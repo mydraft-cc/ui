@@ -8,10 +8,13 @@ export * from './diagram-item';
 export * from './diagram-item-set';
 export * from './diagram-visual';
 export * from './diagram-shape';
-export * from './editor-state';
+export * from './editor-state'
 export * from './renderer';
 export * from './renderer.service';
 export * from './serializer';
 export * from './snap-manager';
 export * from './transform';
+export * from './ui-state';
 export * from './undoable-state';
+
+export * from './projections';

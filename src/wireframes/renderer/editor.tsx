@@ -12,6 +12,7 @@ import {
     DiagramShape,
     DiagramVisual,
     EditorState,
+    getSelection,
     Renderer,
     RendererService,
     selectItems,
@@ -57,14 +58,7 @@ export interface EditorViewProps {
 }
 
 const mapStateToProps = (state: { editor: UndoableState<EditorState> }) => {
-    const editor = state.editor.present;
-
-    const diagram = editor.selectedDiagramId ? editor.diagrams.get(editor.selectedDiagramId) : null;
-
-    const items =
-        diagram ?
-            diagram.selectedItemIds.map(i => diagram.items.get(i)).filter(i => !!i) :
-            [];
+    const { editor, diagram, items} = getSelection(state);
 
     return {
         selectedDiagram: diagram,
@@ -79,7 +73,7 @@ const mapDispatchToProps = (dispatch: Dispatch<any>) => bindActionCreators({
     selectItems, changeItemsAppearance, transformItems
 }, dispatch);
 
-class EditorView extends React.Component<EditorViewProps, {}> {
+class Editor extends React.Component<EditorViewProps, {}> {
     private adornerScope: paper.PaperScope;
     private diagramScope: paper.PaperScope;
     private diagramLayer: paper.Layer;
@@ -260,7 +254,7 @@ class ShapeRef {
     }
 }
 
-export const EditorViewContainer = connect(
+export const EditorContainer = connect(
     mapStateToProps,
     mapDispatchToProps
-)(EditorView);
+)(Editor);

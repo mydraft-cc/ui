@@ -3,14 +3,14 @@ import { Reducer } from 'redux';
 import { UndoableState } from '@app/wireframes/model';
 
 export const UNDO = 'UNDO';
-export const undo = () => {
+export const undo: () => any = () => {
     return {
         type: UNDO
     };
 };
 
 export const REDO = 'REDO';
-export const redo = () => {
+export const redo: () => any = () => {
     return {
         type: REDO
     };

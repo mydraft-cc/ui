@@ -1,0 +1,141 @@
+@font-face {
+  font-family: 'icomoon';
+  src:  url('fonts/icomoon.eot?wn1p9t');
+  src:  url('fonts/icomoon.eot?wn1p9t#iefix') format('embedded-opentype'),
+    url('fonts/icomoon.ttf?wn1p9t') format('truetype'),
+    url('fonts/icomoon.woff?wn1p9t') format('woff'),
+    url('fonts/icomoon.svg?wn1p9t#icomoon') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+
+[class^="icon-"], [class*=" icon-"] {
+  /* use !important to prevent issues with browser extensions that change fonts */
+  font-family: 'icomoon' !important;
+  speak: none;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+
+  /* Better Font Rendering =========== */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-sidebar-right:before {
+  content: "\e90e";
+}
+.icon-sidebar-left:before {
+  content: "\e90f";
+}
+.icon-distribute-h2:before {
+  content: "\e90a";
+}
+.icon-distribute-v2:before {
+  content: "\e90b";
+}
+.icon-distribute-h:before {
+  content: "\e90c";
+}
+.icon-distribute-v:before {
+  content: "\e90d";
+}
+.icon-align-h-center:before {
+  content: "\e900";
+}
+.icon-align-h-left:before {
+  content: "\e901";
+}
+.icon-align-h-right:before {
+  content: "\e902";
+}
+.icon-align-v-bottom:before {
+  content: "\e903";
+}
+.icon-align-v-center:before {
+  content: "\e904";
+}
+.icon-align-v-top:before {
+  content: "\e905";
+}
+.icon-bring-forwards:before {
+  content: "\e906";
+}
+.icon-bring-to-front:before {
+  content: "\e907";
+}
+.icon-send-backwards:before {
+  content: "\e908";
+}
+.icon-send-to-back:before {
+  content: "\e909";
+}
+.icon-search:before {
+  content: "\f002";
+}
+.icon-search-plus:before {
+  content: "\f00e";
+}
+.icon-search-minus:before {
+  content: "\f010";
+}
+.icon-delete:before {
+  content: "\f014";
+}
+.icon-align-left:before {
+  content: "\f036";
+}
+.icon-align-center:before {
+  content: "\f037";
+}
+.icon-align-right:before {
+  content: "\f038";
+}
+.icon-align-justify:before {
+  content: "\f039";
+}
+.icon-plus:before {
+  content: "\f067";
+}
+.icon-minus:before {
+  content: "\f068";
+}
+.icon-cut:before {
+  content: "\f0c4";
+}
+.icon-scissors:before {
+  content: "\f0c4";
+}
+.icon-copy:before {
+  content: "\f0c5";
+}
+.icon-files-o:before {
+  content: "\f0c5";
+}
+.icon-arrange:before {
+  content: "\f0c9";
+}
+.icon-clipboard:before {
+  content: "\f0ea";
+}
+.icon-paste:before {
+  content: "\f0ea";
+}
+.icon-group:before {
+  content: "\f247";
+}
+.icon-ungroup:before {
+  content: "\f248";
+}
+.icon-format_bold:before {
+  content: "\e238";
+}
+.icon-redo:before {
+  content: "\e15a";
+}
+.icon-undo:before {
+  content: "\e166";
+}
+

@@ -3,12 +3,15 @@ require('./libs/paper-area-text');
 
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
+import * as moment from 'moment';
 import { Provider } from 'react-redux';
 import { createStore, combineReducers, Reducer } from 'redux';
 
 import { MathHelper, Vec2 } from '@app/core';
 
-import * as Actions from '@app/wireframes/model/actions';
+import * as Reducers from '@app/wireframes/model/actions';
+
+console.log(moment);
 
 import {
     Diagram,
@@ -42,12 +45,12 @@ for (let identifier in rendererService.registeredRenderers) {
 }
 
 const reducers: Reducer<EditorState>[] = [
-    Actions.alignment(),
-    Actions.appearance(),
-    Actions.items(rendererService, new Serializer(rendererService)),
-    Actions.diagrams(),
-    Actions.grouping(),
-    Actions.ordering()
+    Reducers.alignment(),
+    Reducers.appearance(),
+    Reducers.items(rendererService, new Serializer(rendererService)),
+    Reducers.diagrams(),
+    Reducers.grouping(),
+    Reducers.ordering()
 ];
 
 const reducer: Reducer<EditorState> = (state: EditorState, action: any) => {
@@ -71,17 +74,18 @@ const store = createStore<any>(
                     .addDiagram(diagram).selectDiagram(diagram.id), [
                 SELECT_DIAGRAM,
                 SELECT_ITEMS
-            ])
+            ]),
+        ui: Reducers.ui()
     })
 );
 
-import { App } from './App';
+import { AppContainer } from './app';
 
 import './index.css';
 
 const Root = (
     <Provider store={store}>
-        <App rendererService={rendererService} />
+        <AppContainer rendererService={rendererService} />
     </Provider>
 );
 
