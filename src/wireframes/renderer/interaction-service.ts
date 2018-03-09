@@ -3,9 +3,9 @@ import * as paper from 'paper';
 import { MathHelper } from '@app/core';
 
 export interface InteractionHandler {
-    onDoubleClick?(event: paper.MouseEvent): boolean;
+    onDoubleClick?(event: paper.ToolEvent): boolean;
 
-    onClick?(event: paper.MouseEvent): boolean;
+    onClick?(event: paper.ToolEvent): boolean;
 
     onMouseDown?(event: paper.ToolEvent): boolean;
     onMouseDrag?(event: paper.ToolEvent): boolean;
@@ -24,26 +24,6 @@ const ROTATION_CONFIG = [
     { angle: 270, cursor: 'w-resize' },
     { angle: 315, cursor: 'nw-resize' }
 ];
-
-function findItem(item: paper.Item) {
-    let result = item;
-
-    if (result && result.parent) {
-        let current = item;
-        let parent = <any>item.parent;
-
-        while (/^(Group|Path)$/.test(parent._class)) {
-            current = parent;
-            parent = parent._parent;
-        }
-
-        if (current) {
-            result = current;
-        }
-    }
-
-    return result;
-}
 
 export class InteractionService {
     private interactionHandlers: InteractionHandler[] = [];
@@ -70,9 +50,8 @@ export class InteractionService {
     }
 
     private initializeClickEvents() {
-        this.layer.onClick = this.onClick;
-
-        this.layer.onDoubleClick = this.onDoubleClick;
+        this.layer.onClick = e => this.onClick(e);
+        this.layer.onDoubleClick = e => this.onDoubleClick(e);
     }
 
     public addCursorLayer(layer: paper.Layer) {
@@ -113,20 +92,23 @@ export class InteractionService {
                 const action = actionProvider(handler);
 
                 if (action && !action(event)) {
+                    event.event.stopPropagation();
                     break;
                 }
             }
         }
     }
 
-    private onDoubleClick = (event: paper.MouseEvent) => {
-        event['target'] = findItem(event.target);
+    private onDoubleClick = (e: paper.MouseEvent) => {
+        const eventBuilder: any = paper.ToolEvent;
+        const event = new eventBuilder(this.interactionTool, 'doubleclick', e);
 
         this.invokeEvent(event, h => h.onDoubleClick ? h.onDoubleClick.bind(h) : null);
     };
 
-    private onClick = (event: paper.MouseEvent) => {
-        event['target'] = findItem(event.target);
+    private onClick = (e: paper.MouseEvent) => {
+        const eventBuilder: any = paper.ToolEvent;
+        const event = new eventBuilder(this.interactionTool, 'click', e);
 
         this.invokeEvent(event, h => h.onClick ? h.onClick.bind(h) : null);
     };

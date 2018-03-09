@@ -6,7 +6,8 @@ import { Layout, Tabs } from 'antd';
 
 import {
     ArrangeMenuContainer,
-    HistoryMenuContainer
+    HistoryMenuContainer,
+    UIMenuContainer
 } from '@app/wireframes/components';
 
 import {
@@ -23,6 +24,9 @@ interface AppOwnProps {
 }
 
 interface AppProps {
+    // The renderer service.
+    rendererService: RendererService;
+
     // Show left sidebar.
     showLeftSidebar: boolean;
 
@@ -36,10 +40,10 @@ interface AppProps {
     selectTab: (key: string) => any;
 }
 
-const mapStateToProps = (props: AppOwnProps, state: { ui: UIState }) => {
+const mapStateToProps = (state: { ui: UIState }, props: AppOwnProps) => {
     return {
         rendererService: props.rendererService,
-        selectedtab: state.ui.selectedTab,
+        selectedTab: state.ui.selectedTab,
         showLeftSidebar: state.ui.showLeftSidebar,
         showRightSidebar: state.ui.showRightSidebar
     };
@@ -49,39 +53,42 @@ const mapDispatchToProps = (dispatch: Dispatch<any>) => bindActionCreators({
     selectTab
 }, dispatch);
 
-class App extends React.Component<AppProps & AppOwnProps, {}> {
-    public render() {
-        return (
+const App = (props: AppProps) => {
+    return (
+        <Layout>
+            <Layout.Header>
+                <HistoryMenuContainer />
+
+                <span className='menu-separator' />
+
+                <ArrangeMenuContainer />
+
+                <span className='menu-separator' />
+
+                <UIMenuContainer />
+            </Layout.Header>
             <Layout>
-                <Layout.Header>
-                    <HistoryMenuContainer />
-                    <ArrangeMenuContainer />
-                </Layout.Header>
-                <Layout>
-                    <Layout.Sider width={200}
-                        collapsed={!this.props.showLeftSidebar}
-                        collapsedWidth={0}
-                        collapsible={true}>
-                        <Tabs type='card' onTabClick={(key: string) => this.props.selectTab(key)} activeKey={this.props.selectedTab}>
-                            <Tabs.TabPane key='Shapes' tab='Shapes'>
-                            </Tabs.TabPane>
-                            <Tabs.TabPane key='Icons' tab='Icons'>
-                            </Tabs.TabPane>
-                        </Tabs>
-                    </Layout.Sider>
-                    <Layout.Content>
-                        <EditorContainer rendererService={this.props.rendererService} />
-                    </Layout.Content>
-                    <Layout.Sider width={200}
-                        collapsed={!this.props.showRightSidebar}
-                        collapsedWidth={0}
-                        collapsible={true}>
-                    </Layout.Sider>
-                </Layout>
+                <Layout.Sider width={200}
+                    collapsed={!props.showLeftSidebar}
+                    collapsedWidth={0}>
+                    <Tabs type='card' onTabClick={(key: string) => props.selectTab(key)} activeKey={props.selectedTab}>
+                        <Tabs.TabPane key='Shapes' tab='Shapes'>
+                        </Tabs.TabPane>
+                        <Tabs.TabPane key='Icons' tab='Icons'>
+                        </Tabs.TabPane>
+                    </Tabs>
+                </Layout.Sider>
+                <Layout.Content>
+                    <EditorContainer rendererService={props.rendererService} />
+                </Layout.Content>
+                <Layout.Sider width={200}
+                    collapsed={!props.showRightSidebar}
+                    collapsedWidth={0}>
+                </Layout.Sider>
             </Layout>
-        );
-    }
-}
+        </Layout>
+    );
+};
 
 
 export const AppContainer = connect(

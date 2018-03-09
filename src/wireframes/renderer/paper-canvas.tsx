@@ -34,12 +34,8 @@ export class PaperCanvas extends React.Component<PaperCanvasProps, {}> {
         });
     }
 
-    public componentWillReceiveProps() {
+    public componentDidUpdate() {
         this.updateViewSettings();
-    }
-
-    public shouldComponentUpdate() {
-        return false;
     }
 
     private updateViewSettings() {

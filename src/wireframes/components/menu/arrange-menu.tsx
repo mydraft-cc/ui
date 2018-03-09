@@ -67,30 +67,28 @@ const mapDispatchToProps = (dispatch: Dispatch<any>) => bindActionCreators({
     group: (d, i) => group(d, i, MathHelper.guid()), removeItems, ungroup
 }, dispatch);
 
-export class ArrangeMenu extends React.Component<ArrangeMenuProps, {}> {
-    public render() {
-        return (
-            <>
-                <Button className='menu-item' size='large'
-                    disabled={!this.props.canGroup}
-                    onClick={() => this.props.group(this.props.selectedDiagram!, this.props.selectedItems)}>
-                    <i className='icon-group' />
-                </Button>
+const ArrangeMenu = (props: ArrangeMenuProps) => {
+    return (
+        <>
+            <Button className='menu-item' size='large'
+                disabled={!props.canGroup}
+                onClick={() => props.group(props.selectedDiagram!, props.selectedItems)}>
+                <i className='icon-group' />
+            </Button>
 
-                <Button className='menu-item' size='large'
-                    disabled={!this.props.canUngroup}
-                    onClick={() => this.props.ungroup(this.props.selectedDiagram!, this.props.selectedGroups)}>
-                    <i className='icon-ungroup' />
-                </Button>
+            <Button className='menu-item' size='large'
+                disabled={!props.canUngroup}
+                onClick={() => props.ungroup(props.selectedDiagram!, props.selectedGroups)}>
+                <i className='icon-ungroup' />
+            </Button>
 
-                <Button className='menu-item' size='large'
-                    disabled={!this.props.canRemove}
-                    onClick={() => this.props.removeItems(this.props.selectedDiagram!, this.props.selectedItems)}>
-                    <i className='icon-delete' />
-                </Button>
-            </>
-        );
-    }
+            <Button className='menu-item' size='large'
+                disabled={!props.canRemove}
+                onClick={() => props.removeItems(props.selectedDiagram!, props.selectedItems)}>
+                <i className='icon-delete' />
+            </Button>
+        </>
+    );
 }
 
 export const ArrangeMenuContainer = connect(

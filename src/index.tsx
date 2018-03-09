@@ -76,7 +76,8 @@ const store = createStore<any>(
                 SELECT_ITEMS
             ]),
         ui: Reducers.ui()
-    })
+    }),
+    window['__REDUX_DEVTOOLS_EXTENSION__'] && window['__REDUX_DEVTOOLS_EXTENSION__']()
 );
 
 import { AppContainer } from './app';

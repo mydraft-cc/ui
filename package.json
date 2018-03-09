@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@types/react-redux": "^5.0.15",
-    "@types/redux": "^3.6.0",
+    "antd": "^3.2.3",
     "immutable": "^3.8.2",
+    "moment": "^2.21.0",
     "paper": "^0.11.5",
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
@@ -21,10 +21,13 @@
   },
   "devDependencies": {
     "@types/jest": "^22.1.2",
+    "@types/moment": "^2.13.0",
     "@types/node": "^9.4.5",
     "@types/paper": "^0.9.14",
     "@types/react": "^16.0.36",
     "@types/react-dom": "^16.0.3",
+    "@types/react-redux": "^5.0.15",
+    "@types/redux": "^3.6.0",
     "typescript": "^2.7.1"
   }
 }

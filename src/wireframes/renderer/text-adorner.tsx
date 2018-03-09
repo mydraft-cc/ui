@@ -21,7 +21,7 @@ export interface TextAdornerProps {
     zoom: number;
 
     // The selected diagram.
-    selectedDiagram: Diagram | null;
+    selectedDiagram: Diagram;
 
     // The selected items.
     selectedItems: DiagramItem[];
@@ -52,7 +52,7 @@ export class TextAdorner extends React.Component<TextAdornerProps, {}> implement
         window.removeEventListener('mousedown', this.handleMouseDown);
     }
 
-    public componentWillUpdate() {
+    public componentDidUpdate() {
         this.change();
     }
 
@@ -62,9 +62,9 @@ export class TextAdorner extends React.Component<TextAdornerProps, {}> implement
         }
     };
 
-    public onDoubleClick(event: paper.MouseEvent): boolean {
-        if (event.target && this.textareaElement) {
-            const selectedItem = this.props.provideItemByElement(event.target);
+    public onDoubleClick(event: paper.ToolEvent): boolean {
+        if (event.item && this.textareaElement) {
+            const selectedItem = this.props.provideItemByElement(event.item);
 
             if (selectedItem && selectedItem instanceof DiagramShape) {
                 if (selectedItem.appearance.get(DiagramShape.APPEARANCE_TEXT_DISABLED) === true) {
@@ -86,6 +86,7 @@ export class TextAdorner extends React.Component<TextAdornerProps, {}> implement
                 this.textareaElement.style.width = w;
                 this.textareaElement.style.height = h;
                 this.textareaElement.style.display = 'block';
+                this.textareaElement.style.position = 'absolute';
                 this.textareaElement.focus();
 
                 this.selectedShape = selectedItem;
@@ -114,7 +115,7 @@ export class TextAdorner extends React.Component<TextAdornerProps, {}> implement
     private change() {
         const diagram = this.props.selectedDiagram;
 
-        if (!this.selectedShape || !diagram) {
+        if (!this.selectedShape || (this.props.selectedItems.length === 1 && this.props.selectedItems[0] === this.selectedShape)) {
             return;
         }
 
@@ -137,6 +138,10 @@ export class TextAdorner extends React.Component<TextAdornerProps, {}> implement
     }
 
     public render() {
-        return <textarea style={{ display: 'none '}} ref={(element) => { this.textareaElement = element!; }} onKeyDown={event => this.textareaKeyDown(event)} />
+        return (
+            <div style={{position: 'relative'}}>
+                <textarea style={{ display: 'none '}} ref={(element) => { this.textareaElement = element!; }} onKeyDown={event => this.textareaKeyDown(event)} />
+            </div>
+        );
     }
 }

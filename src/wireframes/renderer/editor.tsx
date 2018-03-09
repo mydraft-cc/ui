@@ -18,6 +18,7 @@ import {
     selectItems,
     Transform,
     transformItems,
+    UIState,
     UndoableState
 } from '@app/wireframes/model';
 
@@ -57,15 +58,15 @@ export interface EditorViewProps {
     transformItems: (diagram: Diagram, items: DiagramItem[], oldBounds: Transform, newBounds: Transform) => void;
 }
 
-const mapStateToProps = (state: { editor: UndoableState<EditorState> }) => {
+const mapStateToProps = (state: { ui: UIState, editor: UndoableState<EditorState> }) => {
     const { editor, diagram, items} = getSelection(state);
 
     return {
         selectedDiagram: diagram,
         selectedItems: items,
-        canvasWidth: editor.size.x,
-        canvasHeight: editor.size.y,
-        canvasZoom: 1
+        canvasWidth: editor.size.x * state.ui.zoom,
+        canvasHeight: editor.size.y * state.ui.zoom,
+        canvasZoom: state.ui.zoom
     };
 }
 
@@ -180,8 +181,8 @@ class Editor extends React.Component<EditorViewProps, {}> {
         return (
             <div className='editor-container'>
                 <PaperCanvas onInit={(layer) => this.initDiagramScope(layer)}
-                      zoom={this.props.canvasZoom}
-                     width={this.props.canvasWidth}
+                    zoom={this.props.canvasZoom}
+                    width={this.props.canvasWidth}
                     height={this.props.canvasHeight} />
 
                 <PaperCanvas onInit={(layer) => this.initAdornerScope(layer)} className='editor-adorners'

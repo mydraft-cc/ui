@@ -15,11 +15,13 @@ import {
 interface HistoryMenuProps {
     // Indicated if the state can be undo.
     canUndo: boolean;
+
     // Indicated if the state can be redo.
     canRedo: boolean;
 
     // Undo the latest action.
     undo: () => void;
+
     // Redo the latest undone action.
     redo: () => void;
 }
@@ -35,24 +37,22 @@ const mapDispatchToProps = (dispatch: Dispatch<any>) => bindActionCreators({
     undo, redo
 }, dispatch);
 
-export class HistoryMenu extends React.Component<HistoryMenuProps, {}> {
-    public render() {
-        return (
-            <>
-                <Button className='menu-item' size='large'
-                    disabled={!this.props.canUndo}
-                    onClick={() => this.props.undo()}>
-                    <i className='icon-undo' />
-                </Button>
+const HistoryMenu = (props: HistoryMenuProps) => {
+    return (
+        <>
+            <Button className='menu-item' size='large'
+                disabled={!props.canUndo}
+                onClick={() => props.undo()}>
+                <i className='icon-undo' />
+            </Button>
 
-                <Button className='menu-item' size='large'
-                    disabled={!this.props.canRedo}
-                    onClick={() => this.props.redo()}>
-                    <i className='icon-redo' />
-                </Button>
-            </>
-        );
-    }
+            <Button className='menu-item' size='large'
+                disabled={!props.canRedo}
+                onClick={() => props.redo()}>
+                <i className='icon-redo' />
+            </Button>
+        </>
+    );
 }
 
 export const HistoryMenuContainer = connect(

@@ -25,5 +25,14 @@
         "./node_modules/paper/dist/paper-full"
       ]
     }
-  }
+  },
+  "exclude": [
+    "acceptance-tests",
+    "build",
+    "node_modules",
+    "jest",
+    "scripts",
+    "src/setupTests.ts",
+    "webpack"
+  ]
 }
