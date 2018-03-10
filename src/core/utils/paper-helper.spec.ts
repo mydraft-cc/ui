@@ -1,3 +1,5 @@
+import * as paper from 'paper';
+
 import 'paper-area-text';
 
 import {
