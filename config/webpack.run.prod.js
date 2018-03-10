@@ -6,7 +6,7 @@ ExtractTextPlugin = require('extract-text-webpack-plugin'),
 
 var ENV = process.env.NODE_ENV = process.env.ENV = 'production';
 
-helpers.removeLoaders(runConfig, 'scss');
+helpers.removeLoaders(runConfig, ['scss']);
 
 module.exports = webpackMerge(runConfig, {
     devtool: 'source-map',

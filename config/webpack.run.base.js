@@ -22,7 +22,7 @@ module.exports = webpackMerge(commonConfig, {
          * 
          * See: https://github.com/webpack/extract-text-webpack-plugin
          */
-        new ExtractTextPlugin('[name]-[contentHash].css'),
+        new ExtractTextPlugin('[name].css'),
 
         /**
          * Shares common code between the pages.
