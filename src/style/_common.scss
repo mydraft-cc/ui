@@ -1,0 +1,69 @@
+@import '_mixins';
+@import '_vars';
+
+// sass-lint:disable no-ids
+
+#root {
+    height: 100%;
+}
+
+#root > .ant-layout {
+    height: 100%;
+}
+
+.sidebar-left,
+.sidebar-right {
+    background: $color-dark-foreground;
+}
+
+.properties-label {
+    padding-top: .25rem;
+    padding-right: .5rem;
+}
+
+.properties-subsection {
+    & {
+        margin-bottom: 1rem;
+    }
+
+    &:last-child {
+        margin: 0;
+    }
+}
+
+.menu {
+    &-separator {
+        @include opacity(.8);
+        display: inline-block;
+        border: 0;
+        background: $color-dark-foreground;
+        height: 1rem;
+        margin-right: .5rem;
+        margin-left: .5rem;
+        width: 1px;
+    }
+
+    &-item {
+        & {
+            @include opacity(.8);
+            color: $color-dark-foreground !important;
+            border: 0;
+            background: transparent !important;
+        }
+
+        &:hover {
+            @include opacity(1);
+        }
+
+        &:disabled {
+            @include opacity(.4);
+        }
+    }
+}
+
+.logo {
+    color: $color-dark-foreground;
+    font-size: 1.1rem;
+    font-weight: bold;
+    margin-right: 50px;
+}

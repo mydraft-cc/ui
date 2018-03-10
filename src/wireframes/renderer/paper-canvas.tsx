@@ -51,6 +51,6 @@ export class PaperCanvas extends React.Component<PaperCanvasProps, {}> {
     }
 
     public render() {
-        return <canvas className={this.props.className} ref={canvas => { this.canvasElement = canvas; }} />
+        return <canvas className={this.props.className} ref={canvas => { this.canvasElement = canvas; }} />;
     }
 }

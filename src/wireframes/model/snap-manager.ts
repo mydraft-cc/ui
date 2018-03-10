@@ -2,7 +2,7 @@ import {
     MathHelper,
     Rect2,
     Vec2
-} from '@app/core'
+} from '@app/core';
 
 import {
     Diagram,
@@ -19,7 +19,7 @@ export interface SnapResult {
     delta: Vec2;
 }
 
-export enum SnapMode { LeftTop, Center, RightBottom };
+export enum SnapMode { LeftTop, Center, RightBottom }
 
 const ROTATE_SNAP = 90 / 4;
 const MOVE_SNAP_GRID = 10;

@@ -1,4 +1,4 @@
-import { Rotation, Vec2 } from '@app/core'
+import { Rotation, Vec2 } from '@app/core';
 
 import {
     appearance,

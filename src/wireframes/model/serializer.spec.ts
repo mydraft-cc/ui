@@ -1,4 +1,4 @@
-import { MathHelper, Vec2 } from '@app/core'
+import { MathHelper, Vec2 } from '@app/core';
 
 import { Checkbox } from './../shapes/checkbox';
 

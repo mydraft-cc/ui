@@ -18,13 +18,10 @@
       240
     ],
     "member-access": [
-      true, 
+      true,
       "check-accessor"
     ],
-    "member-ordering": [
-      true,
-      "variables-before-functions"
-    ],
+    "no-access-missing-member": false,
     "no-arg": true,
     "no-bitwise": true,
     "no-console": [
@@ -40,18 +37,19 @@
     "no-duplicate-variable": true,
     "no-empty": true,
     "no-eval": true,
+    "no-forward-ref": false,
     "no-inferrable-types": [
-      true, 
+      true,
       "ignore-params"
     ],
+    "no-input-rename": false,
+    "no-output-rename": false,
     "no-shadowed-variable": true,
     "no-string-literal": false,
     "no-switch-case-fall-through": true,
     "no-trailing-whitespace": true,
-    
     "no-unused-expression": true,
-    "no-unused-variable": true,
-    "no-use-before-declare": false,
+    "no-use-before-declare": true,
     "no-var-keyword": true,
     "object-literal-sort-keys": false,
     "one-line": [
@@ -75,12 +73,13 @@
     ],
     "radix": true,
     "semicolon": [
+      true,
       "always"
     ],
     "trailing-comma": [
-      true, 
+      true,
       {
-        "multiline": "never", 
+        "multiline": "never",
         "singleline": "never"
       }
     ],

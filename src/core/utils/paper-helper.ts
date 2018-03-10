@@ -6,7 +6,7 @@ import {
     Vec2
 } from '@app/core';
 
-export interface TextGroup { textItem: paper.TextItem; groupItem: paper.Group; };
+export interface TextGroup { textItem: paper.TextItem; groupItem: paper.Group; }
 
 export module PaperHelper {
     export const COLOR_BLACK = new paper.Color(0, 0, 0, 1);

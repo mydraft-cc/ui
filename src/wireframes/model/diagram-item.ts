@@ -1,4 +1,4 @@
-﻿import { ImmutableObject } from '@app/core'
+﻿import { ImmutableObject } from '@app/core';
 
 import { Diagram, Transform } from '@app/wireframes/model';
 

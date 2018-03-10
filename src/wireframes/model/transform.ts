@@ -3,7 +3,7 @@ import {
     Rotation,
     Rect2,
     Vec2
-} from '@app/core'
+} from '@app/core';
 
 export class Transform {
     public static readonly ZERO = new Transform(Vec2.ZERO, Vec2.ZERO, Rotation.ZERO);

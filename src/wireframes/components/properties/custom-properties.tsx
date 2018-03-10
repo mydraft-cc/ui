@@ -1,7 +1,7 @@
-import { connect } from 'react-redux'
-import { bindActionCreators, Dispatch } from 'redux';
-import { Select } from 'antd';
 import * as React from 'react';
+import { connect } from 'react-redux';
+import { bindActionCreators, Dispatch } from 'redux';
+import { Col, Row, Select } from 'antd';
 
 import { ColorPicker } from '@app/core';
 
@@ -53,7 +53,7 @@ const mapStateToProps = (state: { editor: UndoableState<EditorState> }) => {
         selectedShape,
         configurables: selectedShape ? selectedShape.configurables : []
     };
-}
+};
 
 const mapDispatchToProps = (dispatch: Dispatch<any>) => bindActionCreators({
     changeItemsAppearance
@@ -63,35 +63,40 @@ const CustomProperties = (props: CustomPropertiesProps) => {
     return (
         <>
             {props.configurables.map(c =>
-                <div key={c.name}>
-                    {c instanceof SliderConfigurable &&
-                        <CustomSlider
-                            value={props.selectedShape!.appearance.get(c.name)}
-                            min={c.min}
-                            max={c.max}
-                            onChange={ev => props.changeItemsAppearance(props.selectedDiagram!, [props.selectedShape!], c.name, ev)} />
-                    }
-                    {c instanceof SelectionConfigurable &&
-                        <Select
-                            value={props.selectedShape!.appearance.get(c.name)}
-                            allowClear={false}
-                            autoFocus={false}
-                            onChange={ev => props.changeItemsAppearance(props.selectedDiagram!, [props.selectedShape!], c.name, ev)}>
-                            {c.options.map(o =>
-                                <Select.Option key={o} value={o}>{o}</Select.Option>
-                            )}
-                        </Select>
-                    }
-                    {c instanceof ColorConfigurable &&
-                        <ColorPicker
-                            color={props.selectedShape!.appearance.get(c.name)}
-                            onChange={ev => props.changeItemsAppearance(props.selectedDiagram!, [props.selectedShape!], c.name, ev)} />
-                    }
-                </div>
+                <Row key={c.name}>
+                    <Col span={12} className='properties-label'>
+                        {c.label}
+                    </Col>
+                    <Col span={12}>
+                        {c instanceof SliderConfigurable &&
+                            <CustomSlider
+                                value={props.selectedShape!.appearance.get(c.name)}
+                                min={c.min}
+                                max={c.max}
+                                onChange={ev => props.changeItemsAppearance(props.selectedDiagram!, [props.selectedShape!], c.name, ev)} />
+                        }
+                        {c instanceof SelectionConfigurable &&
+                            <Select
+                                value={props.selectedShape!.appearance.get(c.name)}
+                                allowClear={false}
+                                autoFocus={false}
+                                onChange={ev => props.changeItemsAppearance(props.selectedDiagram!, [props.selectedShape!], c.name, ev)}>
+                                {c.options.map(o =>
+                                    <Select.Option key={o} value={o}>{o}</Select.Option>
+                                )}
+                            </Select>
+                        }
+                        {c instanceof ColorConfigurable &&
+                            <ColorPicker
+                                color={props.selectedShape!.appearance.get(c.name)}
+                                onChange={ev => props.changeItemsAppearance(props.selectedDiagram!, [props.selectedShape!], c.name, ev.toNumber())} />
+                        }
+                    </Col>
+                </Row>
             )}
         </>
     );
-}
+};
 
 export const CustomPropertiesContainer = connect(
     mapStateToProps,

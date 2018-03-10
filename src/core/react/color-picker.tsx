@@ -1,7 +1,7 @@
-import { Popover, Button } from 'antd';
-import * as React from 'react'
+import * as React from 'react';
+import { Button, Popover } from 'antd';
 
-import './color-picker.css';
+import './color-picker.scss';
 
 import { Color, ColorPalette } from '@app/core';
 
@@ -27,8 +27,8 @@ export class ColorPicker extends React.Component<ColorPickerProps, ColorPickerSt
         this.state = { visible: false };
     }
 
-    private show() {
-        this.setState({ visible: true });
+    private toggle() {
+        this.setState(s => { return { visible: !s.visible }; });
     }
 
     private selectColor(color: Color) {
@@ -46,25 +46,35 @@ export class ColorPicker extends React.Component<ColorPickerProps, ColorPickerSt
             selectedColor = this.props.color;
         } else if (typeof this.props.color === 'string') {
             selectedColor = Color.fromString(this.props.color);
+        } else if (typeof this.props.color === 'number') {
+            selectedColor = Color.fromNumber(this.props.color);
         }
 
         const selectedPalette = this.props.palette || ColorPalette.colors();
 
+        const colorClassName = (color: Color) => {
+            if (color.eq(selectedColor)) {
+                return 'color-picker-color selected';
+            } else {
+                return 'color-picker-color';
+            }
+        };
+
         const content = (
-            <div>
+            <div className='color-picker-colors'>
                 {selectedPalette.colors.map(c =>
-                    <div className='color' key={c.toString()}>
-                        <div className='color-inner' onChange={() => this.selectColor(c)} style={{background: c.toString()}}></div>
+                    <div className={colorClassName(c)} key={c.toString()}>
+                        <div className='color-picker-color-inner' onClick={() => this.selectColor(c)} style={{background: c.toString()}}></div>
                     </div>
                 )}
             </div>
         );
 
         return (
-            <Popover overlayClassName='colors' content={content} title='Colors' visible={this.state.visible}>
-                <Button onClick={() => this.show()}>
-                    <div className='color'>
-                        <div className='color-inner' style={{background: selectedColor.toString()}}></div>
+            <Popover content={content} title='Colors' visible={this.state.visible}>
+                <Button className='color-picker-button' onClick={() => this.toggle()}>
+                    <div className='color-picker-color'>
+                        <div className='color-picker-color-inner' style={{background: selectedColor.toString()}}></div>
                     </div>
                 </Button>
             </Popover>

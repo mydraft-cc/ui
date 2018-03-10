@@ -15,4 +15,4 @@ export const getSelection = (state: { editor: UndoableState<EditorState> }) => {
         [];
 
     return { editor, diagram, items };
-}
+};

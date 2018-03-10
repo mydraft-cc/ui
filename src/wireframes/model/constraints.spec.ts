@@ -1,4 +1,4 @@
-import { Vec2 } from '@app/core'
+import { Vec2 } from '@app/core';
 
 import {
     DiagramShape,

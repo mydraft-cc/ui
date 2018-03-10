@@ -82,7 +82,7 @@ const store = createStore<any>(
 
 import { AppContainer } from './app';
 
-import './index.css';
+import './index.scss';
 
 const Root = (
     <Provider store={store}>

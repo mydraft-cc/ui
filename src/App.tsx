@@ -1,13 +1,13 @@
-import { connect } from 'react-redux'
-import { bindActionCreators, Dispatch } from 'redux';
 import * as React from 'react';
-
-import { Layout, Tabs } from 'antd';
+import { connect } from 'react-redux';
+import { bindActionCreators, Dispatch } from 'redux';
+import { Collapse, Layout, Tabs } from 'antd';
 
 import {
     ArrangeMenuContainer,
     CustomPropertiesContainer,
     HistoryMenuContainer,
+    LayoutPropertiesContainer,
     UIMenuContainer
 } from '@app/wireframes/components';
 
@@ -48,7 +48,7 @@ const mapStateToProps = (state: { ui: UIState }, props: AppOwnProps) => {
         showLeftSidebar: state.ui.showLeftSidebar,
         showRightSidebar: state.ui.showRightSidebar
     };
-}
+};
 
 const mapDispatchToProps = (dispatch: Dispatch<any>) => bindActionCreators({
     selectTab
@@ -58,18 +58,18 @@ const App = (props: AppProps) => {
     return (
         <Layout>
             <Layout.Header>
-                <HistoryMenuContainer />
+                <span className='logo'>Athene Wireframes</span>
 
+                <HistoryMenuContainer />
                 <span className='menu-separator' />
 
                 <ArrangeMenuContainer />
-
                 <span className='menu-separator' />
 
                 <UIMenuContainer />
             </Layout.Header>
             <Layout>
-                <Layout.Sider width={200}
+                <Layout.Sider width={320} className='sidebar-left'
                     collapsed={!props.showLeftSidebar}
                     collapsedWidth={0}>
                     <Tabs type='card' onTabClick={(key: string) => props.selectTab(key)} activeKey={props.selectedTab}>
@@ -82,10 +82,17 @@ const App = (props: AppProps) => {
                 <Layout.Content>
                     <EditorContainer rendererService={props.rendererService} />
                 </Layout.Content>
-                <Layout.Sider width={200}
+                <Layout.Sider width={320} className='sidebar-right'
                     collapsed={!props.showRightSidebar}
                     collapsedWidth={0}>
-                    <CustomPropertiesContainer />
+                    <Collapse bordered={false} defaultActiveKey={['layout', 'custom']}>
+                        <Collapse.Panel key='layout' header='Layout'>
+                            <LayoutPropertiesContainer />
+                        </Collapse.Panel>
+                        <Collapse.Panel key='custom' header='Custom'>
+                            <CustomPropertiesContainer />
+                        </Collapse.Panel>
+                    </Collapse>
                 </Layout.Sider>
             </Layout>
         </Layout>

@@ -1,8 +1,10 @@
-import { connect } from 'react-redux'
-import { bindActionCreators, Dispatch } from 'redux';
 import * as React from 'react';
+import { connect } from 'react-redux';
+import { bindActionCreators, Dispatch } from 'redux';
 
-import { ImmutableList } from '@app/core'
+import './editor.scss';
+
+import { ImmutableList } from '@app/core';
 
 import {
     changeItemsAppearance,
@@ -68,7 +70,7 @@ const mapStateToProps = (state: { ui: UIState, editor: UndoableState<EditorState
         canvasHeight: editor.size.y * state.ui.zoom,
         canvasZoom: state.ui.zoom
     };
-}
+};
 
 const mapDispatchToProps = (dispatch: Dispatch<any>) => bindActionCreators({
     selectItems, changeItemsAppearance, transformItems
@@ -180,15 +182,17 @@ class Editor extends React.Component<EditorViewProps, {}> {
     public render() {
         return (
             <div className='editor-container'>
-                <PaperCanvas onInit={(layer) => this.initDiagramScope(layer)}
-                    zoom={this.props.canvasZoom}
-                    width={this.props.canvasWidth}
-                    height={this.props.canvasHeight} />
+                <div className='editor-inner' style={{ width: this.props.canvasWidth + 'px', height: this.props.canvasHeight + 'px' }}>
+                    <PaperCanvas onInit={(layer) => this.initDiagramScope(layer)}
+                        zoom={this.props.canvasZoom}
+                        width={this.props.canvasWidth}
+                        height={this.props.canvasHeight} />
 
-                <PaperCanvas onInit={(layer) => this.initAdornerScope(layer)} className='editor-adorners'
-                    zoom={this.props.canvasZoom}
-                    width={this.props.canvasWidth}
-                    height={this.props.canvasHeight} />
+                    <PaperCanvas onInit={(layer) => this.initAdornerScope(layer)} className='editor-adorners'
+                        zoom={this.props.canvasZoom}
+                        width={this.props.canvasWidth}
+                        height={this.props.canvasHeight} />
+                </div>
 
                 <div>
                     {this.adornerScope && this.props.selectedDiagram && (

@@ -1,0 +1,46 @@
+@import '_mixins';
+@import '_vars';
+
+$size: 24px;
+
+.color-picker {
+    &-button {
+        padding: 2px !important;
+    }
+
+    &-colors {
+        @include clearfix;
+        max-width: 210px;
+        min-width: 210px;
+    }
+
+    &-color {
+        & {
+            @include circle($size);
+            float: left;
+            border: 2px solid $color-border;
+            background: $color-dark-foreground;
+            margin: 1px;
+        }
+
+        &.rect {
+            @include border-radius(0);
+            background: transparent;
+            border-color: transparent;
+            float: none;
+        }
+
+        &-inner {
+            @include circle($size - 6px);
+            margin: 1px;
+        }
+
+        &:hover {
+            border-color: $color-border-dark;
+        }
+
+        &.selected {
+            border-color: $color-theme-blue;
+        }
+    }
+}

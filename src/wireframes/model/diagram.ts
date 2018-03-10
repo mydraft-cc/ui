@@ -3,7 +3,7 @@ import {
     ImmutableList,
     ImmutableSet,
     MathHelper
-} from '@app/core'
+} from '@app/core';
 
 import {
     DiagramContainer,

@@ -1,7 +1,7 @@
 
 import * as paper from 'paper';
 
-import { Color, PaperHelper } from '@app/core'
+import { Color, PaperHelper } from '@app/core';
 
 import {
     SnapMode,

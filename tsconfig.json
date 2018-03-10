@@ -7,32 +7,22 @@
     "lib": ["es6", "dom"],
     "module": "esnext",
     "moduleResolution": "node",
+    "noImplicitAny": true,
     "noImplicitReturns": true,
     "noImplicitThis": true,
-    "noImplicitAny": true,
     "noUnusedLocals": true,
     "outDir": "build/dist",
-    "rootDir": "src",
     "strictNullChecks": true,
     "sourceMap": true,
     "suppressImplicitAnyIndexErrors": true,
     "target": "es5",
     "paths": {
       "@app*": [
-        "src*"
+        "src/*"
       ],
       "paper": [
         "./node_modules/paper/dist/paper-full"
       ]
     }
-  },
-  "exclude": [
-    "acceptance-tests",
-    "build",
-    "node_modules",
-    "jest",
-    "scripts",
-    "src/setupTests.ts",
-    "webpack"
-  ]
+  }
 }

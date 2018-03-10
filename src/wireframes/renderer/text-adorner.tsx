@@ -60,7 +60,7 @@ export class TextAdorner extends React.Component<TextAdornerProps, {}> implement
         if (e.target !== this.textareaElement) {
             this.hide();
         }
-    };
+    }
 
     public onDoubleClick(event: paper.ToolEvent): boolean {
         if (event.item && this.textareaElement) {

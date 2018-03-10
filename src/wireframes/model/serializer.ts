@@ -4,7 +4,7 @@ import {
     ImmutableList,
     MathHelper,
     Rotation
-} from '@app/core'
+} from '@app/core';
 
 import {
     DiagramItemSet,

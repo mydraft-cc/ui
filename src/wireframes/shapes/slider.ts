@@ -1,4 +1,4 @@
-import { Rect2, Vec2 } from '@app/core'
+import { Rect2, Vec2 } from '@app/core';
 
 import {
     ColorConfigurable,
@@ -25,7 +25,7 @@ DEFAULT_APPEARANCE[VALUE] = 50;
 
 const CONFIGURABLES: Configurable[] = [
     new SliderConfigurable(VALUE, 'Value'),
-    new ColorConfigurable(ACCENT_COLOR, 'Accent')
+    new ColorConfigurable(ACCENT_COLOR, 'Accent Color')
 ];
 
 const HEIGHT_TOTAL = 20;

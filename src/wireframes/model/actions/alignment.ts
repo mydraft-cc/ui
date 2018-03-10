@@ -1,6 +1,6 @@
 import { Reducer } from 'redux';
 
-import { Rect2, Vec2 } from '@app/core'
+import { Rect2, Vec2 } from '@app/core';
 
 import {
     Diagram,
@@ -158,4 +158,4 @@ function findTargets(itemIds: string[], diagram: Diagram): TransformTarget[] {
     });
 }
 
-interface TransformTarget { transform: Transform; aabb: Rect2; itemId: string; };
+interface TransformTarget { transform: Transform; aabb: Rect2; itemId: string; }

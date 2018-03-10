@@ -1,9 +1,7 @@
-import { connect } from 'react-redux'
-import { bindActionCreators, Dispatch } from 'redux';
-import { Button } from 'antd';
 import * as React from 'react';
-
-import './ui-menu.css';
+import { connect } from 'react-redux';
+import { bindActionCreators, Dispatch } from 'redux';
+import { Button, Icon } from 'antd';
 
 import {
     setShowLeftSidebar,
@@ -46,7 +44,7 @@ const mapStateToProps = (state: { ui: UIState }) => {
         showRightSidebar: state.ui.showRightSidebar,
         zoom: state.ui.zoom
     };
-}
+};
 
 const mapDispatchToProps = (dispatch: Dispatch<any>) => bindActionCreators({
     setZoom, setShowLeftSidebar, setShowRightSidebar
@@ -58,7 +56,7 @@ const UIMenu = (props: UIMenuProps) => {
             <Button className='menu-item' size='large'
                 disabled={!props.canZoomOut}
                 onClick={() => props.setZoom(props.zoom - .25)}>
-                <i className='icon-minus' />
+                <Icon type='minus-circle-o' />
             </Button>
 
             <span className='menu-item'>{props.zoom * 100}</span>
@@ -66,11 +64,11 @@ const UIMenu = (props: UIMenuProps) => {
             <Button className='menu-item' size='large'
                 disabled={!props.canZoomIn}
                 onClick={() => props.setZoom(props.zoom + .25)}>
-                <i className='icon-plus' />
+                <Icon type='plus-circle-o' />
             </Button>
         </>
     );
-}
+};
 
 export const UIMenuContainer = connect(
     mapStateToProps,

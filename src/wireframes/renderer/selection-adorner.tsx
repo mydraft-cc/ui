@@ -5,7 +5,7 @@ import {
     PaperHelper,
     Rect2,
     Vec2
-} from '@app/core'
+} from '@app/core';
 
 import {
     calculateSelection,

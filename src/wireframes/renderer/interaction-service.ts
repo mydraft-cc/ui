@@ -104,26 +104,26 @@ export class InteractionService {
         const event = new eventBuilder(this.interactionTool, 'doubleclick', e);
 
         this.invokeEvent(event, h => h.onDoubleClick ? h.onDoubleClick.bind(h) : null);
-    };
+    }
 
     private onClick = (e: paper.MouseEvent) => {
         const eventBuilder: any = paper.ToolEvent;
         const event = new eventBuilder(this.interactionTool, 'click', e);
 
         this.invokeEvent(event, h => h.onClick ? h.onClick.bind(h) : null);
-    };
+    }
 
     private onMouseDown = (event: paper.ToolEvent) => {
         this.invokeEvent(event, h => h.onMouseDown ? h.onMouseDown.bind(h) : null);
-    };
+    }
 
     private onMouseUp = (event: paper.ToolEvent) => {
         this.invokeEvent(event, h => h.onMouseUp ? h.onMouseUp.bind(h) : null);
-    };
+    }
 
     private onMouseDrag = (event: paper.ToolEvent) => {
         this.invokeEvent(event, h => h.onMouseDrag ? h.onMouseDrag.bind(h) : null);
-    };
+    }
 
     private onMouseMove = (event: paper.ToolEvent) => {
         for (let layer of this.cursorLayers) {
@@ -151,5 +151,5 @@ export class InteractionService {
                 document.body.style.cursor = 'default';
             }
         }
-    };
+    }
 }

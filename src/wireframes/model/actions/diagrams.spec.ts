@@ -1,4 +1,4 @@
-import { MathHelper } from '@app/core'
+import { MathHelper } from '@app/core';
 
 import {
     addDiagram,

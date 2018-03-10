@@ -1,5 +1,4 @@
-
-import { MathHelper, Vec2 } from '@app/core'
+import { MathHelper, Vec2 } from '@app/core';
 
 import { DiagramShape } from '@app/wireframes/model';
 

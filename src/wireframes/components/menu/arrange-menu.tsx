@@ -1,7 +1,7 @@
-import { connect } from 'react-redux'
+import * as React from 'react';
+import { connect } from 'react-redux';
 import { bindActionCreators, Dispatch } from 'redux';
 import { Button } from 'antd';
-import * as React from 'react';
 
 import { MathHelper } from '@app/core';
 
@@ -59,7 +59,7 @@ const mapStateToProps = (state: { editor: UndoableState<EditorState> }) => {
         canRemove: items.length > 0,
         canUngroup: groups.length > 0
     };
-}
+};
 
 const mapDispatchToProps = (dispatch: Dispatch<any>) => bindActionCreators({
     group: (d, i) => group(d, i, MathHelper.guid()), removeItems, ungroup
@@ -87,7 +87,7 @@ const ArrangeMenu = (props: ArrangeMenuProps) => {
             </Button>
         </>
     );
-}
+};
 
 export const ArrangeMenuContainer = connect(
     mapStateToProps,

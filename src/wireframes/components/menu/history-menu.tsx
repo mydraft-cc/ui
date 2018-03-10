@@ -1,9 +1,7 @@
-import { connect } from 'react-redux'
+import * as React from 'react';
+import { connect } from 'react-redux';
 import { bindActionCreators, Dispatch } from 'redux';
 import { Button } from 'antd';
-import * as React from 'react';
-
-import './history-menu.css';
 
 import {
     EditorState,
@@ -31,7 +29,7 @@ const mapStateToProps = (state: { editor: UndoableState<EditorState> }) => {
         canUndo: state.editor.canUndo,
         canRedo: state.editor.canRedo
     };
-}
+};
 
 const mapDispatchToProps = (dispatch: Dispatch<any>) => bindActionCreators({
     undo, redo
@@ -53,7 +51,7 @@ const HistoryMenu = (props: HistoryMenuProps) => {
             </Button>
         </>
     );
-}
+};
 
 export const HistoryMenuContainer = connect(
     mapStateToProps,

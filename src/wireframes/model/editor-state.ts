@@ -1,4 +1,4 @@
-import { ImmutableIdMap, Vec2 } from '@app/core'
+import { ImmutableIdMap, Vec2 } from '@app/core';
 
 import { Diagram } from '@app/wireframes/model';
 
@@ -12,7 +12,7 @@ export class EditorState {
     }
 
     public static empty(): EditorState {
-        return new EditorState(ImmutableIdMap.empty<Diagram>(), null, new Vec2(1000, 1000));
+        return new EditorState(ImmutableIdMap.empty<Diagram>(), null, new Vec2(1200, 1000));
     }
 
     public addDiagram(diagram: Diagram): EditorState {

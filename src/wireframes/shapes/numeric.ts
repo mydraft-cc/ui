@@ -1,5 +1,5 @@
 
-import { Rect2, Vec2 } from '@app/core'
+import { Rect2, Vec2 } from '@app/core';
 
 import { DiagramShape } from '@app/wireframes/model';
 
