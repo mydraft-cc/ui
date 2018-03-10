@@ -85,6 +85,18 @@ module.exports = {
                  * See: https://github.com/webpack-contrib/extract-text-webpack-plugin
                  */
                 use: ExtractTextPlugin.extract({ fallback: 'style-loader', use: 'css-loader?sourceMap' })
+            }, {
+                test: /\.scss$/,
+                use: [{
+                    loader: 'style-loader'
+                }, {
+                    loader: 'css-loader'
+                }, {
+                    loader: 'sass-loader?sourceMap',
+                    options: {
+                        includePaths: [helpers.root('src', 'style')]
+                    }
+                }]
             }
         ]
     },

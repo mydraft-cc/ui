@@ -6,6 +6,8 @@ ExtractTextPlugin = require('extract-text-webpack-plugin'),
 
 var ENV = process.env.NODE_ENV = process.env.ENV = 'production';
 
+helpers.removeLoaders(runConfig, 'scss');
+
 module.exports = webpackMerge(runConfig, {
     devtool: 'source-map',
 
@@ -55,21 +57,20 @@ module.exports = webpackMerge(runConfig, {
                  * 
                  * See: https://github.com/webpack-contrib/extract-text-webpack-plugin
                  */
-                use: ExtractTextPlugin.extract({ fallback: 'style-loader', use: 'css-loader?minimize!sass-loader?sourceMap' }),
-                /*
-                 * Do not include component styles
-                 */
-                include: helpers.root('src', 'theme'),
-            }, {
-                test: /\.scss$/,
-                use: [{
-                    loader: 'raw-loader'
-                }, {
-                    loader: 'sass-loader',
-                    options: {
-                        includePaths: [helpers.root('src', 'style')]
-                    }
-                }]
+                use: ExtractTextPlugin.extract({ 
+                    fallback: 'style-loader',
+                    use: [{
+                        loader: 'css-loader',
+                        options: {
+                            minimize: true
+                        }
+                    }, {
+                        loader: 'sass-loader',
+                        options: {
+                            includePaths: [helpers.root('src', 'style')]
+                        }
+                    }]
+                })
             }
         ]
     },
@@ -78,18 +79,11 @@ module.exports = webpackMerge(runConfig, {
         new webpack.NoEmitOnErrorsPlugin(),
         new webpack.DefinePlugin({ 'process.env': { 'ENV': JSON.stringify(ENV) } }),
         new webpack.optimize.ModuleConcatenationPlugin(),
-
-        /*
-         * Puts each bundle into a file and appends the hash of the file to the path.
-         * 
-         * See: https://github.com/webpack/extract-text-webpack-plugin
-         */
-        new ExtractTextPlugin('[name].css'),
         
         new webpack.optimize.UglifyJsPlugin({
             beautify: false,
             mangle: {
-                screw_ie8: true, keep_fnames: true
+                screw_ie8: true, keep_fnames: false
             },
             compress: {
                 screw_ie8: true, warnings: false

@@ -1,6 +1,6 @@
 export module Collections {
     export function withMovedTo<T>(source: T[], items: T[], target: number, relative = false): T[] {
-        if (items.length === 0 || source.length === 0) {
+        if (source.length === 0 || !items || items.length === 0 || items.filter(x => !x).length > 0) {
             return source;
         }
 
@@ -75,54 +75,94 @@ export module Collections {
         return newItems;
     }
 
-    export function withAdded<T>(source: T[], items: T[]): T[] {
+    export function withAdded<T>(source: T[], items: T[], predicate?: (item: T) => boolean): T[] {
         if (!items || items.length === 0) {
             return source;
         }
 
-        return [...source, ...items];
+        let newItems: T[] | null = null;
+
+        for (let item of items) {
+            if (!item || (predicate && !predicate(item))) {
+                return source;
+            }
+
+            if (!newItems) {
+                newItems = [...source];
+            }
+
+            newItems.push(item);
+        }
+
+        return newItems || source;
     }
 
     export function withRemoved<T>(source: T[], items: T[]): T[] {
-        if (!items || items.length === 0 || source.length === 0) {
-            return items;
+        if (source.length === 0 || !items || items.length === 0) {
+            return source;
         }
 
-        const newItems = [...source];
+        let hasChanged = false;
+
+        const newItems: T[] = [...source];
 
         for (let item of items) {
+            if (!item) {
+                return source;
+            }
+
             const index = newItems.indexOf(item);
 
-            if (index >= 0) {
-                newItems.splice(index, 1);
+            if (index < 0) {
+                return source;
             }
+
+            newItems.splice(index, 1);
+
+            hasChanged = true;
         }
 
-        return newItems;
+        return hasChanged ? newItems : source;
     }
 
-    export function withUpdated<T>(source: T[], items: T[], updater: (item: T) => T): T[] {
-        if (!items || items.length === 0 || source.length === 0) {
-            return items;
+    export function withUpdated<T>(source: T[], items: T[], updater: (item: T) => T, predicate?: (lhs: T, rhs: T) => boolean): T[] {
+        if (!items || items.length === 0 || source.length === 0 || !updater) {
+            return source;
         }
 
-        let hasUpdated = false;
-
-        const newItems = [...source];
+        let newItems: T[] | null = null;
 
         for (let item of items) {
-            const index = newItems.indexOf(item);
+            if (!item) {
+                return source;
+            }
+
+            const index = source.indexOf(item);
+
+            if (index < 0) {
+                return source;
+            }
 
             const newItem = updater(item);
 
-            if (newItem && newItem !== item) {
-                newItems[index] = newItem;
+            if (!newItem) {
+                return source;
+            }
 
-                hasUpdated = true;
+            if (newItem !== item) {
+                if (predicate && !predicate(newItem, item)) {
+                    return source;
+                }
+
+                if (newItems === null) {
+                    newItems = [...source];
+                }
+
+                newItems[index] = newItem;
             }
         }
 
-        return hasUpdated ? newItems : source;
+        return newItems || source;
     }
 }
 

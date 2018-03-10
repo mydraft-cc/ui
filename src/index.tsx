@@ -1,17 +1,16 @@
 require('paper/dist/paper-full');
+
+// Area text extension for paper.js
 require('./libs/paper-area-text');
 
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import * as moment from 'moment';
 import { Provider } from 'react-redux';
 import { createStore, combineReducers, Reducer } from 'redux';
 
 import { MathHelper, Vec2 } from '@app/core';
 
 import * as Reducers from '@app/wireframes/model/actions';
-
-console.log(moment);
 
 import {
     Diagram,

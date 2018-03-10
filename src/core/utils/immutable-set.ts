@@ -1,12 +1,8 @@
 export class ImmutableSet {
-    private static readonly EMPTY = new ImmutableSet({});
+    private static readonly EMPTY = new ImmutableSet({}, 0);
     private readonly items: { [item: string]: boolean };
 
-    public get size(): number {
-        return Object.keys(this.items).length;
-    }
-
-    private constructor(items: { [item: string]: boolean }) {
+    private constructor(items: { [item: string]: boolean }, public readonly size: number) {
         this.items = items;
     }
 
@@ -24,7 +20,7 @@ export class ImmutableSet {
                 itemMap[item] = true;
             }
 
-            return new ImmutableSet(itemMap);
+            return new ImmutableSet(itemMap, Object.keys(itemMap).length);
         }
     }
 
@@ -49,7 +45,15 @@ export class ImmutableSet {
     }
 
     public add(item: string): ImmutableSet {
-        return this.set([item]);
+        if (!item || this.items[item]) {
+            return this;
+        }
+
+        const newItems = {...this.items};
+
+        newItems[item] = true;
+
+        return new ImmutableSet(newItems, this.size + 1);
     }
 
     public remove(...items: string[]): ImmutableSet {
@@ -58,35 +62,45 @@ export class ImmutableSet {
         }
 
         const newItems = {...this.items};
-        let hasChanged = false;
 
         for (let item of items) {
-            if (item) {
-                delete newItems[item];
-
-                hasChanged = true;
+            if (!item || !this.items[item]) {
+                return this;
             }
+
+            delete newItems[item];
         }
 
-        return hasChanged ? new ImmutableSet(newItems) : this;
+        return new ImmutableSet(newItems, this.size - items.length);
     }
 
-    public set(items: string[]): ImmutableSet {
+    public set(...items: string[]): ImmutableSet {
         if (!items) {
             return this;
         }
 
-        const newItems = {...this.items};
-        let hasChanged = false;
+        const newItems = {};
 
         for (let item of items) {
-            if (item) {
-                newItems[item] = true;
+            if (!item) {
+                return this;
+            }
 
-                hasChanged = true;
+            newItems[item] = true;
+        }
+
+        const newSize = Object.keys(newItems).length;
+
+        if (newSize !== this.size) {
+            return new ImmutableSet(newItems, newSize);
+        }
+
+        for (let item of items) {
+            if (!this.items[item]) {
+                return new ImmutableSet(newItems, newSize);
             }
         }
 
-        return hasChanged ? new ImmutableSet(newItems) : this;
+        return this;
     }
 }

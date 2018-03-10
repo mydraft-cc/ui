@@ -10,14 +10,14 @@ module.exports = function (config) {
         frameworks: ['jasmine'],
 
         /**
-         * Load the test files
+         * Load additional test shim to setup angular2 for testing
          */
         files: [
-            '**/*.spec.ts'
+            { pattern: './config/karma-test-shim.js', watched: false }
         ],
 
         preprocessors: {
-            '**/*spec.ts': ['webpack']
+            './config/karma-test-shim.js': ['webpack', 'sourcemap'],
         },
 
         /**

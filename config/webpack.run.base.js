@@ -1,6 +1,7 @@
 ﻿      var webpack = require('webpack'),
      webpackMerge = require('webpack-merge'),
 HtmlWebpackPlugin = require('html-webpack-plugin'),
+ExtractTextPlugin = require('extract-text-webpack-plugin'),
      commonConfig = require('./webpack.config.js'),
           helpers = require('./helpers');
 
@@ -16,6 +17,13 @@ module.exports = webpackMerge(commonConfig, {
     },
 
     plugins: [
+        /*
+         * Puts each bundle into a file and appends the hash of the file to the path.
+         * 
+         * See: https://github.com/webpack/extract-text-webpack-plugin
+         */
+        new ExtractTextPlugin('[name]-[contentHash].css'),
+
         /**
          * Shares common code between the pages.
          *

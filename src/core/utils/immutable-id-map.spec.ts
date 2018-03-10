@@ -202,13 +202,6 @@ describe('ImmutableIdMap', () => {
         expect(list_2.map(t => t.id)).toEqual([v1, v4, v2, v3, v5, v6].map(t => t.id));
     });
 
-    it('should ignore items that are not found', () => {
-        const list_1 = ImmutableIdMap.of(v1, v2, v3, v4, v5, v6);
-        const list_2 = list_1.bringToFront([v3.id, 'not found']);
-
-        expect(list_2.map(t => t.id)).toEqual([v1, v2, v4, v5, v6, v3].map(t => t.id));
-    });
-
     it('should return original list no id found', () => {
         const list_1 = ImmutableIdMap.of(v1, v2, v3, v4, v5, v6);
         const list_2 = list_1.sendBackwards(['not found', 'other not found']);

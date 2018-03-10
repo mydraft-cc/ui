@@ -66,7 +66,7 @@ export class ImmutableIdMap<T extends WithId> {
     }
 
     public add(...items: T[]): ImmutableIdMap<T> {
-        return this.replace(Collections.withAdded(this.items, items));
+        return this.replace(Collections.withAdded(this.items, items, x => !!x.id && !this.contains(x.id)));
     }
 
     public remove(...ids: string[]): ImmutableIdMap<T> {
@@ -74,7 +74,7 @@ export class ImmutableIdMap<T extends WithId> {
     }
 
     public update(id: string, updater: (item: T) => T): ImmutableIdMap<T> {
-        return this.replace(Collections.withUpdated(this.items, this.getItems([id]), updater));
+        return this.replace(Collections.withUpdated(this.items, this.getItems([id]), updater, (l, r) => l.id === r.id));
     }
 
     public bringToFront(ids: string[]): ImmutableIdMap<T> {
@@ -106,17 +106,27 @@ export class ImmutableIdMap<T extends WithId> {
     }
 
     private getItems(ids: string[]): T[] {
-        const result: T[] = [];
+        let result: T[] | null = null;
 
-        for (let id of ids) {
-            const item = this.get(id);
+        if (ids) {
+            for (let id of ids) {
+                const item = this.get(id);
 
-            if (item) {
-                result.push(item);
+                if (item) {
+                    if (result === null) {
+                        result = [];
+                    }
+
+                    result.push(item);
+                }
+            }
+
+            if (result && result.length !== ids.length) {
+                return null!;
             }
         }
 
-        return result;
+        return result!;
     }
 
     private ensureItemsById(): { [id: string]: T } {

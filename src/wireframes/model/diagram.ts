@@ -47,7 +47,7 @@ export class Diagram {
             return this;
         }
 
-        return this.cloned(this.items, this.roots, ImmutableSet.of(...itemIds));
+        return this.cloned(this.items, this.roots, this.selectedItemIds.set(...itemIds));
     }
 
     public addVisual(visual: DiagramVisual): Diagram {

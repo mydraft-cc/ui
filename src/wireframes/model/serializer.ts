@@ -109,7 +109,7 @@ export class Serializer {
     }
 
     private static deserializeChildIds(input: any, idMap: { [id: string]: string }): ImmutableList<string> {
-        return ImmutableList.of(input['childIds'].map((i: string) => idMap[i]));
+        return ImmutableList.of(...input['childIds'].map((i: string) => idMap[i]));
     }
 
     private static serializeRotation(rotation: Rotation, output: any) {

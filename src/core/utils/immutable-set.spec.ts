@@ -67,7 +67,7 @@ describe('ImmutableSet', () => {
     it('should create new set', () => {
         const set_1 = ImmutableSet.empty();
         const set_2 = set_1.add('1');
-        const set_3 = set_2.set(['a', 'b']);
+        const set_3 = set_2.set('a', 'b');
 
         expect(set_3.size).toBe(2);
         expect(set_3.contains('a')).toBeTruthy();
@@ -77,7 +77,7 @@ describe('ImmutableSet', () => {
     it('should return original set when any item to set is null', () => {
         const set_1 = ImmutableSet.empty();
         const set_2 = set_1.add('1');
-        const set_3 = set_2.set(['1', null!]);
+        const set_3 = set_2.set('1', null!);
 
         expect(set_3).toBe(set_2);
     });
@@ -93,8 +93,8 @@ describe('ImmutableSet', () => {
     it('should return original set when items is same', () => {
         const set_1 = ImmutableSet.empty();
         const set_2 = set_1.add('1');
-        const set_3 = set_2.set(['a', 'b']);
-        const set_4 = set_3.set(['a', 'b']);
+        const set_3 = set_2.set('a', 'b');
+        const set_4 = set_3.set('a', 'b');
 
         expect(set_4).toBe(set_3);
     });
