@@ -1,30 +1,30 @@
 import { Diagram, EditorState } from '@app/wireframes/model';
 
 describe('EditorState', () => {
-    const diagram = Diagram.createDiagram();
+    const diagram = Diagram.empty();
 
     it('should instantiate', () => {
-        const state = EditorState.createInitial();
+        const state = EditorState.empty();
 
         expect(state).toBeDefined();
     });
 
     it('should add diagram', () => {
-        const state_1 = EditorState.createInitial();
+        const state_1 = EditorState.empty();
         const state_2 = state_1.addDiagram(diagram);
 
         expect(state_2.diagrams.contains(diagram.id)).toBeTruthy();
     });
 
     it('should return original state when diagram to add is null', () => {
-        const state_1 = EditorState.createInitial();
+        const state_1 = EditorState.empty();
         const state_2 = state_1.addDiagram(null!);
 
         expect(state_1).toBe(state_2);
     });
 
     it('should remove diagram', () => {
-        const state_1 = EditorState.createInitial();
+        const state_1 = EditorState.empty();
         const state_2 = state_1.addDiagram(diagram);
         const state_3 = state_2.removeDiagram(diagram.id);
 
@@ -32,7 +32,7 @@ describe('EditorState', () => {
     });
 
     it('should return original state when diagram to remove is null', () => {
-        const state_1 = EditorState.createInitial();
+        const state_1 = EditorState.empty();
         const state_2 = state_1.addDiagram(diagram);
         const state_3 = state_2.removeDiagram(null!);
 
@@ -40,7 +40,7 @@ describe('EditorState', () => {
     });
 
     it('should return original state when diagram to remove is not found', () => {
-        const state_1 = EditorState.createInitial();
+        const state_1 = EditorState.empty();
         const state_2 = state_1.addDiagram(diagram);
         const state_3 = state_2.removeDiagram('unfound');
 
@@ -48,7 +48,7 @@ describe('EditorState', () => {
     });
 
     it('should unselect diagram when diagram to remove is selected', () => {
-        const state_1 = EditorState.createInitial();
+        const state_1 = EditorState.empty();
         const state_2 = state_1.addDiagram(diagram);
         const state_3 = state_2.selectDiagram(diagram.id);
         const state_4 = state_3.removeDiagram(diagram.id);
@@ -58,7 +58,7 @@ describe('EditorState', () => {
     });
 
     it('should select diagram', () => {
-        const state_1 = EditorState.createInitial();
+        const state_1 = EditorState.empty();
         const state_2 = state_1.addDiagram(diagram);
         const state_3 = state_2.selectDiagram(diagram.id);
 
@@ -66,7 +66,7 @@ describe('EditorState', () => {
     });
 
     it('should return original state when diagram to select is null', () => {
-        const state_1 = EditorState.createInitial();
+        const state_1 = EditorState.empty();
         const state_2 = state_1.addDiagram(diagram);
         const state_3 = state_2.selectDiagram(null);
 
@@ -74,7 +74,7 @@ describe('EditorState', () => {
     });
 
     it('should return original state when diagram to select is not found', () => {
-        const state_1 = EditorState.createInitial();
+        const state_1 = EditorState.empty();
         const state_2 = state_1.addDiagram(diagram);
         const state_3 = state_2.selectDiagram('unfound');
 
@@ -82,9 +82,9 @@ describe('EditorState', () => {
     });
 
     it('should update diagram', () => {
-        const newDiagram = Diagram.createDiagram(diagram.id);
+        const newDiagram = Diagram.empty(diagram.id);
 
-        const state_1 = EditorState.createInitial();
+        const state_1 = EditorState.empty();
         const state_2 = state_1.addDiagram(diagram);
         const state_3 = state_2.updateDiagram(diagram.id, d => newDiagram);
 
@@ -93,23 +93,23 @@ describe('EditorState', () => {
     });
 
     it('sshould return orignal state when diagram id to update is null', () => {
-        const state_1 = EditorState.createInitial();
+        const state_1 = EditorState.empty();
         const state_2 = state_1.addDiagram(diagram);
-        const state_3 = state_2.updateDiagram(null!, d => Diagram.createDiagram(d.id));
+        const state_3 = state_2.updateDiagram(null!, d => Diagram.empty(d.id));
 
         expect(state_2).toBe(state_3);
     });
 
     it('sshould return orignal state when diagram to update is not found', () => {
-        const state_1 = EditorState.createInitial();
+        const state_1 = EditorState.empty();
         const state_2 = state_1.addDiagram(diagram);
-        const state_3 = state_2.updateDiagram('unfound', d => Diagram.createDiagram(d.id));
+        const state_3 = state_2.updateDiagram('unfound', d => Diagram.empty(d.id));
 
         expect(state_2).toBe(state_3);
     });
 
     it('sshould return orignal state when updater is null', () => {
-        const state_1 = EditorState.createInitial();
+        const state_1 = EditorState.empty();
         const state_2 = state_1.addDiagram(diagram);
         const state_3 = state_2.updateDiagram(diagram.id, null!);
 
@@ -117,7 +117,7 @@ describe('EditorState', () => {
     });
 
     it('sshould return orignal state when updater returns null', () => {
-        const state_1 = EditorState.createInitial();
+        const state_1 = EditorState.empty();
         const state_2 = state_1.addDiagram(diagram);
         const state_3 = state_2.updateDiagram(diagram.id, d => null!);
 
@@ -125,7 +125,7 @@ describe('EditorState', () => {
     });
 
     it('sshould return orignal state when updater returns same diagram', () => {
-        const state_1 = EditorState.createInitial();
+        const state_1 = EditorState.empty();
         const state_2 = state_1.addDiagram(diagram);
         const state_3 = state_2.updateDiagram(diagram.id, d => d);
 
@@ -133,14 +133,14 @@ describe('EditorState', () => {
     });
 
     it('should move shape to new index', () => {
-        const d1 = Diagram.createDiagram('1');
-        const d2 = Diagram.createDiagram('2');
-        const d3 = Diagram.createDiagram('3');
-        const d4 = Diagram.createDiagram('4');
-        const d5 = Diagram.createDiagram('5');
+        const d1 = Diagram.empty('1');
+        const d2 = Diagram.empty('2');
+        const d3 = Diagram.empty('3');
+        const d4 = Diagram.empty('4');
+        const d5 = Diagram.empty('5');
 
         const state_1 =
-            EditorState.createInitial()
+            EditorState.empty()
                 .addDiagram(d1)
                 .addDiagram(d2)
                 .addDiagram(d3)

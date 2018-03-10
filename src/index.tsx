@@ -26,7 +26,7 @@ import { registerRenderers } from '@app/wireframes/shapes';
 
 const rendererService = registerRenderers();
 
-let diagram = Diagram.createDiagram();
+let diagram = Diagram.empty();
 let index = 0;
 
 for (let identifier in rendererService.registeredRenderers) {
@@ -70,7 +70,7 @@ const store = createStore<any>(
         editor:
             undoable(reducer,
                 20,
-                EditorState.createInitial()
+                EditorState.empty()
                     .addDiagram(diagram).selectDiagram(diagram.id), [
                 SELECT_DIAGRAM,
                 SELECT_ITEMS

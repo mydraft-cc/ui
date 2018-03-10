@@ -22,20 +22,20 @@ describe('AlignmentReducer', () => {
     const shape2 = DiagramShape.createShape('btn', 40, 40).transformWith(t => t.moveTo(new Vec2(200, 200)));
     const shape3 = DiagramShape.createShape('btn', 80, 80).transformWith(t => t.moveTo(new Vec2(300, 300)));
     const diagram =
-        Diagram.createDiagram()
+        Diagram.empty()
             .addVisual(shape1)
             .addVisual(shape2)
             .addVisual(shape3);
 
     it('should return same state if action is unknown', () => {
-        const state_1 = EditorState.createInitial();
+        const state_1 = EditorState.empty();
         const state_2 = reducer(state_1, { type: 'UNKNOWN' });
 
         expect(state_2).toBe(state_1);
     });
 
     it('should return same state if action has unknown alignment type', () => {
-        const state_1 = EditorState.createInitial();
+        const state_1 = EditorState.empty();
         const state_2 = reducer(state_1, alignItems('UNKNOWN', diagram, []));
 
         expect(state_2).toBe(state_1);
@@ -75,7 +75,7 @@ describe('AlignmentReducer', () => {
 
     function expectPositionsAfterAlignment(type: string, positions: Vec2[]) {
         const action = alignItems(type, diagram, diagram.items.toArray());
-        const state_1 = EditorState.createInitial().addDiagram(diagram);
+        const state_1 = EditorState.empty().addDiagram(diagram);
         const state_2 = reducer(state_1, action);
 
         const shapes = state_2.diagrams.last.items.toArray();

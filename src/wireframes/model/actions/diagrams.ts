@@ -30,7 +30,7 @@ export function diagrams(): Reducer<EditorState> {
             case SELECT_DIAGRAM:
                 return state.selectDiagram(action.payload.diagramId);
             case ADD_DIAGRAM:
-                return state.addDiagram(Diagram.createDiagram(action.payload.diagramId)).selectDiagram(action.payload.diagramId);
+                return state.addDiagram(Diagram.empty(action.payload.diagramId)).selectDiagram(action.payload.diagramId);
             case REMOVE_DIAGRAM:
                 return state.removeDiagram(action.payload.diagramId);
             case MOVE_DIAGRAM:

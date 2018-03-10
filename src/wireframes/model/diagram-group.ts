@@ -23,7 +23,7 @@ export class DiagramGroup extends DiagramContainer {
     }
 
     public static createGroup(childIds: string[], id?: string): DiagramGroup {
-        return new DiagramGroup(id || MathHelper.guid(), new ImmutableList<string>(childIds), Rotation.ZERO);
+        return new DiagramGroup(id || MathHelper.guid(), ImmutableList.of(...childIds), Rotation.ZERO);
     }
 
     public bounds(diagram: Diagram): Transform {

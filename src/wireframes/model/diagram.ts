@@ -22,14 +22,14 @@ export class Diagram {
         public readonly id: string,
         public readonly items: ImmutableIdMap<DiagramItem>,
         public readonly roots: DiagramContainer,
-        public readonly selectedItemIds: ImmutableSet<string>,
+        public readonly selectedItemIds: ImmutableSet,
         private readonly parents: { [id: string]: DiagramGroup }
     ) {
         Object.freeze(this);
     }
 
-    public static createDiagram(id?: string): Diagram {
-        return new Diagram(id || MathHelper.guid(), new ImmutableIdMap<DiagramItem>(), DiagramContainer.createContainer(), new ImmutableSet<string>(), {});
+    public static empty(id?: string): Diagram {
+        return new Diagram(id || MathHelper.guid(), ImmutableIdMap.empty<DiagramItem>(), DiagramContainer.createContainer(), ImmutableSet.empty(), {});
     }
 
     public parent(id: string): DiagramGroup | null {
@@ -47,7 +47,7 @@ export class Diagram {
             return this;
         }
 
-        return this.cloned(this.items, this.roots, this.selectedItemIds.set(itemIds));
+        return this.cloned(this.items, this.roots, ImmutableSet.of(...itemIds));
     }
 
     public addVisual(visual: DiagramVisual): Diagram {
@@ -171,7 +171,7 @@ export class Diagram {
         return result;
     }
 
-    private cloned(items: ImmutableIdMap<DiagramItem>, roots: DiagramContainer, selectedItemIds?: ImmutableSet<string>): Diagram {
+    private cloned(items: ImmutableIdMap<DiagramItem>, roots: DiagramContainer, selectedItemIds?: ImmutableSet): Diagram {
         selectedItemIds = selectedItemIds || this.selectedItemIds;
 
         if (items !== this.items || selectedItemIds !== this.selectedItemIds || this.roots !== roots) {
@@ -193,5 +193,5 @@ export class Diagram {
 }
 
 interface MutableDiagram {
-    items: ImmutableIdMap<DiagramItem>; roots: DiagramContainer; selectedItemIds: ImmutableSet<string>;
+    items: ImmutableIdMap<DiagramItem>; roots: DiagramContainer; selectedItemIds: ImmutableSet;
 }

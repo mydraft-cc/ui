@@ -14,7 +14,7 @@ describe('GroupingReducer', () => {
     const shape1 = DiagramShape.createShape('Button', 100, 100);
     const shape2 = DiagramShape.createShape('Button', 200, 200);
     const diagram =
-        Diagram.createDiagram()
+        Diagram.empty()
             .addVisual(shape1)
             .addVisual(shape2);
 
@@ -22,7 +22,7 @@ describe('GroupingReducer', () => {
 
     it('should return same state if action is unknown', () => {
         const action = { type: 'UNKNOWN' };
-        const state_1 = EditorState.createInitial();
+        const state_1 = EditorState.empty();
         const state_2 = reducer(state_1, action);
 
         expect(state_2).toBe(state_1);
@@ -50,7 +50,7 @@ describe('GroupingReducer', () => {
     });
 
     function expectShapesAfterAction(action: any, expect: (shape1: DiagramShape, shape2: DiagramShape) => void) {
-        const state_1 = EditorState.createInitial().addDiagram(diagram);
+        const state_1 = EditorState.empty().addDiagram(diagram);
         const state_2 = reducer(state_1, action);
 
         const newDiagram = state_2.diagrams.last;

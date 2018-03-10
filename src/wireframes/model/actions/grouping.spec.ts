@@ -13,7 +13,7 @@ describe('GroupingReducer', () => {
 
     it('should return same state if action is unknown', () => {
         const action = { type: 'UNKNOWN' };
-        const state_1 = EditorState.createInitial();
+        const state_1 = EditorState.empty();
         const state_2 = reducer(state_1, action);
 
         expect(state_2).toBe(state_1);
@@ -21,14 +21,14 @@ describe('GroupingReducer', () => {
 
     it('should group shapes and select new group', () => {
         const diagram =
-            Diagram.createDiagram()
+            Diagram.empty()
                 .addVisual(DiagramShape.createShape('btn', 100, 100))
                 .addVisual(DiagramShape.createShape('btn', 100, 100));
 
         const groupId = 'group1';
 
         const action = group(diagram, diagram.items.toArray(), groupId);
-        const state_1 = EditorState.createInitial().addDiagram(diagram);
+        const state_1 = EditorState.empty().addDiagram(diagram);
         const state_2 = reducer(state_1, action);
 
         const newDiagram = state_2.diagrams.last;
@@ -42,7 +42,7 @@ describe('GroupingReducer', () => {
         const groupId2 = 'group2';
 
         let diagram =
-            Diagram.createDiagram()
+            Diagram.empty()
                 .addVisual(DiagramShape.createShape('btn', 100, 100))
                 .addVisual(DiagramShape.createShape('btn', 100, 100))
                 .addVisual(DiagramShape.createShape('btn', 100, 100))
@@ -57,7 +57,7 @@ describe('GroupingReducer', () => {
         const group2 = <DiagramGroup>diagram.items.get(groupId2);
 
         const action = ungroup(diagram, [group1, group2, DiagramGroup.createGroup([])]);
-        const state_1 = EditorState.createInitial().addDiagram(diagram);
+        const state_1 = EditorState.empty().addDiagram(diagram);
         const state_2 = reducer(state_1, action);
 
         const newDiagram = state_2.diagrams.last;

@@ -12,7 +12,7 @@ export class DiagramContainer extends DiagramItem {
     }
 
     public static createContainer(): DiagramContainer {
-        return new DiagramContainer('root', new ImmutableList<string>());
+        return new DiagramContainer('root', ImmutableList.empty<string>());
     }
 
     public bounds(diagram: Diagram): Transform {

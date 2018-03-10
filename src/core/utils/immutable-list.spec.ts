@@ -9,13 +9,13 @@ describe('ImmutableList', () => {
     const v6 = 'value6';
 
     it('should instantiate without arguments', () => {
-        const list = new ImmutableList<string>();
+        const list = ImmutableList.empty<string>();
 
         expect(list).toBeDefined();
     });
 
     it('should instantiate from array of items', () => {
-        const list_1 = new ImmutableList<string>([v1, v2, v3]);
+        const list_1 = ImmutableList.of(v1, v2, v3);
 
         expect(list_1.size).toBe(3);
         expect(list_1.get(0)).toBe(v1);
@@ -24,7 +24,7 @@ describe('ImmutableList', () => {
     });
 
     it('should add values to list', () => {
-        const list_1 = new ImmutableList<string>();
+        const list_1 = ImmutableList.empty<string>();
         const list_2 = list_1.add(v1);
         const list_3 = list_2.add(v2);
         const list_4 = list_3.add(v3);
@@ -36,12 +36,9 @@ describe('ImmutableList', () => {
     });
 
     it('should convert to array', () => {
-        const list_1 = new ImmutableList<string>();
-        const list_2 = list_1.add(v1);
-        const list_3 = list_2.add(v2);
-        const list_4 = list_3.add(v3);
+        const list_1 = ImmutableList.of(v1, v2, v3);
 
-        const items = list_4.toArray();
+        const items = list_1.toArray();
 
         expect(items.length).toBe(3);
         expect(items[0]).toBe(v1);
@@ -50,7 +47,7 @@ describe('ImmutableList', () => {
     });
 
     it('should return original list when value to add is null', () => {
-        const list_1 = new ImmutableList<string>();
+        const list_1 = ImmutableList.empty<string>();
         const list_2 = list_1.add(null!);
 
         expect(list_2).toBe(list_1);
@@ -59,7 +56,7 @@ describe('ImmutableList', () => {
     it('should update item', () => {
         const newValue = 'v1New';
 
-        const list_1 = new ImmutableList<string>();
+        const list_1 = ImmutableList.empty<string>();
         const list_2 = list_1.add(v1);
         const list_3 = list_2.update(v1, t => newValue);
 
@@ -68,7 +65,7 @@ describe('ImmutableList', () => {
     });
 
     it('should return undefined for invalid index', () => {
-        const list_1 = new ImmutableList<string>();
+        const list_1 = ImmutableList.empty<string>();
         const list_2 = list_1.add(v1);
 
         expect(list_2.get(-10)).toBeUndefined();
@@ -78,7 +75,7 @@ describe('ImmutableList', () => {
     it('should return original list when item to update is null', () => {
         const newValue = 'v1New';
 
-        const list_1 = new ImmutableList<string>();
+        const list_1 = ImmutableList.empty<string>();
         const list_2 = list_1.add(v1);
         const list_3 = list_2.update(null!, t => newValue);
 
@@ -86,7 +83,7 @@ describe('ImmutableList', () => {
     });
 
     it('should return original list when updater is null', () => {
-        const list_1 = new ImmutableList<string>();
+        const list_1 = ImmutableList.empty<string>();
         const list_2 = list_1.add(v1);
         const list_3 = list_2.update(v1, null!);
 
@@ -94,7 +91,7 @@ describe('ImmutableList', () => {
     });
 
     it('should return original list when updater returns same item', () => {
-        const list_1 = new ImmutableList<string>();
+        const list_1 = ImmutableList.empty<string>();
         const list_2 = list_1.add(v1);
         const list_3 = list_2.update(v1, t => t);
 
@@ -102,7 +99,7 @@ describe('ImmutableList', () => {
     });
 
     it('should remove values from list', () => {
-        const list_1 = new ImmutableList<string>();
+        const list_1 = ImmutableList.empty<string>();
         const list_2 = list_1.add(v1);
         const list_3 = list_2.add(v2);
         const list_4 = list_3.remove(v1);
@@ -112,7 +109,7 @@ describe('ImmutableList', () => {
     });
 
     it('should return original list when item to remove is null', () => {
-        const list_1 = new ImmutableList<string>();
+        const list_1 = ImmutableList.empty<string>();
         const list_2 = list_1.add(v1);
         const list_3 = list_2.remove(null!);
 
@@ -120,7 +117,7 @@ describe('ImmutableList', () => {
     });
 
     it('should return original list when item to remove does not exists', () => {
-        const list_1 = new ImmutableList<string>();
+        const list_1 = ImmutableList.empty<string>();
         const list_2 = list_1.add(v1);
         const list_3 = list_2.remove(v4);
 
@@ -128,63 +125,63 @@ describe('ImmutableList', () => {
     });
 
     it('should bring to front', () => {
-        const list_1 = new ImmutableList<string>().add(v1, v2, v3, v4, v5, v6);
+        const list_1 = ImmutableList.of(v1, v2, v3, v4, v5, v6);
         const list_2 = list_1.bringToFront([v3, v5]);
 
         expect(list_2.toArray()).toEqual([v1, v2, v4, v6, v3, v5]);
     });
 
     it('should bring forwards', () => {
-        const list_1 = new ImmutableList<string>().add(v1, v2, v3, v4, v5, v6);
+        const list_1 = ImmutableList.of(v1, v2, v3, v4, v5, v6);
         const list_2 = list_1.bringForwards([v3, v4]);
 
         expect(list_2.toArray()).toEqual([v1, v2, v5, v3, v4, v6]);
     });
 
     it('should send to back', () => {
-        const list_1 = new ImmutableList<string>().add(v1, v2, v3, v4, v5, v6);
+        const list_1 = ImmutableList.of(v1, v2, v3, v4, v5, v6);
         const list_2 = list_1.sendToBack([v3, v5]);
 
         expect(list_2.toArray()).toEqual([v3, v5, v1, v2, v4, v6]);
     });
 
     it('should send backwards', () => {
-        const list_1 = new ImmutableList<string>().add(v1, v2, v3, v4, v5, v6);
+        const list_1 = ImmutableList.of(v1, v2, v3, v4, v5, v6);
         const list_2 = list_1.sendBackwards([v3, v5]);
 
         expect(list_2.toArray()).toEqual([v1, v3, v5, v2, v4, v6]);
     });
 
     it('should move item', () => {
-        const list_1 = new ImmutableList<string>().add(v1, v2, v3, v4, v5, v6);
+        const list_1 = ImmutableList.of(v1, v2, v3, v4, v5, v6);
         const list_2 = list_1.moveTo([v4], 1);
 
         expect(list_2.toArray()).toEqual([v1, v4, v2, v3, v5, v6]);
     });
 
     it('should ignore items that are not found', () => {
-        const list_1 = new ImmutableList<string>().add(v1, v2, v3, v4, v5, v6);
+        const list_1 = ImmutableList.of(v1, v2, v3, v4, v5, v6);
         const list_2 = list_1.bringToFront([v3, 'not found']);
 
         expect(list_2.toArray()).toEqual([v1, v2, v4, v5, v6, v3]);
     });
 
     it('should return original list no id found', () => {
-        const list_1 = new ImmutableList<string>().add(v1, v2, v3, v4, v5, v6);
+        const list_1 = ImmutableList.of(v1, v2, v3, v4, v5, v6);
         const list_2 = list_1.sendBackwards(['not found']);
 
         expect(list_2).toBe(list_1);
     });
 
     it('should return original list when ids is null', () => {
-        const list_1 = new ImmutableList<string>().add(v1, v2, v3, v4, v5, v6);
+        const list_1 = ImmutableList.of(v1, v2, v3, v4, v5, v6);
         const list_2 = list_1.sendBackwards(null!);
 
         expect(list_2).toBe(list_1);
     });
 
     it('should return correct result for map', () => {
-        const list_1 = new ImmutableList<string>().add(v1, v2, v3, v4, v5, v6);
+        const list_1 = ImmutableList.of(v1, v2, v3, v4, v5, v6);
 
         const result = list_1.map(t => 'x_' + t);
 
@@ -192,7 +189,7 @@ describe('ImmutableList', () => {
     });
 
     it('should return correct result for forEach', () => {
-        const list_1 = new ImmutableList<string>().add(v1, v2, v3, v4, v5, v6);
+        const list_1 = ImmutableList.of(v1, v2, v3, v4, v5, v6);
 
         const result: string[] = [];
 
@@ -202,7 +199,7 @@ describe('ImmutableList', () => {
     });
 
     it('should return correct result for filter', () => {
-        const list_1 = new ImmutableList<string>().add(v1, v2, v3, v4, v5, v6);
+        const list_1 = ImmutableList.of(v1, v2, v3, v4, v5, v6);
 
         let i = 0;
 
@@ -219,7 +216,7 @@ describe('ImmutableList', () => {
             items.push('id' + i);
         }
 
-        const list_1 = new ImmutableList<string>();
+        const list_1 = ImmutableList.empty<string>();
         const list_2 = list_1.add(...items);
 
         expect(list_2.toArray()).toEqual(items);

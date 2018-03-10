@@ -6,6 +6,7 @@ import { Layout, Tabs } from 'antd';
 
 import {
     ArrangeMenuContainer,
+    CustomPropertiesContainer,
     HistoryMenuContainer,
     UIMenuContainer
 } from '@app/wireframes/components';
@@ -84,6 +85,7 @@ const App = (props: AppProps) => {
                 <Layout.Sider width={200}
                     collapsed={!props.showRightSidebar}
                     collapsedWidth={0}>
+                    <CustomPropertiesContainer />
                 </Layout.Sider>
             </Layout>
         </Layout>

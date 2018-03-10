@@ -9,3 +9,5 @@ export * from './utils/paper-helper';
 export * from './utils/rotation';
 export * from './utils/vec2';
 export * from './utils/rect2';
+
+export * from './react/color-picker';

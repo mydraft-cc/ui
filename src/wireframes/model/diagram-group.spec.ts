@@ -58,7 +58,7 @@ describe('DiagramGroup', () => {
     });
 
     it('should create zero bounds if child id is not in diagram', () => {
-        let diagram = Diagram.createDiagram();
+        let diagram = Diagram.empty();
 
         const group = DiagramGroup.createGroup(['invalid']);
 
@@ -70,7 +70,7 @@ describe('DiagramGroup', () => {
 
     it('should calculate adorner bounds from children', () => {
         let diagram =
-            Diagram.createDiagram()
+            Diagram.empty()
                 .addVisual(shape1)
                 .addVisual(shape2);
 
@@ -86,7 +86,7 @@ describe('DiagramGroup', () => {
 
     it('should cache calculate adorner bounds', () => {
         let diagram =
-            Diagram.createDiagram()
+            Diagram.empty()
                 .addVisual(shape1)
                 .addVisual(shape2);
 

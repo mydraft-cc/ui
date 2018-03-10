@@ -29,7 +29,7 @@ describe('ItemsReducer', () => {
     const shape3 = DiagramShape.createShape('Button', 100, 100);
 
     let diagram =
-        Diagram.createDiagram()
+        Diagram.empty()
             .addVisual(shape1)
             .addVisual(shape2)
             .addVisual(shape3);
@@ -45,7 +45,7 @@ describe('ItemsReducer', () => {
 
     it('should return same state if action is unknown', () => {
         const action = { type: 'UNKNOWN' };
-        const state_1 = EditorState.createInitial();
+        const state_1 = EditorState.empty();
         const state_2 = reducer(state_1, action);
 
         expect(state_2).toBe(state_1);
@@ -53,7 +53,7 @@ describe('ItemsReducer', () => {
 
     it('should select shapes and set the ids of these shapes', () => {
         const action = selectItems(diagram, [groupId]);
-        const state_1 = EditorState.createInitial().addDiagram(diagram);
+        const state_1 = EditorState.empty().addDiagram(diagram);
         const state_2 = reducer(state_1, action);
 
         expect(state_2.diagrams.last.selectedItemIds.toArray()).toEqual([groupId]);
@@ -61,7 +61,7 @@ describe('ItemsReducer', () => {
 
     it('should remove items and all children', () => {
         const action = removeItems(diagram, [diagram.items.get(groupId)!]);
-        const state_1 = EditorState.createInitial().addDiagram(diagram);
+        const state_1 = EditorState.empty().addDiagram(diagram);
         const state_2 = reducer(state_1, action);
 
         expect(state_2.diagrams.last.items.size).toBe(1);
@@ -71,7 +71,7 @@ describe('ItemsReducer', () => {
         const shapeId = 'shape';
 
         const action = addIcon(diagram, 20, 40, 'Icon', shapeId);
-        const state_1 = EditorState.createInitial().addDiagram(diagram);
+        const state_1 = EditorState.empty().addDiagram(diagram);
         const state_2 = reducer(state_1, action);
 
         const newIcon = <DiagramShape>state_2.diagrams.last.items.get(shapeId);
@@ -88,7 +88,7 @@ describe('ItemsReducer', () => {
         const shapeId = 'shape';
 
         const action = addImage(diagram, 20, 40, 'source', 60, 80, shapeId);
-        const state_1 = EditorState.createInitial().addDiagram(diagram);
+        const state_1 = EditorState.empty().addDiagram(diagram);
         const state_2 = reducer(state_1, action);
 
         const newImage = <DiagramShape>state_2.diagrams.last.items.get(shapeId);
@@ -105,7 +105,7 @@ describe('ItemsReducer', () => {
         const shapeId = 'shape';
 
         const action = addImage(diagram, 20, 40, 'source', 600, 800, shapeId);
-        const state_1 = EditorState.createInitial().addDiagram(diagram);
+        const state_1 = EditorState.empty().addDiagram(diagram);
         const state_2 = reducer(state_1, action);
 
         const newImage = <DiagramShape>state_2.diagrams.last.items.get(shapeId);
@@ -117,7 +117,7 @@ describe('ItemsReducer', () => {
         const shapeId = 'shape';
 
         const action = addImage(diagram, 20, 40, 'source', 600, 300, shapeId);
-        const state_1 = EditorState.createInitial().addDiagram(diagram);
+        const state_1 = EditorState.empty().addDiagram(diagram);
         const state_2 = reducer(state_1, action);
 
         const newImage = <DiagramShape>state_2.diagrams.last.items.get(shapeId);
@@ -129,7 +129,7 @@ describe('ItemsReducer', () => {
         const shapeId = 'shape';
 
         const action = addVisual(diagram, 'Button', 100, 20, shapeId);
-        const state_1 = EditorState.createInitial().addDiagram(diagram);
+        const state_1 = EditorState.empty().addDiagram(diagram);
         const state_2 = reducer(state_1, action);
 
         const newShape = <DiagramShape>state_2.diagrams.last.items.get(shapeId);
@@ -146,7 +146,7 @@ describe('ItemsReducer', () => {
         const json = serializer.serializeSet(DiagramItemSet.createFromDiagram(diagram.rootIds.toArray(), diagram)!);
 
         const action = pasteItems(diagram, json);
-        const state_1 = EditorState.createInitial().addDiagram(diagram);
+        const state_1 = EditorState.empty().addDiagram(diagram);
         const state_2 = reducer(state_1, action);
 
         const newDiagram = state_2.diagrams.last;
@@ -160,7 +160,7 @@ describe('ItemsReducer', () => {
         const json = 'invalid json';
 
         const action = pasteItems(diagram, json);
-        const state = EditorState.createInitial();
+        const state = EditorState.empty();
 
         expect(() => reducer(state, action)).not.toThrow();
     });

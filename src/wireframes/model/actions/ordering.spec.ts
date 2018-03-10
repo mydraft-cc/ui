@@ -16,14 +16,14 @@ describe('OrderingReducer', () => {
     const shape2 = DiagramShape.createShape('btn', 100, 100);
     const shape3 = DiagramShape.createShape('btn', 100, 100);
     const diagram =
-        Diagram.createDiagram()
+        Diagram.empty()
             .addVisual(shape1)
             .addVisual(shape2)
             .addVisual(shape3);
 
     it('should return same state if action is unknown', () => {
         const action = { type: 'UNKNOWN' };
-        const state_1 = EditorState.createInitial();
+        const state_1 = EditorState.empty();
         const state_2 = reducer(state_1, action);
 
         expect(state_2).toBe(state_1);
@@ -31,7 +31,7 @@ describe('OrderingReducer', () => {
 
     it('should return same state if action has unknown ordering type', () => {
         const action = orderItems('UNKNOWN', diagram, []);
-        const state_1 = EditorState.createInitial();
+        const state_1 = EditorState.empty();
         const state_2 = reducer(state_1, action);
 
         expect(state_2).toBe(state_1);
@@ -55,7 +55,7 @@ describe('OrderingReducer', () => {
 
     function testOrdering(type: string, shape: DiagramShape, expectedIds: string[]) {
         const action = orderItems(type, diagram, [shape]);
-        const state_1 = EditorState.createInitial().addDiagram(diagram);
+        const state_1 = EditorState.empty().addDiagram(diagram);
         const state_2 = reducer(state_1, action);
 
         expect(state_2.diagrams.last.rootIds.toArray()).toEqual(expectedIds);

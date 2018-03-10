@@ -1,0 +1,17 @@
+.color {
+    float: left;
+    border: 1px solid gray;
+    background: white;
+    margin: 2px;
+}
+
+.color {
+    border-color: blue;
+}
+
+.color-inner {
+    margin: 1px;
+    width: 24px;
+    height: 24px;
+    display: inline-block;
+}

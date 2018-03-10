@@ -3,8 +3,6 @@ import { bindActionCreators, Dispatch } from 'redux';
 import { Button } from 'antd';
 import * as React from 'react';
 
-import './arrange-menu.css';
-
 import { MathHelper } from '@app/core';
 
 import {

@@ -17,13 +17,13 @@ describe('ImmutableIdMap', () => {
     const v6 = new MockupData('value6');
 
     it('should instantiate without arguments', () => {
-        const list = new ImmutableIdMap<MockupData>();
+        const list = ImmutableIdMap.empty<MockupData>();
 
         expect(list).toBeDefined();
     });
 
     it('should instantiate from array of items', () => {
-        const list_1 = new ImmutableIdMap<MockupData>([v1, v2, v3]);
+        const list_1 = ImmutableIdMap.of(v1, v2, v3);
 
         expect(list_1.size).toBe(3);
         expect(list_1.get('value1')).toBe(v1);
@@ -35,7 +35,7 @@ describe('ImmutableIdMap', () => {
     });
 
     it('should add values to list', () => {
-        const list_1 = new ImmutableIdMap<MockupData>();
+        const list_1 = ImmutableIdMap.empty<MockupData>();
         const list_2 = list_1.add(v1);
         const list_3 = list_2.add(v2);
         const list_4 = list_3.add(v3);
@@ -47,12 +47,9 @@ describe('ImmutableIdMap', () => {
     });
 
     it('should convert to array', () => {
-        const list_1 = new ImmutableIdMap<MockupData>();
-        const list_2 = list_1.add(v1);
-        const list_3 = list_2.add(v2);
-        const list_4 = list_3.add(v3);
+        const list_1 = ImmutableIdMap.of(v1, v2, v3);
 
-        const items = list_4.toArray();
+        const items = list_1.toArray();
 
         expect(items.length).toBe(3);
         expect(items[0]).toBe(v1);
@@ -61,21 +58,21 @@ describe('ImmutableIdMap', () => {
     });
 
     it('should return original list when value to add has no id', () => {
-        const list_1 = new ImmutableIdMap<MockupData>();
+        const list_1 = ImmutableIdMap.empty<MockupData>();
         const list_2 = list_1.add(new MockupData(null));
 
         expect(list_2).toBe(list_1);
     });
 
     it('should return original list when value to add is null', () => {
-        const list_1 = new ImmutableIdMap<MockupData>();
+        const list_1 = ImmutableIdMap.empty<MockupData>();
         const list_2 = list_1.add(null!);
 
         expect(list_2).toBe(list_1);
     });
 
     it('should return original list when item to add has already been added', () => {
-        const list_1 = new ImmutableIdMap<MockupData>();
+        const list_1 = ImmutableIdMap.empty<MockupData>();
         const list_2 = list_1.add(v1);
         const list_3 = list_2.add(v1);
 
@@ -85,7 +82,7 @@ describe('ImmutableIdMap', () => {
     it('should update item', () => {
         const newValue = new MockupData(v1.value, v1.id);
 
-        const list_1 = new ImmutableIdMap<MockupData>();
+        const list_1 = ImmutableIdMap.empty<MockupData>();
         const list_2 = list_1.add(v1);
         const list_3 = list_2.update(v1.id, t => newValue);
 
@@ -94,7 +91,7 @@ describe('ImmutableIdMap', () => {
     });
 
     it('should return undefined for invalid id', () => {
-        const list_1 = new ImmutableIdMap<MockupData>();
+        const list_1 = ImmutableIdMap.empty<MockupData>();
 
         expect(list_1.get(null!)).toBeUndefined();
     });
@@ -102,7 +99,7 @@ describe('ImmutableIdMap', () => {
     it('should return original list when id to update is null', () => {
         const newValue = new MockupData(v1.value, v1.id);
 
-        const list_1 = new ImmutableIdMap<MockupData>();
+        const list_1 = ImmutableIdMap.empty<MockupData>();
         const list_2 = list_1.add(v1);
         const list_3 = list_2.update(null!, t => newValue);
 
@@ -112,7 +109,7 @@ describe('ImmutableIdMap', () => {
     it('should return original list when id to update does not exists', () => {
         const newValue = new MockupData(v1.value, v1.id);
 
-        const list_1 = new ImmutableIdMap<MockupData>();
+        const list_1 = ImmutableIdMap.empty<MockupData>();
         const list_2 = list_1.add(v1);
         const list_3 = list_2.update('unknown', t => newValue);
 
@@ -120,7 +117,7 @@ describe('ImmutableIdMap', () => {
     });
 
     it('should return original list when updater is null', () => {
-        const list_1 = new ImmutableIdMap<MockupData>();
+        const list_1 = ImmutableIdMap.empty<MockupData>();
         const list_2 = list_1.add(v1);
         const list_3 = list_2.update(v1.id, null!);
 
@@ -128,7 +125,7 @@ describe('ImmutableIdMap', () => {
     });
 
     it('should return original list when updater returns same item', () => {
-        const list_1 = new ImmutableIdMap<MockupData>();
+        const list_1 = ImmutableIdMap.empty<MockupData>();
         const list_2 = list_1.add(v1);
         const list_3 = list_2.update(v1.id, t => t);
 
@@ -136,7 +133,7 @@ describe('ImmutableIdMap', () => {
     });
 
     it('should return original list when updater returns item with another id', () => {
-        const list_1 = new ImmutableIdMap<MockupData>();
+        const list_1 = ImmutableIdMap.empty<MockupData>();
         const list_2 = list_1.add(v1);
         const list_3 = list_2.update(v1.id, t => v2);
 
@@ -144,7 +141,7 @@ describe('ImmutableIdMap', () => {
     });
 
     it('should remove values from list', () => {
-        const list_1 = new ImmutableIdMap<MockupData>();
+        const list_1 = ImmutableIdMap.empty<MockupData>();
         const list_2 = list_1.add(v1);
         const list_3 = list_2.add(v2);
         const list_4 = list_3.remove('value1');
@@ -155,7 +152,7 @@ describe('ImmutableIdMap', () => {
     });
 
     it('should return original list when id to remove is null', () => {
-        const list_1 = new ImmutableIdMap<MockupData>();
+        const list_1 = ImmutableIdMap.empty<MockupData>();
         const list_2 = list_1.add(v1);
         const list_3 = list_2.remove(v1.id, null!);
 
@@ -163,7 +160,7 @@ describe('ImmutableIdMap', () => {
     });
 
     it('should return original list when id to remove does not exists', () => {
-        const list_1 = new ImmutableIdMap<MockupData>();
+        const list_1 = ImmutableIdMap.empty<MockupData>();
         const list_2 = list_1.add(v1);
         const list_3 = list_2.remove(v1.id, 'unknown');
 
@@ -171,63 +168,63 @@ describe('ImmutableIdMap', () => {
     });
 
     it('should bring to front', () => {
-        const list_1 = new ImmutableIdMap<MockupData>().add(v1, v2, v3, v4, v5, v6);
+        const list_1 = ImmutableIdMap.of(v1, v2, v3, v4, v5, v6);
         const list_2 = list_1.bringToFront([v3.id, v5.id]);
 
         expect(list_2.map(t => t.id)).toEqual([v1, v2, v4, v6, v3, v5].map(t => t.id));
     });
 
     it('should bring forwards', () => {
-        const list_1 = new ImmutableIdMap<MockupData>().add(v1, v2, v3, v4, v5, v6);
+        const list_1 = ImmutableIdMap.of(v1, v2, v3, v4, v5, v6);
         const list_2 = list_1.bringForwards([v3.id, v4.id]);
 
         expect(list_2.map(t => t.id)).toEqual([v1, v2, v5, v3, v4, v6].map(t => t.id));
     });
 
     it('should send to back', () => {
-        const list_1 = new ImmutableIdMap<MockupData>().add(v1, v2, v3, v4, v5, v6);
+        const list_1 = ImmutableIdMap.of(v1, v2, v3, v4, v5, v6);
         const list_2 = list_1.sendToBack([v3.id, v5.id]);
 
         expect(list_2.map(t => t.id)).toEqual([v3, v5, v1, v2, v4, v6].map(t => t.id));
     });
 
     it('should send backwards', () => {
-        const list_1 = new ImmutableIdMap<MockupData>().add(v1, v2, v3, v4, v5, v6);
+        const list_1 = ImmutableIdMap.of(v1, v2, v3, v4, v5, v6);
         const list_2 = list_1.sendBackwards([v3.id, v5.id]);
 
         expect(list_2.map(t => t.id)).toEqual([v1, v3, v5, v2, v4, v6].map(t => t.id));
     });
 
     it('should move item', () => {
-        const list_1 = new ImmutableIdMap<MockupData>().add(v1, v2, v3, v4, v5, v6);
+        const list_1 = ImmutableIdMap.of(v1, v2, v3, v4, v5, v6);
         const list_2 = list_1.moveTo([v4.id], 1);
 
         expect(list_2.map(t => t.id)).toEqual([v1, v4, v2, v3, v5, v6].map(t => t.id));
     });
 
     it('should ignore items that are not found', () => {
-        const list_1 = new ImmutableIdMap<MockupData>().add(v1, v2, v3, v4, v5, v6);
+        const list_1 = ImmutableIdMap.of(v1, v2, v3, v4, v5, v6);
         const list_2 = list_1.bringToFront([v3.id, 'not found']);
 
         expect(list_2.map(t => t.id)).toEqual([v1, v2, v4, v5, v6, v3].map(t => t.id));
     });
 
     it('should return original list no id found', () => {
-        const list_1 = new ImmutableIdMap<MockupData>().add(v1, v2, v3, v4, v5, v6);
+        const list_1 = ImmutableIdMap.of(v1, v2, v3, v4, v5, v6);
         const list_2 = list_1.sendBackwards(['not found', 'other not found']);
 
         expect(list_2).toBe(list_1);
     });
 
     it('should return original list when ids is null', () => {
-        const list_1 = new ImmutableIdMap<MockupData>().add(v1, v2, v3, v4, v5, v6);
+        const list_1 = ImmutableIdMap.of(v1, v2, v3, v4, v5, v6);
         const list_2 = list_1.sendBackwards(null!);
 
         expect(list_2).toBe(list_1);
     });
 
     it('should return correct result for map', () => {
-        const list_1 = new ImmutableIdMap<MockupData>().add(v1, v2, v3, v4, v5, v6);
+        const list_1 = ImmutableIdMap.of(v1, v2, v3, v4, v5, v6);
 
         const result = list_1.map(t => t.id);
 
@@ -235,7 +232,7 @@ describe('ImmutableIdMap', () => {
     });
 
     it('should return correct result for forEach', () => {
-        const list_1 = new ImmutableIdMap<MockupData>().add(v1, v2, v3, v4, v5, v6);
+        const list_1 = ImmutableIdMap.of(v1, v2, v3, v4, v5, v6);
 
         const result: string[] = [];
 
@@ -245,7 +242,7 @@ describe('ImmutableIdMap', () => {
     });
 
     it('should return correct result for filter', () => {
-        const list_1 = new ImmutableIdMap<MockupData>().add(v1, v2, v3, v4, v5, v6);
+        const list_1 = ImmutableIdMap.of(v1, v2, v3, v4, v5, v6);
 
         let i = 0;
 
@@ -262,7 +259,7 @@ describe('ImmutableIdMap', () => {
             items.push(new MockupData('id' + i));
         }
 
-        const list_1 = new ImmutableIdMap<MockupData>();
+        const list_1 = ImmutableIdMap.empty<MockupData>();
         const list_2 = list_1.add(...items);
 
         expect(list_2.toArray()).toEqual(items);

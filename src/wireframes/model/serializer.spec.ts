@@ -44,7 +44,7 @@ describe('Serializer', () => {
         const groupId = MathHelper.guid();
 
         let oldDiagram =
-            Diagram.createDiagram()
+            Diagram.empty()
                 .addVisual(oldShape1)
                 .addVisual(oldShape2)
                 .addVisual(new CustomVisual(MathHelper.guid(), null!))
