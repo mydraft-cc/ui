@@ -67,7 +67,7 @@ const CustomProperties = (props: CustomPropertiesProps) => {
                     <Col span={12} className='properties-label'>
                         {c.label}
                     </Col>
-                    <Col span={12}>
+                    <Col span={12} className='properties-value'>
                         {c instanceof SliderConfigurable &&
                             <CustomSlider
                                 value={props.selectedShape!.appearance.get(c.name)}

@@ -21,6 +21,13 @@
     padding-right: .5rem;
 }
 
+.properties-value {
+    .ant-select {
+        max-width: 100%;
+        min-width: 100%;
+    }
+}
+
 .properties-subsection {
     & {
         margin-bottom: 1rem;
