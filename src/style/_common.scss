@@ -11,6 +11,13 @@
     height: 100%;
 }
 
+.ant-layout-content {
+    &.editor-content {
+        overflow-x: auto !important;
+        overflow-y: auto !important;
+    }
+}
+
 .sidebar-left,
 .sidebar-right {
     background: $color-dark-foreground;

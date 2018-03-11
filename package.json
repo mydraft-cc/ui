@@ -29,6 +29,7 @@
     "@types/react-dom": "16.0.3",
     "@types/react-redux": "5.0.15",
     "@types/redux": "3.6.0",
+    "@types/webpack-env": "^1.13.5",
     "awesome-typescript-loader": "3.4.1",
     "css-loader": "0.28.9",
     "exports-loader": "0.6.4",

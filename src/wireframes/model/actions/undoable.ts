@@ -24,7 +24,6 @@ export function undoable<T>(reducer: Reducer<T>, capacity: 20, initialState: T, 
             case REDO:
                 return state.redo();
             default:
-
                 if (!state) {
                     return UndoableState.create(capacity, initialState);
                 } else {

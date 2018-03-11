@@ -27,8 +27,8 @@ export const toggleRightSidebar: () => any = () => {
     return { type: TOGGle_RIGHT_SIDEBAR };
 };
 
-export function ui(): Reducer<UIState> {
-    const reducer: Reducer<UIState> = (state: UIState, action: any) => {
+export function ui(initialState: UIState): Reducer<UIState> {
+    const reducer: Reducer<UIState> = (state: UIState = initialState, action: any) => {
         switch (action.type) {
             case SET_ZOOM:
                 return {...state, zoom: action.payload };
@@ -41,13 +41,7 @@ export function ui(): Reducer<UIState> {
             case TOGGle_RIGHT_SIDEBAR:
                 return {...state, showRightSidebar: !state.showRightSidebar };
             default:
-                return {
-                    selectedTab: 'shapes',
-                    clipboard: null,
-                    showLeftSidebar: true,
-                    showRightSidebar: true,
-                    zoom: 1
-                };
+                return state;
         }
     };
 

@@ -6,7 +6,7 @@ const DEFAULT_APPEARANCE = {};
 DEFAULT_APPEARANCE[DiagramShape.APPEARANCE_TEXT] = 'Lorem ipsum dolor sit amet, alii rebum postea eam ex. Et mei laoreet officiis, summo sensibus id mei.';
 DEFAULT_APPEARANCE[DiagramShape.APPEARANCE_TEXT_ALIGNMENT] = 'left';
 DEFAULT_APPEARANCE[DiagramShape.APPEARANCE_FONT_SIZE] = AbstractControl.CONTROL_FONT_SIZE;
-DEFAULT_APPEARANCE[DiagramShape.APPEARANCE_STROKE_THICKNESS] = 2;
+DEFAULT_APPEARANCE[DiagramShape.APPEARANCE_STROKE_THICKNESS] = 1;
 
 export class Comment extends AbstractControl {
     public identifier(): string {
@@ -18,7 +18,7 @@ export class Comment extends AbstractControl {
     }
 
     protected renderInternal(ctx: AbstractContext) {
-        const corner = Math.min(14, ctx.bounds.width, ctx.bounds.height);
+        const corner = Math.min(14, ctx.bounds.width, ctx.bounds.height) - .5;
 
         this.createBorder(ctx, corner);
         this.createText(ctx);

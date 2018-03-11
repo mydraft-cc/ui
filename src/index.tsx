@@ -74,7 +74,12 @@ const store = createStore<any>(
                 SELECT_DIAGRAM,
                 SELECT_ITEMS
             ]),
-        ui: Reducers.ui()
+        ui: Reducers.ui({
+            selectedTab: 'shapes',
+            showLeftSidebar: true,
+            showRightSidebar: true,
+            zoom: 1
+        })
     }),
     window['__REDUX_DEVTOOLS_EXTENSION__'] && window['__REDUX_DEVTOOLS_EXTENSION__']()
 );

@@ -31,7 +31,7 @@ export abstract class AbstractControl implements Renderer {
     public static CONTROL_FONT_SIZE = 16;
     public static CONTROL_BACKGROUND_COLOR = 0xF0F0F0;
     public static CONTROL_BORDER_THICKNESS = 1;
-    public static CONTROL_BORDER_COLOR = 0x737373;
+    public static CONTROL_BORDER_COLOR = 0xc9c9c9;
     public static CONTROL_BORDER_RADIUS = 4;
     public static CONTROL_TEXT_COLOR = 0x252525;
 

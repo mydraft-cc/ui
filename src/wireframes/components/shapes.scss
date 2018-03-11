@@ -1,0 +1,44 @@
+@import '_mixins';
+@import '_vars';
+
+.shapes {
+    &-search {
+        input {
+            @include border-radius(0);
+            border-left: 0;
+            border-right: 0;
+        }
+    }
+
+    &-list {
+        overflow-y: auto;
+    }
+}
+
+.shape {
+    & {
+        float: left;
+        border-right: 1px solid $color-border;
+        border-bottom: 1px solid $color-border;
+        background: transparent;
+        text-align: center;
+        text-decoration: none;
+        width: 50%;
+    }
+
+    &-image-row {
+        line-height: 120px;
+    }
+
+    &-image {
+        max-width: 80%;
+    }
+
+    &-title {
+        line-height: 30px;
+    }
+
+    &:hover {
+        background: $color-border;
+    }
+}

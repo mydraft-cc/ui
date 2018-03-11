@@ -1,6 +1,4 @@
 export interface UIState {
-    clipboard: string;
-
     zoom: number;
 
     showLeftSidebar: boolean;

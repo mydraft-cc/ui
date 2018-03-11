@@ -1,18 +1,12 @@
 @import '_mixins';
 @import '_vars';
 
-.editor-adorners  {
-    pointer-events: none;
-}
-
-.editor-container {
-    position: relative;
-    padding: 40px;
-}
-
-.editor-inner {
+.editor {
     & {
         margin: 0 auto;
+    }
+
+    &-inner {
         border: 0;
         background: $color-dark-foreground;
         position: relative;
@@ -20,5 +14,9 @@
 
     canvas {
         @include absolute(0, 0, 0, 0);
+    }
+
+    &-adorners  {
+        pointer-events: none;
     }
 }

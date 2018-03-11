@@ -9,6 +9,7 @@ import {
     HistoryMenuContainer,
     LayoutPropertiesContainer,
     UIMenuContainer,
+    Shapes,
     VisualPropertiesContainer
 } from '@app/wireframes/components';
 
@@ -92,15 +93,14 @@ const App = (props: AppProps) => {
 
                     <Tabs type='card' onTabClick={(key: string) => props.selectTab(key)} activeKey={props.selectedTab}>
                         <Tabs.TabPane key='shapes' tab='Shapes'>
+                            <Shapes rendererService={props.rendererService} />
                         </Tabs.TabPane>
                         <Tabs.TabPane key='icons' tab='Icons'>
                         </Tabs.TabPane>
-                        <Tabs.TabPane key='pages' tab='Pages'>
-                        </Tabs.TabPane>
                     </Tabs>
                 </Layout.Sider>
-                <Layout.Content>
-                    <EditorContainer rendererService={props.rendererService} />
+                <Layout.Content className='editor-content'>
+                    <EditorContainer rendererService={props.rendererService} spacing={40} />
                 </Layout.Content>
                 <Layout.Sider width={320} className='sidebar-right'
                     collapsed={!props.showRightSidebar}

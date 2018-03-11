@@ -62,12 +62,13 @@ export class ButtonBar extends AbstractControl {
                 partItem = ctx.renderer.createRoundedRectangle(bounds, ctx.shape, 0);
             }
 
-            ctx.renderer.setStrokeColor(partItem, ctx.shape);
 
             if (part.selected) {
                 ctx.renderer.setBackgroundColor(partItem, accentColor);
+                ctx.renderer.setStrokeColor(partItem, accentColor);
             } else {
                 ctx.renderer.setBackgroundColor(partItem, ctx.shape);
+                ctx.renderer.setStrokeColor(partItem, ctx.shape);
             }
 
             const textItem = ctx.renderer.createSinglelineText(bounds.deflate(4, 4), ctx.shape);

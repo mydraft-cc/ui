@@ -50,6 +50,9 @@ export interface EditorViewProps {
     // The zoom value of the canvas.
     canvasZoom: number;
 
+    // The spacing.
+    spacing: number;
+
     // A function to select a set of items.
     selectItems: (diagram: Diagram, itemIds: string[]) => void;
 
@@ -180,9 +183,19 @@ class Editor extends React.Component<EditorViewProps, {}> {
     }
 
     public render() {
+        const zoomedWidth  = this.props.canvasZoom * this.props.canvasWidth;
+        const zoomedHeight = this.props.canvasZoom * this.props.canvasHeight;
+
+        const zoomedOuterWidth  = 2 * this.props.spacing + zoomedWidth;
+        const zoomedOuterHeight = 2 * this.props.spacing + zoomedHeight;
+
+        const size = (value: number) => {
+            return value + 'px';
+        };
+
         return (
-            <div className='editor-container'>
-                <div className='editor-inner' style={{ width: this.props.canvasWidth + 'px', height: this.props.canvasHeight + 'px' }}>
+            <div className='editor' style={{ width: size(zoomedOuterWidth), height: size(zoomedOuterHeight), padding: size(this.props.spacing) }}>
+                <div className='editor-inner' style={{ width: size(zoomedWidth), height: size(zoomedHeight) }}>
                     <div>
                         <PaperCanvas onInit={(layer) => this.initDiagramScope(layer)}
                             zoom={this.props.canvasZoom}
