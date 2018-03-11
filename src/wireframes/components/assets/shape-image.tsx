@@ -27,9 +27,21 @@ const ShapeConnect: DragSourceCollector = (connector, monitor) => {
 @DragSource('DND_SHAPE', ShapeTarget, ShapeConnect)
 export class ShapeImage extends React.Component<ShapeProps> {
     public render() {
+        const preview = (node: any) => {
+            if (node) {
+                this.props.connectDragPreview(node.cloneNode(), {
+                    dropEffect: 'copy',
+                    anchorX: 0,
+                    anchorY: 0
+                });
+            }
+        };
+
         return this.props.connectDragSource!(
-            <img ref={img => this.props.connectDragPreview(img!.cloneNode())} className='shape-image' alt={this.props.shape.name} src={urlPath(this.props.shape)} />
-        );
+            <img ref={img => preview(img)} className='shape-image' alt={this.props.shape.name} src={urlPath(this.props.shape)} />,
+        {
+            dropEffect: 'copy'
+        });
     }
 }
 
