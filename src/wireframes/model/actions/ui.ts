@@ -42,7 +42,7 @@ export function ui(): Reducer<UIState> {
                 return {...state, showRightSidebar: !state.showRightSidebar };
             default:
                 return {
-                    selectedTab: 'Shapes',
+                    selectedTab: 'shapes',
                     clipboard: null,
                     showLeftSidebar: true,
                     showRightSidebar: true,

@@ -96,12 +96,14 @@ $sidebar-size: 320px;
         width: 1px;
     }
 
-    &-item {
+    &-item,
+    &-item > button {
         & {
             @include opacity(.8);
             color: $color-dark-foreground !important;
             border: 0;
             background: transparent !important;
+            height: 60px;
         }
 
         &:hover {

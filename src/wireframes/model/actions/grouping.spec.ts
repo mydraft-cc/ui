@@ -3,9 +3,9 @@ import {
     DiagramGroup,
     DiagramShape,
     EditorState,
-    group,
+    groupItems,
     grouping,
-    ungroup
+    ungroupItems
 } from '@app/wireframes/model';
 
 describe('GroupingReducer', () => {
@@ -27,7 +27,7 @@ describe('GroupingReducer', () => {
 
         const groupId = 'group1';
 
-        const action = group(diagram, diagram.items.toArray(), groupId);
+        const action = groupItems(diagram, diagram.items.toArray(), groupId);
         const state_1 = EditorState.empty().addDiagram(diagram);
         const state_2 = reducer(state_1, action);
 
@@ -56,7 +56,7 @@ describe('GroupingReducer', () => {
         const group1 = <DiagramGroup>diagram.items.get(groupId1);
         const group2 = <DiagramGroup>diagram.items.get(groupId2);
 
-        const action = ungroup(diagram, [group1, group2, DiagramGroup.createGroup([])]);
+        const action = ungroupItems(diagram, [group1, group2, DiagramGroup.createGroup([])]);
         const state_1 = EditorState.empty().addDiagram(diagram);
         const state_2 = reducer(state_1, action);
 

@@ -1,9 +1,9 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators, Dispatch } from 'redux';
-import { Button } from 'antd';
+import { Button, Tooltip } from 'antd';
 
-import { MathHelper } from '@app/core';
+import { MathHelper, Shortcut } from '@app/core';
 
 import {
     Diagram,
@@ -11,10 +11,10 @@ import {
     DiagramItem,
     EditorState,
     getSelection,
-    group,
+    groupItems,
     removeItems,
     UndoableState,
-    ungroup
+    ungroupItems
 } from '@app/wireframes/model';
 
 interface ArrangeMenuProps {
@@ -36,14 +36,14 @@ interface ArrangeMenuProps {
     // The selected groups.
     selectedGroups: DiagramGroup[];
 
+    // Group items.
+    groupItems: (diagram: Diagram, items: DiagramItem[], id: string) => void;
+
     // Remove items.
     removeItems: (diagram: Diagram, items: DiagramItem[]) => void;
 
-    // Group items.
-    group: (diagram: Diagram, items: DiagramItem[]) => void;
-
     // Ungroup items.
-    ungroup: (diagram: Diagram, groups: DiagramGroup[]) => void;
+    ungroupItems: (diagram: Diagram, groups: DiagramGroup[]) => void;
 }
 
 const mapStateToProps = (state: { editor: UndoableState<EditorState> }) => {
@@ -62,29 +62,54 @@ const mapStateToProps = (state: { editor: UndoableState<EditorState> }) => {
 };
 
 const mapDispatchToProps = (dispatch: Dispatch<any>) => bindActionCreators({
-    group: (d, i) => group(d, i, MathHelper.guid()), removeItems, ungroup
+    groupItems, removeItems, ungroupItems
 }, dispatch);
 
 const ArrangeMenu = (props: ArrangeMenuProps) => {
+    const doGroup = () => {
+        props.groupItems(props.selectedDiagram!, props.selectedItems, MathHelper.guid());
+    };
+
+    const doUngroup = () =>  {
+        props.ungroupItems(props.selectedDiagram!, props.selectedGroups);
+    };
+
+    const doRemove = () =>  {
+        props.removeItems(props.selectedDiagram!, props.selectedItems);
+    };
+
     return (
         <>
-            <Button className='menu-item' size='large'
-                disabled={!props.canGroup}
-                onClick={() => props.group(props.selectedDiagram!, props.selectedItems)}>
-                <i className='icon-group' />
-            </Button>
+            <Tooltip mouseEnterDelay={1} title='Group items (CTRL + G)'>
+                <Button className='menu-item' size='large'
+                    disabled={!props.canGroup}
+                    onClick={() => doGroup()}>
+                    <i className='icon-group' />
+                </Button>
+            </Tooltip>
 
-            <Button className='menu-item' size='large'
-                disabled={!props.canUngroup}
-                onClick={() => props.ungroup(props.selectedDiagram!, props.selectedGroups)}>
-                <i className='icon-ungroup' />
-            </Button>
+            <Shortcut disabled={!props.canGroup} onPressed={() => doGroup()} keys='ctrl+g' />
 
-            <Button className='menu-item' size='large'
-                disabled={!props.canRemove}
-                onClick={() => props.removeItems(props.selectedDiagram!, props.selectedItems)}>
-                <i className='icon-delete' />
-            </Button>
+            <Tooltip mouseEnterDelay={1} title='Ungroup items (CTRL + SHIFT + G)'>
+                <Button className='menu-item' size='large'
+                    disabled={!props.canUngroup}
+                    onClick={() => doUngroup()}>
+                    <i className='icon-ungroup' />
+                </Button>
+            </Tooltip>
+
+            <Shortcut disabled={!props.canUngroup} onPressed={() => doUngroup()} keys='ctrl+shift+g' />
+
+            <Tooltip mouseEnterDelay={1} title='Delete selected items (DELETE)'>
+                <Button className='menu-item' size='large'
+                    disabled={!props.canRemove}
+                    onClick={() => doRemove()}>
+                    <i className='icon-delete' />
+                </Button>
+            </Tooltip>
+
+            <Shortcut disabled={!props.canRemove} onPressed={() => doRemove()} keys='del' />
+            <Shortcut disabled={!props.canRemove} onPressed={() => doRemove()} keys='backspace' />
         </>
     );
 };

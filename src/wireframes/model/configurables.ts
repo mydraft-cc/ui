@@ -23,6 +23,15 @@ export class SliderConfigurable extends Configurable {
     }
 }
 
+export class NumberConfigurable extends Configurable {
+    constructor(name: string, label: string,
+        public readonly min = 0,
+        public readonly max = 100
+    ) {
+        super(name, label);
+    }
+}
+
 export class ColorConfigurable extends Configurable {
     constructor(name: string, label: string) {
         super(name, label);

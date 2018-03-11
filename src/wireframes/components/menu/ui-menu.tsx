@@ -1,12 +1,11 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators, Dispatch } from 'redux';
-import { Button, Icon } from 'antd';
+import { Button, Icon, Tooltip } from 'antd';
 
-import {
-    UIState,
-    setZoom
-} from '@app/wireframes/model';
+import { Shortcut } from '@app/core';
+
+import { setZoom, UIState } from '@app/wireframes/model';
 
 interface UIMenuProps {
     // Indicates if you can zoom in.
@@ -35,21 +34,37 @@ const mapDispatchToProps = (dispatch: Dispatch<any>) => bindActionCreators({
 }, dispatch);
 
 const UIMenu = (props: UIMenuProps) => {
+    const doZoomOut = () =>  {
+        props.setZoom(props.zoom - .25);
+    };
+
+    const doZoomIn = () =>  {
+        props.setZoom(props.zoom + .25);
+    };
+
     return (
         <>
-            <Button className='menu-item' size='large'
-                disabled={!props.canZoomOut}
-                onClick={() => props.setZoom(props.zoom - .25)}>
-                <Icon type='minus-circle-o' />
-            </Button>
+            <Tooltip mouseEnterDelay={1} title='Zoom Out (ALT + [-])'>
+                <Button className='menu-item' size='large'
+                    disabled={!props.canZoomOut}
+                    onClick={() => doZoomOut()}>
+                    <Icon type='minus-circle-o' />
+                </Button>
+            </Tooltip>
+
+            <Shortcut disabled={!props.canZoomOut} onPressed={() => doZoomOut()} keys='alt+-' />
 
             <span className='menu-item'>{props.zoom * 100}</span>
 
-            <Button className='menu-item' size='large'
-                disabled={!props.canZoomIn}
-                onClick={() => props.setZoom(props.zoom + .25)}>
-                <Icon type='plus-circle-o' />
-            </Button>
+            <Tooltip mouseEnterDelay={1} title='Zoom In (ALT + [+])'>
+                <Button className='menu-item' size='large'
+                    disabled={!props.canZoomIn}
+                    onClick={() => doZoomIn()}>
+                    <Icon type='plus-circle-o' />
+                </Button>
+            </Tooltip>
+
+            <Shortcut disabled={!props.canZoomIn} onPressed={() => doZoomIn()} keys='alt+plus' />
         </>
     );
 };

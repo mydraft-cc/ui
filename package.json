@@ -3,8 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@types/mousetrap": "^1.6.0",
     "antd": "3.2.3",
     "moment": "2.21.0",
+    "mousetrap": "^1.6.1",
     "paper": "0.11.5",
     "react": "16.2.0",
     "react-dom": "16.2.0",

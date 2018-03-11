@@ -1,7 +1,9 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators, Dispatch } from 'redux';
-import { Button } from 'antd';
+import { Button, Tooltip } from 'antd';
+
+import { Shortcut } from '@app/core';
 
 import {
     EditorState,
@@ -36,19 +38,35 @@ const mapDispatchToProps = (dispatch: Dispatch<any>) => bindActionCreators({
 }, dispatch);
 
 const HistoryMenu = (props: HistoryMenuProps) => {
+    const doUndo = () => {
+        props.undo();
+    };
+
+    const doRedo = () => {
+        props.redo();
+    };
+
     return (
         <>
-            <Button className='menu-item' size='large'
-                disabled={!props.canUndo}
-                onClick={() => props.undo()}>
-                <i className='icon-undo' />
-            </Button>
+            <Tooltip mouseEnterDelay={1} title='Undo (CTRL + Z)'>
+                <Button className='menu-item' size='large'
+                    disabled={!props.canUndo}
+                    onClick={() => doUndo()}>
+                    <i className='icon-undo' />
+                </Button>
+            </Tooltip>
 
-            <Button className='menu-item' size='large'
-                disabled={!props.canRedo}
-                onClick={() => props.redo()}>
-                <i className='icon-redo' />
-            </Button>
+            <Shortcut keys='ctrl+z' disabled={!props.canUndo} onPressed={() => doUndo()} />
+
+            <Tooltip mouseEnterDelay={1} title='Redo (CTRL + Y)'>
+                <Button className='menu-item' size='large'
+                    disabled={!props.canRedo}
+                    onClick={() => doRedo()}>
+                    <i className='icon-redo' />
+                </Button>
+            </Tooltip>
+
+            <Shortcut keys='ctrl+y' disabled={!props.canRedo} onPressed={() => doRedo()} />
         </>
     );
 };

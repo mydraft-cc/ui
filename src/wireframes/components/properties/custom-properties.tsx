@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators, Dispatch } from 'redux';
-import { Col, Row, Select } from 'antd';
+import { Col, InputNumber, Row, Select } from 'antd';
 
 import { ColorPicker } from '@app/core';
 
@@ -14,6 +14,7 @@ import {
     DiagramVisual,
     EditorState,
     getSelection,
+    NumberConfigurable,
     SelectionConfigurable,
     SliderConfigurable,
     UndoableState
@@ -70,6 +71,12 @@ const CustomProperties = (props: CustomPropertiesProps) => {
                     <Col span={12} className='property-value'>
                         {c instanceof SliderConfigurable &&
                             <CustomSlider value={props.selectedShape!.appearance.get(c.name)}
+                                min={c.min}
+                                max={c.max}
+                                onChange={value => props.changeItemsAppearance(props.selectedDiagram!, [props.selectedShape!], c.name, value)} />
+                        }
+                        {c instanceof NumberConfigurable &&
+                            <InputNumber value={props.selectedShape!.appearance.get(c.name)}
                                 min={c.min}
                                 max={c.max}
                                 onChange={value => props.changeItemsAppearance(props.selectedDiagram!, [props.selectedShape!], c.name, value)} />

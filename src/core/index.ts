@@ -11,3 +11,4 @@ export * from './utils/vec2';
 export * from './utils/rect2';
 
 export * from './react/color-picker';
+export * from './react/shortcut';
