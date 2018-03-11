@@ -17,14 +17,14 @@ export const selectTab: (value: string) => any = (value: string) => {
     return { type: SELECT_TAB, payload: value };
 };
 
-export const SET_SHOW_LEFT_SIDEBAR = 'SET_SHOW_LEFT_SIDEBAR';
-export const setShowLeftSidebar: (value: boolean) => any = (value: boolean) => {
-    return { type: SET_SHOW_LEFT_SIDEBAR, payload: value };
+export const TOGGLE_SHOW_LEFT_SIDEBAR = 'TOGGLE_SHOW_LEFT_SIDEBAR';
+export const toggleLeftSidebar: () => any = () => {
+    return { type: TOGGLE_SHOW_LEFT_SIDEBAR };
 };
 
-export const SET_RIGHT_SIDEBAR = 'SET_SHOW_RIGHT_SIDEBAR';
-export const setShowRightSidebar: (value: boolean) => any = (value: boolean) => {
-    return { type: SET_RIGHT_SIDEBAR, payload: value };
+export const TOGGle_RIGHT_SIDEBAR = 'TOGGle_RIGHT_SIDEBAR';
+export const toggleRightSidebar: () => any = () => {
+    return { type: TOGGle_RIGHT_SIDEBAR };
 };
 
 export function ui(): Reducer<UIState> {
@@ -36,10 +36,10 @@ export function ui(): Reducer<UIState> {
                 return {...state, clipboard: action.payload };
             case SELECT_TAB:
                 return {...state, selectedTab: action.payload };
-            case SET_SHOW_LEFT_SIDEBAR:
-                return {...state, showLeftSidebar: action.payload };
-            case SET_RIGHT_SIDEBAR:
-                return {...state, showRightSidebar: action.payload };
+            case TOGGLE_SHOW_LEFT_SIDEBAR:
+                return {...state, showLeftSidebar: !state.showLeftSidebar };
+            case TOGGle_RIGHT_SIDEBAR:
+                return {...state, showRightSidebar: !state.showRightSidebar };
             default:
                 return {
                     selectedTab: 'Shapes',

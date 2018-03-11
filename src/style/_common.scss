@@ -16,8 +16,39 @@
     background: $color-dark-foreground;
     overflow-x: hidden;
     overflow-y: auto;
+    position: relative;
 }
 
+$toggle-button-top: 72px;
+$toggle-button-offset-left: 10px;
+$toggle-button-offset-right: 27px;
+$sidebar-size: 320px;
+
+.content {
+    .toggle-button-left {
+        & {
+            @include absolute($toggle-button-top, auto, auto, $toggle-button-offset-left);
+        }
+
+        &.visible {
+            left: $sidebar-size + $toggle-button-offset-left;
+        }
+    }
+
+    .toggle-button-right {
+        & {
+            @include absolute($toggle-button-top, $toggle-button-offset-right, auto, auto);
+        }
+
+        &.visible {
+            right: $sidebar-size + $toggle-button-offset-right;
+        }
+    }
+}
+
+//
+// > Properties
+//
 .property {
     & {
         margin-bottom: .5rem;
@@ -50,6 +81,9 @@
     }
 }
 
+//
+// > Menu Items
+//
 .menu {
     &-separator {
         @include opacity(.8);

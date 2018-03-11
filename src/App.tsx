@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators, Dispatch } from 'redux';
-import { Collapse, Layout, Tabs } from 'antd';
+import { Button, Collapse, Layout, Tabs } from 'antd';
 
 import {
     ArrangeMenuContainer,
@@ -15,6 +15,8 @@ import {
 import {
     RendererService,
     selectTab,
+    toggleLeftSidebar,
+    toggleRightSidebar,
     UIState
 } from '@app/wireframes/model';
 
@@ -40,6 +42,12 @@ interface AppProps {
 
     // Select a tab.
     selectTab: (key: string) => any;
+
+    // Show or hide the left sidebar.
+    toggleLeftSidebar: () =>  any;
+
+    // Show or hide the right sidebar.
+    toggleRightSidebar: () =>  any;
 }
 
 const mapStateToProps = (state: { ui: UIState }, props: AppOwnProps) => {
@@ -52,10 +60,18 @@ const mapStateToProps = (state: { ui: UIState }, props: AppOwnProps) => {
 };
 
 const mapDispatchToProps = (dispatch: Dispatch<any>) => bindActionCreators({
-    selectTab
+    selectTab, toggleLeftSidebar, toggleRightSidebar
 }, dispatch);
 
 const App = (props: AppProps) => {
+    const toggleIcon = (left: boolean) => {
+        return left ? 'left' : 'right';
+    };
+
+    const toggleClass = (visible: boolean, side: string) => {
+        return `toggle-button-${side}` + (visible ? ' visible' : '');
+    };
+
     return (
         <Layout>
             <Layout.Header>
@@ -69,10 +85,11 @@ const App = (props: AppProps) => {
 
                 <UIMenuContainer />
             </Layout.Header>
-            <Layout>
+            <Layout className='content'>
                 <Layout.Sider width={320} className='sidebar-left'
                     collapsed={!props.showLeftSidebar}
                     collapsedWidth={0}>
+
                     <Tabs type='card' onTabClick={(key: string) => props.selectTab(key)} activeKey={props.selectedTab}>
                         <Tabs.TabPane key='shapes' tab='Shapes'>
                         </Tabs.TabPane>
@@ -88,6 +105,7 @@ const App = (props: AppProps) => {
                 <Layout.Sider width={320} className='sidebar-right'
                     collapsed={!props.showRightSidebar}
                     collapsedWidth={0}>
+
                     <Collapse bordered={false} defaultActiveKey={['layout', 'visual', 'custom']}>
                         <Collapse.Panel key='layout' header='Layout'>
                             <LayoutPropertiesContainer />
@@ -100,6 +118,18 @@ const App = (props: AppProps) => {
                         </Collapse.Panel>
                     </Collapse>
                 </Layout.Sider>
+
+                <Button icon={toggleIcon(props.showLeftSidebar)}
+                    className={toggleClass(props.showLeftSidebar, 'left')}
+                    size='small'
+                    shape='circle'
+                    onClick={() => props.toggleLeftSidebar()} />
+
+                <Button icon={toggleIcon(!props.showRightSidebar)}
+                    className={toggleClass(props.showRightSidebar, 'right')}
+                    size='small'
+                    shape='circle'
+                    onClick={() => props.toggleRightSidebar()} />
             </Layout>
         </Layout>
     );
