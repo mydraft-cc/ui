@@ -46,7 +46,7 @@ export interface TransformAdornerProps {
     interactionService: InteractionService;
 }
 
-export class TransformAdorner extends React.Component<TransformAdornerProps, {}> implements InteractionHandler {
+export class TransformAdorner extends React.Component<TransformAdornerProps> implements InteractionHandler {
     private currentTransform: Transform;
     private startTransform: Transform;
     private resizeShapes: paper.Item[] | null = null;

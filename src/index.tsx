@@ -13,6 +13,8 @@ import { MathHelper, Vec2 } from '@app/core';
 import * as Reducers from '@app/wireframes/model/actions';
 
 import {
+    createInitialUIState,
+    createInitialAssetsState,
     Diagram,
     EditorState,
     Serializer,
@@ -66,6 +68,7 @@ const reducer: Reducer<EditorState> = (state: EditorState, action: any) => {
 
 const store = createStore<any>(
     combineReducers({
+        assets: Reducers.assets(createInitialAssetsState(rendererService)),
         editor:
             undoable(reducer,
                 20,
@@ -74,12 +77,7 @@ const store = createStore<any>(
                 SELECT_DIAGRAM,
                 SELECT_ITEMS
             ]),
-        ui: Reducers.ui({
-            selectedTab: 'shapes',
-            showLeftSidebar: true,
-            showRightSidebar: true,
-            zoom: 1
-        })
+        ui: Reducers.ui(createInitialUIState())
     }),
     window['__REDUX_DEVTOOLS_EXTENSION__'] && window['__REDUX_DEVTOOLS_EXTENSION__']()
 );

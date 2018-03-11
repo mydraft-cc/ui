@@ -1,20 +1,6 @@
 @import '_mixins';
 @import '_vars';
 
-.shapes {
-    &-search {
-        input {
-            @include border-radius(0);
-            border-left: 0;
-            border-right: 0;
-        }
-    }
-
-    &-list {
-        overflow-y: auto;
-    }
-}
-
 .shape {
     & {
         float: left;
@@ -40,5 +26,19 @@
 
     &:hover {
         background: $color-border;
+    }
+}
+
+.shapes {
+    &-search {
+        input {
+            @include border-radius(0);
+            border-left: 0;
+            border-right: 0;
+        }
+    }
+
+    &-list {
+        overflow-y: auto;
     }
 }

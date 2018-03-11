@@ -41,7 +41,7 @@ export interface SelectionAdornerProps {
     interactionService: InteractionService;
 }
 
-export class SelectionAdorner extends React.Component<SelectionAdornerProps, {}> implements InteractionHandler {
+export class SelectionAdorner extends React.Component<SelectionAdornerProps> implements InteractionHandler {
     private adornerLayer: paper.Layer;
     private adornerScope: paper.PaperScope;
     private shapesAdorners: paper.Shape[] = [];

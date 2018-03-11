@@ -1,5 +1,6 @@
 export * from './alignment';
 export * from './appearance';
+export * from './assets';
 export * from './diagrams';
 export * from './grouping';
 export * from './items';

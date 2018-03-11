@@ -12,7 +12,7 @@ export interface ShortcutProps {
     onPressed: () => any;
 }
 
-export class Shortcut extends React.Component<ShortcutProps, {}> {
+export class Shortcut extends React.Component<ShortcutProps> {
     public componentDidMount() {
         Mousetrap.bind(this.props.keys, () =>  {
             if (this.props.disabled !== true) {

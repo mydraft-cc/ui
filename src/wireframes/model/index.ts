@@ -9,6 +9,7 @@ export * from './diagram-item-set';
 export * from './diagram-visual';
 export * from './diagram-shape';
 export * from './editor-state';
+export * from './icons';
 export * from './renderer';
 export * from './renderer.service';
 export * from './serializer';
@@ -18,3 +19,4 @@ export * from './ui-state';
 export * from './undoable-state';
 
 export * from './projections';
+export * from './assets-state';

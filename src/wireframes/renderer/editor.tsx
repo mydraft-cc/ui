@@ -42,13 +42,13 @@ export interface EditorViewProps {
     selectedItems: DiagramItem[];
 
     // The width of the canvas.
-    canvasWidth: number;
+    zoomedWidth: number;
 
     // The height of the canvas.
-    canvasHeight: number;
+    zoomedHeight: number;
 
     // The zoom value of the canvas.
-    canvasZoom: number;
+    zoom: number;
 
     // The spacing.
     spacing: number;
@@ -69,9 +69,9 @@ const mapStateToProps = (state: { ui: UIState, editor: UndoableState<EditorState
     return {
         selectedDiagram: diagram,
         selectedItems: items,
-        canvasWidth: editor.size.x * state.ui.zoom,
-        canvasHeight: editor.size.y * state.ui.zoom,
-        canvasZoom: state.ui.zoom
+        zoomedWidth: editor.size.x * state.ui.zoom,
+        zoomedHeight: editor.size.y * state.ui.zoom,
+        zoom: state.ui.zoom
     };
 };
 
@@ -79,7 +79,7 @@ const mapDispatchToProps = (dispatch: Dispatch<any>) => bindActionCreators({
     selectItems, changeItemsAppearance, transformItems
 }, dispatch);
 
-class Editor extends React.Component<EditorViewProps, {}> {
+class Editor extends React.Component<EditorViewProps> {
     private adornerScope: paper.PaperScope;
     private diagramScope: paper.PaperScope;
     private diagramLayer: paper.Layer;
@@ -183,11 +183,8 @@ class Editor extends React.Component<EditorViewProps, {}> {
     }
 
     public render() {
-        const zoomedWidth  = this.props.canvasZoom * this.props.canvasWidth;
-        const zoomedHeight = this.props.canvasZoom * this.props.canvasHeight;
-
-        const zoomedOuterWidth  = 2 * this.props.spacing + zoomedWidth;
-        const zoomedOuterHeight = 2 * this.props.spacing + zoomedHeight;
+        const zoomedOuterWidth  = 2 * this.props.spacing + this.props.zoomedWidth;
+        const zoomedOuterHeight = 2 * this.props.spacing + this.props.zoomedHeight;
 
         const size = (value: number) => {
             return value + 'px';
@@ -195,17 +192,17 @@ class Editor extends React.Component<EditorViewProps, {}> {
 
         return (
             <div className='editor' style={{ width: size(zoomedOuterWidth), height: size(zoomedOuterHeight), padding: size(this.props.spacing) }}>
-                <div className='editor-inner' style={{ width: size(zoomedWidth), height: size(zoomedHeight) }}>
+                <div className='editor-inner' style={{ width: size(this.props.zoomedWidth), height: size(this.props.zoomedHeight) }}>
                     <div>
                         <PaperCanvas onInit={(layer) => this.initDiagramScope(layer)}
-                            zoom={this.props.canvasZoom}
-                            width={this.props.canvasWidth}
-                            height={this.props.canvasHeight} />
+                            zoom={this.props.zoom}
+                            zoomedWidth={this.props.zoomedWidth}
+                            zoomedHeight={this.props.zoomedHeight} />
 
                         <PaperCanvas onInit={(layer) => this.initAdornerScope(layer)} className='editor-adorners'
-                            zoom={this.props.canvasZoom}
-                            width={this.props.canvasWidth}
-                            height={this.props.canvasHeight} />
+                            zoom={this.props.zoom}
+                            zoomedWidth={this.props.zoomedWidth}
+                            zoomedHeight={this.props.zoomedHeight} />
                     </div>
 
                     <div>
@@ -232,7 +229,7 @@ class Editor extends React.Component<EditorViewProps, {}> {
                                     selectedDiagram={this.props.selectedDiagram}
                                     selectedItems={this.props.selectedItems}
                                     provideItemByElement={this.provideItemByElement}
-                                    zoom={this.props.canvasZoom} />
+                                    zoom={this.props.zoom} />
                             </div>
                         )}
                     </div>

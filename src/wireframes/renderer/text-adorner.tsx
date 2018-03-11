@@ -36,7 +36,7 @@ export interface TextAdornerProps {
     interactionService: InteractionService;
 }
 
-export class TextAdorner extends React.Component<TextAdornerProps, {}> implements InteractionHandler {
+export class TextAdorner extends React.Component<TextAdornerProps> implements InteractionHandler {
     private selectedShape: DiagramShape | null = null;
     private textareaElement: HTMLTextAreaElement;
 

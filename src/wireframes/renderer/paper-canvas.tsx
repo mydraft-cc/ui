@@ -3,10 +3,10 @@ import * as paper from 'paper';
 
 export interface PaperCanvasProps {
     // The width of the canvas.
-    width: number;
+    zoomedWidth: number;
 
     // The height of the canvas.
-    height: number;
+    zoomedHeight: number;
 
     // The zoom value of the canvas.
     zoom: number;
@@ -18,7 +18,7 @@ export interface PaperCanvasProps {
     onInit: (scope: paper.PaperScope) => any;
 }
 
-export class PaperCanvas extends React.Component<PaperCanvasProps, {}> {
+export class PaperCanvas extends React.Component<PaperCanvasProps> {
     private canvasElement: any;
     private scope: paper.PaperScope;
 
@@ -40,12 +40,12 @@ export class PaperCanvas extends React.Component<PaperCanvasProps, {}> {
 
     private updateViewSettings() {
         if (this.scope) {
-            this.scope.view.viewSize = new paper.Size(this.props.width, this.props.height);
+            this.scope.view.viewSize = new paper.Size(this.props.zoomedWidth, this.props.zoomedHeight);
 
             this.scope.view.center =
                 new paper.Point(
-                    0.5 / this.props.zoom * this.props.width,
-                    0.5 / this.props.zoom * this.props.height);
+                    0.5 / this.props.zoom * this.props.zoomedWidth,
+                    0.5 / this.props.zoom * this.props.zoomedHeight);
             this.scope.view['matrix'] = new paper.Matrix(this.props.zoom, 0, 0, this.props.zoom, 0, 0);
         }
     }
