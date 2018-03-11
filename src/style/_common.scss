@@ -14,17 +14,29 @@
 .sidebar-left,
 .sidebar-right {
     background: $color-dark-foreground;
+    overflow-x: hidden;
+    overflow-y: auto;
 }
 
-.properties-label {
-    padding-top: .25rem;
-    padding-right: .5rem;
-}
+.property {
+    & {
+        margin-bottom: .5rem;
+    }
 
-.properties-value {
-    .ant-select {
-        max-width: 100%;
-        min-width: 100%;
+    &:last-child {
+        margin-bottom: 0;
+    }
+
+    &-label {
+        padding-top: .25rem;
+        padding-right: .5rem;
+    }
+
+    &-value {
+        .ant-select {
+            max-width: 100%;
+            min-width: 100%;
+        }
     }
 }
 

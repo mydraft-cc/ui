@@ -43,7 +43,7 @@ export class DiagramItemSet {
         Object.freeze(this);
     }
 
-    public static createFromDiagram(itemIds: string[], diagram: Diagram): DiagramItemSet | null {
+    public static createFromDiagram(itemIds: string[], diagram: Diagram): DiagramItemSet {
         const g: DiagramGroup[] = [];
         const v: DiagramVisual[] = [];
 

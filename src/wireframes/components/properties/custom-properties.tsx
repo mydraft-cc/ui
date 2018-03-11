@@ -63,33 +63,28 @@ const CustomProperties = (props: CustomPropertiesProps) => {
     return (
         <>
             {props.configurables.map(c =>
-                <Row key={c.name}>
-                    <Col span={12} className='properties-label'>
+                <Row key={c.name} className='property'>
+                    <Col span={12} className='property-label'>
                         {c.label}
                     </Col>
-                    <Col span={12} className='properties-value'>
+                    <Col span={12} className='property-value'>
                         {c instanceof SliderConfigurable &&
-                            <CustomSlider
-                                value={props.selectedShape!.appearance.get(c.name)}
+                            <CustomSlider value={props.selectedShape!.appearance.get(c.name)}
                                 min={c.min}
                                 max={c.max}
-                                onChange={ev => props.changeItemsAppearance(props.selectedDiagram!, [props.selectedShape!], c.name, ev)} />
+                                onChange={value => props.changeItemsAppearance(props.selectedDiagram!, [props.selectedShape!], c.name, value)} />
                         }
                         {c instanceof SelectionConfigurable &&
-                            <Select
-                                value={props.selectedShape!.appearance.get(c.name)}
-                                allowClear={false}
-                                autoFocus={false}
-                                onChange={ev => props.changeItemsAppearance(props.selectedDiagram!, [props.selectedShape!], c.name, ev)}>
+                            <Select value={props.selectedShape!.appearance.get(c.name)}
+                                onChange={value => props.changeItemsAppearance(props.selectedDiagram!, [props.selectedShape!], c.name, value)}>
                                 {c.options.map(o =>
                                     <Select.Option key={o} value={o}>{o}</Select.Option>
                                 )}
                             </Select>
                         }
                         {c instanceof ColorConfigurable &&
-                            <ColorPicker
-                                color={props.selectedShape!.appearance.get(c.name)}
-                                onChange={ev => props.changeItemsAppearance(props.selectedDiagram!, [props.selectedShape!], c.name, ev.toNumber())} />
+                            <ColorPicker value={props.selectedShape!.appearance.get(c.name)}
+                                onChange={value => props.changeItemsAppearance(props.selectedDiagram!, [props.selectedShape!], c.name, value.toNumber())} />
                         }
                     </Col>
                 </Row>

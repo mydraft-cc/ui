@@ -7,7 +7,7 @@ import { Color, ColorPalette } from '@app/core';
 
 interface ColorPickerProps {
     // The selected color.
-    color?: Color | string | null | undefined;
+    value?: Color | string | null | undefined;
 
     // The color palette.
     palette?: ColorPalette;
@@ -42,12 +42,12 @@ export class ColorPicker extends React.Component<ColorPickerProps, ColorPickerSt
     public render() {
         let selectedColor = Color.BLACK;
 
-        if (this.props.color instanceof Color) {
-            selectedColor = this.props.color;
-        } else if (typeof this.props.color === 'string') {
-            selectedColor = Color.fromString(this.props.color);
-        } else if (typeof this.props.color === 'number') {
-            selectedColor = Color.fromNumber(this.props.color);
+        if (this.props.value instanceof Color) {
+            selectedColor = this.props.value;
+        } else if (typeof this.props.value === 'string') {
+            selectedColor = Color.fromString(this.props.value);
+        } else if (typeof this.props.value === 'number') {
+            selectedColor = Color.fromNumber(this.props.value);
         }
 
         const selectedPalette = this.props.palette || ColorPalette.colors();

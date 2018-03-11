@@ -8,7 +8,8 @@ import {
     CustomPropertiesContainer,
     HistoryMenuContainer,
     LayoutPropertiesContainer,
-    UIMenuContainer
+    UIMenuContainer,
+    VisualPropertiesContainer
 } from '@app/wireframes/components';
 
 import {
@@ -73,9 +74,11 @@ const App = (props: AppProps) => {
                     collapsed={!props.showLeftSidebar}
                     collapsedWidth={0}>
                     <Tabs type='card' onTabClick={(key: string) => props.selectTab(key)} activeKey={props.selectedTab}>
-                        <Tabs.TabPane key='Shapes' tab='Shapes'>
+                        <Tabs.TabPane key='shapes' tab='Shapes'>
                         </Tabs.TabPane>
-                        <Tabs.TabPane key='Icons' tab='Icons'>
+                        <Tabs.TabPane key='icons' tab='Icons'>
+                        </Tabs.TabPane>
+                        <Tabs.TabPane key='pages' tab='Pages'>
                         </Tabs.TabPane>
                     </Tabs>
                 </Layout.Sider>
@@ -85,9 +88,12 @@ const App = (props: AppProps) => {
                 <Layout.Sider width={320} className='sidebar-right'
                     collapsed={!props.showRightSidebar}
                     collapsedWidth={0}>
-                    <Collapse bordered={false} defaultActiveKey={['layout', 'custom']}>
+                    <Collapse bordered={false} defaultActiveKey={['layout', 'visual', 'custom']}>
                         <Collapse.Panel key='layout' header='Layout'>
                             <LayoutPropertiesContainer />
+                        </Collapse.Panel>
+                        <Collapse.Panel key='visual' header='Visual'>
+                            <VisualPropertiesContainer />
                         </Collapse.Panel>
                         <Collapse.Panel key='custom' header='Custom'>
                             <CustomPropertiesContainer />

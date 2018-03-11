@@ -1,7 +1,8 @@
+@import '_mixins';
+@import '_vars';
 
-.layout-properties {
+.text-alignment {
     button {
-        margin-right: 3px;
         padding-left: 0;
         padding-right: 0;
         width: 32px;
