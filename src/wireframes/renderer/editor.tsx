@@ -31,7 +31,7 @@ import { SelectionAdorner }     from './selection-adorner';
 import { TextAdorner }          from './text-adorner';
 import { TransformAdorner }     from './transform-adorner';
 
-export interface EditorViewProps {
+export interface EditorProps {
     // The renderer service.
     rendererService: RendererService;
 
@@ -49,9 +49,6 @@ export interface EditorViewProps {
 
     // The zoom value of the canvas.
     zoom: number;
-
-    // The spacing.
-    spacing: number;
 
     // A function to select a set of items.
     selectItems: (diagram: Diagram, itemIds: string[]) => void;
@@ -79,7 +76,7 @@ const mapDispatchToProps = (dispatch: Dispatch<any>) => bindActionCreators({
     selectItems, changeItemsAppearance, transformItems
 }, dispatch);
 
-class Editor extends React.Component<EditorViewProps> {
+class Editor extends React.Component<EditorProps> {
     private adornerScope: paper.PaperScope;
     private diagramScope: paper.PaperScope;
     private diagramLayer: paper.Layer;
@@ -183,56 +180,51 @@ class Editor extends React.Component<EditorViewProps> {
     }
 
     public render() {
-        const zoomedOuterWidth  = 2 * this.props.spacing + this.props.zoomedWidth;
-        const zoomedOuterHeight = 2 * this.props.spacing + this.props.zoomedHeight;
-
         const size = (value: number) => {
             return value + 'px';
         };
 
         return (
-            <div className='editor' style={{ width: size(zoomedOuterWidth), height: size(zoomedOuterHeight), padding: size(this.props.spacing) }}>
-                <div className='editor-inner' style={{ width: size(this.props.zoomedWidth), height: size(this.props.zoomedHeight) }}>
-                    <div>
-                        <PaperCanvas onInit={(layer) => this.initDiagramScope(layer)}
-                            zoom={this.props.zoom}
-                            zoomedWidth={this.props.zoomedWidth}
-                            zoomedHeight={this.props.zoomedHeight} />
+            <div className='editor' style={{ width: size(this.props.zoomedWidth), height: size(this.props.zoomedHeight) }}>
+                <div>
+                    <PaperCanvas onInit={(layer) => this.initDiagramScope(layer)}
+                        zoom={this.props.zoom}
+                        zoomedWidth={this.props.zoomedWidth}
+                        zoomedHeight={this.props.zoomedHeight} />
 
-                        <PaperCanvas onInit={(layer) => this.initAdornerScope(layer)} className='editor-adorners'
-                            zoom={this.props.zoom}
-                            zoomedWidth={this.props.zoomedWidth}
-                            zoomedHeight={this.props.zoomedHeight} />
-                    </div>
+                    <PaperCanvas onInit={(layer) => this.initAdornerScope(layer)} className='editor-adorners'
+                        zoom={this.props.zoom}
+                        zoomedWidth={this.props.zoomedWidth}
+                        zoomedHeight={this.props.zoomedHeight} />
+                </div>
 
-                    <div>
-                        {this.adornerScope && this.props.selectedDiagram && (
-                            <div>
-                                <TransformAdorner
-                                    adornerScope={this.adornerScope}
-                                    interactionService={this.interactionService}
-                                    selectedDiagram={this.props.selectedDiagram}
-                                    selectedItems={this.props.selectedItems}
-                                    transformItems={this.props.transformItems} />
+                <div>
+                    {this.adornerScope && this.props.selectedDiagram && (
+                        <div>
+                            <TransformAdorner
+                                adornerScope={this.adornerScope}
+                                interactionService={this.interactionService}
+                                selectedDiagram={this.props.selectedDiagram}
+                                selectedItems={this.props.selectedItems}
+                                transformItems={this.props.transformItems} />
 
-                                <SelectionAdorner
-                                    adornerScope={this.adornerScope}
-                                    interactionService={this.interactionService}
-                                    selectedDiagram={this.props.selectedDiagram}
-                                    selectedItems={this.props.selectedItems}
-                                    selectItems={this.props.selectItems}
-                                    provideItemByElement={this.provideItemByElement} />
+                            <SelectionAdorner
+                                adornerScope={this.adornerScope}
+                                interactionService={this.interactionService}
+                                selectedDiagram={this.props.selectedDiagram}
+                                selectedItems={this.props.selectedItems}
+                                selectItems={this.props.selectItems}
+                                provideItemByElement={this.provideItemByElement} />
 
-                                <TextAdorner
-                                    changeItemsAppearance={this.props.changeItemsAppearance}
-                                    interactionService={this.interactionService}
-                                    selectedDiagram={this.props.selectedDiagram}
-                                    selectedItems={this.props.selectedItems}
-                                    provideItemByElement={this.provideItemByElement}
-                                    zoom={this.props.zoom} />
-                            </div>
-                        )}
-                    </div>
+                            <TextAdorner
+                                changeItemsAppearance={this.props.changeItemsAppearance}
+                                interactionService={this.interactionService}
+                                selectedDiagram={this.props.selectedDiagram}
+                                selectedItems={this.props.selectedItems}
+                                provideItemByElement={this.provideItemByElement}
+                                zoom={this.props.zoom} />
+                        </div>
+                    )}
                 </div>
             </div>
         );

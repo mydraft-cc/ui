@@ -7,11 +7,11 @@ interface ShapeProps {
     // The shape data.
     shape: ShapeInfo;
 
-    // Indicates if the shape is being dragged.
-    isDragging?: false;
-
     // The drag source.
     connectDragSource?: any;
+
+    // The drag preview.
+    connectDragPreview?: any;
 }
 
 const ShapeTarget: DragSourceSpec<ShapeProps> = {
@@ -20,15 +20,15 @@ const ShapeTarget: DragSourceSpec<ShapeProps> = {
     }
 };
 
-const ShapeConnect: DragSourceCollector = (connect, monitor) => {
-    return { connectDragSource: connect.dragSource(), isDragging: monitor.isDragging() };
+const ShapeConnect: DragSourceCollector = (connector, monitor) => {
+    return { connectDragSource: connector.dragSource(), connectDragPreview: connector.dragPreview() };
 };
 
-@DragSource('SHAPE', ShapeTarget, ShapeConnect)
+@DragSource('DND_SHAPE', ShapeTarget, ShapeConnect)
 export class ShapeImage extends React.Component<ShapeProps> {
     public render() {
         return this.props.connectDragSource!(
-            <img style={{opacity: this.props.isDragging ? 0.8 : 1 }} className='shape-image' alt={this.props.shape.name} src={urlPath(this.props.shape)} />
+            <img ref={img => this.props.connectDragPreview(img!.cloneNode())} className='shape-image' alt={this.props.shape.name} src={urlPath(this.props.shape)} />
         );
     }
 }

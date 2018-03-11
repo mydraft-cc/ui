@@ -8,6 +8,7 @@ import HTML5Backend from 'react-dnd-html5-backend';
 import {
     ArrangeMenuContainer,
     CustomPropertiesContainer,
+    EditorViewContainer,
     HistoryMenuContainer,
     LayoutPropertiesContainer,
     UIMenuContainer,
@@ -22,8 +23,6 @@ import {
     toggleRightSidebar,
     UIState
 } from '@app/wireframes/model';
-
-import { EditorContainer } from '@app/wireframes/renderer/editor';
 
 interface AppOwnProps {
     // The renderer service.
@@ -103,7 +102,7 @@ const App = (props: AppProps) => {
                         </Tabs>
                     </Layout.Sider>
                     <Layout.Content className='editor-content'>
-                        <EditorContainer rendererService={props.rendererService} spacing={40} />
+                        <EditorViewContainer rendererService={props.rendererService} spacing={40} />
                     </Layout.Content>
                     <Layout.Sider width={320} className='sidebar-right'
                         collapsed={!props.showRightSidebar}
