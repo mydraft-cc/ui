@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "antd": "3.2.3",
+    "font-awesome": "^4.7.0",
     "moment": "2.21.0",
     "mousetrap": "^1.6.1",
     "paper": "0.11.5",

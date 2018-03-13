@@ -18,12 +18,38 @@
     }
 }
 
+//
+// Sidebars
+// 
 .sidebar-left,
 .sidebar-right {
+    border-left: 1px solid $color-border;
     background: $color-dark-foreground;
     overflow-x: hidden;
     overflow-y: auto;
-    position: relative;
+}
+
+.sidebar-left {
+    & {
+        @include flex;
+        @include flex-flow(column);
+        border-right: 1px solid $color-border;
+        background: $color-dark-foreground;
+    }
+
+    .ant-layout-sider-children,
+    .ant-tabs,
+    .ant-tabs-content,
+    .ant-tabs-tabpane,
+    .tab-panel {
+        @include flex;
+        @include flex-flow(column);
+        min-height: 0;
+    }
+
+    .ant-tabs-tabpane {
+        @include flex-shrink-important(1);
+    }
 }
 
 $toggle-button-top: 72px;

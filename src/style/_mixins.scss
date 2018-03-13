@@ -67,7 +67,7 @@
     position: absolute;
 }
 
-@mixin flex-box {
+@mixin flex {
     display: -webkit-box;
     display: -webkit-flex;
     display: -moz-flex;
@@ -97,18 +97,24 @@
             flex-flow: $values;
 }
 
-@mixin flex-grow($int: 0) {
-     -webkit-box-flex: $int;
-    -webkit-flex-grow: $int;
-       -moz-flex-grow: $int;
-    -ms-flex-positive: $int;
-            flex-grow: $int;
+@mixin flex-grow($value: 0) {
+     -webkit-box-flex: $value;
+    -webkit-flex-grow: $value;
+       -moz-flex-grow: $value;
+    -ms-flex-positive: $value;
+            flex-grow: $value;
 }
 
-@mixin flex-shrink($int: 0) {
-    -webkit-flex-shrink: $int;
-       -moz-flex-shrink: $int;
-            flex-shrink: $int;
+@mixin flex-shrink($value: 1) {
+    -webkit-flex-shrink: $value;
+       -moz-flex-shrink: $value;
+            flex-shrink: $value;
+}
+
+@mixin flex-shrink-important($value: 0) {
+    -webkit-flex-shrink: $value !important;
+       -moz-flex-shrink: $value !important;
+            flex-shrink: $value !important;
 }
 
 @mixin inner-border($color: #999) {
