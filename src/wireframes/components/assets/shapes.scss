@@ -7,9 +7,15 @@
         border-right: 1px solid $color-border;
         border-bottom: 1px solid $color-border;
         background: transparent;
+        height: 150px;
         text-align: center;
         text-decoration: none;
         width: 50%;
+    }
+
+    &-title {
+        @include truncate;
+        line-height: 30px;
     }
 
     &-image-row {
@@ -18,10 +24,6 @@
 
     &-image {
         max-width: 80%;
-    }
-
-    &-title {
-        line-height: 30px;
     }
 }
 
@@ -35,8 +37,11 @@
     }
 
     &-list {
-        overflow-y: auto;
-        margin-top: 0;
-        margin-right: -1px;
+        @include flex-grow(1);
     }
+}
+
+// sass-lint:disable class-name-format
+.ReactVirtualized__Masonry__innerScrollContainer {
+    right: -1px;
 }

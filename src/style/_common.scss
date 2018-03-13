@@ -44,6 +44,7 @@
     .tab-panel {
         @include flex;
         @include flex-flow(column);
+        @include flex-grow(1);
         min-height: 0;
     }
 

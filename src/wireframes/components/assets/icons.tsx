@@ -2,6 +2,7 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators, Dispatch } from 'redux';
 import { Input } from 'antd';
+import { AutoSizer, CellMeasurerCache, createMasonryCellPositioner, Masonry, MasonryCellProps } from 'react-virtualized';
 
 import './icons.scss';
 
@@ -35,7 +36,39 @@ const mapDispatchToProps = (dispatch: Dispatch<any>) => bindActionCreators({
     filterIcons
 }, dispatch);
 
+const cache = new CellMeasurerCache({
+    defaultHeight: 150,
+    defaultWidth: 140,
+    fixedWidth: true,
+    fixedHeight: true
+});
+
+const cellPositioner = createMasonryCellPositioner({
+    cellMeasurerCache: cache,
+    columnCount: 2,
+    columnWidth: 160,
+    spacer: 0
+});
+
 const Icons = (props: IconsProps) => {
+    const cellRenderer = (renderProps: MasonryCellProps) => {
+        const icon = props.iconsFiltered[renderProps.index];
+
+        if (!icon) {
+            return null;
+        }
+
+        return (
+            <div className='asset-icon'>
+                <div className='asset-icon-preview'>
+                    <Icon icon={icon} />
+                </div>
+
+                <div className='asset-icon-title'>{icon.label}</div>
+            </div>
+        );
+    };
+
     return (
         <>
             <div className='asset-icons-search'>
@@ -43,15 +76,18 @@ const Icons = (props: IconsProps) => {
             </div>
 
             <div className='asset-icons-list'>
-                {props.iconsFiltered.map(s =>
-                    <div key={s.name} className='asset-icon'>
-                        <div className='asset-icon-preview'>
-                            <Icon icon={s} />
-                        </div>
-
-                        <div className='asset-icon-title'>{s.label}</div>
-                    </div>
-                )}
+                <AutoSizer className='asset-icons-list'>
+                    {({ height, width }) => (
+                        <Masonry
+                            autoHeight={false}
+                            cellCount={props.iconsFiltered.length}
+                            cellMeasurerCache={cache}
+                            cellPositioner={cellPositioner}
+                            cellRenderer={cellRenderer}
+                            height={height}
+                            width={width} />
+                    )}
+                </AutoSizer>
             </div>
         </>
     );

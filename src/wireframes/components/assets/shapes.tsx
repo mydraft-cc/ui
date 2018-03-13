@@ -2,6 +2,7 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators, Dispatch } from 'redux';
 import { Input } from 'antd';
+import { AutoSizer, CellMeasurerCache, createMasonryCellPositioner, Masonry, MasonryCellProps } from 'react-virtualized';
 
 import './shapes.scss';
 
@@ -35,7 +36,39 @@ const mapDispatchToProps = (dispatch: Dispatch<any>) => bindActionCreators({
     filterShapes
 }, dispatch);
 
+const cache = new CellMeasurerCache({
+    defaultHeight: 150,
+    defaultWidth: 158,
+    fixedWidth: true,
+    fixedHeight: true
+});
+
+const cellPositioner = createMasonryCellPositioner({
+    cellMeasurerCache: cache,
+    columnCount: 2,
+    columnWidth: 160,
+    spacer: 0
+});
+
 const Shapes = (props: ShapesProps) => {
+    const cellRenderer = (renderProps: MasonryCellProps) => {
+        const shape = props.shapesFiltered[renderProps.index];
+
+        if (!shape) {
+            return null;
+        }
+
+        return (
+            <div className='asset-shape'>
+                <div className='asset-shape-image-row'>
+                    <ShapeImage shape={shape} />
+                </div>
+
+                <div className='asset-shape-title'>{shape.label}</div>
+            </div>
+        );
+    };
+
     return (
         <>
             <div className='asset-shapes-search'>
@@ -43,15 +76,17 @@ const Shapes = (props: ShapesProps) => {
             </div>
 
             <div className='asset-shapes-list'>
-                {props.shapesFiltered.map(s =>
-                    <div key={s.label} className='asset-shape'>
-                        <div className='asset-shape-image-row'>
-                            <ShapeImage shape={s} />
-                        </div>
-
-                        <div className='asset-shape-title'>{s.label}</div>
-                    </div>
-                )}
+                <AutoSizer className='asset-icons-list'>
+                    {({ height, width }) => (
+                        <Masonry
+                            autoHeight={false}
+                            cellCount={props.shapesFiltered.length}
+                            cellMeasurerCache={cache}
+                            cellPositioner={cellPositioner}
+                            cellRenderer={cellRenderer}
+                            height={height} width={width} />
+                    )}
+                </AutoSizer>
             </div>
         </>
     );
