@@ -3,7 +3,7 @@ import { DragSource, DragSourceSpec, DragSourceCollector } from 'react-dnd';
 
 import { ShapeInfo } from '@app/wireframes/model';
 
-interface ShapeProps {
+interface ShapeImageProps {
     // The shape data.
     shape: ShapeInfo;
 
@@ -14,9 +14,9 @@ interface ShapeProps {
     connectDragPreview?: any;
 }
 
-const ShapeTarget: DragSourceSpec<ShapeProps> = {
+const ShapeTarget: DragSourceSpec<ShapeImageProps> = {
     beginDrag: props => {
-        return { type: props.shape.name };
+        return { type: props.shape.label };
     }
 };
 
@@ -25,7 +25,7 @@ const ShapeConnect: DragSourceCollector = (connector, monitor) => {
 };
 
 @DragSource('DND_SHAPE', ShapeTarget, ShapeConnect)
-export class ShapeImage extends React.Component<ShapeProps> {
+export class ShapeImage extends React.PureComponent<ShapeImageProps> {
     public render() {
         const preview = (node: any) => {
             if (node) {
@@ -38,7 +38,7 @@ export class ShapeImage extends React.Component<ShapeProps> {
         };
 
         return this.props.connectDragSource!(
-            <img ref={img => preview(img)} className='shape-image' alt={this.props.shape.name} src={urlPath(this.props.shape)} />,
+            <img ref={img => preview(img)} className='asset-shape-image' alt={this.props.shape.label} src={urlPath(this.props.shape)} />,
         {
             dropEffect: 'copy'
         });
@@ -48,5 +48,5 @@ export class ShapeImage extends React.Component<ShapeProps> {
 const pathToShapes = require.context('../../../images/shapes', true);
 
 const urlPath = (shape: ShapeInfo) => {
-    return pathToShapes(`./${shape.nameLower}.png`);
+    return pathToShapes(`./${shape.name}.png`);
 };

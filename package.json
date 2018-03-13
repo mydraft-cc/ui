@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@types/react-virtualized": "^9.7.12",
     "antd": "3.2.3",
     "font-awesome": "^4.7.0",
     "moment": "2.21.0",
@@ -14,6 +15,7 @@
     "react-dom": "16.2.0",
     "react-redux": "5.0.7",
     "react-scripts-ts": "2.13.0",
+    "react-virtualized": "^9.18.5",
     "redux": "3.7.2"
   },
   "scripts": {

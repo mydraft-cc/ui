@@ -38,18 +38,18 @@ const mapDispatchToProps = (dispatch: Dispatch<any>) => bindActionCreators({
 const Shapes = (props: ShapesProps) => {
     return (
         <>
-            <div className='shapes-search'>
+            <div className='asset-shapes-search'>
                 <Input placeholder='Find shape' value={props.shapesFilter} onChange={event => props.filterShapes(event.target.value)} />
             </div>
 
-            <div className='shapes-list'>
+            <div className='asset-shapes-list'>
                 {props.shapesFiltered.map(s =>
-                    <div key={s.name} className='shape'>
-                        <div className='shape-image-row'>
+                    <div key={s.label} className='asset-shape'>
+                        <div className='asset-shape-image-row'>
                             <ShapeImage shape={s} />
                         </div>
 
-                        <div className='shape-title'>{s.name}</div>
+                        <div className='asset-shape-title'>{s.label}</div>
                     </div>
                 )}
             </div>

@@ -1,15 +1,15 @@
 import { ICONS, RendererService } from '@app/wireframes/model';
 
 export interface ShapeInfo {
+    label: string;
     name: string;
-
-    nameLower: string;
 }
 
 export interface IconInfo {
-    key: string;
-
-    char: string;
+    label: string;
+    text: string;
+    term: string;
+    name: string;
 }
 
 export interface AssetsState {
@@ -35,12 +35,14 @@ export const createInitialAssetsState: (rendererService: RendererService) => Ass
 
             if (renderer.showInGallery()) {
                 allShapes.push({
-                    nameLower: rendererKey.toLowerCase(),
-                    name: rendererKey
+                    name: rendererKey.toLowerCase(),
+                    label: rendererKey
                 });
             }
         }
     }
+
+    allShapes.sort((l, r) => l.name.localeCompare(r.name));
 
     return {
         shapes: allShapes,

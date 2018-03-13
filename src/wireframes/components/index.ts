@@ -1,3 +1,4 @@
+export * from './assets/icons';
 export * from './assets/shapes';
 
 export * from './menu/arrange-menu';

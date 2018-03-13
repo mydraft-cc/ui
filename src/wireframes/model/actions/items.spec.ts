@@ -70,7 +70,7 @@ describe('ItemsReducer', () => {
     it('should add icon to diagram and select the shape', () => {
         const shapeId = 'shape';
 
-        const action = addIcon(diagram, 20, 40, 'Icon', shapeId);
+        const action = addIcon(diagram, 'Icon', 20, 40, shapeId);
         const state_1 = EditorState.empty().addDiagram(diagram);
         const state_2 = reducer(state_1, action);
 
@@ -87,7 +87,7 @@ describe('ItemsReducer', () => {
     it('should add raster to diagram and select the shape', () => {
         const shapeId = 'shape';
 
-        const action = addImage(diagram, 20, 40, 'source', 60, 80, shapeId);
+        const action = addImage(diagram, 'source', 20, 40, 60, 80, shapeId);
         const state_1 = EditorState.empty().addDiagram(diagram);
         const state_2 = reducer(state_1, action);
 
@@ -104,7 +104,7 @@ describe('ItemsReducer', () => {
     it('should add raster and resize to max height of 300 if height is larger', () => {
         const shapeId = 'shape';
 
-        const action = addImage(diagram, 20, 40, 'source', 600, 800, shapeId);
+        const action = addImage(diagram, 'source', 20, 40, 600, 800, shapeId);
         const state_1 = EditorState.empty().addDiagram(diagram);
         const state_2 = reducer(state_1, action);
 
@@ -116,7 +116,7 @@ describe('ItemsReducer', () => {
     it('should add raster and resize to max width of 300 if width is larger', () => {
         const shapeId = 'shape';
 
-        const action = addImage(diagram, 20, 40, 'source', 600, 300, shapeId);
+        const action = addImage(diagram, 'source', 20, 40, 600, 300, shapeId);
         const state_1 = EditorState.empty().addDiagram(diagram);
         const state_2 = reducer(state_1, action);
 

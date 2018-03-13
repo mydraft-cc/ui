@@ -22,12 +22,12 @@ export const addVisual = (diagram: Diagram, renderer: string, x: number, y: numb
 };
 
 export const ADD_IMAGE = 'ADD_IMAGE';
-export const addImage = (diagram: Diagram, x: number, y: number, source: string, w: number, h: number, shapeId: string) => {
+export const addImage = (diagram: Diagram, source: string, x: number, y: number, w: number, h: number, shapeId: string) => {
     return createDiagramAction(ADD_IMAGE, diagram, { shapeId, source, position: { x, y }, size: { w, h } });
 };
 
 export const ADD_ICON = 'ADD_ICON';
-export const addIcon = (diagram: Diagram, x: number, y: number, char: string, shapeId: string) => {
+export const addIcon = (diagram: Diagram, char: string, x: number, y: number, shapeId: string) => {
     return createDiagramAction(ADD_ICON, diagram, { shapeId, char, position: { x, y } });
 };
 

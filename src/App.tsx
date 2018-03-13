@@ -10,6 +10,7 @@ import {
     CustomPropertiesContainer,
     EditorViewContainer,
     HistoryMenuContainer,
+    IconsContainer,
     LayoutPropertiesContainer,
     UIMenuContainer,
     ShapesContainer,
@@ -98,6 +99,7 @@ const App = (props: AppProps) => {
                                 <ShapesContainer />
                             </Tabs.TabPane>
                             <Tabs.TabPane key='icons' tab='Icons'>
+                                <IconsContainer />
                             </Tabs.TabPane>
                         </Tabs>
                     </Layout.Sider>
