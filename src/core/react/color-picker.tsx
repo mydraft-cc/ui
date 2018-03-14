@@ -20,7 +20,7 @@ interface ColorPickerState {
     visible: boolean;
 }
 
-export class ColorPicker extends React.Component<ColorPickerProps, ColorPickerState> {
+export class ColorPicker extends React.PureComponent<ColorPickerProps, ColorPickerState> {
     constructor(props: ColorPickerProps) {
         super(props);
 

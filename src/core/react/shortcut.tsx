@@ -25,6 +25,10 @@ export class Shortcut extends React.Component<ShortcutProps> {
         Mousetrap.unbind(this.props.keys);
     }
 
+    public shouldComponentUpdate() {
+        return false;
+    }
+
     public render() {
         return null;
     }

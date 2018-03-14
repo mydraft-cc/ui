@@ -36,7 +36,7 @@ const size = (value: number) => {
     return `${value}px`;
 };
 
-export class Grid extends React.Component<GridProps, GridState> {
+export class Grid extends React.PureComponent<GridProps, GridState> {
     private cache: { [key: string]:  JSX.Element } = {};
     private container: HTMLElement;
     private isInitialized = false;
@@ -57,19 +57,6 @@ export class Grid extends React.Component<GridProps, GridState> {
 
     public componentWillReceiveProps() {
         this.measure();
-    }
-
-    public shouldComponentUpdate(nextProps: GridProps, nextState: GridState) {
-        const next = {...nextProps, ...nextState};
-        const curr = {...this.props, ...this.state};
-
-        for (let key in next) {
-            if (next[key] !== curr[key]) {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     private initialize(element: HTMLElement) {

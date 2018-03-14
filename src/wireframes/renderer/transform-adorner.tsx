@@ -436,6 +436,6 @@ export class TransformAdorner extends React.Component<TransformAdornerProps> imp
     }
 
     public render() {
-        return <div></div>;
+        return null;
     }
 }

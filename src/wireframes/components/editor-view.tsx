@@ -91,7 +91,7 @@ const EditorViewConnect: DropTargetCollector = (connector, monitor) => {
 
 @DropTarget('DND_SHAPE', ShapeTarget, EditorViewConnect)
 @DropTarget('DND_ICON', IconTarget, EditorViewConnect)
-class EditorView extends React.Component<EditorViewProps> {
+class EditorView extends React.PureComponent<EditorViewProps> {
     public render() {
         const zoomedOuterWidth  = 2 * this.props.spacing + this.props.zoomedWidth;
         const zoomedOuterHeight = 2 * this.props.spacing + this.props.zoomedHeight;
@@ -113,7 +113,7 @@ export const EditorViewContainer = connect(
     mapDispatchToProps
 )(EditorView);
 
-function calculateSize(monitor: __ReactDnd.DropTargetMonitor | undefined, component: React.Component<EditorViewProps, {}> | undefined, props: EditorViewProps) {
+function calculateSize(monitor: __ReactDnd.DropTargetMonitor | undefined, component: React.PureComponent<EditorViewProps, {}> | undefined, props: EditorViewProps) {
     const clientOffset = monitor!.getSourceClientOffset();
 
     const componentRect = findDOMNode(component!).getBoundingClientRect();

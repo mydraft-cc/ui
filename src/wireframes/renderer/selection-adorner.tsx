@@ -249,6 +249,6 @@ export class SelectionAdorner extends React.Component<SelectionAdornerProps> imp
     }
 
     public render() {
-        return <div></div>;
+        return null;
     }
 }

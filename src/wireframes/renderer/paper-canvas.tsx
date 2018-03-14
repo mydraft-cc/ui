@@ -24,29 +24,32 @@ export class PaperCanvas extends React.Component<PaperCanvasProps> {
 
     public componentWillMount() {
         setTimeout(() => {
-            this.updateViewSettings();
                 this.scope = new paper.PaperScope();
                 this.scope.setup(this.canvasElement);
 
                 this.props.onInit(this.scope);
 
-                this.updateViewSettings();
+                this.updateViewSettings(this.props);
         });
     }
 
-    public componentDidUpdate() {
-        this.updateViewSettings();
+    public componentWillReceiveProps(nextProps: PaperCanvasProps) {
+        this.updateViewSettings(nextProps);
     }
 
-    private updateViewSettings() {
+    public shouldComponentUpdate() {
+        return false;
+    }
+
+    private updateViewSettings(props: PaperCanvasProps) {
         if (this.scope) {
-            this.scope.view.viewSize = new paper.Size(this.props.zoomedWidth, this.props.zoomedHeight);
+            this.scope.view.viewSize = new paper.Size(props.zoomedWidth, props.zoomedHeight);
 
             this.scope.view.center =
                 new paper.Point(
-                    0.5 / this.props.zoom * this.props.zoomedWidth,
-                    0.5 / this.props.zoom * this.props.zoomedHeight);
-            this.scope.view['matrix'] = new paper.Matrix(this.props.zoom, 0, 0, this.props.zoom, 0, 0);
+                    0.5 / props.zoom * props.zoomedWidth,
+                    0.5 / props.zoom * props.zoomedHeight);
+            this.scope.view['matrix'] = new paper.Matrix(props.zoom, 0, 0, props.zoom, 0, 0);
         }
     }
 

@@ -20,7 +20,7 @@ interface CustomSliderState {
     value: number;
 }
 
-export class CustomSlider extends React.Component<CustomSliderProps, CustomSliderState> {
+export class CustomSlider extends React.PureComponent<CustomSliderProps, CustomSliderState> {
     constructor(props: CustomSliderProps) {
         super(props);
 
