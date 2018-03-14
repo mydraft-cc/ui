@@ -3,7 +3,6 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@types/react-virtualized": "^9.7.12",
     "antd": "3.2.3",
     "font-awesome": "^4.7.0",
     "moment": "2.21.0",
@@ -13,9 +12,9 @@
     "react-dnd": "^2.5.4",
     "react-dnd-html5-backend": "^2.5.4",
     "react-dom": "16.2.0",
+    "react-measure": "^2.0.2",
     "react-redux": "5.0.7",
     "react-scripts-ts": "2.13.0",
-    "react-virtualized": "^9.18.5",
     "redux": "3.7.2"
   },
   "scripts": {
@@ -34,6 +33,7 @@
     "@types/react-dnd": "^2.0.36",
     "@types/react-dnd-html5-backend": "^2.1.9",
     "@types/react-dom": "16.0.3",
+    "@types/react-measure": "^2.0.2",
     "@types/react-redux": "5.0.15",
     "@types/redux": "3.6.0",
     "@types/webpack-env": "^1.13.5",

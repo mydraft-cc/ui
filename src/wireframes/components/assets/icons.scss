@@ -3,14 +3,11 @@
 
 .asset-icon {
     & {
-        float: left;
         border-right: 1px solid $color-border;
         border-bottom: 1px solid $color-border;
         background: transparent;
-        height: 150px;
         text-align: center;
         text-decoration: none;
-        width: 50%;
     }
 
     &-title {
@@ -38,10 +35,7 @@
 
     &-list {
         @include flex-grow(1);
+        overflow-y: scroll;
+        overflow-x: hidden;
     }
-}
-
-// sass-lint:disable class-name-format
-.ReactVirtualized__Masonry__innerScrollContainer {
-    right: -1px;
 }

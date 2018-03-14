@@ -2,9 +2,10 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators, Dispatch } from 'redux';
 import { Input } from 'antd';
-import { AutoSizer, CellMeasurerCache, createMasonryCellPositioner, Masonry, MasonryCellProps } from 'react-virtualized';
 
 import './shapes.scss';
+
+import { Grid } from '@app/core';
 
 import {
     AssetsState,
@@ -36,28 +37,8 @@ const mapDispatchToProps = (dispatch: Dispatch<any>) => bindActionCreators({
     filterShapes
 }, dispatch);
 
-const cache = new CellMeasurerCache({
-    defaultHeight: 150,
-    defaultWidth: 158,
-    fixedWidth: true,
-    fixedHeight: true
-});
-
-const cellPositioner = createMasonryCellPositioner({
-    cellMeasurerCache: cache,
-    columnCount: 2,
-    columnWidth: 160,
-    spacer: 0
-});
-
 const Shapes = (props: ShapesProps) => {
-    const cellRenderer = (renderProps: MasonryCellProps) => {
-        const shape = props.shapesFiltered[renderProps.index];
-
-        if (!shape) {
-            return null;
-        }
-
+    const cellRenderer = (shape: ShapeInfo) => {
         return (
             <div className='asset-shape'>
                 <div className='asset-shape-image-row'>
@@ -75,19 +56,7 @@ const Shapes = (props: ShapesProps) => {
                 <Input placeholder='Find shape' value={props.shapesFilter} onChange={event => props.filterShapes(event.target.value)} />
             </div>
 
-            <div className='asset-shapes-list'>
-                <AutoSizer className='asset-icons-list'>
-                    {({ height, width }) => (
-                        <Masonry
-                            autoHeight={false}
-                            cellCount={props.shapesFiltered.length}
-                            cellMeasurerCache={cache}
-                            cellPositioner={cellPositioner}
-                            cellRenderer={cellRenderer}
-                            height={height} width={width} />
-                    )}
-                </AutoSizer>
-            </div>
+            <Grid className='asset-shapes-list' renderer={cellRenderer} columns={2} items={props.shapesFiltered} keyBuilder={shape => shape.name} />
         </>
     );
 };

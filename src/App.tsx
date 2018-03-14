@@ -106,7 +106,7 @@ const App = (props: AppProps) => {
                     <Layout.Content className='editor-content'>
                         <EditorViewContainer rendererService={props.rendererService} spacing={40} />
                     </Layout.Content>
-                    <Layout.Sider width={320} className='sidebar-right'
+                    <Layout.Sider width={330} className='sidebar-right'
                         collapsed={!props.showRightSidebar}
                         collapsedWidth={0}>
 
