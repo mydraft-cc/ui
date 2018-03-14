@@ -130,8 +130,8 @@ class VisualProperties extends React.PureComponent<VisualPropertiesProps> {
     public render() {
         return (
             <>
-                {this.props.selectedDiagram && this.props.selectedItems.length > 0 &&
-                    <>
+                {this.props.selectedDiagram &&
+                    <div style={{display: (this.props.selectedItems.length > 0 ? 'block' : 'none') }}>
                         <div className='property-subsection visual-properties'>
                             <Row className='property'>
                                 <Col span={12} className='property-label'>
@@ -196,7 +196,7 @@ class VisualProperties extends React.PureComponent<VisualPropertiesProps> {
                                 </Col>
                             </Row>
                         </div>
-                    </>
+                    </div>
                 }
             </>
         );
