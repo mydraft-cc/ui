@@ -27,11 +27,11 @@ export class ColorPicker extends React.PureComponent<ColorPickerProps, ColorPick
         this.state = { visible: false };
     }
 
-    private toggle() {
+    private doToggle = () => {
         this.setState(s => { return { visible: !s.visible }; });
     }
 
-    private selectColor(color: Color) {
+    private doSelectColor = (color: Color) => {
         if (this.props.onChange) {
             this.props.onChange(color);
         }
@@ -64,7 +64,7 @@ export class ColorPicker extends React.PureComponent<ColorPickerProps, ColorPick
             <div className='color-picker-colors'>
                 {selectedPalette.colors.map(c =>
                     <div className={colorClassName(c)} key={c.toString()}>
-                        <div className='color-picker-color-inner' onClick={() => this.selectColor(c)} style={{background: c.toString()}}></div>
+                        <div className='color-picker-color-inner' onClick={() => this.doSelectColor(c)} style={{background: c.toString()}}></div>
                     </div>
                 )}
             </div>
@@ -72,7 +72,7 @@ export class ColorPicker extends React.PureComponent<ColorPickerProps, ColorPick
 
         return (
             <Popover content={content} title='Colors' visible={this.state.visible}>
-                <Button className='color-picker-button' onClick={() => this.toggle()}>
+                <Button className='color-picker-button' onClick={this.doToggle}>
                     <div className='color-picker-color'>
                         <div className='color-picker-color-inner' style={{background: selectedColor.toString()}}></div>
                     </div>

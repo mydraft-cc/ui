@@ -78,7 +78,7 @@ export class Grid extends React.PureComponent<GridProps, GridState> {
     private measure() {
         const columns = this.props.columns;
 
-        const itemSize = (310 || 0) / columns;
+        const itemSize = this.container.scrollWidth / columns;
         const itemsHeight = itemSize * this.props.items.length / columns;
 
         const scrollTop = this.container.scrollTop;
@@ -125,7 +125,7 @@ export class Grid extends React.PureComponent<GridProps, GridState> {
             const row = Math.floor(index / this.props.columns);
 
             element = (
-                <div key={index} style={{ position: 'absolute', height: size(dim), width: size(dim), top: size(row * dim), left: size(col * dim + 1) }}>
+                <div key={index} style={{ position: 'absolute', height: size(dim), width: size(dim), top: size(row * dim), left: size(col * dim) }}>
                     {element}
                 </div>
             );

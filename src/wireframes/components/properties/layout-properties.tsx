@@ -35,7 +35,7 @@ interface LayoutPropertiesProps {
     selectedItems: DiagramItem[];
 
     // Indicates wherther the items can be aligned.
-    canAlign:  boolean;
+    canAlign: boolean;
 
     // Indicates whether the items can be ordered.
     canOrder: boolean;
@@ -56,9 +56,9 @@ const mapStateToProps = (state: { editor: UndoableState<EditorState> }) => {
     return {
         selectedDiagram: diagram,
         selectedItems: items,
-        canAlign: items.length >  1,
+        canAlign: items.length > 1,
         canOrder: items.length > 0,
-        canDistribute:  items.length > 1
+        canDistribute: items.length > 1
     };
 };
 
@@ -66,66 +66,84 @@ const mapDispatchToProps = (dispatch: Dispatch<any>) => bindActionCreators({
     orderItems, alignItems
 }, dispatch);
 
-const LayoutProperties = (props: LayoutPropertiesProps) => {
-    const doOrder = (mode: string) => {
-        props.orderItems(mode, props.selectedDiagram!, props.selectedItems);
-    };
+class LayoutProperties extends React.PureComponent<LayoutPropertiesProps> {
+    private doOrder = (mode: string) => {
+        this.props.orderItems(mode, this.props.selectedDiagram!, this.props.selectedItems);
+    }
 
-    const doAlign = (mode: string) => {
-        props.alignItems(mode, props.selectedDiagram!, props.selectedItems);
-    };
+    private doAlign = (mode: string) => {
+        this.props.alignItems(mode, this.props.selectedDiagram!, this.props.selectedItems);
+    }
 
-    return (
-        <>
-            {props.selectedDiagram &&
-                <>
-                    <div className='properties-subsection layout-properties'>
-                        <Button disabled={!props.canAlign} onClick={() => doAlign(ALIGN_H_LEFT)}>
-                            <i className='icon-align-h-left' />
-                        </Button>
-                        <Button disabled={!props.canAlign} onClick={() => doAlign(ALIGN_H_CENTER)}>
-                            <i className='icon-align-h-center' />
-                        </Button>
-                        <Button disabled={!props.canAlign} onClick={() => doAlign(ALIGN_H_RIGHT)}>
-                            <i className='icon-align-h-right' />
-                        </Button>
+    private doAlignHLeft   = () => this.doAlign(ALIGN_H_LEFT);
+    private doAlignHCenter = () => this.doAlign(ALIGN_H_CENTER);
+    private doAlignHRight  = () => this.doAlign(ALIGN_H_RIGHT);
 
-                        <Button disabled={!props.canAlign} onClick={() => doAlign(ALIGN_V_TOP)}>
-                            <i className='icon-align-v-top' />
-                        </Button>
-                        <Button disabled={!props.canAlign} onClick={() => doAlign(ALIGN_V_CENTER)}>
-                            <i className='icon-align-v-center' />
-                        </Button>
-                        <Button disabled={!props.canAlign} onClick={() => doAlign(ALIGN_V_BOTTOM)}>
-                            <i className='icon-align-v-bottom' />
-                        </Button>
-                        <Button disabled={!props.canDistribute} onClick={() => doAlign(DISTRIBUTE_H)}>
-                            <i className='icon-distribute-h2' />
-                        </Button>
-                        <Button disabled={!props.canDistribute} onClick={() => doAlign(DISTRIBUTE_V)}>
-                            <i className='icon-distribute-v2' />
-                        </Button>
-                    </div>
+    private doAlignVTop    = () => this.doAlign(ALIGN_V_TOP);
+    private doAlignVCenter = () => this.doAlign(ALIGN_V_CENTER);
+    private doAlignVBottom = () => this.doAlign(ALIGN_V_BOTTOM);
 
-                    <div className='properties-subsection layout-properties'>
-                        <Button disabled={!props.canOrder} onClick={() => doOrder(BRING_TO_FRONT)}>
-                            <i className='icon-bring-to-front' />
-                        </Button>
-                        <Button disabled={!props.canOrder} onClick={() => doOrder(BRING_FORWARDS)}>
-                            <i className='icon-bring-forwards' />
-                        </Button>
-                        <Button disabled={!props.canOrder} onClick={() => doOrder(SEND_BACKWARDS)}>
-                            <i className='icon-send-backwards'></i>
-                        </Button>
-                        <Button disabled={!props.canOrder} onClick={() => doOrder(SEND_TO_BACK)}>
-                            <i className='icon-send-to-back'></i>
-                        </Button>
-                    </div>
-                </>
-            }
-        </>
-    );
-};
+    private doDistributeH  = () => this.doAlign(DISTRIBUTE_H);
+    private doDistributeV  = () => this.doAlign(DISTRIBUTE_V);
+
+    private doBringToFront  = () => this.doOrder(BRING_TO_FRONT);
+    private doBringForwards = () => this.doOrder(BRING_FORWARDS);
+    private doSendBackwards = () => this.doOrder(SEND_BACKWARDS);
+    private doSendToBack    = () => this.doOrder(SEND_TO_BACK);
+
+    public render() {
+        return (
+            <>
+                {this.props.selectedDiagram &&
+                    <>
+                        <div className='properties-subsection layout-properties'>
+                            <Button disabled={!this.props.canAlign} onClick={this.doAlignHLeft}>
+                                <i className='icon-align-h-left' />
+                            </Button>
+                            <Button disabled={!this.props.canAlign} onClick={this.doAlignHCenter}>
+                                <i className='icon-align-h-center' />
+                            </Button>
+                            <Button disabled={!this.props.canAlign} onClick={this.doAlignHRight}>
+                                <i className='icon-align-h-right' />
+                            </Button>
+
+                            <Button disabled={!this.props.canAlign} onClick={this.doAlignVTop}>
+                                <i className='icon-align-v-top' />
+                            </Button>
+                            <Button disabled={!this.props.canAlign} onClick={this.doAlignVCenter}>
+                                <i className='icon-align-v-center' />
+                            </Button>
+                            <Button disabled={!this.props.canAlign} onClick={this.doAlignVBottom}>
+                                <i className='icon-align-v-bottom' />
+                            </Button>
+                            <Button disabled={!this.props.canDistribute} onClick={this.doDistributeH}>
+                                <i className='icon-distribute-h2' />
+                            </Button>
+                            <Button disabled={!this.props.canDistribute} onClick={this.doDistributeV}>
+                                <i className='icon-distribute-v2' />
+                            </Button>
+                        </div>
+
+                        <div className='properties-subsection layout-properties'>
+                            <Button disabled={!this.props.canOrder} onClick={this.doBringToFront}>
+                                <i className='icon-bring-to-front' />
+                            </Button>
+                            <Button disabled={!this.props.canOrder} onClick={this.doBringForwards}>
+                                <i className='icon-bring-forwards' />
+                            </Button>
+                            <Button disabled={!this.props.canOrder} onClick={this.doSendBackwards}>
+                                <i className='icon-send-backwards'></i>
+                            </Button>
+                            <Button disabled={!this.props.canOrder} onClick={this.doSendToBack}>
+                                <i className='icon-send-to-back'></i>
+                            </Button>
+                        </div>
+                    </>
+                }
+            </>
+        );
+    }
+}
 
 export const LayoutPropertiesContainer = connect(
     mapStateToProps,
