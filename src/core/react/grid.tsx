@@ -1,4 +1,5 @@
 import * as React from 'react';
+import Measurer from 'react-measure';
 
 interface GridProps {
     // The items to render.
@@ -55,7 +56,7 @@ export class Grid extends React.Component<GridProps, GridState> {
     }
 
     public componentWillReceiveProps() {
-        this.calculateIndex();
+        this.measure();
     }
 
     public shouldComponentUpdate(nextProps: GridProps, nextState: GridState) {
@@ -75,7 +76,7 @@ export class Grid extends React.Component<GridProps, GridState> {
         if (element && !this.isInitialized) {
             this.container = element;
 
-            this.calculateIndex();
+            this.measure();
 
             this.isInitialized = true;
         }
@@ -83,11 +84,11 @@ export class Grid extends React.Component<GridProps, GridState> {
 
     private onScroll = (element: UIEvent) => {
         if (this.container === element.target) {
-            this.calculateIndex();
+            this.measure();
         }
     }
 
-    private calculateIndex() {
+    private measure() {
         const itemSize = (310 || 0) / this.props.columns;
         const itemsHeight = itemSize * this.props.items.length / this.props.columns;
 
@@ -141,11 +142,15 @@ export class Grid extends React.Component<GridProps, GridState> {
 
     public render() {
         return (
-            <div className={this.props.className} ref={element => this.initialize(element!)}>
-                <div style={{ height: size(this.state.height), position: 'relative' }}>
-                    {this.renderItems()}
-                </div>
-            </div>
+            <Measurer onResize={() => this.measure()}>
+                {({ measureRef }) =>
+                    <div className={this.props.className} ref={element => { this.initialize(element!); measureRef(element); }}>
+                        <div style={{ height: size(this.state.height), position: 'relative' }}>
+                            {this.renderItems()}
+                        </div>
+                    </div>
+                }
+            </Measurer>
         );
     }
 }
