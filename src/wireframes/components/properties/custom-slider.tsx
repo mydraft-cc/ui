@@ -31,8 +31,12 @@ export class CustomSlider extends React.PureComponent<CustomSliderProps, CustomS
         this.setValue(nextProps.value);
     }
 
-    private setValue(value: number) {
+    private setValue = (value: number) => {
         this.setState({ value });
+    }
+
+    private emitValue = (value: number) => {
+        this.props.onChange(value);
     }
 
     public render() {
@@ -41,8 +45,8 @@ export class CustomSlider extends React.PureComponent<CustomSliderProps, CustomS
                 value={this.state.value}
                 min={this.props.min}
                 max={this.props.max}
-                onChange={(ev: number) =>  this.setValue(ev)}
-                onAfterChange={(ev: number) => this.props.onChange(ev)} />
+                onChange={this.setValue}
+                onAfterChange={this.emitValue} />
         );
     }
 }
