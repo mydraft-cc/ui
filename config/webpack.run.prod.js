@@ -77,7 +77,10 @@ module.exports = webpackMerge(runConfig, {
 
     plugins: [
         new webpack.NoEmitOnErrorsPlugin(),
-        new webpack.DefinePlugin({ 'process.env': { 'ENV': JSON.stringify(ENV) } }),
+        new webpack.DefinePlugin({ 
+            'process.env': { 'ENV': JSON.stringify(ENV) },
+            'process.env.NODE_ENV': JSON.stringify(ENV) 
+        }),
         new webpack.optimize.ModuleConcatenationPlugin(),
         
         new webpack.optimize.UglifyJsPlugin({
