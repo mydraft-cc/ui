@@ -16,7 +16,7 @@ interface ShapeImageProps {
 
 const ShapeTarget: DragSourceSpec<ShapeImageProps> = {
     beginDrag: props => {
-        return { type: props.shape.label };
+        return { shape: props.shape.label };
     }
 };
 
@@ -24,7 +24,7 @@ const ShapeConnect: DragSourceCollector = (connector, monitor) => {
     return { connectDragSource: connector.dragSource(), connectDragPreview: connector.dragPreview() };
 };
 
-@DragSource('DND_SHAPE', ShapeTarget, ShapeConnect)
+@DragSource('DND_ASSET', ShapeTarget, ShapeConnect)
 export class ShapeImage extends React.PureComponent<ShapeImageProps> {
     public render() {
         const preview = (node: any) => {

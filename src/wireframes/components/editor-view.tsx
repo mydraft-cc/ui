@@ -63,25 +63,26 @@ const mapDispatchToProps = (dispatch: Dispatch<any>) => bindActionCreators({
     addIcon, addVisual
 }, dispatch);
 
-const IconTarget: DropTargetSpec<EditorViewProps> = {
+const AssetTarget: DropTargetSpec<EditorViewProps> = {
     canDrop: props => {
         return !!props.selectedDiagram;
     },
     drop: (props, monitor, component) => {
-        const { x, y } = calculateSize(monitor, component, props);
+        const clientOffset = monitor!.getSourceClientOffset();
 
-        props.addIcon(props.selectedDiagram!, monitor!.getItem()['text'], x, y, MathHelper.guid());
-    }
-};
+        const componentRect = findDOMNode(component!).getBoundingClientRect();
 
-const ShapeTarget: DropTargetSpec<EditorViewProps> = {
-    canDrop: props => {
-        return !!props.selectedDiagram;
-    },
-    drop: (props, monitor, component) => {
-        const { x, y } = calculateSize(monitor, component, props);
+        const x = (clientOffset.x - props.spacing - componentRect.left) / props.zoom;
+        const y = (clientOffset.y - props.spacing - componentRect.top) / props.zoom;
 
-        props.addVisual(props.selectedDiagram!, monitor!.getItem()['type'], x, y, MathHelper.guid());
+        const item: any = monitor!.getItem();
+
+        if (item.icon) {
+            props.addIcon(props.selectedDiagram!, item.icon, x, y, MathHelper.guid());
+        } else if (item.shape) {
+            props.addVisual(props.selectedDiagram!, item.shape, x, y, MathHelper.guid());
+        }
+
     }
 };
 
@@ -89,9 +90,8 @@ const EditorViewConnect: DropTargetCollector = (connector, monitor) => {
     return { connectDropTarget: connector.dropTarget() };
 };
 
-@DropTarget('DND_SHAPE', ShapeTarget, EditorViewConnect)
-@DropTarget('DND_ICON', IconTarget, EditorViewConnect)
-class EditorView extends React.PureComponent<EditorViewProps> {
+@DropTarget('DND_ASSET', AssetTarget, EditorViewConnect)
+class EditorView extends React.Component<EditorViewProps> {
     public render() {
         const zoomedOuterWidth  = 2 * this.props.spacing + this.props.zoomedWidth;
         const zoomedOuterHeight = 2 * this.props.spacing + this.props.zoomedHeight;
@@ -112,14 +112,3 @@ export const EditorViewContainer = connect(
     mapStateToProps,
     mapDispatchToProps
 )(EditorView);
-
-function calculateSize(monitor: __ReactDnd.DropTargetMonitor | undefined, component: React.PureComponent<EditorViewProps, {}> | undefined, props: EditorViewProps) {
-    const clientOffset = monitor!.getSourceClientOffset();
-
-    const componentRect = findDOMNode(component!).getBoundingClientRect();
-
-    const x = (clientOffset.x - props.spacing - componentRect.left) / props.zoom;
-    const y = (clientOffset.y - props.spacing - componentRect.top) / props.zoom;
-
-    return { x, y };
-}

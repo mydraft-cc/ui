@@ -13,7 +13,7 @@ interface IconProps {
 
 const IconTarget: DragSourceSpec<IconProps> = {
     beginDrag: props => {
-        return { text: props.icon.text };
+        return { icon: props.icon.text };
     }
 };
 
@@ -21,7 +21,7 @@ const IconConnect: DragSourceCollector = (connector, monitor) => {
     return { connectDragSource: connector.dragSource() };
 };
 
-@DragSource('DND_ICON', IconTarget, IconConnect)
+@DragSource('DND_ASSET', IconTarget, IconConnect)
 export class Icon extends React.PureComponent<IconProps> {
     public render() {
         return this.props.connectDragSource!(

@@ -22,15 +22,17 @@ export class PaperCanvas extends React.Component<PaperCanvasProps> {
     private canvasElement: any;
     private scope: paper.PaperScope;
 
-    public componentWillMount() {
-        setTimeout(() => {
-                this.scope = new paper.PaperScope();
-                this.scope.setup(this.canvasElement);
+    public initialize(canvas: any) {
+        this.canvasElement = canvas;
 
-                this.props.onInit(this.scope);
+        if (canvas) {
+            this.scope = new paper.PaperScope();
+            this.scope.setup(this.canvasElement);
 
-                this.updateViewSettings(this.props);
-        });
+            this.updateViewSettings(this.props);
+
+            this.props.onInit(this.scope);
+        }
     }
 
     public componentWillReceiveProps(nextProps: PaperCanvasProps) {
@@ -54,6 +56,6 @@ export class PaperCanvas extends React.Component<PaperCanvasProps> {
     }
 
     public render() {
-        return <canvas className={this.props.className} ref={canvas => { this.canvasElement = canvas; }} />;
+        return <canvas className={this.props.className} ref={canvas => this.initialize(canvas)} />;
     }
 }

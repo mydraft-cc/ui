@@ -102,6 +102,7 @@ class Editor extends React.Component<EditorProps> {
         this.interactionService.init(scope);
 
         this.renderDiagram();
+
         this.forceUpdate();
     }
 
