@@ -89,16 +89,25 @@ export class Grid extends React.Component<GridProps, GridState> {
     }
 
     private measure() {
-        const itemSize = (310 || 0) / this.props.columns;
-        const itemsHeight = itemSize * this.props.items.length / this.props.columns;
+        const columns = this.props.columns;
+
+        const itemSize = (310 || 0) / columns;
+        const itemsHeight = itemSize * this.props.items.length / columns;
 
         const scrollTop = this.container.scrollTop;
         const scrollBottom = this.container.getBoundingClientRect().height + scrollTop;
 
-        const indexFirst = Math.floor(scrollTop / itemSize) * this.props.columns;
-        const indexLast  = Math.floor(scrollBottom / itemSize) * this.props.columns + this.props.columns * 2;
+        const indexFirst = Math.floor(scrollTop / itemSize) * columns;
+        const indexLast  = Math.floor(scrollBottom / itemSize) * columns + columns * 2;
 
-        this.setState({ cellSize: itemSize, indexFirst: indexFirst, indexLast: indexLast, height: itemsHeight });
+        const state = this.state;
+
+        if (state.cellSize !== itemSize ||
+            state.indexFirst !== indexFirst ||
+            state.indexLast !== indexLast ||
+            state.height !== itemsHeight) {
+            this.setState({ cellSize: itemSize, indexFirst: indexFirst, indexLast: indexLast, height: itemsHeight });
+        }
     }
 
     private renderItems(): JSX.Element[] {

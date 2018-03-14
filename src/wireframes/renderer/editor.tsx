@@ -161,7 +161,7 @@ class Editor extends React.Component<EditorProps> {
             if (!ref) {
                 const renderer = this.props.rendererService.registeredRenderers[shape.renderer];
 
-                ref = new ShapeRef(renderer, shape, true);
+                ref = new ShapeRef(renderer, shape, false);
             } else {
                 if (!ref.invalidate(shape)) {
                     ref.add(this.diagramLayer);
