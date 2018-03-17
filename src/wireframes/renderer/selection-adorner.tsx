@@ -58,6 +58,7 @@ export class SelectionAdorner extends React.Component<SelectionAdornerProps> imp
         this.adornerLayer.sendToBack();
 
         this.props.interactionService.addHandler(this);
+        this.props.interactionService.addAdornerLayer(this.adornerLayer);
     }
 
     public componentWillUnmount() {

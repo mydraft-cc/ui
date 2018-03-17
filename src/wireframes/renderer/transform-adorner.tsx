@@ -15,7 +15,7 @@ import {
     Transform
 } from '@app/wireframes/model';
 
-import { Overlays } from './overlays';
+import { InteractionOverlays } from './interaction-overlays';
 
 import {
     InteractionHandler,
@@ -39,11 +39,11 @@ export interface TransformAdornerProps {
     // The selected items.
     selectedItems: DiagramItem[];
 
-    // A function to transform a set of items.
-    transformItems: (diagram: Diagram, items: DiagramItem[], oldBounds: Transform, newBounds: Transform) => void;
-
     // The interaction service.
     interactionService: InteractionService;
+
+    // A function to transform a set of items.
+    transformItems: (diagram: Diagram, items: DiagramItem[], oldBounds: Transform, newBounds: Transform) => void;
 }
 
 export class TransformAdorner extends React.Component<TransformAdornerProps> implements InteractionHandler {
@@ -53,7 +53,7 @@ export class TransformAdorner extends React.Component<TransformAdornerProps> imp
     private allShapes: paper.Item[] = [];
     private rotateShape: paper.Shape;
     private moveShape: paper.Shape;
-    private overlays: Overlays;
+    private overlays: InteractionOverlays;
     private canResizeX: boolean;
     private canResizeY: boolean;
     private lastSelection: any;
@@ -73,14 +73,14 @@ export class TransformAdorner extends React.Component<TransformAdornerProps> imp
         this.adornerLayer.activate();
 
         this.props.interactionService.addHandler(this);
-        this.props.interactionService.addCursorLayer(this.adornerLayer);
+        this.props.interactionService.addAdornerLayer(this.adornerLayer);
 
-        this.overlays = new Overlays(this.props.adornerScope, this.adornerLayer);
+        this.overlays = new InteractionOverlays(this.props.adornerScope, this.adornerLayer);
     }
 
     public componentWillUnmount() {
         this.props.interactionService.removeHandler(this);
-        this.props.interactionService.removeCursorLayer(this.adornerLayer);
+        this.props.interactionService.removeAdornerLayer(this.adornerLayer);
 
         this.adornerLayer.removeChildren();
         this.adornerLayer.remove();

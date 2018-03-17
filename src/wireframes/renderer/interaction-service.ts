@@ -3,7 +3,7 @@ import * as paper from 'paper';
 import { MathHelper } from '@app/core';
 
 export interface InteractionHandler {
-    onDoubleClick?(event: paper.ToolEvent, next: () => void): boolean;
+    onDoubleClick?(event: paper.ToolEvent, next: () => void): void;
 
     onClick?(event: paper.ToolEvent, next: () => void): boolean;
 
@@ -33,7 +33,7 @@ const NOOP = () => { /* NOOP */ };
 export class InteractionService {
     private interactionHandlers: InteractionHandler[] = [];
     private interactionTool: paper.Tool;
-    private cursorLayers: paper.Layer[] = [];
+    private adornerLayers: paper.Layer[] = [];
     private layer: paper.Layer;
 
     public init(scope: paper.PaperScope) {
@@ -55,16 +55,20 @@ export class InteractionService {
     }
 
     private initializeClickEvents() {
-        this.layer.onClick = e => this.onClick(e);
-        this.layer.onDoubleClick = e => this.onDoubleClick(e);
+        this.layer.onClick = this.onClick;
+        this.layer.onDoubleClick = this.onDoubleClick;
     }
 
-    public addCursorLayer(layer: paper.Layer) {
-        this.cursorLayers.push(layer);
+    public addAdornerLayer(layer: paper.Layer) {
+        this.adornerLayers.push(layer);
     }
 
-    public removeCursorLayer(layer: paper.Layer) {
-        this.cursorLayers.splice(this.cursorLayers.indexOf(layer), 1);
+    public removeAdornerLayer(layer: paper.Layer) {
+        this.adornerLayers.splice(this.adornerLayers.indexOf(layer), 1);
+    }
+
+    public showAdornerLayers(visible: boolean) {
+        this.adornerLayers.forEach(layer => layer.visible = visible);
     }
 
     public addHandler(handler: InteractionHandler) {
@@ -136,7 +140,7 @@ export class InteractionService {
     }
 
     private onMouseMove = (event: paper.ToolEvent) => {
-        for (let layer of this.cursorLayers) {
+        for (let layer of this.adornerLayers) {
             const hitResult = layer.hitTest(event.point, { guides: true, fill: true, tolerance: 2 });
             const hitItem = hitResult ? hitResult.item : null;
 

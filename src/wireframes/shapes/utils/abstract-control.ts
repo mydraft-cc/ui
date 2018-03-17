@@ -43,7 +43,7 @@ export abstract class AbstractControl implements Renderer {
         return true;
     }
 
-    public render(shape: DiagramShape, showAdorners: boolean): any {
+    public render(shape: DiagramShape, showDebugMarkers: boolean): any {
         const ctx = new AbstractContext(RENDERER, shape, new Rect2(Vec2.ZERO, shape.transform.size));
 
         if (RENDER_BACKGROUND) {
@@ -56,7 +56,7 @@ export abstract class AbstractControl implements Renderer {
 
         this.renderInternal(ctx);
 
-        if (showAdorners) {
+        if (showDebugMarkers) {
             const boxItem = ctx.renderer.createRoundedRectangle(ctx.bounds.inflate(1, 1), 1, 0);
 
             ctx.renderer.setStrokeColor(boxItem, 0xff0000);

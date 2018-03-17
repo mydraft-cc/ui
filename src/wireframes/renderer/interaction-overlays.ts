@@ -9,7 +9,7 @@ import {
     Transform
 } from '@app/wireframes/model';
 
-export class Overlays {
+export class InteractionOverlays {
     private textItem: paper.PointText;
     private rectItem: paper.Shape;
     private lineX: paper.Shape;

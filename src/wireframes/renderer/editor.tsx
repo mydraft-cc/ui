@@ -24,7 +24,7 @@ import {
     UndoableState
 } from '@app/wireframes/model';
 
-import { PaperCanvas } from './paper-canvas';
+import { CanvasView } from './canvas-view';
 
 import { InteractionService }   from './interaction-service';
 import { SelectionAdorner }     from './selection-adorner';
@@ -78,8 +78,8 @@ const mapDispatchToProps = (dispatch: Dispatch<any>) => bindActionCreators({
 
 class Editor extends React.Component<EditorProps> {
     private adornerScope: paper.PaperScope;
-    private diagramScope: paper.PaperScope;
-    private diagramLayer: paper.Layer;
+    private renderScope: paper.PaperScope;
+    private renderLayer: paper.Layer;
     private interactionService: InteractionService = new InteractionService();
     private shapeRefsById: { [id: string]: ShapeRef } = {};
     private shapeRefsByRenderElement: { [id: number]: ShapeRef } = {};
@@ -95,9 +95,9 @@ class Editor extends React.Component<EditorProps> {
     }
 
     public initDiagramScope(scope: paper.PaperScope) {
-        this.diagramScope = scope;
-        this.diagramScope.activate();
-        this.diagramLayer = this.diagramScope.project.activeLayer;
+        this.renderScope = scope;
+        this.renderScope.activate();
+        this.renderLayer = this.renderScope.project.activeLayer;
 
         this.interactionService.init(scope);
 
@@ -107,16 +107,49 @@ class Editor extends React.Component<EditorProps> {
     }
 
     private renderDiagram() {
-        if (!this.diagramLayer) {
+        if (!this.renderLayer) {
             return;
         }
 
-        this.diagramScope.activate();
-        this.diagramLayer.activate();
-        this.diagramLayer.removeChildren();
+        this.renderScope.activate();
+        this.renderLayer.activate();
+        this.renderLayer.removeChildren();
 
         const allShapesById: { [id: string]: boolean } = {};
+        const allShapes = this.getFlattenShapes();
 
+        allShapes.forEach(item => allShapesById[item.id] = true);
+
+        for (let id in this.shapeRefsById) {
+            if (this.shapeRefsById.hasOwnProperty(id)) {
+                const ref = this.shapeRefsById[id];
+
+                if (!allShapesById[id]) {
+                    delete this.shapeRefsById[id];
+                    delete this.shapeRefsByRenderElement[ref.renderedElement.id];
+                }
+            }
+        }
+
+        for (let shape of allShapes) {
+            let ref = this.shapeRefsById[shape.id];
+
+            if (!ref) {
+                const renderer = this.props.rendererService.registeredRenderers[shape.renderer];
+
+                ref = new ShapeRef(renderer, shape, false);
+            } else {
+                if (!ref.invalidate(shape)) {
+                    ref.addTo(this.renderLayer);
+                }
+            }
+
+            this.shapeRefsByRenderElement[ref.renderedElement.id] = ref;
+            this.shapeRefsById[shape.id] = ref;
+        }
+    }
+
+    private getFlattenShapes() {
         const flattenShapes: DiagramShape[] = [];
 
         const diagram = this.props.selectedDiagram;
@@ -141,37 +174,9 @@ class Editor extends React.Component<EditorProps> {
             };
 
             handleContainer(diagram.rootIds);
-
-            flattenShapes.forEach(item => allShapesById[item.id] = true);
         }
 
-        for (let id in this.shapeRefsById) {
-            if (this.shapeRefsById.hasOwnProperty(id)) {
-                const ref = this.shapeRefsById[id];
-
-                if (!allShapesById[id]) {
-                    delete this.shapeRefsById[id];
-                    delete this.shapeRefsByRenderElement[ref.renderedElement.id];
-                }
-            }
-        }
-
-        for (let shape of flattenShapes) {
-            let ref = this.shapeRefsById[shape.id];
-
-            if (!ref) {
-                const renderer = this.props.rendererService.registeredRenderers[shape.renderer];
-
-                ref = new ShapeRef(renderer, shape, false);
-            } else {
-                if (!ref.invalidate(shape)) {
-                    ref.add(this.diagramLayer);
-                }
-            }
-
-            this.shapeRefsByRenderElement[ref.renderedElement.id] = ref;
-            this.shapeRefsById[shape.id] = ref;
-        }
+        return flattenShapes;
     }
 
     private provideItemByElement = (item: paper.Item): DiagramItem | null => {
@@ -188,12 +193,12 @@ class Editor extends React.Component<EditorProps> {
         return (
             <div className='editor' style={{ width: size(this.props.zoomedWidth), height: size(this.props.zoomedHeight) }}>
                 <div>
-                    <PaperCanvas onInit={(layer) => this.initDiagramScope(layer)}
+                    <CanvasView onInit={(layer) => this.initDiagramScope(layer)}
                         zoom={this.props.zoom}
                         zoomedWidth={this.props.zoomedWidth}
                         zoomedHeight={this.props.zoomedHeight} />
 
-                    <PaperCanvas onInit={(layer) => this.initAdornerScope(layer)} className='editor-adorners'
+                    <CanvasView onInit={(layer) => this.initAdornerScope(layer)} className='editor-adorners'
                         zoom={this.props.zoom}
                         zoomedWidth={this.props.zoomedWidth}
                         zoomedHeight={this.props.zoomedHeight} />
@@ -238,7 +243,7 @@ class ShapeRef {
     constructor(
         public renderer: Renderer,
         public shape: DiagramShape,
-        public renderAdorners: boolean
+        public showDebugMarkers: boolean
     ) {
         this.render();
     }
@@ -255,12 +260,12 @@ class ShapeRef {
         return mustRender;
     }
 
-    public add(layer: paper.Layer) {
+    public addTo(layer: paper.Layer) {
         layer.addChild(this.renderedElement);
     }
 
     public render() {
-        this.renderedElement = this.renderer.render(this.shape, this.renderAdorners);
+        this.renderedElement = this.renderer.render(this.shape, this.showDebugMarkers);
     }
 }
 

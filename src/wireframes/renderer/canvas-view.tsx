@@ -1,7 +1,7 @@
 import * as React from 'react';
 import * as paper from 'paper';
 
-export interface PaperCanvasProps {
+export interface CanvasViewProps {
     // The width of the canvas.
     zoomedWidth: number;
 
@@ -18,7 +18,7 @@ export interface PaperCanvasProps {
     onInit: (scope: paper.PaperScope) => any;
 }
 
-export class PaperCanvas extends React.Component<PaperCanvasProps> {
+export class CanvasView extends React.Component<CanvasViewProps> {
     private canvasElement: any;
     private scope: paper.PaperScope;
 
@@ -35,7 +35,7 @@ export class PaperCanvas extends React.Component<PaperCanvasProps> {
         }
     }
 
-    public componentWillReceiveProps(nextProps: PaperCanvasProps) {
+    public componentWillReceiveProps(nextProps: CanvasViewProps) {
         this.updateViewSettings(nextProps);
     }
 
@@ -43,7 +43,7 @@ export class PaperCanvas extends React.Component<PaperCanvasProps> {
         return false;
     }
 
-    private updateViewSettings(props: PaperCanvasProps) {
+    private updateViewSettings(props: CanvasViewProps) {
         if (this.scope) {
             this.scope.view.viewSize = new paper.Size(props.zoomedWidth, props.zoomedHeight);
 

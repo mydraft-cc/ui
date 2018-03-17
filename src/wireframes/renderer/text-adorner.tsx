@@ -29,14 +29,14 @@ export interface TextAdornerProps {
     // The selected items.
     selectedItems: DiagramItem[];
 
+    // The interaction service.
+    interactionService: InteractionService;
+
     // A function to change the appearance of a visual.
     changeItemsAppearance: (diagram: Diagram, visuals: DiagramVisual[], key: string, val: any) => void;
 
     // A function to retrieve a render element by diagram item.
     provideItemByElement: (item: paper.Item) => DiagramItem | null;
-
-    // The interaction service.
-    interactionService: InteractionService;
 }
 
 export class TextAdorner extends React.Component<TextAdornerProps> implements InteractionHandler {
@@ -57,8 +57,7 @@ export class TextAdorner extends React.Component<TextAdornerProps> implements In
 
     public componentWillReceiveProps(nextProps: TextAdornerProps) {
         if (this.props.selectedItems !== nextProps.selectedItems) {
-            this.change();
-            this.hide();
+            this.updateText();
         }
     }
 
@@ -68,13 +67,13 @@ export class TextAdorner extends React.Component<TextAdornerProps> implements In
         }
     }
 
-    public onDoubleClick(event: paper.ToolEvent): boolean {
+    public onDoubleClick(event: paper.ToolEvent) {
         if (event.item && this.textareaElement) {
             const selectedItem = this.props.provideItemByElement(event.item);
 
             if (selectedItem && selectedItem instanceof DiagramShape) {
                 if (selectedItem.appearance.get(DiagramShape.APPEARANCE_TEXT_DISABLED) === true) {
-                    return false;
+                    return;
                 }
 
                 const zoom = this.props.zoom;
@@ -83,6 +82,7 @@ export class TextAdorner extends React.Component<TextAdornerProps> implements In
 
                 const x = zoom * (transform.position.x - 0.5 * transform.size.x) + 'px';
                 const y = zoom * (transform.position.y - 0.5 * transform.size.y) + 'px';
+
                 const w = zoom * (Math.max(transform.size.x, MIN_WIDTH) + 1) + 'px';
                 const h = zoom * (Math.max(transform.size.y, MIN_HEIGHT) + 1) + 'px';
 
@@ -91,15 +91,16 @@ export class TextAdorner extends React.Component<TextAdornerProps> implements In
                 this.textareaElement.style.left = x;
                 this.textareaElement.style.width = w;
                 this.textareaElement.style.height = h;
+                this.textareaElement.style.resize = 'none';
                 this.textareaElement.style.display = 'block';
                 this.textareaElement.style.position = 'absolute';
                 this.textareaElement.focus();
 
                 this.selectedShape = selectedItem;
+
+                this.props.interactionService.showAdornerLayers(false);
             }
         }
-
-        return false;
     }
 
     private onTextareaBlur = () => {
@@ -107,9 +108,13 @@ export class TextAdorner extends React.Component<TextAdornerProps> implements In
     }
 
     private onTextareaKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
-        if ((event.keyCode === KEY_ENTER && !this.props.interactionService.isShiftKeyPressed()) || event.keyCode === KEY_ESCAPE) {
+        if ((event.keyCode === KEY_ENTER && !this.props.interactionService.isShiftKeyPressed()) ||
+            (event.keyCode === KEY_ESCAPE)) {
+
             if (event.keyCode === KEY_ENTER) {
-                this.change();
+                this.updateText();
+            } else {
+                this.hide();
             }
 
             this.hide();
@@ -119,7 +124,7 @@ export class TextAdorner extends React.Component<TextAdornerProps> implements In
         }
     }
 
-    private change() {
+    private updateText() {
         if (!this.selectedShape) {
             return;
         }
@@ -130,18 +135,23 @@ export class TextAdorner extends React.Component<TextAdornerProps> implements In
         if (newText !== oldText) {
             this.props.changeItemsAppearance(this.props.selectedDiagram, [this.selectedShape], DiagramShape.APPEARANCE_TEXT, newText);
         }
+
+        this.hide();
     }
 
     private hide() {
         this.selectedShape = null;
 
+        this.textareaElement.style.width = '0';
         this.textareaElement.style.display = 'none';
+
+        this.props.interactionService.showAdornerLayers(true);
     }
 
     public render() {
         return (
             <div style={{position: 'relative'}}>
-                <textarea style={{ display: 'none '}} ref={(element) => { this.textareaElement = element!; }} onBlur={this.onTextareaBlur} onKeyDown={this.onTextareaKeyDown} />
+                <textarea className='ant-input' style={{ display: 'none '}} ref={(element) => { this.textareaElement = element!; }} onBlur={this.onTextareaBlur} onKeyDown={this.onTextareaKeyDown} />
             </div>
         );
     }

@@ -7,5 +7,5 @@ export interface Renderer {
 
     createDefaultShape(id: string): DiagramShape;
 
-    render(shape: DiagramShape, showAdorners: boolean): any;
+    render(shape: DiagramShape, showDebugMarkers: boolean): any;
 }
