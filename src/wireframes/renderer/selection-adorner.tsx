@@ -46,9 +46,8 @@ export class SelectionAdorner extends React.Component<SelectionAdornerProps> imp
     private adornerScope: paper.PaperScope;
     private shapesAdorners: paper.Shape[] = [];
     private selectionShape: paper.Shape | null = null;
-    private startPosition: Vec2 | null;
-    private startTimestamp: Date | null;
-    private dragging = false;
+    private dragStart: Vec2 | null;
+    private drag = false;
 
     public componentDidMount() {
         this.adornerScope = this.props.adornerScope;
@@ -74,18 +73,22 @@ export class SelectionAdorner extends React.Component<SelectionAdornerProps> imp
         this.markItems();
     }
 
-    public onMouseDown(event: paper.ToolEvent): boolean {
-        this.startPosition = PaperHelper.point2Vec(event.point);
-        this.startTimestamp = new Date();
+    public onMouseDown(event: paper.ToolEvent, next: () => void) {
+        if (!this.props.interactionService.isShiftKeyPressed()) {
+            const selection = this.selectSingle(event, this.props.selectedDiagram);
 
-        this.dragging = !event.item;
+            this.props.selectItems(this.props.selectedDiagram, selection);
+        }
 
-        return false;
+        if (!event.item) {
+            this.drag = true;
+            this.dragStart = PaperHelper.point2Vec(event.point);
+        }
     }
 
-    public onMouseDrag(event: paper.ToolEvent): boolean {
-        if (!this.dragging) {
-            return false;
+    public onMouseDrag(event: paper.ToolEvent, next: () => void) {
+        if (!this.drag) {
+            return next();
         }
 
         const eventPoint = PaperHelper.point2Vec(event.point);
@@ -99,51 +102,35 @@ export class SelectionAdorner extends React.Component<SelectionAdornerProps> imp
         if (selectionShape.visible) {
             this.transformShape(selectionShape, selectedArea.position, selectedArea.size, 0);
         }
-
-        return false;
     }
 
-    public onMouseUp(event: paper.ToolEvent): boolean {
+    public onMouseUp(event: paper.ToolEvent, next: () =>  void) {
+        if (!this.drag) {
+            return next();
+        }
+
         try {
             const selectionShape = this.getOrCreateRectangle();
 
             selectionShape.visible = false;
 
-            const isValidSingleClick =
-                this.isValidClickLength(event) &&
-                this.isValidClickTimestamp();
+            if (this.hasMoved(event)) {
+                const selection = this.selectMultiple(event, this.props.selectedDiagram);
 
-            let selection: string[] | null = null;
-
-            if (isValidSingleClick) {
-                selection = this.selectSingle(event, this.props.selectedDiagram);
-            } else if (this.dragging) {
-                selection = this.selectMultiple(event, this.props.selectedDiagram);
-            }
-
-            if (selection !== null) {
-                this.props.selectItems(this.props.selectedDiagram, selection!);
+                if (selection !== null) {
+                    this.props.selectItems(this.props.selectedDiagram, selection!);
+                }
             }
         } finally {
-            this.startPosition = null;
-            this.startTimestamp = null;
-
-            this.dragging = false;
+            this.drag = false;
+            this.dragStart = null;
         }
-
-        return true;
     }
 
-    private isValidClickTimestamp(): boolean {
-        const timestamp = new Date();
-
-        return !this.startTimestamp || (timestamp.getTime() - this.startTimestamp.getTime()) < 800;
-    }
-
-    private isValidClickLength(e: paper.ToolEvent): boolean {
+    private hasMoved(e: paper.ToolEvent): boolean {
         const position = PaperHelper.point2Vec(e.point);
 
-        return !this.startPosition || position.sub(this.startPosition).lengtSquared < 10;
+        return !this.dragStart || position.sub(this.dragStart).lengtSquared > 10;
     }
 
     private selectMultiple(event: paper.ToolEvent, diagram: Diagram): string[] {

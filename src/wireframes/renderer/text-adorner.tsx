@@ -16,6 +16,9 @@ import {
 const MIN_WIDTH = 150;
 const MIN_HEIGHT = 30;
 
+const KEY_ENTER = 13;
+const KEY_ESCAPE = 27;
+
 export interface TextAdornerProps {
     // The current zoom value.
     zoom: number;
@@ -52,8 +55,11 @@ export class TextAdorner extends React.Component<TextAdornerProps> implements In
         window.removeEventListener('mousedown', this.handleMouseDown);
     }
 
-    public componentDidUpdate() {
-        this.change();
+    public componentWillReceiveProps(nextProps: TextAdornerProps) {
+        if (this.props.selectedItems !== nextProps.selectedItems) {
+            this.change();
+            this.hide();
+        }
     }
 
     private handleMouseDown = (e: MouseEvent) => {
@@ -96,15 +102,16 @@ export class TextAdorner extends React.Component<TextAdornerProps> implements In
         return false;
     }
 
-    public textareaKeyDown(event: React.KeyboardEvent<HTMLTextAreaElement>) {
-        const key = event.key.toLowerCase();
+    private onTextareaBlur = () => {
+        this.hide();
+    }
 
-        if (key === 'enter' && !paper.Key.isDown('shift')) {
-            this.change();
+    private onTextareaKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
+        if ((event.keyCode === KEY_ENTER && !this.props.interactionService.isShiftKeyPressed()) || event.keyCode === KEY_ESCAPE) {
+            if (event.keyCode === KEY_ENTER) {
+                this.change();
+            }
 
-            event.preventDefault();
-            event.stopPropagation();
-        } else if (key === 'escape') {
             this.hide();
 
             event.preventDefault();
@@ -113,9 +120,7 @@ export class TextAdorner extends React.Component<TextAdornerProps> implements In
     }
 
     private change() {
-        const diagram = this.props.selectedDiagram;
-
-        if (!this.selectedShape || (this.props.selectedItems.length === 1 && this.props.selectedItems[0] === this.selectedShape)) {
+        if (!this.selectedShape) {
             return;
         }
 
@@ -123,24 +128,20 @@ export class TextAdorner extends React.Component<TextAdornerProps> implements In
         const oldText = this.selectedShape.appearance.get(DiagramShape.APPEARANCE_TEXT);
 
         if (newText !== oldText) {
-            const selectedVisuals = [this.selectedShape];
-
-            this.props.changeItemsAppearance(diagram, selectedVisuals, DiagramShape.APPEARANCE_TEXT, newText);
+            this.props.changeItemsAppearance(this.props.selectedDiagram, [this.selectedShape], DiagramShape.APPEARANCE_TEXT, newText);
         }
-
-        this.selectedShape = null;
-
-        this.hide();
     }
 
     private hide() {
+        this.selectedShape = null;
+
         this.textareaElement.style.display = 'none';
     }
 
     public render() {
         return (
             <div style={{position: 'relative'}}>
-                <textarea style={{ display: 'none '}} ref={(element) => { this.textareaElement = element!; }} onKeyDown={event => this.textareaKeyDown(event)} />
+                <textarea style={{ display: 'none '}} ref={(element) => { this.textareaElement = element!; }} onBlur={this.onTextareaBlur} onKeyDown={this.onTextareaKeyDown} />
             </div>
         );
     }

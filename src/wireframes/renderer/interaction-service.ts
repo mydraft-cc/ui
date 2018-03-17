@@ -3,16 +3,19 @@ import * as paper from 'paper';
 import { MathHelper } from '@app/core';
 
 export interface InteractionHandler {
-    onDoubleClick?(event: paper.ToolEvent): boolean;
+    onDoubleClick?(event: paper.ToolEvent, next: () => void): boolean;
 
-    onClick?(event: paper.ToolEvent): boolean;
+    onClick?(event: paper.ToolEvent, next: () => void): boolean;
 
-    onMouseDown?(event: paper.ToolEvent): boolean;
-    onMouseDrag?(event: paper.ToolEvent): boolean;
-    onMouseUp?(event: paper.ToolEvent): boolean;
+    onMouseDown?(event: paper.ToolEvent, next: () => void): void;
 
-    onKeyDown?(event: paper.KeyEvent): boolean;
-    onKeyUp?(event: paper.KeyEvent): boolean;
+    onMouseDrag?(event: paper.ToolEvent, next: () => void): void;
+
+    onMouseUp?(event: paper.ToolEvent, next: () => void): void;
+
+    onKeyDown?(event: paper.KeyEvent, next: () => void): void;
+
+    onKeyUp?(event: paper.KeyEvent, next: () => void): void;
 }
 
 const ROTATION_CONFIG = [
@@ -24,6 +27,8 @@ const ROTATION_CONFIG = [
     { angle: 270, cursor: 'w-resize' },
     { angle: 315, cursor: 'nw-resize' }
 ];
+
+const NOOP = () => { /* NOOP */ };
 
 export class InteractionService {
     private interactionHandlers: InteractionHandler[] = [];
@@ -88,14 +93,19 @@ export class InteractionService {
 
     private invokeEvent(event: any, actionProvider: (handler: InteractionHandler) => Function) {
         if (this.interactionHandlers.length > 0) {
-            for (let handler of this.interactionHandlers) {
-                const action = actionProvider(handler);
+            let next = NOOP;
 
-                if (action && !action(event)) {
-                    event.event.stopPropagation();
-                    break;
+            for (let i = this.interactionHandlers.length - 1; i >= 0; i--) {
+                const action = actionProvider(this.interactionHandlers[i]);
+
+                if (action) {
+                    const currentNext = next;
+
+                    next = () => action(event, currentNext);
                 }
             }
+
+            next();
         }
     }
 

@@ -50,6 +50,7 @@ export class TransformAdorner extends React.Component<TransformAdornerProps> imp
     private currentTransform: Transform;
     private startTransform: Transform;
     private resizeShapes: paper.Item[] | null = null;
+    private allShapes: paper.Item[] = [];
     private rotateShape: paper.Shape;
     private moveShape: paper.Shape;
     private overlays: Overlays;
@@ -93,6 +94,9 @@ export class TransformAdorner extends React.Component<TransformAdornerProps> imp
         this.layoutMarkers();
 
         this.lastSelection = this.props.selectedDiagram.selectedItemIds;
+
+        this.manipulationMode = 0;
+        this.manipulated = false;
     }
 
     private layoutMarkers() {
@@ -110,6 +114,10 @@ export class TransformAdorner extends React.Component<TransformAdornerProps> imp
         } else {
             this.hideShapes();
         }
+    }
+
+    private hasSelection(): boolean {
+        return this.props.selectedItems.length > 0;
     }
 
     private calculateInitializeTransform() {
@@ -146,42 +154,38 @@ export class TransformAdorner extends React.Component<TransformAdornerProps> imp
         }
     }
 
-    public onMouseDown(event: paper.ToolEvent): boolean {
-        if (!this.hasSelection()) {
-            return true;
+    public onMouseDown(event: paper.ToolEvent, next: () => void) {
+        let hitItem = this.hit(event);
+
+        if (!hitItem) {
+            next();
         }
 
-        this.manipulated = true;
+        hitItem = this.hit(event);
 
-        const hitResult = this.adornerLayer.hitTest(event.point, { guides: true, fill: true, segments: true, tolerance: 2 });
-        const hitItem = hitResult ? hitResult.item : null;
-
-        if (hitItem && (hitItem === this.moveShape || hitItem === this.rotateShape || (this.resizeShapes && this.resizeShapes.indexOf(hitItem) >= 0))) {
-            this.manipulated = false;
-
-            if (hitItem === this.moveShape) {
-                this.manipulationMode = MODE_MOVE;
-            } else if (hitItem === this.rotateShape) {
-                this.manipulationMode = MODE_ROTATE;
-            } else {
-                this.resizeDragOffset = hitItem['offset'];
-
-                this.manipulationMode = MODE_RESIZE;
-            }
-
-            this.startTransform = this.currentTransform;
-
-            return false;
+        if (!hitItem) {
+            this.manipulationMode = 0;
+            return;
         }
 
-        this.manipulationMode = 0;
+        this.manipulated = false;
 
-        return true;
+        if (hitItem === this.moveShape) {
+            this.manipulationMode = MODE_MOVE;
+        } else if (hitItem === this.rotateShape) {
+            this.manipulationMode = MODE_ROTATE;
+        } else {
+            this.manipulationMode = MODE_RESIZE;
+
+            this.resizeDragOffset = hitItem['offset'];
+        }
+
+        this.startTransform = this.currentTransform;
     }
 
-    public onMouseDrag(event: paper.ToolEvent): boolean {
-        if (!this.hasSelection()) {
-            return true;
+    public onMouseDrag(event: paper.ToolEvent, next: () => void) {
+        if (this.manipulationMode === 0) {
+            next();
         }
 
         this.overlays.reset();
@@ -198,11 +202,7 @@ export class TransformAdorner extends React.Component<TransformAdornerProps> imp
             }
 
             this.layoutShapes();
-
-            return false;
         }
-
-        return true;
     }
 
     private move(event: paper.ToolEvent) {
@@ -288,9 +288,9 @@ export class TransformAdorner extends React.Component<TransformAdornerProps> imp
         return new Vec2(x, y);
     }
 
-    public onMouseUp(event: paper.ToolEvent): boolean {
-        if (!this.hasSelection()) {
-            return true;
+    public onMouseUp(event: paper.ToolEvent, next: () => void) {
+        if (this.manipulationMode === 0) {
+            return next();
         }
 
         try {
@@ -304,15 +304,11 @@ export class TransformAdorner extends React.Component<TransformAdornerProps> imp
                     this.props.selectedItems,
                     this.startTransform,
                     this.currentTransform);
-
-                return false;
             }
         } finally {
             this.manipulationMode = 0;
             this.manipulated = false;
         }
-
-        return true;
     }
 
     private layoutShapes() {
@@ -356,18 +352,22 @@ export class TransformAdorner extends React.Component<TransformAdornerProps> imp
         moveShape.matrix.reset();
         moveShape.size = new paper.Size(size.x + 1, size.y + 1);
         moveShape.position = anchor;
-        moveShape.rotate(rotation, anchor);
         moveShape.visible = true;
     }
 
     private hideShapes() {
-        this.rotateShape.visible = this.moveShape.visible = false;
+        this.allShapes.forEach(s => s.visible = false);
+    }
 
-        if (this.resizeShapes === null) {
-            return;
+    private hit(event: paper.ToolEvent) {
+        const hitResult = this.adornerLayer.hitTest(event.point, { guides: true, fill: true, segments: true, tolerance: 2 });
+        const hitItem = hitResult ? hitResult.item : null;
+
+        if (hitItem && (hitItem === this.moveShape || hitItem === this.rotateShape || (this.resizeShapes && this.resizeShapes.indexOf(hitItem) >= 0))) {
+            return hitItem;
         }
 
-        this.resizeShapes.forEach(s => s.visible = false);
+        return null;
     }
 
     private createMoveShape() {
@@ -384,6 +384,8 @@ export class TransformAdorner extends React.Component<TransformAdornerProps> imp
             this.props.interactionService.setCursor(moveShape, 'move');
 
             this.moveShape = moveShape;
+
+            this.allShapes.push(moveShape);
         }
     }
 
@@ -400,6 +402,8 @@ export class TransformAdorner extends React.Component<TransformAdornerProps> imp
             this.props.interactionService.setCursor(rotateShape, 'pointer');
 
             this.rotateShape = rotateShape;
+
+            this.allShapes.push(rotateShape);
         }
     }
 
@@ -427,12 +431,10 @@ export class TransformAdorner extends React.Component<TransformAdornerProps> imp
                 this.props.interactionService.setRotationCursor(resizeShape, as[i]);
 
                 this.resizeShapes.push(resizeShape);
+
+                this.allShapes.push(resizeShape);
             }
         }
-    }
-
-    private hasSelection(): boolean {
-        return this.props.selectedItems.length > 0;
     }
 
     public render() {
