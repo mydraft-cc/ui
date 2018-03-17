@@ -4,7 +4,7 @@ import { bindActionCreators, Dispatch } from 'redux';
 
 import './editor.scss';
 
-import { ImmutableList } from '@app/core';
+import { ImmutableList, sizeInPx } from '@app/core';
 
 import {
     changeItemsAppearance,
@@ -186,12 +186,8 @@ class Editor extends React.Component<EditorProps> {
     }
 
     public render() {
-        const size = (value: number) => {
-            return value + 'px';
-        };
-
         return (
-            <div className='editor' style={{ width: size(this.props.zoomedWidth), height: size(this.props.zoomedHeight) }}>
+            <div className='editor' style={{ width: sizeInPx(this.props.zoomedWidth), height: sizeInPx(this.props.zoomedHeight) }}>
                 <div>
                     <CanvasView onInit={(layer) => this.initDiagramScope(layer)}
                         zoom={this.props.zoom}

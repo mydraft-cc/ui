@@ -1,6 +1,8 @@
 import * as React from 'react';
 import Measurer from 'react-measure';
 
+import { sizeInPx } from '@app/core';
+
 interface GridProps {
     // The items to render.
     items: any[];
@@ -31,10 +33,6 @@ interface GridState {
     // The size of each cell.
     cellSize: number;
 }
-
-const size = (value: number) => {
-    return `${value}px`;
-};
 
 export class Grid extends React.PureComponent<GridProps, GridState> {
     private cache: { [key: string]:  JSX.Element } = {};
@@ -125,7 +123,7 @@ export class Grid extends React.PureComponent<GridProps, GridState> {
             const row = Math.floor(index / this.props.columns);
 
             element = (
-                <div key={index} style={{ position: 'absolute', height: size(dim), width: size(dim), top: size(row * dim), left: size(col * dim) }}>
+                <div key={index} style={{ position: 'absolute', height: sizeInPx(dim), width: sizeInPx(dim), top: sizeInPx(row * dim), left: sizeInPx(col * dim) }}>
                     {element}
                 </div>
             );
@@ -141,7 +139,7 @@ export class Grid extends React.PureComponent<GridProps, GridState> {
             <Measurer onResize={() => this.measure()}>
                 {({ measureRef }) =>
                     <div className={this.props.className} ref={element => { this.initialize(element!); measureRef(element); }}>
-                        <div style={{ height: size(this.state.height), position: 'relative' }}>
+                        <div style={{ height: sizeInPx(this.state.height), position: 'relative' }}>
                             {this.renderItems()}
                         </div>
                     </div>

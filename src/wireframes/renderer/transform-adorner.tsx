@@ -49,28 +49,33 @@ export interface TransformAdornerProps {
 export class TransformAdorner extends React.Component<TransformAdornerProps> implements InteractionHandler {
     private currentTransform: Transform;
     private startTransform: Transform;
-    private resizeShapes: paper.Item[] | null = null;
-    private allShapes: paper.Item[] = [];
-    private rotateShape: paper.Shape;
-    private moveShape: paper.Shape;
+    private allShapes: paper.Item[];
     private overlays: InteractionOverlays;
     private canResizeX: boolean;
     private canResizeY: boolean;
-    private lastSelection: any;
     private manipulated = false;
+    private manipulationMode = 0;
+    private moveShape: paper.Shape;
     private adornerLayer: paper.Layer;
     private adornerScope: paper.PaperScope;
     private rotation: Rotation;
+    private rotateShape: paper.Shape;
     private resizeDragOffset: Vec2;
-    private manipulationMode = 0;
+    private resizeShapes: paper.Item[] = [];
     private snapManager = new SnapManager();
 
-    public componentDidMount() {
+    public componentWillMount() {
         this.adornerScope = this.props.adornerScope;
         this.adornerScope.activate();
 
         this.adornerLayer = new paper.Layer();
         this.adornerLayer.activate();
+
+        this.createRotateShape();
+        this.createMoveShape();
+        this.createResizeShapes();
+
+        this.allShapes = [...this.resizeShapes, this.moveShape, this.rotateShape];
 
         this.props.interactionService.addHandler(this);
         this.props.interactionService.addAdornerLayer(this.adornerLayer);
@@ -86,27 +91,16 @@ export class TransformAdorner extends React.Component<TransformAdornerProps> imp
         this.adornerLayer.remove();
     }
 
-    public componentDidUpdate() {
-        if (this.lastSelection !== this.props.selectedDiagram.selectedItemIds) {
+    public componentWillReceiveProps(nextProps: TransformAdornerProps) {
+        if (this.props.selectedDiagram.selectedItemIds !== nextProps.selectedDiagram.selectedItemIds) {
             this.rotation = Rotation.ZERO;
         }
-
-        this.layoutMarkers();
-
-        this.lastSelection = this.props.selectedDiagram.selectedItemIds;
 
         this.manipulationMode = 0;
         this.manipulated = false;
     }
 
-    private layoutMarkers() {
-        this.adornerScope.activate();
-        this.adornerLayer.activate();
-
-        this.createRotateShape();
-        this.createMoveShape();
-        this.createResizeShapes();
-
+    public componentDidUpdate() {
         if (this.hasSelection()) {
             this.calculateInitializeTransform();
             this.calculateResizeRestrictions();
@@ -155,13 +149,13 @@ export class TransformAdorner extends React.Component<TransformAdornerProps> imp
     }
 
     public onMouseDown(event: paper.ToolEvent, next: () => void) {
-        let hitItem = this.hit(event);
+        let hitItem = this.hitTest(event);
 
         if (!hitItem) {
             next();
         }
 
-        hitItem = this.hit(event);
+        hitItem = this.hitTest(event);
 
         if (!hitItem) {
             this.manipulationMode = 0;
@@ -359,7 +353,7 @@ export class TransformAdorner extends React.Component<TransformAdornerProps> imp
         this.allShapes.forEach(s => s.visible = false);
     }
 
-    private hit(event: paper.ToolEvent) {
+    private hitTest(event: paper.ToolEvent) {
         const hitResult = this.adornerLayer.hitTest(event.point, { guides: true, fill: true, segments: true, tolerance: 2 });
         const hitItem = hitResult ? hitResult.item : null;
 
@@ -371,69 +365,55 @@ export class TransformAdorner extends React.Component<TransformAdornerProps> imp
     }
 
     private createMoveShape() {
-        if (!this.moveShape) {
-            const moveShape = paper.Shape.Rectangle(PaperHelper.ZERO_POINT, PaperHelper.ZERO_POINT);
+        const moveShape = paper.Shape.Rectangle(PaperHelper.ZERO_POINT, PaperHelper.ZERO_POINT);
 
-            moveShape.fillColor = new paper.Color(1, 1, 1, 0.00001);
-            moveShape.strokeColor = TRANSFORMER_STROKE_COLOR;
-            moveShape.strokeWidth = 1;
-            moveShape.strokeScaling = false;
-            moveShape.visible = false;
-            moveShape['guide'] = true;
+        moveShape.fillColor = new paper.Color(1, 1, 1, 0.00001);
+        moveShape.strokeColor = TRANSFORMER_STROKE_COLOR;
+        moveShape.strokeWidth = 1;
+        moveShape.strokeScaling = false;
+        moveShape.visible = false;
+        moveShape['guide'] = true;
 
-            this.props.interactionService.setCursor(moveShape, 'move');
+        this.props.interactionService.setCursor(moveShape, 'move');
 
-            this.moveShape = moveShape;
-
-            this.allShapes.push(moveShape);
-        }
+        this.moveShape = moveShape;
     }
 
     private createRotateShape() {
-        if (!this.rotateShape) {
-            const rotateShape = paper.Shape.Circle(PaperHelper.ZERO_POINT, 8);
+        const rotateShape = paper.Shape.Circle(PaperHelper.ZERO_POINT, 8);
 
-            rotateShape.fillColor = TRANSFORMER_FILL_COLOR;
-            rotateShape.strokeColor = TRANSFORMER_STROKE_COLOR;
-            rotateShape.strokeWidth = 1;
-            rotateShape.visible = false;
-            rotateShape['guide'] = true;
+        rotateShape.fillColor = TRANSFORMER_FILL_COLOR;
+        rotateShape.strokeColor = TRANSFORMER_STROKE_COLOR;
+        rotateShape.strokeWidth = 1;
+        rotateShape.visible = false;
+        rotateShape['guide'] = true;
 
-            this.props.interactionService.setCursor(rotateShape, 'pointer');
+        this.props.interactionService.setCursor(rotateShape, 'pointer');
 
-            this.rotateShape = rotateShape;
-
-            this.allShapes.push(rotateShape);
-        }
+        this.rotateShape = rotateShape;
     }
 
     private createResizeShapes() {
-        if (!this.resizeShapes) {
-            this.resizeShapes = [];
+        const ys = [-0.5, -0.5, -0.5, 0.0, 0.0, 0.5, 0.5, 0.5];
+        const xs = [-0.5, 0.0, 0.5, -0.5, 0.5, -0.5, 0.0, 0.5];
+        const as = [315, 0, 45, 270, 90, 215, 180, 135];
 
-            const ys = [-0.5, -0.5, -0.5, 0.0, 0.0, 0.5, 0.5, 0.5];
-            const xs = [-0.5, 0.0, 0.5, -0.5, 0.5, -0.5, 0.0, 0.5];
-            const as = [315, 0, 45, 270, 90, 215, 180, 135];
+        const size = new paper.Size(13, 13);
 
-            const size = new paper.Size(13, 13);
+        for (let i = 0; i < xs.length; i++) {
+            const resizeShape = paper.Shape.Rectangle(PaperHelper.ZERO_POINT, size);
 
-            for (let i = 0; i < xs.length; i++) {
-                const resizeShape = paper.Shape.Rectangle(PaperHelper.ZERO_POINT, size);
+            resizeShape.fillColor = TRANSFORMER_FILL_COLOR;
+            resizeShape.strokeColor = TRANSFORMER_STROKE_COLOR;
+            resizeShape.strokeWidth = 1;
+            resizeShape.strokeScaling = false;
+            resizeShape.visible = false;
+            resizeShape['guide'] = true;
+            resizeShape['offset'] = new Vec2(xs[i], ys[i]);
 
-                resizeShape.fillColor = TRANSFORMER_FILL_COLOR;
-                resizeShape.strokeColor = TRANSFORMER_STROKE_COLOR;
-                resizeShape.strokeWidth = 1;
-                resizeShape.strokeScaling = false;
-                resizeShape.visible = false;
-                resizeShape['guide'] = true;
-                resizeShape['offset'] = new Vec2(xs[i], ys[i]);
+            this.props.interactionService.setRotationCursor(resizeShape, as[i]);
 
-                this.props.interactionService.setRotationCursor(resizeShape, as[i]);
-
-                this.resizeShapes.push(resizeShape);
-
-                this.allShapes.push(resizeShape);
-            }
+            this.resizeShapes.push(resizeShape);
         }
     }
 

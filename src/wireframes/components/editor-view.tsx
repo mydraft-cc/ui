@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators, Dispatch } from 'redux';
 import { DropTarget, DropTargetSpec, DropTargetCollector } from 'react-dnd';
 
-import { MathHelper } from '@app/core';
+import { MathHelper, sizeInPx } from '@app/core';
 
 import {
     addIcon,
@@ -96,12 +96,8 @@ class EditorView extends React.Component<EditorViewProps> {
         const zoomedOuterWidth  = 2 * this.props.spacing + this.props.zoomedWidth;
         const zoomedOuterHeight = 2 * this.props.spacing + this.props.zoomedHeight;
 
-        const size = (value: number) => {
-            return value + 'px';
-        };
-
         return this.props.connectDropTarget(
-            <div className='editor-view' style={{ width: size(zoomedOuterWidth), height: size(zoomedOuterHeight), padding: size(this.props.spacing) }}>
+            <div className='editor-view' style={{ width: sizeInPx(zoomedOuterWidth), height: sizeInPx(zoomedOuterHeight), padding: sizeInPx(this.props.spacing) }}>
                 <EditorContainer rendererService={this.props.rendererService} />
             </div>
         );

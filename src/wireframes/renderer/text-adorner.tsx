@@ -1,6 +1,8 @@
 import * as React from 'react';
 import * as paper from 'paper';
 
+import { sizeInPx } from '@app/core';
+
 import {
     Diagram,
     DiagramVisual,
@@ -80,11 +82,11 @@ export class TextAdorner extends React.Component<TextAdornerProps> implements In
 
                 const transform = selectedItem.transform;
 
-                const x = zoom * (transform.position.x - 0.5 * transform.size.x) + 'px';
-                const y = zoom * (transform.position.y - 0.5 * transform.size.y) + 'px';
+                const x = sizeInPx(zoom * (transform.position.x - 0.5 * transform.size.x));
+                const y = sizeInPx(zoom * (transform.position.y - 0.5 * transform.size.y));
 
-                const w = zoom * (Math.max(transform.size.x, MIN_WIDTH) + 1) + 'px';
-                const h = zoom * (Math.max(transform.size.y, MIN_HEIGHT) + 1) + 'px';
+                const w = sizeInPx(zoom * (Math.max(transform.size.x, MIN_WIDTH) + 1));
+                const h = sizeInPx(zoom * (Math.max(transform.size.y, MIN_HEIGHT) + 1));
 
                 this.textareaElement.value = selectedItem.appearance.get(DiagramShape.APPEARANCE_TEXT) || '';
                 this.textareaElement.style.top = y;
