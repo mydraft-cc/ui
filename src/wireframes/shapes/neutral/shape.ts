@@ -4,7 +4,8 @@ import {
     SelectionConfigurable
 } from '@app/wireframes/model';
 
-import { AbstractContext, AbstractControl } from './utils/abstract-control';
+import { AbstractContext, AbstractControl } from '@app/wireframes/shapes/utils/abstract-control';
+import { CommonTheme } from './_theme';
 
 const SHAPE_KEY = 'SHAPE';
 const SHAPE_RECTANGLE = 'Rectangle';
@@ -19,9 +20,9 @@ DEFAULT_APPEARANCE[DiagramShape.APPEARANCE_FOREGROUND_COLOR] = 0;
 DEFAULT_APPEARANCE[DiagramShape.APPEARANCE_BACKGROUND_COLOR] = 0xFFFFFF;
 DEFAULT_APPEARANCE[DiagramShape.APPEARANCE_TEXT] = 'Shape';
 DEFAULT_APPEARANCE[DiagramShape.APPEARANCE_TEXT_ALIGNMENT] = 'center';
-DEFAULT_APPEARANCE[DiagramShape.APPEARANCE_FONT_SIZE] = AbstractControl.CONTROL_FONT_SIZE;
-DEFAULT_APPEARANCE[DiagramShape.APPEARANCE_STROKE_COLOR] = AbstractControl.CONTROL_BORDER_COLOR;
-DEFAULT_APPEARANCE[DiagramShape.APPEARANCE_STROKE_THICKNESS] = AbstractControl.CONTROL_BORDER_THICKNESS;
+DEFAULT_APPEARANCE[DiagramShape.APPEARANCE_FONT_SIZE] = CommonTheme.CONTROL_FONT_SIZE;
+DEFAULT_APPEARANCE[DiagramShape.APPEARANCE_STROKE_COLOR] = CommonTheme.CONTROL_BORDER_COLOR;
+DEFAULT_APPEARANCE[DiagramShape.APPEARANCE_STROKE_THICKNESS] = CommonTheme.CONTROL_BORDER_THICKNESS;
 DEFAULT_APPEARANCE[SHAPE_KEY] = SHAPE_RECTANGLE;
 
 const CONFIGURABLES: Configurable[] = [

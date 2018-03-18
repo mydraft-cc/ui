@@ -2,16 +2,17 @@ import { Rect2, Vec2 } from '@app/core';
 
 import { DiagramShape } from '@app/wireframes/model';
 
-import { AbstractContext, AbstractControl } from './utils/abstract-control';
+import { AbstractContext, AbstractControl } from '@app/wireframes/shapes/utils/abstract-control';
+import { CommonTheme } from './_theme';
 
 const DEFAULT_APPEARANCE = {};
-DEFAULT_APPEARANCE[DiagramShape.APPEARANCE_FOREGROUND_COLOR] = AbstractControl.CONTROL_TEXT_COLOR;
-DEFAULT_APPEARANCE[DiagramShape.APPEARANCE_BACKGROUND_COLOR] = AbstractControl.CONTROL_BACKGROUND_COLOR;
+DEFAULT_APPEARANCE[DiagramShape.APPEARANCE_FOREGROUND_COLOR] = CommonTheme.CONTROL_TEXT_COLOR;
+DEFAULT_APPEARANCE[DiagramShape.APPEARANCE_BACKGROUND_COLOR] = CommonTheme.CONTROL_BACKGROUND_COLOR;
 DEFAULT_APPEARANCE[DiagramShape.APPEARANCE_TEXT] = 'ComboBox';
 DEFAULT_APPEARANCE[DiagramShape.APPEARANCE_TEXT_ALIGNMENT] = 'left';
-DEFAULT_APPEARANCE[DiagramShape.APPEARANCE_FONT_SIZE] = AbstractControl.CONTROL_FONT_SIZE;
-DEFAULT_APPEARANCE[DiagramShape.APPEARANCE_STROKE_COLOR] = AbstractControl.CONTROL_BORDER_COLOR;
-DEFAULT_APPEARANCE[DiagramShape.APPEARANCE_STROKE_THICKNESS] = AbstractControl.CONTROL_BORDER_THICKNESS;
+DEFAULT_APPEARANCE[DiagramShape.APPEARANCE_FONT_SIZE] = CommonTheme.CONTROL_FONT_SIZE;
+DEFAULT_APPEARANCE[DiagramShape.APPEARANCE_STROKE_COLOR] = CommonTheme.CONTROL_BORDER_COLOR;
+DEFAULT_APPEARANCE[DiagramShape.APPEARANCE_STROKE_THICKNESS] = CommonTheme.CONTROL_BORDER_THICKNESS;
 
 export class ComboBox extends AbstractControl {
     public identifier(): string {
@@ -34,7 +35,7 @@ export class ComboBox extends AbstractControl {
     private createClickArea(ctx: AbstractContext, clickSize: number) {
         const clickAreaBounds =
             new Rect2(new Vec2(ctx.bounds.right - clickSize, 0), new Vec2(clickSize, ctx.bounds.height));
-        const clickAreaItem = ctx.renderer.createRoundedRectangleRight(clickAreaBounds, ctx.shape, AbstractControl.CONTROL_BORDER_RADIUS);
+        const clickAreaItem = ctx.renderer.createRoundedRectangleRight(clickAreaBounds, ctx.shape, CommonTheme.CONTROL_BORDER_RADIUS);
 
         ctx.renderer.setStrokeColor(clickAreaItem, ctx.shape);
         ctx.renderer.setBackgroundColor(clickAreaItem, ctx.shape);
@@ -58,7 +59,7 @@ export class ComboBox extends AbstractControl {
     private createInputArea(ctx: AbstractContext, clickSize: number) {
         const inputAreaBounds =
             new Rect2(Vec2.ZERO, new Vec2(ctx.bounds.width - clickSize + 1, ctx.bounds.height));
-        const inputAreaItem = ctx.renderer.createRoundedRectangleLeft(inputAreaBounds, ctx.shape, AbstractControl.CONTROL_BORDER_RADIUS);
+        const inputAreaItem = ctx.renderer.createRoundedRectangleLeft(inputAreaBounds, ctx.shape, CommonTheme.CONTROL_BORDER_RADIUS);
 
         ctx.renderer.setStrokeColor(inputAreaItem, ctx.shape);
         ctx.renderer.setBackgroundColor(inputAreaItem, 0xffffff);

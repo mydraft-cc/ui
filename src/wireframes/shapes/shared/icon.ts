@@ -1,9 +1,9 @@
 import { DiagramShape } from '@app/wireframes/model';
 
-import { AbstractContext, AbstractControl } from './utils/abstract-control';
+import { AbstractContext, AbstractControl } from '@app/wireframes/shapes/utils/abstract-control';
 
 const DEFAULT_APPEARANCE = {};
-DEFAULT_APPEARANCE[DiagramShape.APPEARANCE_FOREGROUND_COLOR] = AbstractControl.CONTROL_TEXT_COLOR;
+DEFAULT_APPEARANCE[DiagramShape.APPEARANCE_FOREGROUND_COLOR] = 0;
 DEFAULT_APPEARANCE[DiagramShape.APPEARANCE_TEXT_DISABLED] = true;
 
 export class Icon extends AbstractControl {

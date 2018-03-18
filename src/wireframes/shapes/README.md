@@ -1,3 +1,8 @@
+# How to create a shape?
+
+We use the radio button as an example for a custom shape, please read the comments carefully to understand the shape definition.
+
+```javascript
 import { Rect2, Vec2 } from '@app/core';
 
 import {
@@ -9,6 +14,7 @@ import {
 
 import { AbstractControl, AbstractContext } from './utils/abstract-control';
 
+// Define some constants. See later how we use them.
 const STATE_KEY = 'STATE';
 const STATE_NORMAL = 'Normal';
 const STATE_CHECKED = 'Checked';
@@ -18,6 +24,8 @@ const CIRCLE_POSITION_X = CIRCLE_MARGIN + CIRCLE_RADIUS;
 const CIRCLE_CHECK_RADIUS = CIRCLE_RADIUS - 4;
 const TEXT_POSITION_X = 2 * CIRCLE_MARGIN + 2 * CIRCLE_RADIUS;
 
+// Each shape has an appearance object, that defines how the shape is renderer.
+// We can use default values from the AbstractControl, so that all our shapes get the same border color.
 const DEFAULT_APPEARANCE = {};
 DEFAULT_APPEARANCE[DiagramShape.APPEARANCE_FOREGROUND_COLOR] = AbstractControl.CONTROL_TEXT_COLOR;
 DEFAULT_APPEARANCE[DiagramShape.APPEARANCE_BACKGROUND_COLOR] = AbstractControl.CONTROL_BACKGROUND_COLOR;
@@ -82,3 +90,4 @@ export class RadioButton extends AbstractControl {
         ctx.add(textItem);
     }
 }
+```

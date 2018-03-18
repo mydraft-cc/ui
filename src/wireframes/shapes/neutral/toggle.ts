@@ -6,7 +6,7 @@ import {
     SelectionConfigurable
 } from '@app/wireframes/model';
 
-import { AbstractContext, AbstractControl } from './utils/abstract-control';
+import { AbstractContext, AbstractControl } from '@app/wireframes/shapes/utils/abstract-control';
 
 const STATE_KEY = 'STATE';
 const STATE_NORMAL = 'Normal';

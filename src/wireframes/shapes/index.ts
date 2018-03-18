@@ -1,23 +1,24 @@
-import { Button }       from './button';
-import { ButtonBar }    from './button-bar';
-import { Checkbox }     from './checkbox';
-import { ComboBox }     from './combo-box';
-import { Comment }      from './comment';
-import { Dropdown }     from './dropdown';
-import { Icon }         from './icon';
-import { Image }        from './image';
-import { Label }        from './label';
-import { Link }         from './link';
-import { Numeric }      from './numeric';
-import { Paragraph }    from './paragraph';
-import { Progress }     from './progress';
-import { RadioButton }  from './radio-button';
-import { Raster }       from './raster';
-import { Shape }        from './shape';
-import { Slider }       from './slider';
-import { TextArea }     from './text-area';
-import { TextInput }    from './text-input';
-import { Toggle }       from './toggle';
+import { Button }       from './neutral/button';
+import { ButtonBar }    from './neutral/button-bar';
+import { Checkbox }     from './neutral/checkbox';
+import { ComboBox }     from './neutral/combo-box';
+import { Comment }      from './neutral/comment';
+import { Dropdown }     from './neutral/dropdown';
+import { Image }        from './neutral/image';
+import { Label }        from './neutral/label';
+import { Link }         from './neutral/link';
+import { Numeric }      from './neutral/numeric';
+import { Paragraph }    from './neutral/paragraph';
+import { Progress }     from './neutral/progress';
+import { RadioButton }  from './neutral/radio-button';
+import { Shape }        from './neutral/shape';
+import { Slider }       from './neutral/slider';
+import { TextArea }     from './neutral/text-area';
+import { TextInput }    from './neutral/text-input';
+import { Toggle }       from './neutral/toggle';
+
+import { Icon }         from './shared/icon';
+import { Raster }       from './shared/raster';
 
 import { RendererService } from '@app/wireframes/model/renderer.service';
 

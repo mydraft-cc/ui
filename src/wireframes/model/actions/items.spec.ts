@@ -18,9 +18,9 @@ import {
     Transform
 } from '@app/wireframes/model';
 
-import { Button }   from './../../shapes/button';
-import { Raster }   from './../../shapes/raster';
-import { Icon }     from './../../shapes/icon';
+import { Button }   from '@app/wireframes/shapes/neutral/button';
+import { Raster }   from '@app/wireframes/shapes/shared/raster';
+import { Icon }     from '@app/wireframes/shapes/shared/icon';
 
 describe('ItemsReducer', () => {
     const groupId = 'group1';

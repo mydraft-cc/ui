@@ -1,6 +1,6 @@
 import { MathHelper, Vec2 } from '@app/core';
 
-import { Checkbox } from './../shapes/checkbox';
+import { Checkbox } from '@app/wireframes/shapes/neutral/checkbox';
 
 import {
     Diagram,
