@@ -62,7 +62,6 @@ export class ButtonBar extends AbstractControl {
                 partItem = ctx.renderer.createRoundedRectangle(bounds, ctx.shape, 0);
             }
 
-
             if (part.selected) {
                 ctx.renderer.setBackgroundColor(partItem, accentColor);
                 ctx.renderer.setStrokeColor(partItem, accentColor);

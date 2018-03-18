@@ -1,4 +1,5 @@
 import {
+    Color,
     Rect2,
     Rotation,
     Vec2
@@ -8,50 +9,58 @@ import { DiagramShape } from '@app/wireframes/model';
 
 export interface TextConfig { text: string; fontSize?: number; alignment?: string; }
 
+export type RendererColor = string | number | Color | DiagramShape;
+export type RendererElement = any;
+export type RendererOpacity = number | DiagramShape;
+export type RendererPosition = Vec2 | DiagramShape;
+export type RendererRotation = Rotation | DiagramShape;
+export type RendererText = TextConfig | DiagramShape;
+export type RendererThickness = number | DiagramShape;
+
 export interface AbstractRenderer {
-    createRoundedRectangle(bounds: Rect2, strokeThickness: number | DiagramShape, cornerRadius: number): any;
+    createRoundedRectangle(bounds: Rect2, strokeThickness: RendererThickness, cornerRadius: number): RendererElement;
 
-    createRoundedRectangleLeft(bounds: Rect2, strokeThickness: number | DiagramShape, cornerRadius: number): any;
+    createRoundedRectangleLeft(bounds: Rect2, strokeThickness: RendererThickness, cornerRadius: number): RendererElement;
 
-    createRoundedRectangleRight(bounds: Rect2, strokeThickness: number | DiagramShape, cornerRadius: number): any;
+    createRoundedRectangleRight(bounds: Rect2, strokeThickness: RendererThickness, cornerRadius: number): RendererElement;
 
-    createEllipse(bounds: Rect2, strokeThickness: number | DiagramShape): any;
+    createEllipse(bounds: Rect2, strokeThickness: RendererThickness): RendererElement;
 
-    createCircle(center: Vec2, strokeThickness: number | DiagramShape, radius: number): any;
+    createCircle(center: Vec2, strokeThickness: RendererThickness, radius: number): RendererElement;
 
-    createStar(center: Vec2, count: number, radius1: number, radius2: number, strokeThickness: number | DiagramShape): any;
+    createStar(center: Vec2, count: number, radius1: number, radius2: number, strokeThickness: RendererThickness): RendererElement;
 
-    createPath(path: string, strokeThickness: number | DiagramShape): any;
+    createPath(path: string, strokeThickness: RendererThickness): RendererElement;
 
-    createBoundedPath(bounds: Rect2, path: string, strokeThickness: number | DiagramShape): any;
+    createBoundedPath(bounds: Rect2, path: string, strokeThickness: RendererThickness): RendererElement;
 
-    createSinglelineText(bounds: Rect2, config: TextConfig | DiagramShape): any;
+    createSinglelineText(bounds: Rect2, config: RendererText): RendererElement;
 
-    createMultilineText(bounds: Rect2, config: TextConfig | DiagramShape): any;
+    createMultilineText(bounds: Rect2, config: RendererText): RendererElement;
 
-    createRaster(bounds: Rect2, source: string): any;
+    createRaster(bounds: Rect2, source: string): RendererElement;
 
-    createClipGroup(clipItem: any, ...items: any[]): any;
+    createClipGroup(clipItem: RendererElement, ...items: RendererElement[]): RendererElement;
 
-    createGroup(...items: any[]): any;
+    createGroup(...items: RendererElement[]): RendererElement;
 
-    setForegroundColor(element: any, color: any): void;
+    setForegroundColor(element: RendererElement, color: RendererColor): void;
 
-    setBackgroundColor(element: any, color: any): void;
+    setBackgroundColor(element: RendererElement, color: RendererColor): void;
 
-    setStrokeColor(element: any, color: any): void;
+    setStrokeColor(element: RendererElement, color: RendererColor): void;
 
-    setStrokeStyle(element: any, cap: string, join: string): void;
+    setStrokeStyle(element: RendererElement, cap: string, join: string): void;
 
-    setFontFamily(element: any, fontFamily: string): void;
+    setFontFamily(element: RendererElement, fontFamily: string): void;
 
-    setOpacity(element: any, opacity: number | DiagramShape): void;
+    setOpacity(element: RendererElement, opacity: RendererOpacity): void;
 
-    setPosition(element: any, position: Vec2 | DiagramShape): void;
+    setPosition(element: RendererElement, position: RendererPosition): void;
 
-    setRotation(element: any, rotation: Rotation | DiagramShape): void;
+    setRotation(element: RendererElement, rotation: RendererRotation): void;
 
-    getBounds(element: any): Rect2;
+    getBounds(element: RendererElement): Rect2;
 
     getTextWidth(text: string, fontSize: number, fontFamily: string): number | undefined;
 }

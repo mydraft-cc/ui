@@ -11,10 +11,19 @@ import {
 
 import { DiagramShape } from '@app/wireframes/model';
 
-import { AbstractRenderer, TextConfig } from './abstract-renderer';
+import {
+    AbstractRenderer,
+    RendererColor,
+    RendererElement,
+    RendererOpacity,
+    RendererPosition,
+    RendererRotation,
+    RendererText,
+    RendererThickness
+} from './abstract-renderer';
 
 export class PaperRenderer implements AbstractRenderer {
-    public createRoundedRectangle(bounds: Rect2, strokeThickness: number | DiagramShape, radius: number): any {
+    public createRoundedRectangle(bounds: Rect2, strokeThickness: RendererThickness, radius: number): RendererElement {
         let w = this.getStrokeThickness(strokeThickness);
         let r = this.getBoundsWithStroke(bounds, w);
 
@@ -25,7 +34,7 @@ export class PaperRenderer implements AbstractRenderer {
         return shape;
     }
 
-    public createRoundedRectangleLeft(bounds: Rect2, strokeThickness: number | DiagramShape, radius: number): any {
+    public createRoundedRectangleLeft(bounds: Rect2, strokeThickness: RendererThickness, radius: number): RendererElement {
         let w = this.getStrokeThickness(strokeThickness);
         let r = this.getBoundsWithStroke(bounds, w);
 
@@ -36,7 +45,7 @@ export class PaperRenderer implements AbstractRenderer {
         return shape;
     }
 
-    public createRoundedRectangleRight(bounds: Rect2, strokeThickness: number | DiagramShape, radius: number): any {
+    public createRoundedRectangleRight(bounds: Rect2, strokeThickness: RendererThickness, radius: number): RendererElement {
         let w = this.getStrokeThickness(strokeThickness);
         let r = this.getBoundsWithStroke(bounds, w);
 
@@ -47,7 +56,7 @@ export class PaperRenderer implements AbstractRenderer {
         return shape;
     }
 
-    public createPath(path: string, strokeThickness: number | DiagramShape): any {
+    public createPath(path: string, strokeThickness: RendererThickness): RendererElement {
         let w = this.getStrokeThickness(strokeThickness);
 
         const shape = new paper.CompoundPath(path);
@@ -65,7 +74,7 @@ export class PaperRenderer implements AbstractRenderer {
         return shape;
     }
 
-    public createBoundedPath(bounds: Rect2, path: string, strokeThickness: number | DiagramShape): any {
+    public createBoundedPath(bounds: Rect2, path: string, strokeThickness: RendererThickness): RendererElement {
         let w = this.getStrokeThickness(strokeThickness);
 
         const shape = new paper.CompoundPath(path);
@@ -97,7 +106,7 @@ export class PaperRenderer implements AbstractRenderer {
         return shape;
     }
 
-    public createEllipse(bounds: Rect2, strokeThickness: number | DiagramShape): any {
+    public createEllipse(bounds: Rect2, strokeThickness: RendererThickness): RendererElement {
         let w = this.getStrokeThickness(strokeThickness);
 
         const shape = new paper.Path.Ellipse(PaperHelper.rect2Rectangle(bounds));
@@ -107,7 +116,7 @@ export class PaperRenderer implements AbstractRenderer {
         return shape;
     }
 
-    public createStar(center: Vec2, count: number, radius1: number, radius2: number, strokeThickness: number | DiagramShape): any {
+    public createStar(center: Vec2, count: number, radius1: number, radius2: number, strokeThickness: RendererThickness): RendererElement {
         let w = this.getStrokeThickness(strokeThickness);
 
         const shape = new paper.Path.Star(PaperHelper.vec2Point(center), count, radius1, radius2);
@@ -117,7 +126,7 @@ export class PaperRenderer implements AbstractRenderer {
         return shape;
     }
 
-    public createCircle(center: Vec2, strokeThickness: number | DiagramShape, radius: number): any {
+    public createCircle(center: Vec2, strokeThickness: RendererThickness, radius: number): RendererElement {
         let w = this.getStrokeThickness(strokeThickness);
 
         const shape = paper.Shape.Circle(PaperHelper.vec2Point(center), radius);
@@ -127,7 +136,7 @@ export class PaperRenderer implements AbstractRenderer {
         return shape;
     }
 
-    public createSinglelineText(bounds: Rect2, config: TextConfig | DiagramShape): any {
+    public createSinglelineText(bounds: Rect2, config: RendererText): RendererElement {
         const r = PaperHelper.rect2Rectangle(bounds);
 
         if (config instanceof DiagramShape) {
@@ -140,7 +149,7 @@ export class PaperRenderer implements AbstractRenderer {
         }
     }
 
-    public createMultilineText(bounds: Rect2, config: TextConfig | DiagramShape): any {
+    public createMultilineText(bounds: Rect2, config: RendererText): RendererElement {
         const r = PaperHelper.rect2Rectangle(bounds);
 
         if (config instanceof DiagramShape) {
@@ -153,7 +162,7 @@ export class PaperRenderer implements AbstractRenderer {
         }
     }
 
-    public createRaster(bounds: Rect2, source: string): any {
+    public createRaster(bounds: Rect2, source: string): RendererElement {
         const rasterItem = new paper.Raster(source || '', PaperHelper.vec2Point(bounds.center));
 
         rasterItem.width = bounds.width;
@@ -162,7 +171,7 @@ export class PaperRenderer implements AbstractRenderer {
         return rasterItem;
     }
 
-    public createClipGroup(clipItem: any, ...items: any[]): any {
+    public createClipGroup(clipItem: RendererElement, ...items: RendererElement[]): RendererElement {
         const group = new paper.Group([clipItem, ...items].map(t => t.groupItem ? t.groupItem : t));
 
         group.clipped = true;
@@ -170,7 +179,7 @@ export class PaperRenderer implements AbstractRenderer {
         return group;
     }
 
-    public createGroup(...items: any[]): any {
+    public createGroup(...items: RendererElement[]): RendererElement {
         const group = new paper.Group([...items].map(t => t.groupItem ? t.groupItem : t));
 
         group.clipped = false;
@@ -178,14 +187,14 @@ export class PaperRenderer implements AbstractRenderer {
         return group;
     }
 
-    public setStrokeStyle(element: any, cap: string, join: string): void {
+    public setStrokeStyle(element: RendererElement, cap: string, join: string): void {
         const e = this.getElement(element);
 
         e.strokeCap = cap;
         e.strokeJoin = join;
     }
 
-    public setForegroundColor(element: any, color: any): void {
+    public setForegroundColor(element: RendererElement, color: RendererColor): void {
         const c = this.getColor(color, DiagramShape.APPEARANCE_FOREGROUND_COLOR);
         const e = this.getElement(element);
 
@@ -194,7 +203,7 @@ export class PaperRenderer implements AbstractRenderer {
         }
     }
 
-    public setBackgroundColor(element: any, color: any): void {
+    public setBackgroundColor(element: RendererElement, color: RendererColor): void {
         const c = this.getColor(color, DiagramShape.APPEARANCE_BACKGROUND_COLOR);
         const e = this.getElement(element);
 
@@ -203,7 +212,7 @@ export class PaperRenderer implements AbstractRenderer {
         }
     }
 
-    public setStrokeColor(element: any, color: any): void {
+    public setStrokeColor(element: RendererElement, color: RendererColor): void {
         const c = this.getColor(color, DiagramShape.APPEARANCE_STROKE_COLOR);
         const e = this.getElement(element);
 
@@ -212,7 +221,7 @@ export class PaperRenderer implements AbstractRenderer {
         }
     }
 
-    public setPosition(element: any, position: Vec2 | DiagramShape) {
+    public setPosition(element: RendererElement, position: Vec2 | DiagramShape) {
         const p = this.getPosition(position);
         const e = this.getElement(element);
 
@@ -221,7 +230,7 @@ export class PaperRenderer implements AbstractRenderer {
         }
     }
 
-    public setRotation(element: any, rotation: Rotation | DiagramShape) {
+    public setRotation(element: RendererElement, rotation: Rotation | DiagramShape) {
         const r = this.getRotation(rotation);
         const e = this.getElement(element);
 
@@ -230,7 +239,7 @@ export class PaperRenderer implements AbstractRenderer {
         }
     }
 
-    public setOpacity(element: any, opacity: number | DiagramShape) {
+    public setOpacity(element: RendererElement, opacity: RendererOpacity) {
         const o = this.getOpacity(opacity);
         const e = this.getElement(element);
 
@@ -239,7 +248,7 @@ export class PaperRenderer implements AbstractRenderer {
         }
     }
 
-    public setFontFamily(element: any, fontFamily: string): void {
+    public setFontFamily(element: RendererElement, fontFamily: string): void {
         const e = this.getElement(element);
 
         if (fontFamily) {
@@ -253,13 +262,13 @@ export class PaperRenderer implements AbstractRenderer {
         return paper.project && paper.project.view ? paper.project.view['getTextWidth'](style, [text]) : undefined;
     }
 
-    public getBounds(element: any): Rect2 {
+    public getBounds(element: RendererElement): Rect2 {
         const e = this.getElement(element);
 
         return PaperHelper.rectangle2Rect(e.bounds);
     }
 
-    private getElement(element: any): paper.Item {
+    private getElement(element: RendererElement): paper.Item {
         if (element.textItem) {
             return element.textItem;
         } else {
@@ -267,7 +276,7 @@ export class PaperRenderer implements AbstractRenderer {
         }
     }
 
-    private getColor(color: any, key: string): paper.Color {
+    private getColor(color: RendererColor, key: string): paper.Color {
         if (color instanceof DiagramShape) {
             return PaperHelper.toColor(color.appearance.get(key));
         } else {
@@ -275,7 +284,7 @@ export class PaperRenderer implements AbstractRenderer {
         }
     }
 
-    private getPosition(position: Vec2 | DiagramShape): paper.Point {
+    private getPosition(position: RendererPosition): paper.Point {
         if (position instanceof DiagramShape) {
             return PaperHelper.vec2Point(position.transform.position);
         } else {
@@ -283,7 +292,7 @@ export class PaperRenderer implements AbstractRenderer {
         }
     }
 
-    private getRotation(rotation: Rotation | DiagramShape): number {
+    private getRotation(rotation: RendererRotation): number {
         if (rotation instanceof DiagramShape) {
             return rotation.transform.rotation.degree;
         } else {
@@ -291,7 +300,7 @@ export class PaperRenderer implements AbstractRenderer {
         }
     }
 
-    private getOpacity(opacity: any): number {
+    private getOpacity(opacity: RendererThickness): number {
         if (opacity instanceof DiagramShape) {
             return opacity.appearance.get(DiagramShape.APPEARANCE_OPACITY);
         } else {
@@ -299,7 +308,7 @@ export class PaperRenderer implements AbstractRenderer {
         }
     }
 
-    private getStrokeThickness(strokeThickness: number | DiagramShape): number {
+    private getStrokeThickness(strokeThickness: RendererThickness): number {
         if (strokeThickness instanceof DiagramShape) {
             return strokeThickness.appearance.get(DiagramShape.APPEARANCE_STROKE_THICKNESS) || 0;
         } else {

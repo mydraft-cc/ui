@@ -123,7 +123,7 @@ export module PaperHelper {
         return new Vec2(size.width, size.height);
     }
 
-    export function toColor(value: any): paper.Color {
+    export function toColor(value: string | number | Color): paper.Color {
         if (value === 'transparent') {
             return new paper.Color(1, 1, 1, 0.0001);
         } else {
