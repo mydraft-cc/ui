@@ -48,6 +48,8 @@ Copy the files from the `build` folder to your webserver.
 
 The issues that are easy to start with are marked. Write a comment to the issue if you want to know more.
 
+Read the [Readme about shapes](src/wireframes/shapes/README.md) to understand how to create new shapes.
+
 ## Why another open source tool? There is pencil
 
 There is a great open source tool: http://pencil.evolus.vn/
