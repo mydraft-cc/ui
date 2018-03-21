@@ -149,6 +149,10 @@ export class TransformAdorner extends React.Component<TransformAdornerProps> imp
     }
 
     public onMouseDown(event: paper.ToolEvent, next: () => void) {
+        if (this.props.interactionService.isControlKeyPressed()) {
+            return next();
+        }
+
         let hitItem = this.hitTest(event);
 
         if (!hitItem) {
