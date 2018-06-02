@@ -215,7 +215,11 @@ export class TransformAdorner extends React.Component<TransformAdornerProps> imp
         this.currentTransform = this.startTransform.moveBy(snapResult.delta);
 
         this.overlays.showSnapAdorners(snapResult);
-        this.overlays.showInfo(this.currentTransform, `X: ${Math.round(this.currentTransform.aabb.x)}, Y: ${Math.round(this.currentTransform.aabb.y)}`);
+
+        const x = Math.round(this.currentTransform.aabb.x);
+        const y = Math.round(this.currentTransform.aabb.y);
+
+        this.overlays.showInfo(this.currentTransform, `X: ${x}, Y: ${y}`);
     }
 
     private rotate(event: paper.ToolEvent) {
@@ -253,7 +257,10 @@ export class TransformAdorner extends React.Component<TransformAdornerProps> imp
 
         this.currentTransform = this.startTransform.resizeAndMoveBy(deltaSize, deltaPos);
 
-        this.overlays.showInfo(this.currentTransform, `Width: ${this.currentTransform.size.x}, Height: ${this.currentTransform.size.y}`);
+        const w = Math.round(this.currentTransform.size.x);
+        const h = Math.round(this.currentTransform.size.y);
+
+        this.overlays.showInfo(this.currentTransform, `Width: ${w}, Height: ${h}`);
     }
 
     private getResizeDeltaSize(angle: Rotation, cummulativeTranslation: Vec2) {
@@ -321,15 +328,19 @@ export class TransformAdorner extends React.Component<TransformAdornerProps> imp
 
         const anchor = new paper.Point(position);
 
+        for (let shape of this.allShapes) {
+            shape.matrix.reset();
+        }
+
         for (let resizeShape of this.resizeShapes) {
             const offset = resizeShape['offset'];
 
-            resizeShape.matrix.reset();
             resizeShape.position =
                 new paper.Point(
-                    Math.round(position.x + offset.x * (size.x + 4)),
-                    Math.round(position.y + offset.y * (size.y + 4)));
+                    position.x + offset.x * (size.x + 4),
+                    position.y + offset.y * (size.y + 4));
             resizeShape.rotate(rotation, anchor);
+
             resizeShape.visible =
                 (offset.x === 0 || this.canResizeX) &&
                 (offset.y === 0 || this.canResizeY);
@@ -337,21 +348,24 @@ export class TransformAdorner extends React.Component<TransformAdornerProps> imp
 
         const rotateShape = this.rotateShape;
 
-        rotateShape.matrix.reset();
         rotateShape.position =
             new paper.Point(
-                Math.round(position.x),
-                Math.round(position.y - size.y * 0.5 - 20));
+                position.x,
+                position.y - size.y * 0.5 - 20);
         rotateShape.rotate(rotation, anchor);
+
         rotateShape.visible = true;
 
         const moveShape = this.moveShape;
 
-        moveShape.matrix.reset();
-        moveShape.size = new paper.Size(size.x + 1, size.y + 1);
+        moveShape.size =
+        new paper.Size(
+            size.x + 1,
+            size.y + 1);
         moveShape.position = anchor;
-        moveShape.rotate(rotation, anchor);
         moveShape.visible = true;
+
+        moveShape.rotate(rotation, anchor);
     }
 
     private hideShapes() {
