@@ -37,12 +37,12 @@ Copy the files from the `build` folder to your webserver.
 ## What are the milestones?
 
 * **0.7**: First working editor.
-* **0.8**: Manage pages within a project with background pages. 
 * **0.9**: Simple server to save diagrams with random id.
 * **1.0**: Finalize the version and make small improvements and bugfixes.
-* **1.1**: Presentation mode.
-* **1.2**: Dark theme
-* **1.3**: Link UI elements to external sources or other pages.
+* **1.1**: Manage pages within a project with background pages.
+* **1.2**: Presentation mode.
+* **1.3**: Dark theme
+* **1.4**: Link UI elements to external sources or other pages.
 
 ## How can I contribute?
 
