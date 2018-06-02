@@ -1,19 +1,17 @@
-﻿      var webpack = require('webpack'),
-     webpackMerge = require('webpack-merge'),
-ExtractTextPlugin = require('extract-text-webpack-plugin'),
-     commonConfig = require('./webpack.config.js'),
-          helpers = require('./helpers');
+﻿const webpack = require('webpack'),
+ webpackMerge = require('webpack-merge'),
+         path = require('path'),
+      helpers = require('./helpers'),
+ commonConfig = require('./webpack.config.js');
 
-module.exports = webpackMerge(commonConfig, { 
+module.exports = webpackMerge(commonConfig, {
+    mode: 'development',
+
     /**
      * Source map for Karma from the help of karma-sourcemap-loader & karma-webpack
      *
      * Do not change, leave as is or it wont work.
      * See: https://webpack.js.org/configuration/devtool/
      */
-    devtool: 'inline-source-map',
-
-    plugins: [
-        new ExtractTextPlugin('[name].css')
-    ]
+    devtool: 'inline-source-map'
 });

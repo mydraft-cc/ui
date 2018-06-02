@@ -24,8 +24,8 @@ describe('DiagramItemSet', () => {
         const set = DiagramItemSet.createFromDiagram([groupId, 'unknown'], diagram) !;
 
         expect(set.allVisuals).toEqual([shape1, shape2]);
-        expect(set.allGroups).toEqual([diagram.items.last]);
-        expect(set.rootItems).toEqual([diagram.items.last]);
+        expect(set.allGroups).toEqual(<any>[diagram.items.last]);
+        expect(set.rootItems).toEqual(<any>[diagram.items.last]);
 
         expect(set.isValid).toBeTruthy();
         expect(set.canRemove(diagram)).toBeTruthy();

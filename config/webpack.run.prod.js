@@ -1,15 +1,18 @@
-﻿      var webpack = require('webpack'),
-     webpackMerge = require('webpack-merge'),
-ExtractTextPlugin = require('extract-text-webpack-plugin'),
-        runConfig = require('./webpack.run.base.js'),
-          helpers = require('./helpers');
+﻿const webpack = require('webpack'),
+ webpackMerge = require('webpack-merge'),
+         path = require('path'),
+      helpers = require('./helpers'),
+    runConfig = require('./webpack.run.base.js');
 
-var ENV = process.env.NODE_ENV = process.env.ENV = 'production';
+const plugins = {
+    // https://github.com/webpack-contrib/mini-css-extract-plugin
+    MiniCssExtractPlugin: require('mini-css-extract-plugin'),
+};
 
 helpers.removeLoaders(runConfig, ['scss']);
 
 module.exports = webpackMerge(runConfig, {
-    devtool: 'source-map',
+    mode: 'production',
 
     output: {
         /**
@@ -57,41 +60,14 @@ module.exports = webpackMerge(runConfig, {
                  * 
                  * See: https://github.com/webpack-contrib/extract-text-webpack-plugin
                  */
-                use: ExtractTextPlugin.extract({ 
-                    fallback: 'style-loader',
-                    use: [{
-                        loader: 'css-loader',
-                        options: {
-                            minimize: true
-                        }
-                    }, {
-                        loader: 'sass-loader',
-                        options: {
-                            includePaths: [helpers.root('src', 'style')]
-                        }
-                    }]
-                })
+                use: [
+                    plugins.MiniCssExtractPlugin.loader,
+                {
+                    loader: 'css-loader', options: { minimize: true }
+                }, {
+                    loader: 'sass-loader', options: { includePaths: [helpers.root('src', 'style')] }
+                }]
             }
         ]
-    },
-
-    plugins: [
-        new webpack.NoEmitOnErrorsPlugin(),
-        new webpack.DefinePlugin({ 
-            'process.env.ENV': JSON.stringify(ENV),
-            'process.env.NODE_ENV': JSON.stringify(ENV) 
-        }),
-        new webpack.optimize.ModuleConcatenationPlugin(),
-        
-        new webpack.optimize.UglifyJsPlugin({
-            beautify: false,
-            mangle: {
-                screw_ie8: true, keep_fnames: false
-            },
-            compress: {
-                screw_ie8: true, warnings: false
-            },
-            comments: false
-        })
-    ]
+    }
 });

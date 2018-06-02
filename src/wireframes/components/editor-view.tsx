@@ -70,7 +70,7 @@ const AssetTarget: DropTargetSpec<EditorViewProps> = {
     drop: (props, monitor, component) => {
         const clientOffset = monitor!.getSourceClientOffset();
 
-        const componentRect = findDOMNode(component!).getBoundingClientRect();
+        const componentRect = (findDOMNode(component!) as HTMLElement)!.getBoundingClientRect();
 
         const x = (clientOffset.x - props.spacing - componentRect.left) / props.zoom;
         const y = (clientOffset.y - props.spacing - componentRect.top) / props.zoom;
@@ -82,7 +82,6 @@ const AssetTarget: DropTargetSpec<EditorViewProps> = {
         } else if (item.shape) {
             props.addVisual(props.selectedDiagram!, item.shape, x, y, MathHelper.guid());
         }
-
     }
 };
 

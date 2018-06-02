@@ -1,12 +1,13 @@
-// ReSharper disable InconsistentNaming
-// ReSharper disable PossiblyUnassignedProperty
+const webpack = require('webpack'),
+         path = require('path'),
+      helpers = require('./helpers');
 
-        var webpack = require('webpack'),
-               path = require('path'),
-  HtmlWebpackPlugin = require('html-webpack-plugin'),
-  ExtractTextPlugin = require('extract-text-webpack-plugin'),
-TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin')
-            helpers = require('./helpers');
+const plugins = {
+    // https://github.com/webpack-contrib/mini-css-extract-plugin
+    MiniCssExtractPlugin: require('mini-css-extract-plugin'),
+    // https://github.com/dividab/tsconfig-paths-webpack-plugin
+    TsconfigPathsPlugin: require('tsconfig-paths-webpack-plugin')
+};
 
 module.exports = {
     /**
@@ -29,7 +30,7 @@ module.exports = {
         ],
 
         plugins: [
-            new TsconfigPathsPlugin()
+            new plugins.TsconfigPathsPlugin()
         ]
     },
 
@@ -79,12 +80,11 @@ module.exports = {
                 }]
             }, {
                 test: /\.css$/,
-                /*
-                 * Extract the content from a bundle to a file
-                 * 
-                 * See: https://github.com/webpack-contrib/extract-text-webpack-plugin
-                 */
-                use: ExtractTextPlugin.extract({ fallback: 'style-loader', use: 'css-loader?sourceMap' })
+                use: [
+                    plugins.MiniCssExtractPlugin.loader,
+                {
+                    loader: 'css-loader'
+                }]
             }, {
                 test: /\.scss$/,
                 use: [{
@@ -92,16 +92,20 @@ module.exports = {
                 }, {
                     loader: 'css-loader'
                 }, {
-                    loader: 'sass-loader?sourceMap',
-                    options: {
-                        includePaths: [helpers.root('src', 'style')]
-                    }
+                    loader: 'sass-loader?sourceMap', options: { includePaths: [helpers.root('src', 'style')] }
                 }]
             }
         ]
     },
 
     plugins: [
+        /*
+         * Puts each bundle into a file and appends the hash of the file to the path.
+         * 
+         * See: https://github.com/webpack-contrib/mini-css-extract-plugin
+         */
+        new plugins.MiniCssExtractPlugin('[name].css'),
+
         new webpack.LoaderOptionsPlugin({
             options: {
                 tslint: {

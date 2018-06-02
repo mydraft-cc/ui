@@ -1,9 +1,14 @@
-﻿      var webpack = require('webpack'),
-     webpackMerge = require('webpack-merge'),
-HtmlWebpackPlugin = require('html-webpack-plugin'),
-ExtractTextPlugin = require('extract-text-webpack-plugin'),
-     commonConfig = require('./webpack.config.js'),
-          helpers = require('./helpers');
+﻿const webpack = require('webpack'),
+ webpackMerge = require('webpack-merge'),
+         path = require('path'),
+      helpers = require('./helpers'),
+ commonConfig = require('./webpack.config.js');
+
+const plugins = {    
+    HtmlWebpackPlugin: require('html-webpack-plugin'),
+    // https://github.com/webpack-contrib/mini-css-extract-plugin
+    MiniCssExtractPlugin: require('mini-css-extract-plugin')
+};
 
 module.exports = webpackMerge(commonConfig, {
     /**
@@ -17,22 +22,6 @@ module.exports = webpackMerge(commonConfig, {
     },
 
     plugins: [
-        /*
-         * Puts each bundle into a file and appends the hash of the file to the path.
-         * 
-         * See: https://github.com/webpack/extract-text-webpack-plugin
-         */
-        new ExtractTextPlugin('[name].css'),
-
-        /**
-         * Shares common code between the pages.
-         *
-         * See: https://webpack.js.org/plugins/commons-chunk-plugin/
-         */
-        new webpack.optimize.CommonsChunkPlugin({
-            name: ['src']
-        }),
-
         /**
          * Simplifies creation of HTML files to serve your webpack bundles.
          * This is especially useful for webpack bundles that include a hash in the filename
@@ -40,7 +29,7 @@ module.exports = webpackMerge(commonConfig, {
          *
          * See: https://github.com/ampedandwired/html-webpack-plugin
          */
-        new HtmlWebpackPlugin({
+        new plugins.HtmlWebpackPlugin({
             template: 'public/index.html', hash: true
         })
     ]

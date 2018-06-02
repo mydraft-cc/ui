@@ -66,7 +66,7 @@ const reducer: Reducer<EditorState> = (state: EditorState, action: any) => {
     return state;
 };
 
-const store = createStore<any>(
+const store = createStore(
     combineReducers({
         assets: Reducers.assets(createInitialAssetsState(rendererService)),
         editor:
@@ -82,7 +82,7 @@ const store = createStore<any>(
     window['__REDUX_DEVTOOLS_EXTENSION__'] && window['__REDUX_DEVTOOLS_EXTENSION__']()
 );
 
-import { AppContainer } from './app';
+import { AppContainer } from './App';
 
 import './index.scss';
 
