@@ -12,6 +12,7 @@ import { Numeric }      from './neutral/numeric';
 import { Paragraph }    from './neutral/paragraph';
 import { Progress }     from './neutral/progress';
 import { RadioButton }  from './neutral/radio-button';
+import { Rectangle }    from './neutral/rectangle';
 import { Shape }        from './neutral/shape';
 import { Slider }       from './neutral/slider';
 import { TextArea }     from './neutral/text-area';
@@ -41,6 +42,7 @@ export function registerRenderers(): RendererService {
         .addRenderer(new Progress())
         .addRenderer(new RadioButton())
         .addRenderer(new Raster())
+        .addRenderer(new Rectangle())
         .addRenderer(new Shape())
         .addRenderer(new Slider())
         .addRenderer(new TextArea())
