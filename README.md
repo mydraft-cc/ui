@@ -38,7 +38,7 @@ Copy the files from the `build` folder to your webserver.
 
 * **0.7**: First working editor.
 * **0.8**: Manage pages within a project with background pages. 
-* **0.9**: Save and load files using electron API and add usability features like recent projects.
+* **0.9**: Simple server to save diagrams with random id.
 * **1.0**: Finalize the version and make small improvements and bugfixes.
 * **1.1**: Presentation mode.
 * **1.2**: Dark theme
