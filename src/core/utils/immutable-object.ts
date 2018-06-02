@@ -1,7 +1,7 @@
 ﻿export abstract class ImmutableObject {
     public abstract clone(): ImmutableObject;
 
-    protected afterClone() {
+    protected afterClone(prev?: any) {
         /* NOOP */
     }
 
@@ -10,7 +10,7 @@
 
         updater(cloned);
 
-        cloned.afterClone();
+        cloned.afterClone(this);
 
         return cloned;
     }

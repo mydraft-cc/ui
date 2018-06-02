@@ -127,6 +127,23 @@ export class Transform {
         return new Transform(newCenter.add(newBounds.position), newSize, newRotation);
     }
 
+    public resizeTopLeft(newSize: Vec2): Transform {
+        if (this.size.eq(newSize)) {
+            return this;
+        }
+
+        const ratioSize = newSize.sub(this.size);
+
+        const elementCos = Math.cos(this.rotation.radian);
+        const elementSin = Math.sin(this.rotation.radian);
+
+        const centerOffset = new Vec2(
+            Math.round(0.5 * ((ratioSize.x * elementCos) + (ratioSize.y * elementSin))),
+            Math.round(0.5 * ((ratioSize.x * elementSin) + (ratioSize.y * elementCos))));
+
+        return this.resizeTo(newSize).moveBy(centerOffset);
+    }
+
     public round(): Transform {
         const size = this.size.round();
 

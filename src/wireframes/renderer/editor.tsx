@@ -259,6 +259,8 @@ class ShapeRef {
     }
 
     public addTo(layer: paper.Layer) {
+        this.renderer.setContext(layer);
+
         layer.addChild(this.renderedElement);
     }
 

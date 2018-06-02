@@ -1,14 +1,14 @@
 import { Vec2 } from '@app/core';
 
 import {
-    ALIGN_H_LEFT,
     ALIGN_H_CENTER,
+    ALIGN_H_LEFT,
     ALIGN_H_RIGHT,
-    ALIGN_V_TOP,
-    ALIGN_V_CENTER,
     ALIGN_V_BOTTOM,
-    alignment,
+    ALIGN_V_CENTER,
+    ALIGN_V_TOP,
     alignItems,
+    alignment,
     Diagram,
     DiagramShape,
     DISTRIBUTE_H,

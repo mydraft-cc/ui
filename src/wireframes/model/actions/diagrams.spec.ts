@@ -2,8 +2,8 @@ import { MathHelper } from '@app/core';
 
 import {
     addDiagram,
-    diagrams,
     Diagram,
+    diagrams,
     EditorState,
     moveDiagram,
     removeDiagram,

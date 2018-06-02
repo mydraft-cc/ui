@@ -3,7 +3,7 @@ import { MathHelper, Vec2 } from '@app/core';
 import { DiagramShape } from '@app/wireframes/model';
 
 export interface Constraint {
-    updateSize(shape: DiagramShape, size: Vec2): Vec2;
+    updateSize(shape: DiagramShape, size: Vec2, prev?: DiagramShape): Vec2;
 
     calculateSizeX(): boolean;
 

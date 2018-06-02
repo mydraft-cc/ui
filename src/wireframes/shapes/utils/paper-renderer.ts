@@ -23,6 +23,12 @@ import {
 } from './abstract-renderer';
 
 export class PaperRenderer implements AbstractRenderer {
+    private view: paper.View;
+
+    public captureContext(layer: paper.Layer) {
+        this.view = layer.view;
+    }
+
     public createRoundedRectangle(bounds: Rect2, strokeThickness: RendererThickness, radius: number): RendererElement {
         let w = this.getStrokeThickness(strokeThickness);
         let r = this.getBoundsWithStroke(bounds, w);
@@ -259,7 +265,7 @@ export class PaperRenderer implements AbstractRenderer {
     public getTextWidth(text: string, fontSize: number, fontFamily: string): number | undefined {
         const style = `${fontSize}px ${fontFamily}`;
 
-        return paper.project && paper.project.view ? paper.project.view['getTextWidth'](style, [text]) : undefined;
+        return this.view ? this.view['getTextWidth'](style, [text]) : undefined;
     }
 
     public getBounds(element: RendererElement): Rect2 {

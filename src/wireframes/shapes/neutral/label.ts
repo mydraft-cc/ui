@@ -1,6 +1,6 @@
-import { DiagramShape, TextHeightConstraint } from '@app/wireframes/model';
+import { DiagramShape } from '@app/wireframes/model';
 
-import { AbstractContext, AbstractControl } from '@app/wireframes/shapes/utils/abstract-control';
+import { AbstractContext, AbstractControl, TextSizeConstraint } from '@app/wireframes/shapes/utils/abstract-control';
 import { CommonTheme } from './_theme';
 
 const DEFAULT_APPEARANCE = {};
@@ -8,7 +8,7 @@ DEFAULT_APPEARANCE[DiagramShape.APPEARANCE_FOREGROUND_COLOR] = CommonTheme.CONTR
 DEFAULT_APPEARANCE[DiagramShape.APPEARANCE_TEXT] = 'Label';
 DEFAULT_APPEARANCE[DiagramShape.APPEARANCE_FONT_SIZE] = CommonTheme.CONTROL_FONT_SIZE;
 
-const CONSTRAINT = new TextHeightConstraint(5);
+const CONSTRAINT = new TextSizeConstraint(5);
 
 export class Label extends AbstractControl {
     public identifier(): string {

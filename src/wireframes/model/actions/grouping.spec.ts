@@ -3,8 +3,8 @@ import {
     DiagramGroup,
     DiagramShape,
     EditorState,
-    groupItems,
     grouping,
+    groupItems,
     ungroupItems
 } from '@app/wireframes/model';
 

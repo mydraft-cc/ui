@@ -1,8 +1,8 @@
 import {
-    Diagram,
-    DiagramShape,
     BRING_FORWARDS,
     BRING_TO_FRONT,
+    Diagram,
+    DiagramShape,
     EditorState,
     ordering,
     orderItems,

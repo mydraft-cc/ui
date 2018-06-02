@@ -166,4 +166,36 @@ describe('Transform', () => {
 
         expect(actual).toEqual(expected);
     });
+
+    it('should return same instance when resizing to same size', () =>  {
+        const transform_0 = new Transform(Vec2.ZERO, new Vec2(100, 100), Rotation.ZERO);
+        const transform_1 = transform_0.resizeTopLeft(new Vec2(100, 100));
+
+        expect(transform_1).toBe(transform_0);
+    });
+
+    [{
+        rotation: 0, expectedPosition: new Vec2(150, 100)
+    }, {
+        rotation: 90, expectedPosition: new Vec2(100, 150)
+    }, {
+        rotation: 180, expectedPosition: new Vec2(50, 100)
+    }, {
+        rotation: 270, expectedPosition: new Vec2(100, 50)
+    }].forEach(x =>  {
+        it(`should resize top left with ${x.rotation} rotation`, () => {
+            const oldSize = new Vec2(100, 100);
+            const newSize = new Vec2(200, 100);
+
+            const oldPos = new Vec2(100, 100);
+            const newPos = x.expectedPosition;
+
+            const rotation = Rotation.createFromDegree(x.rotation);
+
+            const actual   = new Transform(oldPos, oldSize, rotation).resizeTopLeft(newSize);
+            const expected = new Transform(newPos, newSize, rotation);
+
+            expect(actual).toEqual(expected);
+        });
+    });
 });

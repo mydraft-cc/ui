@@ -36,6 +36,10 @@ export abstract class AbstractControl implements Renderer {
         return true;
     }
 
+    public setContext(context: any) {
+        RENDERER.captureContext(context);
+    }
+
     public render(shape: DiagramShape, showDebugMarkers: boolean): any {
         const ctx = new AbstractContext(RENDERER, shape, new Rect2(Vec2.ZERO, shape.transform.size));
 
@@ -72,22 +76,31 @@ export abstract class AbstractControl implements Renderer {
 export class TextSizeConstraint implements Constraint {
     constructor(private readonly padding: number) { }
 
-    public updateSize(shape: DiagramShape, size: Vec2): Vec2 {
+    public updateSize(shape: DiagramShape, size: Vec2, prev: DiagramShape): Vec2 {
         const fontSize = shape.appearance.get(DiagramShape.APPEARANCE_FONT_SIZE);
 
-        const width =
-            RENDERER.getTextWidth(
-                shape.appearance.get(DiagramShape.APPEARANCE_TEXT), fontSize, 'sans serif');
 
-        if (!width) {
-            return size;
+        let finalWidth = size.x;
+
+        const text = shape.appearance.get(DiagramShape.APPEARANCE_TEXT);
+
+        if (prev) {
+            const prevText = prev.appearance.get(DiagramShape.APPEARANCE_TEXT);
+
+            if (prevText !== text) {
+                const textWidth = RENDERER.getTextWidth(text, fontSize, 'sans serif');
+
+                if (textWidth && finalWidth < textWidth) {
+                    finalWidth = textWidth + 2 * this.padding;
+                }
+            }
         }
 
-        return new Vec2(width + this.padding * 2, fontSize * 1.2 + this.padding * 2).roundToMultipleOfTwo();
+        return new Vec2(finalWidth, fontSize * 1.2 + this.padding * 2).roundToMultipleOfTwo();
     }
 
     public calculateSizeX(): boolean {
-        return true;
+        return false;
     }
 
     public calculateSizeY(): boolean {

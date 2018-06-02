@@ -13,6 +13,8 @@ class MockupRenderer implements Renderer {
 
     public createProperties(): Configurable[] { return []; }
 
+    public setContext(context: any) { return; }
+
     public render(shape: any): any { return null; }
 }
 

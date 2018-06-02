@@ -7,8 +7,8 @@ import {
     DiagramItemSet,
     DiagramShape,
     DiagramVisual,
-    Serializer,
     RendererService,
+    Serializer,
     Transform
 } from '@app/wireframes/model';
 
