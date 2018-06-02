@@ -59,7 +59,7 @@ const Shapes = (props: ShapesProps) => {
     const cellRenderer = (shape: ShapeInfo) => {
         const doAdd = () => {
             if (props.selectedDiagram) {
-                props.addVisualToPosition(props.selectedDiagram, shape.label);
+                props.addVisualToPosition(props.selectedDiagram, shape.name);
             }
         };
 
@@ -69,7 +69,7 @@ const Shapes = (props: ShapesProps) => {
                     <ShapeImage shape={shape} />
                 </div>
 
-                <div className='asset-shape-title'>{shape.label}</div>
+                <div className='asset-shape-title'>{shape.name}</div>
             </div>
         );
     };

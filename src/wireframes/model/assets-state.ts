@@ -1,8 +1,8 @@
 import { ICONS, RendererService } from '@app/wireframes/model';
 
 export interface ShapeInfo {
-    label: string;
     name: string;
+    key: string;
 }
 
 export interface IconInfo {
@@ -34,15 +34,12 @@ export const createInitialAssetsState: (rendererService: RendererService) => Ass
             const renderer = rendererService.registeredRenderers[rendererKey];
 
             if (renderer.showInGallery()) {
-                allShapes.push({
-                    name: rendererKey.toLowerCase(),
-                    label: rendererKey
-                });
+                allShapes.push({ key: rendererKey.toLowerCase(), name: rendererKey });
             }
         }
     }
 
-    allShapes.sort((l, r) => l.name.localeCompare(r.name));
+    allShapes.sort((l, r) => l.key.localeCompare(r.key));
 
     return {
         shapes: allShapes,

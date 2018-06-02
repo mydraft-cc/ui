@@ -16,7 +16,7 @@ interface ShapeImageProps {
 
 const ShapeTarget: DragSourceSpec<ShapeImageProps> = {
     beginDrag: props => {
-        return { shape: props.shape.label };
+        return { shape: props.shape.name };
     }
 };
 
@@ -38,7 +38,7 @@ export class ShapeImage extends React.PureComponent<ShapeImageProps> {
         };
 
         return this.props.connectDragSource!(
-            <img ref={img => preview(img)} className='asset-shape-image' alt={this.props.shape.label} src={urlPath(this.props.shape)} />,
+            <img ref={img => preview(img)} className='asset-shape-image' alt={this.props.shape.name} src={urlPath(this.props.shape)} />,
         {
             dropEffect: 'copy'
         });
@@ -48,5 +48,5 @@ export class ShapeImage extends React.PureComponent<ShapeImageProps> {
 const pathToShapes = require.context('../../../images/shapes', true);
 
 const urlPath = (shape: ShapeInfo) => {
-    return pathToShapes(`./${shape.name}.png`);
+    return pathToShapes(`./${shape.key}.png`);
 };

@@ -4,6 +4,7 @@ import { Checkbox }     from './neutral/checkbox';
 import { ComboBox }     from './neutral/combo-box';
 import { Comment }      from './neutral/comment';
 import { Dropdown }     from './neutral/dropdown';
+import { Heading }      from './neutral/heading';
 import { Image }        from './neutral/image';
 import { Label }        from './neutral/label';
 import { Link }         from './neutral/link';
@@ -33,6 +34,7 @@ export function registerRenderers(): RendererService {
         .addRenderer(new Label())
         .addRenderer(new Icon())
         .addRenderer(new Image())
+        .addRenderer(new Heading())
         .addRenderer(new Link())
         .addRenderer(new Numeric())
         .addRenderer(new Paragraph())

@@ -29,7 +29,7 @@ export function assets(initialState: AssetsState): Reducer<AssetsState> {
                     shapesFilter: action.payload,
                     shapesFiltered: action.payload.length === 0 ?
                         state.shapes :
-                        state.shapes.filter(i => i.name.indexOf(action.payload) >= 0)
+                        state.shapes.filter(i => i.key.indexOf(action.payload) >= 0)
                 };
             default:
                 return state;

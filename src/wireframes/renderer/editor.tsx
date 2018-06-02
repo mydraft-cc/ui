@@ -76,6 +76,8 @@ const mapDispatchToProps = (dispatch: Dispatch<any>) => bindActionCreators({
     selectItems, changeItemsAppearance, transformItems
 }, dispatch);
 
+const isProduction = process.env.NODE_ENV === 'production';
+
 class Editor extends React.Component<EditorProps> {
     private adornerScope: paper.PaperScope;
     private renderScope: paper.PaperScope;
@@ -137,7 +139,7 @@ class Editor extends React.Component<EditorProps> {
             if (!ref) {
                 const renderer = this.props.rendererService.registeredRenderers[shape.renderer];
 
-                ref = new ShapeRef(renderer, shape, false);
+                ref = new ShapeRef(renderer, shape, !isProduction);
             } else {
                 if (!ref.invalidate(shape)) {
                     ref.addTo(this.renderLayer);
