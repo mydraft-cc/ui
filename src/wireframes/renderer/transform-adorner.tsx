@@ -350,6 +350,7 @@ export class TransformAdorner extends React.Component<TransformAdornerProps> imp
         moveShape.matrix.reset();
         moveShape.size = new paper.Size(size.x + 1, size.y + 1);
         moveShape.position = anchor;
+        moveShape.rotate(rotation, anchor);
         moveShape.visible = true;
     }
 
