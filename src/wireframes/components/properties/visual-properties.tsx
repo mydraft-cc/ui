@@ -1,7 +1,7 @@
+import { Button, Col, Row, Select } from 'antd';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators, Dispatch } from 'redux';
-import { Button, Col, Row, Select } from 'antd';
 
 import './visual-properties.scss';
 

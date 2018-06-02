@@ -7,8 +7,8 @@ import {
 } from '@app/core';
 
 import {
-    DiagramItemSet,
     DiagramGroup,
+    DiagramItemSet,
     DiagramShape,
     RendererService,
     Transform

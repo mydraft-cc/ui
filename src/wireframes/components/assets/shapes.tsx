@@ -1,7 +1,7 @@
+import { Input } from 'antd';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators, Dispatch } from 'redux';
-import { Input } from 'antd';
 
 import './shapes.scss';
 

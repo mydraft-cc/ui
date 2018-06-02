@@ -1,5 +1,5 @@
-import * as React from 'react';
 import { Button, Popover } from 'antd';
+import * as React from 'react';
 
 import './color-picker.scss';
 

@@ -1,9 +1,9 @@
-import * as React from 'react';
-import { connect } from 'react-redux';
-import { bindActionCreators, Dispatch } from 'redux';
 import { Button, Collapse, Layout, Tabs } from 'antd';
+import * as React from 'react';
 import { DragDropContextProvider } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
+import { connect } from 'react-redux';
+import { bindActionCreators, Dispatch } from 'redux';
 
 import {
     ArrangeMenuContainer,
@@ -12,8 +12,8 @@ import {
     HistoryMenuContainer,
     IconsContainer,
     LayoutPropertiesContainer,
-    UIMenuContainer,
     ShapesContainer,
+    UIMenuContainer,
     VisualPropertiesContainer
 } from '@app/wireframes/components';
 

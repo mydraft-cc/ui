@@ -1,7 +1,7 @@
+import { Button, Icon, Tooltip } from 'antd';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators, Dispatch } from 'redux';
-import { Button, Icon, Tooltip } from 'antd';
 
 import { Shortcut } from '@app/core';
 

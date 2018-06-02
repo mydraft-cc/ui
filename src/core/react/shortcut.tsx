@@ -1,5 +1,5 @@
-import * as React from 'react';
 import * as Mousetrap from 'mousetrap';
+import * as React from 'react';
 
 export interface ShortcutProps {
     // Disable the shortcut
@@ -14,10 +14,16 @@ export interface ShortcutProps {
 
 export class Shortcut extends React.Component<ShortcutProps> {
     public componentDidMount() {
-        Mousetrap.bind(this.props.keys, () =>  {
+        Mousetrap.bind(this.props.keys, (e) =>  {
             if (this.props.disabled !== true) {
                 this.props.onPressed();
+
+                e.preventDefault();
+                e.stopPropagation();
+                e.stopImmediatePropagation();
             }
+
+            return false;
         });
     }
 

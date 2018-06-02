@@ -1,7 +1,7 @@
+import { Button } from 'antd';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators, Dispatch } from 'redux';
-import { Button } from 'antd';
 
 import './layout-properties.scss';
 
@@ -12,9 +12,9 @@ import {
     ALIGN_V_BOTTOM,
     ALIGN_V_CENTER,
     ALIGN_V_TOP,
+    alignItems,
     BRING_FORWARDS,
     BRING_TO_FRONT,
-    alignItems,
     Diagram,
     DiagramItem,
     DISTRIBUTE_H,

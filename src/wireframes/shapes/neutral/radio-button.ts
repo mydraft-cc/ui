@@ -7,7 +7,7 @@ import {
     TextHeightConstraint
 } from '@app/wireframes/model';
 
-import { AbstractControl, AbstractContext } from '@app/wireframes/shapes/utils/abstract-control';
+import { AbstractContext, AbstractControl } from '@app/wireframes/shapes/utils/abstract-control';
 import { CommonTheme } from './_theme';
 
 const STATE_KEY = 'STATE';

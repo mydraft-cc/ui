@@ -1,5 +1,5 @@
-import * as React from 'react';
 import * as paper from 'paper';
+import * as React from 'react';
 
 import {
     PaperHelper,
@@ -9,8 +9,8 @@ import {
 
 import {
     Diagram,
-    DiagramShape,
     DiagramItem,
+    DiagramShape,
     SnapManager,
     Transform
 } from '@app/wireframes/model';

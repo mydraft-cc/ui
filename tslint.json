@@ -64,7 +64,7 @@
       "allow-declarations"
     ],
     "ordered-imports": [
-      false
+      true
     ],
     "prefer-for-of": true,
     "quotemark": [

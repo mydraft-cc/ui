@@ -1,8 +1,8 @@
 import * as React from 'react';
+import { DropTarget, DropTargetCollector, DropTargetSpec } from 'react-dnd';
 import { findDOMNode } from 'react-dom';
 import { connect } from 'react-redux';
 import { bindActionCreators, Dispatch } from 'redux';
-import { DropTarget, DropTargetSpec, DropTargetCollector } from 'react-dnd';
 
 import { MathHelper, sizeInPx } from '@app/core';
 

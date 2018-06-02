@@ -1,7 +1,7 @@
 import { ImmutableList } from '@app/core';
 
-import { DiagramItem } from './diagram-item';
 import { Diagram, Transform } from '@app/wireframes/model';
+import { DiagramItem } from './diagram-item';
 
 export class DiagramContainer extends DiagramItem {
     constructor(id: string, public childIds: ImmutableList<string>) {

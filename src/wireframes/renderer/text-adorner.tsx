@@ -1,13 +1,13 @@
-import * as React from 'react';
 import * as paper from 'paper';
+import * as React from 'react';
 
 import { sizeInPx } from '@app/core';
 
 import {
     Diagram,
-    DiagramVisual,
     DiagramItem,
-    DiagramShape
+    DiagramShape,
+    DiagramVisual
 } from '@app/wireframes/model';
 
 import {

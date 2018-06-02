@@ -1,11 +1,12 @@
+import { Button, Tooltip } from 'antd';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators, Dispatch } from 'redux';
-import { Button, Tooltip } from 'antd';
 
 import { MathHelper, Shortcut } from '@app/core';
 
 import {
+    calculateSelection,
     Diagram,
     DiagramGroup,
     DiagramItem,
@@ -13,6 +14,7 @@ import {
     getSelection,
     groupItems,
     removeItems,
+    selectItems,
     UndoableState,
     ungroupItems
 } from '@app/wireframes/model';
@@ -44,6 +46,9 @@ interface ArrangeMenuProps {
 
     // Ungroup items.
     ungroupItems: (diagram: Diagram, groups: DiagramGroup[]) => void;
+
+    // Selcts items.
+    selectItems: (diagram: Diagram, itemsIds: string[]) => void;
 }
 
 const mapStateToProps = (state: { editor: UndoableState<EditorState> }) => {
@@ -62,7 +67,7 @@ const mapStateToProps = (state: { editor: UndoableState<EditorState> }) => {
 };
 
 const mapDispatchToProps = (dispatch: Dispatch<any>) => bindActionCreators({
-    groupItems, removeItems, ungroupItems
+    groupItems, removeItems, ungroupItems, selectItems
 }, dispatch);
 
 class ArrangeMenu extends React.PureComponent<ArrangeMenuProps> {
@@ -76,6 +81,10 @@ class ArrangeMenu extends React.PureComponent<ArrangeMenuProps> {
 
     private doRemove = () => {
         this.props.removeItems(this.props.selectedDiagram!, this.props.selectedItems);
+    }
+
+    private doSelectAll = () => {
+        this.props.selectItems(this.props.selectedDiagram!, calculateSelection(this.props.selectedDiagram!.items.toArray(), this.props.selectedDiagram!));
     }
 
     public render() {
@@ -111,6 +120,8 @@ class ArrangeMenu extends React.PureComponent<ArrangeMenuProps> {
 
                 <Shortcut disabled={!this.props.canRemove} onPressed={this.doRemove} keys='del' />
                 <Shortcut disabled={!this.props.canRemove} onPressed={this.doRemove} keys='backspace' />
+
+                <Shortcut disabled={!this.props.selectedDiagram} onPressed={this.doSelectAll} keys='ctrl+a' />
             </>
         );
     }

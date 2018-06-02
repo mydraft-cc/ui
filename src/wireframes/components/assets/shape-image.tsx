@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { DragSource, DragSourceSpec, DragSourceCollector } from 'react-dnd';
+import { DragSource, DragSourceCollector, DragSourceSpec } from 'react-dnd';
 
 import { ShapeInfo } from '@app/wireframes/model';
 

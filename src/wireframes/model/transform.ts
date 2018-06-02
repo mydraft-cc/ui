@@ -1,7 +1,7 @@
 import {
     MathHelper,
-    Rotation,
     Rect2,
+    Rotation,
     Vec2
 } from '@app/core';
 

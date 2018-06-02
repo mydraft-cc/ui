@@ -6,20 +6,20 @@ require('./libs/paper-area-text');
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
-import { createStore, combineReducers, Reducer } from 'redux';
+import { combineReducers, createStore, Reducer } from 'redux';
 
 import { MathHelper, Vec2 } from '@app/core';
 
 import * as Reducers from '@app/wireframes/model/actions';
 
 import {
-    createInitialUIState,
     createInitialAssetsState,
+    createInitialUIState,
     Diagram,
     EditorState,
-    Serializer,
     SELECT_DIAGRAM,
     SELECT_ITEMS,
+    Serializer,
     undoable
 } from '@app/wireframes/model';
 
