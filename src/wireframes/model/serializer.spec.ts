@@ -13,6 +13,10 @@ import {
 } from '@app/wireframes/model';
 
 class CustomVisual extends DiagramVisual {
+    public static createCustom(id: string) {
+        return new CustomVisual(id, null!);
+    }
+
     public bounds(): Transform {
         throw new Error('Not supported');
     }
@@ -47,7 +51,7 @@ describe('Serializer', () => {
             Diagram.empty()
                 .addVisual(oldShape1)
                 .addVisual(oldShape2)
-                .addVisual(new CustomVisual(MathHelper.guid(), null!))
+                .addVisual(CustomVisual.createCustom(MathHelper.guid()))
                 .group([oldShape1.id, oldShape2.id], groupId);
 
         const oldSet = DiagramItemSet.createFromDiagram([oldDiagram.items.last.id], oldDiagram) !;

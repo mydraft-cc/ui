@@ -8,14 +8,14 @@ import {
 export class Transform {
     public static readonly ZERO = new Transform(Vec2.ZERO, Vec2.ZERO, Rotation.ZERO);
 
-    private cachedAabb: Rect2;
+    private readonly lazy: { aabb: Rect2 | null } = { aabb: null };
 
     public get halfSize(): Vec2 {
         return this.size.mulScalar(0.5);
     }
 
     public get aabb(): Rect2 {
-        return this.cachedAabb || (this.cachedAabb = Rect2.createRotated(this.position.sub(this.size.mulScalar(0.5)), this.size, this.rotation));
+        return this.ensureAabb();
     }
 
     constructor(
@@ -23,6 +23,7 @@ export class Transform {
         public readonly size: Vec2,
         public readonly rotation: Rotation
     ) {
+        Object.freeze(this);
     }
 
     public static createFromRect(rect: Rect2): Transform {
@@ -162,6 +163,16 @@ export class Transform {
         } else {
             return this;
         }
+    }
+
+    private ensureAabb() {
+        if (this.lazy.aabb === null) {
+            this.lazy.aabb = Rect2.createRotated(this.position.sub(this.size.mulScalar(0.5)), this.size, this.rotation);
+
+            Object.freeze(this.lazy);
+        }
+
+        return this.lazy.aabb;
     }
 
     public toJS(): any {

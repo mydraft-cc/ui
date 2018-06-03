@@ -65,6 +65,7 @@ export class Rect2 {
         public readonly position: Vec2,
         public readonly size: Vec2
     ) {
+        Object.freeze(this);
     }
 
     public static createFromVecs(vecs: Vec2[] | null): Rect2 {

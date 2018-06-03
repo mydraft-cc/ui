@@ -1,5 +1,7 @@
 /* tslint:disable: no-bitwise */
 
+import { Types } from './types';
+
 interface IColorDefinition {
     regex: RegExp;
 
@@ -104,9 +106,9 @@ export class Color {
     }
 
     public static fromValue(value: number | string | Color): Color {
-        if (typeof value === 'string') {
+        if (Types.isString(value)) {
             return Color.fromString(value);
-        } else if (typeof value === 'number') {
+        } else if (Types.isNumber(value)) {
             return Color.fromNumber(value);
         } else {
             return value;

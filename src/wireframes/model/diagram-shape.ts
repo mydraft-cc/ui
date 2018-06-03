@@ -25,7 +25,7 @@ export class DiagramShape extends DiagramVisual {
     public static APPEARANCE_FOREGROUND_COLOR = 'BACKGROUND_COLOR';
     public static APPEARANCE_BACKGROUND_COLOR = 'FOREGROUND_COLOR';
 
-    constructor(id: string, appearance: Immutable.Map<string, any>,
+    private constructor(id: string, appearance: Immutable.Map<string, any>,
         public transform: Transform,
         public configurables: Configurable[],
         public constraint: Constraint | undefined,
@@ -35,11 +35,15 @@ export class DiagramShape extends DiagramVisual {
     }
 
     public static createShape(renderer: string, w: number, h: number, configurable?: Configurable[], appearance?: { [key: string]: any }, id?: string, constraint?: Constraint): DiagramShape {
-        return new DiagramShape(id || MathHelper.guid(),
+        const result = new DiagramShape(id || MathHelper.guid(),
             DiagramShape.createAppearance(appearance),
             DiagramShape.createTransform(w, h),
             DiagramShape.createConfigurables(configurable),
             constraint, renderer);
+
+        Object.freeze(result);
+
+        return result;
     }
 
     private static createConfigurables(configurables?: Configurable[]): Configurable[] {

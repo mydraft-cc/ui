@@ -13,7 +13,10 @@ export interface Constraint {
 export class SizeConstraint implements Constraint {
     constructor(
         private readonly width: number | undefined,
-        private readonly height: number | undefined) { }
+        private readonly height: number | undefined
+    ) {
+        Object.freeze(this);
+    }
 
     public updateSize(shape: DiagramShape, size: Vec2): Vec2 {
         let w = size.x;
@@ -40,6 +43,10 @@ export class SizeConstraint implements Constraint {
 }
 
 export class MinSizeConstraint implements Constraint {
+    constructor() {
+        Object.freeze(this);
+    }
+
     public updateSize(shape: DiagramShape, size: Vec2): Vec2 {
         const minSize = Math.min(size.x, size.y);
 
@@ -56,7 +63,11 @@ export class MinSizeConstraint implements Constraint {
 }
 
 export class TextHeightConstraint implements Constraint {
-    constructor(private readonly padding: number) {}
+    constructor(
+        private readonly padding: number
+    ) {
+        Object.freeze(this);
+    }
 
     public updateSize(shape: DiagramShape, size: Vec2): Vec2 {
         const fontSize = shape.appearance.get(DiagramShape.APPEARANCE_FONT_SIZE);

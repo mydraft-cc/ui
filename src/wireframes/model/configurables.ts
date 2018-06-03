@@ -11,6 +11,8 @@ export class SelectionConfigurable extends Configurable {
         public readonly options: string[]
     ) {
         super(name, label);
+
+        Object.freeze(this);
     }
 }
 
@@ -20,6 +22,8 @@ export class SliderConfigurable extends Configurable {
         public readonly max = 100
     ) {
         super(name, label);
+
+        Object.freeze(this);
     }
 }
 
@@ -29,11 +33,15 @@ export class NumberConfigurable extends Configurable {
         public readonly max = 100
     ) {
         super(name, label);
+
+        Object.freeze(this);
     }
 }
 
 export class ColorConfigurable extends Configurable {
     constructor(name: string, label: string) {
         super(name, label);
+
+        Object.freeze(this);
     }
 }

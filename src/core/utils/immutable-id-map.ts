@@ -6,8 +6,7 @@ export interface WithId {
 
 export class ImmutableIdMap<T extends WithId> {
     private static readonly EMPTY = new ImmutableIdMap<any>([]);
-    private readonly items: T[];
-    private itemsById: { [id: string]: T } | null = null;
+    private readonly lazy: { itemsById: { [id: string]: T } | null } = { itemsById: null};
 
     public get size(): number {
         return this.items.length;
@@ -21,8 +20,10 @@ export class ImmutableIdMap<T extends WithId> {
         return this.items[this.items.length - 1];
     }
 
-    private constructor(items: T[]) {
-        this.items = items;
+    private constructor(
+        private readonly items: T[]
+    ) {
+        Object.freeze(this);
     }
 
     public static empty<V extends WithId>(): ImmutableIdMap<V> {
@@ -130,14 +131,17 @@ export class ImmutableIdMap<T extends WithId> {
     }
 
     private ensureItemsById(): { [id: string]: T } {
-        if (this.itemsById === null) {
-            this.itemsById = {};
+        if (this.lazy.itemsById === null) {
+            this.lazy.itemsById = {};
 
             this.forEach(item => {
-                this.itemsById![item.id] = item;
+                this.lazy.itemsById![item.id] = item;
             });
+
+            Object.freeze(this.lazy);
+            Object.freeze(this.lazy.itemsById);
         }
 
-        return this.itemsById;
+        return this.lazy.itemsById;
     }
 }

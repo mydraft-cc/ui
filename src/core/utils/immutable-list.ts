@@ -2,7 +2,6 @@ import { Collections } from '@app/core/utils/collections';
 
 export class ImmutableList<T> {
     private static readonly EMPTY = new ImmutableList<any>([]);
-    private readonly items: T[];
 
     public get size(): number {
         return this.items.length;
@@ -16,8 +15,10 @@ export class ImmutableList<T> {
         return this.items[this.items.length - 1];
     }
 
-    private constructor(items: T[]) {
-        this.items = items;
+    private constructor(
+        private readonly items: T[]
+    ) {
+        Object.freeze(this);
     }
 
     public static empty<V>(): ImmutableList<V> {

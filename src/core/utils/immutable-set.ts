@@ -1,9 +1,10 @@
 export class ImmutableSet {
     private static readonly EMPTY = new ImmutableSet({}, 0);
-    private readonly items: { [item: string]: boolean };
 
-    private constructor(items: { [item: string]: boolean }, public readonly size: number) {
-        this.items = items;
+    private constructor(
+        private readonly items: { [item: string]: boolean }, public readonly size: number
+    ) {
+        Object.freeze(this);
     }
 
     public static empty(): ImmutableSet {

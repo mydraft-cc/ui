@@ -3,7 +3,11 @@ import * as React from 'react';
 
 import './color-picker.scss';
 
-import { Color, ColorPalette } from '@app/core';
+import {
+    Color,
+    ColorPalette,
+    Types
+} from '@app/core';
 
 interface ColorPickerProps {
     // The selected color.
@@ -42,12 +46,14 @@ export class ColorPicker extends React.PureComponent<ColorPickerProps, ColorPick
     public render() {
         let selectedColor = Color.BLACK;
 
-        if (this.props.value instanceof Color) {
-            selectedColor = this.props.value;
-        } else if (typeof this.props.value === 'string') {
-            selectedColor = Color.fromString(this.props.value);
-        } else if (typeof this.props.value === 'number') {
-            selectedColor = Color.fromNumber(this.props.value);
+        const value = this.props.value;
+
+        if (Types.is(value, Color)) {
+            selectedColor = value;
+        } else if (Types.isString(value)) {
+            selectedColor = Color.fromString(value);
+        } else if (Types.isNumber(value)) {
+            selectedColor = Color.fromNumber(value);
         }
 
         const selectedPalette = this.props.palette || ColorPalette.colors();

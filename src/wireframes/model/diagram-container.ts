@@ -4,12 +4,16 @@ import { Diagram, Transform } from '@app/wireframes/model';
 import { DiagramItem } from './diagram-item';
 
 export class DiagramContainer extends DiagramItem {
-    constructor(id: string, public childIds: ImmutableList<string>) {
+    protected constructor(id: string, public childIds: ImmutableList<string>) {
         super(id);
     }
 
     public static createContainer(): DiagramContainer {
-        return new DiagramContainer('root', ImmutableList.empty<string>());
+        const result = new DiagramContainer('root', ImmutableList.empty<string>());
+
+        Object.freeze(result);
+
+        return result;
     }
 
     public bounds(diagram: Diagram): Transform {

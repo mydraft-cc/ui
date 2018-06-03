@@ -15,7 +15,10 @@ import {
 } from '@app/wireframes/model';
 
 export class Serializer {
-    constructor(private readonly rendererService: RendererService) { }
+    constructor(
+        private readonly rendererService: RendererService
+    ) {
+    }
 
     public deserializeSet(json: string): DiagramItemSet {
         const s: DiagramShape[] = [];
@@ -68,10 +71,10 @@ export class Serializer {
     }
 
     private static deserializeGroup(input: any, id: string, idMap: { [id: string]: string }): DiagramGroup {
-        return new DiagramGroup(
-            id,
+        return DiagramGroup.createGroup(
             Serializer.deserializeChildIds(input, idMap),
-            Serializer.deserializeRotation(input));
+            Serializer.deserializeRotation(input),
+            id);
     }
 
     private static serializeGroup(group: DiagramGroup) {

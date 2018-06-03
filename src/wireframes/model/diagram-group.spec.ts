@@ -8,10 +8,17 @@ import {
 } from '@app/wireframes/model';
 
 describe('DiagramGroup', () => {
-    const transform = new Transform(Vec2.ZERO, Vec2.ZERO, Rotation.ZERO);
+    let transform: Transform;
 
-    const shape1 = DiagramShape.createShape('btn', 100, 50).transformWith(t => t.moveTo(new Vec2(100, 100)));
-    const shape2 = DiagramShape.createShape('btn', 100, 50).transformWith(t => t.moveTo(new Vec2(200, 100)));
+    let shape1: DiagramShape;
+    let shape2: DiagramShape;
+
+    beforeEach(() => {
+        transform = new Transform(Vec2.ZERO, Vec2.ZERO, Rotation.ZERO);
+
+        shape1 = DiagramShape.createShape('btn', 100, 50).transformWith(t => t.moveTo(new Vec2(100, 100)));
+        shape2 = DiagramShape.createShape('btn', 100, 50).transformWith(t => t.moveTo(new Vec2(200, 100)));
+    });
 
     it('should instantiate with factory method', () => {
         const group = DiagramGroup.createGroup(['id1', 'id2']);
@@ -95,9 +102,6 @@ describe('DiagramGroup', () => {
         const group = diagram.items.last;
 
         const actual1 = group.bounds(diagram);
-
-        shape1.transform = transform.moveBy(new Vec2(1000, 1000));
-
         const actual2 = group.bounds(diagram);
         const expected = new Transform(new Vec2(150, 100), new Vec2(200, 50), Rotation.ZERO);
 

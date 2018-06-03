@@ -2,7 +2,8 @@ import {
     ImmutableIdMap,
     ImmutableList,
     ImmutableSet,
-    MathHelper
+    MathHelper,
+    Rotation
 } from '@app/core';
 
 import {
@@ -18,7 +19,7 @@ export class Diagram {
         return this.roots.childIds;
     }
 
-    constructor(
+    private constructor(
         public readonly id: string,
         public readonly items: ImmutableIdMap<DiagramItem>,
         public readonly roots: DiagramContainer,
@@ -80,7 +81,7 @@ export class Diagram {
 
     public group(itemIds: string[], groupId?: string): Diagram {
         return this.withMutations(itemIds, (m, u) => {
-            const group = DiagramGroup.createGroup(itemIds, groupId);
+            const group = DiagramGroup.createGroup(itemIds, Rotation.ZERO, groupId);
 
             u(c => c.removeItems(...itemIds).addItems(group.id));
 

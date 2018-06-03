@@ -3,8 +3,8 @@ import { MathHelper } from '@app/core';
 export class Rotation {
     public static readonly ZERO = Rotation.createFromRadian(0);
 
-    public cos: number;
-    public sin: number;
+    public readonly cos: number;
+    public readonly sin: number;
 
     constructor(
         public readonly radian: number,

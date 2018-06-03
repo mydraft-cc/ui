@@ -2,16 +2,17 @@
     public abstract clone(): ImmutableObject;
 
     protected afterClone(prev?: any) {
-        /* NOOP */
+        return;
     }
 
     protected cloned<T extends ImmutableObject>(updater: (instance: ImmutableObject) => void) {
-        let cloned = <T>this.clone();
+        let objCloned = <T>this.clone();
 
-        updater(cloned);
+        updater(objCloned);
 
-        cloned.afterClone(this);
+        objCloned.afterClone(this);
+        Object.freeze(objCloned);
 
-        return cloned;
+        return objCloned;
     }
 }

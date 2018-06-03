@@ -1,7 +1,8 @@
 import {
     ImmutableList,
     MathHelper,
-    Rotation
+    Rotation,
+    Types
 } from '@app/core';
 
 import {
@@ -13,21 +14,30 @@ import {
 } from '@app/wireframes/model';
 
 export class DiagramGroup extends DiagramContainer {
-    private adornerBoundsValue: Transform;
-    private adornerBoundsDiagram: Diagram;
+    private readonly cachedBounds: { [id: string]: Transform } = {};
 
-    constructor(id: string, childIds: ImmutableList<string>,
+    private constructor(id: string, childIds: ImmutableList<string>,
         public rotation: Rotation
     ) {
         super(id, childIds);
     }
 
-    public static createGroup(childIds: string[], id?: string): DiagramGroup {
-        return new DiagramGroup(id || MathHelper.guid(), ImmutableList.of(...childIds), Rotation.ZERO);
+    public static createGroup(childIds: ImmutableList<string> | string[], rotation?: Rotation, id?: string): DiagramGroup {
+        let result: DiagramGroup;
+
+        if (Types.isArrayOfString(childIds)) {
+            result = new DiagramGroup(id || MathHelper.guid(), ImmutableList.of(...childIds), rotation || Rotation.ZERO);
+        } else {
+            result = new DiagramGroup(id || MathHelper.guid(), childIds, Rotation.ZERO);
+        }
+
+        Object.freeze(result);
+
+        return result;
     }
 
     public bounds(diagram: Diagram): Transform {
-        if (this.adornerBoundsDiagram !== diagram) {
+        if (!this.cachedBounds[diagram.id]) {
             const set = DiagramItemSet.createFromDiagram([this.id], diagram);
 
             if (!set || set.allItems.length === 0) {
@@ -36,11 +46,10 @@ export class DiagramGroup extends DiagramContainer {
 
             const shapes = set.allVisuals.filter(i => i instanceof DiagramShape).map(i => <DiagramShape>i);
 
-            this.adornerBoundsValue = Transform.createFromTransformationsAndRotations(shapes.map(s => s.transform), this.rotation);
-            this.adornerBoundsDiagram = diagram;
+            this.cachedBounds[diagram.id] = Transform.createFromTransformationsAndRotations(shapes.map(s => s.transform), this.rotation);
         }
 
-        return this.adornerBoundsValue;
+        return this.cachedBounds[diagram.id];
     }
 
     public transformByBounds(oldBounds: Transform, newBounds: Transform): DiagramGroup {
