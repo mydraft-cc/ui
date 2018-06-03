@@ -7,6 +7,7 @@ import { bindActionCreators, Dispatch } from 'redux';
 
 import {
     ArrangeMenuContainer,
+    ClipboardMenuContainer,
     CustomPropertiesContainer,
     EditorViewContainer,
     HistoryMenuContainer,
@@ -75,6 +76,18 @@ const App = (props: AppProps) => {
         return `toggle-button-${side}` + (visible ? ' visible' : '');
     };
 
+    const doSelectTab = (key: string) => {
+        props.selectTab(key);
+    };
+
+    const doToggleLeftSidebar = () => {
+        props.toggleLeftSidebar();
+    };
+
+    const doToggleRightSidebar = () => {
+        props.toggleLeftSidebar();
+    };
+
     return (
         <DragDropContextProvider backend={HTML5Backend}>
             <Layout>
@@ -87,6 +100,9 @@ const App = (props: AppProps) => {
                     <ArrangeMenuContainer />
                     <span className='menu-separator' />
 
+                    <ClipboardMenuContainer />
+                    <span className='menu-separator' />
+
                     <UIMenuContainer />
                 </Layout.Header>
                 <Layout className='content'>
@@ -94,7 +110,7 @@ const App = (props: AppProps) => {
                         collapsed={!props.showLeftSidebar}
                         collapsedWidth={0}>
 
-                        <Tabs type='card' onTabClick={(key: string) => props.selectTab(key)} activeKey={props.selectedTab}>
+                        <Tabs type='card' onTabClick={doSelectTab} activeKey={props.selectedTab}>
                             <Tabs.TabPane key='shapes' tab='Shapes'>
                                 <ShapesContainer />
                             </Tabs.TabPane>
@@ -127,19 +143,18 @@ const App = (props: AppProps) => {
                         className={toggleClass(props.showLeftSidebar, 'left')}
                         size='small'
                         shape='circle'
-                        onClick={() => props.toggleLeftSidebar()} />
+                        onClick={doToggleLeftSidebar} />
 
                     <Button icon={toggleIcon(!props.showRightSidebar)}
                         className={toggleClass(props.showRightSidebar, 'right')}
                         size='small'
                         shape='circle'
-                        onClick={() => props.toggleRightSidebar()} />
+                        onClick={doToggleRightSidebar} />
                 </Layout>
             </Layout>
         </DragDropContextProvider>
     );
 };
-
 
 export const AppContainer = connect(
     mapStateToProps,

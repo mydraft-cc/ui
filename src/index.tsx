@@ -23,6 +23,7 @@ import {
     undoable
 } from '@app/wireframes/model';
 
+import { SerializerContext } from '@app/context';
 import { registerRenderers } from '@app/wireframes/shapes';
 
 const rendererService = registerRenderers();
@@ -45,10 +46,12 @@ for (let identifier in rendererService.registeredRenderers) {
     }
 }
 
+const serializer = new Serializer(rendererService);
+
 const reducers: Reducer<EditorState>[] = [
     Reducers.alignment(),
     Reducers.appearance(),
-    Reducers.items(rendererService, new Serializer(rendererService)),
+    Reducers.items(rendererService, serializer),
     Reducers.diagrams(),
     Reducers.grouping(),
     Reducers.ordering()
@@ -87,9 +90,11 @@ import { AppContainer } from './App';
 import './index.scss';
 
 const Root = (
-    <Provider store={store}>
-        <AppContainer rendererService={rendererService} />
-    </Provider>
+    <SerializerContext.Provider value={serializer}>
+        <Provider store={store}>
+            <AppContainer rendererService={rendererService} />
+        </Provider>
+    </SerializerContext.Provider>
 );
 
 ReactDOM.render(Root, document.getElementById('root') as HTMLElement);
