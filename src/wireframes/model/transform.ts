@@ -148,18 +148,18 @@ export class Transform {
     public round(): Transform {
         const size = this.size.round();
 
-        let w = Math.floor(this.position.x);
-        let h = Math.floor(this.position.y);
+        let x = Math.floor(this.position.x);
+        let y = Math.floor(this.position.y);
 
         if (this.size.x % 2 === 1) {
-            w += 0.5;
+            x += 0.5;
         }
         if (this.size.y % 2 === 1) {
-            h += 0.5;
+            y += 0.5;
         }
 
-        if (size.ne(this.size) || this.position.x !== w || this.position.y !== h) {
-            return new Transform(new Vec2(w, h), size, this.rotation);
+        if (size.ne(this.size) || this.position.x !== x || this.position.y !== y) {
+            return new Transform(new Vec2(x, y), size, this.rotation);
         } else {
             return this;
         }
