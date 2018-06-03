@@ -7,6 +7,7 @@ import {
     DiagramItem,
     DiagramItemSet,
     DiagramShape,
+    DiagramVisual,
     EditorState,
     RendererService,
     Serializer
@@ -17,8 +18,8 @@ import { createDiagramAction, createItemsAction } from './utils';
 // tslint:disable:no-shadowed-variable
 
 export const ADD_VISUAL = 'ADD_VISUAL';
-export const addVisual = (diagram: Diagram, renderer: string, x: number, y: number, shapeId: string) => {
-    return createDiagramAction(ADD_VISUAL, diagram, { shapeId, renderer, position: { x, y } });
+export const addVisual = (diagram: Diagram, renderer: string, x: number, y: number, shapeId: string, properties?: object) => {
+    return createDiagramAction(ADD_VISUAL, diagram, { shapeId, renderer, position: { x, y }, properties });
 };
 
 export const ADD_IMAGE = 'ADD_IMAGE';
@@ -139,7 +140,16 @@ export function items(rendererService: RendererService, serializer: Serializer):
                             action.payload.position.x + shape.transform.size.x * 0.5,
                             action.payload.position.y + shape.transform.size.y * 0.5);
 
-                    const configured = shape.transformWith(t => t.moveTo(position));
+                    let configured = <DiagramVisual>shape.transformWith(t => t.moveTo(position));
+
+                    let properties = action.payload.properties;
+                    if (properties) {
+                        for (let key in properties) {
+                            if (properties.hasOwnProperty(key)) {
+                                configured = configured.setAppearance(key, properties[key]);
+                            }
+                        }
+                    }
 
                     return diagram.addVisual(configured).selectItems([configured.id]);
                 });

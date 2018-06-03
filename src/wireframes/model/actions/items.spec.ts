@@ -140,6 +140,22 @@ describe('ItemsReducer', () => {
         expect(state_2.diagrams.last.selectedItemIds.toArray()).toEqual([shapeId]);
     });
 
+    it('should add visual with default properties and select this visual', () => {
+        const shapeId = 'shape';
+
+        const action = addVisual(diagram, 'Button', 100, 20, shapeId, { TEXT: 'hello' });
+        const state_1 = EditorState.empty().addDiagram(diagram);
+        const state_2 = reducer(state_1, action);
+
+        const newShape = <DiagramShape>state_2.diagrams.last.items.get(shapeId);
+
+        expect(newShape.id).toBe(shapeId);
+        expect(newShape.appearance.get('TEXT')).toEqual('hello');
+        expect(newShape.transform.position).toEqual(new Vec2(150, 35));
+
+        expect(state_2.diagrams.last.selectedItemIds.toArray()).toEqual([shapeId]);
+    });
+
     it('should paste json and add group and items', () => {
         const serializer = new Serializer(rendererService);
 

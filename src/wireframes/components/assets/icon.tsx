@@ -21,7 +21,7 @@ const IconConnect: DragSourceCollector = (connector, monitor) => {
     return { connectDragSource: connector.dragSource() };
 };
 
-@DragSource('DND_ASSET', IconTarget, IconConnect)
+@DragSource('DND_ICON', IconTarget, IconConnect)
 export class Icon extends React.PureComponent<IconProps> {
     public render() {
         return this.props.connectDragSource!(

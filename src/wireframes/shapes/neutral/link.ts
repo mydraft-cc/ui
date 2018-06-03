@@ -1,6 +1,6 @@
-import { DiagramShape, TextHeightConstraint } from '@app/wireframes/model';
+import { DiagramShape } from '@app/wireframes/model';
 
-import { AbstractContext, AbstractControl } from '@app/wireframes/shapes/utils/abstract-control';
+import { AbstractContext, AbstractControl, TextSizeConstraint } from '@app/wireframes/shapes/utils/abstract-control';
 import { CommonTheme } from './_theme';
 
 const DEFAULT_APPEARANCE = {};
@@ -12,7 +12,7 @@ DEFAULT_APPEARANCE[DiagramShape.APPEARANCE_FONT_SIZE] = CommonTheme.CONTROL_FONT
 DEFAULT_APPEARANCE[DiagramShape.APPEARANCE_STROKE_COLOR] = CommonTheme.CONTROL_BORDER_COLOR;
 DEFAULT_APPEARANCE[DiagramShape.APPEARANCE_STROKE_THICKNESS] = CommonTheme.CONTROL_BORDER_THICKNESS;
 
-const CONSTRAINT = new TextHeightConstraint(5);
+const CONSTRAINT = new TextSizeConstraint(5);
 
 export class Link extends AbstractControl {
     public identifier(): string {
