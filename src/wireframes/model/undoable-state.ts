@@ -1,3 +1,8 @@
+interface State<T> {
+    state: T;
+    action?: any;
+}
+
 export class UndoableState<T> {
     public get canUndo(): boolean {
         return this.past.length > 0;
@@ -7,17 +12,25 @@ export class UndoableState<T> {
         return this.future.length > 0;
     }
 
-    constructor(
-        private readonly past: T[],
+    public get present(): T {
+        return this.presentState.state;
+    }
+
+    public get actions(): any[] {
+        return [...this.past.map(s => s.action), this.presentState.action].filter(x => !!x);
+    }
+
+    private constructor(
+        private readonly past: State<T>[],
         private readonly pastCapacity: number,
-        private readonly future: T[],
-        public readonly present: T
+        private readonly future: State<T>[],
+        private readonly presentState: State<T>
     ) {
         Object.freeze(this);
     }
 
     public static create<T>(capacity: number, present: T) {
-        return new UndoableState<T>([], capacity, [], present);
+        return new UndoableState<T>([], capacity, [], { state: present });
     }
 
     public undo(): UndoableState<T> {
@@ -27,7 +40,7 @@ export class UndoableState<T> {
 
         const newPresent = this.past[this.past.length - 1];
         const newPast = this.past.slice(0, this.past.length - 1);
-        const newFuture = [this.present, ...this.future];
+        const newFuture = [this.presentState, ...this.future];
 
         return new UndoableState(newPast, this.pastCapacity, newFuture, newPresent);
     }
@@ -38,23 +51,23 @@ export class UndoableState<T> {
         }
 
         const newPresent = this.future[0];
-        const newPast = [...this.past, this.present];
+        const newPast = [...this.past, this.presentState];
         const newFuture = this.future.slice(1);
 
         return new UndoableState(newPast, this.pastCapacity, newFuture, newPresent);
     }
 
-    public executed(present: T) {
-        const newPast = [...this.past, this.present];
+    public executed(state: T, action?: any) {
+        const newPast = [...this.past, this.presentState];
 
         if (newPast.length > this.pastCapacity) {
             newPast.splice(0, 1);
         }
 
-        return new UndoableState(newPast, this.pastCapacity, [], present);
+        return new UndoableState(newPast, this.pastCapacity, [], { state, action });
     }
 
-    public replacePresent(present: T) {
-        return new UndoableState(this.past, this.pastCapacity, this.future, present);
+    public replacePresent(state: T, action?: any) {
+        return new UndoableState(this.past, this.pastCapacity, this.future, { state, action });
     }
 }

@@ -64,4 +64,19 @@ describe('UndoableState', () => {
         expect(state_5.canUndo).toBeTruthy();
         expect(state_5.present).toBe(19);
     });
+
+    it('should provide history of actions', () => {
+        const action1 = {};
+        const action2 = {};
+
+        const state_1: UndoableState<number> = UndoableState.create(Number.MAX_VALUE, 13);
+        const state_2 = state_1.executed(14, action1);
+        const state_3 = state_2.executed(15, action2);
+
+        const actions = state_3.actions;
+
+        expect(actions.length).toBe(2);
+        expect(actions[0]).toBe(action1);
+        expect(actions[1]).toBe(action2);
+    });
 });

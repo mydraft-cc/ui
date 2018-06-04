@@ -32,9 +32,9 @@ export function undoable<T>(reducer: Reducer<T>, capacity: 20, initialState: T, 
                     if (newPresent === state.present) {
                         return state;
                     } else if (actionsToIgnore && actionsToIgnore.indexOf(action.type) >= 0) {
-                        return state.replacePresent(newPresent);
+                        return state.replacePresent(newPresent, action);
                     } else {
-                        return state.executed(newPresent);
+                        return state.executed(newPresent, action);
                     }
                 }
         }
