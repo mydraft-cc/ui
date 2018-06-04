@@ -9,6 +9,7 @@ export * from './diagram-item-set';
 export * from './diagram-visual';
 export * from './diagram-shape';
 export * from './editor-state';
+export * from './editor-loading-state';
 export * from './icons';
 export * from './renderer';
 export * from './renderer.service';

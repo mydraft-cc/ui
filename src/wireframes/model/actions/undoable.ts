@@ -3,20 +3,16 @@ import { Reducer } from 'redux';
 import { UndoableState } from '@app/wireframes/model';
 
 export const UNDO = 'UNDO';
-export const undo: () => any = () => {
-    return {
-        type: UNDO
-    };
+export const undo = () => {
+    return { type: UNDO };
 };
 
 export const REDO = 'REDO';
-export const redo: () => any = () => {
-    return {
-        type: REDO
-    };
+export const redo = () => {
+    return { type: REDO };
 };
 
-export function undoable<T>(reducer: Reducer<T>, capacity: 20, initialState: T, actionsToIgnore: string[]): Reducer<UndoableState<T>> {
+export function undoable<T>(reducer: Reducer<T>, initialState: T, actionsToIgnore: string[]): Reducer<UndoableState<T>> {
     const undoReducer: Reducer<UndoableState<T>> = (state: UndoableState<T>, action: any) => {
         switch (action.type) {
             case UNDO:
@@ -25,7 +21,7 @@ export function undoable<T>(reducer: Reducer<T>, capacity: 20, initialState: T, 
                 return state.redo();
             default:
                 if (!state) {
-                    return UndoableState.create(capacity, initialState);
+                    return UndoableState.create(initialState);
                 } else {
                     const newPresent = reducer(state.present, action);
 

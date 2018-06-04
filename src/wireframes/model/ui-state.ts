@@ -1,11 +1,10 @@
 export interface UIState {
     zoom: number;
 
-    selectedTab: string;
-
     showLeftSidebar: boolean;
-
     showRightSidebar: boolean;
+
+    selectedTab: string;
 }
 
 export const createInitialUIState: () => UIState = () => {

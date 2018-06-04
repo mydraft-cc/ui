@@ -8,12 +8,13 @@ import * as ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 import { combineReducers, createStore, Reducer } from 'redux';
 
-import { MathHelper, Vec2 } from '@app/core';
+import { MathHelper, UserReport, Vec2 } from '@app/core';
 
 import * as Reducers from '@app/wireframes/model/actions';
 
 import {
     createInitialAssetsState,
+    createInitialEditorLoadingState,
     createInitialUIState,
     Diagram,
     EditorState,
@@ -57,7 +58,7 @@ const reducers: Reducer<EditorState>[] = [
     Reducers.ordering()
 ];
 
-const reducer: Reducer<EditorState> = (state: EditorState, action: any) => {
+const editorReducer: Reducer<EditorState> = (state: EditorState, action: any) => {
     for (const nested of reducers) {
         const newState = nested(state, action);
 
@@ -70,18 +71,19 @@ const reducer: Reducer<EditorState> = (state: EditorState, action: any) => {
 };
 
 const store = createStore(
-    combineReducers({
-        assets: Reducers.assets(createInitialAssetsState(rendererService)),
-        editor:
-            undoable(reducer,
-                20,
-                EditorState.empty()
-                    .addDiagram(diagram).selectDiagram(diagram.id), [
-                SELECT_DIAGRAM,
-                SELECT_ITEMS
-            ]),
-        ui: Reducers.ui(createInitialUIState())
-    }),
+    Reducers.rootLoading(
+        combineReducers({
+            assets: Reducers.assets(createInitialAssetsState(rendererService)),
+            editorLoading: Reducers.editorLoading(createInitialEditorLoadingState()),
+            editor:
+                undoable(editorReducer,
+                    EditorState.empty()
+                        .addDiagram(diagram).selectDiagram(diagram.id), [
+                    SELECT_DIAGRAM,
+                    SELECT_ITEMS
+                ]),
+            ui: Reducers.ui(createInitialUIState())
+    }), editorReducer),
     window['__REDUX_DEVTOOLS_EXTENSION__'] && window['__REDUX_DEVTOOLS_EXTENSION__']()
 );
 
@@ -92,7 +94,11 @@ import './index.scss';
 const Root = (
     <SerializerContext.Provider value={serializer}>
         <Provider store={store}>
-            <AppContainer rendererService={rendererService} />
+            <>
+                <AppContainer rendererService={rendererService} />
+
+                <UserReport />
+            </>
         </Provider>
     </SerializerContext.Provider>
 );

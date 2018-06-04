@@ -3,6 +3,7 @@ export * from './appearance';
 export * from './assets';
 export * from './diagrams';
 export * from './grouping';
+export * from './loading';
 export * from './items';
 export * from './ordering';
 export * from './ui';

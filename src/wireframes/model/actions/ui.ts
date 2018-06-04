@@ -2,11 +2,6 @@ import { Reducer } from 'redux';
 
 import { UIState } from '@app/wireframes/model';
 
-export const COPY = 'COPY';
-export const copy: (value: string) => any = (value: string) => {
-    return { type: COPY, payload: value };
-};
-
 export const SET_ZOOM = 'SET_ZOOM';
 export const setZoom: (value: number) => any = (value: number) => {
     return { type: SET_ZOOM, payload: value };
@@ -28,12 +23,10 @@ export const toggleRightSidebar: () => any = () => {
 };
 
 export function ui(initialState: UIState): Reducer<UIState> {
-    const reducer: Reducer<UIState> = (state: UIState = initialState, action: any) => {
+    const reducer: Reducer<UIState> = (state = initialState, action: any) => {
         switch (action.type) {
             case SET_ZOOM:
                 return {...state, zoom: action.payload };
-            case COPY:
-                return {...state, clipboard: action.payload };
             case SELECT_TAB:
                 return {...state, selectedTab: action.payload };
             case TOGGLE_SHOW_LEFT_SIDEBAR:
