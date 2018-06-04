@@ -109,7 +109,7 @@ const VisualProperties = (props: VisualPropertiesProps) => {
     };
 
     const doAlignTextLeft =   () => doAlignText('left');
-    const doAlignTextCenter = () =>  doAlignText('center');
+    const doAlignTextCenter = () => doAlignText('center');
     const doAlignTextRight =  () => doAlignText('right');
 
     const doChangeFontSize =    	(value: any) => doChangeAppearance(DiagramShape.APPEARANCE_FONT_SIZE, value);
