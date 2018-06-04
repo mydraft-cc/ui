@@ -15,3 +15,4 @@ export * from './utils/rect2';
 export * from './react/color-picker';
 export * from './react/grid';
 export * from './react/shortcut';
+export * from './react/user-report';

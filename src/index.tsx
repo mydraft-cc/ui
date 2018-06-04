@@ -8,7 +8,7 @@ import * as ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 import { combineReducers, createStore, Reducer } from 'redux';
 
-import { MathHelper, Vec2 } from '@app/core';
+import { MathHelper, UserReport, Vec2 } from '@app/core';
 
 import * as Reducers from '@app/wireframes/model/actions';
 
@@ -57,7 +57,7 @@ const reducers: Reducer<EditorState>[] = [
     Reducers.ordering()
 ];
 
-const reducer: Reducer<EditorState> = (state: EditorState, action: any) => {
+const editorReducer: Reducer<EditorState> = (state: EditorState, action: any) => {
     for (const nested of reducers) {
         const newState = nested(state, action);
 
@@ -73,7 +73,7 @@ const store = createStore(
     combineReducers({
         assets: Reducers.assets(createInitialAssetsState(rendererService)),
         editor:
-            undoable(reducer,
+            undoable(editorReducer,
                 20,
                 EditorState.empty()
                     .addDiagram(diagram).selectDiagram(diagram.id), [
@@ -92,7 +92,11 @@ import './index.scss';
 const Root = (
     <SerializerContext.Provider value={serializer}>
         <Provider store={store}>
-            <AppContainer rendererService={rendererService} />
+            <>
+                <AppContainer rendererService={rendererService} />
+
+                <UserReport />
+            </>
         </Provider>
     </SerializerContext.Provider>
 );
