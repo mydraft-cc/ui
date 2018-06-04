@@ -4,13 +4,12 @@ import { findDOMNode } from 'react-dom';
 import { connect } from 'react-redux';
 import { bindActionCreators, Dispatch } from 'redux';
 
-import { MathHelper, sizeInPx } from '@app/core';
+import { sizeInPx } from '@app/core';
 
 import {
     addIcon,
     addImage,
     addVisual,
-    Diagram,
     EditorState,
     getSelection,
     RendererService,
@@ -41,23 +40,23 @@ export interface EditorViewProps {
     connectDropTarget?: any;
 
     // The selected diagram.
-    selectedDiagram: Diagram | null;
+    selectedDiagramId: string | null;
 
     // Adds an icon.
-    addIcon: (diagram: Diagram, char: string, x: number, y: number, shapeId: string) => any;
+    addIcon: (diagram: string, char: string, x: number, y: number) => any;
 
     // Adds a visual.
-    addVisual: (diagram: Diagram, renderer: string, x: number, y: number, shapeId: string, properties?: object) => any;
+    addVisual: (diagram: string, renderer: string, x: number, y: number, properties?: object) => any;
 
     // Adds an image.
-    addImage: (diagram: Diagram, source: string, x: number, y: number, w: number, h: number, shapeId: string) => any;
+    addImage: (diagram: string, source: string, x: number, y: number, w: number, h: number) => any;
 }
 
 const mapStateToProps = (state: { ui: UIState, editor: UndoableState<EditorState> }) => {
-    const { editor, diagram } = getSelection(state);
+    const { editor } = getSelection(state);
 
     return {
-        selectedDiagram: diagram,
+        selectedDiagramId: editor.selectedDiagramId,
         zoomedWidth: editor.size.x * state.ui.zoom,
         zoomedHeight: editor.size.y * state.ui.zoom,
         zoom: state.ui.zoom
@@ -70,12 +69,14 @@ const mapDispatchToProps = (dispatch: Dispatch<any>) => bindActionCreators({
 
 const AssetTarget: DropTargetSpec<EditorViewProps> = {
     canDrop: props => {
-        return !!props.selectedDiagram;
+        return !!props.selectedDiagramId;
     },
     drop: (props, monitor, component) => {
-        if (!monitor) {
+        if (!monitor || !props.selectedDiagramId) {
             return;
         }
+
+        const diagramId = props.selectedDiagramId;
 
         const offset = monitor.getSourceClientOffset() || monitor.getClientOffset();
 
@@ -87,17 +88,15 @@ const AssetTarget: DropTargetSpec<EditorViewProps> = {
         const itemType = monitor.getItemType();
         const item: any = monitor.getItem();
 
-        const id = MathHelper.guid();
-
         switch (itemType) {
             case 'DND_ASSET':
-                props.addVisual(props.selectedDiagram!, item['shape'], x, y, id);
+                props.addVisual(diagramId, item['shape'], x, y);
                 break;
             case 'DND_ICON':
-                props.addIcon(props.selectedDiagram!, item['icon'], x, y, id);
+                props.addIcon(diagramId, item['icon'], x, y);
                 break;
             case NativeTypes.TEXT:
-                props.addVisual(props.selectedDiagram!, 'Label', x, y, id, { TEXT: item['text'] });
+                props.addVisual(diagramId, 'Label', x, y, { TEXT: item['text'] });
                 break;
             case NativeTypes.FILE: {
                 const files = item.files as File[];
@@ -111,7 +110,7 @@ const AssetTarget: DropTargetSpec<EditorViewProps> = {
                             const imageElement = document.createElement('img');
 
                             imageElement.onload = () => {
-                                props.addImage(props.selectedDiagram!, imageSource, x, y, imageElement.width, imageElement.height, id);
+                                props.addImage(diagramId, imageSource, x, y, imageElement.width, imageElement.height);
                             };
                             imageElement.src = imageSource;
                         };
@@ -125,7 +124,7 @@ const AssetTarget: DropTargetSpec<EditorViewProps> = {
                 const urls = item.urls as string[];
 
                 for (let url of urls) {
-                    props.addVisual(props.selectedDiagram!, 'Link', x, y, id, { TEXT: url });
+                    props.addVisual(diagramId, 'Link', x, y, { TEXT: url });
                     break;
                 }
                 break;

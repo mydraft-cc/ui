@@ -4,12 +4,15 @@ import { Rect2, Vec2 } from '@app/core';
 
 import {
     Diagram,
-    DiagramItem,
     EditorState,
     Transform
 } from '@app/wireframes/model';
 
-import { createItemsAction } from './utils';
+import {
+    createItemsAction,
+    DiagramRef,
+    ItemsRef
+} from './utils';
 
 export const ALIGN_H_LEFT = 'ALIGN_H_LEFT';
 export const ALIGN_H_RIGHT = 'ALIGN_H_RIGHT';
@@ -21,7 +24,7 @@ export const DISTRIBUTE_H = 'DISTRIBUTE_H';
 export const DISTRIBUTE_V = 'DISTRIBUTE_V';
 
 export const ALIGN_ITEMS = 'ALIGN_ITEMS';
-export const alignItems = (mode: string, diagram: Diagram, items: DiagramItem[]) => {
+export const alignItems = (mode: string, diagram: DiagramRef, items: ItemsRef) => {
     return createItemsAction(ALIGN_ITEMS, diagram, items, { mode });
 };
 

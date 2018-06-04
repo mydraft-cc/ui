@@ -5,15 +5,13 @@ import { bindActionCreators, Dispatch } from 'redux';
 
 import './icons.scss';
 
-import { Grid, MathHelper } from '@app/core';
+import { Grid } from '@app/core';
 
 import {
     addIcon,
     AssetsState,
-    Diagram,
     EditorState,
     filterIcons,
-    getSelection,
     IconInfo,
     UndoableState
 } from '@app/wireframes/model';
@@ -28,24 +26,22 @@ interface IconsProps {
     iconsFilter: string;
 
     // The selected diagram.
-    selectedDiagram: Diagram | null;
+    selectedDiagramId: string | null;
 
     // Filter the icons.
     filterIcons: (value: string) => any;
 
     // Adds an Icon.
-    addIconToPosition: (diagram: Diagram, char: string) => any;
+    addIconToPosition: (diagram: string, char: string) => any;
 }
 
-const addIconToPosition = (diagram: Diagram, char: string) => {
-    return addIcon(diagram, char, 100, 100, MathHelper.guid());
+const addIconToPosition = (diagram: string, char: string) => {
+    return addIcon(diagram, char, 100, 100);
 };
 
 const mapStateToProps = (state: { assets: AssetsState, editor: UndoableState<EditorState> }) => {
-    const { diagram } = getSelection(state);
-
     return {
-        selectedDiagram: diagram,
+        selectedDiagramId: state.editor.present.selectedDiagramId,
         iconsFiltered: state.assets.iconsFiltered,
         iconsFilter: state.assets.iconsFilter
     };
@@ -58,8 +54,8 @@ const mapDispatchToProps = (dispatch: Dispatch<any>) => bindActionCreators({
 const Icons = (props: IconsProps) => {
     const cellRenderer = (icon: IconInfo) => {
         const doAdd = () => {
-            if (props.selectedDiagram) {
-                props.addIconToPosition(props.selectedDiagram, icon.text);
+            if (props.selectedDiagramId) {
+                props.addIconToPosition(props.selectedDiagramId, icon.text);
             }
         };
 

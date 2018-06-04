@@ -1,26 +1,28 @@
 import { Reducer } from 'redux';
 
+import { MathHelper } from '@app/core';
+
 import { Diagram, EditorState } from '@app/wireframes/model';
 
-import { createDiagramAction } from './utils';
+import { createDiagramAction, DiagramRef } from './utils';
 
 export const ADD_DIAGRAM = 'ADD_DIAGRAM';
-export const addDiagram = (diagramId: string) => {
-    return createDiagramAction(ADD_DIAGRAM, diagramId);
+export const addDiagram = (diagramId?: string) => {
+    return createDiagramAction(ADD_DIAGRAM, diagramId || MathHelper.guid());
 };
 
 export const SELECT_DIAGRAM = 'SELECT_DIAGRAM';
-export const selectDiagram = (diagram: Diagram) => {
+export const selectDiagram = (diagram: DiagramRef) => {
     return createDiagramAction(SELECT_DIAGRAM, diagram);
 };
 
 export const REMOVE_DIAGRAM = 'REMOVE_DiAGRAM';
-export const removeDiagram = (diagram: Diagram) => {
+export const removeDiagram = (diagram: DiagramRef) => {
     return createDiagramAction(REMOVE_DIAGRAM, diagram);
 };
 
 export const MOVE_DIAGRAM = 'MOVE_DIAGRAM';
-export const moveDiagram = (diagram: Diagram, position: number) => {
+export const moveDiagram = (diagram: DiagramRef, position: number) => {
     return createDiagramAction(MOVE_DIAGRAM, diagram, { position });
 };
 

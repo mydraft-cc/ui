@@ -7,7 +7,6 @@ import { Shortcut } from '@app/core';
 
 import {
     Diagram,
-    DiagramItem,
     DiagramItemSet,
     EditorState,
     getSelection,
@@ -27,10 +26,10 @@ interface ClipboardMenuProps {
     selectedDiagram: Diagram | null;
 
     // The selected items.
-    selectedItems: DiagramItem[];
+    selectedItemIds: string[];
 
     // Remove items.
-    removeItems: (diagram: Diagram, items: DiagramItem[]) => void;
+    removeItems: (diagram: Diagram, items: string[]) => void;
 
     // Ungroup items.
     pasteItems: (diagram: Diagram, json: string, offset?: number) => void;
@@ -47,7 +46,7 @@ const mapStateToProps = (state: { editor: UndoableState<EditorState> }) => {
 
     return {
         selectedDiagram: diagram,
-        selectedItems: items,
+        selectedItemIds: items.map(x => x.id),
         canCopy: items.length > 0
     };
 };
@@ -68,7 +67,7 @@ class ClipboardMenu extends React.PureComponent<ClipboardMenuProps, ClipboardMen
     private doCopy = (serializer: Serializer) => {
         const set =
             DiagramItemSet.createFromDiagram(
-                this.props.selectedItems.map(x => x.id),
+                this.props.selectedItemIds,
                 this.props.selectedDiagram!);
 
         this.setState({ offset: 0, clipboard: serializer.serializeSet(set) });
@@ -77,7 +76,7 @@ class ClipboardMenu extends React.PureComponent<ClipboardMenuProps, ClipboardMen
     private doCut = (serializer: Serializer) => {
         this.doCopy(serializer);
 
-        this.props.removeItems(this.props.selectedDiagram!, this.props.selectedItems);
+        this.props.removeItems(this.props.selectedDiagram!, this.props.selectedItemIds);
     }
 
     private doPaste = () => {

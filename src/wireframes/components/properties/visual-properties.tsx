@@ -9,7 +9,6 @@ import { Color, ColorPicker } from '@app/core';
 
 import {
     changeItemsAppearance,
-    Diagram,
     DiagramItem,
     DiagramItemSet,
     DiagramShape,
@@ -20,7 +19,7 @@ import {
 
 interface VisualPropertiesProps {
     // The selected diagram.
-    selectedDiagram: Diagram | null;
+    selectedDiagramId: string | null;
 
     // The selected items.
     selectedItems: DiagramItem[];
@@ -44,11 +43,11 @@ interface VisualPropertiesProps {
     textAlignment: string;
 
     // Orders the items.
-    changeItemsAppearance: (diagram: Diagram, items: DiagramItem[], key: string, val: any) => any;
+    changeItemsAppearance: (diagram: string, items: DiagramItem[], key: string, val: any) => any;
 }
 
 const mapStateToProps = (state: { editor: UndoableState<EditorState> }) => {
-    const { diagram, items } = getSelection(state);
+    const { diagram, editor, items } = getSelection(state);
 
     let set: DiagramItemSet | null = null;
 
@@ -78,7 +77,7 @@ const mapStateToProps = (state: { editor: UndoableState<EditorState> }) => {
     }
 
     return {
-        selectedDiagram: diagram,
+        selectedDiagramId: editor.selectedDiagramId,
         selectedItems: items,
         backgroundColor: uniqueAppearance(DiagramShape.APPEARANCE_BACKGROUND_COLOR, x => Color.fromValue(x), (l, r) => l.eq(r)),
         fontSize: uniqueAppearance(DiagramShape.APPEARANCE_FONT_SIZE, x => x, (l, r) => l !== r),
@@ -102,19 +101,19 @@ const VisualProperties = (props: VisualPropertiesProps) => {
     };
 
     const doAlignText = (value: string) => {
-        props.changeItemsAppearance(props.selectedDiagram!, props.selectedItems, DiagramShape.APPEARANCE_TEXT_ALIGNMENT, value);
+        props.changeItemsAppearance(props.selectedDiagramId!, props.selectedItems, DiagramShape.APPEARANCE_TEXT_ALIGNMENT, value);
     };
 
     const doChangeAppearance = (key: string, value: any) => {
-        props.changeItemsAppearance(props.selectedDiagram!, props.selectedItems, DiagramShape.APPEARANCE_FONT_SIZE, value);
+        props.changeItemsAppearance(props.selectedDiagramId!, props.selectedItems, DiagramShape.APPEARANCE_FONT_SIZE, value);
     };
 
-    const doAlignTextLeft = () => doAlignText('left');
+    const doAlignTextLeft =   () => doAlignText('left');
     const doAlignTextCenter = () =>  doAlignText('center');
-    const doAlignTextRight = () => doAlignText('right');
+    const doAlignTextRight =  () => doAlignText('right');
 
-    const doChangeFontSize = (value: any) => doChangeAppearance(DiagramShape.APPEARANCE_FONT_SIZE, value);
-    const doChangeStrokeColor = (value: any) => doChangeAppearance(DiagramShape.APPEARANCE_STROKE_COLOR, value);
+    const doChangeFontSize =    	(value: any) => doChangeAppearance(DiagramShape.APPEARANCE_FONT_SIZE, value);
+    const doChangeStrokeColor =     (value: any) => doChangeAppearance(DiagramShape.APPEARANCE_STROKE_COLOR, value);
     const doChangeStrokeThickness = (value: any) => doChangeAppearance(DiagramShape.APPEARANCE_STROKE_THICKNESS, value);
     const doChangeForegroundColor = (value: any) => doChangeAppearance(DiagramShape.APPEARANCE_FOREGROUND_COLOR, value);
     const doChangeBackgroundColor = (value: any) => doChangeAppearance(DiagramShape.APPEARANCE_BACKGROUND_COLOR, value);
@@ -129,7 +128,7 @@ const VisualProperties = (props: VisualPropertiesProps) => {
 
     return (
         <>
-            {props.selectedDiagram &&
+            {props.selectedDiagramId &&
                 <div style={{display: (props.selectedItems.length > 0 ? 'block' : 'none') }}>
                     <div className='property-subsection visual-properties'>
                         <Row className='property'>

@@ -1,23 +1,25 @@
 import { Reducer } from 'redux';
 
 import {
-    Diagram,
-    DiagramItem,
     DiagramItemSet,
     DiagramVisual,
     EditorState,
     Transform
 } from '@app/wireframes/model';
 
-import { createItemsAction } from './utils';
+import {
+    createItemsAction,
+    DiagramRef,
+    ItemsRef
+} from './utils';
 
 export const CHANGE_ITEMS_APPEARANCE = 'CHANGE_ITEMS_APPEARANCE';
-export const changeItemsAppearance = (diagram: Diagram, visuals: DiagramVisual[], key: string, val: any) => {
+export const changeItemsAppearance = (diagram: DiagramRef, visuals: ItemsRef, key: string, val: any) => {
     return createItemsAction(CHANGE_ITEMS_APPEARANCE, diagram, visuals, { appearance: { key, val } });
 };
 
 export const TRANSFORM_ITEMS = 'TRANSFORM_ITEMS';
-export const transformItems = (diagram: Diagram, items: DiagramItem[], oldBounds: Transform, newBounds: Transform) => {
+export const transformItems = (diagram: DiagramRef, items: ItemsRef, oldBounds: Transform, newBounds: Transform) => {
     return createItemsAction(TRANSFORM_ITEMS, diagram, items, { oldBounds: oldBounds.toJS(), newBounds: newBounds.toJS() });
 };
 

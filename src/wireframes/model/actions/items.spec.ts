@@ -128,7 +128,7 @@ describe('ItemsReducer', () => {
     it('should add visual and select this visual', () => {
         const shapeId = 'shape';
 
-        const action = addVisual(diagram, 'Button', 100, 20, shapeId);
+        const action = addVisual(diagram, 'Button', 100, 20, { }, shapeId);
         const state_1 = EditorState.empty().addDiagram(diagram);
         const state_2 = reducer(state_1, action);
 
@@ -143,7 +143,7 @@ describe('ItemsReducer', () => {
     it('should add visual with default properties and select this visual', () => {
         const shapeId = 'shape';
 
-        const action = addVisual(diagram, 'Button', 100, 20, shapeId, { TEXT: 'hello' });
+        const action = addVisual(diagram, 'Button', 100, 20, { TEXT: 'hello' }, shapeId);
         const state_1 = EditorState.empty().addDiagram(diagram);
         const state_2 = reducer(state_1, action);
 

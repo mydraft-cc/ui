@@ -1,6 +1,6 @@
 import { Reducer } from 'redux';
 
-import { Vec2 } from '@app/core';
+import { MathHelper, Vec2 } from '@app/core';
 
 import {
     Diagram,
@@ -13,37 +13,42 @@ import {
     Serializer
 } from '@app/wireframes/model';
 
-import { createDiagramAction, createItemsAction } from './utils';
+import {
+    createDiagramAction,
+    createItemsAction,
+    DiagramRef,
+    ItemsRef
+} from './utils';
 
 // tslint:disable:no-shadowed-variable
 
 export const ADD_VISUAL = 'ADD_VISUAL';
-export const addVisual = (diagram: Diagram, renderer: string, x: number, y: number, shapeId: string, properties?: object) => {
-    return createDiagramAction(ADD_VISUAL, diagram, { shapeId, renderer, position: { x, y }, properties });
+export const addVisual = (diagram: DiagramRef, renderer: string, x: number, y: number, properties?: object, shapeId?: string) => {
+    return createDiagramAction(ADD_VISUAL, diagram, { shapeId: shapeId || MathHelper.guid(), renderer, position: { x, y }, properties });
 };
 
 export const ADD_IMAGE = 'ADD_IMAGE';
-export const addImage = (diagram: Diagram, source: string, x: number, y: number, w: number, h: number, shapeId: string) => {
-    return createDiagramAction(ADD_IMAGE, diagram, { shapeId, source, position: { x, y }, size: { w, h } });
+export const addImage = (diagram: DiagramRef, source: string, x: number, y: number, w: number, h: number, shapeId?: string) => {
+    return createDiagramAction(ADD_IMAGE, diagram, { shapeId: shapeId || MathHelper.guid(), source, position: { x, y }, size: { w, h } });
 };
 
 export const ADD_ICON = 'ADD_ICON';
-export const addIcon = (diagram: Diagram, char: string, x: number, y: number, shapeId: string) => {
-    return createDiagramAction(ADD_ICON, diagram, { shapeId, char, position: { x, y } });
+export const addIcon = (diagram: DiagramRef, char: string, x: number, y: number, shapeId?: string) => {
+    return createDiagramAction(ADD_ICON, diagram, { shapeId: shapeId || MathHelper.guid(), char, position: { x, y } });
 };
 
 export const SELECT_ITEMS = 'SELECT_ITEMS';
-export const selectItems = (diagram: Diagram, itemIds: string[]) => {
+export const selectItems = (diagram: DiagramRef, itemIds: ItemsRef) => {
     return createItemsAction(SELECT_ITEMS, diagram, itemIds);
 };
 
 export const REMOVE_ITEMS = 'REMOVE_ITEMS';
-export const removeItems = (diagram: Diagram, items: DiagramItem[]) => {
+export const removeItems = (diagram: DiagramRef, items: ItemsRef) => {
     return createItemsAction(REMOVE_ITEMS, diagram, items);
 };
 
 export const PASTE_ITEMS = 'PASTE_ITEMS';
-export const pasteItems = (diagram: Diagram, json: string, offset = 0) => {
+export const pasteItems = (diagram: DiagramRef, json: string, offset = 0) => {
     return createDiagramAction(PASTE_ITEMS, diagram, { json, offset });
 };
 

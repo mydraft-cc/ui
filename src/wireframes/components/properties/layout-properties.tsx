@@ -15,7 +15,6 @@ import {
     alignItems,
     BRING_FORWARDS,
     BRING_TO_FRONT,
-    Diagram,
     DiagramItem,
     DISTRIBUTE_H,
     DISTRIBUTE_V,
@@ -29,7 +28,7 @@ import {
 
 interface LayoutPropertiesProps {
     // The selected diagram.
-    selectedDiagram: Diagram | null;
+    selectedDiagramId: string | null;
 
     // The selected items.
     selectedItems: DiagramItem[];
@@ -44,17 +43,17 @@ interface LayoutPropertiesProps {
     canDistribute: boolean;
 
     // Orders the items.
-    orderItems: (mode: string, diagram: Diagram, items: DiagramItem[]) => any;
+    orderItems: (mode: string, diagram: string, items: DiagramItem[]) => any;
 
     // Align the items.
-    alignItems: (mode: string, diagram: Diagram, items: DiagramItem[]) => any;
+    alignItems: (mode: string, diagram: string, items: DiagramItem[]) => any;
 }
 
 const mapStateToProps = (state: { editor: UndoableState<EditorState> }) => {
-    const { diagram, items } = getSelection(state);
+    const { editor, items } = getSelection(state);
 
     return {
-        selectedDiagram: diagram,
+        selectedDiagramId: editor.selectedDiagramId,
         selectedItems: items,
         canAlign: items.length > 1,
         canOrder: items.length > 0,
@@ -68,11 +67,11 @@ const mapDispatchToProps = (dispatch: Dispatch<any>) => bindActionCreators({
 
 const LayoutProperties = (props: LayoutPropertiesProps) => {
     const doOrder = (mode: string) => {
-        props.orderItems(mode, props.selectedDiagram!, props.selectedItems);
+        props.orderItems(mode, props.selectedDiagramId!, props.selectedItems);
     };
 
     const doAlign = (mode: string) => {
-        props.alignItems(mode, props.selectedDiagram!, props.selectedItems);
+        props.alignItems(mode, props.selectedDiagramId!, props.selectedItems);
     };
 
     const doAlignHLeft   = () => doAlign(ALIGN_H_LEFT);
@@ -93,7 +92,7 @@ const LayoutProperties = (props: LayoutPropertiesProps) => {
 
     return (
         <>
-            {props.selectedDiagram &&
+            {props.selectedDiagramId &&
                 <>
                     <div className='properties-subsection layout-properties'>
                         <Button disabled={!props.canAlign} onClick={doAlignHLeft}>

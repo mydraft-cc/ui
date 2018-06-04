@@ -1,21 +1,26 @@
 import { Reducer } from 'redux';
 
+import { MathHelper } from '@app/core';
+
 import {
     Diagram,
     DiagramGroup,
-    DiagramItem,
     EditorState
 } from '@app/wireframes/model';
 
-import { createItemsAction } from './utils';
+import {
+    createItemsAction,
+    DiagramRef,
+    ItemsRef
+} from './utils';
 
 export const GROUP_ITEMS = 'GROUP_ITEMS';
-export const groupItems = (diagram: Diagram, items: DiagramItem[], groupId?: string) => {
-    return createItemsAction(GROUP_ITEMS, diagram, items, { groupId });
+export const groupItems = (diagram: DiagramRef, items: ItemsRef, groupId?: string) => {
+    return createItemsAction(GROUP_ITEMS, diagram, items, { groupId: groupId || MathHelper.guid() });
 };
 
 export const UNGROUP_ITEMS = 'UNGROUP_ITEMS';
-export const ungroupItems = (diagram: Diagram, groups: DiagramGroup[]) => {
+export const ungroupItems = (diagram: Diagram, groups: ItemsRef) => {
     return createItemsAction(UNGROUP_ITEMS, diagram, groups);
 };
 

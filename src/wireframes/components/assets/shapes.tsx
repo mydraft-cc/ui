@@ -5,15 +5,13 @@ import { bindActionCreators, Dispatch } from 'redux';
 
 import './shapes.scss';
 
-import { Grid, MathHelper } from '@app/core';
+import { Grid } from '@app/core';
 
 import {
     addVisual,
     AssetsState,
-    Diagram,
     EditorState,
     filterShapes,
-    getSelection,
     ShapeInfo,
     UndoableState
 } from '@app/wireframes/model';
@@ -28,24 +26,22 @@ interface ShapesProps {
     shapesFilter: string;
 
     // The selected diagram.
-    selectedDiagram: Diagram | null;
+    selectedDiagramId: string | null;
 
     // Filter the shapes.
     filterShapes: (value: string) => any;
 
     // Adds an visual.
-    addVisualToPosition: (diagram: Diagram, renderer: string) => any;
+    addVisualToPosition: (diagram: string, renderer: string) => any;
 }
 
-const addVisualToPosition = (diagram: Diagram, renderer: string) => {
-    return addVisual(diagram, renderer, 100, 100, MathHelper.guid());
+const addVisualToPosition = (diagram: string, renderer: string) => {
+    return addVisual(diagram, renderer, 100, 100);
 };
 
 const mapStateToProps = (state: { assets: AssetsState, editor: UndoableState<EditorState> }) => {
-    const { diagram } = getSelection(state);
-
     return {
-        selectedDiagram: diagram,
+        selectedDiagramId: state.editor.present.selectedDiagramId,
         shapesFiltered: state.assets.shapesFiltered,
         shapesFilter: state.assets.shapesFilter
     };
@@ -58,8 +54,8 @@ const mapDispatchToProps = (dispatch: Dispatch<any>) => bindActionCreators({
 const Shapes = (props: ShapesProps) => {
     const cellRenderer = (shape: ShapeInfo) => {
         const doAdd = () => {
-            if (props.selectedDiagram) {
-                props.addVisualToPosition(props.selectedDiagram, shape.name);
+            if (props.selectedDiagramId) {
+                props.addVisualToPosition(props.selectedDiagramId, shape.name);
             }
         };
 

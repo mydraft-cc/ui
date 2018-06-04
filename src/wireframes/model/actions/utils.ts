@@ -1,6 +1,10 @@
 import { Diagram, DiagramItem } from '@app/wireframes/model';
 
-export function createItemsAction(type: string, diagram: Diagram, items: string[] | DiagramItem[], payload?: {}): any {
+export type DiagramRef = string | Diagram;
+
+export type ItemsRef = string[] | DiagramItem[];
+
+export function createItemsAction(type: string, diagram: DiagramRef, items: ItemsRef, payload?: {}): any {
     payload = payload || {};
 
     const itemIds: string[] = [];
@@ -18,7 +22,7 @@ export function createItemsAction(type: string, diagram: Diagram, items: string[
     return createDiagramAction(type, diagram, payload);
 }
 
-export function createDiagramAction(type: string, diagram: Diagram | string, payload?: {}): any {
+export function createDiagramAction(type: string, diagram: DiagramRef, payload?: {}): any {
     payload = payload || {};
 
     if (diagram instanceof Diagram) {

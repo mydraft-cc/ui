@@ -1,12 +1,14 @@
 import { Reducer } from 'redux';
 
 import {
-    Diagram,
-    DiagramItem,
     EditorState
 } from '@app/wireframes/model';
 
-import { createItemsAction } from './utils';
+import {
+    createItemsAction,
+    DiagramRef,
+    ItemsRef
+} from './utils';
 
 export const BRING_TO_FRONT = 'BRING_TO_FRONT';
 export const BRING_FORWARDS = 'BRING_FORWARDS';
@@ -14,7 +16,7 @@ export const SEND_BACKWARDS = 'SEND_BACKWARDS';
 export const SEND_TO_BACK = 'SEND_TO_BACK';
 
 export const ORDER_ITEMS = 'ORDER_ITEMS';
-export const orderItems = (mode: string, diagram: Diagram, items: DiagramItem[]) => {
+export const orderItems = (mode: string, diagram: DiagramRef, items: ItemsRef) => {
     return createItemsAction(ORDER_ITEMS, diagram, items, { mode });
 };
 

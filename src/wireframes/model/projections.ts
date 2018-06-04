@@ -11,7 +11,7 @@ export const getSelection = (state: { editor: UndoableState<EditorState> }) => {
 
     const items =
         diagram ?
-        diagram.selectedItemIds.map(i => diagram.items.get(i)).filter(i => !!i) :
+        diagram.selectedItemIds.map(i => diagram.items.get(i)).filter(i => !!i).map(x => x!) :
         [];
 
     return { editor, diagram, items };
