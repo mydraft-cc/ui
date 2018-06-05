@@ -45,7 +45,7 @@ export class Checkbox extends AbstractControl {
     }
 
     public createDefaultShape(shapeId: string): DiagramShape {
-        return DiagramShape.createShape(this.identifier(), 104, 36, CONFIGURABLE, DEFAULT_APPEARANCE, shapeId, CONSTRAINT);
+        return DiagramShape.createShape(shapeId, this.identifier(), 104, 36, CONFIGURABLE, DEFAULT_APPEARANCE, CONSTRAINT);
     }
 
     protected renderInternal(ctx: AbstractContext) {

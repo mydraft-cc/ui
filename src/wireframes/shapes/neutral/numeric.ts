@@ -21,7 +21,7 @@ export class Numeric extends AbstractControl {
     }
 
     public createDefaultShape(shapeId: string): DiagramShape {
-        return DiagramShape.createShape(this.identifier(), 80, 30, undefined, DEFAULT_APPEARANCE, shapeId);
+        return DiagramShape.createShape(shapeId, this.identifier(), 80, 30, undefined, DEFAULT_APPEARANCE);
     }
 
     protected renderInternal(ctx: AbstractContext) {

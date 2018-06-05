@@ -16,7 +16,7 @@ export class Icon extends AbstractControl {
     }
 
     public createDefaultShape(shapeId: string): DiagramShape {
-        return DiagramShape.createShape(this.identifier(), 40, 40, undefined, DEFAULT_APPEARANCE, shapeId);
+        return DiagramShape.createShape(shapeId, this.identifier(), 40, 40, undefined, DEFAULT_APPEARANCE);
     }
 
     protected renderInternal(ctx: AbstractContext) {

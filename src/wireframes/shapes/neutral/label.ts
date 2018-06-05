@@ -16,7 +16,7 @@ export class Label extends AbstractControl {
     }
 
     public createDefaultShape(shapeId: string): DiagramShape {
-        return DiagramShape.createShape(this.identifier(), 46, 30, undefined, DEFAULT_APPEARANCE, shapeId, CONSTRAINT);
+        return DiagramShape.createShape(shapeId, this.identifier(), 46, 30, undefined, DEFAULT_APPEARANCE, CONSTRAINT);
     }
 
     protected renderInternal(ctx: AbstractContext) {

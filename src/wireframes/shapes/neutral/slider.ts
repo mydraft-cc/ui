@@ -40,7 +40,7 @@ export class Slider extends AbstractControl {
     }
 
     public createDefaultShape(shapeId: string): DiagramShape {
-        return DiagramShape.createShape(this.identifier(), 150, HEIGHT_TOTAL, CONFIGURABLES, DEFAULT_APPEARANCE, shapeId, CONSTRAINT);
+        return DiagramShape.createShape(shapeId, this.identifier(), 150, HEIGHT_TOTAL, CONFIGURABLES, DEFAULT_APPEARANCE, CONSTRAINT);
     }
 
     protected renderInternal(ctx: AbstractContext) {

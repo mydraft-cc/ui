@@ -1,6 +1,5 @@
 import {
     ImmutableList,
-    MathHelper,
     Rotation,
     Types
 } from '@app/core';
@@ -22,13 +21,13 @@ export class DiagramGroup extends DiagramContainer {
         super(id, childIds);
     }
 
-    public static createGroup(childIds: ImmutableList<string> | string[], rotation?: Rotation, id?: string): DiagramGroup {
+    public static createGroup(id: string, childIds: ImmutableList<string> | string[], rotation?: Rotation): DiagramGroup {
         let result: DiagramGroup;
 
         if (Types.isArrayOfString(childIds)) {
-            result = new DiagramGroup(id || MathHelper.guid(), ImmutableList.of(...childIds), rotation || Rotation.ZERO);
+            result = new DiagramGroup(id, ImmutableList.of(...childIds), rotation || Rotation.ZERO);
         } else {
-            result = new DiagramGroup(id || MathHelper.guid(), childIds, Rotation.ZERO);
+            result = new DiagramGroup(id, childIds, Rotation.ZERO);
         }
 
         Object.freeze(result);

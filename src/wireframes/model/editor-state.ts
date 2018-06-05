@@ -16,7 +16,7 @@ export class EditorState {
     }
 
     public addDiagram(diagram: Diagram): EditorState {
-        return this.clone(this.diagrams.add(diagram), this.selectedDiagramId);
+        return this.clone(this.diagrams.add(diagram), diagram ? diagram.id : this.selectedDiagramId);
     }
 
     public removeDiagram(diagramId: string): EditorState {

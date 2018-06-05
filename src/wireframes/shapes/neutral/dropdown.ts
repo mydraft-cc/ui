@@ -20,7 +20,7 @@ export class Dropdown extends AbstractControl {
     }
 
     public createDefaultShape(shapeId: string): DiagramShape {
-        return DiagramShape.createShape(this.identifier(), 120, 30, undefined, DEFAULT_APPEARANCE, shapeId);
+        return DiagramShape.createShape(shapeId, this.identifier(), 120, 30, undefined, DEFAULT_APPEARANCE);
     }
 
     protected renderInternal(ctx: AbstractContext) {

@@ -1,18 +1,16 @@
-
-import { EditorState, UndoableState } from '@app/wireframes/model';
+import {
+    DiagramItem,
+    EditorState,
+    UndoableState
+} from '@app/wireframes/model';
 
 export const getSelection = (state: { editor: UndoableState<EditorState> }) => {
     const editor = state.editor.present;
 
-    const diagram =
-        editor.selectedDiagramId ?
-        editor.diagrams.get(editor.selectedDiagramId) || null :
-        null;
+    const diagram = editor.diagrams.get(editor.selectedDiagramId!)!;
 
-    const items =
-        diagram ?
-        diagram.selectedItemIds.map(i => diagram.items.get(i)).filter(i => !!i).map(x => x!) :
-        [];
+    const selectedIds = diagram.selectedItemIds;
+    const selectedItems = <DiagramItem[]>selectedIds.map(i => diagram.items.get(i));
 
-    return { editor, diagram, items };
+    return { editor, diagram, items: selectedItems };
 };

@@ -2,7 +2,7 @@ import { UndoableState } from '@app/wireframes/model';
 
 describe('UndoableState', () => {
     it('should create new state', () => {
-        const state_1: UndoableState<number> = UndoableState.create(Number.MAX_VALUE, 13);
+        const state_1: UndoableState<number> = UndoableState.create(13);
 
         expect(state_1.canRedo).toBeFalsy();
         expect(state_1.canUndo).toBeFalsy();
@@ -10,7 +10,7 @@ describe('UndoableState', () => {
     });
 
     it('should limit history', () => {
-        const state_1: UndoableState<number> = UndoableState.create(2, 13);
+        const state_1: UndoableState<number> = UndoableState.create(13, 2);
         const state_2 = state_1.executed(14);
         const state_3 = state_2.executed(15);
         const state_4 = state_3.executed(16);
@@ -25,7 +25,7 @@ describe('UndoableState', () => {
     });
 
     it('should return original state when cannot undo or redo', () => {
-        const state_1: UndoableState<number> = UndoableState.create(Number.MAX_VALUE, 13);
+        const state_1: UndoableState<number> = UndoableState.create(13);
         const state_2 = state_1.undo();
         const state_3 = state_2.redo();
 
@@ -33,7 +33,7 @@ describe('UndoableState', () => {
     });
 
     it('should undo and redo execution', () => {
-        const state_1: UndoableState<number> = UndoableState.create(Number.MAX_VALUE, 13);
+        const state_1: UndoableState<number> = UndoableState.create(13);
         const state_2 = state_1.executed(15);
 
         expect(state_2.canRedo).toBeFalsy();
@@ -54,7 +54,7 @@ describe('UndoableState', () => {
     });
 
     it('should keep past and future when replacing present', () => {
-        const state_1: UndoableState<number> = UndoableState.create(Number.MAX_VALUE, 13);
+        const state_1: UndoableState<number> = UndoableState.create(13);
         const state_2 = state_1.executed(14);
         const state_3 = state_2.executed(15);
         const state_4 = state_3.undo();
@@ -69,7 +69,7 @@ describe('UndoableState', () => {
         const action1 = {};
         const action2 = {};
 
-        const state_1: UndoableState<number> = UndoableState.create(Number.MAX_VALUE, 13);
+        const state_1: UndoableState<number> = UndoableState.create(13);
         const state_2 = state_1.executed(14, action1);
         const state_3 = state_2.executed(15, action2);
 

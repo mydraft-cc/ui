@@ -20,7 +20,7 @@ export class Link extends AbstractControl {
     }
 
     public createDefaultShape(shapeId: string): DiagramShape {
-        return DiagramShape.createShape(this.identifier(), 40, 30, undefined, DEFAULT_APPEARANCE, shapeId, CONSTRAINT);
+        return DiagramShape.createShape(shapeId, this.identifier(), 40, 30, undefined, DEFAULT_APPEARANCE, CONSTRAINT);
     }
 
     protected renderInternal(ctx: AbstractContext) {

@@ -31,7 +31,7 @@ export function grouping(): Reducer<EditorState> {
                 return state.updateDiagram(action.payload.diagramId, diagram => {
                     const groupId = action.payload.groupId;
 
-                    return diagram.group(action.payload.itemIds, groupId).selectItems([groupId]);
+                    return diagram.group(groupId, action.payload.itemIds).selectItems([groupId]);
                 });
             case UNGROUP_ITEMS:
                 return state.updateDiagram(action.payload.diagramId, diagram => {

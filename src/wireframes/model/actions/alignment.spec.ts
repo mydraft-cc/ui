@@ -1,4 +1,4 @@
-import { Vec2 } from '@app/core';
+import { MathHelper, Vec2 } from '@app/core';
 
 import {
     ALIGN_H_CENTER,
@@ -18,25 +18,27 @@ import {
 
 describe('AlignmentReducer', () => {
     const reducer = alignment();
-    const shape1 = DiagramShape.createShape('btn', 20, 20).transformWith(t => t.moveTo(new Vec2(100, 100)));
-    const shape2 = DiagramShape.createShape('btn', 40, 40).transformWith(t => t.moveTo(new Vec2(200, 200)));
-    const shape3 = DiagramShape.createShape('btn', 80, 80).transformWith(t => t.moveTo(new Vec2(300, 300)));
+    const shape1 = DiagramShape.createShape(MathHelper.guid(), 'btn', 20, 20).transformWith(t => t.moveTo(new Vec2(100, 100)));
+    const shape2 = DiagramShape.createShape(MathHelper.guid(), 'btn', 40, 40).transformWith(t => t.moveTo(new Vec2(200, 200)));
+    const shape3 = DiagramShape.createShape(MathHelper.guid(), 'btn', 80, 80).transformWith(t => t.moveTo(new Vec2(300, 300)));
     const diagram =
-        Diagram.empty()
+        Diagram.empty(MathHelper.guid())
             .addVisual(shape1)
             .addVisual(shape2)
             .addVisual(shape3);
 
     it('should return same state if action is unknown', () => {
+        const action = { type: 'UNKNOWN' };
         const state_1 = EditorState.empty();
-        const state_2 = reducer(state_1, { type: 'UNKNOWN' });
+        const state_2 = reducer(state_1, action);
 
         expect(state_2).toBe(state_1);
     });
 
     it('should return same state if action has unknown alignment type', () => {
+        const action = alignItems('UNKNOWN', diagram, []);
         const state_1 = EditorState.empty();
-        const state_2 = reducer(state_1, alignItems('UNKNOWN', diagram, []));
+        const state_2 = reducer(state_1, action);
 
         expect(state_2).toBe(state_1);
     });

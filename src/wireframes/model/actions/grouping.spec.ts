@@ -1,3 +1,5 @@
+import { MathHelper } from '@app/core';
+
 import {
     Diagram,
     DiagramGroup,
@@ -21,9 +23,9 @@ describe('GroupingReducer', () => {
 
     it('should group shapes and select new group', () => {
         const diagram =
-            Diagram.empty()
-                .addVisual(DiagramShape.createShape('btn', 100, 100))
-                .addVisual(DiagramShape.createShape('btn', 100, 100));
+            Diagram.empty(MathHelper.guid())
+                .addVisual(DiagramShape.createShape(MathHelper.guid(), 'btn', 100, 100))
+                .addVisual(DiagramShape.createShape(MathHelper.guid(), 'btn', 100, 100));
 
         const groupId = 'group1';
 
@@ -42,21 +44,21 @@ describe('GroupingReducer', () => {
         const groupId2 = 'group2';
 
         let diagram =
-            Diagram.empty()
-                .addVisual(DiagramShape.createShape('btn', 100, 100))
-                .addVisual(DiagramShape.createShape('btn', 100, 100))
-                .addVisual(DiagramShape.createShape('btn', 100, 100))
-                .addVisual(DiagramShape.createShape('btn', 100, 100));
+            Diagram.empty(MathHelper.guid())
+                .addVisual(DiagramShape.createShape(MathHelper.guid(), 'btn', 100, 100))
+                .addVisual(DiagramShape.createShape(MathHelper.guid(), 'btn', 100, 100))
+                .addVisual(DiagramShape.createShape(MathHelper.guid(), 'btn', 100, 100))
+                .addVisual(DiagramShape.createShape(MathHelper.guid(), 'btn', 100, 100));
 
         const shapes = diagram.items.toArray();
 
-        diagram = diagram.group([shapes[0].id, shapes[1].id], groupId1);
-        diagram = diagram.group([shapes[2].id, shapes[3].id], groupId2);
+        diagram = diagram.group(groupId1, [shapes[0].id, shapes[1].id]);
+        diagram = diagram.group(groupId2, [shapes[2].id, shapes[3].id]);
 
         const group1 = <DiagramGroup>diagram.items.get(groupId1);
         const group2 = <DiagramGroup>diagram.items.get(groupId2);
 
-        const action = ungroupItems(diagram, [group1, group2, DiagramGroup.createGroup([])]);
+        const action = ungroupItems(diagram, [group1, group2, DiagramGroup.createGroup(MathHelper.guid(), [])]);
         const state_1 = EditorState.empty().addDiagram(diagram);
         const state_2 = reducer(state_1, action);
 

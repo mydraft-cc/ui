@@ -1,4 +1,8 @@
-import { Rotation, Vec2 } from '@app/core';
+import {
+    MathHelper,
+    Rotation,
+    Vec2
+} from '@app/core';
 
 import {
     appearance,
@@ -11,10 +15,11 @@ import {
 } from '@app/wireframes/model';
 
 describe('GroupingReducer', () => {
-    const shape1 = DiagramShape.createShape('Button', 100, 100);
-    const shape2 = DiagramShape.createShape('Button', 200, 200);
+    const shape1 = DiagramShape.createShape(MathHelper.guid(), 'Button', 100, 100);
+    const shape2 = DiagramShape.createShape(MathHelper.guid(), 'Button', 200, 200);
+
     const diagram =
-        Diagram.empty()
+        Diagram.empty(MathHelper.guid())
             .addVisual(shape1)
             .addVisual(shape2);
 

@@ -8,18 +8,18 @@ import {
 } from '@app/wireframes/model';
 
 describe('DiagramItemSet', () => {
-    const shape1 = DiagramShape.createShape('btn', 100, 50);
-    const shape2 = DiagramShape.createShape('btn', 100, 50);
+    const shape1 = DiagramShape.createShape(MathHelper.guid(), 'btn', 100, 50);
+    const shape2 = DiagramShape.createShape(MathHelper.guid(), 'btn', 100, 50);
 
     it('should instantiate from diagram', () => {
         const groupId = MathHelper.guid();
 
         let diagram =
-            Diagram.empty()
+            Diagram.empty(MathHelper.guid())
                 .addVisual(shape1)
                 .addVisual(shape2);
 
-        diagram = diagram.group([shape1.id, shape2.id], groupId);
+        diagram = diagram.group(groupId, [shape1.id, shape2.id]);
 
         const set = DiagramItemSet.createFromDiagram([groupId, 'unknown'], diagram) !;
 
@@ -32,13 +32,13 @@ describe('DiagramItemSet', () => {
     });
 
     it('should return empty set when ids is null', () => {
-        const set = DiagramItemSet.createFromDiagram(null!, Diagram.empty())!;
+        const set = DiagramItemSet.createFromDiagram(null!, Diagram.empty(MathHelper.guid()))!;
 
         expect(set.allItems).toEqual([]);
     });
 
     it('should be not valid when group children are not in diagram', () => {
-        const set = new DiagramItemSet([DiagramGroup.createGroup(['id1'])], []);
+        const set = new DiagramItemSet([DiagramGroup.createGroup(MathHelper.guid(), ['notfound'])], []);
 
         expect(set.isValid).toBeFalsy();
     });
@@ -46,19 +46,19 @@ describe('DiagramItemSet', () => {
     it('should be able to add to diagram when created from new shapes', () => {
         const set = new DiagramItemSet([], [shape1]);
 
-        expect(set.canAdd(Diagram.empty())).toBeTruthy();
+        expect(set.canAdd(Diagram.empty(MathHelper.guid()))).toBeTruthy();
     });
 
     it('should be not able to add and remove when set is not valid', () => {
-        const set = new DiagramItemSet([DiagramGroup.createGroup(['d1'])], []);
+        const set = new DiagramItemSet([DiagramGroup.createGroup(MathHelper.guid(), ['d1'])], []);
 
-        expect(set.canAdd(Diagram.empty())).toBeFalsy();
-        expect(set.canRemove(Diagram.empty())).toBeFalsy();
+        expect(set.canAdd(Diagram.empty(MathHelper.guid()))).toBeFalsy();
+        expect(set.canRemove(Diagram.empty(MathHelper.guid()))).toBeFalsy();
     });
 
     it('should be not able to add when items are already in diagram', () => {
         let diagram =
-            Diagram.empty()
+            Diagram.empty(MathHelper.guid())
                 .addVisual(shape1)
                 .addVisual(shape2);
 
@@ -71,6 +71,6 @@ describe('DiagramItemSet', () => {
         const set =
             new DiagramItemSet([], [shape1, shape2]);
 
-        expect(set.canRemove(Diagram.empty())).toBeFalsy();
+        expect(set.canRemove(Diagram.empty(MathHelper.guid()))).toBeFalsy();
     });
 });

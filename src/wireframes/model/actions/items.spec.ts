@@ -1,4 +1,8 @@
-import { Rotation, Vec2 } from '@app/core';
+import {
+    MathHelper,
+    Rotation,
+    Vec2
+} from '@app/core';
 
 import {
     addIcon,
@@ -24,16 +28,16 @@ import { Raster }   from '@app/wireframes/shapes/shared/raster';
 
 describe('ItemsReducer', () => {
     const groupId = 'group1';
-    const shape1 = DiagramShape.createShape('Button', 100, 100);
-    const shape2 = DiagramShape.createShape('Button', 100, 100);
-    const shape3 = DiagramShape.createShape('Button', 100, 100);
+    const shape1 = DiagramShape.createShape(MathHelper.guid(), 'Button', 100, 100);
+    const shape2 = DiagramShape.createShape(MathHelper.guid(), 'Button', 100, 100);
+    const shape3 = DiagramShape.createShape(MathHelper.guid(), 'Button', 100, 100);
 
     let diagram =
-        Diagram.empty()
+        Diagram.empty(MathHelper.guid())
             .addVisual(shape1)
             .addVisual(shape2)
             .addVisual(shape3);
-    diagram = diagram.group([shape1.id, shape2.id], groupId);
+    diagram = diagram.group(groupId, [shape1.id, shape2.id]);
 
     const rendererService
         = new RendererService()

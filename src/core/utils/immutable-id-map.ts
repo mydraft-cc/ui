@@ -50,6 +50,10 @@ export class ImmutableIdMap<T extends WithId> {
         return !!items[id];
     }
 
+    public at(index: number) {
+        return this.items[index];
+    }
+
     public toArray(): T[] {
         return [...this.items];
     }
@@ -96,6 +100,19 @@ export class ImmutableIdMap<T extends WithId> {
 
     public moveTo(ids: string[], target: number, relative = false): ImmutableIdMap<T> {
         return this.replace(Collections.withMovedTo(this.items, this.getItems(ids), target, relative));
+    }
+
+    public indexOf(id: string) {
+        let result = -1;
+
+        for (let i = 0; i < this.items.length; i++) {
+            if (this.items[i].id === id) {
+                result = i;
+                break;
+            }
+        }
+
+        return result;
     }
 
     private replace(items: T[]): ImmutableIdMap<T>  {

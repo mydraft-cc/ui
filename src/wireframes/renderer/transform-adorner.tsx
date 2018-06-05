@@ -267,7 +267,7 @@ export class TransformAdorner extends React.Component<TransformAdornerProps> imp
         const delta = Vec2.createRotated(cummulativeTranslation.mulScalar(2), Vec2.ZERO, angle.negate()).mul(this.resizeDragOffset);
 
         const snapResult =
-            this.snapManager.snapResizing(this.props.selectedDiagram!, this.startTransform, delta,
+            this.snapManager.snapResizing(this.props.selectedDiagram, this.startTransform, delta,
                 this.props.interactionService.isShiftKeyPressed(),
                 this.resizeDragOffset.x,
                 this.resizeDragOffset.y);

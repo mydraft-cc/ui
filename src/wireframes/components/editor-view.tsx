@@ -40,7 +40,7 @@ export interface EditorViewProps {
     connectDropTarget?: any;
 
     // The selected diagram.
-    selectedDiagramId: string | null;
+    selectedDiagramId: string;
 
     // Adds an icon.
     addIcon: (diagram: string, char: string, x: number, y: number) => any;
@@ -68,15 +68,10 @@ const mapDispatchToProps = (dispatch: Dispatch<any>) => bindActionCreators({
 }, dispatch);
 
 const AssetTarget: DropTargetSpec<EditorViewProps> = {
-    canDrop: props => {
-        return !!props.selectedDiagramId;
-    },
     drop: (props, monitor, component) => {
-        if (!monitor || !props.selectedDiagramId) {
+        if (!monitor) {
             return;
         }
-
-        const diagramId = props.selectedDiagramId;
 
         const offset = monitor.getSourceClientOffset() || monitor.getClientOffset();
 
@@ -89,14 +84,14 @@ const AssetTarget: DropTargetSpec<EditorViewProps> = {
         const item: any = monitor.getItem();
 
         switch (itemType) {
-            case 'DND_ASSET':
-                props.addVisual(diagramId, item['shape'], x, y);
-                break;
             case 'DND_ICON':
-                props.addIcon(diagramId, item['icon'], x, y);
+                props.addIcon(props.selectedDiagramId, item['icon'], x, y);
+                break;
+            case 'DND_ASSET':
+                props.addVisual(props.selectedDiagramId, item['shape'], x, y);
                 break;
             case NativeTypes.TEXT:
-                props.addVisual(diagramId, 'Label', x, y, { TEXT: item['text'] });
+                props.addVisual(props.selectedDiagramId, 'Label', x, y, { TEXT: item['text'] });
                 break;
             case NativeTypes.FILE: {
                 const files = item.files as File[];
@@ -110,7 +105,7 @@ const AssetTarget: DropTargetSpec<EditorViewProps> = {
                             const imageElement = document.createElement('img');
 
                             imageElement.onload = () => {
-                                props.addImage(diagramId, imageSource, x, y, imageElement.width, imageElement.height);
+                                props.addImage(props.selectedDiagramId, imageSource, x, y, imageElement.width, imageElement.height);
                             };
                             imageElement.src = imageSource;
                         };
@@ -124,7 +119,7 @@ const AssetTarget: DropTargetSpec<EditorViewProps> = {
                 const urls = item.urls as string[];
 
                 for (let url of urls) {
-                    props.addVisual(diagramId, 'Link', x, y, { TEXT: url });
+                    props.addVisual(props.selectedDiagramId, 'Link', x, y, { TEXT: url });
                     break;
                 }
                 break;

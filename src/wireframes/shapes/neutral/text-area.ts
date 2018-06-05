@@ -18,7 +18,7 @@ export class TextArea extends AbstractControl {
     }
 
     public createDefaultShape(shapeId: string): DiagramShape {
-        return DiagramShape.createShape(this.identifier(), 160, 60, undefined, DEFAULT_APPEARANCE, shapeId);
+        return DiagramShape.createShape(shapeId, this.identifier(), 160, 60, undefined, DEFAULT_APPEARANCE);
     }
 
     protected renderInternal(ctx: AbstractContext) {

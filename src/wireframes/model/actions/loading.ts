@@ -1,7 +1,7 @@
 import { Reducer } from 'redux';
 
 import {
-    Diagram,
+    addDiagram,
     EditorLoadingState,
     EditorState,
     UndoableState
@@ -58,20 +58,14 @@ interface EditorPath {
 export function rootLoading(innerReducer: Reducer<any>, editorReducer: Reducer<EditorState>): Reducer<any> {
     const reducer: Reducer<EditorPath> = (state: EditorPath, action: any) => {
         switch (action.type) {
-            case NEW_DIAGRAM:
-            {
-                const diagram = Diagram.empty();
+            case NEW_DIAGRAM: {
+                const initialAction = addDiagram();
+                const initialState = editorReducer(EditorState.empty(), initialAction);
 
-                const editor =
-                    EditorState.empty()
-                        .addDiagram(diagram)
-                        .selectDiagram(diagram.id);
-
-                state = { ...state, editor: UndoableState.create(editor) };
+                state = { ...state, editor: UndoableState.create(initialState, undefined, initialAction) };
                 break;
             }
-            case LOADING_SUCCEEDED:
-            {
+            case LOADING_SUCCEEDED: {
                 let editor = EditorState.empty();
 
                 for (let loadedAction of action.payload) {

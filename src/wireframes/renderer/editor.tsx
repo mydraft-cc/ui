@@ -36,7 +36,7 @@ export interface EditorProps {
     rendererService: RendererService;
 
     // The selected diagram.
-    selectedDiagram: Diagram | null;
+    selectedDiagram: Diagram;
 
     // The selected items.
     selectedItems: DiagramItem[];

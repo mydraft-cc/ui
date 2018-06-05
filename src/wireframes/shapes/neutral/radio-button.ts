@@ -45,7 +45,7 @@ export class RadioButton extends AbstractControl {
     }
 
     public createDefaultShape(shapeId: string): DiagramShape {
-        return DiagramShape.createShape(this.identifier(), 130, 36, CONFIGURABLES, DEFAULT_APPEARANCE, shapeId, CONSTRAINT);
+        return DiagramShape.createShape(shapeId, this.identifier(), 130, 36, CONFIGURABLES, DEFAULT_APPEARANCE, CONSTRAINT);
     }
 
     protected renderInternal(ctx: AbstractContext) {

@@ -19,7 +19,7 @@ import {
 
 interface VisualPropertiesProps {
     // The selected diagram.
-    selectedDiagramId: string | null;
+    selectedDiagramId: string;
 
     // The selected items.
     selectedItems: DiagramItem[];
@@ -101,11 +101,11 @@ const VisualProperties = (props: VisualPropertiesProps) => {
     };
 
     const doAlignText = (value: string) => {
-        props.changeItemsAppearance(props.selectedDiagramId!, props.selectedItems, DiagramShape.APPEARANCE_TEXT_ALIGNMENT, value);
+        props.changeItemsAppearance(props.selectedDiagramId, props.selectedItems, DiagramShape.APPEARANCE_TEXT_ALIGNMENT, value);
     };
 
     const doChangeAppearance = (key: string, value: any) => {
-        props.changeItemsAppearance(props.selectedDiagramId!, props.selectedItems, DiagramShape.APPEARANCE_FONT_SIZE, value);
+        props.changeItemsAppearance(props.selectedDiagramId, props.selectedItems, DiagramShape.APPEARANCE_FONT_SIZE, value);
     };
 
     const doAlignTextLeft =   () => doAlignText('left');
@@ -128,74 +128,72 @@ const VisualProperties = (props: VisualPropertiesProps) => {
 
     return (
         <>
-            {props.selectedDiagramId &&
-                <div style={{display: (props.selectedItems.length > 0 ? 'block' : 'none') }}>
-                    <div className='property-subsection visual-properties'>
-                        <Row className='property'>
-                            <Col span={12} className='property-label'>
-                                Font Size
+            <div style={{display: (props.selectedItems.length > 0 ? 'block' : 'none') }}>
+                <div className='property-subsection visual-properties'>
+                    <Row className='property'>
+                        <Col span={12} className='property-label'>
+                            Font Size
+                    </Col>
+                        <Col span={12} className='property-value'>
+                            <Select value={props.fontSize ? props.fontSize.toString() : undefined} onChange={doChangeFontSize}>
+                                {fontSize}
+                            </Select>
                         </Col>
-                            <Col span={12} className='property-value'>
-                                <Select value={props.fontSize ? props.fontSize.toString() : undefined} onChange={doChangeFontSize}>
-                                    {fontSize}
-                                </Select>
-                            </Col>
-                        </Row>
-                        <Row className='property'>
-                            <Col span={12} className='property-label'>
-                                Stroke Thickness
+                    </Row>
+                    <Row className='property'>
+                        <Col span={12} className='property-label'>
+                            Stroke Thickness
+                    </Col>
+                        <Col span={12} className='property-value'>
+                            <Select value={props.strokeThickness ? props.strokeThickness.toString() : undefined} onChange={doChangeStrokeThickness}>
+                                {strokeThicknesses}
+                            </Select>
                         </Col>
-                            <Col span={12} className='property-value'>
-                                <Select value={props.strokeThickness ? props.strokeThickness.toString() : undefined} onChange={doChangeStrokeThickness}>
-                                    {strokeThicknesses}
-                                </Select>
-                            </Col>
-                        </Row>
-                        <Row className='property'>
-                            <Col span={12} className='property-label'>
-                                Stroke Color
+                    </Row>
+                    <Row className='property'>
+                        <Col span={12} className='property-label'>
+                            Stroke Color
+                    </Col>
+                        <Col span={12} className='property-value'>
+                            <ColorPicker value={props.strokeColor} onChange={doChangeStrokeColor} />
                         </Col>
-                            <Col span={12} className='property-value'>
-                                <ColorPicker value={props.strokeColor} onChange={doChangeStrokeColor} />
-                            </Col>
-                        </Row>
-                        <Row className='property'>
-                            <Col span={12} className='property-label'>
-                                Foreground Color
+                    </Row>
+                    <Row className='property'>
+                        <Col span={12} className='property-label'>
+                            Foreground Color
+                    </Col>
+                        <Col span={12} className='property-value'>
+                            <ColorPicker value={props.foregroundColor} onChange={doChangeForegroundColor} />
                         </Col>
-                            <Col span={12} className='property-value'>
-                                <ColorPicker value={props.foregroundColor} onChange={doChangeForegroundColor} />
-                            </Col>
-                        </Row>
-                        <Row className='property'>
-                            <Col span={12} className='property-label'>
-                                Background Color
+                    </Row>
+                    <Row className='property'>
+                        <Col span={12} className='property-label'>
+                            Background Color
+                    </Col>
+                        <Col span={12} className='property-value'>
+                            <ColorPicker value={props.backgroundColor} onChange={doChangeBackgroundColor} />
                         </Col>
-                            <Col span={12} className='property-value'>
-                                <ColorPicker value={props.backgroundColor} onChange={doChangeBackgroundColor} />
-                            </Col>
-                        </Row>
-                        <Row className='property'>
-                            <Col span={12} className='property-label'>
-                                Text Alignment
+                    </Row>
+                    <Row className='property'>
+                        <Col span={12} className='property-label'>
+                            Text Alignment
+                    </Col>
+                        <Col span={12} className='property-value'>
+                            <Button.Group className='text-alignment'>
+                                <Button type={alignTextType('left')} onClick={doAlignTextLeft}>
+                                    <i className='icon-align-left' />
+                                </Button>
+                                <Button type={alignTextType('center')} onClick={doAlignTextCenter}>
+                                    <i className='icon-align-center' />
+                                </Button>
+                                <Button type={alignTextType('right')} onClick={doAlignTextRight}>
+                                    <i className='icon-align-right' />
+                                </Button>
+                            </Button.Group>
                         </Col>
-                            <Col span={12} className='property-value'>
-                                <Button.Group className='text-alignment'>
-                                    <Button type={alignTextType('left')} onClick={doAlignTextLeft}>
-                                        <i className='icon-align-left' />
-                                    </Button>
-                                    <Button type={alignTextType('center')} onClick={doAlignTextCenter}>
-                                        <i className='icon-align-center' />
-                                    </Button>
-                                    <Button type={alignTextType('right')} onClick={doAlignTextRight}>
-                                        <i className='icon-align-right' />
-                                    </Button>
-                                </Button.Group>
-                            </Col>
-                        </Row>
-                    </div>
+                    </Row>
                 </div>
-            }
+            </div>
         </>
     );
 };

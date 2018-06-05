@@ -7,7 +7,7 @@ import {
 
 describe('Undoable', () => {
     const state_1: UndoableState<number> =
-        UndoableState.create(Number.MAX_VALUE, 13)
+        UndoableState.create(13)
             .executed(14)
             .executed(15)
             .undo();

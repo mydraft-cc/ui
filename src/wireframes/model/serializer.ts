@@ -71,10 +71,9 @@ export class Serializer {
     }
 
     private static deserializeGroup(input: any, id: string, idMap: { [id: string]: string }): DiagramGroup {
-        return DiagramGroup.createGroup(
+        return DiagramGroup.createGroup(id,
             Serializer.deserializeChildIds(input, idMap),
-            Serializer.deserializeRotation(input),
-            id);
+            Serializer.deserializeRotation(input));
     }
 
     private static serializeGroup(group: DiagramGroup) {

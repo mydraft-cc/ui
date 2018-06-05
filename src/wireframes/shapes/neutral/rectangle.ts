@@ -29,7 +29,7 @@ export class Rectangle extends AbstractControl {
     }
 
     public createDefaultShape(shapeId: string): DiagramShape {
-        return DiagramShape.createShape(this.identifier(), 100, 60, CONFIGURABLES, DEFAULT_APPEARANCE, shapeId);
+        return DiagramShape.createShape(shapeId, this.identifier(), 100, 60, CONFIGURABLES, DEFAULT_APPEARANCE);
     }
 
     protected renderInternal(ctx: AbstractContext) {

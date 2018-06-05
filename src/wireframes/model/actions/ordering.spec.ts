@@ -1,3 +1,5 @@
+import { MathHelper } from '@app/core';
+
 import {
     BRING_FORWARDS,
     BRING_TO_FRONT,
@@ -12,11 +14,11 @@ import {
 
 describe('OrderingReducer', () => {
     const reducer = ordering();
-    const shape1 = DiagramShape.createShape('btn', 100, 100);
-    const shape2 = DiagramShape.createShape('btn', 100, 100);
-    const shape3 = DiagramShape.createShape('btn', 100, 100);
+    const shape1 = DiagramShape.createShape(MathHelper.guid(), 'btn', 100, 100);
+    const shape2 = DiagramShape.createShape(MathHelper.guid(), 'btn', 100, 100);
+    const shape3 = DiagramShape.createShape(MathHelper.guid(), 'btn', 100, 100);
     const diagram =
-        Diagram.empty()
+        Diagram.empty(MathHelper.guid())
             .addVisual(shape1)
             .addVisual(shape2)
             .addVisual(shape3);

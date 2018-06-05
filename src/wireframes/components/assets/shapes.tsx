@@ -26,7 +26,7 @@ interface ShapesProps {
     shapesFilter: string;
 
     // The selected diagram.
-    selectedDiagramId: string | null;
+    selectedDiagramId: string;
 
     // Filter the shapes.
     filterShapes: (value: string) => any;
@@ -54,9 +54,7 @@ const mapDispatchToProps = (dispatch: Dispatch<any>) => bindActionCreators({
 const Shapes = (props: ShapesProps) => {
     const cellRenderer = (shape: ShapeInfo) => {
         const doAdd = () => {
-            if (props.selectedDiagramId) {
-                props.addVisualToPosition(props.selectedDiagramId, shape.name);
-            }
+            props.addVisualToPosition(props.selectedDiagramId, shape.name);
         };
 
         return (

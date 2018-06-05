@@ -1,9 +1,7 @@
 import {
     ImmutableIdMap,
     ImmutableList,
-    ImmutableSet,
-    MathHelper,
-    Rotation
+    ImmutableSet
 } from '@app/core';
 
 import {
@@ -29,8 +27,8 @@ export class Diagram {
         Object.freeze(this);
     }
 
-    public static empty(id?: string): Diagram {
-        return new Diagram(id || MathHelper.guid(), ImmutableIdMap.empty<DiagramItem>(), DiagramContainer.createContainer(), ImmutableSet.empty(), {});
+    public static empty(id: string): Diagram {
+        return new Diagram(id, ImmutableIdMap.empty<DiagramItem>(), DiagramContainer.createContainer(), ImmutableSet.empty(), {});
     }
 
     public parent(id: string): DiagramGroup | null {
@@ -79,9 +77,9 @@ export class Diagram {
         return this.withMutations(itemIds, (_, u) => u(c => c.sendBackwards(itemIds)));
     }
 
-    public group(itemIds: string[], groupId?: string): Diagram {
+    public group(groupId: string, itemIds: string[]): Diagram {
         return this.withMutations(itemIds, (m, u) => {
-            const group = DiagramGroup.createGroup(itemIds, Rotation.ZERO, groupId);
+            const group = DiagramGroup.createGroup(groupId, itemIds);
 
             u(c => c.removeItems(...itemIds).addItems(group.id));
 

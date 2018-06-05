@@ -33,7 +33,7 @@ describe('DiagramReducer', () => {
     });
 
     it('should select diagram', () => {
-        const diagram = Diagram.empty();
+        const diagram = Diagram.empty(MathHelper.guid());
 
         const action = selectDiagram(diagram);
         const state_1 = EditorState.empty().addDiagram(diagram);
@@ -43,7 +43,7 @@ describe('DiagramReducer', () => {
     });
 
     it('should remove diagram', () => {
-        const diagram = Diagram.empty();
+        const diagram = Diagram.empty(MathHelper.guid());
 
         const action = removeDiagram(diagram);
         const state_1 = EditorState.empty().addDiagram(diagram);
@@ -53,8 +53,8 @@ describe('DiagramReducer', () => {
     });
 
     it('should move diagram to new position', () => {
-        const diagram1 = Diagram.empty();
-        const diagram2 = Diagram.empty();
+        const diagram1 = Diagram.empty(MathHelper.guid());
+        const diagram2 = Diagram.empty(MathHelper.guid());
 
         const action = moveDiagram(diagram2, 0);
         const state_1 = EditorState.empty().addDiagram(diagram1).addDiagram(diagram2);

@@ -13,6 +13,7 @@ import { MathHelper, UserReport, Vec2 } from '@app/core';
 import * as Reducers from '@app/wireframes/model/actions';
 
 import {
+    addDiagram,
     createInitialAssetsState,
     createInitialEditorLoadingState,
     createInitialUIState,
@@ -29,20 +30,24 @@ import { registerRenderers } from '@app/wireframes/shapes';
 
 const rendererService = registerRenderers();
 
-let diagram = Diagram.empty();
-let index = 0;
+let initialAction = addDiagram();
+let initialDiagram = Diagram.empty(initialAction.id);
 
-for (let identifier in rendererService.registeredRenderers) {
-    if (rendererService.registeredRenderers.hasOwnProperty(identifier)) {
-        const renderer = rendererService.registeredRenderers[identifier];
+if (process.env.NODE_ENV === 'production') {
+    let index = 0;
 
-        if (renderer.showInGallery()) {
-            const x = 150 + Math.floor(index % 5) * 200;
-            const y = 150 + Math.floor(index / 5) * 200;
+    for (let identifier in rendererService.registeredRenderers) {
+        if (rendererService.registeredRenderers.hasOwnProperty(identifier)) {
+            const renderer = rendererService.registeredRenderers[identifier];
 
-            diagram = diagram.addVisual(renderer.createDefaultShape(MathHelper.guid()).transformWith(t => t.moveBy(new Vec2(x, y))));
+            if (renderer.showInGallery()) {
+                const x = 150 + Math.floor(index % 5) * 200;
+                const y = 150 + Math.floor(index / 5) * 200;
 
-            index++;
+                initialDiagram = initialDiagram.addVisual(renderer.createDefaultShape(MathHelper.guid()).transformWith(t => t.moveBy(new Vec2(x, y))));
+
+                index++;
+            }
         }
     }
 }
@@ -77,11 +82,13 @@ const store = createStore(
             editorLoading: Reducers.editorLoading(createInitialEditorLoadingState()),
             editor:
                 undoable(editorReducer,
-                    EditorState.empty()
-                        .addDiagram(diagram).selectDiagram(diagram.id), [
-                    SELECT_DIAGRAM,
-                    SELECT_ITEMS
-                ]),
+                    EditorState.empty().addDiagram(initialDiagram),
+                    [
+                        SELECT_DIAGRAM,
+                        SELECT_ITEMS
+                    ],
+                    initialAction
+                ),
             ui: Reducers.ui(createInitialUIState())
     }), editorReducer),
     window['__REDUX_DEVTOOLS_EXTENSION__'] && window['__REDUX_DEVTOOLS_EXTENSION__']()

@@ -1,10 +1,6 @@
 ﻿import * as Immutable from 'immutable';
 
-import {
-    MathHelper,
-    Rotation,
-    Vec2
-} from '@app/core';
+import { Rotation, Vec2 } from '@app/core';
 
 import {
     Configurable,
@@ -34,12 +30,13 @@ export class DiagramShape extends DiagramVisual {
         super(id, appearance);
     }
 
-    public static createShape(renderer: string, w: number, h: number, configurable?: Configurable[], appearance?: { [key: string]: any }, id?: string, constraint?: Constraint): DiagramShape {
-        const result = new DiagramShape(id || MathHelper.guid(),
+    public static createShape(id: string, renderer: string, w: number, h: number, configurable?: Configurable[], appearance?: { [key: string]: any }, constraint?: Constraint): DiagramShape {
+        const result = new DiagramShape(id,
             DiagramShape.createAppearance(appearance),
             DiagramShape.createTransform(w, h),
             DiagramShape.createConfigurables(configurable),
-            constraint, renderer);
+            constraint,
+            renderer);
 
         Object.freeze(result);
 

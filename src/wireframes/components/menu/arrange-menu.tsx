@@ -30,7 +30,7 @@ interface ArrangeMenuProps {
     canRemove: boolean;
 
     // The selected diagram.
-    selectedDiagram: Diagram | null;
+    selectedDiagram: Diagram;
 
     // The selected items.
     selectedItems: DiagramItem[];
@@ -72,19 +72,19 @@ const mapDispatchToProps = (dispatch: Dispatch<any>) => bindActionCreators({
 
 const ArrangeMenu = (props: ArrangeMenuProps) => {
     const doGroup = () => {
-        props.groupItems(props.selectedDiagram!, props.selectedItems, MathHelper.guid());
+        props.groupItems(props.selectedDiagram, props.selectedItems, MathHelper.guid());
     };
 
     const doUngroup = () => {
-        props.ungroupItems(props.selectedDiagram!, props.selectedGroups);
+        props.ungroupItems(props.selectedDiagram, props.selectedGroups);
     };
 
     const doRemove = () => {
-        props.removeItems(props.selectedDiagram!, props.selectedItems);
+        props.removeItems(props.selectedDiagram, props.selectedItems);
     };
 
     const doSelectAll = () => {
-        props.selectItems(props.selectedDiagram!, calculateSelection(props.selectedDiagram!.items.toArray(), props.selectedDiagram!));
+        props.selectItems(props.selectedDiagram, calculateSelection(props.selectedDiagram.items.toArray(), props.selectedDiagram));
     };
 
     return (
@@ -120,7 +120,7 @@ const ArrangeMenu = (props: ArrangeMenuProps) => {
             <Shortcut disabled={!props.canRemove} onPressed={doRemove} keys='del' />
             <Shortcut disabled={!props.canRemove} onPressed={doRemove} keys='backspace' />
 
-            <Shortcut disabled={!props.selectedDiagram} onPressed={doSelectAll} keys='ctrl+a' />
+            <Shortcut onPressed={doSelectAll} keys='ctrl+a' />
         </>
     );
 };

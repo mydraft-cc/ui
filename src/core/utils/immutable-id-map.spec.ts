@@ -57,6 +57,24 @@ describe('ImmutableIdMap', () => {
         expect(items[2]).toBe(v3);
     });
 
+    it('should get index by id', () => {
+        const list_1 = ImmutableIdMap.of(v1, v2, v3);
+
+        expect(list_1.indexOf(v1.id)).toBe(0);
+        expect(list_1.indexOf(v2.id)).toBe(1);
+        expect(list_1.indexOf(v3.id)).toBe(2);
+        expect(list_1.indexOf('err')).toBe(-1);
+    });
+
+    it('should get item by array', () => {
+        const list_1 = ImmutableIdMap.of(v1, v2, v3);
+
+        expect(list_1.at(0)).toBe(v1);
+        expect(list_1.at(1)).toBe(v2);
+        expect(list_1.at(2)).toBe(v3);
+        expect(list_1.at(6)).toBeUndefined();
+    });
+
     it('should return original list when value to add has no id', () => {
         const list_1 = ImmutableIdMap.empty<MockupData>();
         const list_2 = list_1.add(new MockupData(null));

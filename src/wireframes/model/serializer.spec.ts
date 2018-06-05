@@ -33,8 +33,8 @@ class CustomVisual extends DiagramVisual {
 describe('Serializer', () => {
     const checkbox = new Checkbox();
 
-    const oldShape1 = checkbox.createDefaultShape('id1').transformWith(t => t.moveTo(new Vec2(100, 20)));
-    const oldShape2 = checkbox.createDefaultShape('id2').transformWith(t => t.moveTo(new Vec2(30, 10)));
+    const oldShape1 = checkbox.createDefaultShape(MathHelper.guid()).transformWith(t => t.moveTo(new Vec2(100, 20)));
+    const oldShape2 = checkbox.createDefaultShape(MathHelper.guid()).transformWith(t => t.moveTo(new Vec2(30, 10)));
 
     let renderers: RendererService;
 
@@ -48,11 +48,11 @@ describe('Serializer', () => {
         const groupId = MathHelper.guid();
 
         let oldDiagram =
-            Diagram.empty()
+            Diagram.empty(MathHelper.guid())
                 .addVisual(oldShape1)
                 .addVisual(oldShape2)
                 .addVisual(CustomVisual.createCustom(MathHelper.guid()))
-                .group([oldShape1.id, oldShape2.id], groupId);
+                .group(groupId, [oldShape1.id, oldShape2.id]);
 
         const oldSet = DiagramItemSet.createFromDiagram([oldDiagram.items.last.id], oldDiagram) !;
 

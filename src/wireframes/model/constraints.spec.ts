@@ -1,4 +1,4 @@
-import { Vec2 } from '@app/core';
+import { MathHelper, Vec2 } from '@app/core';
 
 import {
     DiagramShape,
@@ -8,7 +8,7 @@ import {
 } from '@app/wireframes/model';
 
 const shape =
-    DiagramShape.createShape('button', 100, 100)
+    DiagramShape.createShape(MathHelper.guid(), 'button', 100, 100)
         .setAppearance(DiagramShape.APPEARANCE_FONT_SIZE, 12) as DiagramShape;
 
 describe('TextHeightConstraint', () => {
