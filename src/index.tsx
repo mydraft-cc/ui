@@ -31,9 +31,9 @@ import { registerRenderers } from '@app/wireframes/shapes';
 const rendererService = registerRenderers();
 
 let initialAction = addDiagram();
-let initialDiagram = Diagram.empty(initialAction.id);
+let initialDiagram = Diagram.empty(initialAction.payload.diagramId);
 
-if (process.env.NODE_ENV === 'production') {
+if (process.env.NODE_ENV !== 'production') {
     let index = 0;
 
     for (let identifier in rendererService.registeredRenderers) {
