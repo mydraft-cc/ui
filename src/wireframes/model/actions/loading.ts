@@ -1,3 +1,4 @@
+import { push } from 'react-router-redux';
 import { Dispatch, Reducer } from 'redux';
 
 import {
@@ -19,6 +20,25 @@ export const newDiagram = () => {
 export const LOADING_STARTED = 'LOADING_STARTED';
 export const LOADING_FAILED = 'LOADING_FAILED';
 export const LOADING_SUCCEEDED = 'LOADING_SUCCEEDED';
+export const loadDiagramAsync = (token: string) => {
+    return (dispatch: Dispatch<any>, getState: () => LoadingStateInStore) => {
+        const state = getState();
+
+        if (token && token.length > 0 && token !== state.loading.readToken) {
+            dispatch({ type: LOADING_STARTED });
+
+            fetch(`https://api.mydraft.cc/${token}`)
+                .then(response => response.json())
+                .then(response => {
+                    dispatch({ type: LOADING_SUCCEEDED, readToken: token, actions: response });
+                    dispatch(showInfoToast('Succeeded to load diagram.'));
+                }, () => {
+                    dispatch({ type: LOADING_FAILED });
+                    dispatch(showErrorToast('Failed to save diagram.'));
+                });
+        }
+    };
+};
 
 export const SAVING_STARTED = 'SAVING_STARTED';
 export const SAVING_FAILED = 'SAVING_FAILED';
@@ -27,14 +47,14 @@ export const saveDiagramAsync = () => {
     return (dispatch: Dispatch<any>, getState: () => LoadingStateInStore & EditorStateInStore) => {
         const state = getState();
 
+        const writeToken = state.loading.writeToken;
+        const readToken = state.loading.readToken;
+
         const body = JSON.stringify(state.editor.actions);
 
         let putPromise: Promise<{ readToken: string, writeToken: string }>;
 
-        if (state.loading.readToken && state.loading.writeToken) {
-            const writeToken = state.loading.writeToken;
-            const readToken = state.loading.readToken;
-
+        if (readToken && writeToken) {
             putPromise = fetch(`https://api.mydraft.cc/${readToken}/${writeToken}`, {
                 method: 'PUT',
                 headers: {
@@ -53,12 +73,20 @@ export const saveDiagramAsync = () => {
                     ContentType: 'text/json'
                 },
                 body
-            }).then(response => response.json()))
+            })
+            .then(response => response.json()))
         .then(r => {
-            const url = `${window.location.protocol}//${window.location.host}/#/${r.readToken}`;
-
             dispatch({ type: SAVING_SUCCEEDED, writeToken: r.writeToken, readToken: r.readToken });
-            dispatch(showInfoToast(`Diagram saved unter ${url}`));
+
+            if (r.writeToken !== state.loading.writeToken) {
+                const url = `${window.location.protocol}//${window.location.host}/${r.readToken}`;
+
+                dispatch(showInfoToast(`Diagram saved under ${url}.`));
+            } else {
+                dispatch(showInfoToast(`Diagram saved and updated.`));
+            }
+
+            dispatch(push(r.readToken));
         },
         () => {
             dispatch({ type: SAVING_FAILED, error: 'Failed to save diagram' });

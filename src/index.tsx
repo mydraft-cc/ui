@@ -1,13 +1,23 @@
+// Paperjs for canvas rendering.
 require('paper/dist/paper-full');
 
 // Area text extension for paper.js
 require('./libs/paper-area-text');
 
+// Import our stylesheets
+import './index.scss';
+
+import { createBrowserHistory } from 'history';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { Provider } from 'react-redux';
-import { applyMiddleware, combineReducers, createStore, Reducer } from 'redux';
+import { Route, Router } from 'react-router';
+import { routerMiddleware, routerReducer } from 'react-router-redux';
+import { applyMiddleware, combineReducers, compose, createStore, Reducer } from 'redux';
 import thunk from 'redux-thunk';
+
+const history = createBrowserHistory();
+
+import { Provider } from 'react-redux';
 
 import { MathHelper, UserReport, Vec2 } from '@app/core';
 
@@ -78,13 +88,14 @@ const editorReducer: Reducer<EditorState> = (state: EditorState, action: any) =>
     return state;
 };
 
-// const composeEnhancers = window['__REDUX_DEVTOOLS_EXTENSION__'] || compose;
+const composeEnhancers = window['__REDUX_DEVTOOLS_EXTENSION_COMPOSE__'] || compose;
 
 const store = createStore(
     Reducers.rootLoading(
         combineReducers({
             assets: Reducers.assets(createInitialAssetsState(rendererService)),
             loading: Reducers.loading(createInitialLoadingState()),
+            routing: routerReducer,
             editor:
                 undoable(editorReducer,
                     EditorState.empty().addDiagram(initialDiagram),
@@ -96,21 +107,23 @@ const store = createStore(
                 ),
             ui: Reducers.ui(createInitialUIState())
     }), editorReducer),
-    applyMiddleware(thunk)
+    composeEnhancers(applyMiddleware(thunk, routerMiddleware(history)))
 );
 
 import { AppContainer } from './App';
 
-import './index.scss';
-
 const Root = (
     <SerializerContext.Provider value={serializer}>
         <Provider store={store}>
-            <>
-                <AppContainer rendererService={rendererService} />
-                <UserMessageContainer />
-                <UserReport />
-            </>
+            <Router history={history}>
+                <Route path='/:token?' render={props => (
+                    <>
+                        <AppContainer token={props.match.params.token} rendererService={rendererService} />
+                        <UserMessageContainer />
+                        <UserReport />
+                    </>
+                )} />
+            </Router>
         </Provider>
     </SerializerContext.Provider>
 );

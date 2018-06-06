@@ -4,8 +4,6 @@ import { connect } from 'react-redux';
 
 import { UIStateInStore } from '@app/wireframes/model';
 
-import './user-message.scss';
-
 interface UserMessageProps {
     // The error message
     errorToast?: string;
@@ -22,7 +20,7 @@ const UserMessage = (props: UserMessageProps) => {
     return (
         <div className='toast-container'>
             {props.infoToast &&
-                <Alert message={props.infoToast} showIcon={true} className='toast' type='success' />
+                <Alert message={props.infoToast} showIcon={true} className='toast' type='info' />
             }
             {props.errorToast &&
                 <Alert message={props.errorToast} showIcon={true} className='toast' type='error' />
