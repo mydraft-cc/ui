@@ -27,7 +27,7 @@ import {
 
 interface LayoutPropertiesProps {
     // The selected diagram.
-    selectedDiagramId: string;
+    selectedDiagramId: string | null;
 
     // The selected items.
     selectedItems: DiagramItem[];
@@ -66,11 +66,15 @@ const mapDispatchToProps = (dispatch: Dispatch<any>) => bindActionCreators({
 
 const LayoutProperties = (props: LayoutPropertiesProps) => {
     const doOrder = (mode: string) => {
-        props.orderItems(mode, props.selectedDiagramId, props.selectedItems);
+        if (props.selectedDiagramId) {
+            props.orderItems(mode, props.selectedDiagramId, props.selectedItems);
+        }
     };
 
     const doAlign = (mode: string) => {
-        props.alignItems(mode, props.selectedDiagramId, props.selectedItems);
+        if (props.selectedDiagramId) {
+            props.alignItems(mode, props.selectedDiagramId, props.selectedItems);
+        }
     };
 
     const doAlignHLeft   = () => doAlign(ALIGN_H_LEFT);
@@ -91,48 +95,52 @@ const LayoutProperties = (props: LayoutPropertiesProps) => {
 
     return (
         <>
-            <div className='properties-subsection layout-properties'>
-                <Button disabled={!props.canAlign} onClick={doAlignHLeft}>
-                    <i className='icon-align-h-left' />
-                </Button>
-                <Button disabled={!props.canAlign} onClick={doAlignHCenter}>
-                    <i className='icon-align-h-center' />
-                </Button>
-                <Button disabled={!props.canAlign} onClick={doAlignHRight}>
-                    <i className='icon-align-h-right' />
-                </Button>
+            {props.selectedDiagramId &&
+                <>
+                    <div className='properties-subsection layout-properties'>
+                        <Button disabled={!props.canAlign} onClick={doAlignHLeft}>
+                            <i className='icon-align-h-left' />
+                        </Button>
+                        <Button disabled={!props.canAlign} onClick={doAlignHCenter}>
+                            <i className='icon-align-h-center' />
+                        </Button>
+                        <Button disabled={!props.canAlign} onClick={doAlignHRight}>
+                            <i className='icon-align-h-right' />
+                        </Button>
 
-                <Button disabled={!props.canAlign} onClick={doAlignVTop}>
-                    <i className='icon-align-v-top' />
-                </Button>
-                <Button disabled={!props.canAlign} onClick={doAlignVCenter}>
-                    <i className='icon-align-v-center' />
-                </Button>
-                <Button disabled={!props.canAlign} onClick={doAlignVBottom}>
-                    <i className='icon-align-v-bottom' />
-                </Button>
-                <Button disabled={!props.canDistribute} onClick={doDistributeH}>
-                    <i className='icon-distribute-h2' />
-                </Button>
-                <Button disabled={!props.canDistribute} onClick={doDistributeV}>
-                    <i className='icon-distribute-v2' />
-                </Button>
-            </div>
+                        <Button disabled={!props.canAlign} onClick={doAlignVTop}>
+                            <i className='icon-align-v-top' />
+                        </Button>
+                        <Button disabled={!props.canAlign} onClick={doAlignVCenter}>
+                            <i className='icon-align-v-center' />
+                        </Button>
+                        <Button disabled={!props.canAlign} onClick={doAlignVBottom}>
+                            <i className='icon-align-v-bottom' />
+                        </Button>
+                        <Button disabled={!props.canDistribute} onClick={doDistributeH}>
+                            <i className='icon-distribute-h2' />
+                        </Button>
+                        <Button disabled={!props.canDistribute} onClick={doDistributeV}>
+                            <i className='icon-distribute-v2' />
+                        </Button>
+                    </div>
 
-            <div className='properties-subsection layout-properties'>
-                <Button disabled={!props.canOrder} onClick={doBringToFront}>
-                    <i className='icon-bring-to-front' />
-                </Button>
-                <Button disabled={!props.canOrder} onClick={doBringForwards}>
-                    <i className='icon-bring-forwards' />
-                </Button>
-                <Button disabled={!props.canOrder} onClick={doSendBackwards}>
-                    <i className='icon-send-backwards'></i>
-                </Button>
-                <Button disabled={!props.canOrder} onClick={doSendToBack}>
-                    <i className='icon-send-to-back'></i>
-                </Button>
-            </div>
+                    <div className='properties-subsection layout-properties'>
+                        <Button disabled={!props.canOrder} onClick={doBringToFront}>
+                            <i className='icon-bring-to-front' />
+                        </Button>
+                        <Button disabled={!props.canOrder} onClick={doBringForwards}>
+                            <i className='icon-bring-forwards' />
+                        </Button>
+                        <Button disabled={!props.canOrder} onClick={doSendBackwards}>
+                            <i className='icon-send-backwards'></i>
+                        </Button>
+                        <Button disabled={!props.canOrder} onClick={doSendToBack}>
+                            <i className='icon-send-to-back'></i>
+                        </Button>
+                    </div>
+                </>
+            }
         </>
     );
 };

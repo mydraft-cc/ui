@@ -7,14 +7,21 @@ import {
     EditorStateInStore,
     LoadingState,
     LoadingStateInStore,
+    selectItems,
     UndoableState
 } from '@app/wireframes/model';
 
 import { showErrorToast, showInfoToast } from './ui';
 
 export const NEW_DIAGRAM = 'NEW_DIAGRAM';
-export const newDiagram = () => {
-    return { type: NEW_DIAGRAM };
+export const newDiagram = (updateUrl = true) => {
+    return (dispatch: Dispatch<any>, getState: () => LoadingStateInStore) => {
+        dispatch({ type: NEW_DIAGRAM });
+
+        if (updateUrl) {
+            dispatch(push(''));
+        }
+    };
 };
 
 export const LOADING_STARTED = 'LOADING_STARTED';
@@ -98,18 +105,20 @@ export const saveDiagramAsync = () => {
 export function loading(initialState: LoadingState): Reducer<LoadingState> {
     const reducer: Reducer<LoadingState> = (state = initialState, action: any) => {
         switch (action.type) {
+            case NEW_DIAGRAM:
+                return { isSaving: false, isLoading: true };
             case LOADING_STARTED:
-                return {...state, isLoading: true };
+                return { isSaving: false, isLoading: true };
             case LOADING_FAILED:
-                return {...state, isLoading: false };
+                return { isSaving: false, isLoading: false };
             case LOADING_SUCCEEDED:
-                return {...state, isLoading: false, readToken: action.readToken, writeToken: null };
+                return { isSaving: false, isLoading: false, readToken: action.readToken, writeToken: null };
             case SAVING_STARTED:
-                return {...state, isSaving: true };
+                return { isLoading: false, isSaving: true };
             case SAVING_FAILED:
-                return {...state, isSaving: false };
+                return { isLoading: false, isSaving: false };
             case SAVING_SUCCEEDED:
-                return {...state, isSaving: false, readToken: action.readToken, writeToken: action.writeToken };
+                return { isLoading: false, isSaving: false, readToken: action.readToken, writeToken: action.writeToken };
             default:
                 return state;
         }
@@ -118,24 +127,43 @@ export function loading(initialState: LoadingState): Reducer<LoadingState> {
     return reducer;
 }
 
-export function rootLoading(innerReducer: Reducer<any>, editorReducer: Reducer<EditorState>): Reducer<any> {
+export function rootLoading(innerReducer: Reducer<any>, undoableReducer: Reducer<UndoableState<EditorState>>, editorReducer: Reducer<EditorState>): Reducer<any> {
     const reducer: Reducer<EditorStateInStore> = (state: EditorStateInStore, action: any) => {
         switch (action.type) {
             case NEW_DIAGRAM: {
                 const initialAction = addDiagram();
                 const initialState = editorReducer(EditorState.empty(), initialAction);
 
-                state = { ...state, editor: UndoableState.create(initialState, undefined, initialAction) };
+                state = { ...state, editor: UndoableState.create(initialState, initialAction) };
                 break;
             }
             case LOADING_SUCCEEDED: {
-                let editor = EditorState.empty();
+                let firstAction = action.actions[0];
 
-                for (let loadedAction of action.actions) {
-                    editor = editorReducer(editor, loadedAction);
+                if (!firstAction) {
+                    firstAction = addDiagram();
                 }
 
-                state = { ...state, editor: UndoableState.create(editor) };
+                let editor = UndoableState.create(EditorState.empty());
+
+                for (let loadedAction of action.actions) {
+                    editor = undoableReducer(editor, loadedAction);
+                }
+
+                let present = editor.present;
+
+                const diagram = present.diagrams.get(present.selectedDiagramId!);
+
+                if (diagram) {
+                    editor = undoableReducer(editor, selectItems(diagram, []));
+
+                    state = { ...state, editor };
+                } else {
+                    const initialAction = addDiagram();
+                    const initialState = editorReducer(EditorState.empty(), initialAction);
+
+                    state = { ...state, editor: UndoableState.create(initialState, initialAction) };
+                }
                 break;
             }
         }

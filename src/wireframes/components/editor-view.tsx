@@ -4,7 +4,11 @@ import { findDOMNode } from 'react-dom';
 import { connect } from 'react-redux';
 import { bindActionCreators, Dispatch } from 'redux';
 
+import { NativeTypes } from 'react-dnd-html5-backend';
+
 import { sizeInPx } from '@app/core';
+
+import { RendererContext } from '@app/context';
 
 import {
     addIcon,
@@ -12,17 +16,12 @@ import {
     addVisual,
     EditorStateInStore,
     getSelection,
-    RendererService,
     UIStateInStore
 } from '@app/wireframes/model';
 
 import { EditorContainer } from '@app/wireframes/renderer/editor';
-import { NativeTypes } from 'react-dnd-html5-backend';
 
 export interface EditorViewProps {
-    // The renderer service.
-    rendererService: RendererService;
-
     // The width of the canvas.
     zoomedWidth: number;
 
@@ -154,7 +153,11 @@ class EditorView extends React.Component<EditorViewProps> {
 
         return this.props.connectDropTarget(
             <div className='editor-view' style={calculateStyle()}>
-                <EditorContainer rendererService={this.props.rendererService} />
+                <RendererContext.Consumer>
+                    {renderer =>
+                        <EditorContainer rendererService={renderer} />
+                    }
+                </RendererContext.Consumer>
             </div>
         );
     }

@@ -3,7 +3,7 @@ import { Dispatch, Reducer } from 'redux';
 import { UIState } from '@app/wireframes/model';
 
 export const SHOW_INFO_TOAST = 'SHOW_INFO_TOAST';
-export const showInfoToast = (message: string, hideAfter = 5000) => {
+export const showInfoToast = (message: string, hideAfter = 3000) => {
     return (dispatch: Dispatch<any>) => {
         dispatch({ type: SHOW_INFO_TOAST, message });
 
@@ -14,7 +14,7 @@ export const showInfoToast = (message: string, hideAfter = 5000) => {
 };
 
 export const SHOW_ERROR_TOAST = 'SHOW_ERROR_TOAST';
-export const showErrorToast = (message: string, hideAfter = 5000) => {
+export const showErrorToast = (message: string, hideAfter = 3000) => {
     return (dispatch: Dispatch<any>) => {
         dispatch({ type: SHOW_ERROR_TOAST, message });
 

@@ -22,7 +22,7 @@ interface ClipboardMenuProps {
     canCopy: boolean;
 
     // The selected diagram.
-    selectedDiagram: Diagram;
+    selectedDiagram: Diagram | null;
 
     // The selected items.
     selectedItemIds: string[];
@@ -67,7 +67,7 @@ class ClipboardMenu extends React.PureComponent<ClipboardMenuProps, ClipboardMen
         const set =
             DiagramItemSet.createFromDiagram(
                 this.props.selectedItemIds,
-                this.props.selectedDiagram);
+                this.props.selectedDiagram!);
 
         this.setState({ offset: 0, clipboard: serializer.serializeSet(set) });
     }
@@ -75,13 +75,13 @@ class ClipboardMenu extends React.PureComponent<ClipboardMenuProps, ClipboardMen
     private doCut = (serializer: Serializer) => {
         this.doCopy(serializer);
 
-        this.props.removeItems(this.props.selectedDiagram, this.props.selectedItemIds);
+        this.props.removeItems(this.props.selectedDiagram!, this.props.selectedItemIds);
     }
 
     private doPaste = () => {
         this.setState(s => ({ offset: s.offset + OFFSET, clipboard: s.clipboard }));
 
-        this.props.pasteItems(this.props.selectedDiagram, this.state.clipboard!, this.state.offset);
+        this.props.pasteItems(this.props.selectedDiagram!, this.state.clipboard!, this.state.offset);
     }
 
     public render() {

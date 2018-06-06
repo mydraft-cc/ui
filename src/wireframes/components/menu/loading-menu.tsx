@@ -3,7 +3,7 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators, Dispatch } from 'redux';
 
-import { Shortcut } from '@app/core';
+import { Shortcut, Title } from '@app/core';
 
 import {
     LoadingStateInStore,
@@ -31,6 +31,12 @@ const mapDispatchToProps = (dispatch: Dispatch<any>) => bindActionCreators({
 }, dispatch);
 
 const LoadingMenu = (props: LoadingMenuProps) => {
+    const getText = () => {
+        return props.readToken && props.readToken.length > 0 ?
+            `mydraft.cc - Diaram ${props.readToken}` :
+            'mydraft.cc - New Diagram';
+    };
+
     const doNewDiagram = () => {
         props.newDiagram();
     };
@@ -41,6 +47,8 @@ const LoadingMenu = (props: LoadingMenuProps) => {
 
     return (
         <>
+            <Title text={getText()} />
+
             <Tooltip mouseEnterDelay={1} title='New Diagram (CTRL + N)'>
                 <Button className='menu-item' size='large'
                     onClick={doNewDiagram}>

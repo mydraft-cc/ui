@@ -1,12 +1,22 @@
-import { DiagramItem, EditorStateInStore } from '@app/wireframes/model';
+import {
+    Diagram,
+    DiagramItem,
+    EditorStateInStore
+} from '@app/wireframes/model';
 
 export const getSelection = (state: EditorStateInStore) => {
     const editor = state.editor.present;
 
-    const diagram = editor.diagrams.get(editor.selectedDiagramId!)!;
+    let diagram: Diagram | undefined = undefined;
+    let diagramItems: DiagramItem[] = [];
 
-    const selectedIds = diagram.selectedItemIds;
-    const selectedItems = <DiagramItem[]>selectedIds.map(i => diagram.items.get(i));
+    if (editor.selectedDiagramId) {
+        diagram = editor.diagrams.get(editor.selectedDiagramId);
 
-    return { editor, diagram, items: selectedItems };
+        if (diagram) {
+            diagramItems = <DiagramItem[]>diagram.selectedItemIds.map(i => diagram!.items.get(i));
+        }
+    }
+
+    return { editor, diagram: diagram || null, items: diagramItems };
 };

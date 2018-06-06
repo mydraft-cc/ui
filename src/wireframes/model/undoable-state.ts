@@ -29,7 +29,7 @@ export class UndoableState<T> {
         Object.freeze(this);
     }
 
-    public static create<T>(present: T, capacity = Number.MAX_VALUE, action?: any) {
+    public static create<T>(present: T, action?: any, capacity = Number.MAX_VALUE) {
         return new UndoableState<T>([], capacity, [], { state: present, action });
     }
 
@@ -39,8 +39,8 @@ export class UndoableState<T> {
         }
 
         const newPresent = this.past[this.past.length - 1];
-        const newPast = this.past.slice(0, this.past.length - 1);
-        const newFuture = [this.presentState, ...this.future];
+        const newPast    = this.past.slice(0, this.past.length - 1);
+        const newFuture  = [this.presentState, ...this.future];
 
         return new UndoableState(newPast, this.pastCapacity, newFuture, newPresent);
     }
@@ -51,8 +51,8 @@ export class UndoableState<T> {
         }
 
         const newPresent = this.future[0];
-        const newPast = [...this.past, this.presentState];
-        const newFuture = this.future.slice(1);
+        const newPast    = [...this.past, this.presentState];
+        const newFuture  = this.future.slice(1);
 
         return new UndoableState(newPast, this.pastCapacity, newFuture, newPresent);
     }
@@ -67,7 +67,7 @@ export class UndoableState<T> {
         return new UndoableState(newPast, this.pastCapacity, [], { state, action });
     }
 
-    public replacePresent(state: T, action?: any) {
-        return new UndoableState(this.past, this.pastCapacity, this.future, { state, action });
+    public replacePresent(state: T) {
+        return new UndoableState(this.past, this.pastCapacity, this.future, { state, action: this.presentState.action });
     }
 }

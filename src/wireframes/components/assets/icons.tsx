@@ -26,7 +26,7 @@ interface IconsProps {
     iconsFilter: string;
 
     // The selected diagram.
-    selectedDiagramId: string;
+    selectedDiagramId: string | null;
 
     // Filter the icons.
     filterIcons: (value: string) => any;
@@ -54,7 +54,11 @@ const mapDispatchToProps = (dispatch: Dispatch<any>) => bindActionCreators({
 const Icons = (props: IconsProps) => {
     const cellRenderer = (icon: IconInfo) => {
         const doAdd = () => {
-            props.addIconToPosition(props.selectedDiagramId, icon.text);
+            const diagramId = props.selectedDiagramId;
+
+            if (diagramId) {
+                props.addIconToPosition(diagramId, icon.text);
+            }
         };
 
         return (

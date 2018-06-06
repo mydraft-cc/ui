@@ -10,7 +10,7 @@ describe('UndoableState', () => {
     });
 
     it('should limit history', () => {
-        const state_1: UndoableState<number> = UndoableState.create(13, 2);
+        const state_1: UndoableState<number> = UndoableState.create(13, undefined, 2);
         const state_2 = state_1.executed(14);
         const state_3 = state_2.executed(15);
         const state_4 = state_3.executed(16);
@@ -66,17 +66,29 @@ describe('UndoableState', () => {
     });
 
     it('should provide history of actions', () => {
-        const action1 = {};
-        const action2 = {};
+        const state_1: UndoableState<number> = UndoableState.create(13, 103);
+        const state_2 = state_1.executed(14, 104);
+        const state_3 = state_2.executed(15, 105);
+        const state_4 = state_3.executed(16, 106);
 
+        expect(state_4.actions).toEqual([103, 104, 105, 106]);
+    });
+
+    it('should skip invalid actions', () => {
         const state_1: UndoableState<number> = UndoableState.create(13);
-        const state_2 = state_1.executed(14, action1);
-        const state_3 = state_2.executed(15, action2);
+        const state_2 = state_1.executed(14, 104);
+        const state_3 = state_2.executed(15);
+        const state_4 = state_3.executed(16, 106);
 
-        const actions = state_3.actions;
+        expect(state_4.actions).toEqual([104, 106]);
+    });
 
-        expect(actions.length).toBe(2);
-        expect(actions[0]).toBe(action1);
-        expect(actions[1]).toBe(action2);
+    it('should skip action when replaced', () => {
+        const state_1: UndoableState<number> = UndoableState.create(13);
+        const state_2 = state_1.executed(14, 104);
+        const state_3 = state_2.executed(15, 105);
+        const state_4 = state_3.replacePresent(16);
+
+        expect(state_4.actions).toEqual([104, 105]);
     });
 });

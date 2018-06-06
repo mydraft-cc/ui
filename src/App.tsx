@@ -21,7 +21,7 @@ import {
 
 import {
     loadDiagramAsync,
-    RendererService,
+    newDiagram,
     selectTab,
     toggleLeftSidebar,
     toggleRightSidebar,
@@ -31,15 +31,9 @@ import {
 interface AppOwnProps {
     // The read token of the diagram.
     token: string;
-
-    // The renderer service.
-    rendererService: RendererService;
 }
 
 interface AppProps {
-    // The renderer service.
-    rendererService: RendererService;
-
     // Show left sidebar.
     showLeftSidebar: boolean;
 
@@ -58,13 +52,15 @@ interface AppProps {
     // Show or hide the right sidebar.
     toggleRightSidebar: () =>  any;
 
+    // Creates a new diagram.
+    newDiagram: (updateUrl: boolean) =>  any;
+
     // Load a diagram.
     loadDiagramAsync: (token: string) => any;
 }
 
 const mapStateToProps = (state: UIStateInStore, props: AppOwnProps) => {
     return {
-        rendererService: props.rendererService,
         selectedTab: state.ui.selectedTab,
         showLeftSidebar: state.ui.showLeftSidebar,
         showRightSidebar: state.ui.showRightSidebar
@@ -72,12 +68,26 @@ const mapStateToProps = (state: UIStateInStore, props: AppOwnProps) => {
 };
 
 const mapDispatchToProps = (dispatch: Dispatch<any>) => bindActionCreators({
-    loadDiagramAsync, selectTab, toggleLeftSidebar, toggleRightSidebar
+    loadDiagramAsync, newDiagram, selectTab, toggleLeftSidebar, toggleRightSidebar
 }, dispatch);
 
 class App extends React.PureComponent<AppProps & AppOwnProps> {
-    public componentDidMount() {
-        this.props.loadDiagramAsync(this.props.token);
+    constructor(props: AppProps & AppOwnProps) {
+        super(props);
+
+        props.newDiagram(false);
+
+        if (props.token && props.token.length > 0) {
+            props.loadDiagramAsync(props.token);
+        }
+    }
+
+    public componentWillUpdate(props: AppProps & AppOwnProps) {
+        if (props.token && props.token.length > 0) {
+            props.loadDiagramAsync(props.token);
+        } else {
+            props.newDiagram(true);
+        }
     }
 
     private doSelectTab = (key: string) => {
@@ -129,7 +139,7 @@ class App extends React.PureComponent<AppProps & AppOwnProps> {
                             </Tabs>
                         </Layout.Sider>
                         <Layout.Content className='editor-content'>
-                            <EditorViewContainer rendererService={this.props.rendererService} spacing={40} />
+                            <EditorViewContainer spacing={40} />
                         </Layout.Content>
                         <Layout.Sider width={330} className='sidebar-right'
                             collapsed={!this.props.showRightSidebar}

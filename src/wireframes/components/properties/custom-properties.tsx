@@ -22,7 +22,7 @@ import { CustomSlider } from './custom-slider';
 
 interface CustomPropertiesProps {
     // The selected diagram.
-    selectedDiagramId: string;
+    selectedDiagramId: string | null;
 
     // The selected items.
     selectedShape: DiagramVisual | null;
@@ -61,7 +61,7 @@ const mapDispatchToProps = (dispatch: Dispatch<any>) => bindActionCreators({
 const CustomProperties = (props: CustomPropertiesProps) => {
     return (
         <>
-            {props.configurables.map(c =>
+            {props.selectedDiagramId && props.configurables.map(c =>
                 <Row key={c.name} className='property'>
                     <Col span={12} className='property-label'>
                         {c.label}
@@ -71,17 +71,17 @@ const CustomProperties = (props: CustomPropertiesProps) => {
                             <CustomSlider value={props.selectedShape!.appearance.get(c.name)}
                                 min={c.min}
                                 max={c.max}
-                                onChange={value => props.changeItemsAppearance(props.selectedDiagramId, [props.selectedShape!], c.name, value)} />
+                                onChange={value => props.changeItemsAppearance(props.selectedDiagramId!, [props.selectedShape!], c.name, value)} />
                         }
                         {c instanceof NumberConfigurable &&
                             <InputNumber value={props.selectedShape!.appearance.get(c.name)}
                                 min={c.min}
                                 max={c.max}
-                                onChange={value => props.changeItemsAppearance(props.selectedDiagramId, [props.selectedShape!], c.name, value)} />
+                                onChange={value => props.changeItemsAppearance(props.selectedDiagramId!, [props.selectedShape!], c.name, value)} />
                         }
                         {c instanceof SelectionConfigurable &&
                             <Select value={props.selectedShape!.appearance.get(c.name)}
-                                onChange={value => props.changeItemsAppearance(props.selectedDiagramId, [props.selectedShape!], c.name, value)}>
+                                onChange={value => props.changeItemsAppearance(props.selectedDiagramId!, [props.selectedShape!], c.name, value)}>
                                 {c.options.map(o =>
                                     <Select.Option key={o} value={o}>{o}</Select.Option>
                                 )}
@@ -89,7 +89,7 @@ const CustomProperties = (props: CustomPropertiesProps) => {
                         }
                         {c instanceof ColorConfigurable &&
                             <ColorPicker value={props.selectedShape!.appearance.get(c.name)}
-                                onChange={value => props.changeItemsAppearance(props.selectedDiagramId, [props.selectedShape!], c.name, value.toNumber())} />
+                                onChange={value => props.changeItemsAppearance(props.selectedDiagramId!, [props.selectedShape!], c.name, value.toNumber())} />
                         }
                     </Col>
                 </Row>
