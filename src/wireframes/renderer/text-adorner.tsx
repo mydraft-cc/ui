@@ -35,7 +35,7 @@ export interface TextAdornerProps {
     interactionService: InteractionService;
 
     // A function to change the appearance of a visual.
-    changeItemsAppearance: (diagram: Diagram, visuals: DiagramVisual[], key: string, val: any) => void;
+    changeItemsAppearance: (diagram: Diagram, visuals: DiagramVisual[], key: string, val: any) => any;
 
     // A function to retrieve a render element by diagram item.
     provideItemByElement: (item: paper.Item) => DiagramItem | null;

@@ -4,6 +4,7 @@ export * from './assets/shapes';
 export * from './menu/arrange-menu';
 export * from './menu/clipboard-menu';
 export * from './menu/history-menu';
+export * from './menu/loading-menu';
 export * from './menu/ui-menu';
 
 export * from './properties/custom-properties';

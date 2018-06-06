@@ -12,10 +12,8 @@ import {
     DiagramItem,
     DiagramItemSet,
     DiagramShape,
-    EditorState,
-    getSelection,
-    UndoableState,
-    EditorStateInStore
+    EditorStateInStore,
+    getSelection
 } from '@app/wireframes/model';
 
 interface VisualPropertiesProps {

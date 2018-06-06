@@ -13,6 +13,7 @@ import {
     HistoryMenuContainer,
     IconsContainer,
     LayoutPropertiesContainer,
+    LoadingMenuContainer,
     ShapesContainer,
     UIMenuContainer,
     VisualPropertiesContainer
@@ -92,7 +93,7 @@ const App = (props: AppProps) => {
         <DragDropContextProvider backend={HTML5Backend}>
             <Layout>
                 <Layout.Header>
-                    <span className='logo'>Athene Wireframes</span>
+                    <span className='logo'>mydraft.cc</span>
 
                     <HistoryMenuContainer />
                     <span className='menu-separator' />
@@ -104,6 +105,10 @@ const App = (props: AppProps) => {
                     <span className='menu-separator' />
 
                     <UIMenuContainer />
+
+                    <span style={{ float: 'right' }}>
+                        <LoadingMenuContainer />
+                    </span>
                 </Layout.Header>
                 <Layout className='content'>
                     <Layout.Sider width={320} className='sidebar-left'

@@ -28,10 +28,10 @@ interface ClipboardMenuProps {
     selectedItemIds: string[];
 
     // Remove items.
-    removeItems: (diagram: Diagram, items: string[]) => void;
+    removeItems: (diagram: Diagram, items: string[]) => any;
 
     // Ungroup items.
-    pasteItems: (diagram: Diagram, json: string, offset?: number) => void;
+    pasteItems: (diagram: Diagram, json: string, offset?: number) => any;
 }
 
 interface ClipboardMenuState {

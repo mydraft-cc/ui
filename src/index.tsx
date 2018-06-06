@@ -7,7 +7,7 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 import { applyMiddleware, combineReducers, createStore, Reducer } from 'redux';
-import promiseMiddleware from 'redux-promise-middleware';
+import thunk from 'redux-thunk';
 
 import { MathHelper, UserReport, Vec2 } from '@app/core';
 
@@ -16,7 +16,7 @@ import * as Reducers from '@app/wireframes/model/actions';
 import {
     addDiagram,
     createInitialAssetsState,
-    createInitialEditorLoadingState,
+    createInitialLoadingState,
     createInitialUIState,
     Diagram,
     EditorState,
@@ -76,11 +76,13 @@ const editorReducer: Reducer<EditorState> = (state: EditorState, action: any) =>
     return state;
 };
 
+// const composeEnhancers = window['__REDUX_DEVTOOLS_EXTENSION__'] || compose;
+
 const store = createStore(
     Reducers.rootLoading(
         combineReducers({
             assets: Reducers.assets(createInitialAssetsState(rendererService)),
-            editorLoading: Reducers.editorLoading(createInitialEditorLoadingState()),
+            loading: Reducers.loading(createInitialLoadingState()),
             editor:
                 undoable(editorReducer,
                     EditorState.empty().addDiagram(initialDiagram),
@@ -92,12 +94,8 @@ const store = createStore(
                 ),
             ui: Reducers.ui(createInitialUIState())
     }), editorReducer),
-    window['__REDUX_DEVTOOLS_EXTENSION__'] && window['__REDUX_DEVTOOLS_EXTENSION__']()
+    applyMiddleware(thunk)
 );
-
-applyMiddleware(
-    promiseMiddleware()
-)(createStore);
 
 import { AppContainer } from './App';
 

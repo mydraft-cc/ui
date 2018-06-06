@@ -19,10 +19,10 @@ interface HistoryMenuProps {
     canRedo: boolean;
 
     // Undo the latest action.
-    undo: () => void;
+    undo: () => any;
 
     // Redo the latest undone action.
-    redo: () => void;
+    redo: () => any;
 }
 
 const mapStateToProps = (state: EditorStateInStore) => {

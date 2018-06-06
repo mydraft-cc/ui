@@ -31,14 +31,14 @@ export interface SelectionAdornerProps {
     // The selected items.
     selectedItems: DiagramItem[];
 
+    // The interaction service.
+    interactionService: InteractionService;
+
     // A function to retrieve a render element by diagram item.
     provideItemByElement: (item: paper.Item) => DiagramItem | null;
 
     // A function to select a set of items.
-    selectItems: (diagram: Diagram, itemIds: string[]) => void;
-
-    // The interaction service.
-    interactionService: InteractionService;
+    selectItems: (diagram: Diagram, itemIds: string[]) => any;
 }
 
 export class SelectionAdorner extends React.Component<SelectionAdornerProps> implements InteractionHandler {

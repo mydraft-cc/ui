@@ -19,7 +19,7 @@ export interface LoadingStateInStore {
     loading: LoadingState;
 }
 
-export const createInitialEditorLoadingState: () => LoadingState = () => {
+export const createInitialLoadingState: () => LoadingState = () => {
     return {
         isLoading: false,
         isSaving: false

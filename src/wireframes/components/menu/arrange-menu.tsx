@@ -38,16 +38,16 @@ interface ArrangeMenuProps {
     selectedGroups: DiagramGroup[];
 
     // Group items.
-    groupItems: (diagram: Diagram, items: DiagramItem[], id: string) => void;
+    groupItems: (diagram: Diagram, items: DiagramItem[], id: string) => any;
 
     // Remove items.
-    removeItems: (diagram: Diagram, items: DiagramItem[]) => void;
+    removeItems: (diagram: Diagram, items: DiagramItem[]) => any;
 
     // Ungroup items.
-    ungroupItems: (diagram: Diagram, groups: DiagramGroup[]) => void;
+    ungroupItems: (diagram: Diagram, groups: DiagramGroup[]) => any;
 
     // Selcts items.
-    selectItems: (diagram: Diagram, itemsIds: string[]) => void;
+    selectItems: (diagram: Diagram, itemsIds: string[]) => any;
 }
 
 const mapStateToProps = (state: EditorStateInStore) => {

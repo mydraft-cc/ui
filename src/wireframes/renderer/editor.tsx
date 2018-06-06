@@ -50,13 +50,13 @@ export interface EditorProps {
     zoom: number;
 
     // A function to select a set of items.
-    selectItems: (diagram: Diagram, itemIds: string[]) => void;
+    selectItems: (diagram: Diagram, itemIds: string[]) => any;
 
     // A function to change the appearance of a visual.
-    changeItemsAppearance: (diagram: Diagram, visuals: DiagramVisual[], key: string, val: any) => void;
+    changeItemsAppearance: (diagram: Diagram, visuals: DiagramVisual[], key: string, val: any) => any;
 
     // A function to transform a set of items.
-    transformItems: (diagram: Diagram, items: DiagramItem[], oldBounds: Transform, newBounds: Transform) => void;
+    transformItems: (diagram: Diagram, items: DiagramItem[], oldBounds: Transform, newBounds: Transform) => any;
 }
 
 const mapStateToProps = (state: UIStateInStore & EditorStateInStore) => {
@@ -156,7 +156,7 @@ class Editor extends React.Component<EditorProps> {
         const diagram = this.props.selectedDiagram;
 
         if (diagram) {
-            let handleContainer: (itemIds: ImmutableList<string>) => void;
+            let handleContainer: (itemIds: ImmutableList<string>) => any;
 
             handleContainer = itemIds => {
                 itemIds.forEach(itemId => {

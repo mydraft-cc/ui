@@ -1,4 +1,4 @@
-import { Action, Dispatch, Reducer } from 'redux';
+import { Dispatch, Reducer } from 'redux';
 
 import {
     addDiagram,
@@ -14,25 +14,14 @@ export const newDiagram = () => {
     return { type: NEW_DIAGRAM };
 };
 
-export const LOAD_DIAGRAM = 'LOAD_DIAGRAM';
-export const loadDiagram = (token: string) => {
-    return { type: LOAD_DIAGRAM, payload: token };
-};
-
-export const LOADING_FAILED = 'LOADING_FAILED';
-export const loadingFailed = (error: string) => {
-    return { type: LOADING_FAILED, payload: error };
-};
-
-export const LOADING_SUCCEEDED = 'LOADING_SUCCEEDED';
-export const loadingSucceeded = (actions: any[]) => {
-    return { type: LOADING_SUCCEEDED, payload: actions };
-};
-
 export const HIDE_ERROR = 'HIDE_ERROR';
 export const hideError = () => {
     return { type: HIDE_ERROR };
 };
+
+export const LOADING_STARTED = 'LOADING_STARTED';
+export const LOADING_FAILED = 'LOADING_FAILED';
+export const LOADING_SUCCEEDED = 'LOADING_SUCCEEDED';
 
 export const SAVING_STARTED = 'SAVING_STARTED';
 export const SAVING_FAILED = 'SAVING_FAILED';
@@ -78,15 +67,15 @@ export const saveDiagramAsync = () => {
     };
 };
 
-export function editorLoading(initialState: LoadingState): Reducer<LoadingState> {
-    const reducer: Reducer<LoadingState> = (state = initialState, action: Action & any) => {
+export function loading(initialState: LoadingState): Reducer<LoadingState> {
+    const reducer: Reducer<LoadingState> = (state = initialState, action: any) => {
         switch (action.type) {
-            case LOAD_DIAGRAM:
-                return {...state, isLoading: true, tokenRead: action.payload };
+            case LOADING_STARTED:
+                return {...state, isLoading: true, tokenRead: action.tokenRead };
             case LOADING_FAILED:
-                return {...state, isLoading: false, error: action.payload };
+                return {...state, isLoading: false, error: action.error };
             case LOADING_SUCCEEDED:
-                return {...state, isLoading: false, tokenRead: action.payload };
+                return {...state, isLoading: false, tokenRead: action.tokenRead };
             case HIDE_ERROR:
                 return {...state, error: null };
             default:
@@ -110,7 +99,7 @@ export function rootLoading(innerReducer: Reducer<any>, editorReducer: Reducer<E
             case LOADING_SUCCEEDED: {
                 let editor = EditorState.empty();
 
-                for (let loadedAction of action.payload) {
+                for (let loadedAction of action.actions) {
                     editor = editorReducer(editor, loadedAction);
                 }
 

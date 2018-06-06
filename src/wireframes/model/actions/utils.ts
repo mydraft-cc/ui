@@ -10,8 +10,8 @@ interface ItemsAction extends DiagramAction {
     readonly diagramId: string;
 }
 
-export function createItemsAction<T extends {}>(type: string, diagram: DiagramRef, items: ItemsRef, payload?: T): T & Action & ItemsAction {
-    let result: any = createDiagramAction(type, diagram, payload);
+export function createItemsAction<T extends {}>(type: string, diagram: DiagramRef, items: ItemsRef, action?: T): T & Action & ItemsAction {
+    let result: any = createDiagramAction(type, diagram, action);
 
     const itemIds: string[] = [];
 
@@ -32,7 +32,7 @@ interface DiagramAction {
     readonly diagramId: string;
 }
 
-export function createDiagramAction<T extends {}>(type: string, diagram: DiagramRef, payload?: T): T & Action & DiagramAction {
+export function createDiagramAction<T extends {}>(type: string, diagram: DiagramRef, action?: T): T & Action & DiagramAction {
     const result: any = { type };
 
     if (diagram instanceof Diagram) {
@@ -41,8 +41,8 @@ export function createDiagramAction<T extends {}>(type: string, diagram: Diagram
         result.diagramId = diagram;
     }
 
-    if (payload) {
-        Object.assign(result, payload);
+    if (action) {
+        Object.assign(result, action);
     }
 
     return result;
