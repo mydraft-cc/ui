@@ -10,11 +10,10 @@ import {
     addIcon,
     addImage,
     addVisual,
-    EditorState,
+    EditorStateInStore,
     getSelection,
     RendererService,
-    UIState,
-    UndoableState
+    UIStateInStore
 } from '@app/wireframes/model';
 
 import { EditorContainer } from '@app/wireframes/renderer/editor';
@@ -52,7 +51,7 @@ export interface EditorViewProps {
     addImage: (diagram: string, source: string, x: number, y: number, w: number, h: number) => any;
 }
 
-const mapStateToProps = (state: { ui: UIState, editor: UndoableState<EditorState> }) => {
+const mapStateToProps = (state: UIStateInStore & EditorStateInStore) => {
     const { editor } = getSelection(state);
 
     return {
@@ -150,7 +149,7 @@ class EditorView extends React.Component<EditorViewProps> {
 
             const padding = sizeInPx(this.props.spacing);
 
-            return { width: w, height: h, padding };
+            return { width: w, height: h, padding, margin: 'auto' };
         };
 
         return this.props.connectDropTarget(

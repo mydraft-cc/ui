@@ -28,16 +28,16 @@ export function grouping(): Reducer<EditorState> {
     const reducer: Reducer<EditorState> = (state: EditorState, action: any) => {
         switch (action.type) {
             case GROUP_ITEMS:
-                return state.updateDiagram(action.payload.diagramId, diagram => {
-                    const groupId = action.payload.groupId;
+                return state.updateDiagram(action.diagramId, diagram => {
+                    const groupId = action.groupId;
 
-                    return diagram.group(groupId, action.payload.itemIds).selectItems([groupId]);
+                    return diagram.group(groupId, action.itemIds).selectItems([groupId]);
                 });
             case UNGROUP_ITEMS:
-                return state.updateDiagram(action.payload.diagramId, diagram => {
+                return state.updateDiagram(action.diagramId, diagram => {
                     const childIds: string[] = [];
 
-                    for (let groupId of action.payload.itemIds) {
+                    for (let groupId of action.itemIds) {
                         const target = <DiagramGroup>diagram.items.get(groupId);
 
                         if (target) {

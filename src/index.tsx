@@ -6,7 +6,8 @@ require('./libs/paper-area-text');
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
-import { combineReducers, createStore, Reducer } from 'redux';
+import { applyMiddleware, combineReducers, createStore, Reducer } from 'redux';
+import promiseMiddleware from 'redux-promise-middleware';
 
 import { MathHelper, UserReport, Vec2 } from '@app/core';
 
@@ -31,7 +32,7 @@ import { registerRenderers } from '@app/wireframes/shapes';
 const rendererService = registerRenderers();
 
 let initialAction = addDiagram();
-let initialDiagram = Diagram.empty(initialAction.payload.diagramId);
+let initialDiagram = Diagram.empty(initialAction.diagramId);
 
 if (process.env.NODE_ENV !== 'production') {
     let index = 0;
@@ -93,6 +94,10 @@ const store = createStore(
     }), editorReducer),
     window['__REDUX_DEVTOOLS_EXTENSION__'] && window['__REDUX_DEVTOOLS_EXTENSION__']()
 );
+
+applyMiddleware(
+    promiseMiddleware()
+)(createStore);
 
 import { AppContainer } from './App';
 

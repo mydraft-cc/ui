@@ -16,7 +16,8 @@
     "react-measure": "2.0.2",
     "react-redux": "5.0.7",
     "react-scripts-ts": "2.16.0",
-    "redux": "3.7.2"
+    "redux": "3.7.2",
+    "redux-thunk": "2.3.0"
   },
   "scripts": {
     "test": "karma start",

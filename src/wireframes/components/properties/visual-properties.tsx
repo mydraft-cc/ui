@@ -14,7 +14,8 @@ import {
     DiagramShape,
     EditorState,
     getSelection,
-    UndoableState
+    UndoableState,
+    EditorStateInStore
 } from '@app/wireframes/model';
 
 interface VisualPropertiesProps {
@@ -46,7 +47,7 @@ interface VisualPropertiesProps {
     changeItemsAppearance: (diagram: string, items: DiagramItem[], key: string, val: any) => any;
 }
 
-const mapStateToProps = (state: { editor: UndoableState<EditorState> }) => {
+const mapStateToProps = (state: EditorStateInStore) => {
     const { diagram, editor, items } = getSelection(state);
 
     let set: DiagramItemSet | null = null;

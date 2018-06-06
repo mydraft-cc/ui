@@ -11,12 +11,11 @@ import {
     Configurable,
     DiagramShape,
     DiagramVisual,
-    EditorState,
+    EditorStateInStore,
     getSelection,
     NumberConfigurable,
     SelectionConfigurable,
-    SliderConfigurable,
-    UndoableState
+    SliderConfigurable
 } from '@app/wireframes/model';
 
 import { CustomSlider } from './custom-slider';
@@ -35,7 +34,7 @@ interface CustomPropertiesProps {
     changeItemsAppearance: (diagram: string, visuals: DiagramVisual[], key: string, val: any) => any;
 }
 
-const mapStateToProps = (state: { editor: UndoableState<EditorState> }) => {
+const mapStateToProps = (state: EditorStateInStore) => {
     const { editor, items } = getSelection(state);
 
     let selectedShape: DiagramShape | null = null;

@@ -18,12 +18,11 @@ import {
     DiagramItem,
     DISTRIBUTE_H,
     DISTRIBUTE_V,
-    EditorState,
+    EditorStateInStore,
     getSelection,
     orderItems,
     SEND_BACKWARDS,
-    SEND_TO_BACK,
-    UndoableState
+    SEND_TO_BACK
 } from '@app/wireframes/model';
 
 interface LayoutPropertiesProps {
@@ -49,7 +48,7 @@ interface LayoutPropertiesProps {
     alignItems: (mode: string, diagram: string, items: DiagramItem[]) => any;
 }
 
-const mapStateToProps = (state: { editor: UndoableState<EditorState> }) => {
+const mapStateToProps = (state: EditorStateInStore) => {
     const { editor, items } = getSelection(state);
 
     return {

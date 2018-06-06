@@ -23,7 +23,7 @@ import {
     selectTab,
     toggleLeftSidebar,
     toggleRightSidebar,
-    UIState
+    UIStateInStore
 } from '@app/wireframes/model';
 
 interface AppOwnProps {
@@ -54,7 +54,7 @@ interface AppProps {
     toggleRightSidebar: () =>  any;
 }
 
-const mapStateToProps = (state: { ui: UIState }, props: AppOwnProps) => {
+const mapStateToProps = (state: UIStateInStore, props: AppOwnProps) => {
     return {
         rendererService: props.rendererService,
         selectedTab: state.ui.selectedTab,

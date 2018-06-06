@@ -6,10 +6,9 @@ import { bindActionCreators, Dispatch } from 'redux';
 import { Shortcut } from '@app/core';
 
 import {
-    EditorState,
+    EditorStateInStore,
     redo,
-    undo,
-    UndoableState
+    undo
 } from '@app/wireframes/model';
 
 interface HistoryMenuProps {
@@ -26,7 +25,7 @@ interface HistoryMenuProps {
     redo: () => void;
 }
 
-const mapStateToProps = (state: { editor: UndoableState<EditorState> }) => {
+const mapStateToProps = (state: EditorStateInStore) => {
     return {
         canUndo: state.editor.canUndo,
         canRedo: state.editor.canRedo

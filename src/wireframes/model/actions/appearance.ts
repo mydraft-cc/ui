@@ -27,11 +27,11 @@ export function appearance(): Reducer<EditorState> {
     const editorReducer: Reducer<EditorState> = (state: EditorState, action: any) => {
         switch (action.type) {
             case CHANGE_ITEMS_APPEARANCE:
-                return state.updateDiagram(action.payload.diagramId, diagram => {
-                    const key = action.payload.appearance.key;
-                    const val = action.payload.appearance.val;
+                return state.updateDiagram(action.diagramId, diagram => {
+                    const key = action.appearance.key;
+                    const val = action.appearance.val;
 
-                    const set = DiagramItemSet.createFromDiagram(action.payload.itemIds, diagram);
+                    const set = DiagramItemSet.createFromDiagram(action.itemIds, diagram);
 
                     for (let visual of set!.allVisuals) {
                         diagram = diagram.updateItem(visual.id, i => (<DiagramVisual>i).setAppearance(key, val));
@@ -40,11 +40,11 @@ export function appearance(): Reducer<EditorState> {
                     return diagram;
                 });
             case TRANSFORM_ITEMS:
-                return state.updateDiagram(action.payload.diagramId, diagram => {
-                    const oldBounds = Transform.createFromJS(action.payload.oldBounds);
-                    const newBounds = Transform.createFromJS(action.payload.newBounds);
+                return state.updateDiagram(action.diagramId, diagram => {
+                    const oldBounds = Transform.createFromJS(action.oldBounds);
+                    const newBounds = Transform.createFromJS(action.newBounds);
 
-                    const set = DiagramItemSet.createFromDiagram(action.payload.itemIds, diagram);
+                    const set = DiagramItemSet.createFromDiagram(action.itemIds, diagram);
 
                     for (let item of set!.allItems) {
                         diagram = diagram.updateItem(item.id, i => i.transformByBounds(oldBounds, newBounds));

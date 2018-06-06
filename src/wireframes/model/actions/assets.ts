@@ -19,7 +19,7 @@ export function assets(initialState: AssetsState): Reducer<AssetsState> {
                 return {
                     ...state,
                     iconsFilter: action.payload,
-                    iconsFiltered: action.payload.length === 0 ?
+                    iconsFiltered: action.length === 0 ?
                         state.icons :
                         state.icons.filter(i => i.term.indexOf(action.payload) >= 0)
                 };
@@ -27,7 +27,7 @@ export function assets(initialState: AssetsState): Reducer<AssetsState> {
                 return {
                     ...state,
                     shapesFilter: action.payload,
-                    shapesFiltered: action.payload.length === 0 ?
+                    shapesFiltered: action.length === 0 ?
                         state.shapes :
                         state.shapes.filter(i => i.key.indexOf(action.payload) >= 0)
                 };

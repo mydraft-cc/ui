@@ -58,25 +58,25 @@ export function items(rendererService: RendererService, serializer: Serializer):
     const reducer: Reducer<EditorState> = (state: EditorState, action: any) => {
         switch (action.type) {
             case SELECT_ITEMS:
-                return state.updateDiagram(action.payload.diagramId, diagram => {
-                    return diagram.selectItems(action.payload.itemIds);
+                return state.updateDiagram(action.diagramId, diagram => {
+                    return diagram.selectItems(action.itemIds);
                 });
             case REMOVE_ITEMS:
-                return state.updateDiagram(action.payload.diagramId, diagram => {
-                    const set = DiagramItemSet.createFromDiagram(action.payload.itemIds, diagram);
+                return state.updateDiagram(action.diagramId, diagram => {
+                    const set = DiagramItemSet.createFromDiagram(action.itemIds, diagram);
 
                     return diagram.removeItems(set!);
                 });
             case PASTE_ITEMS:
-                return state.updateDiagram(action.payload.diagramId, diagram => {
-                    const set = serializer.deserializeSet(action.payload.json);
+                return state.updateDiagram(action.diagramId, diagram => {
+                    const set = serializer.deserializeSet(action.json);
 
                     diagram = diagram.addItems(set);
 
                     for (let item of set.allVisuals) {
                         diagram = diagram.updateItem(item.id, i => {
                             const oldBounds = i.bounds(diagram);
-                            const newBounds = oldBounds.moveBy(new Vec2(action.payload.offset, action.payload.offset));
+                            const newBounds = oldBounds.moveBy(new Vec2(action.offset, action.offset));
 
                             return i.transformByBounds(oldBounds, newBounds);
                         });
@@ -87,27 +87,27 @@ export function items(rendererService: RendererService, serializer: Serializer):
                     return diagram;
                 });
             case ADD_ICON:
-                return state.updateDiagram(action.payload.diagramId, diagram => {
+                return state.updateDiagram(action.diagramId, diagram => {
                     const renderer = rendererService.registeredRenderers['Icon'];
 
-                    const shape = renderer.createDefaultShape(action.payload.shapeId);
+                    const shape = renderer.createDefaultShape(action.shapeId);
 
                     const position =
                         new Vec2(
-                            action.payload.position.x + shape.transform.size.x * 0.5,
-                            action.payload.position.y + shape.transform.size.y * 0.5);
+                            action.position.x + shape.transform.size.x * 0.5,
+                            action.position.y + shape.transform.size.y * 0.5);
 
                     const configured =
-                        shape.transformWith(t => t.moveTo(position)).setAppearance(DiagramShape.APPEARANCE_TEXT, action.payload.char);
+                        shape.transformWith(t => t.moveTo(position)).setAppearance(DiagramShape.APPEARANCE_TEXT, action.char);
 
                     return diagram.addVisual(configured).selectItems([configured.id]);
                 });
             case ADD_IMAGE:
-                return state.updateDiagram(action.payload.diagramId, diagram => {
+                return state.updateDiagram(action.diagramId, diagram => {
                     let size =
                         new Vec2(
-                            action.payload.size.w,
-                            action.payload.size.h);
+                            action.size.w,
+                            action.size.h);
 
                     if (size.x > MAX_IMAGE_SIZE || size.y > MAX_IMAGE_SIZE) {
                         const ratio = size.x / size.y;
@@ -121,33 +121,33 @@ export function items(rendererService: RendererService, serializer: Serializer):
 
                     const position =
                         new Vec2(
-                            action.payload.position.x + size.x * 0.5,
-                            action.payload.position.y + size.y * 0.5);
+                            action.position.x + size.x * 0.5,
+                            action.position.y + size.y * 0.5);
 
                     const renderer = rendererService.registeredRenderers['Raster'];
 
                     const shape =
-                        renderer.createDefaultShape(action.payload.shapeId)
+                        renderer.createDefaultShape(action.shapeId)
                             .transformWith(t => t.resizeTo(size))
                             .transformWith(t => t.moveTo(position))
-                            .setAppearance('SOURCE', action.payload.source);
+                            .setAppearance('SOURCE', action.source);
 
                     return diagram.addVisual(shape).selectItems([shape.id]);
                 });
             case ADD_VISUAL:
-                return state.updateDiagram(action.payload.diagramId, diagram => {
-                    const renderer = rendererService.registeredRenderers[action.payload.renderer];
+                return state.updateDiagram(action.diagramId, diagram => {
+                    const renderer = rendererService.registeredRenderers[action.renderer];
 
-                    const shape = renderer.createDefaultShape(action.payload.shapeId);
+                    const shape = renderer.createDefaultShape(action.shapeId);
 
                     const position =
                         new Vec2(
-                            action.payload.position.x + shape.transform.size.x * 0.5,
-                            action.payload.position.y + shape.transform.size.y * 0.5);
+                            action.position.x + shape.transform.size.x * 0.5,
+                            action.position.y + shape.transform.size.y * 0.5);
 
                     let configured = <DiagramVisual>shape.transformWith(t => t.moveTo(position));
 
-                    let properties = action.payload.properties;
+                    let properties = action.properties;
                     if (properties) {
                         for (let key in properties) {
                             if (properties.hasOwnProperty(key)) {

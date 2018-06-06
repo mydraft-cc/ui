@@ -8,12 +8,11 @@ import { Shortcut } from '@app/core';
 import {
     Diagram,
     DiagramItemSet,
-    EditorState,
+    EditorStateInStore,
     getSelection,
     pasteItems,
     removeItems,
-    Serializer,
-    UndoableState
+    Serializer
 } from '@app/wireframes/model';
 
 import { SerializerContext } from '@app/context';
@@ -41,7 +40,7 @@ interface ClipboardMenuState {
     offset: number;
 }
 
-const mapStateToProps = (state: { editor: UndoableState<EditorState> }) => {
+const mapStateToProps = (state: EditorStateInStore) => {
     const { diagram, items } = getSelection(state);
 
     return {

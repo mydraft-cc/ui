@@ -1,11 +1,17 @@
+import { Action } from 'redux';
+
 import { Diagram, DiagramItem } from '@app/wireframes/model';
 
 export type DiagramRef = string | Diagram;
 
 export type ItemsRef = string[] | DiagramItem[];
 
-export function createItemsAction(type: string, diagram: DiagramRef, items: ItemsRef, payload?: {}): any {
-    payload = payload || {};
+interface ItemsAction extends DiagramAction {
+    readonly diagramId: string;
+}
+
+export function createItemsAction<T extends {}>(type: string, diagram: DiagramRef, items: ItemsRef, payload?: T): T & Action & ItemsAction {
+    let result: any = createDiagramAction(type, diagram, payload);
 
     const itemIds: string[] = [];
 
@@ -17,19 +23,27 @@ export function createItemsAction(type: string, diagram: DiagramRef, items: Item
         }
     }
 
-    payload['itemIds'] = itemIds;
+    result.itemIds = itemIds;
 
-    return createDiagramAction(type, diagram, payload);
+    return result;
 }
 
-export function createDiagramAction(type: string, diagram: DiagramRef, payload?: {}): any {
-    payload = payload || {};
+interface DiagramAction {
+    readonly diagramId: string;
+}
+
+export function createDiagramAction<T extends {}>(type: string, diagram: DiagramRef, payload?: T): T & Action & DiagramAction {
+    const result: any = { type };
 
     if (diagram instanceof Diagram) {
-        payload['diagramId'] = diagram.id;
+        result.diagramId = diagram.id;
     } else {
-        payload['diagramId'] = diagram;
+        result.diagramId = diagram;
     }
 
-    return { type: type, payload: payload };
+    if (payload) {
+        Object.assign(result, payload);
+    }
+
+    return result;
 }

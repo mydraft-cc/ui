@@ -10,12 +10,11 @@ import {
     Diagram,
     DiagramGroup,
     DiagramItem,
-    EditorState,
+    EditorStateInStore,
     getSelection,
     groupItems,
     removeItems,
     selectItems,
-    UndoableState,
     ungroupItems
 } from '@app/wireframes/model';
 
@@ -51,7 +50,7 @@ interface ArrangeMenuProps {
     selectItems: (diagram: Diagram, itemsIds: string[]) => void;
 }
 
-const mapStateToProps = (state: { editor: UndoableState<EditorState> }) => {
+const mapStateToProps = (state: EditorStateInStore) => {
     const { diagram, items } = getSelection(state);
 
     const groups = items.filter(s => s instanceof DiagramGroup);

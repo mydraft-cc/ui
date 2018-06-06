@@ -23,22 +23,22 @@ export const orderItems = (mode: string, diagram: DiagramRef, items: ItemsRef) =
 export function ordering(): Reducer<EditorState> {
     const reducer: Reducer<EditorState> = (state: EditorState, action: any) => {
         if (action.type === ORDER_ITEMS) {
-            switch (action.payload.mode) {
+            switch (action.mode) {
                 case BRING_TO_FRONT:
-                    return state.updateDiagram(action.payload.diagramId, diagram => {
-                        return diagram.bringToFront(action.payload.itemIds);
+                    return state.updateDiagram(action.diagramId, diagram => {
+                        return diagram.bringToFront(action.itemIds);
                     });
                 case BRING_FORWARDS:
-                    return state.updateDiagram(action.payload.diagramId, diagram => {
-                        return diagram.bringForwards(action.payload.itemIds);
+                    return state.updateDiagram(action.diagramId, diagram => {
+                        return diagram.bringForwards(action.itemIds);
                     });
                 case SEND_TO_BACK:
-                    return state.updateDiagram(action.payload.diagramId, diagram => {
-                        return diagram.sendToBack(action.payload.itemIds);
+                    return state.updateDiagram(action.diagramId, diagram => {
+                        return diagram.sendToBack(action.itemIds);
                     });
                 case SEND_BACKWARDS:
-                    return state.updateDiagram(action.payload.diagramId, diagram => {
-                        return diagram.sendBackwards(action.payload.itemIds);
+                    return state.updateDiagram(action.diagramId, diagram => {
+                        return diagram.sendBackwards(action.itemIds);
                     });
                 default:
                     return state;

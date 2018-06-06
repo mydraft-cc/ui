@@ -1,9 +1,11 @@
-import { Reducer } from 'redux';
+import { Action, Dispatch, Reducer } from 'redux';
 
 import {
     addDiagram,
-    EditorLoadingState,
     EditorState,
+    EditorStateInStore,
+    LoadingState,
+    LoadingStateInStore,
     UndoableState
 } from '@app/wireframes/model';
 
@@ -32,8 +34,52 @@ export const hideError = () => {
     return { type: HIDE_ERROR };
 };
 
-export function editorLoading(initialState: EditorLoadingState): Reducer<EditorLoadingState> {
-    const reducer: Reducer<EditorLoadingState> = (state = initialState, action: any) => {
+export const SAVING_STARTED = 'SAVING_STARTED';
+export const SAVING_FAILED = 'SAVING_FAILED';
+export const SAVING_SUCCEEDED = 'SAVING_SUCCEEDED';
+export const saveDiagramAsync = () => {
+    return (dispatch: Dispatch<any>, getState: () => LoadingStateInStore & EditorStateInStore) => {
+        const state = getState();
+
+        const body = JSON.stringify(state.editor.actions);
+
+        let putPromise: Promise<{ tokenRead: string, tokenWrite: string }>;
+
+        if (state.loading.tokenRead && state.loading.tokenWrite) {
+            const tokenWrite = state.loading.tokenWrite;
+            const tokenRead = state.loading.tokenRead;
+
+            putPromise = fetch(`https://api.mydraft.cc/${tokenRead}/${tokenWrite}`, {
+                method: 'PUT',
+                headers: {
+                    ContentType: 'text/json'
+                },
+                body
+            }).then(() => ({ tokenRead, tokenWrite }));
+        } else {
+            putPromise = Promise.reject({});
+        }
+
+        putPromise.catch(() => {
+            return fetch(`https://api.mydraft.cc/`, {
+                method: 'POST',
+                headers: {
+                    ContentType: 'text/json'
+                },
+                body
+            }).then(response => response.json());
+        })
+        .then(r => {
+            dispatch({ type: SAVING_SUCCEEDED, tokenWrite: r.tokenWrite, tokenRead: r.tokenRead });
+        },
+        () => {
+            dispatch({ type: SAVING_FAILED, error: 'Failed to save diagram' });
+        });
+    };
+};
+
+export function editorLoading(initialState: LoadingState): Reducer<LoadingState> {
+    const reducer: Reducer<LoadingState> = (state = initialState, action: Action & any) => {
         switch (action.type) {
             case LOAD_DIAGRAM:
                 return {...state, isLoading: true, tokenRead: action.payload };
@@ -51,12 +97,8 @@ export function editorLoading(initialState: EditorLoadingState): Reducer<EditorL
     return reducer;
 }
 
-interface EditorPath {
-    editor: UndoableState<EditorState>;
-}
-
 export function rootLoading(innerReducer: Reducer<any>, editorReducer: Reducer<EditorState>): Reducer<any> {
-    const reducer: Reducer<EditorPath> = (state: EditorPath, action: any) => {
+    const reducer: Reducer<EditorStateInStore> = (state: EditorStateInStore, action: any) => {
         switch (action.type) {
             case NEW_DIAGRAM: {
                 const initialAction = addDiagram();

@@ -1,6 +1,6 @@
 import { ImmutableIdMap, Vec2 } from '@app/core';
 
-import { Diagram } from '@app/wireframes/model';
+import { Diagram, UndoableState } from '@app/wireframes/model';
 
 export class EditorState {
     constructor(
@@ -50,4 +50,8 @@ export class EditorState {
             return this;
         }
     }
+}
+
+export interface EditorStateInStore {
+    editor: UndoableState<EditorState>;
 }

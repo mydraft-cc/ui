@@ -30,13 +30,13 @@ export function diagrams(): Reducer<EditorState> {
     const reducer: Reducer<EditorState> = (state: EditorState, action: any) => {
         switch (action.type) {
             case SELECT_DIAGRAM:
-                return state.selectDiagram(action.payload.diagramId);
+                return state.selectDiagram(action.diagramId);
             case ADD_DIAGRAM:
-                return state.addDiagram(Diagram.empty(action.payload.diagramId)).selectDiagram(action.payload.diagramId);
+                return state.addDiagram(Diagram.empty(action.diagramId)).selectDiagram(action.diagramId);
             case REMOVE_DIAGRAM:
-                return state.removeDiagram(action.payload.diagramId);
+                return state.removeDiagram(action.diagramId);
             case MOVE_DIAGRAM:
-                return state.moveDiagram(action.payload.diagramId, action.payload.position);
+                return state.moveDiagram(action.diagramId, action.position);
             default:
                 return state;
         }

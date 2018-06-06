@@ -13,15 +13,14 @@ import {
     DiagramItem,
     DiagramShape,
     DiagramVisual,
-    EditorState,
+    EditorStateInStore,
     getSelection,
     Renderer,
     RendererService,
     selectItems,
     Transform,
     transformItems,
-    UIState,
-    UndoableState
+    UIStateInStore
 } from '@app/wireframes/model';
 
 import { CanvasView } from './canvas-view';
@@ -60,7 +59,7 @@ export interface EditorProps {
     transformItems: (diagram: Diagram, items: DiagramItem[], oldBounds: Transform, newBounds: Transform) => void;
 }
 
-const mapStateToProps = (state: { ui: UIState, editor: UndoableState<EditorState> }) => {
+const mapStateToProps = (state: UIStateInStore & EditorStateInStore) => {
     const { editor, diagram, items} = getSelection(state);
 
     return {
