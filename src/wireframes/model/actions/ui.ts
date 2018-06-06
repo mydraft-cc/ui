@@ -1,6 +1,28 @@
-import { Reducer } from 'redux';
+import { Dispatch, Reducer } from 'redux';
 
 import { UIState } from '@app/wireframes/model';
+
+export const SHOW_INFO_TOAST = 'SHOW_INFO_TOAST';
+export const showInfoToast = (message: string, hideAfter = 5000) => {
+    return (dispatch: Dispatch<any>) => {
+        dispatch({ type: SHOW_INFO_TOAST, message });
+
+        setTimeout(() => {
+            dispatch({ type: SHOW_INFO_TOAST, message: null });
+        }, hideAfter);
+    };
+};
+
+export const SHOW_ERROR_TOAST = 'SHOW_ERROR_TOAST';
+export const showErrorToast = (message: string, hideAfter = 5000) => {
+    return (dispatch: Dispatch<any>) => {
+        dispatch({ type: SHOW_ERROR_TOAST, message });
+
+        setTimeout(() => {
+            dispatch({ type: SHOW_ERROR_TOAST, message: null });
+        }, hideAfter);
+    };
+};
 
 export const SET_ZOOM = 'SET_ZOOM';
 export const setZoom = (zoomLevel: number) => {
@@ -33,6 +55,10 @@ export function ui(initialState: UIState): Reducer<UIState> {
                 return {...state, showLeftSidebar: !state.showLeftSidebar };
             case TOGGle_RIGHT_SIDEBAR:
                 return {...state, showRightSidebar: !state.showRightSidebar };
+            case SHOW_INFO_TOAST:
+                return {...state, infoToast: action.message };
+            case SHOW_ERROR_TOAST:
+                return {...state, errorToast: action.message };
             default:
                 return state;
         }

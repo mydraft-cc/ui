@@ -23,7 +23,7 @@ interface LoadingMenuProps {
 }
 
 const mapStateToProps = (state: LoadingStateInStore) => {
-    return { readToken: state.loading.tokenRead };
+    return { readToken: state.loading.readToken };
 };
 
 const mapDispatchToProps = (dispatch: Dispatch<any>) => bindActionCreators({

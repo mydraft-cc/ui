@@ -26,6 +26,8 @@ import {
     undoable
 } from '@app/wireframes/model';
 
+import { UserMessageContainer } from '@app/wireframes/components';
+
 import { SerializerContext } from '@app/context';
 import { registerRenderers } from '@app/wireframes/shapes';
 
@@ -106,7 +108,7 @@ const Root = (
         <Provider store={store}>
             <>
                 <AppContainer rendererService={rendererService} />
-
+                <UserMessageContainer />
                 <UserReport />
             </>
         </Provider>

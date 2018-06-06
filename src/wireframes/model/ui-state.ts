@@ -2,6 +2,12 @@ export interface UIState {
     // The current zoom level.
     zoom: number;
 
+    // The error toast from any loading operation.
+    errorToast?: string;
+
+    // The info toast from any loading operation.
+    infoToast?: string;
+
     // Indicates if the left sidebar is open.
     showLeftSidebar: boolean;
 
