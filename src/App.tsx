@@ -53,10 +53,10 @@ interface AppProps {
     toggleRightSidebar: () =>  any;
 
     // Creates a new diagram.
-    newDiagram: (updateUrl: boolean) =>  any;
+    newDiagram: (navigate: boolean) =>  any;
 
     // Load a diagram.
-    loadDiagramAsync: (token: string) => any;
+    loadDiagramAsync: (token: string, navigate: boolean) => any;
 }
 
 const mapStateToProps = (state: UIStateInStore, props: AppOwnProps) => {
@@ -78,15 +78,15 @@ class App extends React.PureComponent<AppProps & AppOwnProps> {
         props.newDiagram(false);
 
         if (props.token && props.token.length > 0) {
-            props.loadDiagramAsync(props.token);
+            props.loadDiagramAsync(props.token, false);
         }
     }
 
     public componentWillUpdate(props: AppProps & AppOwnProps) {
         if (props.token && props.token.length > 0) {
-            props.loadDiagramAsync(props.token);
+            props.loadDiagramAsync(props.token, false);
         } else {
-            props.newDiagram(true);
+            props.newDiagram(false);
         }
     }
 

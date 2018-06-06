@@ -14,11 +14,11 @@ import {
 import { showErrorToast, showInfoToast } from './ui';
 
 export const NEW_DIAGRAM = 'NEW_DIAGRAM';
-export const newDiagram = (updateUrl = true) => {
+export const newDiagram = (navigate = true) => {
     return (dispatch: Dispatch<any>, getState: () => LoadingStateInStore) => {
         dispatch({ type: NEW_DIAGRAM });
 
-        if (updateUrl) {
+        if (navigate) {
             dispatch(push(''));
         }
     };
@@ -27,7 +27,7 @@ export const newDiagram = (updateUrl = true) => {
 export const LOADING_STARTED = 'LOADING_STARTED';
 export const LOADING_FAILED = 'LOADING_FAILED';
 export const LOADING_SUCCEEDED = 'LOADING_SUCCEEDED';
-export const loadDiagramAsync = (token: string) => {
+export const loadDiagramAsync = (token: string, navigate = true) => {
     return (dispatch: Dispatch<any>, getState: () => LoadingStateInStore) => {
         const state = getState();
 
@@ -39,6 +39,10 @@ export const loadDiagramAsync = (token: string) => {
                 .then(response => {
                     dispatch({ type: LOADING_SUCCEEDED, readToken: token, actions: response });
                     dispatch(showInfoToast('Succeeded to load diagram.'));
+
+                    if (navigate) {
+                        dispatch(push(token));
+                    }
                 }, () => {
                     dispatch({ type: LOADING_FAILED });
                     dispatch(showErrorToast('Failed to save diagram.'));
@@ -50,7 +54,7 @@ export const loadDiagramAsync = (token: string) => {
 export const SAVING_STARTED = 'SAVING_STARTED';
 export const SAVING_FAILED = 'SAVING_FAILED';
 export const SAVING_SUCCEEDED = 'SAVING_SUCCEEDED';
-export const saveDiagramAsync = () => {
+export const saveDiagramAsync = (navigate = true) => {
     return (dispatch: Dispatch<any>, getState: () => LoadingStateInStore & EditorStateInStore) => {
         const state = getState();
 
@@ -93,7 +97,9 @@ export const saveDiagramAsync = () => {
                 dispatch(showInfoToast(`Diagram saved and updated.`));
             }
 
-            dispatch(push(r.readToken));
+            if (navigate) {
+                dispatch(push(r.readToken));
+            }
         },
         () => {
             dispatch({ type: SAVING_FAILED, error: 'Failed to save diagram' });
@@ -134,7 +140,7 @@ export function rootLoading(innerReducer: Reducer<any>, undoableReducer: Reducer
                 const initialAction = addDiagram();
                 const initialState = editorReducer(EditorState.empty(), initialAction);
 
-                state = { ...state, editor: UndoableState.create(initialState, initialAction) };
+                state = { editor: UndoableState.create(initialState, initialAction) };
                 break;
             }
             case LOADING_SUCCEEDED: {
@@ -144,7 +150,7 @@ export function rootLoading(innerReducer: Reducer<any>, undoableReducer: Reducer
                     firstAction = addDiagram();
                 }
 
-                let editor = UndoableState.create(EditorState.empty());
+                let editor = UndoableState.create(editorReducer(EditorState.empty(), firstAction), firstAction);
 
                 for (let loadedAction of action.actions) {
                     editor = undoableReducer(editor, loadedAction);
@@ -155,14 +161,12 @@ export function rootLoading(innerReducer: Reducer<any>, undoableReducer: Reducer
                 const diagram = present.diagrams.get(present.selectedDiagramId!);
 
                 if (diagram) {
-                    editor = undoableReducer(editor, selectItems(diagram, []));
-
-                    state = { ...state, editor };
+                    state = { editor: undoableReducer(editor, selectItems(diagram, [])) };
                 } else {
                     const initialAction = addDiagram();
                     const initialState = editorReducer(EditorState.empty(), initialAction);
 
-                    state = { ...state, editor: UndoableState.create(initialState, initialAction) };
+                    state = { editor: UndoableState.create(initialState, initialAction) };
                 }
                 break;
             }

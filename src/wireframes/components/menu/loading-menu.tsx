@@ -34,7 +34,7 @@ const LoadingMenu = (props: LoadingMenuProps) => {
     const getText = () => {
         return props.readToken && props.readToken.length > 0 ?
             `mydraft.cc - Diaram ${props.readToken}` :
-            'mydraft.cc - New Diagram';
+            'mydract.cc - New Diagram';
     };
 
     const doNewDiagram = () => {
