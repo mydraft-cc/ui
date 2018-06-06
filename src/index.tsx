@@ -77,11 +77,11 @@ const composeEnhancers = window['__REDUX_DEVTOOLS_EXTENSION_COMPOSE__'] || compo
 const store = createStore(
     Reducers.rootLoading(
         combineReducers({
-            assets: Reducers.assets(createInitialAssetsState(rendererService)),
-            editor: undoableReducer,
+             assets: Reducers.assets(createInitialAssetsState(rendererService)),
+             editor: undoableReducer,
             loading: Reducers.loading(createInitialLoadingState()),
             routing: routerReducer,
-            ui: Reducers.ui(createInitialUIState())
+                 ui: Reducers.ui(createInitialUIState())
     }), undoableReducer, editorReducer),
     composeEnhancers(applyMiddleware(thunk, routerMiddleware(history)))
 );
