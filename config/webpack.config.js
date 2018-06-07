@@ -79,6 +79,11 @@ module.exports = {
                     loader: 'file-loader?name=assets/[name].[hash].[ext]'
                 }]
             }, {
+                test: /\.html$/,
+                use: [{
+                    loader: 'raw-loader' 
+                }]
+            }, {
                 test: /\.css$/,
                 use: [
                     plugins.MiniCssExtractPlugin.loader,

@@ -82,11 +82,13 @@ class App extends React.PureComponent<AppProps & AppOwnProps> {
         }
     }
 
-    public componentWillUpdate(props: AppProps & AppOwnProps) {
-        if (props.token && props.token.length > 0) {
-            props.loadDiagramAsync(props.token, false);
-        } else {
-            props.newDiagram(false);
+    public componentWillReceiveProps(props: AppProps & AppOwnProps) {
+        if (this.props.token !== props.token) {
+            if (props.token && props.token.length > 0) {
+                props.loadDiagramAsync(props.token, false);
+            } else {
+                props.newDiagram(false);
+            }
         }
     }
 

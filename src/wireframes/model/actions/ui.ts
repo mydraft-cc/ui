@@ -23,13 +23,18 @@ export const selectTab = (tab: string) => {
     return { type: SELECT_TAB, tab };
 };
 
+export const TOGGLE_INFO_DIALOG = 'TOGGLE_INFO_DIALOG';
+export const toggleInfoDialog = (isOpen: boolean) => {
+    return { type: TOGGLE_INFO_DIALOG, isOpen };
+};
+
 export const TOGGLE_LEFT_SIDEBAR = 'TOGGLE_LEFT_SIDEBAR';
-export const toggleLeftSidebar: () => any = () => {
+export const toggleLeftSidebar = () => {
     return { type: TOGGLE_LEFT_SIDEBAR };
 };
 
 export const TOGGlE_RIGHT_SIDEBAR = 'TOGGle_RIGHT_SIDEBAR';
-export const toggleRightSidebar: () => any = () => {
+export const toggleRightSidebar = () => {
     return { type: TOGGlE_RIGHT_SIDEBAR };
 };
 
@@ -57,6 +62,8 @@ export function ui(initialState: UIState): Reducer<UIState> {
                 return {...state, zoom: action.zoomLevel };
             case SELECT_TAB:
                 return {...state, selectedTab: action.tab };
+            case TOGGLE_INFO_DIALOG:
+                return { ...state, showInfoDialog: action.isOpen };
             case TOGGLE_LEFT_SIDEBAR:
                 return {...state, showLeftSidebar: !state.showLeftSidebar };
             case TOGGlE_RIGHT_SIDEBAR:
