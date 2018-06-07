@@ -104,7 +104,7 @@ const VisualProperties = (props: VisualPropertiesProps) => {
     };
 
     const doChangeAppearance = (key: string, value: any) => {
-        props.changeItemsAppearance(props.selectedDiagramId!, props.selectedItems, DiagramShape.APPEARANCE_FONT_SIZE, value);
+        props.changeItemsAppearance(props.selectedDiagramId!, props.selectedItems, key, value);
     };
 
     const doAlignTextLeft =   () => doAlignText('left');

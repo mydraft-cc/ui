@@ -32,6 +32,10 @@ export abstract class AbstractControl implements Renderer {
 
     public abstract identifier(): string;
 
+    public previewOffset() {
+        return Vec2.ZERO;
+    }
+
     public showInGallery() {
         return true;
     }

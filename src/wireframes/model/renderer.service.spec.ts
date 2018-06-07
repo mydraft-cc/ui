@@ -1,3 +1,5 @@
+import { Vec2 } from '@app/core';
+
 import {
     Configurable,
     Renderer,
@@ -5,6 +7,8 @@ import {
 } from '@app/wireframes/model';
 
 class MockupRenderer implements Renderer {
+    public previewOffset() { return Vec2.ZERO; }
+
     public identifier(): string { return 'identifier'; }
 
     public showInGallery(): boolean { return false; }

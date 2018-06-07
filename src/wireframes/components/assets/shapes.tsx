@@ -57,7 +57,7 @@ const Shapes = (props: ShapesProps) => {
             const diagramId = props.selectedDiagramId;
 
             if (diagramId) {
-                props.addVisualToPosition(diagramId, shape.name);
+                props.addVisualToPosition(diagramId, shape.key);
             }
         };
 
@@ -67,7 +67,7 @@ const Shapes = (props: ShapesProps) => {
                     <ShapeImage shape={shape} />
                 </div>
 
-                <div className='asset-shape-title'>{shape.name}</div>
+                <div className='asset-shape-title'>{shape.label}</div>
             </div>
         );
     };
@@ -78,7 +78,7 @@ const Shapes = (props: ShapesProps) => {
                 <Input placeholder='Find shape' value={props.shapesFilter} onChange={event => props.filterShapes(event.target.value)} />
             </div>
 
-            <Grid className='asset-shapes-list' renderer={cellRenderer} columns={2} items={props.shapesFiltered} keyBuilder={shape => shape.name} />
+            <Grid className='asset-shapes-list' renderer={cellRenderer} columns={2} items={props.shapesFiltered} keyBuilder={shape => shape.searchTerm} />
         </>
     );
 };

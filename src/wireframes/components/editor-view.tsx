@@ -75,11 +75,17 @@ const AssetTarget: DropTargetSpec<EditorViewProps> = {
 
         const componentRect = (findDOMNode(component!) as HTMLElement)!.getBoundingClientRect();
 
-        const x = (offset.x - props.spacing - componentRect.left) / props.zoom;
-        const y = (offset.y - props.spacing - componentRect.top) / props.zoom;
+        let x = (offset.x - props.spacing - componentRect.left) / props.zoom;
+        let y = (offset.y - props.spacing - componentRect.top) / props.zoom;
+
+        const item: any = monitor.getItem();
+
+        if (item.offset) {
+            x += item.offset.x;
+            y += item.offset.y;
+        }
 
         const itemType = monitor.getItemType();
-        const item: any = monitor.getItem();
 
         switch (itemType) {
             case 'DND_ICON':

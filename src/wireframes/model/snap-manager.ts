@@ -26,7 +26,7 @@ const MOVE_SNAP_GRID = 10;
 const MOVE_SNAP_SHAPE = 5;
 const RESIZE_SNAP_SHAPE = 5;
 const RESIZE_SNAP_GRID = 10;
-const RESIZE_MINIMUM = 20;
+const RESIZE_MINIMUM = 1;
 
 export class SnapManager {
     public snapRotating(transform: Transform, delta: number, disabled = false): number {

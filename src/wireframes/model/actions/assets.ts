@@ -21,7 +21,7 @@ export function assets(initialState: AssetsState): Reducer<AssetsState> {
                     iconsFilter: action.filter,
                     iconsFiltered: action.length === 0 ?
                         state.icons :
-                        state.icons.filter(i => i.term.indexOf(action.filter) >= 0)
+                        state.icons.filter(i => i.searchTerm.indexOf(action.filter) >= 0)
                 };
             case FILTER_SHAPES:
                 return {
@@ -29,7 +29,7 @@ export function assets(initialState: AssetsState): Reducer<AssetsState> {
                     shapesFilter: action.filter,
                     shapesFiltered: action.length === 0 ?
                         state.shapes :
-                        state.shapes.filter(i => i.key.indexOf(action.filter) >= 0)
+                        state.shapes.filter(i => i.searchTerm.indexOf(action.filter) >= 0)
                 };
             default:
                 return state;
