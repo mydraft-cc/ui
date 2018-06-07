@@ -19,22 +19,6 @@
 }
 
 //
-// TOASTS
-//
-.toast {
-    & {
-        display: inline-block;
-    }
-
-    &-container {
-        @include absolute(80px, 0, auto, 0);
-        @include transition(opacity .2 ease);
-        @include opacity(1);
-        text-align: center;
-    }
-}
-
-//
 // Sidebars
 // 
 .sidebar-left,

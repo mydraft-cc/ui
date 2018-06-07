@@ -31,10 +31,9 @@ import {
     SELECT_DIAGRAM,
     SELECT_ITEMS,
     Serializer,
+    toastMiddleware,
     undoable
 } from '@app/wireframes/model';
-
-import { UserMessageContainer } from '@app/wireframes/components';
 
 import { RendererContext, SerializerContext } from '@app/context';
 import { registerRenderers } from '@app/wireframes/shapes';
@@ -83,7 +82,7 @@ const store = createStore(
             routing: routerReducer,
                  ui: Reducers.ui(createInitialUIState())
     }), undoableReducer, editorReducer),
-    composeEnhancers(applyMiddleware(thunk, routerMiddleware(history)))
+    composeEnhancers(applyMiddleware(thunk, toastMiddleware(), routerMiddleware(history)))
 );
 
 import { AppContainer } from './app';
@@ -96,7 +95,6 @@ const Root = (
                     <Route path='/:token?' render={props => (
                         <>
                             <AppContainer token={props.match.params.token} />
-                            <UserMessageContainer />
                             <UserReport />
                         </>
                     )} />
