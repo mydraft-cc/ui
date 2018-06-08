@@ -71,7 +71,7 @@ const mapDispatchToProps = (dispatch: Dispatch<any>) => bindActionCreators({
     loadDiagramAsync, newDiagram, selectTab, toggleLeftSidebar, toggleRightSidebar
 }, dispatch);
 
-const logo = require('./images/logo.png');
+const logo = require('./images/logo-square-64.png');
 
 class App extends React.PureComponent<AppProps & AppOwnProps> {
     constructor(props: AppProps & AppOwnProps) {

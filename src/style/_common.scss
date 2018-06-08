@@ -11,16 +11,27 @@
     height: 100%;
 }
 
-.ant-layout-content {
-    &.editor-content {
-        overflow-x: auto !important;
-        overflow-y: auto !important;
+.ant-layout {
+    &-header {
+        padding-left: 100px;
+        padding-right: 0;
+        text-align: center;
+
+        @media (max-width: 1000px) {
+            text-align: left;
+        }
+    }
+
+    &-content {
+        &.editor-content {
+            overflow-x: auto !important;
+            overflow-y: auto !important;
+        }
     }
 }
 
 .logo {
-    max-height: 30px;
-    margin-right: 50px;
+    @include fixed(0, 0, 0, 0);
 }
 
 //
