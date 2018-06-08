@@ -59,15 +59,15 @@ export class ImmutableIdMap<T extends WithId> {
     }
 
     public map<R>(projection: (item: T, key?: string) => R): R[] {
-        return this.items.map((v, k) => projection(v!, v!.id));
+        return this.items.map(v => projection(v!, v!.id));
     }
 
     public filter(projection: (item: T, key?: string) => boolean): T[] {
-        return this.items.filter((v, k) => projection(v!, v!.id));
+        return this.items.filter(v => projection(v!, v!.id));
     }
 
     public forEach(projection: (item: T, key?: string) => void): void {
-        this.items.forEach((v, k) => projection(v!, v!.id));
+        this.items.forEach(v => projection(v!, v!.id));
     }
 
     public add(...items: T[]): ImmutableIdMap<T> {

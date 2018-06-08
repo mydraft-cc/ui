@@ -15,7 +15,7 @@ import { showErrorToast, showInfoToast } from './ui';
 
 export const NEW_DIAGRAM = 'NEW_DIAGRAM';
 export const newDiagram = (navigate = true) => {
-    return (dispatch: Dispatch<any>, getState: () => LoadingStateInStore) => {
+    return (dispatch: Dispatch<any>) => {
         dispatch({ type: NEW_DIAGRAM });
 
         if (navigate) {
@@ -38,6 +38,7 @@ export const loadDiagramAsync = (token: string, navigate = true) => {
                 .then(response => response.json())
                 .then(response => {
                     dispatch({ type: LOADING_SUCCEEDED, readToken: token, actions: response });
+
                     dispatch(showInfoToast('Succeeded to load diagram.'));
 
                     if (navigate) {
@@ -45,7 +46,8 @@ export const loadDiagramAsync = (token: string, navigate = true) => {
                     }
                 }, () => {
                     dispatch({ type: LOADING_FAILED });
-                    dispatch(showErrorToast('Failed to save diagram.'));
+
+                    dispatch(showErrorToast('Failed to load diagram.'));
                 });
         }
     };
@@ -102,7 +104,8 @@ export const saveDiagramAsync = (navigate = true) => {
             }
         },
         () => {
-            dispatch({ type: SAVING_FAILED, error: 'Failed to save diagram' });
+            dispatch({ type: SAVING_FAILED });
+
             dispatch(showErrorToast('Failed to save diagram.'));
         });
     };

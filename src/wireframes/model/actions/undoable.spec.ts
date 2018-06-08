@@ -15,7 +15,7 @@ describe('Undoable', () => {
     it('should call state for undo action', () => {
         let reducerCalled = false;
 
-        const reducer = undoable((s, a) => { reducerCalled = true; return s; }, {}, []);
+        const reducer = undoable(s => { reducerCalled = true; return s; }, {}, []);
         const state_2 = reducer(state_1, { type: 'UNDO' });
 
         expect(state_2.present).toBe(13);
@@ -25,7 +25,7 @@ describe('Undoable', () => {
     it('should call state for redo action', () => {
         let reducerCalled = false;
 
-        const reducer = undoable((s, a) => { reducerCalled = true; return s; }, {}, []);
+        const reducer = undoable(s => { reducerCalled = true; return s; }, {}, []);
         const state_2 = reducer(state_1, { type: 'REDO' });
 
         expect(state_2.present).toBe(15);
@@ -35,7 +35,7 @@ describe('Undoable', () => {
     it('should return original state when inner reducer makes no chance', () => {
         let reducerCalled = false;
 
-        const reducer = undoable((s, a) => { reducerCalled = true; return s; }, {}, []);
+        const reducer = undoable(s => { reducerCalled = true; return s; }, {}, []);
         const state_2 = reducer(state_1, { type: 'OTHER' });
 
         expect(state_2).toBe(state_1);
@@ -45,7 +45,7 @@ describe('Undoable', () => {
     it('should call inner reducer for other action', () => {
         let reducerCalled = false;
 
-        const reducer = undoable((s, a) => { reducerCalled = true; return 16; }, {}, []);
+        const reducer = undoable(() => { reducerCalled = true; return 16; }, {}, []);
         const state_2 = reducer(state_1, { type: 'OTHER' });
 
         expect(state_2.present).toBe(16);
@@ -55,7 +55,7 @@ describe('Undoable', () => {
     it('should call inner reducer for ignored action', () => {
         let reducerCalled = false;
 
-        const reducer = undoable((s, a) => { reducerCalled = true; return 16; }, {}, ['OTHER']);
+        const reducer = undoable(() => { reducerCalled = true; return 16; }, {}, ['OTHER']);
         const state_2 = reducer(state_1, { type: 'OTHER' });
 
         expect(state_2.present).toBe(16);

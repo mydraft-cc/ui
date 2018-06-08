@@ -4,13 +4,13 @@ import { Dispatch, Middleware, Reducer } from 'redux';
 import { UIState } from '@app/wireframes/model';
 
 export const SHOW_INFO_TOAST = 'SHOW_INFO_TOAST';
-export const showInfoToast = (text: string, hideAfter = 3000) => {
+export const showInfoToast = (text: string) => {
     return { type: SHOW_INFO_TOAST, text };
 };
 
 export const SHOW_ERROR_TOAST = 'SHOW_ERROR_TOAST';
-export const showErrorToast = (text: string, hideAfter = 3000) => {
-    return { type: SHOW_ERROR_TOAST, message };
+export const showErrorToast = (text: string) => {
+    return { type: SHOW_ERROR_TOAST, text };
 };
 
 export const SET_ZOOM = 'SET_ZOOM';
