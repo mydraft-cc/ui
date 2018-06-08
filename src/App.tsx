@@ -71,6 +71,8 @@ const mapDispatchToProps = (dispatch: Dispatch<any>) => bindActionCreators({
     loadDiagramAsync, newDiagram, selectTab, toggleLeftSidebar, toggleRightSidebar
 }, dispatch);
 
+const logo = require('./images/logo.png');
+
 class App extends React.PureComponent<AppProps & AppOwnProps> {
     constructor(props: AppProps & AppOwnProps) {
         super(props);
@@ -109,7 +111,7 @@ class App extends React.PureComponent<AppProps & AppOwnProps> {
             <DragDropContextProvider backend={HTML5Backend}>
                 <Layout>
                     <Layout.Header>
-                        <span className='logo'>mydraft.cc</span>
+                        <img className='logo' src={logo} alt='mydraft.cc' />
 
                         <HistoryMenuContainer />
                         <span className='menu-separator' />
