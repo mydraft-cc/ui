@@ -83,7 +83,6 @@ export class TextSizeConstraint implements Constraint {
     public updateSize(shape: DiagramShape, size: Vec2, prev: DiagramShape): Vec2 {
         const fontSize = shape.appearance.get(DiagramShape.APPEARANCE_FONT_SIZE);
 
-
         let finalWidth = size.x;
 
         const text = shape.appearance.get(DiagramShape.APPEARANCE_TEXT);
@@ -92,10 +91,14 @@ export class TextSizeConstraint implements Constraint {
             const prevText = prev.appearance.get(DiagramShape.APPEARANCE_TEXT);
 
             if (prevText !== text) {
-                const textWidth = RENDERER.getTextWidth(text, fontSize, 'sans serif');
+                let textWidth = RENDERER.getTextWidth(text, fontSize, 'sans serif');
 
-                if (textWidth && finalWidth < textWidth) {
-                    finalWidth = textWidth + 2 * this.padding;
+                if (textWidth) {
+                    textWidth += 2 * this.padding + text.length * 0.1 * fontSize;
+
+                    if (finalWidth < textWidth) {
+                        finalWidth = textWidth;
+                    }
                 }
             }
         }

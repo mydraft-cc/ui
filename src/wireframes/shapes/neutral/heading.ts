@@ -8,7 +8,7 @@ DEFAULT_APPEARANCE[DiagramShape.APPEARANCE_FOREGROUND_COLOR] = CommonTheme.CONTR
 DEFAULT_APPEARANCE[DiagramShape.APPEARANCE_TEXT] = 'Heading';
 DEFAULT_APPEARANCE[DiagramShape.APPEARANCE_FONT_SIZE] = 24;
 
-const CONSTRAINT = new TextSizeConstraint(5);
+const CONSTRAINT = new TextSizeConstraint(10);
 
 export class Heading extends AbstractControl {
     public identifier(): string {
