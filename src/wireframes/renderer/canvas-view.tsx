@@ -1,5 +1,6 @@
-import * as paper from 'paper';
+
 import * as React from 'react';
+import * as svg from 'svg.js';
 
 export interface CanvasViewProps {
     // The width of the canvas.
@@ -15,23 +16,23 @@ export interface CanvasViewProps {
     className?: string;
 
     // The callback when the canvas has been initialized.
-    onInit: (scope: paper.PaperScope) => any;
+    onInit: (scope: svg.Doc) => any;
 }
 
 export class CanvasView extends React.Component<CanvasViewProps> {
-    private canvasElement: any;
-    private scope: paper.PaperScope;
+    private docElement: any;
+    private doc: svg.Doc;
 
     public initialize(canvas: any) {
-        this.canvasElement = canvas;
+        this.docElement = canvas;
 
         if (canvas) {
-            this.scope = new paper.PaperScope();
-            this.scope.setup(this.canvasElement);
+            this.doc = svg(this.docElement);
+            this.doc.attr('shape-rendering', 'geometricPrecision');
 
             this.updateViewSettings(this.props);
 
-            this.props.onInit(this.scope);
+            this.props.onInit(this.doc);
         }
     }
 
@@ -44,18 +45,12 @@ export class CanvasView extends React.Component<CanvasViewProps> {
     }
 
     private updateViewSettings(props: CanvasViewProps) {
-        if (this.scope) {
-            this.scope.view.viewSize = new paper.Size(props.zoomedWidth, props.zoomedHeight);
-
-            this.scope.view.center =
-                new paper.Point(
-                    0.5 / props.zoom * props.zoomedWidth,
-                    0.5 / props.zoom * props.zoomedHeight);
-            this.scope.view['matrix'] = new paper.Matrix(props.zoom, 0, 0, props.zoom, 0, 0);
+        if (this.doc) {
+            this.doc.style({ width: props.zoomedWidth + 'px', height: props.zoomedHeight + 'px'});
         }
     }
 
     public render() {
-        return <canvas className={this.props.className} ref={canvas => this.initialize(canvas)} />;
+        return <div className={this.props.className} ref={canvas => this.initialize(canvas)} />;
     }
 }

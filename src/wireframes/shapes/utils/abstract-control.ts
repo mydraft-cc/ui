@@ -6,7 +6,7 @@ import {
     Renderer
 } from '@app/wireframes/model';
 
-import { AbstractRenderer, PaperRenderer } from './paper-renderer';
+import { AbstractRenderer, SVGRenderer } from './svg-renderer';
 
 const RENDER_BACKGROUND = 1;
 
@@ -25,7 +25,7 @@ export class AbstractContext {
     }
 }
 
-const RENDERER = new PaperRenderer();
+const RENDERER = new SVGRenderer();
 
 export abstract class AbstractControl implements Renderer {
     public abstract createDefaultShape(shapeId: string): DiagramShape;
@@ -57,7 +57,7 @@ export abstract class AbstractControl implements Renderer {
 
         this.renderInternal(ctx);
 
-        if (showDebugMarkers) {
+        if (!showDebugMarkers) {
             const boxItem = ctx.renderer.createRoundedRectangle(ctx.bounds.inflate(1, 1), 1, 0);
 
             ctx.renderer.setStrokeColor(boxItem, 0xff0000);

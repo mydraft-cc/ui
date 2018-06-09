@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators, Dispatch } from 'redux';
+import * as svg from 'svg.js';
 
 import './editor.scss';
 
@@ -24,11 +25,6 @@ import {
 } from '@app/wireframes/model';
 
 import { CanvasView } from './canvas-view';
-
-import { InteractionService }   from './interaction-service';
-import { SelectionAdorner }     from './selection-adorner';
-import { TextAdorner }          from './text-adorner';
-import { TransformAdorner }     from './transform-adorner';
 
 export interface EditorProps {
     // The renderer service.
@@ -78,10 +74,8 @@ const mapDispatchToProps = (dispatch: Dispatch<any>) => bindActionCreators({
 const isProduction = process.env.NODE_ENV === 'production';
 
 class Editor extends React.Component<EditorProps> {
-    private adornerScope: paper.PaperScope;
-    private renderScope: paper.PaperScope;
-    private renderLayer: paper.Layer;
-    private interactionService: InteractionService = new InteractionService();
+    private diagramDoc: svg.Doc;
+    // private interactionService: InteractionService = new InteractionService();
     private shapeRefsById: { [id: string]: ShapeRef } = {};
     private shapeRefsByRenderElement: { [id: number]: ShapeRef } = {};
 
@@ -89,18 +83,8 @@ class Editor extends React.Component<EditorProps> {
         this.renderDiagram();
     }
 
-    public initAdornerScope(scope: paper.PaperScope) {
-        this.adornerScope = scope;
-
-        this.forceUpdate();
-    }
-
-    public initDiagramScope(scope: paper.PaperScope) {
-        this.renderScope = scope;
-        this.renderScope.activate();
-        this.renderLayer = this.renderScope.project.activeLayer;
-
-        this.interactionService.init(scope);
+    public initDiagramScope(doc: svg.Doc) {
+        this.diagramDoc = doc;
 
         this.renderDiagram();
 
@@ -108,13 +92,9 @@ class Editor extends React.Component<EditorProps> {
     }
 
     private renderDiagram() {
-        if (!this.renderLayer) {
+        if (!this.diagramDoc) {
             return;
         }
-
-        this.renderScope.activate();
-        this.renderLayer.activate();
-        this.renderLayer.removeChildren();
 
         const allShapesById: { [id: string]: boolean } = {};
         const allShapes = this.getFlattenShapes();
@@ -125,9 +105,11 @@ class Editor extends React.Component<EditorProps> {
             if (this.shapeRefsById.hasOwnProperty(id)) {
                 const ref = this.shapeRefsById[id];
 
+                ref.remove();
+
                 if (!allShapesById[id]) {
                     delete this.shapeRefsById[id];
-                    delete this.shapeRefsByRenderElement[ref.renderedElement.id];
+                    delete this.shapeRefsByRenderElement[ref.renderId];
                 }
             }
         }
@@ -138,14 +120,12 @@ class Editor extends React.Component<EditorProps> {
             if (!ref) {
                 const renderer = this.props.rendererService.registeredRenderers[shape.renderer];
 
-                ref = new ShapeRef(renderer, shape, !isProduction);
-            } else {
-                if (!ref.invalidate(shape)) {
-                    ref.addTo(this.renderLayer);
-                }
+                ref = new ShapeRef(this.diagramDoc, renderer, !isProduction);
             }
 
-            this.shapeRefsByRenderElement[ref.renderedElement.id] = ref;
+            ref.render(shape);
+
+            this.shapeRefsByRenderElement[ref.renderId] = ref;
             this.shapeRefsById[shape.id] = ref;
         }
     }
@@ -180,54 +160,22 @@ class Editor extends React.Component<EditorProps> {
         return flattenShapes;
     }
 
+    /*
     private provideItemByElement = (item: paper.Item): DiagramItem | null => {
         const ref = this.shapeRefsByRenderElement[item.id];
 
         return ref ? ref.shape : null;
     }
+    */
 
     public render() {
         return (
             <div className='editor' style={{ width: sizeInPx(this.props.zoomedWidth), height: sizeInPx(this.props.zoomedHeight) }}>
                 <div>
-                    <CanvasView onInit={(layer) => this.initDiagramScope(layer)}
+                    <CanvasView onInit={(doc) => this.initDiagramScope(doc)}
                         zoom={this.props.zoom}
                         zoomedWidth={this.props.zoomedWidth}
                         zoomedHeight={this.props.zoomedHeight} />
-
-                    <CanvasView onInit={(layer) => this.initAdornerScope(layer)} className='editor-adorners'
-                        zoom={this.props.zoom}
-                        zoomedWidth={this.props.zoomedWidth}
-                        zoomedHeight={this.props.zoomedHeight} />
-                </div>
-
-                <div>
-                    {this.adornerScope && this.props.selectedDiagram && (
-                        <div>
-                            <TransformAdorner
-                                adornerScope={this.adornerScope}
-                                interactionService={this.interactionService}
-                                selectedDiagram={this.props.selectedDiagram}
-                                selectedItems={this.props.selectedItems}
-                                transformItems={this.props.transformItems} />
-
-                            <SelectionAdorner
-                                adornerScope={this.adornerScope}
-                                interactionService={this.interactionService}
-                                selectedDiagram={this.props.selectedDiagram}
-                                selectedItems={this.props.selectedItems}
-                                selectItems={this.props.selectItems}
-                                provideItemByElement={this.provideItemByElement} />
-
-                            <TextAdorner
-                                changeItemsAppearance={this.props.changeItemsAppearance}
-                                interactionService={this.interactionService}
-                                selectedDiagram={this.props.selectedDiagram}
-                                selectedItems={this.props.selectedItems}
-                                provideItemByElement={this.provideItemByElement}
-                                zoom={this.props.zoom} />
-                        </div>
-                    )}
                 </div>
             </div>
         );
@@ -235,36 +183,39 @@ class Editor extends React.Component<EditorProps> {
 }
 
 class ShapeRef {
-    public renderedElement: paper.Item;
+    private shape: DiagramShape;
 
-    constructor(
-        public renderer: Renderer,
-        public shape: DiagramShape,
-        public showDebugMarkers: boolean
-    ) {
-        this.render();
+    public renderedElement: svg.Element;
+
+    public get renderId() {
+        return this.renderedElement.id();
     }
 
-    public invalidate(shape: DiagramShape): boolean {
+    constructor(
+        public readonly doc: svg.Doc,
+        public renderer: Renderer,
+        public showDebugMarkers: boolean
+    ) {
+    }
+
+    public remove() {
+        if (this.renderedElement) {
+            this.renderedElement.remove();
+        }
+    }
+
+    public render(shape: DiagramShape) {
         const mustRender = this.shape !== shape || !this.renderedElement;
 
         if (mustRender) {
-            this.shape = shape;
+            this.renderer.setContext(this.doc);
 
-            this.render();
+            this.renderedElement = this.renderer.render(shape, this.showDebugMarkers);
+        } else {
+            this.doc.add(this.renderedElement);
         }
 
-        return mustRender;
-    }
-
-    public addTo(layer: paper.Layer) {
-        this.renderer.setContext(layer);
-
-        layer.addChild(this.renderedElement);
-    }
-
-    public render() {
-        this.renderedElement = this.renderer.render(this.shape, this.showDebugMarkers);
+        this.shape = shape;
     }
 }
 

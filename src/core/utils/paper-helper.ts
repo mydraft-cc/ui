@@ -6,7 +6,7 @@ import {
     Vec2
 } from '@app/core';
 
-export interface TextGroup { textItem: paper.TextItem; groupItem: paper.Group; }
+export interface PaperTextGroup { textItem: paper.TextItem; groupItem: paper.Group; }
 
 export module PaperHelper {
     export const COLOR_BLACK = new paper.Color(0, 0, 0, 1);
@@ -16,7 +16,7 @@ export module PaperHelper {
     export const ZERO_RECTANGLE = new paper.Rectangle(0, 0, 0, 0);
     export const IDENTITY_MATRIX = new paper.Matrix(1, 0, 0, 1, 0, 0);
 
-    export function createSinglelineText(rectangle: paper.Rectangle, text: string, fontSize?: number, alignment?: string): TextGroup {
+    export function createSinglelineText(rectangle: paper.Rectangle, text: string, fontSize?: number, alignment?: string): PaperTextGroup {
         fontSize = fontSize || 10;
 
         alignment = alignment || 'center';
@@ -48,7 +48,7 @@ export module PaperHelper {
         return { groupItem, textItem };
     }
 
-    export function createMultilineText(rectangle: paper.Rectangle, text: string, fontSize?: number, alignment?: string): TextGroup {
+    export function createMultilineText(rectangle: paper.Rectangle, text: string, fontSize?: number, alignment?: string): PaperTextGroup {
         fontSize = fontSize || 10;
 
         alignment = alignment || 'left';
