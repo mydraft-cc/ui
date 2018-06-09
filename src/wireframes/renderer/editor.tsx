@@ -209,7 +209,8 @@ class Editor extends React.Component<EditorProps> {
                                 interactionService={this.interactionService}
                                 selectedDiagram={this.props.selectedDiagram}
                                 selectedItems={this.props.selectedItems}
-                                transformItems={this.props.transformItems} />
+                                transformItems={this.props.transformItems}
+                                zoom={this.props.zoom} />
 
                             <SelectionAdorner
                                 adornerScope={this.adornerScope}

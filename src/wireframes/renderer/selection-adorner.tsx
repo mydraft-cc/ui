@@ -10,7 +10,8 @@ import {
 import {
     calculateSelection,
     Diagram,
-    DiagramItem
+    DiagramItem,
+    Transform
 } from '@app/wireframes/model';
 
 import {
@@ -47,7 +48,7 @@ export class SelectionAdorner extends React.Component<SelectionAdornerProps> imp
     private shapesAdorners: paper.Shape[] = [];
     private selectionShape: paper.Shape | null = null;
     private dragStart: Vec2 | null;
-    private drag = false;
+    private dragging = false;
 
     public componentDidMount() {
         this.adornerScope = this.props.adornerScope;
@@ -82,31 +83,26 @@ export class SelectionAdorner extends React.Component<SelectionAdornerProps> imp
         }
 
         if (!event.item) {
-            this.drag = true;
+            this.dragging = true;
             this.dragStart = PaperHelper.point2Vec(event.point);
         }
     }
 
     public onMouseDrag(event: paper.ToolEvent, next: () => void) {
-        if (!this.drag) {
+        if (!this.dragging) {
             return next();
         }
 
-        const eventPoint = PaperHelper.point2Vec(event.point);
-        const eventStart = PaperHelper.point2Vec(event.downPoint);
+        const dragCurrent = PaperHelper.point2Vec(event.point).round();
 
-        const selectedArea = Rect2.createFromVecs([eventPoint, eventStart]);
+        const selectedArea = Rect2.createFromVecs([this.dragStart!, dragCurrent]);
         const selectionShape = this.getOrCreateRectangle();
 
-        selectionShape.visible = selectedArea.size.x > 0 && selectedArea.size.y > 0;
-
-        if (selectionShape.visible) {
-            this.transformShape(selectionShape, selectedArea.position, selectedArea.size, 0);
-        }
+        this.transformFromRect(selectionShape, selectedArea);
     }
 
     public onMouseUp(event: paper.ToolEvent, next: () =>  void) {
-        if (!this.drag) {
+        if (!this.dragging) {
             return next();
         }
 
@@ -123,7 +119,7 @@ export class SelectionAdorner extends React.Component<SelectionAdornerProps> imp
                 }
             }
         } finally {
-            this.drag = false;
+            this.dragging = false;
             this.dragStart = null;
         }
     }
@@ -178,6 +174,7 @@ export class SelectionAdorner extends React.Component<SelectionAdornerProps> imp
 
                 shapeAdorner.strokeColor = SELECTION_STROKE_COLOR;
                 shapeAdorner.strokeWidth = 1;
+                shapeAdorner.strokeScaling = false;
                 shapeAdorner.visible = false;
                 shapeAdorner.sendToBack();
 
@@ -188,7 +185,7 @@ export class SelectionAdorner extends React.Component<SelectionAdornerProps> imp
 
             const bounds = item.bounds(this.props.selectedDiagram);
 
-            this.transformShape(shapeAdorner, bounds.position.sub(bounds.halfSize), bounds.size, 1, bounds.rotation.degree);
+            this.transformFromTransform(shapeAdorner, bounds);
             i++;
         }
     }
@@ -207,6 +204,7 @@ export class SelectionAdorner extends React.Component<SelectionAdornerProps> imp
         selectionShape.opacity = 0.4;
         selectionShape.strokeColor = SELECTION_STROKE_COLOR;
         selectionShape.strokeWidth = 1;
+        selectionShape.strokeScaling = false;
         selectionShape.visible = false;
 
         this.selectionShape = selectionShape;
@@ -214,26 +212,25 @@ export class SelectionAdorner extends React.Component<SelectionAdornerProps> imp
         return selectionShape;
     }
 
-    protected transformShape(shape: paper.Shape, position: Vec2, size: Vec2, offset: number, rotation = 0) {
-        shape.matrix.reset();
+    protected transformFromRect(paperItem: paper.Shape, rect: Rect2) {
+        paperItem.visible = rect.area > 0;
 
-        const bounds = new Rect2(position, size);
-        let l = Math.round(bounds.left);
-        let t = Math.round(bounds.top);
-        let r = Math.round(bounds.right);
-        let b = Math.round(bounds.bottom);
+        if (!paperItem.visible) {
+            return;
+        }
 
-        l += 0.5 - offset;
-        t += 0.5 - offset;
-        r -= 0.5 - offset;
-        b -= 0.5 - offset;
+        paperItem.matrix.reset();
+        paperItem.size = new paper.Size(rect.size.x + 1, rect.size.y + 1);
+        paperItem.position = PaperHelper.vec2Point(rect.center);
+        paperItem.visible = true;
+    }
 
-        const rect = new paper.Rectangle(l, t, r - l, b - t);
-
-        shape.size = rect.size;
-        shape.position = rect.center;
-        shape.rotation = rotation;
-        shape.visible = true;
+    protected transformFromTransform(paperItem: paper.Shape, transform: Transform) {
+        paperItem.matrix.reset();
+        paperItem.size = new paper.Size(transform.size.x + 1, transform.size.y + 1);
+        paperItem.position = PaperHelper.vec2Point(transform.position);
+        paperItem.rotation = transform.rotation.degree;
+        paperItem.visible = true;
     }
 
     public render() {

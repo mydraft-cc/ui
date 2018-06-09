@@ -57,7 +57,7 @@ export abstract class AbstractControl implements Renderer {
 
         this.renderInternal(ctx);
 
-        if (showDebugMarkers) {
+        if (!showDebugMarkers) {
             const boxItem = ctx.renderer.createRoundedRectangle(ctx.bounds.inflate(1, 1), 1, 0);
 
             ctx.renderer.setStrokeColor(boxItem, 0xff0000);

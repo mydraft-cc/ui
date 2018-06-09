@@ -30,8 +30,8 @@ export class PaperRenderer implements AbstractRenderer {
     }
 
     public createRoundedRectangle(bounds: Rect2, strokeThickness: RendererThickness, radius: number): RendererElement {
-        let w = this.getStrokeThickness(strokeThickness);
-        let r = this.getBoundsWithStroke(bounds, w);
+        const w = this.getStrokeThickness(strokeThickness);
+        const r = this.getBoundsWithStroke(bounds, w);
 
         const shape = paper.Shape.Rectangle(r, radius);
 
@@ -41,8 +41,8 @@ export class PaperRenderer implements AbstractRenderer {
     }
 
     public createRoundedRectangleLeft(bounds: Rect2, strokeThickness: RendererThickness, radius: number): RendererElement {
-        let w = this.getStrokeThickness(strokeThickness);
-        let r = this.getBoundsWithStroke(bounds, w);
+        const w = this.getStrokeThickness(strokeThickness);
+        const r = this.getBoundsWithStroke(bounds, w);
 
         const shape = PaperHelper.createRoundedRectangleLeft(r, radius);
 
@@ -52,8 +52,8 @@ export class PaperRenderer implements AbstractRenderer {
     }
 
     public createRoundedRectangleRight(bounds: Rect2, strokeThickness: RendererThickness, radius: number): RendererElement {
-        let w = this.getStrokeThickness(strokeThickness);
-        let r = this.getBoundsWithStroke(bounds, w);
+        const w = this.getStrokeThickness(strokeThickness);
+        const r = this.getBoundsWithStroke(bounds, w);
 
         const shape = PaperHelper.createRoundedRectangleRight(r, radius);
 
@@ -63,7 +63,7 @@ export class PaperRenderer implements AbstractRenderer {
     }
 
     public createPath(path: string, strokeThickness: RendererThickness): RendererElement {
-        let w = this.getStrokeThickness(strokeThickness);
+        const w = this.getStrokeThickness(strokeThickness);
 
         const shape = new paper.CompoundPath(path);
 
@@ -81,7 +81,7 @@ export class PaperRenderer implements AbstractRenderer {
     }
 
     public createBoundedPath(bounds: Rect2, path: string, strokeThickness: RendererThickness): RendererElement {
-        let w = this.getStrokeThickness(strokeThickness);
+        const w = this.getStrokeThickness(strokeThickness);
 
         const shape = new paper.CompoundPath(path);
 
@@ -113,7 +113,7 @@ export class PaperRenderer implements AbstractRenderer {
     }
 
     public createEllipse(bounds: Rect2, strokeThickness: RendererThickness): RendererElement {
-        let w = this.getStrokeThickness(strokeThickness);
+        const w = this.getStrokeThickness(strokeThickness);
 
         const shape = new paper.Path.Ellipse(PaperHelper.rect2Rectangle(bounds));
 
@@ -123,7 +123,7 @@ export class PaperRenderer implements AbstractRenderer {
     }
 
     public createStar(center: Vec2, count: number, radius1: number, radius2: number, strokeThickness: RendererThickness): RendererElement {
-        let w = this.getStrokeThickness(strokeThickness);
+        const w = this.getStrokeThickness(strokeThickness);
 
         const shape = new paper.Path.Star(PaperHelper.vec2Point(center), count, radius1, radius2);
 
@@ -133,7 +133,7 @@ export class PaperRenderer implements AbstractRenderer {
     }
 
     public createCircle(center: Vec2, strokeThickness: RendererThickness, radius: number): RendererElement {
-        let w = this.getStrokeThickness(strokeThickness);
+        const w = this.getStrokeThickness(strokeThickness);
 
         const shape = paper.Shape.Circle(PaperHelper.vec2Point(center), radius);
 

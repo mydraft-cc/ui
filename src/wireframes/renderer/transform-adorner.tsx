@@ -22,6 +22,12 @@ import {
     InteractionService
 } from './interaction-service';
 
+declare module 'paper' {
+    export interface Item {
+        guide: boolean;
+    }
+}
+
 const MODE_RESIZE = 2;
 const MODE_MOVE = 3;
 const MODE_ROTATE = 1;
@@ -41,6 +47,9 @@ export interface TransformAdornerProps {
 
     // The interaction service.
     interactionService: InteractionService;
+
+    // The zoom factor.
+    zoom: number;
 
     // A function to transform a set of items.
     transformItems: (diagram: Diagram, items: DiagramItem[], oldBounds: Transform, newBounds: Transform) => void;
@@ -340,6 +349,7 @@ export class TransformAdorner extends React.Component<TransformAdornerProps> imp
                     position.x + offset.x * (size.x + 4),
                     position.y + offset.y * (size.y + 4));
             resizeShape.rotate(rotation, anchor);
+            resizeShape.scale(Math.min(1, 1 / this.props.zoom));
 
             resizeShape.visible =
                 (offset.x === 0 || this.canResizeX) &&
@@ -353,15 +363,16 @@ export class TransformAdorner extends React.Component<TransformAdornerProps> imp
                 position.x,
                 position.y - size.y * 0.5 - 20);
         rotateShape.rotate(rotation, anchor);
+        rotateShape.scale(Math.min(1, 1 / this.props.zoom));
 
         rotateShape.visible = true;
 
         const moveShape = this.moveShape;
 
         moveShape.size =
-        new paper.Size(
-            size.x + 1,
-            size.y + 1);
+            new paper.Size(
+                size.x + 1,
+                size.y + 1);
         moveShape.position = anchor;
         moveShape.visible = true;
 
@@ -391,7 +402,7 @@ export class TransformAdorner extends React.Component<TransformAdornerProps> imp
         moveShape.strokeWidth = 1;
         moveShape.strokeScaling = false;
         moveShape.visible = false;
-        moveShape['guide'] = true;
+        moveShape.guide = true;
 
         this.props.interactionService.setCursor(moveShape, 'move');
 
@@ -404,8 +415,9 @@ export class TransformAdorner extends React.Component<TransformAdornerProps> imp
         rotateShape.fillColor = TRANSFORMER_FILL_COLOR;
         rotateShape.strokeColor = TRANSFORMER_STROKE_COLOR;
         rotateShape.strokeWidth = 1;
+        rotateShape.strokeScaling = false;
         rotateShape.visible = false;
-        rotateShape['guide'] = true;
+        rotateShape.guide = true;
 
         this.props.interactionService.setCursor(rotateShape, 'pointer');
 
@@ -427,7 +439,7 @@ export class TransformAdorner extends React.Component<TransformAdornerProps> imp
             resizeShape.strokeWidth = 1;
             resizeShape.strokeScaling = false;
             resizeShape.visible = false;
-            resizeShape['guide'] = true;
+            resizeShape.guide = true;
             resizeShape['offset'] = new Vec2(xs[i], ys[i]);
 
             this.props.interactionService.setRotationCursor(resizeShape, as[i]);
