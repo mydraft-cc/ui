@@ -346,10 +346,10 @@ export class TransformAdorner extends React.Component<TransformAdornerProps> imp
 
             resizeShape.position =
                 new paper.Point(
-                    position.x + offset.x * (size.x + 4),
-                    position.y + offset.y * (size.y + 4));
+                    Math.round(position.x + offset.x * (size.x + 4)),
+                    Math.round(position.y + offset.y * (size.y + 4)));
             resizeShape.rotate(rotation, anchor);
-            resizeShape.scale(Math.min(1, 1 / this.props.zoom));
+            resizeShape.scale(1 / this.props.zoom);
 
             resizeShape.visible =
                 (offset.x === 0 || this.canResizeX) &&
@@ -361,9 +361,9 @@ export class TransformAdorner extends React.Component<TransformAdornerProps> imp
         rotateShape.position =
             new paper.Point(
                 position.x,
-                position.y - size.y * 0.5 - 20);
+                position.y - size.y * 0.5 - 30 / this.props.zoom);
         rotateShape.rotate(rotation, anchor);
-        rotateShape.scale(Math.min(1, 1 / this.props.zoom));
+        rotateShape.scale(1 / this.props.zoom);
 
         rotateShape.visible = true;
 
