@@ -80,18 +80,24 @@ export class DiagramShape extends DiagramVisual {
     }
 
     public transformTo(transform: Transform): DiagramShape {
-        if (!transform || transform.eq(this.transform)) {
+        if (!transform) {
             return this;
         }
 
-        return this.cloned<DiagramShape>((state: DiagramShape) => state.transform = transform.round());
+        transform = transform.round();
+
+        if (transform.eq(this.transform)) {
+            return this;
+        }
+
+        return this.cloned<DiagramShape>((state: DiagramShape) => state.transform = transform);
     }
 
     protected afterClone(prev: DiagramShape) {
         if (this.constraint) {
             const size = this.constraint.updateSize(this, this.transform.size, prev);
 
-            this.transform = this.transform.resizeTopLeft(size);
+            this.transform = this.transform.resizeTopLeft(size).round();
         }
     }
 
