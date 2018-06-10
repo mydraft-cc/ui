@@ -3,6 +3,7 @@ import * as svg from 'svg.js';
 
 import {
     Rect2,
+    SVGHelper,
     Vec2
 } from '@app/core';
 
@@ -168,19 +169,9 @@ export class SelectionAdorner extends React.Component<SelectionAdornerProps> imp
     }
 
     protected transformShape(shape: svg.Element, position: Vec2, size: Vec2, offset: number, rotation = 0) {
-        const bounds = new Rect2(position, size);
-        let l = Math.round(bounds.left);
-        let t = Math.round(bounds.top);
-        let r = Math.round(bounds.right);
-        let b = Math.round(bounds.bottom);
+        const bounds = new Rect2(position, size).deflate(-1.5 + offset, -1.5 + offset);
 
-        l += 0.5 - offset;
-        t += 0.5 - offset;
-        r -= 0.5 - offset;
-        b -= 0.5 - offset;
-
-        shape.untransform();
-        shape.size(r - l, b - t).rotate(rotation).move(l, t).show();
+        SVGHelper.size(shape, bounds, rotation).show();
     }
 
     public render() {

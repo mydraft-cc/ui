@@ -14,28 +14,26 @@ export module SVGHelper {
     export const ZERO_POINT = new svg.Point(0, 0);
     export const IDENTITY_MATRIX = new svg.Matrix(1, 0, 0, 1, 0, 0);
 
-    export function createSinglelineText(doc: svg.Doc, rect: Rect2, textString: string, fontSize?: number, alignment?: string): SVGTextGroup {
+    export function createSinglelineText(doc: svg.Doc, rect: Rect2, textString: string, fontSize?: number, alignment?: string) {
         fontSize = fontSize || 10;
 
-        const group = doc.group();
-
-        const text = size(group.element('foreignObject', svg.Parent), rect);
+        const text = size(doc.element('foreignObject', svg.Parent), rect);
 
         const div = document.createElement('div');
         div.textContent = textString;
+        div.style.height = rect.height + 'px';
+        div.style.lineHeight = fontSize * 1.2 + 'px';
         div.style.fontSize = fontSize + 'px';
         div.style.fontFamily = 'inherit';
         div.style.overflow = 'hidden';
-
+        div.style.textAlign = <any>alignment || 'center';
 
         text.node.appendChild(div);
 
-        // text.clipWith(size(new svg.Rect(), rect));
-
-        return { groupElement: group, textElement: <any>text };
+        return text;
     }
 
-    export function createMultilineText(doc: svg.Doc, rectangle: Rect2, textString: string, fontSize?: number, alignment?: string): SVGTextGroup {
+    export function createMultilineText(doc: svg.Doc, rectangle: Rect2, textString: string, fontSize?: number, alignment?: string) {
         return createSinglelineText(doc, rectangle, textString, fontSize, alignment);
     }
 
@@ -65,8 +63,16 @@ export module SVGHelper {
         return item;
     }
 
-    export function size<T extends svg.Element>(element: T, rect: Rect2): T {
-        return element.size(rect.size.x, rect.size.y).center(rect.centerX, rect.centerY);
+    export function size<T extends svg.Element>(element: T, rect: Rect2, rotation = 0): T {
+        const transform =
+            new svg.Matrix()
+                .rotate(
+                    rotation,
+                    rect.centerX,
+                    rect.centerY)
+                .translate(rect.x, rect.y);
+
+        return element.matrix(transform).size(rect.size.x, rect.size.y);
     }
 
     export function vec2Point(vec: Vec2): svg.Point {

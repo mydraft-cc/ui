@@ -177,8 +177,18 @@ export class TransformAdorner extends React.Component<TransformAdornerProps> imp
     }
 
     private hitTest(point: Vec2) {
+        const { x, y } = point;
+
         for (let element of this.allElements) {
-            if (element.inside(point.x, point.y)) {
+            const box = element.bbox();
+
+            const inside =
+                x > box.x
+             && y > box.y
+             && x < box.x + box.width
+             && y < box.y + box.height;
+
+            if (inside) {
                 return element;
             }
         }

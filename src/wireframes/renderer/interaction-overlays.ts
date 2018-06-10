@@ -70,7 +70,7 @@ export class InteractionOverlays {
     public showXLine(value: number, color: Color) {
         this.ensureLines();
 
-        const height = this.layer.bbox().h;
+        const height = this.layer.height();
 
         this.lineX.fill(color.toString());
         this.lineX.move(Math.round(value) + 0.5, height * 0.5);
@@ -81,7 +81,7 @@ export class InteractionOverlays {
     public showYLine(value: number, color: Color) {
         this.ensureLines();
 
-        const width = this.layer.bbox().w;
+        const width = this.layer.width();
 
         this.lineY.fill(color.toString());
         this.lineY.move(width * 0.5, Math.round(value) + 0.5);

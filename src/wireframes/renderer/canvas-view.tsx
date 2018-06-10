@@ -1,4 +1,3 @@
-
 import * as React from 'react';
 import * as svg from 'svg.js';
 
@@ -21,17 +20,17 @@ export interface CanvasViewProps {
 
 export class CanvasView extends React.Component<CanvasViewProps> {
     private docElement: any;
-    private doc: svg.Doc;
+    private document: svg.Doc;
 
     public initialize(canvas: any) {
         this.docElement = canvas;
 
         if (canvas) {
-            this.doc = svg(this.docElement);
+            this.document = svg(this.docElement);
 
             this.updateViewSettings(this.props);
 
-            this.props.onInit(this.doc);
+            this.props.onInit(this.document);
         }
     }
 
@@ -44,8 +43,19 @@ export class CanvasView extends React.Component<CanvasViewProps> {
     }
 
     private updateViewSettings(props: CanvasViewProps) {
-        if (this.doc) {
-            this.doc.style({ width: props.zoomedWidth + 'px', height: props.zoomedHeight + 'px'});
+        if (this.document) {
+            const w = props.zoomedWidth / props.zoom;
+            const h = props.zoomedHeight / props.zoom;
+
+            this.document.style({ width: w + 'px', height: h + 'px'});
+            this.document.untransform();
+            this.document.scale(
+                props.zoom,
+                props.zoom, 0, 0);
+            this.document.translate(
+                0.5 * (props.zoomedWidth -  w),
+                0.5 * (props.zoomedHeight - h));
+            this.document.show();
         }
     }
 
