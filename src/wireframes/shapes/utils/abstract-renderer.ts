@@ -56,6 +56,8 @@ export interface AbstractRenderer {
 
     setOpacity(element: RendererElement, opacity: RendererOpacity): void;
 
+    setSize(element: RendererElement, position: RendererPosition): void;
+
     setPosition(element: RendererElement, position: RendererPosition): void;
 
     setRotation(element: RendererElement, rotation: RendererRotation): void;

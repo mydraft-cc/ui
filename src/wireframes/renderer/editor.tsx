@@ -25,6 +25,8 @@ import {
 } from '@app/wireframes/model';
 
 import { CanvasView } from './canvas-view';
+import { InteractionService }   from './interaction-service';
+import { SelectionAdorner }     from './selection-adorner';
 
 export interface EditorProps {
     // The renderer service.
@@ -74,8 +76,9 @@ const mapDispatchToProps = (dispatch: Dispatch<any>) => bindActionCreators({
 const isProduction = process.env.NODE_ENV === 'production';
 
 class Editor extends React.Component<EditorProps> {
-    private diagramDoc: svg.Doc;
-    // private interactionService: InteractionService = new InteractionService();
+    private diagramAdorners: svg.Container;
+    private diagramRendering: svg.Container;
+    private interactionService: InteractionService;
     private shapeRefsById: { [id: string]: ShapeRef } = {};
     private shapeRefsByRenderElement: { [id: number]: ShapeRef } = {};
 
@@ -84,7 +87,10 @@ class Editor extends React.Component<EditorProps> {
     }
 
     public initDiagramScope(doc: svg.Doc) {
-        this.diagramDoc = doc;
+        this.diagramRendering = doc.group();
+        this.diagramAdorners = doc.group();
+
+        this.interactionService = new InteractionService(this.diagramAdorners, this.diagramRendering);
 
         this.renderDiagram();
 
@@ -92,7 +98,7 @@ class Editor extends React.Component<EditorProps> {
     }
 
     private renderDiagram() {
-        if (!this.diagramDoc) {
+        if (!this.interactionService) {
             return;
         }
 
@@ -120,7 +126,7 @@ class Editor extends React.Component<EditorProps> {
             if (!ref) {
                 const renderer = this.props.rendererService.registeredRenderers[shape.renderer];
 
-                ref = new ShapeRef(this.diagramDoc, renderer, !isProduction);
+                ref = new ShapeRef(this.diagramRendering, renderer, !isProduction);
             }
 
             ref.render(shape);
@@ -177,6 +183,19 @@ class Editor extends React.Component<EditorProps> {
                         zoomedWidth={this.props.zoomedWidth}
                         zoomedHeight={this.props.zoomedHeight} />
                 </div>
+
+                <div>
+                    {this.interactionService && this.props.selectedDiagram && (
+                        <div>
+                            <SelectionAdorner
+                                adorners={this.diagramAdorners}
+                                interactionService={this.interactionService}
+                                selectedDiagram={this.props.selectedDiagram}
+                                selectedItems={this.props.selectedItems}
+                                selectItems={this.props.selectItems} />
+                        </div>
+                    )}
+                </div>
             </div>
         );
     }
@@ -192,7 +211,7 @@ class ShapeRef {
     }
 
     constructor(
-        public readonly doc: svg.Doc,
+        public readonly doc: svg.Container,
         public renderer: Renderer,
         public showDebugMarkers: boolean
     ) {

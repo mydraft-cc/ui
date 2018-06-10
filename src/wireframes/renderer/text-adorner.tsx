@@ -1,3 +1,4 @@
+/*
 import * as paper from 'paper';
 import * as React from 'react';
 
@@ -158,3 +159,4 @@ export class TextAdorner extends React.Component<TextAdornerProps> implements In
         );
     }
 }
+*/

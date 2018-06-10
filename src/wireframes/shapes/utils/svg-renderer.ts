@@ -191,12 +191,21 @@ export class SVGRenderer implements AbstractRenderer {
         }
     }
 
+    public setSize(element: RendererElement, size: Vec2 | DiagramShape) {
+        const s = this.getSize(size);
+        const e = this.getElement(element);
+
+        if (s) {
+            e.size(s.x, s.y);
+        }
+    }
+
     public setPosition(element: RendererElement, position: Vec2 | DiagramShape) {
         const p = this.getPosition(position);
         const e = this.getElement(element);
 
         if (p) {
-            e.center(p.x, p.y);
+            e.move(p.x - 0.5 * e.width(), p.y - 0.5 * e.height());
         }
     }
 
@@ -249,6 +258,14 @@ export class SVGRenderer implements AbstractRenderer {
             return SVGHelper.toColor(color.appearance.get(key));
         } else {
             return SVGHelper.toColor(color);
+        }
+    }
+
+    private getSize(size: RendererPosition): svg.Point {
+        if (size instanceof DiagramShape) {
+            return SVGHelper.vec2Point(size.transform.size);
+        } else {
+            return SVGHelper.vec2Point(size);
         }
     }
 

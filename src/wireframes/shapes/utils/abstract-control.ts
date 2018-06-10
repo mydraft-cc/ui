@@ -45,12 +45,19 @@ export abstract class AbstractControl implements Renderer {
     }
 
     public render(shape: DiagramShape, showDebugMarkers: boolean): any {
-        const ctx = new AbstractContext(RENDERER, shape, new Rect2(Vec2.ZERO, shape.transform.size));
+        let bounds = new Rect2(Vec2.ZERO, shape.transform.size);
+
+        if (shape.appearance.get(DiagramShape.APPEARANCE_STROKE_COLOR) % 2 === 1) {
+            bounds = bounds.deflate(0.5, 0.5);
+        }
+
+        const ctx = new AbstractContext(RENDERER, shape, bounds);
 
         if (RENDER_BACKGROUND) {
             const backgroundItem = ctx.renderer.createRoundedRectangle(ctx.bounds, 0, 0);
 
             ctx.renderer.setBackgroundColor(backgroundItem, 'transparent');
+            ctx.renderer.setOpacity(backgroundItem, 0);
 
             ctx.add(backgroundItem);
         }
@@ -67,6 +74,7 @@ export abstract class AbstractControl implements Renderer {
 
         const rootItem = ctx.renderer.createGroup(...ctx.items);
 
+        ctx.renderer.setSize(rootItem, shape);
         ctx.renderer.setPosition(rootItem, shape);
         ctx.renderer.setRotation(rootItem, shape);
         ctx.renderer.setOpacity(rootItem, shape);

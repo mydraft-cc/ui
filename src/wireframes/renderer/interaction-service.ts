@@ -1,21 +1,29 @@
-import * as paper from 'paper';
+import * as svg from 'svg.js';
 
-import { MathHelper } from '@app/core';
+import { MathHelper, Vec2 } from '@app/core';
+
+import { DiagramShape } from '@appwireframes/model';
+
+export class SvgEvent {
+    constructor(
+        public readonly event: MouseEvent,
+        public readonly position: Vec2,
+        public readonly element?: Element | null,
+        public readonly shape?: DiagramShape | null
+    ) {
+    }
+}
 
 export interface InteractionHandler {
-    onDoubleClick?(event: paper.ToolEvent, next: () => void): void;
+    onDoubleClick?(event: SvgEvent, next: () => void): void;
 
-    onClick?(event: paper.ToolEvent, next: () => void): boolean;
+    onClick?(event: SvgEvent, next: () => void): boolean;
 
-    onMouseDown?(event: paper.ToolEvent, next: () => void): void;
+    onMouseDown?(event: SvgEvent, next: () => void): void;
 
-    onMouseDrag?(event: paper.ToolEvent, next: () => void): void;
+    onMouseDrag?(event: SvgEvent, next: () => void): void;
 
-    onMouseUp?(event: paper.ToolEvent, next: () => void): void;
-
-    onKeyDown?(event: paper.KeyEvent, next: () => void): void;
-
-    onKeyUp?(event: paper.KeyEvent, next: () => void): void;
+    onMouseUp?(event: SvgEvent, next: () => void): void;
 }
 
 const ROTATION_CONFIG = [
@@ -31,44 +39,27 @@ const ROTATION_CONFIG = [
 const NOOP = () => { /* NOOP */ };
 
 export class InteractionService {
-    private interactionHandlers: InteractionHandler[] = [];
-    private interactionTool: paper.Tool;
-    private adornerLayers: paper.Layer[] = [];
-    private layer: paper.Layer;
+    private readonly interactionHandlers: InteractionHandler[] = [];
 
-    public init(scope: paper.PaperScope) {
-        this.layer = scope.project.activeLayer;
+    constructor(diagramAdorners: svg.Container, diagramRenderings: svg.Container
+    ) {
+        diagramAdorners.mousedown((event: MouseEvent) => {
+            this.invokeEvent(event, diagramAdorners, h => h.onMouseDown ? h.onMouseDown.bind(h) : null);
+        });
 
-        this.initializeTool(scope);
-        this.initializeClickEvents();
-    }
+        diagramAdorners.mousedown((event: MouseEvent) => {
+            this.invokeEvent(event, diagramAdorners, h => h.onMouseDrag ? h.onMouseDrag.bind(h) : null);
+        });
 
-    private initializeTool(scope: paper.PaperScope) {
-        this.interactionTool = new paper.Tool();
-        this.interactionTool.minDistance = 1;
-        this.interactionTool.onMouseDown = this.onMouseDown;
-        this.interactionTool.onMouseDrag = this.onMouseDrag;
-        this.interactionTool.onMouseMove = this.onMouseMove;
-        this.interactionTool.onMouseUp = this.onMouseUp;
+        diagramAdorners.mouseup((event: MouseEvent) => {
+            this.invokeEvent(event, diagramAdorners, h => h.onMouseDown ? h.onMouseDown.bind(h) : null);
+        });
 
-        scope.tool = this.interactionTool;
-    }
+        diagramRenderings.click((event: MouseEvent) => {
+            this.invokeEvent(event, diagramRenderings, h => h.onClick ? h.onClick.bind(h) : null);
+        });
 
-    private initializeClickEvents() {
-        this.layer.onClick = this.onClick;
-        this.layer.onDoubleClick = this.onDoubleClick;
-    }
-
-    public addAdornerLayer(layer: paper.Layer) {
-        this.adornerLayers.push(layer);
-    }
-
-    public removeAdornerLayer(layer: paper.Layer) {
-        this.adornerLayers.splice(this.adornerLayers.indexOf(layer), 1);
-    }
-
-    public showAdornerLayers(visible: boolean) {
-        this.adornerLayers.forEach(layer => layer.visible = visible);
+        diagramAdorners.mousemove(this.onMouseMove);
     }
 
     public addHandler(handler: InteractionHandler) {
@@ -79,11 +70,11 @@ export class InteractionService {
         this.interactionHandlers.splice(this.interactionHandlers.indexOf(handler), 1);
     }
 
-    public setCursor(item: paper.Item, cursor: string) {
+    public setCursor(item: svg.Element, cursor: string) {
         item['cursor'] = cursor;
     }
 
-    public setRotationCursor(item: paper.Item, angle: number) {
+    public setCursorAngle(item: svg.Element, angle: number) {
         item['cursorAngle'] = angle;
     }
 
@@ -95,24 +86,43 @@ export class InteractionService {
         return paper.Key.isDown('shift');
     }
 
-    private invokeEvent(event: any, actionProvider: (handler: InteractionHandler) => Function) {
+    private invokeEvent(event: MouseEvent, layer: svg.Container, actionProvider: (handler: InteractionHandler) => Function) {
         if (this.interactionHandlers.length > 0) {
-            let next = NOOP;
+            const handlers: Function[] = [];
 
             for (let i = this.interactionHandlers.length - 1; i >= 0; i--) {
-                const action = actionProvider(this.interactionHandlers[i]);
+                const handler = actionProvider(this.interactionHandlers[i]);
 
-                if (action) {
-                    const currentNext = next;
-
-                    next = () => action(event, currentNext);
+                if (handler) {
+                    handlers.push(handler);
                 }
             }
 
-            next();
+            if (handlers.length > 0) {
+                const layerElement: SVGElement = <any>layer.node;
+
+                let element: SVGElement | null = <SVGElement>event.target;
+
+                while (element && element !== layerElement && <any>element.parentElement !== layerElement) {
+                    element = <SVGElement | null>element.parentElement;
+                }
+
+                const svgEvent = new SvgEvent(event, Vec2.ZERO, element, null);
+
+                let next = NOOP;
+
+                for (let handler of handlers) {
+                    const currentNext = next;
+
+                    next = () => handler(svgEvent, currentNext);
+                }
+
+                next();
+            }
         }
     }
 
+    /*
     private onDoubleClick = (e: paper.MouseEvent) => {
         const eventBuilder: any = paper.ToolEvent;
         const event = new eventBuilder(this.interactionTool, 'doubleclick', e);
@@ -138,32 +148,30 @@ export class InteractionService {
     private onMouseDrag = (event: paper.ToolEvent) => {
         this.invokeEvent(event, h => h.onMouseDrag ? h.onMouseDrag.bind(h) : null);
     }
+    */
 
-    private onMouseMove = (event: paper.ToolEvent) => {
-        for (let layer of this.adornerLayers) {
-            const hitResult = layer.hitTest(event.point, { guides: true, fill: true, tolerance: 2 });
-            const hitItem = hitResult ? hitResult.item : null;
+    private onMouseMove = (event: MouseEvent) => {
+        let element: SVGElement | null = <SVGElement | null>event.target;
 
-            if (hitItem && hitItem['cursor']) {
-                document.body.style.cursor = hitItem['cursor'];
-            } else if (hitItem && Number.isFinite(hitItem['cursorAngle'])) {
-                const rotation = hitItem['cursorAngle'];
+        if (element && element['cursor']) {
+            document.body.style.cursor = element['cursor'];
+        } else if (element && Number.isFinite(element['cursorAngle'])) {
+            const rotation = element['cursorAngle'];
 
-                const totalRotation = MathHelper.toPositiveDegree(hitItem.rotation + rotation);
+            const totalRotation = MathHelper.toPositiveDegree(0 + rotation);
 
-                for (let config of ROTATION_CONFIG) {
-                    if (totalRotation > config.angle - 22.5 &&
-                        totalRotation < config.angle + 22.5) {
+            for (let config of ROTATION_CONFIG) {
+                if (totalRotation > config.angle - 22.5 &&
+                    totalRotation < config.angle + 22.5) {
 
-                        document.body.style.cursor = config.cursor;
-                        return;
-                    }
+                    document.body.style.cursor = config.cursor;
+                    return;
                 }
-
-                document.body.style.cursor = 'n-resize';
-            } else {
-                document.body.style.cursor = 'default';
             }
+
+            document.body.style.cursor = 'n-resize';
+        } else {
+            document.body.style.cursor = 'default';
         }
     }
 }

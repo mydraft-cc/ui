@@ -14,18 +14,27 @@ export module SVGHelper {
     export const ZERO_POINT = new svg.Point(0, 0);
     export const IDENTITY_MATRIX = new svg.Matrix(1, 0, 0, 1, 0, 0);
 
-    export function createSinglelineText(doc: svg.Doc, rectangle: Rect2, textString: string, fontSize?: number, alignment?: string): SVGTextGroup {
+    export function createSinglelineText(doc: svg.Doc, rect: Rect2, textString: string, fontSize?: number, alignment?: string): SVGTextGroup {
         fontSize = fontSize || 10;
 
-        alignment = alignment || 'center';
+        const group = size(doc.group(), rect);
 
-        const group = doc.group();
+        const text = group.text(textString).size(fontSize);
 
-        // const clip = size(group.rect(), rectangle);
+        let y = rect.centerY - 0.65 * fontSize * text.leading();
 
-        const text = group.text(textString);
-        text.size(fontSize);
-        // text.clipWith(clip);
+        if (alignment === 'left') {
+            text.attr('text-anchor', 'start');
+            text.center(rect.left, y);
+        } else if (alignment === 'right') {
+            text.attr('text-anchor', 'end');
+            text.center(rect.right, y);
+        } else {
+            text.attr('text-anchor', 'end');
+            text.center(rect.centerX, y);
+        }
+
+        // text.clipWith(size(new svg.Rect(), rect));
 
         return { groupElement: group, textElement: text };
     }
@@ -61,10 +70,7 @@ export module SVGHelper {
     }
 
     export function size<T extends svg.Element>(element: T, rect: Rect2): T {
-        element.center(rect.centerX, rect.centerY);
-        element.size(rect.size.x, rect.size.y);
-
-        return element;
+        return element.size(rect.size.x, rect.size.y).center(rect.centerX, rect.centerY);
     }
 
     export function vec2Point(vec: Vec2): svg.Point {

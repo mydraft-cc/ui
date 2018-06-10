@@ -337,4 +337,8 @@ export class PaperRenderer implements AbstractRenderer {
 
         return new paper.Rectangle(l, t, r - l, b - t);
     }
+
+    public setSize(element: RendererElement, size: Vec2 | DiagramShape) {
+        return;
+    }
 }

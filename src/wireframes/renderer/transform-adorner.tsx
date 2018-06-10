@@ -1,3 +1,4 @@
+/*
 import * as paper from 'paper';
 import * as React from 'react';
 
@@ -430,7 +431,7 @@ export class TransformAdorner extends React.Component<TransformAdornerProps> imp
             resizeShape['guide'] = true;
             resizeShape['offset'] = new Vec2(xs[i], ys[i]);
 
-            this.props.interactionService.setRotationCursor(resizeShape, as[i]);
+            this.props.interactionService.setCursorAngle(resizeShape, as[i]);
 
             this.resizeShapes.push(resizeShape);
         }
@@ -440,3 +441,4 @@ export class TransformAdorner extends React.Component<TransformAdornerProps> imp
         return null;
     }
 }
+*/
