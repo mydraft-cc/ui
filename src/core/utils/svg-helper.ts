@@ -17,26 +17,22 @@ export module SVGHelper {
     export function createSinglelineText(doc: svg.Doc, rect: Rect2, textString: string, fontSize?: number, alignment?: string): SVGTextGroup {
         fontSize = fontSize || 10;
 
-        const group = size(doc.group(), rect);
+        const group = doc.group();
 
-        const text = group.text(textString).size(fontSize);
+        const text = size(group.element('foreignObject', svg.Parent), rect);
 
-        let y = rect.centerY - 0.65 * fontSize * text.leading();
+        const div = document.createElement('div');
+        div.textContent = textString;
+        div.style.fontSize = fontSize + 'px';
+        div.style.fontFamily = 'inherit';
+        div.style.overflow = 'hidden';
 
-        if (alignment === 'left') {
-            text.attr('text-anchor', 'start');
-            text.center(rect.left, y);
-        } else if (alignment === 'right') {
-            text.attr('text-anchor', 'end');
-            text.center(rect.right, y);
-        } else {
-            text.attr('text-anchor', 'end');
-            text.center(rect.centerX, y);
-        }
+
+        text.node.appendChild(div);
 
         // text.clipWith(size(new svg.Rect(), rect));
 
-        return { groupElement: group, textElement: text };
+        return { groupElement: group, textElement: <any>text };
     }
 
     export function createMultilineText(doc: svg.Doc, rectangle: Rect2, textString: string, fontSize?: number, alignment?: string): SVGTextGroup {

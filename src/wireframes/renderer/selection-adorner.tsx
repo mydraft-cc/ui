@@ -48,13 +48,11 @@ export class SelectionAdorner extends React.Component<SelectionAdornerProps> imp
     public componentDidMount() {
         this.props.interactionService.addHandler(this);
 
-        this.layer = this.props.adorners.group();
+        this.layer = this.props.adorners;
     }
 
     public componentWillUnmount() {
         this.props.interactionService.removeHandler(this);
-
-        this.layer.remove();
 
         this.shapesAdorners = [];
     }
@@ -81,55 +79,43 @@ export class SelectionAdorner extends React.Component<SelectionAdornerProps> imp
             return next();
         }
 
-        const eventPoint = event.position;
-
-        const selectedArea = Rect2.createFromVecs([eventPoint, this.dragStart!]);
+        const selectedRect = Rect2.createFromVecs([this.dragStart!, event.position]);
         const selectionShape = this.getOrCreateRectangle();
 
-        if (selectedArea.area > 0) {
-            selectionShape.show();
+        if (selectedRect.area > 0) {
+            this.transformShape(selectionShape, selectedRect.position, selectedRect.size, 0);
         } else {
             selectionShape.hide();
         }
-
-        if (selectionShape.visible) {
-            this.transformShape(selectionShape, selectedArea.position, selectedArea.size, 0);
-        }
     }
 
-    public onMouseUp(event: SvgEvent, next: () =>  void) {
+    public onMouseUp(event: SvgEvent, next: () => void) {
         if (!this.dragging) {
             return next();
         }
 
         try {
-            const selectionShape = this.getOrCreateRectangle();
+            const selectedRect = Rect2.createFromVecs([this.dragStart!, event.position]);
 
-            selectionShape.show();
+            if (selectedRect.area > 100) {
+                const selection = this.selectMultiple(selectedRect, this.props.selectedDiagram);
 
-            if (this.hasMoved(event)) {
-                const selection = this.selectMultiple(event, this.props.selectedDiagram);
-
-                if (selection !== null) {
+                if (selection) {
                     this.props.selectItems(this.props.selectedDiagram, selection!);
                 }
             }
         } finally {
+            const selectionShape = this.getOrCreateRectangle();
+
+            selectionShape.hide();
+
             this.dragging = false;
             this.dragStart = null;
         }
     }
 
-    private hasMoved(e: SvgEvent): boolean {
-        return !this.dragStart || e.position.sub(this.dragStart).lengtSquared > 10;
-    }
-
-    private selectMultiple(event: SvgEvent, diagram: Diagram): string[] {
-        const eventPoint = event.position;
-
-        const selectedArea = Rect2.createFromVecs([this.dragStart!, eventPoint]);
-        const selectedItems = diagram.rootIds.map(id => diagram.items.get(id)).filter(i => i && selectedArea.containsRect(i.bounds(diagram).aabb)).map(i => i!);
-
+    private selectMultiple(rect: Rect2, diagram: Diagram): string[] {
+        const selectedItems = diagram.rootIds.map(id => diagram.items.get(id)).filter(i => i && rect.containsRect(i.bounds(diagram).aabb)).map(i => i!);
         const selection = calculateSelection(selectedItems, diagram, true);
 
         return selection;
@@ -155,7 +141,7 @@ export class SelectionAdorner extends React.Component<SelectionAdornerProps> imp
             let shapeAdorner: svg.Element;
 
             if (i >= this.shapesAdorners.length) {
-                shapeAdorner = this.props.adorners.rect().stroke(SELECTION_STROKE_COLOR).back();
+                shapeAdorner = this.props.adorners.rect().stroke(SELECTION_STROKE_COLOR).fill('none').back();
 
                 this.shapesAdorners.push(shapeAdorner);
             } else {
@@ -175,9 +161,7 @@ export class SelectionAdorner extends React.Component<SelectionAdornerProps> imp
         }
 
         this.selectionShape =
-            this.layer.rect()
-                .fill(SELECTION_FILL_COLOR)
-                .opacity(0.4)
+            this.layer.rect().fill(SELECTION_FILL_COLOR).opacity(0.4)
                 .stroke(SELECTION_STROKE_COLOR);
 
         return this.selectionShape;
@@ -195,7 +179,8 @@ export class SelectionAdorner extends React.Component<SelectionAdornerProps> imp
         r -= 0.5 - offset;
         b -= 0.5 - offset;
 
-        shape.size(r - l, b - t).move(l, t).rotate(rotation).show();
+        shape.untransform();
+        shape.size(r - l, b - t).rotate(rotation).move(l, t).show();
     }
 
     public render() {

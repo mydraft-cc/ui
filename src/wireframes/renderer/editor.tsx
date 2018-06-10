@@ -24,9 +24,11 @@ import {
     UIStateInStore
 } from '@app/wireframes/model';
 
-import { CanvasView } from './canvas-view';
+import { CanvasView }           from './canvas-view';
 import { InteractionService }   from './interaction-service';
 import { SelectionAdorner }     from './selection-adorner';
+import { TextAdorner }          from './text-adorner';
+import { TransformAdorner }     from './transform-adorner';
 
 export interface EditorProps {
     // The renderer service.
@@ -76,21 +78,24 @@ const mapDispatchToProps = (dispatch: Dispatch<any>) => bindActionCreators({
 const isProduction = process.env.NODE_ENV === 'production';
 
 class Editor extends React.Component<EditorProps> {
-    private diagramAdorners: svg.Container;
+    private adornersSelect: svg.Container;
+    private adornersTransform: svg.Container;
+    private diagramTools: svg.Element;
     private diagramRendering: svg.Container;
     private interactionService: InteractionService;
     private shapeRefsById: { [id: string]: ShapeRef } = {};
-    private shapeRefsByRenderElement: { [id: number]: ShapeRef } = {};
 
     public componentDidUpdate() {
         this.renderDiagram();
     }
 
     public initDiagramScope(doc: svg.Doc) {
+        this.diagramTools = doc.rect().fill('transparent');
         this.diagramRendering = doc.group();
-        this.diagramAdorners = doc.group();
+        this.adornersSelect = doc.group();
+        this.adornersTransform = doc.group();
 
-        this.interactionService = new InteractionService(this.diagramAdorners, this.diagramRendering);
+        this.interactionService = new InteractionService([this.adornersSelect, this.adornersTransform], this.diagramRendering, doc);
 
         this.renderDiagram();
 
@@ -115,7 +120,6 @@ class Editor extends React.Component<EditorProps> {
 
                 if (!allShapesById[id]) {
                     delete this.shapeRefsById[id];
-                    delete this.shapeRefsByRenderElement[ref.renderId];
                 }
             }
         }
@@ -131,7 +135,6 @@ class Editor extends React.Component<EditorProps> {
 
             ref.render(shape);
 
-            this.shapeRefsByRenderElement[ref.renderId] = ref;
             this.shapeRefsById[shape.id] = ref;
         }
     }
@@ -166,36 +169,49 @@ class Editor extends React.Component<EditorProps> {
         return flattenShapes;
     }
 
-    /*
-    private provideItemByElement = (item: paper.Item): DiagramItem | null => {
-        const ref = this.shapeRefsByRenderElement[item.id];
-
-        return ref ? ref.shape : null;
-    }
-    */
-
     public render() {
-        return (
-            <div className='editor' style={{ width: sizeInPx(this.props.zoomedWidth), height: sizeInPx(this.props.zoomedHeight) }}>
-                <div>
-                    <CanvasView onInit={(doc) => this.initDiagramScope(doc)}
-                        zoom={this.props.zoom}
-                        zoomedWidth={this.props.zoomedWidth}
-                        zoomedHeight={this.props.zoomedHeight} />
-                </div>
+        const w = this.props.zoomedWidth;
+        const h = this.props.zoomedHeight;
 
-                <div>
-                    {this.interactionService && this.props.selectedDiagram && (
-                        <div>
-                            <SelectionAdorner
-                                adorners={this.diagramAdorners}
-                                interactionService={this.interactionService}
-                                selectedDiagram={this.props.selectedDiagram}
-                                selectedItems={this.props.selectedItems}
-                                selectItems={this.props.selectItems} />
-                        </div>
-                    )}
-                </div>
+        if (this.interactionService) {
+            this.diagramTools.size(w, h);
+            this.adornersSelect.size(w, h);
+            this.adornersTransform.size(w, h);
+            this.diagramRendering.size(w, h);
+        }
+
+        return (
+            <div className='editor' style={{ position: 'relative', width: sizeInPx(w), height: sizeInPx(h) }}>
+                <CanvasView onInit={(doc) => this.initDiagramScope(doc)}
+                    zoom={this.props.zoom}
+                    zoomedWidth={this.props.zoomedWidth}
+                    zoomedHeight={this.props.zoomedHeight} />
+
+                {this.interactionService && this.props.selectedDiagram && (
+                    <>
+                        <TransformAdorner
+                            adorners={this.adornersTransform}
+                            interactionService={this.interactionService}
+                            selectedDiagram={this.props.selectedDiagram}
+                            selectedItems={this.props.selectedItems}
+                            transformItems={this.props.transformItems}
+                            zoom={this.props.zoom} />
+
+                        <SelectionAdorner
+                            adorners={this.adornersSelect}
+                            interactionService={this.interactionService}
+                            selectedDiagram={this.props.selectedDiagram}
+                            selectedItems={this.props.selectedItems}
+                            selectItems={this.props.selectItems} />
+
+                        <TextAdorner
+                            changeItemsAppearance={this.props.changeItemsAppearance}
+                            interactionService={this.interactionService}
+                            selectedDiagram={this.props.selectedDiagram}
+                            selectedItems={this.props.selectedItems}
+                            zoom={this.props.zoom} />
+                    </>
+                )}
             </div>
         );
     }
@@ -230,6 +246,7 @@ class ShapeRef {
             this.renderer.setContext(this.doc);
 
             this.renderedElement = this.renderer.render(shape, this.showDebugMarkers);
+            this.renderedElement.node['shape'] = shape;
         } else {
             this.doc.add(this.renderedElement);
         }

@@ -1,5 +1,3 @@
-/*
-import * as paper from 'paper';
 import * as React from 'react';
 
 import { sizeInPx } from '@app/core';
@@ -13,7 +11,8 @@ import {
 
 import {
     InteractionHandler,
-    InteractionService
+    InteractionService,
+    SvgEvent
 } from './interaction-service';
 
 const MIN_WIDTH = 150;
@@ -37,9 +36,6 @@ export interface TextAdornerProps {
 
     // A function to change the appearance of a visual.
     changeItemsAppearance: (diagram: Diagram, visuals: DiagramVisual[], key: string, val: any) => any;
-
-    // A function to retrieve a render element by diagram item.
-    provideItemByElement: (item: paper.Item) => DiagramItem | null;
 }
 
 export class TextAdorner extends React.Component<TextAdornerProps> implements InteractionHandler {
@@ -70,39 +66,35 @@ export class TextAdorner extends React.Component<TextAdornerProps> implements In
         }
     }
 
-    public onDoubleClick(event: paper.ToolEvent) {
-        if (event.item && this.textareaElement) {
-            const selectedItem = this.props.provideItemByElement(event.item);
-
-            if (selectedItem && selectedItem instanceof DiagramShape) {
-                if (selectedItem.appearance.get(DiagramShape.APPEARANCE_TEXT_DISABLED) === true) {
-                    return;
-                }
-
-                const zoom = this.props.zoom;
-
-                const transform = selectedItem.transform;
-
-                const x = sizeInPx(zoom * (transform.position.x - 0.5 * transform.size.x));
-                const y = sizeInPx(zoom * (transform.position.y - 0.5 * transform.size.y));
-
-                const w = sizeInPx(zoom * (Math.max(transform.size.x, MIN_WIDTH) + 1));
-                const h = sizeInPx(zoom * (Math.max(transform.size.y, MIN_HEIGHT) + 1));
-
-                this.textareaElement.value = selectedItem.appearance.get(DiagramShape.APPEARANCE_TEXT) || '';
-                this.textareaElement.style.top = y;
-                this.textareaElement.style.left = x;
-                this.textareaElement.style.width = w;
-                this.textareaElement.style.height = h;
-                this.textareaElement.style.resize = 'none';
-                this.textareaElement.style.display = 'block';
-                this.textareaElement.style.position = 'absolute';
-                this.textareaElement.focus();
-
-                this.selectedShape = selectedItem;
-
-                this.props.interactionService.showAdornerLayers(false);
+    public onDoubleClick(event: SvgEvent) {
+        if (event.shape && this.textareaElement) {
+            if (event.shape.appearance.get(DiagramShape.APPEARANCE_TEXT_DISABLED) === true) {
+                return;
             }
+
+            const zoom = this.props.zoom;
+
+            const transform = event.shape.transform;
+
+            const x = sizeInPx(zoom * (transform.position.x - 0.5 * transform.size.x));
+            const y = sizeInPx(zoom * (transform.position.y - 0.5 * transform.size.y));
+
+            const w = sizeInPx(zoom * (Math.max(transform.size.x, MIN_WIDTH) + 1));
+            const h = sizeInPx(zoom * (Math.max(transform.size.y, MIN_HEIGHT) + 1));
+
+            this.textareaElement.value = event.shape.appearance.get(DiagramShape.APPEARANCE_TEXT) || '';
+            this.textareaElement.style.top = y;
+            this.textareaElement.style.left = x;
+            this.textareaElement.style.width = w;
+            this.textareaElement.style.height = h;
+            this.textareaElement.style.resize = 'none';
+            this.textareaElement.style.display = 'block';
+            this.textareaElement.style.position = 'absolute';
+            this.textareaElement.focus();
+
+            this.props.interactionService.hideAdorners();
+
+            this.selectedShape = event.shape;
         }
     }
 
@@ -148,15 +140,12 @@ export class TextAdorner extends React.Component<TextAdornerProps> implements In
         this.textareaElement.style.width = '0';
         this.textareaElement.style.display = 'none';
 
-        this.props.interactionService.showAdornerLayers(true);
+        this.props.interactionService.showAdorners();
     }
 
     public render() {
         return (
-            <div style={{position: 'relative'}}>
-                <textarea className='ant-input' style={{ display: 'none '}} ref={(element) => { this.textareaElement = element!; }} onBlur={this.onTextareaBlur} onKeyDown={this.onTextareaKeyDown} />
-            </div>
+            <textarea className='ant-input' style={{ display: 'none '}} ref={(element) => { this.textareaElement = element!; }} onBlur={this.onTextareaBlur} onKeyDown={this.onTextareaKeyDown} />
         );
     }
 }
-*/

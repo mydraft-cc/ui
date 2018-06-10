@@ -1,7 +1,6 @@
+import * as svg from 'svg.js';
 
-import * as paper from 'paper';
-
-import { Color, PaperHelper } from '@app/core';
+import { Color } from '@app/core';
 
 import {
     SnapMode,
@@ -10,39 +9,28 @@ import {
 } from '@app/wireframes/model';
 
 export class InteractionOverlays {
-    private textItem: paper.PointText;
-    private rectItem: paper.Shape;
-    private lineX: paper.Shape;
-    private lineY: paper.Shape;
-    private items: paper.Item[] = [];
+    private textItem: svg.Text;
+    private rectItem: svg.Element;
+    private lineX: svg.Element;
+    private lineY: svg.Element;
+    private elements: svg.Element[] = [];
 
-    constructor(private readonly scope: paper.PaperScope, private readonly layer: paper.Layer) { }
+    constructor(
+        private readonly layer: svg.Container
+    ) {
+    }
 
     private ensureInfoShapes() {
         if (this.textItem) {
             return;
         }
 
-        this.scope.activate();
-        this.layer.activate();
+        this.rectItem = this.layer.rect().fill('#000');
 
-        const rectItem = paper.Shape.Rectangle(PaperHelper.ZERO_POINT, PaperHelper.ZERO_SIZE);
+        this.textItem = this.layer.text('').size(12).fill('none');
 
-        rectItem.fillColor = PaperHelper.COLOR_BLACK;
-        rectItem.strokeColor = PaperHelper.COLOR_BLACK;
-        rectItem.strokeWidth = 1;
-
-        this.rectItem = rectItem;
-
-        const textItem = new paper.PointText(PaperHelper.ZERO_POINT);
-
-        textItem.fontSize = 12;
-        textItem.fillColor = PaperHelper.COLOR_WHITE;
-
-        this.textItem = textItem;
-
-        this.items.push(this.textItem);
-        this.items.push(this.rectItem);
+        this.elements.push(this.textItem);
+        this.elements.push(this.rectItem);
 
         this.reset();
     }
@@ -52,14 +40,11 @@ export class InteractionOverlays {
             return;
         }
 
-        this.scope.activate();
-        this.layer.activate();
+        this.lineX = this.layer.rect();
+        this.lineY = this.layer.rect();
 
-        this.lineX = paper.Shape.Rectangle(new paper.Rectangle(0, 0, 0, 0));
-        this.lineY = paper.Shape.Rectangle(new paper.Rectangle(0, 0, 0, 0));
-
-        this.items.push(this.lineX);
-        this.items.push(this.lineY);
+        this.elements.push(this.lineX);
+        this.elements.push(this.lineY);
 
         this.reset();
     }
@@ -85,23 +70,23 @@ export class InteractionOverlays {
     public showXLine(value: number, color: Color) {
         this.ensureLines();
 
-        const h = this.scope.view.bounds.height;
+        const height = this.layer.bbox().h;
 
-        this.lineX.size = new paper.Size(1, h);
-        this.lineX.fillColor = PaperHelper.toColor(color);
-        this.lineX.position = new paper.Point(Math.round(value) + 0.5, h * 0.5);
-        this.lineX.visible = true;
+        this.lineX.fill(color.toString());
+        this.lineX.move(Math.round(value) + 0.5, height * 0.5);
+        this.lineX.size(1, height);
+        this.lineX.show();
     }
 
     public showYLine(value: number, color: Color) {
         this.ensureLines();
 
-        const w = this.scope.view.bounds.width;
+        const width = this.layer.bbox().w;
 
-        this.lineY.size = new paper.Size(w, 1);
-        this.lineY.fillColor = PaperHelper.toColor(color);
-        this.lineY.position = new paper.Point(w * 0.5, Math.round(value) + 0.5);
-        this.lineY.visible = true;
+        this.lineY.fill(color.toString());
+        this.lineY.move(width * 0.5, Math.round(value) + 0.5);
+        this.lineY.size(width, 1);
+        this.lineY.show();
     }
 
     public showInfo(transform: Transform, text: string) {
@@ -111,23 +96,20 @@ export class InteractionOverlays {
 
         this.ensureInfoShapes();
 
-        this.textItem.content = text;
-        this.textItem.point = new paper.Point(aabb.right + 4, aabb.bottom + 24);
-        this.textItem.visible = true;
+        this.textItem.text(text);
+        this.textItem.center(aabb.right + 4, aabb.bottom + 24);
+        this.textItem.show();
 
-        const bounds = this.textItem.bounds;
+        const bounds = this.textItem.bbox();
 
-        this.rectItem.position = bounds.center;
-        this.rectItem.size =
-            new paper.Size(
-                bounds.size.width + 8,
-                bounds.size.height + 8);
-        this.rectItem.visible = true;
+        this.rectItem.center(bounds.cx, bounds.cy);
+        this.rectItem.size(bounds.w + 8, bounds.h + 8);
+        this.rectItem.show();
     }
 
     public reset() {
-        for (let item of this.items) {
-            item.visible = false;
+        for (let element of this.elements) {
+            element.hide();
         }
     }
 }

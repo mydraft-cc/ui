@@ -169,7 +169,7 @@ export class SVGRenderer implements AbstractRenderer {
         const e = this.getElement(element);
 
         if (c) {
-            e.attr('fill', c.toHex());
+            e.attr('color', c.toHex());
         }
     }
 

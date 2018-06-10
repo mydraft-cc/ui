@@ -41,25 +41,30 @@ const NOOP = () => { /* NOOP */ };
 export class InteractionService {
     private readonly interactionHandlers: InteractionHandler[] = [];
 
-    constructor(diagramAdorners: svg.Container, diagramRenderings: svg.Container
+    constructor(
+        private readonly adornerLayers: svg.Element[], renderings: svg.Element, private readonly diagram: svg.Doc
     ) {
-        diagramAdorners.mousedown((event: MouseEvent) => {
-            this.invokeEvent(event, diagramAdorners, h => h.onMouseDown ? h.onMouseDown.bind(h) : null);
+        diagram.mousedown((event: MouseEvent) => {
+            this.invokeEvent(event, h => h.onMouseDown ? h.onMouseDown.bind(h) : null);
         });
 
-        diagramAdorners.mousedown((event: MouseEvent) => {
-            this.invokeEvent(event, diagramAdorners, h => h.onMouseDrag ? h.onMouseDrag.bind(h) : null);
+        diagram.mousemove((event: MouseEvent) => {
+            this.invokeEvent(event, h => h.onMouseDrag ? h.onMouseDrag.bind(h) : null);
         });
 
-        diagramAdorners.mouseup((event: MouseEvent) => {
-            this.invokeEvent(event, diagramAdorners, h => h.onMouseDown ? h.onMouseDown.bind(h) : null);
+        diagram.mouseup((event: MouseEvent) => {
+            this.invokeEvent(event, h => h.onMouseUp ? h.onMouseUp.bind(h) : null);
         });
 
-        diagramRenderings.click((event: MouseEvent) => {
-            this.invokeEvent(event, diagramRenderings, h => h.onClick ? h.onClick.bind(h) : null);
+        renderings.click((event: MouseEvent) => {
+            this.invokeEvent(event, h => h.onClick ? h.onClick.bind(h) : null);
         });
 
-        diagramAdorners.mousemove(this.onMouseMove);
+        renderings.dblclick((event: MouseEvent) => {
+            this.invokeEvent(event, h => h.onDoubleClick ? h.onDoubleClick.bind(h) : null);
+        });
+
+        diagram.mousemove(this.onMouseMove);
     }
 
     public addHandler(handler: InteractionHandler) {
@@ -79,14 +84,22 @@ export class InteractionService {
     }
 
     public isControlKeyPressed(): boolean {
-        return paper.Key.isDown('control');
+        return false;
     }
 
     public isShiftKeyPressed() {
-        return paper.Key.isDown('shift');
+        return false;
     }
 
-    private invokeEvent(event: MouseEvent, layer: svg.Container, actionProvider: (handler: InteractionHandler) => Function) {
+    public showAdorners() {
+        this.adornerLayers.forEach(l => l.show());
+    }
+
+    public hideAdorners() {
+        this.adornerLayers.forEach(l => l.hide());
+    }
+
+    private invokeEvent(event: MouseEvent, actionProvider: (handler: InteractionHandler) => Function) {
         if (this.interactionHandlers.length > 0) {
             const handlers: Function[] = [];
 
@@ -99,15 +112,23 @@ export class InteractionService {
             }
 
             if (handlers.length > 0) {
-                const layerElement: SVGElement = <any>layer.node;
+                let current: any = event.target;
+                let element: any = null;
 
-                let element: SVGElement | null = <SVGElement>event.target;
+                while (current && current.parentElement) {
+                    current = current.parentElement;
 
-                while (element && element !== layerElement && <any>element.parentElement !== layerElement) {
-                    element = <SVGElement | null>element.parentElement;
+                    if (current.shape) {
+                        element = current;
+                        break;
+                    }
                 }
 
-                const svgEvent = new SvgEvent(event, Vec2.ZERO, element, null);
+                const { x, y } = this.diagram.point(event.pageX, event.pageY);
+
+                console.log(`x: ${x}, y: ${y}`);
+
+                const svgEvent = new SvgEvent(event, new Vec2(x, y), element, element ? element.shape : null);
 
                 let next = NOOP;
 
@@ -121,34 +142,6 @@ export class InteractionService {
             }
         }
     }
-
-    /*
-    private onDoubleClick = (e: paper.MouseEvent) => {
-        const eventBuilder: any = paper.ToolEvent;
-        const event = new eventBuilder(this.interactionTool, 'doubleclick', e);
-
-        this.invokeEvent(event, h => h.onDoubleClick ? h.onDoubleClick.bind(h) : null);
-    }
-
-    private onClick = (e: paper.MouseEvent) => {
-        const eventBuilder: any = paper.ToolEvent;
-        const event = new eventBuilder(this.interactionTool, 'click', e);
-
-        this.invokeEvent(event, h => h.onClick ? h.onClick.bind(h) : null);
-    }
-
-    private onMouseDown = (event: paper.ToolEvent) => {
-        this.invokeEvent(event, h => h.onMouseDown ? h.onMouseDown.bind(h) : null);
-    }
-
-    private onMouseUp = (event: paper.ToolEvent) => {
-        this.invokeEvent(event, h => h.onMouseUp ? h.onMouseUp.bind(h) : null);
-    }
-
-    private onMouseDrag = (event: paper.ToolEvent) => {
-        this.invokeEvent(event, h => h.onMouseDrag ? h.onMouseDrag.bind(h) : null);
-    }
-    */
 
     private onMouseMove = (event: MouseEvent) => {
         let element: SVGElement | null = <SVGElement | null>event.target;

@@ -28,7 +28,6 @@ export class CanvasView extends React.Component<CanvasViewProps> {
 
         if (canvas) {
             this.doc = svg(this.docElement);
-            this.doc.attr('shape-rendering', 'geometricPrecision');
 
             this.updateViewSettings(this.props);
 
