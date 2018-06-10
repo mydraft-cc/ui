@@ -27,7 +27,7 @@ export class InteractionOverlays {
 
         this.rectItem = this.layer.rect().fill('#000');
 
-        this.textItem = this.layer.text('').size(12).fill('none');
+        this.textItem = this.layer.text('').size(12).fill('#fff');
 
         this.elements.push(this.textItem);
         this.elements.push(this.rectItem);
@@ -73,7 +73,7 @@ export class InteractionOverlays {
         const height = this.layer.height();
 
         this.lineX.fill(color.toString());
-        this.lineX.move(Math.round(value) + 0.5, height * 0.5);
+        this.lineX.move(Math.round(value), 0);
         this.lineX.size(1, height);
         this.lineX.show();
     }
@@ -84,7 +84,7 @@ export class InteractionOverlays {
         const width = this.layer.width();
 
         this.lineY.fill(color.toString());
-        this.lineY.move(width * 0.5, Math.round(value) + 0.5);
+        this.lineY.move(0, Math.round(value));
         this.lineY.size(width, 1);
         this.lineY.show();
     }
@@ -94,15 +94,16 @@ export class InteractionOverlays {
 
         const aabb = transform.aabb;
 
-        this.ensureInfoShapes();
-
+        this.textItem.untransform();
         this.textItem.text(text);
-        this.textItem.center(aabb.right + 4, aabb.bottom + 24);
+        this.textItem.translate(aabb.right + 4, aabb.bottom + 24);
         this.textItem.show();
+        this.textItem.rebuild(true);
 
-        const bounds = this.textItem.bbox();
+        const bounds = this.textItem.bbox().transform(this.textItem.matrixify());
 
-        this.rectItem.center(bounds.cx, bounds.cy);
+        this.rectItem.untransform();
+        this.rectItem.translate(bounds.x - 4, bounds.y - 4);
         this.rectItem.size(bounds.w + 8, bounds.h + 8);
         this.rectItem.show();
     }

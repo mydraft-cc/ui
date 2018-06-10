@@ -11,6 +11,10 @@
     height: 100%;
 }
 
+.no-select {
+    @include no-selection();
+}
+
 .ant-layout {
     &-header {
         padding-left: 100px;

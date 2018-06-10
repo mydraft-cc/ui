@@ -193,14 +193,14 @@ export class PaperRenderer implements AbstractRenderer {
         return group;
     }
 
-    public setStrokeStyle(element: RendererElement, cap: string, join: string): void {
+    public setStrokeStyle(element: RendererElement, cap: string, join: string) {
         const e = this.getElement(element);
 
         e.strokeCap = cap;
         e.strokeJoin = join;
     }
 
-    public setForegroundColor(element: RendererElement, color: RendererColor): void {
+    public setForegroundColor(element: RendererElement, color: RendererColor) {
         const c = this.getColor(color, DiagramShape.APPEARANCE_FOREGROUND_COLOR);
         const e = this.getElement(element);
 
@@ -209,7 +209,7 @@ export class PaperRenderer implements AbstractRenderer {
         }
     }
 
-    public setBackgroundColor(element: RendererElement, color: RendererColor): void {
+    public setBackgroundColor(element: RendererElement, color: RendererColor) {
         const c = this.getColor(color, DiagramShape.APPEARANCE_BACKGROUND_COLOR);
         const e = this.getElement(element);
 
@@ -218,7 +218,7 @@ export class PaperRenderer implements AbstractRenderer {
         }
     }
 
-    public setStrokeColor(element: RendererElement, color: RendererColor): void {
+    public setStrokeColor(element: RendererElement, color: RendererColor) {
         const c = this.getColor(color, DiagramShape.APPEARANCE_STROKE_COLOR);
         const e = this.getElement(element);
 
@@ -254,7 +254,15 @@ export class PaperRenderer implements AbstractRenderer {
         }
     }
 
-    public setFontFamily(element: RendererElement, fontFamily: string): void {
+    public setText(element: RendererElement, text: string) {
+        const e = this.getElement(element);
+
+        if (text) {
+            (<paper.TextItem>e).content = text;
+        }
+    }
+
+    public setFontFamily(element: RendererElement, fontFamily: string) {
         const e = this.getElement(element);
 
         if (fontFamily) {

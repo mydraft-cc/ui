@@ -161,7 +161,11 @@ export class SVGRenderer implements AbstractRenderer {
     }
 
     public setStrokeStyle(element: RendererElement, cap: string, join: string): void {
-        return;
+        const e = this.getElement(element);
+
+        if (e) {
+            e.attr('stroke-cap', cap).attr('stroke-linejoin', join);
+        }
     }
 
     public setForegroundColor(element: RendererElement, color: RendererColor): void {
@@ -205,7 +209,7 @@ export class SVGRenderer implements AbstractRenderer {
         const e = this.getElement(element);
 
         if (p) {
-            e.move(p.x - 0.5 * e.width(), p.y - 0.5 * e.height());
+            e.translate(p.x - 0.5 * e.width(), p.y - 0.5 * e.height());
         }
     }
 
@@ -224,6 +228,14 @@ export class SVGRenderer implements AbstractRenderer {
 
         if (Number.isFinite(o)) {
             e.opacity(o);
+        }
+    }
+
+    public setText(element: RendererElement, text: string) {
+        const e = this.getElement(element);
+
+        if (text) {
+            e.node.children[0].textContent = text;
         }
     }
 

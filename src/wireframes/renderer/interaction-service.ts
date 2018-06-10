@@ -40,10 +40,19 @@ const NOOP = () => { /* NOOP */ };
 
 export class InteractionService {
     private readonly interactionHandlers: InteractionHandler[] = [];
+    private readonly pressedKey = {};
 
     constructor(
         private readonly adornerLayers: svg.Element[], renderings: svg.Element, private readonly diagram: svg.Doc
     ) {
+        document.onkeydown = (event: KeyboardEvent) => {
+            this.pressedKey[event.keyCode + ''] = true;
+        };
+
+        document.onkeyup = (event: KeyboardEvent) => {
+            this.pressedKey[event.keyCode + ''] = false;
+        };
+
         diagram.mousedown((event: MouseEvent) => {
             this.invokeEvent(event, h => h.onMouseDown ? h.onMouseDown.bind(h) : null);
         });
@@ -64,7 +73,9 @@ export class InteractionService {
             this.invokeEvent(event, h => h.onDoubleClick ? h.onDoubleClick.bind(h) : null);
         });
 
-        diagram.mousemove(this.onMouseMove);
+        diagram.mousemove((event: MouseEvent) => {
+            this.onMouseMove(event);
+        });
     }
 
     public addHandler(handler: InteractionHandler) {
@@ -76,19 +87,19 @@ export class InteractionService {
     }
 
     public setCursor(item: svg.Element, cursor: string) {
-        item['cursor'] = cursor;
+        item.node['cursor'] = cursor;
     }
 
     public setCursorAngle(item: svg.Element, angle: number) {
-        item['cursorAngle'] = angle;
+        item.node['cursorAngle'] = angle;
     }
 
     public isControlKeyPressed(): boolean {
-        return false;
+        return this.pressedKey['17'] === true;
     }
 
     public isShiftKeyPressed() {
-        return false;
+        return this.pressedKey['16'] === true;
     }
 
     public showAdorners() {
@@ -126,8 +137,6 @@ export class InteractionService {
 
                 const { x, y } = this.diagram.point(event.pageX, event.pageY);
 
-                console.log(`x: ${x}, y: ${y}`);
-
                 const svgEvent = new SvgEvent(event, new Vec2(x, y), element, element ? element.shape : null);
 
                 let next = NOOP;
@@ -144,14 +153,16 @@ export class InteractionService {
     }
 
     private onMouseMove = (event: MouseEvent) => {
-        let element: SVGElement | null = <SVGElement | null>event.target;
+        let element: any = event.target;
 
         if (element && element['cursor']) {
             document.body.style.cursor = element['cursor'];
         } else if (element && Number.isFinite(element['cursorAngle'])) {
             const rotation = element['cursorAngle'];
 
-            const totalRotation = MathHelper.toPositiveDegree(0 + rotation);
+            const baseRotation = svg.adopt(element).transform().rotation;
+
+            const totalRotation = MathHelper.toPositiveDegree((baseRotation || 0) + rotation);
 
             for (let config of ROTATION_CONFIG) {
                 if (totalRotation > config.angle - 22.5 &&

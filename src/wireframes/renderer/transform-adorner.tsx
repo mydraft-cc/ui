@@ -201,30 +201,34 @@ export class TransformAdorner extends React.Component<TransformAdornerProps> imp
     }
 
     public onMouseDrag(event: SvgEvent, next: () => void) {
-        if (this.manipulationMode === 0) {
-            next();
+        if (this.manipulationMode === 0 || !this.dragStart) {
+            return next();
         }
 
         this.overlays.reset();
+
+        const delta = event.position.sub(this.dragStart);
+
+        if (delta.lengtSquared === 0) {
+            return;
+        }
 
         if (this.manipulationMode !== 0) {
             this.manipulated = true;
 
             if (this.manipulationMode === MODE_MOVE) {
-                this.move(event);
+                this.move(delta);
             } else if (this.manipulationMode === MODE_ROTATE) {
                 this.rotate(event);
             } else {
-                this.resize(event);
+                this.resize(delta);
             }
 
             this.layoutShapes();
         }
     }
 
-    private move(event: SvgEvent) {
-        const delta = event.position.sub(this.dragStart);
-
+    private move(delta: Vec2) {
         const snapResult =
             this.snapManager.snapMoving(this.props.selectedDiagram, this.startTransform, delta,
                 this.props.interactionService.isShiftKeyPressed());
@@ -262,9 +266,7 @@ export class TransformAdorner extends React.Component<TransformAdornerProps> imp
         return cummulativeRotation;
     }
 
-    private resize(event: SvgEvent) {
-        const delta = event.position.sub(this.dragStart);
-
+    private resize(delta: Vec2) {
         const startRotation = this.startTransform.rotation;
 
         const deltaSize = this.getResizeDeltaSize(startRotation, delta);
@@ -382,7 +384,7 @@ export class TransformAdorner extends React.Component<TransformAdornerProps> imp
     private createMoveShape() {
         const moveShape = this.layer.rect();
 
-        moveShape.fill('transparent');
+        moveShape.fill('none');
         moveShape.size(0, 0);
         moveShape.stroke(TRANSFORMER_STROKE_COLOR);
         moveShape.hide();

@@ -58,6 +58,8 @@ export interface AbstractRenderer {
 
     setSize(element: RendererElement, position: RendererPosition): void;
 
+    setText(element: RendererElement, text: string): void;
+
     setPosition(element: RendererElement, position: RendererPosition): void;
 
     setRotation(element: RendererElement, rotation: RendererRotation): void;

@@ -81,10 +81,10 @@ export class ButtonBar extends AbstractControl {
                 }
             }
 
-            textItem.textItem.content = part.text;
+            ctx.renderer.setText(textItem, part.text);
 
             ctx.add(partItem);
-            ctx.add(textItem.groupItem);
+            ctx.add(textItem);
         }
     }
 

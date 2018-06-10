@@ -47,7 +47,7 @@ export abstract class AbstractControl implements Renderer {
     public render(shape: DiagramShape, showDebugMarkers: boolean): any {
         let bounds = new Rect2(Vec2.ZERO, shape.transform.size);
 
-        if (shape.appearance.get(DiagramShape.APPEARANCE_STROKE_COLOR) % 2 === 1) {
+        if (shape.appearance.get(DiagramShape.APPEARANCE_STROKE_THICKNESS) % 2 === 1) {
             bounds = bounds.deflate(0.5, 0.5);
         }
 

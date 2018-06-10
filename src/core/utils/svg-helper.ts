@@ -6,8 +6,6 @@ import {
     Vec2
 } from '@app/core';
 
-export interface SVGTextGroup { textElement: svg.Text; groupElement: svg.Parent; }
-
 export module SVGHelper {
     export const COLOR_BLACK = new svg.Color('#000');
     export const COLOR_WHITE = new svg.Color('#fff');
@@ -15,27 +13,31 @@ export module SVGHelper {
     export const IDENTITY_MATRIX = new svg.Matrix(1, 0, 0, 1, 0, 0);
 
     export function createSinglelineText(doc: svg.Doc, rect: Rect2, textString: string, fontSize?: number, alignment?: string) {
+        return createText(doc, rect, textString, fontSize || 10, rect.height, alignment);
+    }
+
+    export function createMultilineText(doc: svg.Doc, rect: Rect2, textString: string, fontSize?: number, alignment?: string) {
+        return createText(doc, rect, textString, fontSize || 10, 1.2 * (fontSize || 10), alignment);
+    }
+
+    export function createText(doc: svg.Doc, rect: Rect2, textString: string, fontSize: number, lineHeight: number, alignment?: string) {
         fontSize = fontSize || 10;
 
         const text = size(doc.element('foreignObject', svg.Parent), rect);
 
         const div = document.createElement('div');
-        div.textContent = textString;
+        div.className = 'no-select';
         div.style.height = rect.height + 'px';
-        div.style.lineHeight = rect.height + 'px';
+        div.style.lineHeight = lineHeight + 'px';
         div.style.fontSize = fontSize + 'px';
         div.style.fontFamily = 'inherit';
         div.style.overflow = 'hidden';
-        div.style.pointerEvents = 'none';
         div.style.textAlign = <any>alignment || 'center';
+        div.textContent = textString;
 
         text.node.appendChild(div);
 
         return text;
-    }
-
-    export function createMultilineText(doc: svg.Doc, rectangle: Rect2, textString: string, fontSize?: number, alignment?: string) {
-        return createSinglelineText(doc, rectangle, textString, fontSize, alignment);
     }
 
     export function createRoundedRectangleRight(doc: svg.Doc, rectangle: Rect2, radius = 10) {
