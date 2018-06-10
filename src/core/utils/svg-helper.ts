@@ -22,10 +22,11 @@ export module SVGHelper {
         const div = document.createElement('div');
         div.textContent = textString;
         div.style.height = rect.height + 'px';
-        div.style.lineHeight = fontSize * 1.2 + 'px';
+        div.style.lineHeight = rect.height + 'px';
         div.style.fontSize = fontSize + 'px';
         div.style.fontFamily = 'inherit';
         div.style.overflow = 'hidden';
+        div.style.pointerEvents = 'none';
         div.style.textAlign = <any>alignment || 'center';
 
         text.node.appendChild(div);

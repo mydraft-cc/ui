@@ -177,7 +177,11 @@ export class TransformAdorner extends React.Component<TransformAdornerProps> imp
     }
 
     private hitTest(point: Vec2) {
-        const { x, y } = point;
+        if (!this.currentTransform) {
+            return null;
+        }
+
+        const { x, y } = Vec2.createRotated(point, this.currentTransform.position, this.currentTransform.rotation.negate());
 
         for (let element of this.allElements) {
             const box = element.bbox();
