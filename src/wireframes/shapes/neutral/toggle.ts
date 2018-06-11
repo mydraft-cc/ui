@@ -1,4 +1,4 @@
-import { Vec2 } from '@app/core';
+import { Rect2, Vec2 } from '@app/core';
 
 import {
     Configurable,
@@ -53,11 +53,11 @@ export class Toggle extends AbstractControl {
 
         const circleCenter = new Vec2(circleX, circleY);
         const circleSize = radius - border;
-        const circleItem = ctx.renderer.createCircle(circleCenter, 0, circleSize);
+        const circleItem = ctx.renderer.createEllipse(Rect2.createFromCenter(circleCenter, circleSize));
 
         ctx.renderer.setBackgroundColor(circleItem, ctx.shape.appearance.get(DiagramShape.APPEARANCE_STROKE_COLOR));
 
-        const pillItem = ctx.renderer.createRoundedRectangle(ctx.bounds, 0, radius);
+        const pillItem = ctx.renderer.createRectangle(ctx.bounds, 0, radius);
 
         if (isUnchecked) {
             ctx.renderer.setBackgroundColor(pillItem, ctx.shape);

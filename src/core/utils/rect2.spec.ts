@@ -182,6 +182,13 @@ describe('Rect2', () => {
         expect(actual).toEqual(expected);
     });
 
+    it('should create from center', () => {
+        const actual = Rect2.createFromCenter(new Vec2(100, 100), 10);
+        const expected = new Rect2(new Vec2(90, 90), new Vec2(110, 110));
+
+        expect(actual).toEqual(expected);
+    });
+
     it('should create correct rect from vectors', () => {
         const actual =
             Rect2.createFromVecs([

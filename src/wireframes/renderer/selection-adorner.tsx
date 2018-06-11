@@ -1,11 +1,7 @@
 import * as React from 'react';
 import * as svg from 'svg.js';
 
-import {
-    Rect2,
-    SVGHelper,
-    Vec2
-} from '@app/core';
+import { Rect2, Vec2 } from '@app/core';
 
 import {
     calculateSelection,
@@ -19,8 +15,7 @@ import {
     SvgEvent
 } from './interaction-service';
 
-const SELECTION_STROKE_COLOR = '#009';
-const SELECTION_FILL_COLOR = '#00f';
+import { SVGRenderer } from '@app/wireframes/shapes/utils/svg-renderer';
 
 export interface SelectionAdornerProps {
     // The adorner scope.
@@ -40,16 +35,23 @@ export interface SelectionAdornerProps {
 }
 
 export class SelectionAdorner extends React.Component<SelectionAdornerProps> implements InteractionHandler {
-    private layer: svg.Container;
-    private shapesAdorners: svg.Element[] = [];
-    private selectionShape: svg.Element | null = null;
+    private renderer: SVGRenderer;
+    private shapesAdorners: any[] = [];
+    private selectionShape: any;
     private dragStart: Vec2 | null;
     private dragging = false;
 
     public componentDidMount() {
         this.props.interactionService.addHandler(this);
 
-        this.layer = this.props.adorners;
+        this.renderer = new SVGRenderer();
+        this.renderer.captureContext(this.props.adorners);
+
+        this.selectionShape = this.renderer.createRectangle(Rect2.ZERO, 1);
+
+        this.renderer.setBackgroundColor(this.selectionShape, '#0f0');
+        this.renderer.setStrokeColor(this.selectionShape, '#050');
+        this.renderer.setOpacity(this.selectionShape, 0.3);
     }
 
     public componentWillUnmount() {
@@ -81,12 +83,11 @@ export class SelectionAdorner extends React.Component<SelectionAdornerProps> imp
         }
 
         const selectedRect = Rect2.createFromVecs([this.dragStart!, event.position]);
-        const selectionShape = this.getOrCreateRectangle();
 
         if (selectedRect.area > 0) {
-            this.transformShape(selectionShape, selectedRect.position, selectedRect.size, 0);
+            this.transformShape(this.selectionShape, selectedRect.position, selectedRect.size, 0);
         } else {
-            selectionShape.hide();
+            this.renderer.setVisibility(this.selectionShape, false);
         }
     }
 
@@ -106,9 +107,7 @@ export class SelectionAdorner extends React.Component<SelectionAdornerProps> imp
                 }
             }
         } finally {
-            const selectionShape = this.getOrCreateRectangle();
-
-            selectionShape.hide();
+            this.renderer.setVisibility(this.selectionShape, false);
 
             this.dragging = false;
             this.dragStart = null;
@@ -139,10 +138,13 @@ export class SelectionAdorner extends React.Component<SelectionAdornerProps> imp
 
         let i = 0;
         for (let item of this.props.selectedItems) {
-            let shapeAdorner: svg.Element;
+            let shapeAdorner: any;
 
             if (i >= this.shapesAdorners.length) {
-                shapeAdorner = this.props.adorners.rect().stroke(SELECTION_STROKE_COLOR).fill('none').back();
+                shapeAdorner = this.renderer.createRectangle(Rect2.ZERO, 1);
+
+                this.renderer.setBackgroundColor(shapeAdorner, 'none');
+                this.renderer.setStrokeColor(shapeAdorner, '#00f');
 
                 this.shapesAdorners.push(shapeAdorner);
             } else {
@@ -156,22 +158,15 @@ export class SelectionAdorner extends React.Component<SelectionAdornerProps> imp
         }
     }
 
-    private getOrCreateRectangle(): svg.Element {
-        if (this.selectionShape) {
-            return this.selectionShape;
-        }
-
-        this.selectionShape =
-            this.layer.rect().fill(SELECTION_FILL_COLOR).opacity(0.4)
-                .stroke(SELECTION_STROKE_COLOR);
-
-        return this.selectionShape;
-    }
-
-    protected transformShape(shape: svg.Element, position: Vec2, size: Vec2, offset: number, rotation = 0) {
-        const bounds = new Rect2(position, size).deflate(-1.5 + offset, -1.5 + offset);
-
-        SVGHelper.size(shape, bounds, rotation).show();
+    protected transformShape(shape: any, position: Vec2, size: Vec2, offset: number, rotation = 0) {
+        this.renderer.transform(shape, {
+            x: position.x - offset,
+            y: position.y - offset,
+            w: size.x + 2 * offset,
+            h: size.y + 2 * offset,
+            rotation
+        });
+        this.renderer.setVisibility(shape, true);
     }
 
     public render() {

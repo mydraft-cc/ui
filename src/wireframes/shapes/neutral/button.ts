@@ -27,7 +27,7 @@ export class Button extends AbstractControl {
     }
 
     private createBorder(ctx: AbstractContext) {
-        const borderItem = ctx.renderer.createRoundedRectangle(ctx.bounds, ctx.shape, CommonTheme.CONTROL_BORDER_RADIUS);
+        const borderItem = ctx.renderer.createRectangle(ctx.bounds, ctx.shape, CommonTheme.CONTROL_BORDER_RADIUS);
 
         ctx.renderer.setBackgroundColor(borderItem, ctx.shape);
         ctx.renderer.setStrokeColor(borderItem, ctx.shape);

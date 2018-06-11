@@ -1,3 +1,4 @@
+/*
 import * as paper from 'paper';
 
 export * from './abstract-renderer';
@@ -5,21 +6,19 @@ export * from './abstract-renderer';
 import {
     PaperHelper,
     Rect2,
-    Rotation,
     Vec2
 } from '@app/core';
 
-import { DiagramShape } from '@app/wireframes/model';
+import { DiagramShape, Transform } from '@app/wireframes/model';
 
 import {
     AbstractRenderer,
     RendererColor,
     RendererElement,
     RendererOpacity,
-    RendererPosition,
-    RendererRotation,
     RendererText,
-    RendererThickness
+    RendererThickness,
+    RendererTransform
 } from './abstract-renderer';
 
 export class PaperRenderer implements AbstractRenderer {
@@ -29,7 +28,7 @@ export class PaperRenderer implements AbstractRenderer {
         this.view = layer.view;
     }
 
-    public createRoundedRectangle(bounds: Rect2, strokeThickness: RendererThickness, radius: number): RendererElement {
+    public createRectangle(bounds: Rect2, strokeThickness: RendererThickness, radius: number): RendererElement {
         let w = this.getStrokeThickness(strokeThickness);
         let r = this.getBoundsWithStroke(bounds, w);
 
@@ -193,6 +192,12 @@ export class PaperRenderer implements AbstractRenderer {
         return group;
     }
 
+    public setVisibility(element: RendererElement, visible: boolean) {
+        const e = this.getElement(element);
+
+        e.visible = visible;
+    }
+
     public setStrokeStyle(element: RendererElement, cap: string, join: string) {
         const e = this.getElement(element);
 
@@ -227,24 +232,6 @@ export class PaperRenderer implements AbstractRenderer {
         }
     }
 
-    public setPosition(element: RendererElement, position: Vec2 | DiagramShape) {
-        const p = this.getPosition(position);
-        const e = this.getElement(element);
-
-        if (p) {
-            e.position = p;
-        }
-    }
-
-    public setRotation(element: RendererElement, rotation: Rotation | DiagramShape) {
-        const r = this.getRotation(rotation);
-        const e = this.getElement(element);
-
-        if (Number.isFinite(r)) {
-            e.rotation = r;
-        }
-    }
-
     public setOpacity(element: RendererElement, opacity: RendererOpacity) {
         const o = this.getOpacity(opacity);
         const e = this.getElement(element);
@@ -267,6 +254,26 @@ export class PaperRenderer implements AbstractRenderer {
 
         if (fontFamily) {
             (<paper.TextItem>e).fontFamily = fontFamily;
+        }
+    }
+
+    public transform(element: any, to: RendererTransform): void {
+        const e = this.getElement(element);
+
+        if (to instanceof DiagramShape) {
+            this.transform(element, to.transform);
+        } else if (to instanceof Transform) {
+            SVGHelper.transform(e, {
+                x: to.position.x - 0.5 * to.size.x,
+                y: to.position.y - 0.5 * to.size.y,
+                w: to.size.x,
+                h: to.size.y,
+                rx: to.position.x,
+                ry: to.position.y,
+                rotation: to.rotation.degree
+            });
+        } else {
+            SVGHelper.transform(element, to);
         }
     }
 
@@ -295,22 +302,6 @@ export class PaperRenderer implements AbstractRenderer {
             return PaperHelper.toColor(color.appearance.get(key));
         } else {
             return PaperHelper.toColor(color);
-        }
-    }
-
-    private getPosition(position: RendererPosition): paper.Point {
-        if (position instanceof DiagramShape) {
-            return PaperHelper.vec2Point(position.transform.position);
-        } else {
-            return PaperHelper.vec2Point(position);
-        }
-    }
-
-    private getRotation(rotation: RendererRotation): number {
-        if (rotation instanceof DiagramShape) {
-            return rotation.transform.rotation.degree;
-        } else {
-            return rotation.degree;
         }
     }
 
@@ -345,8 +336,5 @@ export class PaperRenderer implements AbstractRenderer {
 
         return new paper.Rectangle(l, t, r - l, b - t);
     }
-
-    public setSize(element: RendererElement, size: Vec2 | DiagramShape) {
-        return;
-    }
 }
+*/

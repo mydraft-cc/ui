@@ -54,13 +54,13 @@ export class ButtonBar extends AbstractControl {
             let partItem: any;
 
             if (parts.length === 1) {
-                partItem = ctx.renderer.createRoundedRectangle(bounds, ctx.shape, CommonTheme.CONTROL_BORDER_RADIUS);
+                partItem = ctx.renderer.createRectangle(bounds, ctx.shape, CommonTheme.CONTROL_BORDER_RADIUS);
             } else if (i === 0) {
                 partItem = ctx.renderer.createRoundedRectangleLeft(bounds, ctx.shape, CommonTheme.CONTROL_BORDER_RADIUS);
             } else if (i === parts.length - 1) {
                 partItem = ctx.renderer.createRoundedRectangleRight(bounds, ctx.shape, CommonTheme.CONTROL_BORDER_RADIUS);
             } else {
-                partItem = ctx.renderer.createRoundedRectangle(bounds, ctx.shape, 0);
+                partItem = ctx.renderer.createRectangle(bounds, ctx.shape, 0);
             }
 
             if (part.selected) {

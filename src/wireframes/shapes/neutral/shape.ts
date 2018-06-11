@@ -12,7 +12,6 @@ const SHAPE_RECTANGLE = 'Rectangle';
 const SHAPE_ROUNDED_RECTANGLE = 'Rounded Rectangle';
 const SHAPE_ELLIPSE = 'Ellipse';
 const SHAPE_TRIANGLE = 'Triangle';
-const SHAPE_STAR = 'Star';
 const SHAPE_RHOMBUS = 'Rhombus';
 
 const DEFAULT_APPEARANCE = {};
@@ -32,8 +31,7 @@ const CONFIGURABLES: Configurable[] = [
             SHAPE_ROUNDED_RECTANGLE,
             SHAPE_ELLIPSE,
             SHAPE_TRIANGLE,
-            SHAPE_RHOMBUS,
-            SHAPE_STAR
+            SHAPE_RHOMBUS
         ])
 ];
 
@@ -58,12 +56,8 @@ export class Shape extends AbstractControl {
 
         const shapeType = ctx.shape.appearance.get(SHAPE_KEY);
 
-        const diameter = Math.min(b.width, b.height);
-
         if (shapeType === SHAPE_ROUNDED_RECTANGLE) {
-            shapeItem = ctx.renderer.createRoundedRectangle(b, ctx.shape, 10);
-        } else if (shapeType === SHAPE_STAR) {
-            shapeItem = ctx.renderer.createStar(b.center, 6, diameter / 4, diameter / 2, ctx.shape);
+            shapeItem = ctx.renderer.createRectangle(b, ctx.shape, 10);
         } else if (shapeType === SHAPE_ELLIPSE) {
             shapeItem = ctx.renderer.createEllipse(b, ctx.shape);
         } else if (shapeType === SHAPE_TRIANGLE) {
@@ -71,7 +65,7 @@ export class Shape extends AbstractControl {
         } else if (shapeType === SHAPE_RHOMBUS) {
             shapeItem = ctx.renderer.createPath(`M${b.centerX} ${b.top} L${b.right} ${b.centerY} L${b.centerX} ${b.bottom} L${b.left} ${b.centerY} z`, ctx.shape);
         } else {
-            shapeItem = ctx.renderer.createRoundedRectangle(b, ctx.shape, 0);
+            shapeItem = ctx.renderer.createRectangle(b, ctx.shape, 0);
         }
 
         ctx.renderer.setStrokeColor(shapeItem, ctx.shape);

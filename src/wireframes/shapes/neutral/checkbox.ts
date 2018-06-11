@@ -60,7 +60,7 @@ export class Checkbox extends AbstractControl {
 
         const bounds = new Rect2(new Vec2(x, y), new Vec2(s, s));
 
-        const boxItem = ctx.renderer.createRoundedRectangle(bounds, ctx.shape, 0);
+        const boxItem = ctx.renderer.createRectangle(bounds, ctx.shape, 0);
 
         ctx.renderer.setStrokeColor(boxItem, ctx.shape);
         ctx.renderer.setBackgroundColor(boxItem, ctx.shape);
@@ -70,7 +70,7 @@ export class Checkbox extends AbstractControl {
         const state = ctx.shape.appearance.get(STATE_KEY);
 
         if (state === STATE_INTERDEMINATE) {
-            const interdeminateBoxItem = ctx.renderer.createRoundedRectangle(bounds.deflate(4, 4), 0, 0);
+            const interdeminateBoxItem = ctx.renderer.createRectangle(bounds.deflate(4, 4), 0, 0);
 
             ctx.renderer.setBackgroundColor(interdeminateBoxItem, ctx.shape.appearance.get(DiagramShape.APPEARANCE_STROKE_COLOR));
 

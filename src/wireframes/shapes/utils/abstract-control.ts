@@ -45,16 +45,10 @@ export abstract class AbstractControl implements Renderer {
     }
 
     public render(shape: DiagramShape, showDebugMarkers: boolean): any {
-        let bounds = new Rect2(Vec2.ZERO, shape.transform.size);
-
-        if (shape.appearance.get(DiagramShape.APPEARANCE_STROKE_THICKNESS) % 2 === 1) {
-            bounds = bounds.deflate(0.5, 0.5);
-        }
-
-        const ctx = new AbstractContext(RENDERER, shape, bounds);
+        const ctx = new AbstractContext(RENDERER, shape, new Rect2(Vec2.ZERO, shape.transform.size));
 
         if (RENDER_BACKGROUND) {
-            const backgroundItem = ctx.renderer.createRoundedRectangle(ctx.bounds, 0, 0);
+            const backgroundItem = ctx.renderer.createRectangle(ctx.bounds, 0, 0);
 
             ctx.renderer.setBackgroundColor(backgroundItem, 'transparent');
             ctx.renderer.setOpacity(backgroundItem, 0);
@@ -65,7 +59,7 @@ export abstract class AbstractControl implements Renderer {
         this.renderInternal(ctx);
 
         if (!showDebugMarkers) {
-            const boxItem = ctx.renderer.createRoundedRectangle(ctx.bounds.inflate(1, 1), 1, 0);
+            const boxItem = ctx.renderer.createRectangle(ctx.bounds.inflate(1, 1), 1, 0);
 
             ctx.renderer.setStrokeColor(boxItem, 0xff0000);
 
@@ -74,9 +68,7 @@ export abstract class AbstractControl implements Renderer {
 
         const rootItem = ctx.renderer.createGroup(...ctx.items);
 
-        ctx.renderer.setSize(rootItem, shape);
-        ctx.renderer.setPosition(rootItem, shape);
-        ctx.renderer.setRotation(rootItem, shape);
+        ctx.renderer.transform(rootItem, shape);
         ctx.renderer.setOpacity(rootItem, shape);
 
         return rootItem;

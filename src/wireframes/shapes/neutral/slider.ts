@@ -55,7 +55,7 @@ export class Slider extends AbstractControl {
 
     private createThumb(ctx: AbstractContext, relative: number) {
         const thumbCenter = new Vec2(ctx.bounds.x + ctx.bounds.width * relative, 0.5 * HEIGHT_TOTAL);
-        const thumbItem = ctx.renderer.createCircle(thumbCenter, ctx.shape, 0.5 * HEIGHT_TOTAL);
+        const thumbItem = ctx.renderer.createEllipse(Rect2.createFromCenter(thumbCenter, 0.5 * HEIGHT_TOTAL), ctx.shape);
 
         ctx.renderer.setStrokeColor(thumbItem, ctx.shape);
         ctx.renderer.setBackgroundColor(thumbItem, ctx.shape.appearance.get(DiagramShape.APPEARANCE_FOREGROUND_COLOR));
@@ -64,15 +64,15 @@ export class Slider extends AbstractControl {
     }
 
     private createBackground(ctx: AbstractContext, bounds: Rect2, relative: number) {
-        const clipMask = ctx.renderer.createRoundedRectangle(bounds, 0, bounds.height * 0.5);
+        const clipMask = ctx.renderer.createRectangle(bounds, 0, bounds.height * 0.5);
 
         const activeBounds = new Rect2(bounds.position, new Vec2(bounds.width * relative, bounds.height));
-        const activeShape = ctx.renderer.createRoundedRectangle(activeBounds, 0, 0);
+        const activeShape = ctx.renderer.createRectangle(activeBounds, 0, 0);
 
         ctx.renderer.setBackgroundColor(activeShape, ctx.shape.appearance.get(ACCENT_COLOR));
 
         const inactiveBounds = new Rect2(new Vec2(bounds.x + bounds.width * relative, bounds.top), new Vec2(bounds.width * (1 - relative), bounds.height));
-        const inactiveShape = ctx.renderer.createRoundedRectangle(inactiveBounds, 0, 0);
+        const inactiveShape = ctx.renderer.createRectangle(inactiveBounds, 0, 0);
 
         ctx.renderer.setBackgroundColor(inactiveShape, ctx.shape);
 
@@ -80,7 +80,7 @@ export class Slider extends AbstractControl {
     }
 
     private createBorder(ctx: AbstractContext, bounds: Rect2) {
-        const borderItem = ctx.renderer.createRoundedRectangle(bounds, ctx.shape, bounds.height * 0.5);
+        const borderItem = ctx.renderer.createRectangle(bounds, ctx.shape, bounds.height * 0.5);
 
         ctx.renderer.setStrokeColor(borderItem, ctx.shape);
 

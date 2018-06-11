@@ -38,7 +38,7 @@ export class Image extends AbstractControl {
     }
 
     private createBorder(ctx: AbstractContext) {
-        const borderItem = ctx.renderer.createRoundedRectangle(ctx.bounds, ctx.shape, 0);
+        const borderItem = ctx.renderer.createRectangle(ctx.bounds, ctx.shape, 0);
 
         ctx.renderer.setBackgroundColor(borderItem, ctx.shape);
         ctx.renderer.setStrokeColor(borderItem, ctx.shape);

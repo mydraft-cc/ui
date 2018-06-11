@@ -1,6 +1,6 @@
 import * as svg from 'svg.js';
 
-import { Color } from '@app/core';
+import { Color, Rect2 } from '@app/core';
 
 import {
     SnapMode,
@@ -8,45 +8,30 @@ import {
     Transform
 } from '@app/wireframes/model';
 
+import { SVGRenderer } from '@app/wireframes/shapes/utils/svg-renderer';
+
 export class InteractionOverlays {
-    private textItem: svg.Text;
-    private rectItem: svg.Element;
-    private lineX: svg.Element;
-    private lineY: svg.Element;
-    private elements: svg.Element[] = [];
+    private infoRect: any;
+    private infoText: any;
+    private lineX: any;
+    private lineY: any;
+    private elements: any[] = [];
+    private readonly renderer: SVGRenderer;
 
     constructor(
         private readonly layer: svg.Container
     ) {
-    }
+        this.renderer = new SVGRenderer();
+        this.renderer.captureContext(layer);
 
-    private ensureInfoShapes() {
-        if (this.textItem) {
-            return;
-        }
-
-        this.rectItem = this.layer.rect().fill('#000');
-
-        this.textItem = this.layer.text('').size(12).fill('#fff');
-
-        this.elements.push(this.textItem);
-        this.elements.push(this.rectItem);
-
-        this.reset();
-    }
-
-    private ensureLines() {
-        if (this.lineX && this.lineY) {
-            return;
-        }
-
-        this.lineX = this.layer.rect();
-        this.lineY = this.layer.rect();
+        this.lineX = this.renderer.createRectangle(Rect2.ZERO, 0, 0);
+        this.lineY = this.renderer.createRectangle(Rect2.ZERO, 0, 0);
 
         this.elements.push(this.lineX);
         this.elements.push(this.lineY);
 
-        this.reset();
+        this.infoRect = this.renderer.createRectangle(Rect2.ZERO, 0, 0);
+        this.infoText = this.renderer.createSinglelineText(Rect2.ZERO, { text: '' });
     }
 
     public showSnapAdorners(snapResult: SnapResult) {
@@ -68,49 +53,38 @@ export class InteractionOverlays {
     }
 
     public showXLine(value: number, color: Color) {
-        this.ensureLines();
-
         const height = this.layer.height();
 
-        this.lineX.fill(color.toString());
-        this.lineX.move(Math.round(value), 0);
-        this.lineX.size(1, height);
-        this.lineX.show();
+        this.renderer.transform(this.lineX, { x: value, y: 0, w: 1, h: height });
+        this.renderer.setBackgroundColor(this.lineX, color);
+        this.renderer.setVisibility(this.lineX, true);
     }
 
     public showYLine(value: number, color: Color) {
-        this.ensureLines();
-
         const width = this.layer.width();
 
-        this.lineY.fill(color.toString());
-        this.lineY.move(0, Math.round(value));
-        this.lineY.size(width, 1);
-        this.lineY.show();
+        this.renderer.transform(this.lineY, { x: 0, y: value, w: width, h: 1 });
+        this.renderer.setBackgroundColor(this.lineY, color);
+        this.renderer.setVisibility(this.lineY, true);
     }
 
     public showInfo(transform: Transform, text: string) {
-        this.ensureInfoShapes();
-
         const aabb = transform.aabb;
 
-        this.textItem.untransform();
-        this.textItem.text(text);
-        this.textItem.translate(aabb.right + 4, aabb.bottom + 24);
-        this.textItem.show();
-        this.textItem.rebuild(true);
+        this.renderer.setText(this.infoText, text);
+        this.renderer.setVisibility(this.infoText, true);
+        this.renderer.transform(this.infoText, { x: aabb.right + 4, y: aabb.bottom + 24 });
 
-        const bounds = this.textItem.bbox().transform(this.textItem.matrixify());
+        const bounds = this.renderer.getBounds(this.infoText);
 
-        this.rectItem.untransform();
-        this.rectItem.translate(bounds.x - 4, bounds.y - 4);
-        this.rectItem.size(bounds.w + 8, bounds.h + 8);
-        this.rectItem.show();
+        this.renderer.setText(this.infoRect, text);
+        this.renderer.setVisibility(this.infoRect, true);
+        this.renderer.transform(this.infoRect, { rect: bounds.inflate(4, 4) });
     }
 
     public reset() {
         for (let element of this.elements) {
-            element.hide();
+            this.renderer.setVisibility(element, false);
         }
     }
 }

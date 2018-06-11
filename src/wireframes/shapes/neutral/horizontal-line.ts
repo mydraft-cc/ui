@@ -42,7 +42,7 @@ export class HorizontalLine extends AbstractControl {
     }
 
     protected renderInternal(ctx: AbstractContext) {
-        const textItem = ctx.renderer.createRoundedRectangle(ctx.bounds, ctx.shape, 0);
+        const textItem = ctx.renderer.createRectangle(ctx.bounds, ctx.shape, 0);
 
         ctx.renderer.setBackgroundColor(textItem, ctx.shape.appearance.get(DiagramShape.APPEARANCE_STROKE_COLOR));
 
