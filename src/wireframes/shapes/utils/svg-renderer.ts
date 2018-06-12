@@ -20,7 +20,19 @@ import {
 } from './abstract-renderer';
 
 export class SVGRenderer implements AbstractRenderer {
+    private measureDiv: HTMLDivElement;
     private container: svg.Container;
+
+    constructor() {
+        this.measureDiv = document.createElement('div');
+        this.measureDiv.style.height = 'auto';
+        this.measureDiv.style.position = 'absolute';
+        this.measureDiv.style.visibility = 'hidden';
+        this.measureDiv.style.width = 'auto';
+        this.measureDiv.style.whiteSpace = 'nowrap';
+
+        document.body.appendChild(this.measureDiv);
+    }
 
     public captureContext(container: svg.Container) {
         this.container = container;
@@ -339,7 +351,11 @@ export class SVGRenderer implements AbstractRenderer {
     }
 
     public getTextWidth(text: string, fontSize: number, fontFamily: string): number | undefined {
-        return undefined;
+        this.measureDiv.textContent = text;
+        this.measureDiv.style.fontSize = fontSize + 'px';
+        this.measureDiv.style.fontFamily = fontFamily;
+
+        return this.measureDiv.clientWidth + 1;
     }
 
     private getBoundsWithStroke(bounds?: Rect2, strokeWidth = 0): Rect2 {
