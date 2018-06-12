@@ -5,7 +5,6 @@ export * from './utils/immutable-list';
 export * from './utils/immutable-object';
 export * from './utils/immutable-set';
 export * from './utils/math-helper';
-export * from './utils/paper-helper';
 export * from './utils/react';
 export * from './utils/rotation';
 export * from './utils/svg-helper';

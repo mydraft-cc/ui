@@ -92,10 +92,39 @@ export class SVGRenderer implements AbstractRenderer {
         return element;
     }
 
-    public createPath(strokeWidth: RendererWidth, path: string): RendererElement {
+    public createPath(strokeWidth: RendererWidth, path: string, bounds?: Rect2): RendererElement {
         const w = this.getStrokeWidth(strokeWidth);
 
-        const element = this.container.path(path).fill('transparent');
+        const pathArray = new svg.PathArray(path);
+        const pathSegments: svg.PathArrayPoint[] = <any>pathArray.valueOf();
+
+        for (let segment of pathSegments) {
+            if (segment.length >= 3) {
+                let x = <number>segment[segment.length - 2];
+                let y = <number>segment[segment.length - 1];
+
+                if (w === 0) {
+                    x = Math.round(x);
+                    y = Math.round(y);
+                } else if (w % 2 === 1 && bounds) {
+                    if (x === bounds.left) {
+                        x += 0.5;
+                    } else if (x === bounds.right) {
+                        x -= 0.5;
+                    }
+                    if (y === bounds.top) {
+                        y += 0.5;
+                    } else if (y === bounds.bottom) {
+                        y -= 0.5;
+                    }
+                }
+
+                segment[segment.length - 2] = x;
+                segment[segment.length - 1] = y;
+            }
+        }
+
+        const element = this.container.path(pathArray).fill('transparent');
 
         if (w > 0) {
             element.stroke({ width: w });
@@ -143,7 +172,7 @@ export class SVGRenderer implements AbstractRenderer {
     }
 
     public createRaster(source: string, bounds?: Rect2): RendererElement {
-        const element = new svg.Image().load(source);
+        const element = this.container.image().load(source);
 
         SVGHelper.transform(element, { rect: bounds });
 
@@ -160,73 +189,89 @@ export class SVGRenderer implements AbstractRenderer {
         return group;
     }
 
-    public setVisibility(element: RendererElement, visible: boolean) {
+    public setVisibility(element: RendererElement, visible: boolean): AbstractRenderer {
         const e = this.getElement(element);
 
         visible ? e.show() : e.hide();
+
+        return this;
     }
 
-    public setForegroundColor(element: RendererElement, color: RendererColor): void {
+    public setForegroundColor(element: RendererElement, color: RendererColor): AbstractRenderer {
         const c = this.getColor(color, DiagramShape.APPEARANCE_FOREGROUND_COLOR);
         const e = this.getElement(element);
 
         if (c) {
             e.attr('color', c);
         }
+
+        return this;
     }
 
-    public setBackgroundColor(element: RendererElement, color: RendererColor): void {
+    public setBackgroundColor(element: RendererElement, color: RendererColor): AbstractRenderer {
         const c = this.getColor(color, DiagramShape.APPEARANCE_BACKGROUND_COLOR);
         const e = this.getElement(element);
 
         if (c) {
             e.attr('fill', c);
         }
+
+        return this;
     }
 
-    public setStrokeColor(element: RendererElement, color: RendererColor): void {
+    public setStrokeColor(element: RendererElement, color: RendererColor): AbstractRenderer {
         const c = this.getColor(color, DiagramShape.APPEARANCE_STROKE_COLOR);
         const e = this.getElement(element);
 
         if (c) {
             e.attr('stroke', c);
         }
+
+        return this;
     }
 
-    public setOpacity(element: RendererElement, opacity: RendererOpacity) {
+    public setOpacity(element: RendererElement, opacity: RendererOpacity): AbstractRenderer {
         const o = this.getOpacity(opacity);
         const e = this.getElement(element);
 
         if (Number.isFinite(o)) {
             e.opacity(o);
         }
+
+        return this;
     }
 
-    public setText(element: RendererElement, text: string) {
+    public setText(element: RendererElement, text: string): AbstractRenderer {
         const e = this.getElement(element);
 
         if (text) {
             e.node.children[0].textContent = text;
         }
+
+        return this;
     }
 
-    public setFontFamily(element: RendererElement, fontFamily: string): void {
+    public setFontFamily(element: RendererElement, fontFamily: string): AbstractRenderer {
         const e = this.getElement(element);
 
         if (fontFamily) {
             e.attr('font-family', fontFamily);
         }
+
+        return this;
     }
 
-    public setStrokeStyle(element: RendererElement, cap: string, join: string): void {
+    public setStrokeStyle(element: RendererElement, cap: string, join: string): AbstractRenderer {
         const e = this.getElement(element);
 
         if (e) {
             e.attr('stroke-cap', cap).attr('stroke-linejoin', join);
         }
+
+        return this;
     }
 
-    public setTransform(element: any, to: RendererTransform): void {
+    public setTransform(element: any, to: RendererTransform): AbstractRenderer {
         const e = this.getElement(element);
 
         if (to instanceof DiagramShape) {
@@ -244,6 +289,8 @@ export class SVGRenderer implements AbstractRenderer {
         } else {
             SVGHelper.transform(element, to);
         }
+
+        return this;
     }
 
     public getBounds(element: RendererElement): Rect2 {

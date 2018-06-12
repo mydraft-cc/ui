@@ -2,11 +2,9 @@ import * as paper from 'paper';
 
 import 'paper-area-text';
 
-import {
-    PaperHelper,
-    Rect2,
-    Vec2
-} from '@app/core';
+import { Rect2, Vec2 } from '@app/core';
+
+import { PaperHelper } from './paper-helper';
 
 describe('PaperHelper', () => {
     let project: paper.Project;

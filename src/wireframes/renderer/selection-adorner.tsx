@@ -49,7 +49,7 @@ export class SelectionAdorner extends React.Component<SelectionAdornerProps> imp
 
         this.selectionShape = this.renderer.createRectangle(1);
 
-        this.renderer.setBackgroundColor(this.selectionShape, '#0f0');
+        this.renderer.setBackgroundColor(this.selectionShape, '#0a0');
         this.renderer.setStrokeColor(this.selectionShape, '#050');
         this.renderer.setOpacity(this.selectionShape, 0.3);
     }
@@ -144,7 +144,7 @@ export class SelectionAdorner extends React.Component<SelectionAdornerProps> imp
                 shapeAdorner = this.renderer.createRectangle(1);
 
                 this.renderer.setBackgroundColor(shapeAdorner, 'none');
-                this.renderer.setStrokeColor(shapeAdorner, '#00f');
+                this.renderer.setStrokeColor(shapeAdorner, '#00a');
 
                 this.shapesAdorners.push(shapeAdorner);
             } else {

@@ -1,23 +1,13 @@
-// Paperjs for canvas rendering.
-require('paper/dist/paper-full');
-
-// Area text extension for paper.js
-require('./libs/paper-area-text');
-
-// Import our stylesheets
 import './index.scss';
 
 import { createBrowserHistory } from 'history';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
+import { Provider } from 'react-redux';
 import { Route, Router } from 'react-router';
 import { routerMiddleware, routerReducer } from 'react-router-redux';
 import { applyMiddleware, combineReducers, compose, createStore, Reducer } from 'redux';
 import thunk from 'redux-thunk';
-
-const history = createBrowserHistory();
-
-import { Provider } from 'react-redux';
 
 import { UserReport } from '@app/core';
 
@@ -71,6 +61,8 @@ const undoableReducer = undoable(editorReducer,
     ]
 );
 
+const history = createBrowserHistory();
+
 const composeEnhancers = window['__REDUX_DEVTOOLS_EXTENSION_COMPOSE__'] || compose;
 
 const store = createStore(
@@ -88,20 +80,21 @@ const store = createStore(
 import { AppContainer } from './app';
 
 const Root = (
-    <SerializerContext.Provider value={serializer}>
-        <RendererContext.Provider value={rendererService}>
-            <Provider store={store}>
-                <Router history={history}>
-                    <Route path='/:token?' render={props => (
-                        <>
+    <>
+        <SerializerContext.Provider value={serializer}>
+            <RendererContext.Provider value={rendererService}>
+                <Provider store={store}>
+                    <Router history={history}>
+                        <Route path='/:token?' render={props => (
                             <AppContainer token={props.match.params.token} />
-                            <UserReport />
-                        </>
-                    )} />
-                </Router>
-            </Provider>
-        </RendererContext.Provider>
-    </SerializerContext.Provider>
+                        )} />
+                    </Router>
+                </Provider>
+            </RendererContext.Provider>
+        </SerializerContext.Provider>
+
+        <UserReport />
+    </>
 );
 
 ReactDOM.render(Root, document.getElementById('root') as HTMLElement);

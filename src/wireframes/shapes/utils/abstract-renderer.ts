@@ -34,23 +34,23 @@ export interface AbstractRenderer {
 
     createGroup(items: RendererElement[], clipItem?: RendererElement): RendererElement;
 
-    setForegroundColor(element: RendererElement, color: RendererColor): void;
+    setForegroundColor(element: RendererElement, color: RendererColor): AbstractRenderer;
 
-    setBackgroundColor(element: RendererElement, color: RendererColor): void;
+    setBackgroundColor(element: RendererElement, color: RendererColor): AbstractRenderer;
 
-    setStrokeColor(element: RendererElement, color: RendererColor): void;
+    setStrokeColor(element: RendererElement, color: RendererColor): AbstractRenderer;
 
-    setStrokeStyle(element: RendererElement, cap: string, join: string): void;
+    setStrokeStyle(element: RendererElement, cap: string, join: string): AbstractRenderer;
 
-    setFontFamily(element: RendererElement, fontFamily: string): void;
+    setFontFamily(element: RendererElement, fontFamily: string): AbstractRenderer;
 
-    setOpacity(element: RendererElement, opacity: RendererOpacity): void;
+    setOpacity(element: RendererElement, opacity: RendererOpacity): AbstractRenderer;
 
-    setVisibility(element: RendererElement, visible: boolean): any;
+    setVisibility(element: RendererElement, visible: boolean): AbstractRenderer;
 
-    setText(element: RendererElement, text: string): void;
+    setText(element: RendererElement, text: string): AbstractRenderer;
 
-    setTransform(element: RendererElement, to: RendererTransform): void;
+    setTransform(element: RendererElement, to: RendererTransform): AbstractRenderer;
 
     getBounds(element: RendererElement): Rect2;
 
