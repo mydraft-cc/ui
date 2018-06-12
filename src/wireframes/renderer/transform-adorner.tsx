@@ -19,6 +19,8 @@ import {
     SvgEvent
 } from './interaction-service';
 
+import { SVGRenderer } from '@app/wireframes/shapes/utils/svg-renderer';
+
 const MODE_RESIZE = 2;
 const MODE_MOVE = 3;
 const MODE_ROTATE = 1;
@@ -47,25 +49,26 @@ export interface TransformAdornerProps {
 }
 
 export class TransformAdorner extends React.Component<TransformAdornerProps> implements InteractionHandler {
+    private renderer: SVGRenderer;
     private currentTransform: Transform;
     private startTransform: Transform;
-    private allElements: svg.Element[];
+    private allElements: any[];
     private overlays: InteractionOverlays;
     private canResizeX: boolean;
     private canResizeY: boolean;
     private manipulated = false;
     private manipulationMode = 0;
-    private moveShape: svg.Element;
+    private moveShape: any;
     private dragStart: Vec2;
-    private layer: svg.Container;
     private rotation: Rotation;
-    private rotateShape: svg.Shape;
+    private rotateShape: any;
     private resizeDragOffset: Vec2;
-    private resizeShapes: svg.Element[] = [];
+    private resizeShapes: any[] = [];
     private snapManager = new SnapManager();
 
     public componentWillMount() {
-        this.layer = this.props.adorners;
+        this.renderer = new SVGRenderer();
+        this.renderer.captureContext(this.props.adorners);
 
         this.createRotateShape();
         this.createMoveShape();
@@ -75,13 +78,11 @@ export class TransformAdorner extends React.Component<TransformAdornerProps> imp
 
         this.props.interactionService.addHandler(this);
 
-        this.overlays = new InteractionOverlays(this.layer);
+        this.overlays = new InteractionOverlays(this.props.adorners);
     }
 
     public componentWillUnmount() {
         this.props.interactionService.removeHandler(this);
-
-        this.layer.remove();
     }
 
     public componentWillReceiveProps(nextProps: TransformAdornerProps) {
@@ -346,35 +347,38 @@ export class TransformAdorner extends React.Component<TransformAdornerProps> imp
         for (let resizeShape of this.resizeShapes) {
             const offset = resizeShape['offset'];
 
-            resizeShape.untransform();
-            resizeShape.center(
-                position.x + offset.x * (size.x + 4),
-                position.y + offset.y * (size.y + 4));
-            resizeShape.rotate(rotation, position.x, position.y);
+            this.renderer.setTransform(resizeShape, {
+                x: position.x - 7 + offset.x * (size.x + 4),
+                y: position.y - 7 + offset.y * (size.y + 4),
+                rx: position.x,
+                ry: position.y,
+                rotation
+            });
 
-            if ((offset.x === 0 || this.canResizeX) && (offset.y === 0 || this.canResizeY)) {
-                resizeShape.show();
-            } else {
-                resizeShape.hide();
-            }
+            this.renderer.setVisibility(resizeShape,
+                (offset.x === 0 || this.canResizeX) &&
+                (offset.y === 0 || this.canResizeY));
         }
 
-        const rotateShape = this.rotateShape;
+        this.renderer.setVisibility(this.rotateShape, true);
+        this.renderer.setTransform(this.rotateShape, {
+            x: position.x - 8,
+            y: position.y - 8 - size.y * 0.5 - 30,
+            rx: position.x,
+            ry: position.y,
+            rotation
+        });
 
-        rotateShape.untransform();
-        rotateShape.center(
-            position.x,
-            position.y - size.y * 0.5 - 20);
-        rotateShape.rotate(rotation, position.x, position.y);
-        rotateShape.show();
-
-        const moveShape = this.moveShape;
-
-        moveShape.untransform();
-        moveShape.size(size.x + 1, size.y + 1);
-        moveShape.center(position.x, position.y);
-        moveShape.rotate(rotation, position.x, position.y);
-        moveShape.show();
+        this.renderer.setVisibility(this.moveShape, true);
+        this.renderer.setTransform(this.moveShape, {
+            x: position.x - 0.5 * size.x - 1,
+            y: position.y - 0.5 * size.y - 1,
+            w: size.x + 2,
+            h: size.y + 2,
+            rx: position.x,
+            ry: position.y,
+            rotation
+        });
     }
 
     private hideShapes() {
@@ -382,12 +386,11 @@ export class TransformAdorner extends React.Component<TransformAdornerProps> imp
     }
 
     private createMoveShape() {
-        const moveShape = this.layer.rect();
+        const moveShape = this.renderer.createRectangle(1);
 
-        moveShape.fill('none');
-        moveShape.size(0, 0);
-        moveShape.stroke(TRANSFORMER_STROKE_COLOR);
-        moveShape.hide();
+        this.renderer.setStrokeColor(moveShape, TRANSFORMER_STROKE_COLOR);
+        this.renderer.setBackgroundColor(moveShape, 'none');
+        this.renderer.setVisibility(moveShape, false);
 
         this.props.interactionService.setCursor(moveShape, 'move');
 
@@ -395,12 +398,12 @@ export class TransformAdorner extends React.Component<TransformAdornerProps> imp
     }
 
     private createRotateShape() {
-        const rotateShape = this.layer.ellipse();
+        const rotateShape = this.renderer.createEllipse(1);
 
-        rotateShape.fill(TRANSFORMER_FILL_COLOR);
-        rotateShape.size(15, 15);
-        rotateShape.stroke(TRANSFORMER_STROKE_COLOR);
-        rotateShape.hide();
+        this.renderer.setTransform(rotateShape, { w: 16, h: 16 });
+        this.renderer.setStrokeColor(rotateShape, TRANSFORMER_STROKE_COLOR);
+        this.renderer.setBackgroundColor(rotateShape, TRANSFORMER_FILL_COLOR);
+        this.renderer.setVisibility(rotateShape, false);
 
         this.props.interactionService.setCursor(rotateShape, 'pointer');
 
@@ -413,12 +416,13 @@ export class TransformAdorner extends React.Component<TransformAdornerProps> imp
         const as = [315, 0, 45, 270, 90, 215, 180, 135];
 
         for (let i = 0; i < xs.length; i++) {
-            const resizeShape = this.layer.rect();
+            const resizeShape = this.renderer.createRectangle(1);
 
-            resizeShape.fill(TRANSFORMER_FILL_COLOR);
-            resizeShape.size(13, 13);
-            resizeShape.stroke(TRANSFORMER_STROKE_COLOR);
-            resizeShape.hide();
+            this.renderer.setTransform(resizeShape, { w: 14, h: 14 });
+            this.renderer.setStrokeColor(resizeShape, TRANSFORMER_STROKE_COLOR);
+            this.renderer.setBackgroundColor(resizeShape, TRANSFORMER_FILL_COLOR);
+            this.renderer.setVisibility(resizeShape, false);
+
             resizeShape['offset'] = new Vec2(xs[i], ys[i]);
 
             this.props.interactionService.setCursorAngle(resizeShape, as[i]);

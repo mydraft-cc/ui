@@ -35,7 +35,7 @@ export class ComboBox extends AbstractControl {
     private createClickArea(ctx: AbstractContext, clickSize: number) {
         const clickAreaBounds =
             new Rect2(new Vec2(ctx.bounds.right - clickSize, 0), new Vec2(clickSize, ctx.bounds.height));
-        const clickAreaItem = ctx.renderer.createRoundedRectangleRight(clickAreaBounds, ctx.shape, CommonTheme.CONTROL_BORDER_RADIUS);
+        const clickAreaItem = ctx.renderer.createRoundedRectangleRight(ctx.shape, CommonTheme.CONTROL_BORDER_RADIUS, clickAreaBounds);
 
         ctx.renderer.setStrokeColor(clickAreaItem, ctx.shape);
         ctx.renderer.setBackgroundColor(clickAreaItem, ctx.shape);
@@ -49,7 +49,7 @@ export class ComboBox extends AbstractControl {
         const w = clickSize * 0.3;
         const h = clickSize * 0.2;
 
-        const triangleItem = ctx.renderer.createPath(`M${x - 0.5 * w},${y - 0.4 * h} L${x},${y + 0.6 * h},L${x + 0.5 * w},${y - 0.4 * h} z`, 0);
+        const triangleItem = ctx.renderer.createPath(0, `M${x - 0.5 * w},${y - 0.4 * h} L${x},${y + 0.6 * h},L${x + 0.5 * w},${y - 0.4 * h} z`);
 
         ctx.renderer.setBackgroundColor(triangleItem, ctx.shape.appearance.get(DiagramShape.APPEARANCE_STROKE_COLOR));
 
@@ -59,7 +59,7 @@ export class ComboBox extends AbstractControl {
     private createInputArea(ctx: AbstractContext, clickSize: number) {
         const inputAreaBounds =
             new Rect2(Vec2.ZERO, new Vec2(ctx.bounds.width - clickSize + 1, ctx.bounds.height));
-        const inputAreaItem = ctx.renderer.createRoundedRectangleLeft(inputAreaBounds, ctx.shape, CommonTheme.CONTROL_BORDER_RADIUS);
+        const inputAreaItem = ctx.renderer.createRoundedRectangleLeft(ctx.shape, CommonTheme.CONTROL_BORDER_RADIUS, inputAreaBounds);
 
         ctx.renderer.setStrokeColor(inputAreaItem, ctx.shape);
         ctx.renderer.setBackgroundColor(inputAreaItem, 0xffffff);
@@ -74,7 +74,7 @@ export class ComboBox extends AbstractControl {
                 new Vec2(
                     Math.max(0, ctx.bounds.width - clickSize - 6),
                     Math.max(0, ctx.bounds.height - 8)));
-        const textItem = ctx.renderer.createSinglelineText(textAreaBounds, ctx.shape);
+        const textItem = ctx.renderer.createSinglelineText(ctx.shape, textAreaBounds);
 
         ctx.renderer.setForegroundColor(textItem, ctx.shape);
 

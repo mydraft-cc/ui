@@ -48,10 +48,11 @@ export abstract class AbstractControl implements Renderer {
         const ctx = new AbstractContext(RENDERER, shape, new Rect2(Vec2.ZERO, shape.transform.size));
 
         if (RENDER_BACKGROUND) {
-            const backgroundItem = ctx.renderer.createRectangle(ctx.bounds, 0, 0);
+            const backgroundItem = ctx.renderer.createRectangle(0);
 
             ctx.renderer.setBackgroundColor(backgroundItem, 'transparent');
             ctx.renderer.setOpacity(backgroundItem, 0);
+            ctx.renderer.setTransform(backgroundItem, { rect: ctx.bounds });
 
             ctx.add(backgroundItem);
         }
@@ -59,16 +60,17 @@ export abstract class AbstractControl implements Renderer {
         this.renderInternal(ctx);
 
         if (!showDebugMarkers) {
-            const boxItem = ctx.renderer.createRectangle(ctx.bounds.inflate(1, 1), 1, 0);
+            const boxItem = ctx.renderer.createRectangle(1);
 
             ctx.renderer.setStrokeColor(boxItem, 0xff0000);
+            ctx.renderer.setTransform(boxItem, { rect: ctx.bounds.inflate(1) });
 
             ctx.add(boxItem);
         }
 
-        const rootItem = ctx.renderer.createGroup(...ctx.items);
+        const rootItem = ctx.renderer.createGroup(ctx.items);
 
-        ctx.renderer.transform(rootItem, shape);
+        ctx.renderer.setTransform(rootItem, shape);
         ctx.renderer.setOpacity(rootItem, shape);
 
         return rootItem;

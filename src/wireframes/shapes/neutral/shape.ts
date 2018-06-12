@@ -57,15 +57,15 @@ export class Shape extends AbstractControl {
         const shapeType = ctx.shape.appearance.get(SHAPE_KEY);
 
         if (shapeType === SHAPE_ROUNDED_RECTANGLE) {
-            shapeItem = ctx.renderer.createRectangle(b, ctx.shape, 10);
+            shapeItem = ctx.renderer.createRectangle(ctx.shape, 10, ctx.bounds);
         } else if (shapeType === SHAPE_ELLIPSE) {
-            shapeItem = ctx.renderer.createEllipse(b, ctx.shape);
+            shapeItem = ctx.renderer.createEllipse(ctx.shape, ctx.bounds);
         } else if (shapeType === SHAPE_TRIANGLE) {
-            shapeItem = ctx.renderer.createBoundedPath(b, `M0 ${b.bottom} L${b.centerX} ${b.top} L${b.right} ${b.bottom} z`, ctx.shape);
+            shapeItem = ctx.renderer.createPath(ctx.shape, `M0 ${b.bottom} L${b.centerX} ${b.top} L${b.right} ${b.bottom} z`, ctx.bounds);
         } else if (shapeType === SHAPE_RHOMBUS) {
-            shapeItem = ctx.renderer.createPath(`M${b.centerX} ${b.top} L${b.right} ${b.centerY} L${b.centerX} ${b.bottom} L${b.left} ${b.centerY} z`, ctx.shape);
+            shapeItem = ctx.renderer.createPath(ctx.shape, `M${b.centerX} ${b.top} L${b.right} ${b.centerY} L${b.centerX} ${b.bottom} L${b.left} ${b.centerY} z`, ctx.bounds);
         } else {
-            shapeItem = ctx.renderer.createRectangle(b, ctx.shape, 0);
+            shapeItem = ctx.renderer.createRectangle(ctx.shape, 0, ctx.bounds);
         }
 
         ctx.renderer.setStrokeColor(shapeItem, ctx.shape);
@@ -75,7 +75,7 @@ export class Shape extends AbstractControl {
     }
 
     private createText(ctx: AbstractContext) {
-        const textItem = ctx.renderer.createSinglelineText(ctx.bounds.deflate(10, 10), ctx.shape);
+        const textItem = ctx.renderer.createSinglelineText(ctx.shape, ctx.bounds.deflate(10, 10));
 
         ctx.renderer.setForegroundColor(textItem, ctx.shape);
 

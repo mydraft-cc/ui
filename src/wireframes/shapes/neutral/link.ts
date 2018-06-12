@@ -24,7 +24,7 @@ export class Link extends AbstractControl {
     }
 
     protected renderInternal(ctx: AbstractContext) {
-        const textItem = ctx.renderer.createSinglelineText(ctx.bounds, ctx.shape);
+        const textItem = ctx.renderer.createSinglelineText(ctx.shape, ctx.bounds);
 
         ctx.renderer.setForegroundColor(textItem, ctx.shape);
 
@@ -39,7 +39,7 @@ export class Link extends AbstractControl {
         const y = Math.round((ctx.bounds.centerY + fontSize * 0.5)) +
                     (ctx.shape.appearance.get(DiagramShape.APPEARANCE_STROKE_THICKNESS) % 2 === 1 ? 0.5 : 0);
 
-        const underlineItem = ctx.renderer.createPath(`M${x},${y} L${x + w},${y}`, ctx.shape);
+        const underlineItem = ctx.renderer.createPath(ctx.shape, `M${x},${y} L${x + w},${y}`);
 
         ctx.renderer.setStrokeColor(underlineItem, ctx.shape.appearance.get(DiagramShape.APPEARANCE_FOREGROUND_COLOR));
 

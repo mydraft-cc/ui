@@ -50,23 +50,23 @@ export class Progress extends AbstractControl {
     private createBackground(ctx: AbstractContext) {
         const relative = ctx.shape.appearance.get(VALUE) / 100;
 
-        const clipMask = ctx.renderer.createRectangle(ctx.bounds, 0, ctx.bounds.height * 0.5);
+        const clipMask = ctx.renderer.createRectangle(0, ctx.bounds.height * 0.5, ctx.bounds);
 
         const activeBounds = new Rect2(ctx.bounds.position, new Vec2(ctx.bounds.width * relative, ctx.bounds.height));
-        const activeShape = ctx.renderer.createRectangle(activeBounds, 0, 0);
+        const activeShape = ctx.renderer.createRectangle(0, 0, activeBounds);
 
         ctx.renderer.setBackgroundColor(activeShape, ctx.shape.appearance.get(ACCENT_COLOR));
 
         const inactiveBounds = new Rect2(new Vec2(ctx.bounds.width * relative, ctx.bounds.top), new Vec2(ctx.bounds.width * (1 - relative), ctx.bounds.height));
-        const inactiveShape = ctx.renderer.createRectangle(inactiveBounds, 0, 0);
+        const inactiveShape = ctx.renderer.createRectangle(0, 0, inactiveBounds);
 
         ctx.renderer.setBackgroundColor(inactiveShape, ctx.shape);
 
-        ctx.add(ctx.renderer.createClipGroup(clipMask, activeShape, inactiveShape));
+        ctx.add(ctx.renderer.createGroup([activeShape, inactiveShape], clipMask));
     }
 
     private createBorder(ctx: AbstractContext) {
-        const borderItem = ctx.renderer.createRectangle(ctx.bounds, ctx.shape, ctx.bounds.height * 0.51);
+        const borderItem = ctx.renderer.createRectangle(ctx.shape, ctx.bounds.height * 0.51, ctx.bounds);
 
         ctx.renderer.setStrokeColor(borderItem, ctx.shape);
 

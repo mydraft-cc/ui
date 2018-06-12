@@ -56,7 +56,7 @@ export class RadioButton extends AbstractControl {
     private createCircle(ctx: AbstractContext) {
         const y = 0.5 * ctx.bounds.size.y;
 
-        const circleItem = ctx.renderer.createCircle(new Vec2(CIRCLE_POSITION_X, y), ctx.shape, CIRCLE_RADIUS);
+        const circleItem = ctx.renderer.createEllipse(ctx.shape, Rect2.createFromCenter(new Vec2(CIRCLE_POSITION_X, y), CIRCLE_RADIUS));
 
         ctx.renderer.setStrokeColor(circleItem, ctx.shape);
         ctx.renderer.setBackgroundColor(circleItem, ctx.shape);
@@ -66,7 +66,7 @@ export class RadioButton extends AbstractControl {
         const state = ctx.shape.appearance.get(STATE_KEY);
 
         if (state === STATE_CHECKED) {
-            const checkCircleItem = ctx.renderer.createCircle(new Vec2(CIRCLE_POSITION_X, y), 0, CIRCLE_CHECK_RADIUS);
+            const checkCircleItem = ctx.renderer.createEllipse(0, Rect2.createFromCenter(new Vec2(CIRCLE_POSITION_X, y), CIRCLE_CHECK_RADIUS));
 
             ctx.renderer.setBackgroundColor(checkCircleItem, ctx.shape.appearance.get(DiagramShape.APPEARANCE_STROKE_COLOR));
 
@@ -78,7 +78,7 @@ export class RadioButton extends AbstractControl {
         const w = ctx.shape.transform.size.x - TEXT_POSITION_X;
         const h = ctx.shape.transform.size.y;
 
-        const textItem = ctx.renderer.createSinglelineText(new Rect2(new Vec2(TEXT_POSITION_X, 0), new Vec2(w, h)), ctx.shape);
+        const textItem = ctx.renderer.createSinglelineText(ctx.shape, new Rect2(new Vec2(TEXT_POSITION_X, 0), new Vec2(w, h)));
 
         ctx.add(textItem);
     }

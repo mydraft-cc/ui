@@ -27,32 +27,31 @@ export module SVGHelper {
     export const ZERO_POINT = new svg.Point(0, 0);
     export const IDENTITY_MATRIX = new svg.Matrix(1, 0, 0, 1, 0, 0);
 
-    export function createSinglelineText(container: svg.Container, rect: Rect2, textString: string, fontSize?: number, alignment?: string) {
-        return createText(container, rect, textString, fontSize || 10, rect.height, alignment);
+    export function createSinglelineText(container: svg.Container, text: string, fontSize?: number, alignment?: string) {
+        return createText(container, text, fontSize, alignment, 'middle');
     }
 
-    export function createMultilineText(container: svg.Container, rect: Rect2, textString: string, fontSize?: number, alignment?: string) {
-        return createText(container, rect, textString, fontSize || 10, 1.2 * (fontSize || 10), alignment);
+    export function createMultilineText(container: svg.Container, text: string, fontSize?: number, alignment?: string) {
+        return createText(container, text, fontSize, alignment, 'top');
     }
 
-    export function createText(container: svg.Container, rect: Rect2, textString: string, fontSize: number, lineHeight: number, alignment?: string) {
+    export function createText(container: svg.Container, text: string, fontSize?: number, alignment?: string, verticalAlign?: string) {
         fontSize = fontSize || 10;
 
-        const text = transform(container.element('foreignObject', svg.Parent), { rect });
+        const element = container.element('foreignObject', svg.Parent);
 
         const div = document.createElement('div');
         div.className = 'no-select';
-        div.style.height = rect.height + 'px';
-        div.style.lineHeight = lineHeight + 'px';
-        div.style.fontSize = fontSize + 'px';
+        div.style.textAlign = alignment || 'center';
+        div.style.fontSize = (fontSize || 10) + 'px';
         div.style.fontFamily = 'inherit';
         div.style.overflow = 'hidden';
-        div.style.textAlign = <any>alignment || 'center';
-        div.textContent = textString;
+        div.style.verticalAlign = verticalAlign || 'middle';
+        div.textContent = text;
 
-        text.node.appendChild(div);
+        element.node.appendChild(div);
 
-        return text;
+        return element;
     }
 
     export function createRoundedRectangleRight(container: svg.Container, rectangle: Rect2, radius = 10) {
@@ -126,6 +125,16 @@ export module SVGHelper {
         }
 
         if ((t.rect || t.w || t.h) && w > 0 && h > 0) {
+            if (element.node.nodeName === 'foreignObject') {
+                const text = <HTMLDivElement>element.node.children[0];
+
+                if (text.style.verticalAlign === 'middle') {
+                    text.style.lineHeight = h + 'px';
+                }
+
+                text.style.height = h + 'px';
+            }
+
             element.size(w, h);
         }
 

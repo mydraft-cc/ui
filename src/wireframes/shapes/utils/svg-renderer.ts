@@ -26,147 +26,131 @@ export class SVGRenderer implements AbstractRenderer {
         this.container = container;
     }
 
-    public createRectangle(bounds?: Rect2, strokeWidth?: RendererWidth, radius?: number): RendererElement {
+    public createRectangle(strokeWidth: RendererWidth, radius?: number, bounds?: Rect2): RendererElement {
         const w = this.getStrokeWidth(strokeWidth);
-        const b = this.getBoundsWithStroke(bounds);
 
-        const shape = this.container.rect().fill('transparent');
+        const element = this.container.rect().fill('transparent');
 
         if (w > 0) {
-            shape.stroke({ width: w });
+            element.stroke({ width: w });
         }
 
         if (radius && radius > 0) {
-            shape.radius(radius, radius);
+            element.radius(radius, radius);
         }
 
-        SVGHelper.transform(shape, { rect: b });
+        SVGHelper.transform(element, { rect: bounds });
 
-        return shape;
+        return element;
     }
 
-    public createEllipse(bounds?: Rect2, strokeWidth?: RendererWidth): RendererElement {
+    public createEllipse(strokeWidth: RendererWidth, bounds?: Rect2): RendererElement {
         const w = this.getStrokeWidth(strokeWidth);
-        const b = this.getBoundsWithStroke(bounds, w);
 
-        const shape = this.container.ellipse().fill('transparent');
+        const element = this.container.ellipse().fill('transparent');
 
         if (w > 0) {
-            shape.stroke({ width: w });
+            element.stroke({ width: w });
         }
 
-        SVGHelper.transform(shape, { rect: b });
+        SVGHelper.transform(element, { rect: bounds });
 
-        return shape;
+        return element;
     }
 
-    public createRoundedRectangleLeft(bounds: Rect2, strokeWidth: RendererWidth, radius: number): RendererElement {
+    public createRoundedRectangleLeft(strokeWidth: RendererWidth, radius: number, bounds: Rect2): RendererElement {
         if (radius <= 0) {
-            return this.createRectangle(bounds, strokeWidth, 0);
+            return this.createRectangle(strokeWidth, 0, bounds);
         }
 
         const w = this.getStrokeWidth(strokeWidth);
         const b = this.getBoundsWithStroke(bounds, w);
 
-        const shape = SVGHelper.createRoundedRectangleLeft(this.container, b, radius).fill('transparent');
+        const element = SVGHelper.createRoundedRectangleLeft(this.container, b, radius).fill('transparent');
 
         if (w > 0) {
-            shape.stroke({ width: w });
+            element.stroke({ width: w });
         }
 
-        return shape;
+        return element;
     }
 
-    public createRoundedRectangleRight(bounds: Rect2, strokeWidth: RendererWidth, radius: number): RendererElement {
+    public createRoundedRectangleRight(strokeWidth: RendererWidth, radius: number, bounds: Rect2): RendererElement {
         if (radius <= 0) {
-            return this.createRectangle(bounds, strokeWidth, 0);
+            return this.createRectangle(strokeWidth, 0, bounds);
         }
 
         const w = this.getStrokeWidth(strokeWidth);
         const b = this.getBoundsWithStroke(bounds, w);
 
-        const shape = SVGHelper.createRoundedRectangleRight(this.container, b, radius).fill('transparent');
+        const element = SVGHelper.createRoundedRectangleRight(this.container, b, radius).fill('transparent');
 
         if (w > 0) {
-            shape.stroke({ width: w });
+            element.stroke({ width: w });
         }
 
-        return shape;
+        return element;
     }
 
-    public createPath(path: string, strokeWidth?: RendererWidth): RendererElement {
+    public createPath(strokeWidth: RendererWidth, path: string): RendererElement {
         const w = this.getStrokeWidth(strokeWidth);
 
-        const shape = this.container.path(path).fill('transparent');
+        const element = this.container.path(path).fill('transparent');
 
         if (w > 0) {
-            shape.stroke({ width: w });
+            element.stroke({ width: w });
         }
 
-        return shape;
+        return element;
     }
 
-    public createBoundedPath(bounds: Rect2, path: string, strokeWidth?: RendererWidth): RendererElement {
-        const w = this.getStrokeWidth(strokeWidth);
-
-        const shape = this.container.path(path).fill('transparent');
-
-        if (w > 0) {
-            shape.stroke({ width: w });
-        }
-
-        return shape;
-    }
-
-    public createSinglelineText(bounds?: Rect2, config?: RendererText): RendererElement {
-        bounds = bounds || Rect2.ZERO;
+    public createSinglelineText(config?: RendererText, bounds?: Rect2): RendererElement {
+        let element: svg.Element;
 
         if (config instanceof DiagramShape) {
-            return SVGHelper.createSinglelineText(this.container, bounds || Rect2.ZERO,
+            element = SVGHelper.createSinglelineText(this.container,
                 config.appearance.get(DiagramShape.APPEARANCE_TEXT),
                 config.appearance.get(DiagramShape.APPEARANCE_FONT_SIZE),
                 config.appearance.get(DiagramShape.APPEARANCE_TEXT_ALIGNMENT));
         } else if (config) {
-            return SVGHelper.createSinglelineText(this.container, bounds, config.text, config.fontSize, config.alignment);
+            element = SVGHelper.createSinglelineText(this.container, config.text, config.fontSize, config.alignment);
         } else {
-            return SVGHelper.createMultilineText(this.container, bounds, '');
+            element = SVGHelper.createMultilineText(this.container, '');
         }
+
+        SVGHelper.transform(element, { rect: bounds });
+
+        return element;
     }
 
-    public createMultilineText(bounds?: Rect2, config?: RendererText): RendererElement {
-        bounds = bounds || Rect2.ZERO;
+    public createMultilineText(config?: RendererText, bounds?: Rect2): RendererElement {
+        let element: svg.Element;
 
         if (config instanceof DiagramShape) {
-            return SVGHelper.createMultilineText(this.container, bounds,
+            element = SVGHelper.createMultilineText(this.container,
                 config.appearance.get(DiagramShape.APPEARANCE_TEXT),
                 config.appearance.get(DiagramShape.APPEARANCE_FONT_SIZE),
                 config.appearance.get(DiagramShape.APPEARANCE_TEXT_ALIGNMENT));
         } else if (config) {
-            return SVGHelper.createMultilineText(this.container, bounds, config.text, config.fontSize, config.alignment);
+            element = SVGHelper.createMultilineText(this.container, config.text, config.fontSize, config.alignment);
         } else {
-            return SVGHelper.createMultilineText(this.container, bounds, '');
-        }
-    }
-
-    public createRaster(bounds: Rect2, source: string): RendererElement {
-        const shape = SVGHelper.transform(new svg.Image(), bounds);
-
-        shape.load(source);
-
-        return shape;
-    }
-
-    public createClipGroup(clipItem: RendererElement, ...items: RendererElement[]): RendererElement {
-        const group = this.container.group();
-
-        for (let item of items) {
-            group.add(item.groupElement ? item.groupElement : item);
+            element = SVGHelper.createMultilineText(this.container, '');
         }
 
-        return group;
+        SVGHelper.transform(element, { rect: bounds });
+
+        return element;
     }
 
-    public createGroup(...items: RendererElement[]): RendererElement {
+    public createRaster(source: string, bounds?: Rect2): RendererElement {
+        const element = new svg.Image().load(source);
+
+        SVGHelper.transform(element, { rect: bounds });
+
+        return element;
+    }
+
+    public createGroup(items: RendererElement[]): RendererElement {
         const group = this.container.group();
 
         for (let item of items) {
@@ -242,11 +226,11 @@ export class SVGRenderer implements AbstractRenderer {
         }
     }
 
-    public transform(element: any, to: RendererTransform): void {
+    public setTransform(element: any, to: RendererTransform): void {
         const e = this.getElement(element);
 
         if (to instanceof DiagramShape) {
-            this.transform(element, to.transform);
+            this.setTransform(element, to.transform);
         } else if (to instanceof Transform) {
             SVGHelper.transform(e, {
                 x: to.position.x - 0.5 * to.size.x,
@@ -260,10 +244,6 @@ export class SVGRenderer implements AbstractRenderer {
         } else {
             SVGHelper.transform(element, to);
         }
-    }
-
-    public getTextWidth(text: string, fontSize: number, fontFamily: string): number | undefined {
-        return undefined;
     }
 
     public getBounds(element: RendererElement): Rect2 {
@@ -296,12 +276,16 @@ export class SVGRenderer implements AbstractRenderer {
         }
     }
 
-    private getStrokeWidth(strokeWidth?: RendererWidth): number {
+    private getStrokeWidth(strokeWidth: RendererWidth): number {
         if (strokeWidth instanceof DiagramShape) {
-            return strokeWidth.appearance.get(DiagramShape.APPEARANCE_STROKE_THICKNESS) || 0;
+            return strokeWidth.appearance.get(DiagramShape.APPEARANCE_STROKE_THICKNESS);
         } else {
-            return strokeWidth || 0;
+            return strokeWidth;
         }
+    }
+
+    public getTextWidth(text: string, fontSize: number, fontFamily: string): number | undefined {
+        return undefined;
     }
 
     private getBoundsWithStroke(bounds?: Rect2, strokeWidth = 0): Rect2 {

@@ -68,8 +68,8 @@ export class Rect2 {
         Object.freeze(this);
     }
 
-    public static createFromCenter(center: Vec2, size: number) {
-        return new Rect2(new Vec2(center.x - size, center.y - size), new Vec2(center.x + size, center.y + size));
+    public static createFromCenter(center: Vec2, radius: number) {
+        return new Rect2(new Vec2(center.x, center.y), new Vec2(2 * radius, 2 * radius));
     }
 
     public static createFromVecs(vecs: Vec2[] | null): Rect2 {
@@ -148,15 +148,19 @@ export class Rect2 {
         return this.inflate(v.x, v.y);
     }
 
-    public inflate(w: number, h: number): Rect2 {
-        return new Rect2(new Vec2(this.position.x - w, this.position.y - h), new Vec2(this.size.x + (2 * w), this.size.y + (2 * h)));
-    }
-
     public deflateV(v: Vec2): Rect2 {
         return this.deflate(v.x, v.y);
     }
 
-    public deflate(w: number, h: number): Rect2 {
+    public inflate(w: number, h?: number): Rect2 {
+        h = h || w;
+
+        return new Rect2(new Vec2(this.position.x - w, this.position.y - h), new Vec2(this.size.x + (2 * w), this.size.y + (2 * h)));
+    }
+
+    public deflate(w: number, h?: number): Rect2 {
+        h = h || w;
+
         return new Rect2(new Vec2(this.position.x + w, this.position.y + h), new Vec2(Math.max(0, this.size.x - (2 * w)), Math.max(0, this.size.y - (2 * h))));
     }
 

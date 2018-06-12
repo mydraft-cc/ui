@@ -47,7 +47,7 @@ export class SelectionAdorner extends React.Component<SelectionAdornerProps> imp
         this.renderer = new SVGRenderer();
         this.renderer.captureContext(this.props.adorners);
 
-        this.selectionShape = this.renderer.createRectangle(Rect2.ZERO, 1);
+        this.selectionShape = this.renderer.createRectangle(1);
 
         this.renderer.setBackgroundColor(this.selectionShape, '#0f0');
         this.renderer.setStrokeColor(this.selectionShape, '#050');
@@ -141,7 +141,7 @@ export class SelectionAdorner extends React.Component<SelectionAdornerProps> imp
             let shapeAdorner: any;
 
             if (i >= this.shapesAdorners.length) {
-                shapeAdorner = this.renderer.createRectangle(Rect2.ZERO, 1);
+                shapeAdorner = this.renderer.createRectangle(1);
 
                 this.renderer.setBackgroundColor(shapeAdorner, 'none');
                 this.renderer.setStrokeColor(shapeAdorner, '#00f');
@@ -159,7 +159,7 @@ export class SelectionAdorner extends React.Component<SelectionAdornerProps> imp
     }
 
     protected transformShape(shape: any, position: Vec2, size: Vec2, offset: number, rotation = 0) {
-        this.renderer.transform(shape, {
+        this.renderer.setTransform(shape, {
             x: position.x - offset,
             y: position.y - offset,
             w: size.x + 2 * offset,

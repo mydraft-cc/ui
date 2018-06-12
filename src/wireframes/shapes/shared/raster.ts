@@ -19,7 +19,7 @@ export class Raster extends AbstractControl {
     }
 
     protected renderInternal(ctx: AbstractContext) {
-        const rasterItem = ctx.renderer.createRaster(ctx.bounds.deflate(1, 1), ctx.shape.appearance.get('SOURCE'));
+        const rasterItem = ctx.renderer.createRaster(ctx.shape.appearance.get('SOURCE'), ctx.bounds.deflate(1));
 
         ctx.add(rasterItem);
     }

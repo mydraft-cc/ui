@@ -24,7 +24,7 @@ export class Icon extends AbstractControl {
 
         const config = { fontSize, text: ctx.shape.appearance.get(DiagramShape.APPEARANCE_TEXT), alignment: 'center' };
 
-        const textItem = ctx.renderer.createSinglelineText(ctx.bounds, config);
+        const textItem = ctx.renderer.createSinglelineText(config, ctx.bounds);
 
         ctx.renderer.setForegroundColor(textItem, ctx.shape);
         ctx.renderer.setFontFamily(textItem, 'FontAwesome');

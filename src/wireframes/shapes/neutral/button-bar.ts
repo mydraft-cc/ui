@@ -54,13 +54,13 @@ export class ButtonBar extends AbstractControl {
             let partItem: any;
 
             if (parts.length === 1) {
-                partItem = ctx.renderer.createRectangle(bounds, ctx.shape, CommonTheme.CONTROL_BORDER_RADIUS);
+                partItem = ctx.renderer.createRectangle(ctx.shape, CommonTheme.CONTROL_BORDER_RADIUS, bounds);
             } else if (i === 0) {
-                partItem = ctx.renderer.createRoundedRectangleLeft(bounds, ctx.shape, CommonTheme.CONTROL_BORDER_RADIUS);
+                partItem = ctx.renderer.createRoundedRectangleLeft(ctx.shape, CommonTheme.CONTROL_BORDER_RADIUS, bounds);
             } else if (i === parts.length - 1) {
-                partItem = ctx.renderer.createRoundedRectangleRight(bounds, ctx.shape, CommonTheme.CONTROL_BORDER_RADIUS);
+                partItem = ctx.renderer.createRoundedRectangleRight(ctx.shape, CommonTheme.CONTROL_BORDER_RADIUS, bounds);
             } else {
-                partItem = ctx.renderer.createRectangle(bounds, ctx.shape, 0);
+                partItem = ctx.renderer.createRectangle(ctx.shape, 0, bounds);
             }
 
             if (part.selected) {
@@ -71,7 +71,7 @@ export class ButtonBar extends AbstractControl {
                 ctx.renderer.setStrokeColor(partItem, ctx.shape);
             }
 
-            const textItem = ctx.renderer.createSinglelineText(bounds.deflate(4, 4), ctx.shape);
+            const textItem = ctx.renderer.createSinglelineText(ctx.shape, bounds.deflate(4));
 
             if (part.selected) {
                 if (accentColor.luminance > 0.4) {

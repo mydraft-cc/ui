@@ -53,11 +53,11 @@ export class Toggle extends AbstractControl {
 
         const circleCenter = new Vec2(circleX, circleY);
         const circleSize = radius - border;
-        const circleItem = ctx.renderer.createEllipse(Rect2.createFromCenter(circleCenter, circleSize));
+        const circleItem = ctx.renderer.createEllipse(0, Rect2.createFromCenter(circleCenter, circleSize));
 
         ctx.renderer.setBackgroundColor(circleItem, ctx.shape.appearance.get(DiagramShape.APPEARANCE_STROKE_COLOR));
 
-        const pillItem = ctx.renderer.createRectangle(ctx.bounds, 0, radius);
+        const pillItem = ctx.renderer.createRectangle(0, radius, ctx.bounds);
 
         if (isUnchecked) {
             ctx.renderer.setBackgroundColor(pillItem, ctx.shape);

@@ -16,27 +16,23 @@ export type RendererWidth = number | DiagramShape;
 export type RendererTransform = Transform | MatrixTransform | DiagramShape;
 
 export interface AbstractRenderer {
-    createRoundedRectangleLeft(bounds: Rect2, strokeWidth: RendererWidth, radius: number): RendererElement;
+    createRoundedRectangleLeft(strokeWidth: RendererWidth, radius: number, bounds: Rect2): RendererElement;
 
-    createRoundedRectangleRight(bounds: Rect2, strokeWidth: RendererWidth, radius: number): RendererElement;
+    createRoundedRectangleRight(strokeWidth: RendererWidth, radius: number, bounds: Rect2): RendererElement;
 
-    createPath(path: string, strokeWidth: RendererWidth): RendererElement;
+    createPath(strokeWidth: RendererWidth, path: string, bounds?: Rect2): RendererElement;
 
-    createBoundedPath(bounds: Rect2, path: string, strokeWidth: RendererWidth): RendererElement;
+    createRaster(source: string, bounds?: Rect2): RendererElement;
 
-    createRaster(bounds: Rect2, source: string): RendererElement;
+    createRectangle(strokeWidth: RendererWidth, radius?: number, bounds?: Rect2): RendererElement;
 
-    createRectangle(bounds?: Rect2, strokeWidth?: RendererWidth, radius?: number): RendererElement;
+    createEllipse(strokeWidth: RendererWidth, bounds?: Rect2): RendererElement;
 
-    createEllipse(bounds?: Rect2, strokeWidth?: RendererWidth): RendererElement;
+    createSinglelineText(config?: RendererText, bounds?: Rect2): RendererElement;
 
-    createSinglelineText(bounds: Rect2, config?: RendererText): RendererElement;
+    createMultilineText(config?: RendererText, bounds?: Rect2): RendererElement;
 
-    createMultilineText(bounds: Rect2, config?: RendererText): RendererElement;
-
-    createClipGroup(clipItem: RendererElement, ...items: RendererElement[]): RendererElement;
-
-    createGroup(...items: RendererElement[]): RendererElement;
+    createGroup(items: RendererElement[], clipItem?: RendererElement): RendererElement;
 
     setForegroundColor(element: RendererElement, color: RendererColor): void;
 
@@ -54,7 +50,7 @@ export interface AbstractRenderer {
 
     setText(element: RendererElement, text: string): void;
 
-    transform(element: RendererElement, to: RendererTransform): void;
+    setTransform(element: RendererElement, to: RendererTransform): void;
 
     getBounds(element: RendererElement): Rect2;
 

@@ -31,7 +31,7 @@ export class Comment extends AbstractControl {
         const t = ctx.bounds.top;
         const b = ctx.bounds.bottom;
 
-        const borderItem = ctx.renderer.createBoundedPath(ctx.bounds, `M${l + c},${t} L${r},${t} L${r},${b} L${l},${b} L${l},${t + c} L${l + c},${t} L${l + c},${t + c} L${l},${t + c} z`, ctx.shape);
+        const borderItem = ctx.renderer.createPath(ctx.shape, `M${l + c},${t} L${r},${t} L${r},${b} L${l},${b} L${l},${t + c} L${l + c},${t} L${l + c},${t + c} L${l},${t + c} z`, ctx.bounds);
 
         ctx.renderer.setBackgroundColor(borderItem, 0xfff9b7);
         ctx.renderer.setStrokeColor(borderItem, 0);
@@ -41,7 +41,7 @@ export class Comment extends AbstractControl {
     }
 
     private createText(ctx: AbstractContext) {
-        const textItem = ctx.renderer.createMultilineText(ctx.bounds.deflate(20, 20), ctx.shape);
+        const textItem = ctx.renderer.createMultilineText(ctx.shape, ctx.bounds.deflate(20));
 
         ctx.add(textItem);
     }
