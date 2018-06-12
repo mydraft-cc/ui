@@ -31,7 +31,13 @@ export class InteractionOverlays {
         this.elements.push(this.lineY);
 
         this.infoRect = this.renderer.createRectangle(0);
-        this.infoText = this.renderer.createSinglelineText();
+        this.infoText = this.renderer.createSinglelineText({ text: '', fontSize: 14 });
+
+        this.elements.push(this.infoRect);
+        this.elements.push(this.infoText);
+
+        this.renderer.setBackgroundColor(this.infoRect, '#000');
+        this.renderer.setForegroundColor(this.infoText, '#fff');
     }
 
     public showSnapAdorners(snapResult: SnapResult) {
@@ -72,7 +78,7 @@ export class InteractionOverlays {
         const aabb = transform.aabb;
 
         this.renderer.setText(this.infoText, text);
-        this.renderer.setTransform(this.infoText, { x: aabb.right + 4, y: aabb.bottom + 24 });
+        this.renderer.setTransform(this.infoText, { x: aabb.right + 4, y: aabb.bottom + 24, w: 120, h: 24 });
         this.renderer.setVisibility(this.infoText, true);
 
         const bounds = this.renderer.getBounds(this.infoText);

@@ -295,8 +295,15 @@ export class SVGRenderer implements AbstractRenderer {
 
     public getBounds(element: RendererElement): Rect2 {
         const e = this.getElement(element);
+        const m = e.matrixify();
 
-        return SVGHelper.box2Rect(e.bbox());
+        let box: svg.Box = e.bbox();
+
+        if (m) {
+            box = box.transform(m);
+        }
+
+        return SVGHelper.box2Rect(box);
     }
 
     private getElement(element: RendererElement): svg.Element {

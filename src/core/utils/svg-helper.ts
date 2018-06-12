@@ -94,16 +94,13 @@ export module SVGHelper {
             h -= 1;
         }
 
-        let matrix: svg.Matrix | null = null;
-
-        if (t.rotation && t.rotation !== 0) {
-            matrix = matrix || new svg.Matrix();
-            matrix = matrix.rotate(
-                t.rotation,
-                t.rx || (x + 0.5 * w),
-                t.ry || (y + 0.5 * h)
-            );
-        }
+        let matrix =
+            new svg.Matrix()
+                .rotate(
+                    t.rotation || 0,
+                    t.rx || (x + 0.5 * w),
+                    t.ry || (y + 0.5 * h)
+                );
 
         if (element['children']) {
             if (t.rect || t.x || t.y) {
