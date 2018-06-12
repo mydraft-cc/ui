@@ -16,11 +16,15 @@
     }
 
     &-preview {
-        line-height: 120px;
+        line-height: 100px;
+    }
+
+    &-preview {
+        height: 70px;
     }
 
     .fa {
-        font-size: 42px;
+        font-size: 36px;
     }
 }
 
