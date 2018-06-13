@@ -76,11 +76,11 @@ export class TextAdorner extends React.Component<TextAdornerProps> implements In
 
             const transform = event.shape.transform;
 
-            const x = sizeInPx(zoom * (transform.position.x - 0.5 * transform.size.x));
-            const y = sizeInPx(zoom * (transform.position.y - 0.5 * transform.size.y));
+            const x = sizeInPx(zoom * (transform.position.x - 1.5 * transform.size.x));
+            const y = sizeInPx(zoom * (transform.position.y - 1.5 * transform.size.y));
 
-            const w = sizeInPx(zoom * (Math.max(transform.size.x, MIN_WIDTH) + 1));
-            const h = sizeInPx(zoom * (Math.max(transform.size.y, MIN_HEIGHT) + 1));
+            const w = sizeInPx(zoom * (Math.max(transform.size.x, MIN_WIDTH) + 3));
+            const h = sizeInPx(zoom * (Math.max(transform.size.y, MIN_HEIGHT) + 3));
 
             this.textareaElement.value = event.shape.appearance.get(DiagramShape.APPEARANCE_TEXT) || '';
             this.textareaElement.style.top = y;
@@ -145,7 +145,10 @@ export class TextAdorner extends React.Component<TextAdornerProps> implements In
 
     public render() {
         return (
-            <textarea className='ant-input' style={{ display: 'none '}} ref={(element) => { this.textareaElement = element!; }} onBlur={this.onTextareaBlur} onKeyDown={this.onTextareaKeyDown} />
+            <textarea className='ant-input' style={{ display: 'none '}}
+                ref={(element) => { this.textareaElement = element!; }}
+                onBlur={this.onTextareaBlur}
+                onKeyDown={this.onTextareaKeyDown} />
         );
     }
 }

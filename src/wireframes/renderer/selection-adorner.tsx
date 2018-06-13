@@ -39,7 +39,6 @@ export class SelectionAdorner extends React.Component<SelectionAdornerProps> imp
     private shapesAdorners: any[] = [];
     private selectionShape: any;
     private dragStart: Vec2 | null;
-    private dragging = false;
 
     public componentDidMount() {
         this.props.interactionService.addHandler(this);
@@ -72,17 +71,16 @@ export class SelectionAdorner extends React.Component<SelectionAdornerProps> imp
         }
 
         if (!event.element) {
-            this.dragging = true;
             this.dragStart = event.position;
         }
     }
 
     public onMouseDrag(event: SvgEvent, next: () => void) {
-        if (!this.dragging) {
+        if (!this.dragStart) {
             return next();
         }
 
-        const selectedRect = Rect2.createFromVecs([this.dragStart!, event.position]);
+        const selectedRect = Rect2.createFromVecs([this.dragStart, event.position]);
 
         if (selectedRect.area > 0) {
             this.transformShape(this.selectionShape, selectedRect.position, selectedRect.size, 0);
@@ -92,12 +90,12 @@ export class SelectionAdorner extends React.Component<SelectionAdornerProps> imp
     }
 
     public onMouseUp(event: SvgEvent, next: () => void) {
-        if (!this.dragging) {
+        if (!this.dragStart) {
             return next();
         }
 
         try {
-            const selectedRect = Rect2.createFromVecs([this.dragStart!, event.position]);
+            const selectedRect = Rect2.createFromVecs([this.dragStart, event.position]);
 
             if (selectedRect.area > 100) {
                 const selection = this.selectMultiple(selectedRect, this.props.selectedDiagram);
@@ -109,7 +107,6 @@ export class SelectionAdorner extends React.Component<SelectionAdornerProps> imp
         } finally {
             this.renderer.setVisibility(this.selectionShape, false);
 
-            this.dragging = false;
             this.dragStart = null;
         }
     }

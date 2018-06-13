@@ -52,7 +52,7 @@ export interface AbstractRenderer {
 
     setTransform(element: RendererElement, to: RendererTransform): AbstractRenderer;
 
-    getBounds(element: RendererElement): Rect2;
+    getBounds(element: RendererElement, untransformed?: boolean): Rect2;
 
     getTextWidth(text: string, fontSize: number, fontFamily: string): number | undefined;
 }
