@@ -80,7 +80,7 @@ export class SelectionAdorner extends React.Component<SelectionAdornerProps> imp
             return next();
         }
 
-        const selectedRect = Rect2.createFromVecs([this.dragStart, event.position]);
+        const selectedRect = Rect2.fromVecs([this.dragStart, event.position]);
 
         if (selectedRect.area > 0) {
             this.transformShape(this.selectionShape, selectedRect.position, selectedRect.size, 0);
@@ -95,7 +95,7 @@ export class SelectionAdorner extends React.Component<SelectionAdornerProps> imp
         }
 
         try {
-            const selectedRect = Rect2.createFromVecs([this.dragStart, event.position]);
+            const selectedRect = Rect2.fromVecs([this.dragStart, event.position]);
 
             if (selectedRect.area > 100) {
                 const selection = this.selectMultiple(selectedRect, this.props.selectedDiagram);

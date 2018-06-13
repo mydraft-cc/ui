@@ -119,7 +119,7 @@ export class Serializer {
     }
 
     private static deserializeRotation(input: any): Rotation {
-        return Rotation.createFromDegree(input['rotation']);
+        return Rotation.fromDegree(input['rotation']);
     }
 
     private static serializeRenderer(renderer: string, output: any) {

@@ -55,7 +55,7 @@ export class Slider extends AbstractControl {
 
     private createThumb(ctx: AbstractContext, relative: number) {
         const thumbCenter = new Vec2(ctx.bounds.x + ctx.bounds.width * relative, 0.5 * HEIGHT_TOTAL);
-        const thumbItem = ctx.renderer.createEllipse(ctx.shape, Rect2.createFromCenter(thumbCenter, 0.5 * HEIGHT_TOTAL));
+        const thumbItem = ctx.renderer.createEllipse(ctx.shape, Rect2.fromCenter(thumbCenter, 0.5 * HEIGHT_TOTAL));
 
         ctx.renderer.setStrokeColor(thumbItem, ctx.shape);
         ctx.renderer.setBackgroundColor(thumbItem, ctx.shape.appearance.get(DiagramShape.APPEARANCE_FOREGROUND_COLOR));

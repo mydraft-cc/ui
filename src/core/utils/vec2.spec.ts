@@ -126,7 +126,7 @@ describe('Vec2', () => {
     });
 
     it('should calculate median', () => {
-        const actual = Vec2.createMedian(new Vec2(10, 20), new Vec2(20, 20), new Vec2(60, 20));
+        const actual = Vec2.median(new Vec2(10, 20), new Vec2(20, 20), new Vec2(60, 20));
         const expected = new Vec2(30, 20);
 
         expect(actual).toEqual(expected);
@@ -136,9 +136,9 @@ describe('Vec2', () => {
         const source = new Vec2(40, 20);
         const center = new Vec2(20, 20);
 
-        const rotation = Rotation.createFromRadian(Math.PI / 2);
+        const rotation = Rotation.fromRadian(Math.PI / 2);
 
-        const actual = Vec2.createRotated(source, center, rotation);
+        const actual = Vec2.rotated(source, center, rotation);
         const expected = new Vec2(20, 40);
 
         expect(actual).toEqual(expected);

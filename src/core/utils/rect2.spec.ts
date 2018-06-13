@@ -148,14 +148,14 @@ describe('Rect2', () => {
     });
 
     it('should return empty when creating from null vectors', () => {
-        const actual = Rect2.createFromVecs(null);
+        const actual = Rect2.fromVecs(null);
         const expected = Rect2.EMPTY;
 
         expect(actual).toEqual(expected);
     });
 
     it('should return empty when creating from null rects', () => {
-        const actual = Rect2.createFromRects(null);
+        const actual = Rect2.fromRects(null);
         const expected = Rect2.EMPTY;
 
         expect(actual).toEqual(expected);
@@ -183,7 +183,7 @@ describe('Rect2', () => {
     });
 
     it('should create from center', () => {
-        const actual = Rect2.createFromCenter(new Vec2(100, 100), 10);
+        const actual = Rect2.fromCenter(new Vec2(100, 100), 10);
         const expected = new Rect2(new Vec2(90, 90), new Vec2(110, 110));
 
         expect(actual).toEqual(expected);
@@ -191,7 +191,7 @@ describe('Rect2', () => {
 
     it('should create correct rect from vectors', () => {
         const actual =
-            Rect2.createFromVecs([
+            Rect2.fromVecs([
                 new Vec2(100, 100),
                 new Vec2(500, 300),
                 new Vec2(900, 800)]);
@@ -202,7 +202,7 @@ describe('Rect2', () => {
 
     it('should create correct rect from rects', () => {
         const actual =
-            Rect2.createFromRects([
+            Rect2.fromRects([
                 new Rect2(new Vec2(100, 100), new Vec2(100, 100)),
                 new Rect2(new Vec2(500, 300), new Vec2(100, 100)),
                 new Rect2(new Vec2(150, 150), new Vec2(750, 650))]);
@@ -212,14 +212,14 @@ describe('Rect2', () => {
     });
 
     it('should create rect from rotation', () => {
-        const actual = Rect2.createRotated(new Vec2(400, 300), new Vec2(600, 400), Rotation.createFromRadian(Math.PI / 2));
+        const actual = Rect2.rotated(new Vec2(400, 300), new Vec2(600, 400), Rotation.fromRadian(Math.PI / 2));
         const expected = new Rect2(new Vec2(500, 200), new Vec2(400, 600));
 
         expect(actual).toEqual(expected);
     });
 
     it('should create rect from zero rotation', () => {
-        const actual = Rect2.createRotated(new Vec2(400, 300), new Vec2(600, 400), Rotation.ZERO);
+        const actual = Rect2.rotated(new Vec2(400, 300), new Vec2(600, 400), Rotation.ZERO);
         const expected = new Rect2(new Vec2(400, 300), new Vec2(600, 400));
 
         expect(actual).toEqual(expected);

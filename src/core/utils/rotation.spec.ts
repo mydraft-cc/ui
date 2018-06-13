@@ -2,36 +2,36 @@ import { Rotation } from '@app/core';
 
 describe('Rotation', () => {
     it('should sub correctly', () => {
-        const rotation1 = Rotation.createFromDegree(180);
-        const rotation2 = Rotation.createFromDegree(45);
+        const rotation1 = Rotation.fromDegree(180);
+        const rotation2 = Rotation.fromDegree(45);
 
         const actual = rotation1.sub(rotation2);
-        const expected = Rotation.createFromDegree(135);
+        const expected = Rotation.fromDegree(135);
 
         expect(actual).toEqual(expected);
     });
 
     it('should add correctly', () => {
-        const rotation1 = Rotation.createFromDegree(180);
-        const rotation2 = Rotation.createFromDegree(45);
+        const rotation1 = Rotation.fromDegree(180);
+        const rotation2 = Rotation.fromDegree(45);
 
         const actual = rotation1.add(rotation2);
-        const expected = Rotation.createFromDegree(225);
+        const expected = Rotation.fromDegree(225);
 
         expect(actual).toEqual(expected);
     });
 
     it('should calculate negated rotation', () => {
-        const rotation = Rotation.createFromDegree(180);
+        const rotation = Rotation.fromDegree(180);
 
         const actual = rotation.negate();
-        const expected = Rotation.createFromDegree(-180);
+        const expected = Rotation.fromDegree(-180);
 
         expect(actual).toEqual(expected);
     });
 
     it('should create rotation by degree', () => {
-        const rotation = Rotation.createFromDegree(180);
+        const rotation = Rotation.fromDegree(180);
 
         expect(rotation.degree).toBe(180);
         expect(rotation.radian).toBe(Math.PI);
@@ -43,7 +43,7 @@ describe('Rotation', () => {
     });
 
     it('should create rotation by radian', () => {
-        const rotation = Rotation.createFromRadian(Math.PI);
+        const rotation = Rotation.fromRadian(Math.PI);
 
         expect(rotation.degree).toBe(180);
         expect(rotation.radian).toBe(Math.PI);
@@ -55,12 +55,12 @@ describe('Rotation', () => {
     });
 
     it('should make correct equal comparisons', () => {
-        expect(Rotation.createFromDegree(123).eq(Rotation.createFromDegree(123))).toBeTruthy();
-        expect(Rotation.createFromDegree(123).eq(Rotation.createFromDegree(234))).toBeFalsy();
+        expect(Rotation.fromDegree(123).eq(Rotation.fromDegree(123))).toBeTruthy();
+        expect(Rotation.fromDegree(123).eq(Rotation.fromDegree(234))).toBeFalsy();
     });
 
     it('should make correct not equal comparisons', () => {
-        expect(Rotation.createFromDegree(123).ne(Rotation.createFromDegree(123))).toBeFalsy();
-        expect(Rotation.createFromDegree(123).ne(Rotation.createFromDegree(234))).toBeTruthy();
+        expect(Rotation.fromDegree(123).ne(Rotation.fromDegree(123))).toBeFalsy();
+        expect(Rotation.fromDegree(123).ne(Rotation.fromDegree(234))).toBeTruthy();
     });
 });

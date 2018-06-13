@@ -78,7 +78,7 @@ export function alignment(): Reducer<EditorState> {
 function distributeHorizontally(itemIds: string[], diagram: Diagram) {
     const targets = findTargets(itemIds, diagram);
 
-    const bounds = Rect2.createFromRects(targets.map(t => t.aabb));
+    const bounds = Rect2.fromRects(targets.map(t => t.aabb));
 
     let totalWidth = 0;
 
@@ -108,7 +108,7 @@ function distributeHorizontally(itemIds: string[], diagram: Diagram) {
 function distributeVertically(itemIds: string[], diagram: Diagram) {
     const targets = findTargets(itemIds, diagram);
 
-    const bounds = Rect2.createFromRects(targets.map(t => t.aabb));
+    const bounds = Rect2.fromRects(targets.map(t => t.aabb));
 
     let totalHeight = 0;
 
@@ -138,7 +138,7 @@ function distributeVertically(itemIds: string[], diagram: Diagram) {
 function alignShapes(itemIds: string[], diagram: Diagram, transformer: (bounds: Rect2, item: Rect2) => Vec2): Diagram {
     const targets = findTargets(itemIds, diagram);
 
-    const bounds = Rect2.createFromRects(targets.map(t => t.aabb));
+    const bounds = Rect2.fromRects(targets.map(t => t.aabb));
 
     for (let target of targets) {
         const newPosition = transformer(bounds, target.aabb);

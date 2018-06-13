@@ -182,7 +182,7 @@ export class TransformAdorner extends React.Component<TransformAdornerProps> imp
             return null;
         }
 
-        const unrotated = Vec2.createRotated(point, this.transform.position, this.transform.rotation.negate());
+        const unrotated = Vec2.rotated(point, this.transform.position, this.transform.rotation.negate());
 
         for (let element of this.allElements) {
             const box = this.renderer.getBounds(element, true);
@@ -245,7 +245,7 @@ export class TransformAdorner extends React.Component<TransformAdornerProps> imp
             this.snapManager.snapRotating(this.startTransform, delta,
                 this.props.interactionService.isShiftKeyPressed());
 
-        this.transform = this.startTransform.rotateBy(Rotation.createFromDegree(deltaRotation));
+        this.transform = this.startTransform.rotateBy(Rotation.fromDegree(deltaRotation));
 
         this.overlays.showInfo(this.transform, `Y: ${this.transform.rotation.degree}°`);
     }
@@ -276,7 +276,7 @@ export class TransformAdorner extends React.Component<TransformAdornerProps> imp
     }
 
     private getResizeDeltaSize(angle: Rotation, cummulativeTranslation: Vec2) {
-        const delta = Vec2.createRotated(cummulativeTranslation.mulScalar(2), Vec2.ZERO, angle.negate()).mul(this.resizeDragOffset);
+        const delta = Vec2.rotated(cummulativeTranslation.mulScalar(2), Vec2.ZERO, angle.negate()).mul(this.resizeDragOffset);
 
         const snapResult =
             this.snapManager.snapResizing(this.props.selectedDiagram, this.startTransform, delta,

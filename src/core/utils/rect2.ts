@@ -68,11 +68,11 @@ export class Rect2 {
         Object.freeze(this);
     }
 
-    public static createFromCenter(center: Vec2, radius: number) {
+    public static fromCenter(center: Vec2, radius: number) {
         return new Rect2(new Vec2(center.x, center.y), new Vec2(2 * radius, 2 * radius));
     }
 
-    public static createFromVecs(vecs: Vec2[] | null): Rect2 {
+    public static fromVecs(vecs: Vec2[] | null): Rect2 {
         if (!vecs || vecs.length === 0) {
             return Rect2.EMPTY;
         }
@@ -92,7 +92,7 @@ export class Rect2 {
         return new Rect2(new Vec2(minX, minY), new Vec2(Math.max(0, maxX - minX), Math.max(0, maxY - minY)));
     }
 
-    public static createFromRects(rects: Rect2[] | null): Rect2 {
+    public static fromRects(rects: Rect2[] | null): Rect2 {
         if (!rects || rects.length === 0) {
             return Rect2.EMPTY;
         }
@@ -112,7 +112,7 @@ export class Rect2 {
         return new Rect2(new Vec2(minX, minY), new Vec2(Math.max(0, maxX - minX), Math.max(0, maxY - minY)));
     }
 
-    public static createRotated(position: Vec2, size: Vec2, rotation: Rotation): Rect2 {
+    public static rotated(position: Vec2, size: Vec2, rotation: Rotation): Rect2 {
         const x = position.x;
         const y = position.y;
         const w = size.x;
@@ -124,12 +124,12 @@ export class Rect2 {
 
         const center = new Vec2(x + (w * 0.5), y + (h * 0.5));
 
-        const lt = Vec2.createRotated(new Vec2(x + 0, y + 0), center, rotation);
-        const rt = Vec2.createRotated(new Vec2(x + w, y + 0), center, rotation);
-        const rb = Vec2.createRotated(new Vec2(x + w, y + h), center, rotation);
-        const lb = Vec2.createRotated(new Vec2(x + 0, y + h), center, rotation);
+        const lt = Vec2.rotated(new Vec2(x + 0, y + 0), center, rotation);
+        const rt = Vec2.rotated(new Vec2(x + w, y + 0), center, rotation);
+        const rb = Vec2.rotated(new Vec2(x + w, y + h), center, rotation);
+        const lb = Vec2.rotated(new Vec2(x + 0, y + h), center, rotation);
 
-        return Rect2.createFromVecs([lb, lt, rb, rt]);
+        return Rect2.fromVecs([lb, lt, rb, rt]);
     }
 
     public eq(r: Rect2): boolean {

@@ -31,29 +31,29 @@ export class Transform {
     }
 
     public static createFromRects(rects: Rect2[]): Transform {
-        return Transform.createFromRect(Rect2.createFromRects(rects));
+        return Transform.createFromRect(Rect2.fromRects(rects));
     }
 
     public static createFromJS(js: any): Transform {
-        return new Transform(new Vec2(js.position.x, js.position.y), new Vec2(js.size.x, js.size.y), Rotation.createFromDegree(js.rotation));
+        return new Transform(new Vec2(js.position.x, js.position.y), new Vec2(js.size.x, js.size.y), Rotation.fromDegree(js.rotation));
     }
 
     public static createFromTransformationsAndRotations(transforms: Transform[], rotation: Rotation): Transform {
         const negatedRotation = rotation.negate();
 
-        const median = Vec2.createMedian(...transforms.map(t => t.position));
+        const median = Vec2.median(...transforms.map(t => t.position));
 
         const unrotatedTransforms = transforms.map(t => t.rotateAroundAnchor(median, negatedRotation));
-        const unrotatedBounds = Rect2.createFromRects(unrotatedTransforms.map(x => x.aabb));
+        const unrotatedBounds = Rect2.fromRects(unrotatedTransforms.map(x => x.aabb));
 
         const firstToCenterUnrotated = unrotatedTransforms[0].position.sub(unrotatedBounds.center);
-        const firstToCenterRotated = Vec2.createRotated(firstToCenterUnrotated, Vec2.ZERO, rotation);
+        const firstToCenterRotated = Vec2.rotated(firstToCenterUnrotated, Vec2.ZERO, rotation);
 
         const center = transforms[0].position.sub(firstToCenterRotated);
 
         const unrotatedTransformAabbs = transforms.map(t => t.rotateAroundAnchor(center, negatedRotation).aabb);
 
-        const rect = Rect2.createFromRects(unrotatedTransformAabbs);
+        const rect = Rect2.fromRects(unrotatedTransformAabbs);
 
         return new Transform(rect.position.add(rect.size.mulScalar(0.5)), rect.size, rotation);
     }
@@ -99,7 +99,7 @@ export class Transform {
     }
 
     public rotateAroundAnchor(anchor: Vec2, rotation: Rotation): Transform {
-        const newPosition = Vec2.createRotated(this.position, anchor, rotation);
+        const newPosition = Vec2.rotated(this.position, anchor, rotation);
 
         return new Transform(newPosition, this.size, this.rotation.add(rotation));
     }
@@ -110,7 +110,7 @@ export class Transform {
         const ratioSize = newBounds.size.div(Vec2.max(Vec2.ONE, oldBounds.size));
 
         const oldSize = Vec2.max(Vec2.ONE, this.size);
-        const oldCenter = Vec2.createRotated(this.position.sub(oldBounds.position), Vec2.ZERO, negatedRotation);
+        const oldCenter = Vec2.rotated(this.position.sub(oldBounds.position), Vec2.ZERO, negatedRotation);
 
         const elementRot = this.rotation.sub(oldBounds.rotation);
         const elementCos = MathHelper.simpleCos(elementRot.degree);
@@ -121,7 +121,7 @@ export class Transform {
             (ratioSize.x * elementSin) + (ratioSize.y * elementCos));
 
         const newSize = Vec2.max(oldSize.mul(rotatedRatio), Vec2.ZERO);
-        const newCenter = Vec2.createRotated(oldCenter.mul(ratioSize), Vec2.ZERO, newBounds.rotation);
+        const newCenter = Vec2.rotated(oldCenter.mul(ratioSize), Vec2.ZERO, newBounds.rotation);
 
         const newRotation = this.rotation.add(newBounds.rotation).sub(oldBounds.rotation);
 
@@ -167,7 +167,7 @@ export class Transform {
 
     private ensureAabb() {
         if (this.lazy.aabb === null) {
-            this.lazy.aabb = Rect2.createRotated(this.position.sub(this.size.mulScalar(0.5)), this.size, this.rotation);
+            this.lazy.aabb = Rect2.rotated(this.position.sub(this.size.mulScalar(0.5)), this.size, this.rotation);
 
             Object.freeze(this.lazy);
         }
