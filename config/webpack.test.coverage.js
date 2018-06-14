@@ -4,7 +4,7 @@
       helpers = require('./helpers'),
    testConfig = require('./webpack.test.js');
 
-helpers.removeLoaders(testConfig, ['ts']);
+helpers.removeLoaders(testConfig, ['ts', 'tsx']);
 
 module.exports = webpackMerge(testConfig, {
     module: {        
@@ -14,14 +14,19 @@ module.exports = webpackMerge(testConfig, {
          * See: https://webpack.js.org/configuration/module/#module-rules
          */
         rules: [{
+            test: /\.ts[x]?$/,
+            use: [{
+                loader: 'awesome-typescript-loader' 
+            }],
+            include: [/node_modules/]
+        }, {
             test: /\.ts$/,
             use: [{
                 loader: 'awesome-typescript-loader'
             }],
             include: [/\.(e2e|spec)\.ts$/],
-            
         }, {
-            test: /\.ts$/,
+            test: /\.ts[x]?$/,
             use: [{
                 loader: 'istanbul-instrumenter-loader'
             }, {
@@ -29,7 +34,7 @@ module.exports = webpackMerge(testConfig, {
             }, {
                 loader: 'tslint-loader' 
             }],
-            exclude: [/\.(e2e|spec)\.ts$/]
+            exclude: [/\.(e2e|spec)\.ts$/, /node_modules/]
         }]
     }
 });

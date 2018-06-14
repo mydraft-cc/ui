@@ -108,11 +108,11 @@ export module PaperHelper {
     }
 
     export function rect2Rectangle(rect: Rect2): paper.Rectangle {
-        return new paper.Rectangle(rect.position.x, rect.position.y, rect.size.x, rect.size.y);
+        return new paper.Rectangle(rect.x, rect.y, rect.w, rect.h);
     }
 
     export function rectangle2Rect(rectangle: paper.Rectangle): Rect2 {
-        return new Rect2(new Vec2(rectangle.left, rectangle.top), new Vec2(rectangle.width, rectangle.height));
+        return new Rect2(rectangle.x, rectangle.y, rectangle.width, rectangle.height);
     }
 
     export function point2Vec(point: paper.Point): Vec2 {

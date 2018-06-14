@@ -1,4 +1,4 @@
-import { Rect2, Vec2 } from '@app/core';
+import { Rect2 } from '@app/core';
 
 import {
     ColorConfigurable,
@@ -52,12 +52,12 @@ export class Progress extends AbstractControl {
 
         const clipMask = ctx.renderer.createRectangle(0, ctx.bounds.height * 0.5, ctx.bounds);
 
-        const activeBounds = new Rect2(ctx.bounds.position, new Vec2(ctx.bounds.width * relative, ctx.bounds.height));
+        const activeBounds = new Rect2(ctx.bounds.x, ctx.bounds.y, ctx.bounds.width * relative, ctx.bounds.height);
         const activeShape = ctx.renderer.createRectangle(0, 0, activeBounds);
 
         ctx.renderer.setBackgroundColor(activeShape, ctx.shape.appearance.get(ACCENT_COLOR));
 
-        const inactiveBounds = new Rect2(new Vec2(ctx.bounds.width * relative, ctx.bounds.top), new Vec2(ctx.bounds.width * (1 - relative), ctx.bounds.height));
+        const inactiveBounds = new Rect2(ctx.bounds.width * relative, ctx.bounds.top, ctx.bounds.width * (1 - relative), ctx.bounds.height);
         const inactiveShape = ctx.renderer.createRectangle(0, 0, inactiveBounds);
 
         ctx.renderer.setBackgroundColor(inactiveShape, ctx.shape);

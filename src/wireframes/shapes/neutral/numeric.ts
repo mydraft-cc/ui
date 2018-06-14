@@ -1,5 +1,5 @@
 
-import { Rect2, Vec2 } from '@app/core';
+import { Rect2 } from '@app/core';
 
 import { DiagramShape } from '@app/wireframes/model';
 
@@ -35,8 +35,7 @@ export class Numeric extends AbstractControl {
     }
 
     private createClickArea(ctx: AbstractContext, clickSize: number) {
-        const clickAreaBounds =
-            new Rect2(new Vec2(ctx.bounds.right - clickSize, 0), new Vec2(clickSize, ctx.bounds.height));
+        const clickAreaBounds = new Rect2(ctx.bounds.right - clickSize, 0, clickSize, ctx.bounds.height);
         const clickAreaItem = ctx.renderer.createRoundedRectangleRight(ctx.shape, CommonTheme.CONTROL_BORDER_RADIUS, clickAreaBounds);
 
         ctx.renderer.setStrokeColor(clickAreaItem, ctx.shape);
@@ -72,8 +71,7 @@ export class Numeric extends AbstractControl {
     }
 
     private createInputArea(ctx: AbstractContext, clickSize: number) {
-        const inputAreaBounds =
-            new Rect2(Vec2.ZERO, new Vec2(ctx.bounds.width - clickSize + 1, ctx.bounds.height));
+        const inputAreaBounds = new Rect2(0, 0, ctx.bounds.width - clickSize + 1, ctx.bounds.height);
         const inputAreaItem = ctx.renderer.createRoundedRectangleLeft(ctx.shape, CommonTheme.CONTROL_BORDER_RADIUS, inputAreaBounds);
 
         ctx.renderer.setStrokeColor(inputAreaItem, ctx.shape);
@@ -84,11 +82,9 @@ export class Numeric extends AbstractControl {
 
     private createText(ctx: AbstractContext, clickSize: number) {
         const textAreaBounds =
-            new Rect2(
-                new Vec2(14, 4),
-                new Vec2(
-                    Math.max(0, ctx.bounds.width - clickSize - 6),
-                    Math.max(0, ctx.bounds.height - 8)));
+            new Rect2(14, 4,
+                Math.max(0, ctx.bounds.width - clickSize - 6),
+                Math.max(0, ctx.bounds.height - 8));
         const textItem = ctx.renderer.createSinglelineText(ctx.shape, textAreaBounds);
 
         ctx.renderer.setForegroundColor(textItem, ctx.shape);

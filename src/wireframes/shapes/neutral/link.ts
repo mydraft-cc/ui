@@ -36,7 +36,7 @@ export class Link extends AbstractControl {
 
         const w = Math.round(Math.min(b.width, ctx.bounds.width));
         const x = Math.round((ctx.bounds.width - w) * 0.5);
-        const y = Math.round((ctx.bounds.centerY + fontSize * 0.5)) +
+        const y = Math.round((ctx.bounds.cy + fontSize * 0.5)) +
                     (ctx.shape.appearance.get(DiagramShape.APPEARANCE_STROKE_THICKNESS) % 2 === 1 ? 0.5 : 0);
 
         const underlineItem = ctx.renderer.createPath(ctx.shape, `M${x},${y} L${x + w},${y}`);

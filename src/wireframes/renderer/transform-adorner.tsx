@@ -187,7 +187,7 @@ export class TransformAdorner extends React.Component<TransformAdornerProps> imp
         for (let element of this.allElements) {
             const box = this.renderer.getBounds(element, true);
 
-            if (box.containsVec(unrotated)) {
+            if (box.contains(unrotated)) {
                 return element;
             }
         }
@@ -276,7 +276,7 @@ export class TransformAdorner extends React.Component<TransformAdornerProps> imp
     }
 
     private getResizeDeltaSize(angle: Rotation, cummulativeTranslation: Vec2) {
-        const delta = Vec2.rotated(cummulativeTranslation.mulScalar(2), Vec2.ZERO, angle.negate()).mul(this.resizeDragOffset);
+        const delta = Vec2.rotated(cummulativeTranslation.mul(2), Vec2.ZERO, angle.negate()).mul(this.resizeDragOffset);
 
         const snapResult =
             this.snapManager.snapResizing(this.props.selectedDiagram, this.startTransform, delta,

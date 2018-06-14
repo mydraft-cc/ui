@@ -1,11 +1,7 @@
 import * as svg from 'svg.js';
 export * from './abstract-renderer';
 
-import {
-    Rect2,
-    SVGHelper,
-    Vec2
-} from '@app/core';
+import { Rect2, SVGHelper } from '@app/core';
 
 import { DiagramShape, Transform } from '@app/wireframes/model';
 
@@ -290,10 +286,10 @@ export class SVGRenderer implements AbstractRenderer {
             this.setTransform(element, to.transform);
         } else if (to instanceof Transform) {
             SVGHelper.transform(e, {
-                x: to.position.x - 0.5 * to.size.x,
-                y: to.position.y - 0.5 * to.size.y,
-                w: to.size.x,
-                h: to.size.y,
+                x:  to.position.x - 0.5 * to.size.x,
+                y:  to.position.y - 0.5 * to.size.y,
+                w:  to.size.x,
+                h:  to.size.y,
                 rx: to.position.x,
                 ry: to.position.y,
                 rotation: to.rotation.degree
@@ -380,6 +376,6 @@ export class SVGRenderer implements AbstractRenderer {
             b -= 0.5;
         }
 
-        return new Rect2(new Vec2(l, t), new Vec2(r - l, b - t));
+        return new Rect2(l, t, r - l, b - t);
     }
 }

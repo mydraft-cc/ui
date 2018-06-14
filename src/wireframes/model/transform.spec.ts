@@ -22,7 +22,7 @@ describe('Transform', () => {
             rotation: 45
         };
 
-        const parsed = Transform.createFromJS(json);
+        const parsed = Transform.fromJS(json);
 
         expect(parsed.position.x).toEqual(10);
         expect(parsed.position.y).toEqual(20);
@@ -124,7 +124,7 @@ describe('Transform', () => {
     });
 
     it('Should create from rect', () => {
-        const actual = Transform.createFromRect(new Rect2(new Vec2(100, 60), new Vec2(30, 40)));
+        const actual = Transform.fromRect(new Rect2(100, 60, 30, 40));
         const expected = new Transform(new Vec2(115, 80), new Vec2(30, 40), Rotation.ZERO);
 
         expect(actual).toEqual(expected);
@@ -139,11 +139,11 @@ describe('Transform', () => {
 
     it('Should create from rects', () => {
         const rects = [
-            new Rect2(new Vec2(100, 60), new Vec2(30, 40)),
-            new Rect2(new Vec2(200, 60), new Vec2(30, 40))
+            new Rect2(100, 60, 30, 40),
+            new Rect2(200, 60, 30, 40)
         ];
 
-        const actual = Transform.createFromRects(rects);
+        const actual = Transform.fromRects(rects);
         const expected = new Transform(new Vec2(165, 80), new Vec2(130, 40), Rotation.ZERO);
 
         expect(actual).toEqual(expected);

@@ -41,8 +41,8 @@ export function appearance(): Reducer<EditorState> {
                 });
             case TRANSFORM_ITEMS:
                 return state.updateDiagram(action.diagramId, diagram => {
-                    const oldBounds = Transform.createFromJS(action.oldBounds);
-                    const newBounds = Transform.createFromJS(action.newBounds);
+                    const oldBounds = Transform.fromJS(action.oldBounds);
+                    const newBounds = Transform.fromJS(action.newBounds);
 
                     const set = DiagramItemSet.createFromDiagram(action.itemIds, diagram);
 

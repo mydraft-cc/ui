@@ -11,7 +11,7 @@ export class Transform {
     private readonly lazy: { aabb: Rect2 | null } = { aabb: null };
 
     public get halfSize(): Vec2 {
-        return this.size.mulScalar(0.5);
+        return this.size.mul(0.5);
     }
 
     public get aabb(): Rect2 {
@@ -26,15 +26,15 @@ export class Transform {
         Object.freeze(this);
     }
 
-    public static createFromRect(rect: Rect2): Transform {
-        return new Transform(rect.position.add(rect.size.mulScalar(0.5)), rect.size, Rotation.ZERO);
+    public static fromRect(rect: Rect2): Transform {
+        return new Transform(new Vec2(rect.cx, rect.cy), new Vec2(rect.w, rect.h), Rotation.ZERO);
     }
 
-    public static createFromRects(rects: Rect2[]): Transform {
-        return Transform.createFromRect(Rect2.fromRects(rects));
+    public static fromRects(rects: Rect2[]): Transform {
+        return Transform.fromRect(Rect2.fromRects(rects));
     }
 
-    public static createFromJS(js: any): Transform {
+    public static fromJS(js: any): Transform {
         return new Transform(new Vec2(js.position.x, js.position.y), new Vec2(js.size.x, js.size.y), Rotation.fromDegree(js.rotation));
     }
 
@@ -55,7 +55,7 @@ export class Transform {
 
         const rect = Rect2.fromRects(unrotatedTransformAabbs);
 
-        return new Transform(rect.position.add(rect.size.mulScalar(0.5)), rect.size, rotation);
+        return new Transform(new Vec2(rect.cx, rect.cy), new Vec2(rect.w, rect.h), rotation);
     }
 
     public eq(t: Transform) {
@@ -167,7 +167,7 @@ export class Transform {
 
     private ensureAabb() {
         if (this.lazy.aabb === null) {
-            this.lazy.aabb = Rect2.rotated(this.position.sub(this.size.mulScalar(0.5)), this.size, this.rotation);
+            this.lazy.aabb = Rect2.rotated(this.position.sub(this.size.mul(0.5)), this.size, this.rotation);
 
             Object.freeze(this.lazy);
         }

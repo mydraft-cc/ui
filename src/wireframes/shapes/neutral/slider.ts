@@ -44,7 +44,7 @@ export class Slider extends AbstractControl {
     }
 
     protected renderInternal(ctx: AbstractContext) {
-        const sliderBounds = new Rect2(new Vec2(HEIGHT_TOTAL * 0.5, (HEIGHT_TOTAL - HEIGHT_BORDER) * 0.5), new Vec2(ctx.bounds.width - HEIGHT_TOTAL, HEIGHT_BORDER));
+        const sliderBounds = new Rect2(HEIGHT_TOTAL * 0.5, (HEIGHT_TOTAL - HEIGHT_BORDER) * 0.5, ctx.bounds.width - HEIGHT_TOTAL, HEIGHT_BORDER);
 
         const relative = ctx.shape.appearance.get(VALUE) / 100;
 
@@ -66,12 +66,12 @@ export class Slider extends AbstractControl {
     private createBackground(ctx: AbstractContext, bounds: Rect2, relative: number) {
         const clipMask = ctx.renderer.createRectangle(0, bounds.height * 0.5, bounds);
 
-        const activeBounds = new Rect2(bounds.position, new Vec2(bounds.width * relative, bounds.height));
+        const activeBounds = new Rect2(bounds.x, bounds.y, bounds.width * relative, bounds.height);
         const activeShape = ctx.renderer.createRectangle(0, 0, activeBounds);
 
         ctx.renderer.setBackgroundColor(activeShape, ctx.shape.appearance.get(ACCENT_COLOR));
 
-        const inactiveBounds = new Rect2(new Vec2(bounds.x + bounds.width * relative, bounds.top), new Vec2(bounds.width * (1 - relative), bounds.height));
+        const inactiveBounds = new Rect2(bounds.x + bounds.width * relative, bounds.top, bounds.width * (1 - relative), bounds.height);
         const inactiveShape = ctx.renderer.createRectangle(0, 0, inactiveBounds);
 
         ctx.renderer.setBackgroundColor(inactiveShape, ctx.shape);

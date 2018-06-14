@@ -61,9 +61,9 @@ export class Shape extends AbstractControl {
         } else if (shapeType === SHAPE_ELLIPSE) {
             shapeItem = ctx.renderer.createEllipse(ctx.shape, ctx.bounds);
         } else if (shapeType === SHAPE_TRIANGLE) {
-            shapeItem = ctx.renderer.createPath(ctx.shape, `M0 ${b.bottom} L${b.centerX} ${b.top} L${b.right} ${b.bottom} z`, ctx.bounds);
+            shapeItem = ctx.renderer.createPath(ctx.shape, `M0 ${b.bottom} L${b.cx} ${b.top} L${b.right} ${b.bottom} z`, ctx.bounds);
         } else if (shapeType === SHAPE_RHOMBUS) {
-            shapeItem = ctx.renderer.createPath(ctx.shape, `M${b.centerX} ${b.top} L${b.right} ${b.centerY} L${b.centerX} ${b.bottom} L${b.left} ${b.centerY} z`, ctx.bounds);
+            shapeItem = ctx.renderer.createPath(ctx.shape, `M${b.cx} ${b.top} L${b.right} ${b.cy} L${b.cx} ${b.bottom} L${b.left} ${b.cy} z`, ctx.bounds);
         } else {
             shapeItem = ctx.renderer.createRectangle(ctx.shape, 0, ctx.bounds);
         }

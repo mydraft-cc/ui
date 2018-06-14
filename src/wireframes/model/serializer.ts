@@ -143,6 +143,6 @@ export class Serializer {
     }
 
     private static deserializeTransform(shape: DiagramShape, input: any): DiagramShape {
-        return shape.transformTo(Transform.createFromJS(input['transform']));
+        return shape.transformTo(Transform.fromJS(input['transform']));
     }
 }

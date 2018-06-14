@@ -42,7 +42,7 @@ describe('Vec2', () => {
     });
 
     it('should add by scalar correctly', () => {
-        const actual = new Vec2(15, 12).addScalar(3);
+        const actual = new Vec2(15, 12).add(3);
         const expected = new Vec2(18, 15);
 
         expect(actual).toEqual(expected);
@@ -56,7 +56,7 @@ describe('Vec2', () => {
     });
 
     it('should subtract by scalar correctly', () => {
-        const actual = new Vec2(15, 12).subScalar(3);
+        const actual = new Vec2(15, 12).sub(3);
         const expected = new Vec2(12, 9);
 
         expect(actual).toEqual(expected);
@@ -70,7 +70,7 @@ describe('Vec2', () => {
     });
 
     it('should multiply by scalar correctly', () => {
-        const actual = new Vec2(15, 12).mulScalar(3);
+        const actual = new Vec2(15, 12).mul(3);
         const expected = new Vec2(45, 36);
 
         expect(actual).toEqual(expected);
@@ -84,7 +84,7 @@ describe('Vec2', () => {
     });
 
     it('should divide by scalar correctly', () => {
-        const actual = new Vec2(15, 12).divScalar(3);
+        const actual = new Vec2(15, 12).div(3);
         const expected = new Vec2(5, 4);
 
         expect(actual).toEqual(expected);

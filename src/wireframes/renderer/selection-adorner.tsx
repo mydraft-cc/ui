@@ -80,10 +80,10 @@ export class SelectionAdorner extends React.Component<SelectionAdornerProps> imp
             return next();
         }
 
-        const selectedRect = Rect2.fromVecs([this.dragStart, event.position]);
+        const rect = Rect2.fromVecs([this.dragStart, event.position]);
 
-        if (selectedRect.area > 0) {
-            this.transformShape(this.selectionShape, selectedRect.position, selectedRect.size, 0);
+        if (rect.area > 0) {
+            this.transformShape(this.selectionShape, new Vec2(rect.x, rect.y), new Vec2(rect.w, rect.h), 0);
         } else {
             this.renderer.setVisibility(this.selectionShape, false);
         }
@@ -112,7 +112,7 @@ export class SelectionAdorner extends React.Component<SelectionAdornerProps> imp
     }
 
     private selectMultiple(rect: Rect2, diagram: Diagram): string[] {
-        const selectedItems = diagram.rootIds.map(id => diagram.items.get(id)).filter(i => i && rect.containsRect(i.bounds(diagram).aabb)).map(i => i!);
+        const selectedItems = diagram.rootIds.map(id => diagram.items.get(id)).filter(i => i && rect.contains(i.bounds(diagram).aabb)).map(i => i!);
         const selection = calculateSelection(selectedItems, diagram, true);
 
         return selection;
@@ -121,7 +121,7 @@ export class SelectionAdorner extends React.Component<SelectionAdornerProps> imp
     private selectSingle(event: SvgEvent, diagram: Diagram): string[] {
         let selection: string[] = [];
 
-        if (event.shape && event.shape.bounds(diagram).aabb.containsVec(event.position)) {
+        if (event.shape && event.shape.bounds(diagram).aabb.contains(event.position)) {
             selection = calculateSelection([event.shape], diagram, true, this.props.interactionService.isControlKeyPressed());
         }
 

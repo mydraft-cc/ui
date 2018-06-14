@@ -147,7 +147,7 @@ export module SVGHelper {
     }
 
     export function box2Rect(box: svg.Box): Rect2 {
-        return new Rect2(new Vec2(box.x, box.y), new Vec2(box.w, box.h));
+        return new Rect2(box.x, box.y, box.w, box.h);
     }
 
     export function toColor(value: string | number | Color): string {

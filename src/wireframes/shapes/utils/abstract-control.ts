@@ -45,7 +45,7 @@ export abstract class AbstractControl implements Renderer {
     }
 
     public render(shape: DiagramShape, showDebugMarkers: boolean): any {
-        const ctx = new AbstractContext(RENDERER, shape, new Rect2(Vec2.ZERO, shape.transform.size));
+        const ctx = new AbstractContext(RENDERER, shape, new Rect2(0, 0, shape.transform.size.x, shape.transform.size.y));
 
         if (RENDER_BACKGROUND) {
             const backgroundItem = ctx.renderer.createRectangle(0);

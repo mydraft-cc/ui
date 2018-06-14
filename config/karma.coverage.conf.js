@@ -13,11 +13,11 @@ module.exports = function (config) {
          * Load additional test shim to setup angular2 for testing
          */
         files: [
-            { pattern: './app-config/karma-test-shim.js', watched: false }
+            { pattern: './config/karma-test-shim.js', watched: false }
         ],
 
         preprocessors: {
-            './app-config/karma-test-shim.js': ['webpack', 'sourcemap'],
+            './config/karma-test-shim.js': ['webpack', 'sourcemap'],
         },
 
         /**

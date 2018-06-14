@@ -1,4 +1,4 @@
-import { Rect2, Vec2 } from '@app/core';
+import { Rect2 } from '@app/core';
 
 import { DiagramShape } from '@app/wireframes/model';
 
@@ -55,11 +55,9 @@ export class Dropdown extends AbstractControl {
 
     private createText(ctx: AbstractContext, clickSize: number) {
         const textAreaBounds =
-            new Rect2(
-                new Vec2(14, 4),
-                new Vec2(
-                    Math.max(0, ctx.bounds.width - clickSize - 6),
-                    Math.max(0, ctx.bounds.height - 8)));
+            new Rect2(14, 4,
+                Math.max(0, ctx.bounds.width - clickSize - 6),
+                Math.max(0, ctx.bounds.height - 8));
         const textItem = ctx.renderer.createSinglelineText(ctx.shape, textAreaBounds);
 
         ctx.renderer.setForegroundColor(textItem, ctx.shape);

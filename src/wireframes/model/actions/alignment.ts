@@ -91,11 +91,14 @@ function distributeHorizontally(itemIds: string[], diagram: Diagram) {
     let x = bounds.left;
 
     for (let target of targets.sort((a, b) => a.aabb.x - b.aabb.x)) {
-        if (x !== target.aabb.position.x) {
-            const newPosition = new Vec2(x, target.aabb.position.y);
+        if (x !== target.aabb.x) {
+            const newPosition = new Vec2(x, target.aabb.y);
+
+            const dx = newPosition.x - target.aabb.x;
+            const dy = newPosition.y - target.aabb.y;
 
             diagram = diagram.updateItem(target.itemId, item => {
-                return item.transformByBounds(target.transform, target.transform.moveBy(newPosition.sub(target.aabb.position)));
+                return item.transformByBounds(target.transform, target.transform.moveBy(new Vec2(dx, dy)));
             });
         }
 
@@ -121,11 +124,14 @@ function distributeVertically(itemIds: string[], diagram: Diagram) {
     let y = bounds.top;
 
     for (let target of targets.sort((a, b) => a.aabb.y - b.aabb.y)) {
-        if (y !== target.aabb.position.y) {
-            const newPosition = new Vec2(target.aabb.position.x, y);
+        if (y !== target.aabb.y) {
+            const newPosition = new Vec2(target.aabb.x, y);
+
+            const dx = newPosition.x - target.aabb.x;
+            const dy = newPosition.y - target.aabb.y;
 
             diagram = diagram.updateItem(target.itemId, item => {
-                return item.transformByBounds(target.transform, target.transform.moveBy(newPosition.sub(target.aabb.position)));
+                return item.transformByBounds(target.transform, target.transform.moveBy(new Vec2(dx, dy)));
             });
         }
 
@@ -143,9 +149,12 @@ function alignShapes(itemIds: string[], diagram: Diagram, transformer: (bounds: 
     for (let target of targets) {
         const newPosition = transformer(bounds, target.aabb);
 
-        if (newPosition.ne(target.aabb.position)) {
+        const dx = newPosition.x - target.aabb.x;
+        const dy = newPosition.y - target.aabb.y;
+
+        if (dx !== 0 || dy !== 0) {
             diagram = diagram.updateItem(target.itemId, item => {
-                return item.transformByBounds(target.transform, target.transform.moveBy(newPosition.sub(target.aabb.position)));
+                return item.transformByBounds(target.transform, target.transform.moveBy(new Vec2(dx, dy)));
             });
         }
     }

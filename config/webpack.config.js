@@ -45,29 +45,20 @@ module.exports = {
          *
          * See: https://webpack.js.org/configuration/module/#module-rules
          */
-        rules: [
-            {
-                test: /\.ts$/,
+        rules: [{
+                test: /\.ts[x]?$/,
                 use: [{
                     loader: 'awesome-typescript-loader'
                 }, {
                     loader: 'tslint-loader' 
                 }],
-                exclude: /node_modules/
+                exclude: [/node_modules/]
             }, {
-                test: /\.tsx$/,
-                use: [{
-                    loader: 'awesome-typescript-loader'
-                }, {
-                    loader: 'tslint-loader' 
-                }],
-                exclude: /node_modules/
-            }, {
-                test: /\.ts$/,
+                test: /\.ts[x]?$/,
                 use: [{
                     loader: 'awesome-typescript-loader' 
                 }],
-                include: /node_modules/
+                include: [/node_modules/]
             }, {
                 test: /\.(woff|woff2|ttf|eot)(\?.*$|$)/,
                 use: [{

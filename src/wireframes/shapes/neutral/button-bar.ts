@@ -1,8 +1,4 @@
-import {
-    Color,
-    Rect2,
-    Vec2
-} from '@app/core';
+import { Color, Rect2 } from '@app/core';
 
 import {
     ColorConfigurable,
@@ -49,7 +45,7 @@ export class ButtonBar extends AbstractControl {
         for (let i = 0; i < parts.length; i++) {
             const part = parts[i];
 
-            const bounds = new Rect2(new Vec2(w * i, 0), new Vec2(w, h));
+            const bounds = new Rect2(w * i, 0, w, h);
 
             let partItem: any;
 
