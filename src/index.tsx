@@ -20,9 +20,7 @@ import {
     EditorState,
     SELECT_DIAGRAM,
     SELECT_ITEMS,
-    Serializer,
-    toastMiddleware,
-    undoable
+    Serializer
 } from '@app/wireframes/model';
 
 import { RendererContext, SerializerContext } from '@app/context';
@@ -53,7 +51,7 @@ const editorReducer: Reducer<EditorState> = (state: EditorState, action: any) =>
     return state;
 };
 
-const undoableReducer = undoable(editorReducer,
+const undoableReducer = Reducers.undoable(editorReducer,
     EditorState.empty(),
     [
         SELECT_DIAGRAM,
@@ -74,7 +72,7 @@ const store = createStore(
             routing: routerReducer,
                  ui: Reducers.ui(createInitialUIState())
     }), undoableReducer, editorReducer),
-    composeEnhancers(applyMiddleware(thunk, toastMiddleware(), routerMiddleware(history)))
+    composeEnhancers(applyMiddleware(thunk, Reducers.toastMiddleware(), routerMiddleware(history)))
 );
 
 import { AppContainer } from './app';

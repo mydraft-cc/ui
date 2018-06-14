@@ -2,7 +2,7 @@ import * as svg from 'svg.js';
 
 import { MathHelper, Vec2 } from '@app/core';
 
-import { DiagramShape } from '@appwireframes/model';
+import { DiagramShape } from '@app/wireframes/model';
 
 export class SvgEvent {
     constructor(

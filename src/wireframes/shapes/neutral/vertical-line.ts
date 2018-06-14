@@ -1,4 +1,4 @@
-import { Vec2 } from '@appcore';
+import { Vec2 } from '@app/core';
 
 import { Constraint, DiagramShape } from '@app/wireframes/model';
 
