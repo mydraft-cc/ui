@@ -6,6 +6,8 @@ import {
     Vec2
 } from '@app/core';
 
+import { sizeInPx } from './react';
+
 export interface MatrixTransform {
     rect?: Rect2;
 
@@ -43,7 +45,7 @@ export module SVGHelper {
         const div = document.createElement('div');
         div.className = 'no-select';
         div.style.textAlign = alignment || 'center';
-        div.style.fontSize = (fontSize || 10) + 'px';
+        div.style.fontSize = sizeInPx(fontSize || 10);
         div.style.fontFamily = 'inherit';
         div.style.overflow = 'hidden';
         div.style.verticalAlign = verticalAlign || 'middle';
@@ -126,10 +128,10 @@ export module SVGHelper {
                 const text = <HTMLDivElement>element.node.children[0];
 
                 if (text.style.verticalAlign === 'middle') {
-                    text.style.lineHeight = h + 'px';
+                    text.style.lineHeight = sizeInPx(h);
                 }
 
-                text.style.height = h + 'px';
+                text.style.height = sizeInPx(h);
             }
 
             element.size(w, h);

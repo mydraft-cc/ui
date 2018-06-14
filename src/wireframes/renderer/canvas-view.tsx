@@ -1,6 +1,8 @@
 import * as React from 'react';
 import * as svg from 'svg.js';
 
+import { sizeInPx } from '@app/core';
+
 export interface CanvasViewProps {
     // The width of the canvas.
     zoomedWidth: number;
@@ -47,7 +49,7 @@ export class CanvasView extends React.Component<CanvasViewProps> {
             const w = props.zoomedWidth / props.zoom;
             const h = props.zoomedHeight / props.zoom;
 
-            this.document.style({ width: w + 'px', height: h + 'px'});
+            this.document.style({ width: sizeInPx(w), height: sizeInPx(h) });
             this.document.untransform();
             this.document.scale(
                 props.zoom,

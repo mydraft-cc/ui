@@ -1,7 +1,11 @@
 import * as svg from 'svg.js';
 export * from './abstract-renderer';
 
-import { Rect2, SVGHelper } from '@app/core';
+import {
+    Rect2,
+    sizeInPx,
+    SVGHelper
+} from '@app/core';
 
 import { DiagramShape, Transform } from '@app/wireframes/model';
 
@@ -351,7 +355,7 @@ export class SVGRenderer implements AbstractRenderer {
 
     public getTextWidth(text: string, fontSize: number, fontFamily: string): number | undefined {
         this.measureDiv.textContent = text;
-        this.measureDiv.style.fontSize = fontSize + 'px';
+        this.measureDiv.style.fontSize = sizeInPx(fontSize);
         this.measureDiv.style.fontFamily = fontFamily;
 
         return this.measureDiv.clientWidth + 1;

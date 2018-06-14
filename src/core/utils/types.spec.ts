@@ -8,6 +8,13 @@ describe('Types', () => {
         expect(Types.hash(new RegExp('.*'))).toEqual('{}');
     });
 
+    it('should return empty string when stringify fails', () =>  {
+        const value = {};
+        value['self'] = value;
+
+        expect(Types.hash(value)).toEqual('');
+    });
+
     it('should make string check', () => {
         expect(Types.isString('')).toBeTruthy();
         expect(Types.isString('string')).toBeTruthy();
