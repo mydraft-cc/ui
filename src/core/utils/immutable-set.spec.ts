@@ -10,6 +10,12 @@ describe('ImmutableSet', () => {
         expect(set_1.contains('3')).toBeTruthy();
     });
 
+    it('should return empty instance if creating map from empty array', () => {
+        const list = ImmutableSet.of();
+
+        expect(list).toBe(ImmutableSet.empty());
+    });
+
     it('should add items', () => {
         const set_1 = ImmutableSet.empty();
         const set_2 = set_1.add('1');

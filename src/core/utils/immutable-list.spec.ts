@@ -23,6 +23,18 @@ describe('ImmutableList', () => {
         expect(list_1.get(2)).toBe(v3);
     });
 
+    it('should return first item', () => {
+        const list_1 = ImmutableList.of(v1, v2, v3);
+
+        expect(list_1.first).toBe(v1);
+    });
+
+    it('should return last item', () => {
+        const list_1 = ImmutableList.of(v1, v2, v3);
+
+        expect(list_1.last).toBe(v3);
+    });
+
     it('should add values to list', () => {
         const list_1 = ImmutableList.empty<string>();
         const list_2 = list_1.add(v1);
