@@ -56,7 +56,7 @@ export class Checkbox extends AbstractControl {
     private createBox(ctx: AbstractContext) {
         const s = BOX_SIZE;
         const x = BOX_MARGIN;
-        const y = (ctx.bounds.w - s) * 0.5;
+        const y = (ctx.bounds.h - s) * 0.5;
 
         const bounds = new Rect2(x, y, s, s);
 

@@ -20,7 +20,7 @@ export class Icon extends AbstractControl {
     }
 
     protected renderInternal(ctx: AbstractContext) {
-        const fontSize = Math.min(ctx.bounds.x, ctx.bounds.y) - 16;
+        const fontSize = Math.min(ctx.bounds.w, ctx.bounds.h) - 10;
 
         const config = { fontSize, text: ctx.shape.appearance.get(DiagramShape.APPEARANCE_TEXT), alignment: 'center' };
 
