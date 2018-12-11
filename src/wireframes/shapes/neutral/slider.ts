@@ -44,12 +44,12 @@ export class Slider extends AbstractControl {
     }
 
     protected renderInternal(ctx: AbstractContext) {
-        const sliderBounds = new Rect2(new Vec2(HEIGHT_TOTAL * 0.5, (HEIGHT_TOTAL - HEIGHT_BORDER) * 0.5), new Vec2(ctx.bounds.width - HEIGHT_TOTAL, HEIGHT_BORDER));
+        const slideRect = Rect2.create(HEIGHT_TOTAL * 0.5, (HEIGHT_TOTAL - HEIGHT_BORDER) * 0.5, ctx.bounds.width - HEIGHT_TOTAL, HEIGHT_BORDER);
 
         const relative = ctx.shape.appearance.get(VALUE) / 100;
 
-        this.createBackground(ctx, sliderBounds, relative);
-        this.createBorder(ctx, sliderBounds);
+        this.createBackground(ctx, slideRect, relative);
+        this.createBorder(ctx, slideRect);
         this.createThumb(ctx, relative);
     }
 
@@ -66,17 +66,17 @@ export class Slider extends AbstractControl {
     private createBackground(ctx: AbstractContext, bounds: Rect2, relative: number) {
         const clipMask = ctx.renderer.createRoundedRectangle(bounds, 0, bounds.height * 0.5);
 
-        const activeBounds = new Rect2(bounds.position, new Vec2(bounds.width * relative, bounds.height));
-        const activeShape = ctx.renderer.createRoundedRectangle(activeBounds, 0, 0);
+        const activeRect = new Rect2(bounds.position, new Vec2(bounds.width * relative, bounds.height));
+        const activeItem = ctx.renderer.createRoundedRectangle(activeRect, 0, 0);
 
-        ctx.renderer.setBackgroundColor(activeShape, ctx.shape.appearance.get(ACCENT_COLOR));
+        ctx.renderer.setBackgroundColor(activeItem, ctx.shape.appearance.get(ACCENT_COLOR));
 
-        const inactiveBounds = new Rect2(new Vec2(bounds.x + bounds.width * relative, bounds.top), new Vec2(bounds.width * (1 - relative), bounds.height));
-        const inactiveShape = ctx.renderer.createRoundedRectangle(inactiveBounds, 0, 0);
+        const inactiveRect = new Rect2(new Vec2(bounds.x + bounds.width * relative, bounds.top), new Vec2(bounds.width * (1 - relative), bounds.height));
+        const inactiveItem = ctx.renderer.createRoundedRectangle(inactiveRect, 0, 0);
 
-        ctx.renderer.setBackgroundColor(inactiveShape, ctx.shape);
+        ctx.renderer.setBackgroundColor(inactiveItem, ctx.shape);
 
-        ctx.add(ctx.renderer.createClipGroup(clipMask, activeShape, inactiveShape));
+        ctx.add(ctx.renderer.createClipGroup(clipMask, activeItem, inactiveItem));
     }
 
     private createBorder(ctx: AbstractContext, bounds: Rect2) {

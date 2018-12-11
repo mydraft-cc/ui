@@ -15,7 +15,7 @@ export class Title extends React.PureComponent<TitleProps> {
         document.title = props.text;
     }
 
-    public render() {
+    public render(): any {
         return null;
     }
 }

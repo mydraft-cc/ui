@@ -1,5 +1,5 @@
 
-import { Rect2, Vec2 } from '@app/core';
+import { Rect2 } from '@app/core';
 
 import { DiagramShape } from '@app/wireframes/model';
 
@@ -35,9 +35,8 @@ export class Numeric extends AbstractControl {
     }
 
     private createClickArea(ctx: AbstractContext, clickSize: number) {
-        const clickAreaBounds =
-            new Rect2(new Vec2(ctx.bounds.right - clickSize, 0), new Vec2(clickSize, ctx.bounds.height));
-        const clickAreaItem = ctx.renderer.createRoundedRectangleRight(clickAreaBounds, ctx.shape, CommonTheme.CONTROL_BORDER_RADIUS);
+        const clickAreaRect = Rect2.create(ctx.bounds.right - clickSize, 0, clickSize, ctx.bounds.height);
+        const clickAreaItem = ctx.renderer.createRoundedRectangleRight(clickAreaRect, ctx.shape, CommonTheme.CONTROL_BORDER_RADIUS);
 
         ctx.renderer.setStrokeColor(clickAreaItem, ctx.shape);
         ctx.renderer.setBackgroundColor(clickAreaItem, ctx.shape);
@@ -72,9 +71,8 @@ export class Numeric extends AbstractControl {
     }
 
     private createInputArea(ctx: AbstractContext, clickSize: number) {
-        const inputAreaBounds =
-            new Rect2(Vec2.ZERO, new Vec2(ctx.bounds.width - clickSize + 1, ctx.bounds.height));
-        const inputAreaItem = ctx.renderer.createRoundedRectangleLeft(inputAreaBounds, ctx.shape, CommonTheme.CONTROL_BORDER_RADIUS);
+        const inputAreaRect = Rect2.create(0, 0, ctx.bounds.width - clickSize + 1, ctx.bounds.height);
+        const inputAreaItem = ctx.renderer.createRoundedRectangleLeft(inputAreaRect, ctx.shape, CommonTheme.CONTROL_BORDER_RADIUS);
 
         ctx.renderer.setStrokeColor(inputAreaItem, ctx.shape);
         ctx.renderer.setBackgroundColor(inputAreaItem, 0xffffff);
@@ -83,13 +81,12 @@ export class Numeric extends AbstractControl {
     }
 
     private createText(ctx: AbstractContext, clickSize: number) {
-        const textAreaBounds =
-            new Rect2(
-                new Vec2(14, 4),
-                new Vec2(
-                    Math.max(0, ctx.bounds.width - clickSize - 6),
-                    Math.max(0, ctx.bounds.height - 8)));
-        const textItem = ctx.renderer.createSinglelineText(textAreaBounds, ctx.shape);
+        const textRect =
+            Rect2.create(
+                14, 4,
+                Math.max(0, ctx.bounds.width - clickSize - 6),
+                Math.max(0, ctx.bounds.height - 8));
+        const textItem = ctx.renderer.createSinglelineText(textRect, ctx.shape);
 
         ctx.renderer.setForegroundColor(textItem, ctx.shape);
 

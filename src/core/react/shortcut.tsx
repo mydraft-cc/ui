@@ -35,7 +35,7 @@ export class Shortcut extends React.Component<ShortcutProps> {
         return false;
     }
 
-    public render() {
+    public render(): any {
         return null;
     }
 }

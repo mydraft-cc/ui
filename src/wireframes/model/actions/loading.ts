@@ -3,7 +3,7 @@ import { Dispatch, Reducer } from 'redux';
 
 let url = 'https://api.mydraft.cc';
 
-if (process.env.NODE_ENV === 'development') {
+if (process.env.NODE_ENV === 'test_development') {
     url = 'http://localhost:4000';
 }
 

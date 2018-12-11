@@ -23,6 +23,7 @@
     &-image {
         @include improve-image;
         max-width: 80%;
+        max-height: 70px;
     }
 }
 

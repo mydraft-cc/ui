@@ -78,7 +78,8 @@ export class RadioButton extends AbstractControl {
         const w = ctx.shape.transform.size.x - TEXT_POSITION_X;
         const h = ctx.shape.transform.size.y;
 
-        const textItem = ctx.renderer.createSinglelineText(new Rect2(new Vec2(TEXT_POSITION_X, 0), new Vec2(w, h)), ctx.shape);
+        const textRect = Rect2.create(TEXT_POSITION_X, 0, w, h);
+        const textItem = ctx.renderer.createSinglelineText(textRect, ctx.shape);
 
         ctx.add(textItem);
     }

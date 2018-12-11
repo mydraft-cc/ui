@@ -15,7 +15,7 @@ export class UserReport extends React.Component {
         }, 1000);
     }
 
-    public render() {
+    public render(): any {
         return null;
     }
 }

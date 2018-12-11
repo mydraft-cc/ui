@@ -147,6 +147,13 @@ describe('Rect2', () => {
         expect(rect.containsRect(other)).toBeFalsy();
     });
 
+    it('should create rect from numbers', () => {
+        const actual = Rect2.create(10, 20, 30, 40);
+        const expected = new Rect2(new Vec2(10, 20), new Vec2(30, 40));
+
+        expect(actual).toEqual(expected);
+    });
+
     it('should return empty when creating from null vectors', () => {
         const actual = Rect2.createFromVecs(null);
         const expected = Rect2.EMPTY;

@@ -448,7 +448,7 @@ export class TransformAdorner extends React.Component<TransformAdornerProps> imp
         }
     }
 
-    public render() {
+    public render(): any {
         return null;
     }
 }

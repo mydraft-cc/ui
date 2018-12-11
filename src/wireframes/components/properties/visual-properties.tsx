@@ -1,4 +1,5 @@
 import { Button, Col, Row, Select } from 'antd';
+import { ButtonType } from 'antd/lib/button';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators, Dispatch } from 'redux';
@@ -95,7 +96,7 @@ const DEFINED_STROKE_THICKNESSES = [1, 2, 4, 6, 8];
 const DEFINED_FONT_SIZES = [4, 6, 8, 10, 12, 14, 16, 18, 20, 24, 28, 32, 36, 40, 48, 60];
 
 const VisualProperties = (props: VisualPropertiesProps) => {
-    const alignTextType = (value: string) => {
+    const alignTextType = (value: string): ButtonType => {
         return value === props.textAlignment ? 'primary' : undefined;
     };
 

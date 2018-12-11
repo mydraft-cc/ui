@@ -1,4 +1,4 @@
-import { Rect2, Vec2 } from '@app/core';
+import { Rect2 } from '@app/core';
 
 import {
     Configurable,
@@ -58,9 +58,9 @@ export class Checkbox extends AbstractControl {
         const x = BOX_MARGIN;
         const y = (ctx.bounds.size.y - s) * 0.5;
 
-        const bounds = new Rect2(new Vec2(x, y), new Vec2(s, s));
+        const rect = Rect2.create(x, y, s, s);
 
-        const boxItem = ctx.renderer.createRoundedRectangle(bounds, ctx.shape, 0);
+        const boxItem = ctx.renderer.createRoundedRectangle(rect, ctx.shape, 0);
 
         ctx.renderer.setStrokeColor(boxItem, ctx.shape);
         ctx.renderer.setBackgroundColor(boxItem, ctx.shape);
@@ -70,13 +70,13 @@ export class Checkbox extends AbstractControl {
         const state = ctx.shape.appearance.get(STATE_KEY);
 
         if (state === STATE_INTERDEMINATE) {
-            const interdeminateBoxItem = ctx.renderer.createRoundedRectangle(bounds.deflate(4, 4), 0, 0);
+            const interdeminateBoxItem = ctx.renderer.createRoundedRectangle(rect.deflate(4, 4), 0, 0);
 
             ctx.renderer.setBackgroundColor(interdeminateBoxItem, ctx.shape.appearance.get(DiagramShape.APPEARANCE_STROKE_COLOR));
 
             ctx.add(interdeminateBoxItem);
         } else if (state === STATE_CHECKED) {
-            const checkPathItem = ctx.renderer.createPath(`M${bounds.left + 3} ${bounds.centerY + 2} L${bounds.left + bounds.width * 0.4} ${bounds.bottom - 4} L${bounds.right - 3} ${bounds.top + 3}`, 2);
+            const checkPathItem = ctx.renderer.createPath(`M${rect.left + 3} ${rect.centerY + 2} L${rect.left + rect.width * 0.4} ${rect.bottom - 4} L${rect.right - 3} ${rect.top + 3}`, 2);
 
             ctx.renderer.setStrokeStyle(checkPathItem, 'butt', 'butt');
             ctx.renderer.setStrokeColor(checkPathItem, ctx.shape);
@@ -89,7 +89,8 @@ export class Checkbox extends AbstractControl {
         const w = ctx.shape.transform.size.x - TEXT_POSITION_X;
         const h = ctx.shape.transform.size.y;
 
-        const textItem = ctx.renderer.createSinglelineText(new Rect2(new Vec2(TEXT_POSITION_X, 0), new Vec2(w, h)), ctx.shape);
+        const textRect = Rect2.create(TEXT_POSITION_X, 0, w, h);
+        const textItem = ctx.renderer.createSinglelineText(textRect, ctx.shape);
 
         ctx.add(textItem);
     }

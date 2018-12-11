@@ -11,6 +11,7 @@ import { Label } from './neutral/label';
 import { Link } from './neutral/link';
 import { Numeric } from './neutral/numeric';
 import { Paragraph } from './neutral/paragraph';
+import { Phone } from './neutral/phone';
 import { Progress } from './neutral/progress';
 import { RadioButton } from './neutral/radio-button';
 import { Rectangle } from './neutral/rectangle';
@@ -42,6 +43,7 @@ export function registerRenderers(): RendererService {
         .addRenderer(new Link())
         .addRenderer(new Numeric())
         .addRenderer(new Paragraph())
+        .addRenderer(new Phone())
         .addRenderer(new Progress())
         .addRenderer(new RadioButton())
         .addRenderer(new Raster())

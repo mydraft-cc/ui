@@ -68,6 +68,10 @@ export class Rect2 {
         Object.freeze(this);
     }
 
+    public static create(x: number, y: number, w: number, h: number): Rect2 {
+        return new Rect2(new Vec2(x, y), new Vec2(w, h));
+    }
+
     public static createFromVecs(vecs: Vec2[] | null): Rect2 {
         if (!vecs || vecs.length === 0) {
             return Rect2.EMPTY;

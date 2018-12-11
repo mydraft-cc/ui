@@ -233,7 +233,7 @@ export class SelectionAdorner extends React.Component<SelectionAdornerProps> imp
         paperItem.visible = true;
     }
 
-    public render() {
+    public render(): any {
         return null;
     }
 }

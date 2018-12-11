@@ -1,8 +1,4 @@
-import {
-    Color,
-    Rect2,
-    Vec2
-} from '@app/core';
+import { Color, Rect2 } from '@app/core';
 
 import {
     ColorConfigurable,
@@ -49,18 +45,18 @@ export class ButtonBar extends AbstractControl {
         for (let i = 0; i < parts.length; i++) {
             const part = parts[i];
 
-            const bounds = new Rect2(new Vec2(w * i, 0), new Vec2(w, h));
+            const rect = Rect2.create(w * i, 0, w, h);
 
             let partItem: any;
 
             if (parts.length === 1) {
-                partItem = ctx.renderer.createRoundedRectangle(bounds, ctx.shape, CommonTheme.CONTROL_BORDER_RADIUS);
+                partItem = ctx.renderer.createRoundedRectangle(rect, ctx.shape, CommonTheme.CONTROL_BORDER_RADIUS);
             } else if (i === 0) {
-                partItem = ctx.renderer.createRoundedRectangleLeft(bounds, ctx.shape, CommonTheme.CONTROL_BORDER_RADIUS);
+                partItem = ctx.renderer.createRoundedRectangleLeft(rect, ctx.shape, CommonTheme.CONTROL_BORDER_RADIUS);
             } else if (i === parts.length - 1) {
-                partItem = ctx.renderer.createRoundedRectangleRight(bounds, ctx.shape, CommonTheme.CONTROL_BORDER_RADIUS);
+                partItem = ctx.renderer.createRoundedRectangleRight(rect, ctx.shape, CommonTheme.CONTROL_BORDER_RADIUS);
             } else {
-                partItem = ctx.renderer.createRoundedRectangle(bounds, ctx.shape, 0);
+                partItem = ctx.renderer.createRoundedRectangle(rect, ctx.shape, 0);
             }
 
             if (part.selected) {
@@ -71,7 +67,7 @@ export class ButtonBar extends AbstractControl {
                 ctx.renderer.setStrokeColor(partItem, ctx.shape);
             }
 
-            const textItem = ctx.renderer.createSinglelineText(bounds.deflate(4, 4), ctx.shape);
+            const textItem = ctx.renderer.createSinglelineText(rect.deflate(4, 4), ctx.shape);
 
             if (part.selected) {
                 if (accentColor.luminance > 0.4) {

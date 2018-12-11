@@ -19,9 +19,9 @@ export class Comment extends AbstractControl {
     }
 
     protected renderInternal(ctx: AbstractContext) {
-        const corner = Math.min(14, ctx.bounds.width, ctx.bounds.height) - .5;
+        const cornerItem = Math.min(14, ctx.bounds.width, ctx.bounds.height) - .5;
 
-        this.createBorder(ctx, corner);
+        this.createBorder(ctx, cornerItem);
         this.createText(ctx);
     }
 
