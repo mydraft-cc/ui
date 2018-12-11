@@ -13,7 +13,7 @@
     "noImplicitThis": true,
     "noUnusedLocals": true,
     "outDir": "build/dist",
-    "strictNullChecks": true,
+    "strictNullChecks": false,
     "sourceMap": true,
     "suppressImplicitAnyIndexErrors": true,
     "target": "es5",
