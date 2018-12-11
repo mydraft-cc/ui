@@ -47,7 +47,7 @@ const mapStateToProps = (state: { assets: AssetsState, editor: UndoableState<Edi
     };
 };
 
-const mapDispatchToProps = (dispatch: Dispatch<any>) => bindActionCreators({
+const mapDispatchToProps = (dispatch: Dispatch) => bindActionCreators({
     filterIcons, addIconToPosition
 }, dispatch);
 

@@ -7,6 +7,8 @@
 const plugins = {
     // https://github.com/webpack-contrib/mini-css-extract-plugin
     MiniCssExtractPlugin: require('mini-css-extract-plugin'),
+    // https://github.com/NMFR/optimize-css-assets-webpack-plugin
+    OptimizeCSSAssetsPlugin: require("optimize-css-assets-webpack-plugin")
 };
 
 helpers.removeLoaders(runConfig, ['scss']);
@@ -63,11 +65,16 @@ module.exports = webpackMerge(runConfig, {
                 use: [
                     plugins.MiniCssExtractPlugin.loader,
                 {
-                    loader: 'css-loader', options: { minimize: true }
+                    loader: 'css-loader'
                 }, {
                     loader: 'sass-loader', options: { includePaths: [helpers.root('src', 'style')] }
                 }]
             }
         ]
-    }
+    },
+    optimization: {
+        minimizer: [
+          new plugins.OptimizeCSSAssetsPlugin({})
+        ]
+    },
 });

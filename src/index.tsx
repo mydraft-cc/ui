@@ -85,7 +85,7 @@ const store = createStore(
     composeEnhancers(applyMiddleware(thunk, toastMiddleware(), routerMiddleware(history)))
 );
 
-import { AppContainer } from './app';
+import { AppContainer } from './App';
 
 const Root = (
     <SerializerContext.Provider value={serializer}>
@@ -94,7 +94,8 @@ const Root = (
                 <Router history={history}>
                     <Route path='/:token?' render={props => (
                         <>
-                            <AppContainer token={props.match.params.token} />
+                            <AppContainer token={props.match !== null ? props.match.params.token : ''} />
+
                             <UserReport />
                         </>
                     )} />

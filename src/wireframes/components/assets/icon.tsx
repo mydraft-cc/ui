@@ -11,13 +11,13 @@ interface IconProps {
     connectDragSource?: any;
 }
 
-const IconTarget: DragSourceSpec<IconProps> = {
+const IconTarget: DragSourceSpec<IconProps, any> = {
     beginDrag: props => {
         return { icon: props.icon.text };
     }
 };
 
-const IconConnect: DragSourceCollector = (connector, monitor) => {
+const IconConnect: DragSourceCollector<{}> = (connector, monitor) => {
     return { connectDragSource: connector.dragSource() };
 };
 

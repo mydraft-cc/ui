@@ -1,6 +1,12 @@
 import { push } from 'react-router-redux';
 import { Dispatch, Reducer } from 'redux';
 
+let url = 'https://api.mydraft.cc';
+
+if (process.env.NODE_ENV === 'development') {
+    url = 'http://localhost:4000';
+}
+
 import {
     addDiagram,
     EditorState,
@@ -15,7 +21,7 @@ import { showErrorToast, showInfoToast } from './ui';
 
 export const NEW_DIAGRAM = 'NEW_DIAGRAM';
 export const newDiagram = (navigate = true) => {
-    return (dispatch: Dispatch<any>) => {
+    return (dispatch: Dispatch) => {
         dispatch({ type: NEW_DIAGRAM });
 
         if (navigate) {
@@ -28,14 +34,20 @@ export const LOADING_STARTED = 'LOADING_STARTED';
 export const LOADING_FAILED = 'LOADING_FAILED';
 export const LOADING_SUCCEEDED = 'LOADING_SUCCEEDED';
 export const loadDiagramAsync = (token: string, navigate = true) => {
-    return (dispatch: Dispatch<any>, getState: () => LoadingStateInStore) => {
+    return (dispatch: Dispatch, getState: () => LoadingStateInStore) => {
         const state = getState();
 
         if (token && token.length > 0 && token !== state.loading.readToken) {
             dispatch({ type: LOADING_STARTED });
 
-            fetch(`https://api.mydraft.cc/${token}`)
-                .then(response => response.json())
+            fetch(`${url}/${token}`)
+                .then(response => {
+                    if (response.ok) {
+                        return response.json();
+                    } else {
+                        throw Error('Failed to load diagram');
+                    }
+                })
                 .then(response => {
                     dispatch({ type: LOADING_SUCCEEDED, readToken: token, actions: response });
 
@@ -44,10 +56,9 @@ export const loadDiagramAsync = (token: string, navigate = true) => {
                     if (navigate) {
                         dispatch(push(token));
                     }
-                }, () => {
+                }, (error: Error) => {
                     dispatch({ type: LOADING_FAILED });
-
-                    dispatch(showErrorToast('Failed to load diagram.'));
+                    dispatch(showErrorToast(error.message));
                 });
         }
     };
@@ -57,7 +68,7 @@ export const SAVING_STARTED = 'SAVING_STARTED';
 export const SAVING_FAILED = 'SAVING_FAILED';
 export const SAVING_SUCCEEDED = 'SAVING_SUCCEEDED';
 export const saveDiagramAsync = (navigate = true) => {
-    return (dispatch: Dispatch<any>, getState: () => LoadingStateInStore & EditorStateInStore) => {
+    return (dispatch: Dispatch, getState: () => LoadingStateInStore & EditorStateInStore) => {
         const state = getState();
 
         const writeToken = state.loading.writeToken;
@@ -68,7 +79,7 @@ export const saveDiagramAsync = (navigate = true) => {
         let putPromise: Promise<{ readToken: string, writeToken: string }>;
 
         if (readToken && writeToken) {
-            putPromise = fetch(`https://api.mydraft.cc/${readToken}/${writeToken}`, {
+            putPromise = fetch(`${url}/${readToken}/${writeToken}`, {
                 method: 'PUT',
                 headers: {
                     ContentType: 'text/json'
@@ -80,21 +91,27 @@ export const saveDiagramAsync = (navigate = true) => {
         }
 
         putPromise.catch(() =>
-            fetch(`https://api.mydraft.cc/`, {
+            fetch(`${url}/`, {
                 method: 'POST',
                 headers: {
                     ContentType: 'text/json'
                 },
                 body
             })
-            .then(response => response.json()))
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    throw Error('Failed to save diagram');
+                }
+            }))
         .then(r => {
             dispatch({ type: SAVING_SUCCEEDED, writeToken: r.writeToken, readToken: r.readToken });
 
             if (r.writeToken !== state.loading.writeToken) {
-                const url = `${window.location.protocol}//${window.location.host}/${r.readToken}`;
+                const fullUrl = `${window.location.protocol}//${window.location.host}/${r.readToken}`;
 
-                dispatch(showInfoToast(`Diagram saved under ${url}.`));
+                dispatch(showInfoToast(`Diagram saved under ${fullUrl}.`));
             } else {
                 dispatch(showInfoToast(`Diagram saved and updated.`));
             }
@@ -102,11 +119,9 @@ export const saveDiagramAsync = (navigate = true) => {
             if (navigate) {
                 dispatch(push(r.readToken));
             }
-        },
-        () => {
+        }, (err: Error) => {
             dispatch({ type: SAVING_FAILED });
-
-            dispatch(showErrorToast('Failed to save diagram.'));
+            dispatch(showErrorToast(err.message));
         });
     };
 };

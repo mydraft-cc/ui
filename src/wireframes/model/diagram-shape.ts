@@ -52,7 +52,7 @@ export class DiagramShape extends DiagramVisual {
     }
 
     private static createAppearance(appearance?: { [key: string]: any }): Immutable.Map<string, any> {
-        return Immutable.Map<string, any>(appearance || EMPTY_APPEARANCE);
+        return Immutable.Map<any>(appearance || EMPTY_APPEARANCE);
     }
 
     public bounds(diagram: Diagram): Transform {

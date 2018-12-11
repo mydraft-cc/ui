@@ -14,13 +14,13 @@ interface ShapeImageProps {
     connectDragPreview?: any;
 }
 
-const ShapeTarget: DragSourceSpec<ShapeImageProps> = {
+const ShapeTarget: DragSourceSpec<ShapeImageProps, any> = {
     beginDrag: props => {
         return { shape: props.shape.key, offset: props.shape.offset };
     }
 };
 
-const ShapeConnect: DragSourceCollector = (connector, monitor) => {
+const ShapeConnect: DragSourceCollector<any> = (connector, monitor) => {
     return { connectDragSource: connector.dragSource(), connectDragPreview: connector.dragPreview() };
 };
 

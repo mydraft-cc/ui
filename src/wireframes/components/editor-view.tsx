@@ -61,7 +61,7 @@ const mapStateToProps = (state: UIStateInStore & EditorStateInStore) => {
     };
 };
 
-const mapDispatchToProps = (dispatch: Dispatch<any>) => bindActionCreators({
+const mapDispatchToProps = (dispatch: Dispatch) => bindActionCreators({
     addIcon, addImage, addVisual
 }, dispatch);
 
@@ -71,7 +71,7 @@ const AssetTarget: DropTargetSpec<EditorViewProps> = {
             return;
         }
 
-        const offset = monitor.getSourceClientOffset() || monitor.getClientOffset();
+        const offset = monitor.getSourceClientOffset() || monitor.getClientOffset()!;
 
         const componentRect = (findDOMNode(component!) as HTMLElement)!.getBoundingClientRect();
 
@@ -132,7 +132,7 @@ const AssetTarget: DropTargetSpec<EditorViewProps> = {
     }
 };
 
-const EditorViewConnect: DropTargetCollector = (connector, monitor) => {
+const EditorViewConnect: DropTargetCollector<any> = (connector, monitor) => {
     return { connectDropTarget: connector.dropTarget() };
 };
 

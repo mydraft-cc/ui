@@ -32,7 +32,7 @@ interface DiagramAction {
     readonly diagramId: string;
 }
 
-export function createDiagramAction<T extends {}>(type: string, diagram: DiagramRef, action?: T): T & Action & DiagramAction {
+export function createDiagramAction<T extends {}>(type: string, diagram: DiagramRef, action?: T): T & Action<string> & DiagramAction {
     const result: any = { type };
 
     if (diagram instanceof Diagram) {

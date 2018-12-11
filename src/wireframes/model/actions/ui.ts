@@ -1,5 +1,5 @@
 import { message } from 'antd';
-import { Dispatch, Middleware, Reducer } from 'redux';
+import { AnyAction, Dispatch, Middleware, Reducer } from 'redux';
 
 import { UIState } from '@app/wireframes/model';
 
@@ -39,7 +39,7 @@ export const toggleRightSidebar = () => {
 };
 
 export function toastMiddleware() {
-    const middleware: Middleware = () => (next: Dispatch<any>) => (action: any) => {
+    const middleware: Middleware = () => (next: Dispatch<AnyAction>) => (action: any) => {
         switch (action.type) {
             case SHOW_INFO_TOAST:
                 message.info(action.text);

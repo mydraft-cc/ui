@@ -54,7 +54,7 @@ const mapStateToProps = (state: EditorStateInStore) => {
     };
 };
 
-const mapDispatchToProps = (dispatch: Dispatch<any>) => bindActionCreators({
+const mapDispatchToProps = (dispatch: Dispatch) => bindActionCreators({
     changeItemsAppearance
 }, dispatch);
 

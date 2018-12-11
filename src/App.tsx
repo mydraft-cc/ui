@@ -67,7 +67,7 @@ const mapStateToProps = (state: UIStateInStore, props: AppOwnProps) => {
     };
 };
 
-const mapDispatchToProps = (dispatch: Dispatch<any>) => bindActionCreators({
+const mapDispatchToProps = (dispatch: Dispatch) => bindActionCreators({
     loadDiagramAsync, newDiagram, selectTab, toggleLeftSidebar, toggleRightSidebar
 }, dispatch);
 

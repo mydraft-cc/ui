@@ -36,7 +36,7 @@ const mapStateToProps = (state: LoadingStateInStore & UIStateInStore) => {
     return { readToken: state.loading.readToken, showInfoDialog: state.ui.showInfoDialog };
 };
 
-const mapDispatchToProps = (dispatch: Dispatch<any>) => bindActionCreators({
+const mapDispatchToProps = (dispatch: Dispatch) => bindActionCreators({
     newDiagram, saveDiagramAsync, toggleInfoDialog
 }, dispatch);
 

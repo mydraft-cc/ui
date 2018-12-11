@@ -29,7 +29,7 @@ const mapStateToProps = (state: UIStateInStore) => {
     };
 };
 
-const mapDispatchToProps = (dispatch: Dispatch<any>) => bindActionCreators({
+const mapDispatchToProps = (dispatch: Dispatch) => bindActionCreators({
     setZoom
 }, dispatch);
 

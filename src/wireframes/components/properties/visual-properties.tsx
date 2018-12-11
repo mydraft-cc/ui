@@ -87,7 +87,7 @@ const mapStateToProps = (state: EditorStateInStore) => {
     };
 };
 
-const mapDispatchToProps = (dispatch: Dispatch<any>) => bindActionCreators({
+const mapDispatchToProps = (dispatch: Dispatch) => bindActionCreators({
     changeItemsAppearance
 }, dispatch);
 
@@ -118,11 +118,11 @@ const VisualProperties = (props: VisualPropertiesProps) => {
     const doChangeBackgroundColor = (value: any) => doChangeAppearance(DiagramShape.APPEARANCE_BACKGROUND_COLOR, value);
 
     const fontSize = DEFINED_FONT_SIZES.map(o =>
-        <Select.Option key={o} value={o}>{o}</Select.Option>
+        <Select.Option key={o.toString()} value={o}>{o}</Select.Option>
     );
 
     const strokeThicknesses = DEFINED_STROKE_THICKNESSES.map(o =>
-        <Select.Option key={o} value={o}>{o}</Select.Option>
+        <Select.Option key={o.toString()} value={o}>{o}</Select.Option>
     );
 
     return (
