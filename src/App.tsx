@@ -1,7 +1,5 @@
 import { Button, Collapse, Layout, Tabs } from 'antd';
 import * as React from 'react';
-import { DragDropContextProvider } from 'react-dnd';
-import HTML5Backend from 'react-dnd-html5-backend';
 import { connect } from 'react-redux';
 import { bindActionCreators, Dispatch } from 'redux';
 
@@ -108,74 +106,72 @@ class App extends React.PureComponent<AppProps & AppOwnProps> {
 
     public render() {
         return (
-            <DragDropContextProvider backend={HTML5Backend}>
-                <Layout>
-                    <Layout.Header>
-                        <img className='logo' src={logo} alt='mydraft.cc' />
+            <Layout>
+                <Layout.Header>
+                    <img className='logo' src={logo} alt='mydraft.cc' />
 
-                        <HistoryMenuContainer />
-                        <span className='menu-separator' />
+                    <HistoryMenuContainer />
+                    <span className='menu-separator' />
 
-                        <ArrangeMenuContainer />
-                        <span className='menu-separator' />
+                    <ArrangeMenuContainer />
+                    <span className='menu-separator' />
 
-                        <ClipboardMenuContainer />
-                        <span className='menu-separator' />
+                    <ClipboardMenuContainer />
+                    <span className='menu-separator' />
 
-                        <UIMenuContainer />
+                    <UIMenuContainer />
 
-                        <span style={{ float: 'right' }}>
-                            <LoadingMenuContainer />
-                        </span>
-                    </Layout.Header>
-                    <Layout className='content'>
-                        <Layout.Sider width={320} className='sidebar-left'
-                            collapsed={!this.props.showLeftSidebar}
-                            collapsedWidth={0}>
+                    <span style={{ float: 'right' }}>
+                        <LoadingMenuContainer />
+                    </span>
+                </Layout.Header>
+                <Layout className='content'>
+                    <Layout.Sider width={320} className='sidebar-left'
+                        collapsed={!this.props.showLeftSidebar}
+                        collapsedWidth={0}>
 
-                            <Tabs type='card' onTabClick={this.doSelectTab} activeKey={this.props.selectedTab}>
-                                <Tabs.TabPane key='shapes' tab='Shapes'>
-                                    <ShapesContainer />
-                                </Tabs.TabPane>
-                                <Tabs.TabPane key='icons' tab='Icons'>
-                                    <IconsContainer />
-                                </Tabs.TabPane>
-                            </Tabs>
-                        </Layout.Sider>
-                        <Layout.Content className='editor-content'>
-                            <EditorViewContainer spacing={40} />
-                        </Layout.Content>
-                        <Layout.Sider width={330} className='sidebar-right'
-                            collapsed={!this.props.showRightSidebar}
-                            collapsedWidth={0}>
+                        <Tabs type='card' onTabClick={this.doSelectTab} activeKey={this.props.selectedTab}>
+                            <Tabs.TabPane key='shapes' tab='Shapes'>
+                                <ShapesContainer />
+                            </Tabs.TabPane>
+                            <Tabs.TabPane key='icons' tab='Icons'>
+                                <IconsContainer />
+                            </Tabs.TabPane>
+                        </Tabs>
+                    </Layout.Sider>
+                    <Layout.Content className='editor-content'>
+                        <EditorViewContainer spacing={40} />
+                    </Layout.Content>
+                    <Layout.Sider width={330} className='sidebar-right'
+                        collapsed={!this.props.showRightSidebar}
+                        collapsedWidth={0}>
 
-                            <Collapse bordered={false} defaultActiveKey={['layout', 'visual', 'custom']}>
-                                <Collapse.Panel key='layout' header='Layout'>
-                                    <LayoutPropertiesContainer />
-                                </Collapse.Panel>
-                                <Collapse.Panel key='visual' header='Visual'>
-                                    <VisualPropertiesContainer />
-                                </Collapse.Panel>
-                                <Collapse.Panel key='custom' header='Custom'>
-                                    <CustomPropertiesContainer />
-                                </Collapse.Panel>
-                            </Collapse>
-                        </Layout.Sider>
+                        <Collapse bordered={false} defaultActiveKey={['layout', 'visual', 'custom']}>
+                            <Collapse.Panel key='layout' header='Layout'>
+                                <LayoutPropertiesContainer />
+                            </Collapse.Panel>
+                            <Collapse.Panel key='visual' header='Visual'>
+                                <VisualPropertiesContainer />
+                            </Collapse.Panel>
+                            <Collapse.Panel key='custom' header='Custom'>
+                                <CustomPropertiesContainer />
+                            </Collapse.Panel>
+                        </Collapse>
+                    </Layout.Sider>
 
-                        <Button icon={toggleIcon(this.props.showLeftSidebar)}
-                            className={toggleClass(this.props.showLeftSidebar, 'left')}
-                            size='small'
-                            shape='circle'
-                            onClick={this.doToggleLeftSidebar} />
+                    <Button icon={toggleIcon(this.props.showLeftSidebar)}
+                        className={toggleClass(this.props.showLeftSidebar, 'left')}
+                        size='small'
+                        shape='circle'
+                        onClick={this.doToggleLeftSidebar} />
 
-                        <Button icon={toggleIcon(!this.props.showRightSidebar)}
-                            className={toggleClass(this.props.showRightSidebar, 'right')}
-                            size='small'
-                            shape='circle'
-                            onClick={this.doToggleRightSidebar} />
-                    </Layout>
+                    <Button icon={toggleIcon(!this.props.showRightSidebar)}
+                        className={toggleClass(this.props.showRightSidebar, 'right')}
+                        size='small'
+                        shape='circle'
+                        onClick={this.doToggleRightSidebar} />
                 </Layout>
-            </DragDropContextProvider>
+            </Layout>
         );
     }
 }

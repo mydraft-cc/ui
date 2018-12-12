@@ -2,6 +2,8 @@ import './index.scss';
 
 import { createBrowserHistory } from 'history';
 import * as React from 'react';
+import { DragDropContextProvider } from 'react-dnd';
+import HTML5Backend from 'react-dnd-html5-backend';
 import * as ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 import { Route, Router } from 'react-router';
@@ -79,19 +81,21 @@ import { AppContainer } from './App';
 
 const Root = (
     <>
-        <SerializerContext.Provider value={serializer}>
-            <RendererContext.Provider value={rendererService}>
-                <Provider store={store}>
-                    <Router history={history}>
-                        <Route path='/:token?' render={props => (
-                            <AppContainer token={props.match.params.token} />
-                        )} />
-                    </Router>
-                </Provider>
-            </RendererContext.Provider>
-        </SerializerContext.Provider>
+        <DragDropContextProvider backend={HTML5Backend}>
+            <SerializerContext.Provider value={serializer}>
+                <RendererContext.Provider value={rendererService}>
+                    <Provider store={store}>
+                        <Router history={history}>
+                            <Route path='/:token?' render={props => (
+                                <AppContainer token={props.match.params.token} />
+                            )} />
+                        </Router>
+                    </Provider>
+                </RendererContext.Provider>
+            </SerializerContext.Provider>
 
-        <UserReport />
+            <UserReport />
+        </DragDropContextProvider>
     </>
 );
 

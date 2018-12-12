@@ -1,6 +1,6 @@
 import { DiagramShape } from '@app/wireframes/model';
 
-import { Rect2 } from '@app/core';
+import { Rect2, Vec2 } from '@app/core';
 
 import { AbstractContext, AbstractControl } from '@app/wireframes/shapes/utils/abstract-control';
 
@@ -10,6 +10,10 @@ DEFAULT_APPEARANCE[DiagramShape.APPEARANCE_BACKGROUND_COLOR] = 0xFFFFFF;
 export class Phone extends AbstractControl {
     public identifier(): string {
         return 'Phone';
+    }
+
+    public previewOffset() {
+        return new Vec2(20, 80);
     }
 
     public createDefaultShape(shapeId: string): DiagramShape {
