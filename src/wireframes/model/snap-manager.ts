@@ -132,14 +132,14 @@ export class SnapManager {
         if (!snapToGrid) {
             const orderedAabbs = this.calculateOrderedAABBs(transform, diagram);
 
-            const left = aabb.left + delta.x, right = aabb.right + delta.x, centerX = aabb.centerX + delta.x;
+            const left = aabb.left + delta.x, right = aabb.right + delta.x, centerX = aabb.cx + delta.x;
 
             for (let target of orderedAabbs) {
-                if (Math.abs(target.centerX - centerX) < MOVE_SNAP_SHAPE) {
-                    x = target.centerX - aabb.width * 0.5;
+                if (Math.abs(target.cx - centerX) < MOVE_SNAP_SHAPE) {
+                    x = target.cx - aabb.width * 0.5;
 
                     result.snapModeX = SnapMode.Center;
-                    result.snapValueX = target.centerX;
+                    result.snapValueX = target.cx;
                     break;
                 } else if (Math.abs(target.left - left) < MOVE_SNAP_SHAPE) {
                     x = target.left;
@@ -168,14 +168,14 @@ export class SnapManager {
                 }
             }
 
-            const top = aabb.top + delta.y, bottom = aabb.bottom + delta.y, centerY = aabb.centerY + delta.y;
+            const top = aabb.top + delta.y, bottom = aabb.bottom + delta.y, centerY = aabb.cy + delta.y;
 
             for (let target of orderedAabbs) {
-                if (Math.abs(target.centerY - centerY) < MOVE_SNAP_SHAPE) {
-                    y = target.centerY - aabb.height * 0.5;
+                if (Math.abs(target.cy - centerY) < MOVE_SNAP_SHAPE) {
+                    y = target.cy - aabb.height * 0.5;
 
                     result.snapModeY = SnapMode.Center;
-                    result.snapValueY = target.centerY;
+                    result.snapValueY = target.cy;
                     break;
                 } else if (Math.abs(target.top - top) < MOVE_SNAP_SHAPE) {
                     y = target.top;

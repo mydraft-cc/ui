@@ -1,26 +1,34 @@
-import * as paper from 'paper';
+import * as svg from 'svg.js';
 
-import { MathHelper } from '@app/core';
+import { MathHelper, Vec2 } from '@app/core';
+
+import { DiagramShape } from '@app/wireframes/model';
+
+export class SvgEvent {
+    constructor(
+        public readonly event: MouseEvent,
+        public readonly position: Vec2,
+        public readonly element?: Element | null,
+        public readonly shape?: DiagramShape | null
+    ) {
+    }
+}
 
 export interface InteractionHandler {
-    onDoubleClick?(event: paper.ToolEvent, next: () => void): void;
+    onDoubleClick?(event: SvgEvent, next: () => void): void;
 
-    onClick?(event: paper.ToolEvent, next: () => void): boolean;
+    onClick?(event: SvgEvent, next: () => void): boolean;
 
-    onMouseDown?(event: paper.ToolEvent, next: () => void): void;
+    onMouseDown?(event: SvgEvent, next: () => void): void;
 
-    onMouseDrag?(event: paper.ToolEvent, next: () => void): void;
+    onMouseDrag?(event: SvgEvent, next: () => void): void;
 
-    onMouseUp?(event: paper.ToolEvent, next: () => void): void;
-
-    onKeyDown?(event: paper.KeyEvent, next: () => void): void;
-
-    onKeyUp?(event: paper.KeyEvent, next: () => void): void;
+    onMouseUp?(event: SvgEvent, next: () => void): void;
 }
 
 const ROTATION_CONFIG = [
-    { angle: 45, cursor: 'ne-resize' },
-    { angle: 90, cursor: 'e-resize' },
+    { angle: 45,  cursor: 'ne-resize' },
+    { angle: 90,  cursor: 'e-resize' },
     { angle: 135, cursor: 'se-resize' },
     { angle: 180, cursor: 's-resize' },
     { angle: 215, cursor: 'sw-resize' },
@@ -31,44 +39,52 @@ const ROTATION_CONFIG = [
 const NOOP = () => { /* NOOP */ };
 
 export class InteractionService {
-    private interactionHandlers: InteractionHandler[] = [];
-    private interactionTool: paper.Tool;
-    private adornerLayers: paper.Layer[] = [];
-    private layer: paper.Layer;
+    private readonly interactionHandlers: InteractionHandler[] = [];
+    private readonly pressedKey = {};
+    private isDragging = false;
 
-    public init(scope: paper.PaperScope) {
-        this.layer = scope.project.activeLayer;
+    constructor(
+        private readonly adornerLayers: svg.Element[], renderings: svg.Element, private readonly diagram: svg.Doc
+    ) {
+        document.onkeydown = (event: KeyboardEvent) => {
+            this.pressedKey[event.keyCode + ''] = true;
+        };
 
-        this.initializeTool(scope);
-        this.initializeClickEvents();
-    }
+        document.onkeyup = (event: KeyboardEvent) => {
+            this.pressedKey[event.keyCode + ''] = false;
+        };
 
-    private initializeTool(scope: paper.PaperScope) {
-        this.interactionTool = new paper.Tool();
-        this.interactionTool.minDistance = 1;
-        this.interactionTool.onMouseDown = this.onMouseDown;
-        this.interactionTool.onMouseDrag = this.onMouseDrag;
-        this.interactionTool.onMouseMove = this.onMouseMove;
-        this.interactionTool.onMouseUp = this.onMouseUp;
+        renderings.click((event: MouseEvent) => {
+            this.invokeEvent(event, h => h.onClick ? h.onClick.bind(h) : null);
+        });
 
-        scope.tool = this.interactionTool;
-    }
+        renderings.dblclick((event: MouseEvent) => {
+            this.invokeEvent(event, h => h.onDoubleClick ? h.onDoubleClick.bind(h) : null);
+        });
 
-    private initializeClickEvents() {
-        this.layer.onClick = this.onClick;
-        this.layer.onDoubleClick = this.onDoubleClick;
-    }
+        diagram.mousemove((event: MouseEvent) => {
+            this.onMouseMove(event);
+        });
 
-    public addAdornerLayer(layer: paper.Layer) {
-        this.adornerLayers.push(layer);
-    }
+        diagram.mousedown((event: MouseEvent) => {
+            this.isDragging = true;
 
-    public removeAdornerLayer(layer: paper.Layer) {
-        this.adornerLayers.splice(this.adornerLayers.indexOf(layer), 1);
-    }
+            this.invokeEvent(event, h => h.onMouseDown ? h.onMouseDown.bind(h) : null);
+        });
 
-    public showAdornerLayers(visible: boolean) {
-        this.adornerLayers.forEach(layer => layer.visible = visible);
+        window.document.addEventListener('mousemove', (event: MouseEvent) => {
+            if (this.isDragging) {
+                this.invokeEvent(event, h => h.onMouseDrag ? h.onMouseDrag.bind(h) : null);
+            }
+        });
+
+        window.document.addEventListener('mouseup', (event: MouseEvent) => {
+            if (this.isDragging) {
+                this.isDragging = false;
+
+                this.invokeEvent(event, h => h.onMouseUp ? h.onMouseUp.bind(h) : null);
+            }
+        });
     }
 
     public addHandler(handler: InteractionHandler) {
@@ -79,91 +95,96 @@ export class InteractionService {
         this.interactionHandlers.splice(this.interactionHandlers.indexOf(handler), 1);
     }
 
-    public setCursor(item: paper.Item, cursor: string) {
-        item['cursor'] = cursor;
+    public setCursor(item: svg.Element, cursor: string) {
+        item.node['cursor'] = cursor;
     }
 
-    public setRotationCursor(item: paper.Item, angle: number) {
-        item['cursorAngle'] = angle;
+    public setCursorAngle(item: svg.Element, angle: number) {
+        item.node['cursorAngle'] = angle;
     }
 
     public isControlKeyPressed(): boolean {
-        return paper.Key.isDown('control');
+        return this.pressedKey['17'] === true;
     }
 
     public isShiftKeyPressed() {
-        return paper.Key.isDown('shift');
+        return this.pressedKey['16'] === true;
     }
 
-    private invokeEvent(event: any, actionProvider: (handler: InteractionHandler) => Function) {
+    public showAdorners() {
+        this.adornerLayers.forEach(l => l.show());
+    }
+
+    public hideAdorners() {
+        this.adornerLayers.forEach(l => l.hide());
+    }
+
+    private invokeEvent(event: MouseEvent, actionProvider: (handler: InteractionHandler) => Function) {
         if (this.interactionHandlers.length > 0) {
-            let next = NOOP;
+            const handlers: Function[] = [];
 
             for (let i = this.interactionHandlers.length - 1; i >= 0; i--) {
-                const action = actionProvider(this.interactionHandlers[i]);
+                const handler = actionProvider(this.interactionHandlers[i]);
 
-                if (action) {
-                    const currentNext = next;
-
-                    next = () => action(event, currentNext);
+                if (handler) {
+                    handlers.push(handler);
                 }
             }
 
-            next();
-        }
-    }
+            if (handlers.length > 0) {
+                let current: any = event.target;
+                let element: any = null;
 
-    private onDoubleClick = (e: paper.MouseEvent) => {
-        const eventBuilder: any = paper.ToolEvent;
-        const event = new eventBuilder(this.interactionTool, 'doubleclick', e);
+                while (current && current.parentElement) {
+                    current = current.parentElement;
 
-        this.invokeEvent(event, h => h.onDoubleClick ? h.onDoubleClick.bind(h) : null);
-    }
-
-    private onClick = (e: paper.MouseEvent) => {
-        const eventBuilder: any = paper.ToolEvent;
-        const event = new eventBuilder(this.interactionTool, 'click', e);
-
-        this.invokeEvent(event, h => h.onClick ? h.onClick.bind(h) : null);
-    }
-
-    private onMouseDown = (event: paper.ToolEvent) => {
-        this.invokeEvent(event, h => h.onMouseDown ? h.onMouseDown.bind(h) : null);
-    }
-
-    private onMouseUp = (event: paper.ToolEvent) => {
-        this.invokeEvent(event, h => h.onMouseUp ? h.onMouseUp.bind(h) : null);
-    }
-
-    private onMouseDrag = (event: paper.ToolEvent) => {
-        this.invokeEvent(event, h => h.onMouseDrag ? h.onMouseDrag.bind(h) : null);
-    }
-
-    private onMouseMove = (event: paper.ToolEvent) => {
-        for (let layer of this.adornerLayers) {
-            const hitResult = layer.hitTest(event.point, { guides: true, fill: true, tolerance: 2 });
-            const hitItem = hitResult ? hitResult.item : null;
-
-            if (hitItem && hitItem['cursor']) {
-                document.body.style.cursor = hitItem['cursor'];
-            } else if (hitItem && Number.isFinite(hitItem['cursorAngle'])) {
-                const rotation = hitItem['cursorAngle'];
-
-                const totalRotation = MathHelper.toPositiveDegree(hitItem.rotation + rotation);
-
-                for (let config of ROTATION_CONFIG) {
-                    if (totalRotation > config.angle - 22.5 &&
-                        totalRotation < config.angle + 22.5) {
-
-                        document.body.style.cursor = config.cursor;
-                        return;
+                    if (current.shape) {
+                        element = current;
+                        break;
                     }
                 }
 
-                document.body.style.cursor = 'n-resize';
-            } else {
-                document.body.style.cursor = 'default';
+                const { x, y } = this.diagram.point(event.pageX, event.pageY);
+
+                const svgEvent = new SvgEvent(event, new Vec2(x, y), element, element ? element.shape : null);
+
+                let next = NOOP;
+
+                for (let handler of handlers) {
+                    const currentNext = next;
+
+                    next = () => handler(svgEvent, currentNext);
+                }
+
+                next();
             }
+        }
+    }
+
+    private onMouseMove = (event: MouseEvent) => {
+        let element: any = event.target;
+
+        if (element && element['cursor']) {
+            document.body.style.cursor = element['cursor'];
+        } else if (element && Number.isFinite(element['cursorAngle'])) {
+            const rotation = element['cursorAngle'];
+
+            const baseRotation = svg.adopt(element).transform().rotation;
+
+            const totalRotation = MathHelper.toPositiveDegree((baseRotation || 0) + rotation);
+
+            for (let config of ROTATION_CONFIG) {
+                if (totalRotation > config.angle - 22.5 &&
+                    totalRotation < config.angle + 22.5) {
+
+                    document.body.style.cursor = config.cursor;
+                    return;
+                }
+            }
+
+            document.body.style.cursor = 'n-resize';
+        } else {
+            document.body.style.cursor = 'default';
         }
     }
 }

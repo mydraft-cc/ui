@@ -1,7 +1,7 @@
 import { MathHelper } from '@app/core';
 
 export class Rotation {
-    public static readonly ZERO = Rotation.createFromRadian(0);
+    public static readonly ZERO = Rotation.fromRadian(0);
 
     public readonly cos: number;
     public readonly sin: number;
@@ -16,11 +16,11 @@ export class Rotation {
         Object.freeze(this);
     }
 
-    public static createFromRadian(radian: number): Rotation {
+    public static fromRadian(radian: number): Rotation {
         return new Rotation(radian, MathHelper.toDegree(radian));
     }
 
-    public static createFromDegree(degree: number): Rotation {
+    public static fromDegree(degree: number): Rotation {
         return new Rotation(MathHelper.toRad(degree), degree);
     }
 
@@ -37,14 +37,14 @@ export class Rotation {
     }
 
     public add(r: Rotation): Rotation {
-        return Rotation.createFromDegree(MathHelper.toPositiveDegree(this.degree + r.degree));
+        return Rotation.fromDegree(MathHelper.toPositiveDegree(this.degree + r.degree));
     }
 
     public sub(r: Rotation): Rotation {
-        return Rotation.createFromDegree(MathHelper.toPositiveDegree(this.degree - r.degree));
+        return Rotation.fromDegree(MathHelper.toPositiveDegree(this.degree - r.degree));
     }
 
     public negate(): Rotation {
-        return Rotation.createFromDegree(-this.degree);
+        return Rotation.fromDegree(-this.degree);
     }
 }

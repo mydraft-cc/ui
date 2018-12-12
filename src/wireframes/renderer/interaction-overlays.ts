@@ -1,7 +1,6 @@
+import * as svg from 'svg.js';
 
-import * as paper from 'paper';
-
-import { Color, PaperHelper } from '@app/core';
+import { Color } from '@app/core';
 
 import {
     SnapMode,
@@ -9,59 +8,36 @@ import {
     Transform
 } from '@app/wireframes/model';
 
+import { SVGRenderer } from '@app/wireframes/shapes/utils/svg-renderer';
+
 export class InteractionOverlays {
-    private textItem: paper.PointText;
-    private rectItem: paper.Shape;
-    private lineX: paper.Shape;
-    private lineY: paper.Shape;
-    private items: paper.Item[] = [];
+    private infoRect: any;
+    private infoText: any;
+    private lineX: any;
+    private lineY: any;
+    private elements: any[] = [];
+    private readonly renderer: SVGRenderer;
 
-    constructor(private readonly scope: paper.PaperScope, private readonly layer: paper.Layer) { }
+    constructor(
+        private readonly layer: svg.Container
+    ) {
+        this.renderer = new SVGRenderer();
+        this.renderer.captureContext(layer);
 
-    private ensureInfoShapes() {
-        if (this.textItem) {
-            return;
-        }
+        this.lineX = this.renderer.createRectangle(0);
+        this.lineY = this.renderer.createRectangle(0);
 
-        this.scope.activate();
-        this.layer.activate();
+        this.elements.push(this.lineX);
+        this.elements.push(this.lineY);
 
-        const rectItem = paper.Shape.Rectangle(PaperHelper.ZERO_POINT, PaperHelper.ZERO_SIZE);
+        this.infoRect = this.renderer.createRectangle(0);
+        this.infoText = this.renderer.createSinglelineText({ text: '', fontSize: 14 });
 
-        rectItem.fillColor = PaperHelper.COLOR_BLACK;
-        rectItem.strokeColor = PaperHelper.COLOR_BLACK;
-        rectItem.strokeWidth = 1;
+        this.elements.push(this.infoRect);
+        this.elements.push(this.infoText);
 
-        this.rectItem = rectItem;
-
-        const textItem = new paper.PointText(PaperHelper.ZERO_POINT);
-
-        textItem.fontSize = 12;
-        textItem.fillColor = PaperHelper.COLOR_WHITE;
-
-        this.textItem = textItem;
-
-        this.items.push(this.textItem);
-        this.items.push(this.rectItem);
-
-        this.reset();
-    }
-
-    private ensureLines() {
-        if (this.lineX && this.lineY) {
-            return;
-        }
-
-        this.scope.activate();
-        this.layer.activate();
-
-        this.lineX = paper.Shape.Rectangle(new paper.Rectangle(0, 0, 0, 0));
-        this.lineY = paper.Shape.Rectangle(new paper.Rectangle(0, 0, 0, 0));
-
-        this.items.push(this.lineX);
-        this.items.push(this.lineY);
-
-        this.reset();
+        this.renderer.setBackgroundColor(this.infoRect, '#000');
+        this.renderer.setForegroundColor(this.infoText, '#fff');
     }
 
     public showSnapAdorners(snapResult: SnapResult) {
@@ -83,51 +59,37 @@ export class InteractionOverlays {
     }
 
     public showXLine(value: number, color: Color) {
-        this.ensureLines();
+        const height = this.layer.height();
 
-        const h = this.scope.view.bounds.height;
-
-        this.lineX.size = new paper.Size(1, h);
-        this.lineX.fillColor = PaperHelper.toColor(color);
-        this.lineX.position = new paper.Point(Math.round(value) + 0.5, h * 0.5);
-        this.lineX.visible = true;
+        this.renderer.setBackgroundColor(this.lineX, color);
+        this.renderer.setTransform(this.lineX, { x: value, y: 0, w: 1, h: height });
+        this.renderer.setVisibility(this.lineX, true);
     }
 
     public showYLine(value: number, color: Color) {
-        this.ensureLines();
+        const width = this.layer.width();
 
-        const w = this.scope.view.bounds.width;
-
-        this.lineY.size = new paper.Size(w, 1);
-        this.lineY.fillColor = PaperHelper.toColor(color);
-        this.lineY.position = new paper.Point(w * 0.5, Math.round(value) + 0.5);
-        this.lineY.visible = true;
+        this.renderer.setBackgroundColor(this.lineY, color);
+        this.renderer.setTransform(this.lineY, { x: 0, y: value, w: width, h: 1 });
+        this.renderer.setVisibility(this.lineY, true);
     }
 
     public showInfo(transform: Transform, text: string) {
-        this.ensureInfoShapes();
-
         const aabb = transform.aabb;
 
-        this.ensureInfoShapes();
+        this.renderer.setText(this.infoText, text);
+        this.renderer.setTransform(this.infoText, { x: aabb.right + 4, y: aabb.bottom + 24, w: 120, h: 24 });
+        this.renderer.setVisibility(this.infoText, true);
 
-        this.textItem.content = text;
-        this.textItem.point = new paper.Point(aabb.right + 4, aabb.bottom + 24);
-        this.textItem.visible = true;
+        const bounds = this.renderer.getBounds(this.infoText);
 
-        const bounds = this.textItem.bounds;
-
-        this.rectItem.position = bounds.center;
-        this.rectItem.size =
-            new paper.Size(
-                bounds.size.width + 8,
-                bounds.size.height + 8);
-        this.rectItem.visible = true;
+        this.renderer.setTransform(this.infoRect, { rect: bounds.inflate(4) });
+        this.renderer.setVisibility(this.infoRect, true);
     }
 
     public reset() {
-        for (let item of this.items) {
-            item.visible = false;
+        for (let element of this.elements) {
+            this.renderer.setVisibility(element, false);
         }
     }
 }

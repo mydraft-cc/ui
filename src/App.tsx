@@ -103,7 +103,7 @@ class App extends React.PureComponent<AppProps & AppOwnProps> {
     }
 
     private doToggleRightSidebar = () => {
-        this.props.toggleLeftSidebar();
+        this.props.toggleRightSidebar();
     }
 
     public render() {

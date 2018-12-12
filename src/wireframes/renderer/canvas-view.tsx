@@ -1,5 +1,7 @@
-import * as paper from 'paper';
 import * as React from 'react';
+import * as svg from 'svg.js';
+
+import { sizeInPx } from '@app/core';
 
 export interface CanvasViewProps {
     // The width of the canvas.
@@ -15,23 +17,22 @@ export interface CanvasViewProps {
     className?: string;
 
     // The callback when the canvas has been initialized.
-    onInit: (scope: paper.PaperScope) => any;
+    onInit: (scope: svg.Doc) => any;
 }
 
 export class CanvasView extends React.Component<CanvasViewProps> {
-    private canvasElement: any;
-    private scope: paper.PaperScope;
+    private docElement: any;
+    private document: svg.Doc;
 
     public initialize(canvas: any) {
-        this.canvasElement = canvas;
+        this.docElement = canvas;
 
         if (canvas) {
-            this.scope = new paper.PaperScope();
-            this.scope.setup(this.canvasElement);
+            this.document = svg(this.docElement);
 
             this.updateViewSettings(this.props);
 
-            this.props.onInit(this.scope);
+            this.props.onInit(this.document);
         }
     }
 
@@ -44,18 +45,23 @@ export class CanvasView extends React.Component<CanvasViewProps> {
     }
 
     private updateViewSettings(props: CanvasViewProps) {
-        if (this.scope) {
-            this.scope.view.viewSize = new paper.Size(props.zoomedWidth, props.zoomedHeight);
+        if (this.document) {
+            const w = props.zoomedWidth / props.zoom;
+            const h = props.zoomedHeight / props.zoom;
 
-            this.scope.view.center =
-                new paper.Point(
-                    0.5 / props.zoom * props.zoomedWidth,
-                    0.5 / props.zoom * props.zoomedHeight);
-            this.scope.view['matrix'] = new paper.Matrix(props.zoom, 0, 0, props.zoom, 0, 0);
+            this.document.style({ width: sizeInPx(w), height: sizeInPx(h) });
+            this.document.untransform();
+            this.document.scale(
+                props.zoom,
+                props.zoom, 0, 0);
+            this.document.translate(
+                0.5 * (props.zoomedWidth -  w),
+                0.5 * (props.zoomedHeight - h));
+            this.document.show();
         }
     }
 
     public render() {
-        return <canvas className={this.props.className} ref={canvas => this.initialize(canvas)} />;
+        return <div className={this.props.className} ref={canvas => this.initialize(canvas)} />;
     }
 }

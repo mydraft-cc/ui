@@ -1,66 +1,58 @@
 import {
     Color,
-    Rect2,
-    Rotation,
-    Vec2
+    MatrixTransform,
+    Rect2
 } from '@app/core';
 
-import { DiagramShape } from '@app/wireframes/model';
+import { DiagramShape, Transform } from '@app/wireframes/model';
 
 export interface TextConfig { text: string; fontSize?: number; alignment?: string; }
 
 export type RendererColor = string | number | Color | DiagramShape;
 export type RendererElement = any;
 export type RendererOpacity = number | DiagramShape;
-export type RendererPosition = Vec2 | DiagramShape;
-export type RendererRotation = Rotation | DiagramShape;
 export type RendererText = TextConfig | DiagramShape;
-export type RendererThickness = number | DiagramShape;
+export type RendererWidth = number | DiagramShape;
+export type RendererTransform = Transform | MatrixTransform | DiagramShape;
 
 export interface AbstractRenderer {
-    createRoundedRectangle(bounds: Rect2, strokeThickness: RendererThickness, cornerRadius: number): RendererElement;
+    createRoundedRectangleLeft(strokeWidth: RendererWidth, radius: number, bounds: Rect2): RendererElement;
 
-    createRoundedRectangleLeft(bounds: Rect2, strokeThickness: RendererThickness, cornerRadius: number): RendererElement;
+    createRoundedRectangleRight(strokeWidth: RendererWidth, radius: number, bounds: Rect2): RendererElement;
 
-    createRoundedRectangleRight(bounds: Rect2, strokeThickness: RendererThickness, cornerRadius: number): RendererElement;
+    createPath(strokeWidth: RendererWidth, path: string, bounds?: Rect2): RendererElement;
 
-    createEllipse(bounds: Rect2, strokeThickness: RendererThickness): RendererElement;
+    createRaster(source: string, bounds?: Rect2): RendererElement;
 
-    createCircle(center: Vec2, strokeThickness: RendererThickness, radius: number): RendererElement;
+    createRectangle(strokeWidth: RendererWidth, radius?: number, bounds?: Rect2): RendererElement;
 
-    createStar(center: Vec2, count: number, radius1: number, radius2: number, strokeThickness: RendererThickness): RendererElement;
+    createEllipse(strokeWidth: RendererWidth, bounds?: Rect2): RendererElement;
 
-    createPath(path: string, strokeThickness: RendererThickness): RendererElement;
+    createSinglelineText(config?: RendererText, bounds?: Rect2): RendererElement;
 
-    createBoundedPath(bounds: Rect2, path: string, strokeThickness: RendererThickness): RendererElement;
+    createMultilineText(config?: RendererText, bounds?: Rect2): RendererElement;
 
-    createSinglelineText(bounds: Rect2, config: RendererText): RendererElement;
+    createGroup(items: RendererElement[], clipItem?: RendererElement): RendererElement;
 
-    createMultilineText(bounds: Rect2, config: RendererText): RendererElement;
+    setForegroundColor(element: RendererElement, color: RendererColor): AbstractRenderer;
 
-    createRaster(bounds: Rect2, source: string): RendererElement;
+    setBackgroundColor(element: RendererElement, color: RendererColor): AbstractRenderer;
 
-    createClipGroup(clipItem: RendererElement, ...items: RendererElement[]): RendererElement;
+    setStrokeColor(element: RendererElement, color: RendererColor): AbstractRenderer;
 
-    createGroup(...items: RendererElement[]): RendererElement;
+    setStrokeStyle(element: RendererElement, cap: string, join: string): AbstractRenderer;
 
-    setForegroundColor(element: RendererElement, color: RendererColor): void;
+    setFontFamily(element: RendererElement, fontFamily: string): AbstractRenderer;
 
-    setBackgroundColor(element: RendererElement, color: RendererColor): void;
+    setOpacity(element: RendererElement, opacity: RendererOpacity): AbstractRenderer;
 
-    setStrokeColor(element: RendererElement, color: RendererColor): void;
+    setVisibility(element: RendererElement, visible: boolean): AbstractRenderer;
 
-    setStrokeStyle(element: RendererElement, cap: string, join: string): void;
+    setText(element: RendererElement, text: string): AbstractRenderer;
 
-    setFontFamily(element: RendererElement, fontFamily: string): void;
+    setTransform(element: RendererElement, to: RendererTransform): AbstractRenderer;
 
-    setOpacity(element: RendererElement, opacity: RendererOpacity): void;
-
-    setPosition(element: RendererElement, position: RendererPosition): void;
-
-    setRotation(element: RendererElement, rotation: RendererRotation): void;
-
-    getBounds(element: RendererElement): Rect2;
+    getBounds(element: RendererElement, untransformed?: boolean): Rect2;
 
     getTextWidth(text: string, fontSize: number, fontFamily: string): number | undefined;
 }

@@ -22,6 +22,12 @@ describe('ImmutableIdMap', () => {
         expect(list).toBeDefined();
     });
 
+    it('should return empty instance if creating map from empty array', () => {
+        const list = ImmutableIdMap.of();
+
+        expect(list).toBe(ImmutableIdMap.empty());
+    });
+
     it('should instantiate from array of items', () => {
         const list_1 = ImmutableIdMap.of(v1, v2, v3);
 

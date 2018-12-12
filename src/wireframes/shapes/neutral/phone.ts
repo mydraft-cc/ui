@@ -17,7 +17,7 @@ export class Phone extends AbstractControl {
     }
 
     protected renderInternal(ctx: AbstractContext) {
-        const hullItem = ctx.renderer.createRoundedRectangle(ctx.bounds, ctx.shape, 20);
+        const hullItem = ctx.renderer.createRectangle(0, 20, ctx.bounds);
 
         ctx.renderer.setBackgroundColor(hullItem, 0);
 
@@ -30,8 +30,8 @@ export class Phone extends AbstractControl {
     }
 
     private createDisplay(ctx: AbstractContext) {
-        const displayRect = Rect2.create(20, 100, ctx.bounds.width - 40, ctx.bounds.height - 180);
-        const displayItem = ctx.renderer.createRoundedRectangle(displayRect, 0, 0);
+        const displayRect = new Rect2(20, 100, ctx.bounds.width - 40, ctx.bounds.height - 180);
+        const displayItem = ctx.renderer.createRectangle(0, 0, displayRect);
 
         ctx.renderer.setBackgroundColor(displayItem, ctx.shape);
 
@@ -39,8 +39,8 @@ export class Phone extends AbstractControl {
     }
 
     private createSpeaker(ctx: AbstractContext) {
-        const speakerRect = Rect2.create((ctx.bounds.width - 50) * 0.5, 48, 50, 4);
-        const speakerItem = ctx.renderer.createRoundedRectangle(speakerRect, 0, 2);
+        const speakerRect = new Rect2((ctx.bounds.width - 50) * 0.5, 48, 50, 4);
+        const speakerItem = ctx.renderer.createRectangle(0, 2, speakerRect);
 
         ctx.renderer.setBackgroundColor(speakerItem, 0x333333);
 

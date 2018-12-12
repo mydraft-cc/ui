@@ -44,18 +44,18 @@ export class Slider extends AbstractControl {
     }
 
     protected renderInternal(ctx: AbstractContext) {
-        const slideRect = Rect2.create(HEIGHT_TOTAL * 0.5, (HEIGHT_TOTAL - HEIGHT_BORDER) * 0.5, ctx.bounds.width - HEIGHT_TOTAL, HEIGHT_BORDER);
+        const sliderRect = new Rect2(HEIGHT_TOTAL * 0.5, (HEIGHT_TOTAL - HEIGHT_BORDER) * 0.5, ctx.bounds.width - HEIGHT_TOTAL, HEIGHT_BORDER);
 
         const relative = ctx.shape.appearance.get(VALUE) / 100;
 
-        this.createBackground(ctx, slideRect, relative);
-        this.createBorder(ctx, slideRect);
+        this.createBackground(ctx, sliderRect, relative);
+        this.createBorder(ctx, sliderRect);
         this.createThumb(ctx, relative);
     }
 
     private createThumb(ctx: AbstractContext, relative: number) {
         const thumbCenter = new Vec2(ctx.bounds.x + ctx.bounds.width * relative, 0.5 * HEIGHT_TOTAL);
-        const thumbItem = ctx.renderer.createCircle(thumbCenter, ctx.shape, 0.5 * HEIGHT_TOTAL);
+        const thumbItem = ctx.renderer.createEllipse(ctx.shape, Rect2.fromCenter(thumbCenter, 0.5 * HEIGHT_TOTAL));
 
         ctx.renderer.setStrokeColor(thumbItem, ctx.shape);
         ctx.renderer.setBackgroundColor(thumbItem, ctx.shape.appearance.get(DiagramShape.APPEARANCE_FOREGROUND_COLOR));
@@ -64,23 +64,23 @@ export class Slider extends AbstractControl {
     }
 
     private createBackground(ctx: AbstractContext, bounds: Rect2, relative: number) {
-        const clipMask = ctx.renderer.createRoundedRectangle(bounds, 0, bounds.height * 0.5);
+        const clipMask = ctx.renderer.createRectangle(0, bounds.height * 0.5, bounds);
 
-        const activeRect = new Rect2(bounds.position, new Vec2(bounds.width * relative, bounds.height));
-        const activeItem = ctx.renderer.createRoundedRectangle(activeRect, 0, 0);
+        const activeRect = new Rect2(bounds.x, bounds.y, bounds.width * relative, bounds.height);
+        const activeItem = ctx.renderer.createRectangle(0, 0, activeRect);
 
         ctx.renderer.setBackgroundColor(activeItem, ctx.shape.appearance.get(ACCENT_COLOR));
 
-        const inactiveRect = new Rect2(new Vec2(bounds.x + bounds.width * relative, bounds.top), new Vec2(bounds.width * (1 - relative), bounds.height));
-        const inactiveItem = ctx.renderer.createRoundedRectangle(inactiveRect, 0, 0);
+        const inactiveRect = new Rect2(bounds.x + bounds.width * relative, bounds.top, bounds.width * (1 - relative), bounds.height);
+        const inactiveItem = ctx.renderer.createRectangle(0, 0, inactiveRect);
 
         ctx.renderer.setBackgroundColor(inactiveItem, ctx.shape);
 
-        ctx.add(ctx.renderer.createClipGroup(clipMask, activeItem, inactiveItem));
+        ctx.add(ctx.renderer.createGroup([activeItem, inactiveItem], clipMask));
     }
 
     private createBorder(ctx: AbstractContext, bounds: Rect2) {
-        const borderItem = ctx.renderer.createRoundedRectangle(bounds, ctx.shape, bounds.height * 0.5);
+        const borderItem = ctx.renderer.createRectangle(ctx.shape, bounds.height * 0.5, bounds);
 
         ctx.renderer.setStrokeColor(borderItem, ctx.shape);
 

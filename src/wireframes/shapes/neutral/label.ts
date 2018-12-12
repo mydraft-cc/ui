@@ -20,7 +20,7 @@ export class Label extends AbstractControl {
     }
 
     protected renderInternal(ctx: AbstractContext) {
-        const textItem = ctx.renderer.createSinglelineText(ctx.bounds, ctx.shape);
+        const textItem = ctx.renderer.createSinglelineText(ctx.shape, ctx.bounds);
 
         ctx.renderer.setForegroundColor(textItem, ctx.shape);
 

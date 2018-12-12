@@ -49,14 +49,14 @@ describe('DiagramGroup', () => {
     });
 
     it('should update roration when transforming between bounds', () => {
-        const oldBounds = new Transform(Vec2.ZERO, Vec2.ZERO, Rotation.createFromDegree(90));
-        const newBounds = new Transform(Vec2.ZERO, Vec2.ZERO, Rotation.createFromDegree(215));
+        const oldBounds = new Transform(Vec2.ZERO, Vec2.ZERO, Rotation.fromDegree(90));
+        const newBounds = new Transform(Vec2.ZERO, Vec2.ZERO, Rotation.fromDegree(215));
 
         const group_1 = DiagramGroup.createGroup(MathHelper.guid(), []);
         const group_2 = group_1.transformByBounds(oldBounds, newBounds);
 
         const actual = group_2.rotation;
-        const expected = Rotation.createFromDegree(125);
+        const expected = Rotation.fromDegree(125);
 
         expect(actual).toEqual(expected);
     });

@@ -19,7 +19,7 @@ export class Paragraph extends AbstractControl {
     }
 
     protected renderInternal(ctx: AbstractContext) {
-        const textItem = ctx.renderer.createMultilineText(ctx.bounds, ctx.shape);
+        const textItem = ctx.renderer.createMultilineText(ctx.shape, ctx.bounds);
 
         ctx.add(textItem);
     }

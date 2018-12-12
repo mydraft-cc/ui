@@ -2,11 +2,9 @@ import * as paper from 'paper';
 
 import 'paper-area-text';
 
-import {
-    PaperHelper,
-    Rect2,
-    Vec2
-} from '@app/core';
+import { Rect2, Vec2 } from '@app/core';
+
+import { PaperHelper } from './paper-helper';
 
 describe('PaperHelper', () => {
     let project: paper.Project;
@@ -17,7 +15,7 @@ describe('PaperHelper', () => {
     });
 
     it('should convert rect to rectangle', () => {
-        const rectangle = PaperHelper.rect2Rectangle(new Rect2(new Vec2(13, 11), new Vec2(23, 18)));
+        const rectangle = PaperHelper.rect2Rectangle(new Rect2(13, 11, 23, 18));
 
         expect(rectangle.left).toBe(13);
         expect(rectangle.top).toBe(11);

@@ -51,13 +51,13 @@ const mapDispatchToProps = (dispatch: Dispatch) => bindActionCreators({
     filterShapes, addVisualToPosition
 }, dispatch);
 
-const Shapes = (props: ShapesProps) => {
-    const cellRenderer = (shape: ShapeInfo) => {
+class Shapes extends React.PureComponent<ShapesProps> {
+    private cellRenderer = (shape: ShapeInfo) => {
         const doAdd = () => {
-            const diagramId = props.selectedDiagramId;
+            const diagramId = this.props.selectedDiagramId;
 
             if (diagramId) {
-                props.addVisualToPosition(diagramId, shape.key);
+                this.props.addVisualToPosition(diagramId, shape.key);
             }
         };
 
@@ -70,18 +70,20 @@ const Shapes = (props: ShapesProps) => {
                 <div className='asset-shape-title'>{shape.label}</div>
             </div>
         );
-    };
+    }
 
-    return (
-        <>
-            <div className='asset-shapes-search'>
-                <Input placeholder='Find shape' value={props.shapesFilter} onChange={event => props.filterShapes(event.target.value)} />
-            </div>
+    public render() {
+        return (
+            <>
+                <div className='asset-shapes-search'>
+                    <Input placeholder='Find shape' value={this.props.shapesFilter} onChange={event => this.props.filterShapes(event.target.value)} />
+                </div>
 
-            <Grid className='asset-shapes-list' renderer={cellRenderer} columns={2} items={props.shapesFiltered} keyBuilder={shape => shape.searchTerm} />
-        </>
-    );
-};
+                <Grid className='asset-shapes-list' renderer={this.cellRenderer} columns={2} items={this.props.shapesFiltered} keyBuilder={shape => shape.searchTerm} />
+            </>
+        );
+    }
+}
 
 export const ShapesContainer = connect(
     mapStateToProps,

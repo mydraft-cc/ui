@@ -37,7 +37,7 @@ export class Dropdown extends AbstractControl {
         const w = clickSize * 0.3;
         const h = clickSize * 0.2;
 
-        const triangleItem = ctx.renderer.createPath(`M${x - 0.5 * w},${y - 0.4 * h} L${x},${y + 0.6 * h},L${x + 0.5 * w},${y - 0.4 * h} z`, 0);
+        const triangleItem = ctx.renderer.createPath(0, `M${x - 0.5 * w},${y - 0.4 * h} L${x},${y + 0.6 * h},L${x + 0.5 * w},${y - 0.4 * h} z`);
 
         ctx.renderer.setBackgroundColor(triangleItem, ctx.shape.appearance.get(DiagramShape.APPEARANCE_STROKE_COLOR));
 
@@ -45,7 +45,7 @@ export class Dropdown extends AbstractControl {
     }
 
     private createBorder(ctx: AbstractContext) {
-        const borderItem = ctx.renderer.createRoundedRectangle(ctx.bounds, ctx.shape, CommonTheme.CONTROL_BORDER_RADIUS);
+        const borderItem = ctx.renderer.createRectangle(ctx.shape, CommonTheme.CONTROL_BORDER_RADIUS, ctx.bounds);
 
         ctx.renderer.setBackgroundColor(borderItem, ctx.shape);
         ctx.renderer.setStrokeColor(borderItem, ctx.shape);
@@ -55,11 +55,10 @@ export class Dropdown extends AbstractControl {
 
     private createText(ctx: AbstractContext, clickSize: number) {
         const textRect =
-            Rect2.create(
-                14, 4,
+            new Rect2(14, 4,
                 Math.max(0, ctx.bounds.width - clickSize - 6),
                 Math.max(0, ctx.bounds.height - 8));
-        const textItem = ctx.renderer.createSinglelineText(textRect, ctx.shape);
+        const textItem = ctx.renderer.createSinglelineText(ctx.shape, textRect);
 
         ctx.renderer.setForegroundColor(textItem, ctx.shape);
 

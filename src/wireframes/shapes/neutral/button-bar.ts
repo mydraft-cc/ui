@@ -45,18 +45,18 @@ export class ButtonBar extends AbstractControl {
         for (let i = 0; i < parts.length; i++) {
             const part = parts[i];
 
-            const rect = Rect2.create(w * i, 0, w, h);
+            const bounds = new Rect2(w * i, 0, w, h);
 
             let partItem: any;
 
             if (parts.length === 1) {
-                partItem = ctx.renderer.createRoundedRectangle(rect, ctx.shape, CommonTheme.CONTROL_BORDER_RADIUS);
+                partItem = ctx.renderer.createRectangle(ctx.shape, CommonTheme.CONTROL_BORDER_RADIUS, bounds);
             } else if (i === 0) {
-                partItem = ctx.renderer.createRoundedRectangleLeft(rect, ctx.shape, CommonTheme.CONTROL_BORDER_RADIUS);
+                partItem = ctx.renderer.createRoundedRectangleLeft(ctx.shape, CommonTheme.CONTROL_BORDER_RADIUS, bounds);
             } else if (i === parts.length - 1) {
-                partItem = ctx.renderer.createRoundedRectangleRight(rect, ctx.shape, CommonTheme.CONTROL_BORDER_RADIUS);
+                partItem = ctx.renderer.createRoundedRectangleRight(ctx.shape, CommonTheme.CONTROL_BORDER_RADIUS, bounds);
             } else {
-                partItem = ctx.renderer.createRoundedRectangle(rect, ctx.shape, 0);
+                partItem = ctx.renderer.createRectangle(ctx.shape, 0, bounds);
             }
 
             if (part.selected) {
@@ -67,7 +67,7 @@ export class ButtonBar extends AbstractControl {
                 ctx.renderer.setStrokeColor(partItem, ctx.shape);
             }
 
-            const textItem = ctx.renderer.createSinglelineText(rect.deflate(4, 4), ctx.shape);
+            const textItem = ctx.renderer.createSinglelineText(ctx.shape, bounds.deflate(4));
 
             if (part.selected) {
                 if (accentColor.luminance > 0.4) {
@@ -77,10 +77,10 @@ export class ButtonBar extends AbstractControl {
                 }
             }
 
-            textItem.textItem.content = part.text;
+            ctx.renderer.setText(textItem, part.text);
 
             ctx.add(partItem);
-            ctx.add(textItem.groupItem);
+            ctx.add(textItem);
         }
     }
 

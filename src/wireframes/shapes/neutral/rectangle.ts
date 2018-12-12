@@ -40,7 +40,7 @@ export class Rectangle extends AbstractControl {
     private createShape(ctx: AbstractContext) {
         const borderRadius =  ctx.shape.appearance.get(BORDER_RADIUS_KEY);
 
-        const shapeItem = ctx.renderer.createRoundedRectangle(ctx.bounds, ctx.shape, borderRadius);
+        const shapeItem = ctx.renderer.createRectangle(ctx.shape, borderRadius, ctx.bounds);
 
         ctx.renderer.setStrokeColor(shapeItem, ctx.shape);
         ctx.renderer.setBackgroundColor(shapeItem, ctx.shape);
@@ -49,7 +49,7 @@ export class Rectangle extends AbstractControl {
     }
 
     private createText(ctx: AbstractContext) {
-        const textItem = ctx.renderer.createSinglelineText(ctx.bounds.deflate(10, 10), ctx.shape);
+        const textItem = ctx.renderer.createSinglelineText(ctx.shape, ctx.bounds.deflate(10));
 
         ctx.renderer.setForegroundColor(textItem, ctx.shape);
 

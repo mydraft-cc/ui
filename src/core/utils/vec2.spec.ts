@@ -42,7 +42,7 @@ describe('Vec2', () => {
     });
 
     it('should add by scalar correctly', () => {
-        const actual = new Vec2(15, 12).addScalar(3);
+        const actual = new Vec2(15, 12).add(3);
         const expected = new Vec2(18, 15);
 
         expect(actual).toEqual(expected);
@@ -56,7 +56,7 @@ describe('Vec2', () => {
     });
 
     it('should subtract by scalar correctly', () => {
-        const actual = new Vec2(15, 12).subScalar(3);
+        const actual = new Vec2(15, 12).sub(3);
         const expected = new Vec2(12, 9);
 
         expect(actual).toEqual(expected);
@@ -70,7 +70,7 @@ describe('Vec2', () => {
     });
 
     it('should multiply by scalar correctly', () => {
-        const actual = new Vec2(15, 12).mulScalar(3);
+        const actual = new Vec2(15, 12).mul(3);
         const expected = new Vec2(45, 36);
 
         expect(actual).toEqual(expected);
@@ -84,7 +84,7 @@ describe('Vec2', () => {
     });
 
     it('should divide by scalar correctly', () => {
-        const actual = new Vec2(15, 12).divScalar(3);
+        const actual = new Vec2(15, 12).div(3);
         const expected = new Vec2(5, 4);
 
         expect(actual).toEqual(expected);
@@ -126,7 +126,7 @@ describe('Vec2', () => {
     });
 
     it('should calculate median', () => {
-        const actual = Vec2.createMedian(new Vec2(10, 20), new Vec2(20, 20), new Vec2(60, 20));
+        const actual = Vec2.median(new Vec2(10, 20), new Vec2(20, 20), new Vec2(60, 20));
         const expected = new Vec2(30, 20);
 
         expect(actual).toEqual(expected);
@@ -136,9 +136,9 @@ describe('Vec2', () => {
         const source = new Vec2(40, 20);
         const center = new Vec2(20, 20);
 
-        const rotation = Rotation.createFromRadian(Math.PI / 2);
+        const rotation = Rotation.fromRadian(Math.PI / 2);
 
-        const actual = Vec2.createRotated(source, center, rotation);
+        const actual = Vec2.rotated(source, center, rotation);
         const expected = new Vec2(20, 40);
 
         expect(actual).toEqual(expected);

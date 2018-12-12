@@ -12,7 +12,6 @@ const SHAPE_RECTANGLE = 'Rectangle';
 const SHAPE_ROUNDED_RECTANGLE = 'Rounded Rectangle';
 const SHAPE_ELLIPSE = 'Ellipse';
 const SHAPE_TRIANGLE = 'Triangle';
-const SHAPE_STAR = 'Star';
 const SHAPE_RHOMBUS = 'Rhombus';
 
 const DEFAULT_APPEARANCE = {};
@@ -32,8 +31,7 @@ const CONFIGURABLES: Configurable[] = [
             SHAPE_ROUNDED_RECTANGLE,
             SHAPE_ELLIPSE,
             SHAPE_TRIANGLE,
-            SHAPE_RHOMBUS,
-            SHAPE_STAR
+            SHAPE_RHOMBUS
         ])
 ];
 
@@ -58,20 +56,16 @@ export class Shape extends AbstractControl {
 
         const shapeType = ctx.shape.appearance.get(SHAPE_KEY);
 
-        const diameter = Math.min(b.width, b.height);
-
         if (shapeType === SHAPE_ROUNDED_RECTANGLE) {
-            shapeItem = ctx.renderer.createRoundedRectangle(b, ctx.shape, 10);
-        } else if (shapeType === SHAPE_STAR) {
-            shapeItem = ctx.renderer.createStar(b.center, 6, diameter / 4, diameter / 2, ctx.shape);
+            shapeItem = ctx.renderer.createRectangle(ctx.shape, 10, ctx.bounds);
         } else if (shapeType === SHAPE_ELLIPSE) {
-            shapeItem = ctx.renderer.createEllipse(b, ctx.shape);
+            shapeItem = ctx.renderer.createEllipse(ctx.shape, ctx.bounds);
         } else if (shapeType === SHAPE_TRIANGLE) {
-            shapeItem = ctx.renderer.createBoundedPath(b, `M0 ${b.bottom} L${b.centerX} ${b.top} L${b.right} ${b.bottom} z`, ctx.shape);
+            shapeItem = ctx.renderer.createPath(ctx.shape, `M0 ${b.bottom} L${b.cx} ${b.top} L${b.right} ${b.bottom} z`, ctx.bounds);
         } else if (shapeType === SHAPE_RHOMBUS) {
-            shapeItem = ctx.renderer.createPath(`M${b.centerX} ${b.top} L${b.right} ${b.centerY} L${b.centerX} ${b.bottom} L${b.left} ${b.centerY} z`, ctx.shape);
+            shapeItem = ctx.renderer.createPath(ctx.shape, `M${b.cx} ${b.top} L${b.right} ${b.cy} L${b.cx} ${b.bottom} L${b.left} ${b.cy} z`, ctx.bounds);
         } else {
-            shapeItem = ctx.renderer.createRoundedRectangle(b, ctx.shape, 0);
+            shapeItem = ctx.renderer.createRectangle(ctx.shape, 0, ctx.bounds);
         }
 
         ctx.renderer.setStrokeColor(shapeItem, ctx.shape);
@@ -81,7 +75,7 @@ export class Shape extends AbstractControl {
     }
 
     private createText(ctx: AbstractContext) {
-        const textItem = ctx.renderer.createSinglelineText(ctx.bounds.deflate(10, 10), ctx.shape);
+        const textItem = ctx.renderer.createSinglelineText(ctx.shape, ctx.bounds.deflate(10, 10));
 
         ctx.renderer.setForegroundColor(textItem, ctx.shape);
 

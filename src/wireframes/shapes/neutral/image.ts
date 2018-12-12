@@ -29,7 +29,7 @@ export class Image extends AbstractControl {
         const t = ctx.bounds.top + 0.5;
         const b = ctx.bounds.bottom - 0.5;
 
-        const crossItem = ctx.renderer.createPath(`M${l},${t} L${r},${b} M${l},${b} L${r},${t}`, ctx.shape);
+        const crossItem = ctx.renderer.createPath(ctx.shape, `M${l},${t} L${r},${b} M${l},${b} L${r},${t}`);
 
         ctx.renderer.setStrokeColor(crossItem, ctx.shape);
         ctx.renderer.setStrokeStyle(crossItem, 'butt', 'butt');
@@ -38,7 +38,7 @@ export class Image extends AbstractControl {
     }
 
     private createBorder(ctx: AbstractContext) {
-        const borderItem = ctx.renderer.createRoundedRectangle(ctx.bounds, ctx.shape, 0);
+        const borderItem = ctx.renderer.createRectangle(ctx.shape, 0, ctx.bounds);
 
         ctx.renderer.setBackgroundColor(borderItem, ctx.shape);
         ctx.renderer.setStrokeColor(borderItem, ctx.shape);

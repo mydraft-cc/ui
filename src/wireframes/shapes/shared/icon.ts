@@ -20,11 +20,11 @@ export class Icon extends AbstractControl {
     }
 
     protected renderInternal(ctx: AbstractContext) {
-        const fontSize = Math.min(ctx.bounds.size.x, ctx.bounds.size.y) - 16;
+        const fontSize = Math.min(ctx.bounds.w, ctx.bounds.h) - 10;
 
         const config = { fontSize, text: ctx.shape.appearance.get(DiagramShape.APPEARANCE_TEXT), alignment: 'center' };
 
-        const textItem = ctx.renderer.createSinglelineText(ctx.bounds, config);
+        const textItem = ctx.renderer.createSinglelineText(config, ctx.bounds);
 
         ctx.renderer.setForegroundColor(textItem, ctx.shape);
         ctx.renderer.setFontFamily(textItem, 'FontAwesome');

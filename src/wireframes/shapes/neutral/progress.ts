@@ -1,4 +1,4 @@
-import { Rect2, Vec2 } from '@app/core';
+import { Rect2 } from '@app/core';
 
 import {
     ColorConfigurable,
@@ -50,23 +50,23 @@ export class Progress extends AbstractControl {
     private createBackground(ctx: AbstractContext) {
         const relative = ctx.shape.appearance.get(VALUE) / 100;
 
-        const clipMask = ctx.renderer.createRoundedRectangle(ctx.bounds, 0, ctx.bounds.height * 0.5);
+        const clipMask = ctx.renderer.createRectangle(0, ctx.bounds.height * 0.5, ctx.bounds);
 
-        const activeRect = new Rect2(ctx.bounds.position, new Vec2(ctx.bounds.width * relative, ctx.bounds.height));
-        const activeItem = ctx.renderer.createRoundedRectangle(activeRect, 0, 0);
+        const activeBounds = new Rect2(ctx.bounds.x, ctx.bounds.y, ctx.bounds.width * relative, ctx.bounds.height);
+        const activeItem = ctx.renderer.createRectangle(0, 0, activeBounds);
 
         ctx.renderer.setBackgroundColor(activeItem, ctx.shape.appearance.get(ACCENT_COLOR));
 
-        const inactiveRect = new Rect2(new Vec2(ctx.bounds.width * relative, ctx.bounds.top), new Vec2(ctx.bounds.width * (1 - relative), ctx.bounds.height));
-        const inactiveItem = ctx.renderer.createRoundedRectangle(inactiveRect, 0, 0);
+        const inactiveBounds = new Rect2(ctx.bounds.width * relative, ctx.bounds.top, ctx.bounds.width * (1 - relative), ctx.bounds.height);
+        const inactiveItem = ctx.renderer.createRectangle(0, 0, inactiveBounds);
 
         ctx.renderer.setBackgroundColor(inactiveItem, ctx.shape);
 
-        ctx.add(ctx.renderer.createClipGroup(clipMask, activeItem, inactiveItem));
+        ctx.add(ctx.renderer.createGroup([activeItem, inactiveItem], clipMask));
     }
 
     private createBorder(ctx: AbstractContext) {
-        const borderItem = ctx.renderer.createRoundedRectangle(ctx.bounds, ctx.shape, ctx.bounds.height * 0.51);
+        const borderItem = ctx.renderer.createRectangle(ctx.shape, ctx.bounds.height * 0.51, ctx.bounds);
 
         ctx.renderer.setStrokeColor(borderItem, ctx.shape);
 

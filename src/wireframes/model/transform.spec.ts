@@ -7,7 +7,7 @@ import {
 import { Transform } from '@app/wireframes/model';
 
 describe('Transform', () => {
-    const transform = new Transform(new Vec2(10, 20), new Vec2(30, 40), Rotation.createFromDegree(45));
+    const transform = new Transform(new Vec2(10, 20), new Vec2(30, 40), Rotation.fromDegree(45));
 
     it('should convert from json', () => {
         const json = {
@@ -22,7 +22,7 @@ describe('Transform', () => {
             rotation: 45
         };
 
-        const parsed = Transform.createFromJS(json);
+        const parsed = Transform.fromJS(json);
 
         expect(parsed.position.x).toEqual(10);
         expect(parsed.position.y).toEqual(20);
@@ -52,7 +52,7 @@ describe('Transform', () => {
     });
 
     it('should adjust position for size', () => {
-        const newTransform = new Transform(new Vec2(10, 20), new Vec2(31, 41), Rotation.createFromDegree(45)).round();
+        const newTransform = new Transform(new Vec2(10, 20), new Vec2(31, 41), Rotation.fromDegree(45)).round();
 
         const actual = newTransform.position;
         const expected = new Vec2(10.5, 20.5);
@@ -61,70 +61,70 @@ describe('Transform', () => {
     });
 
     it('should calculate to string', () => {
-        const actual = new Transform(new Vec2(10, 20), new Vec2(30, 40), Rotation.createFromDegree(45)).toString();
+        const actual = new Transform(new Vec2(10, 20), new Vec2(30, 40), Rotation.fromDegree(45)).toString();
         const expected = '<position: (10, 20), size: (30, 40), rotation: 45°>';
 
         expect(actual).toEqual(expected);
     });
 
     it('should calculate to string', () => {
-        const actual = new Transform(new Vec2(10, 20), new Vec2(30, 40), Rotation.createFromDegree(45)).halfSize;
+        const actual = new Transform(new Vec2(10, 20), new Vec2(30, 40), Rotation.fromDegree(45)).halfSize;
         const expected = new Vec2(15, 20);
 
         expect(actual).toEqual(expected);
     });
 
     it('should rotate around anchor', () => {
-        const actual = transform.rotateAroundAnchor(new Vec2(25, 140), Rotation.createFromDegree(90));
-        const expected = new Transform(new Vec2(145, 125), new Vec2(30, 40), Rotation.createFromDegree(135));
+        const actual = transform.rotateAroundAnchor(new Vec2(25, 140), Rotation.fromDegree(90));
+        const expected = new Transform(new Vec2(145, 125), new Vec2(30, 40), Rotation.fromDegree(135));
 
         expect(actual).toEqual(expected);
     });
 
     it('should replace position by moveTo', () => {
         const actual = transform.moveTo(new Vec2(100, 60));
-        const expected = new Transform(new Vec2(100, 60), new Vec2(30, 40), Rotation.createFromDegree(45));
+        const expected = new Transform(new Vec2(100, 60), new Vec2(30, 40), Rotation.fromDegree(45));
 
         expect(actual).toEqual(expected);
     });
 
     it('should add position by moveBy', () => {
         const actual = transform.moveBy(new Vec2(100, 60));
-        const expected = new Transform(new Vec2(110, 80), new Vec2(30, 40), Rotation.createFromDegree(45));
+        const expected = new Transform(new Vec2(110, 80), new Vec2(30, 40), Rotation.fromDegree(45));
 
         expect(actual).toEqual(expected);
     });
 
     it('should replace size by resizeTo', () => {
         const actual = transform.resizeTo(new Vec2(100, 60));
-        const expected = new Transform(new Vec2(10, 20), new Vec2(100, 60), Rotation.createFromDegree(45));
+        const expected = new Transform(new Vec2(10, 20), new Vec2(100, 60), Rotation.fromDegree(45));
 
         expect(actual).toEqual(expected);
     });
 
     it('should add size by resizeBy', () => {
         const actual = transform.resizeBy(new Vec2(100, 60));
-        const expected = new Transform(new Vec2(10, 20), new Vec2(130, 100), Rotation.createFromDegree(45));
+        const expected = new Transform(new Vec2(10, 20), new Vec2(130, 100), Rotation.fromDegree(45));
 
         expect(actual).toEqual(expected);
     });
 
     it('should replace rotation by rotateTo', () => {
-        const actual = transform.rotateTo(Rotation.createFromDegree(90));
-        const expected = new Transform(new Vec2(10, 20), new Vec2(30, 40), Rotation.createFromDegree(90));
+        const actual = transform.rotateTo(Rotation.fromDegree(90));
+        const expected = new Transform(new Vec2(10, 20), new Vec2(30, 40), Rotation.fromDegree(90));
 
         expect(actual).toEqual(expected);
     });
 
     it('should add size by rotateBy', () => {
-        const actual = transform.rotateBy(Rotation.createFromDegree(90));
-        const expected = new Transform(new Vec2(10, 20), new Vec2(30, 40), Rotation.createFromDegree(135));
+        const actual = transform.rotateBy(Rotation.fromDegree(90));
+        const expected = new Transform(new Vec2(10, 20), new Vec2(30, 40), Rotation.fromDegree(135));
 
         expect(actual).toEqual(expected);
     });
 
     it('Should create from rect', () => {
-        const actual = Transform.createFromRect(new Rect2(new Vec2(100, 60), new Vec2(30, 40)));
+        const actual = Transform.fromRect(new Rect2(100, 60, 30, 40));
         const expected = new Transform(new Vec2(115, 80), new Vec2(30, 40), Rotation.ZERO);
 
         expect(actual).toEqual(expected);
@@ -139,11 +139,11 @@ describe('Transform', () => {
 
     it('Should create from rects', () => {
         const rects = [
-            new Rect2(new Vec2(100, 60), new Vec2(30, 40)),
-            new Rect2(new Vec2(200, 60), new Vec2(30, 40))
+            new Rect2(100, 60, 30, 40),
+            new Rect2(200, 60, 30, 40)
         ];
 
-        const actual = Transform.createFromRects(rects);
+        const actual = Transform.fromRects(rects);
         const expected = new Transform(new Vec2(165, 80), new Vec2(130, 40), Rotation.ZERO);
 
         expect(actual).toEqual(expected);
@@ -152,7 +152,7 @@ describe('Transform', () => {
     it('should create from transformations and rotation', () => {
         const center = new Vec2(300, 150);
 
-        const rotation = Rotation.createFromDegree(45);
+        const rotation = Rotation.fromDegree(45);
 
         const transformation1 =
             new Transform(new Vec2(200, 100), new Vec2(100, 40), Rotation.ZERO)
@@ -162,7 +162,7 @@ describe('Transform', () => {
                 .rotateAroundAnchor(center, rotation);
 
         const actual = Transform.createFromTransformationsAndRotations([transformation1, transformation2], rotation);
-        const expected = new Transform(new Vec2(300, 150), new Vec2(300, 140), Rotation.createFromDegree(45));
+        const expected = new Transform(new Vec2(300, 150), new Vec2(300, 140), Rotation.fromDegree(45));
 
         expect(actual).toEqual(expected);
     });
@@ -190,7 +190,7 @@ describe('Transform', () => {
             const oldPos = new Vec2(100, 100);
             const newPos = x.expectedPosition;
 
-            const rotation = Rotation.createFromDegree(x.rotation);
+            const rotation = Rotation.fromDegree(x.rotation);
 
             const actual   = new Transform(oldPos, oldSize, rotation).resizeTopLeft(newSize);
             const expected = new Transform(newPos, newSize, rotation);

@@ -51,13 +51,13 @@ const mapDispatchToProps = (dispatch: Dispatch) => bindActionCreators({
     filterIcons, addIconToPosition
 }, dispatch);
 
-const Icons = (props: IconsProps) => {
-    const cellRenderer = (icon: IconInfo) => {
+class Icons extends React.PureComponent<IconsProps> {
+    private cellRenderer = (icon: IconInfo) => {
         const doAdd = () => {
-            const diagramId = props.selectedDiagramId;
+            const diagramId = this.props.selectedDiagramId;
 
             if (diagramId) {
-                props.addIconToPosition(diagramId, icon.text);
+                this.props.addIconToPosition(diagramId, icon.text);
             }
         };
 
@@ -70,18 +70,20 @@ const Icons = (props: IconsProps) => {
                 <div className='asset-icon-title'>{icon.label}</div>
             </div>
         );
-    };
+    }
 
-    return (
-        <>
-            <div className='asset-icons-search'>
-                <Input placeholder='Find icon' value={props.iconsFilter} onChange={event => props.filterIcons(event.target.value)} />
-            </div>
+    public render() {
+        return (
+            <>
+                <div className='asset-icons-search'>
+                    <Input placeholder='Find icon' value={this.props.iconsFilter} onChange={event => this.props.filterIcons(event.target.value)} />
+                </div>
 
-            <Grid className='asset-icons-list' renderer={cellRenderer} columns={2} items={props.iconsFiltered} keyBuilder={icon => icon.name} />
-        </>
-    );
-};
+                <Grid className='asset-icons-list' renderer={this.cellRenderer} columns={3} items={this.props.iconsFiltered} keyBuilder={icon => icon.name} />
+            </>
+        );
+    }
+}
 
 export const IconsContainer = connect(
     mapStateToProps,

@@ -5,8 +5,8 @@ export class Vec2 {
 
     public static readonly ONE = new Vec2(1, 1);
 
-    public static readonly POSITIVE_INFINITE = new Vec2(Number.POSITIVE_INFINITY, Number.POSITIVE_INFINITY);
-    public static readonly NEGATIVE_INFINITE = new Vec2(Number.NEGATIVE_INFINITY, Number.NEGATIVE_INFINITY);
+    public static readonly POSITIVE_INFINITY = new Vec2(Number.POSITIVE_INFINITY, Number.POSITIVE_INFINITY);
+    public static readonly NEGATIVE_INFINITY = new Vec2(Number.NEGATIVE_INFINITY, Number.NEGATIVE_INFINITY);
 
     public get length(): number {
         return Math.sqrt(this.x * this.x + this.y * this.y);
@@ -35,36 +35,36 @@ export class Vec2 {
         return `(${this.x}, ${this.y})`;
     }
 
-    public add(v: Vec2): Vec2 {
-        return new Vec2(this.x + v.x, this.y + v.y);
+    public add(v: Vec2 | number): Vec2 {
+        if (v instanceof Vec2) {
+            return new Vec2(this.x + v.x, this.y + v.y);
+        } else {
+            return new Vec2(this.x + v, this.y + v);
+        }
     }
 
-    public addScalar(s: number): Vec2 {
-        return new Vec2(this.x + s, this.y + s);
+    public sub(v: Vec2 | number): Vec2 {
+        if (v instanceof Vec2) {
+            return new Vec2(this.x - v.x, this.y - v.y);
+        } else {
+            return new Vec2(this.x - v, this.y - v);
+        }
     }
 
-    public sub(v: Vec2): Vec2 {
-        return new Vec2(this.x - v.x, this.y - v.y);
+    public mul(v: Vec2 | number): Vec2 {
+        if (v instanceof Vec2) {
+            return new Vec2(this.x * v.x, this.y * v.y);
+        } else {
+            return new Vec2(this.x * v, this.y * v);
+        }
     }
 
-    public subScalar(s: number): Vec2 {
-        return new Vec2(this.x - s, this.y - s);
-    }
-
-    public mul(v: Vec2): Vec2 {
-        return new Vec2(this.x * v.x, this.y * v.y);
-    }
-
-    public mulScalar(s: number): Vec2 {
-        return new Vec2(this.x * s, this.y * s);
-    }
-
-    public div(v: Vec2): Vec2 {
-        return new Vec2(this.x / v.x, this.y / v.y);
-    }
-
-    public divScalar(s: number): Vec2 {
-        return new Vec2(this.x / s, this.y / s);
+    public div(v: Vec2 | number): Vec2 {
+        if (v instanceof Vec2) {
+            return new Vec2(this.x / v.x, this.y / v.y);
+        } else {
+            return new Vec2(this.x / v, this.y / v);
+        }
     }
 
     public negate(): Vec2 {
@@ -87,7 +87,7 @@ export class Vec2 {
         return new Vec2(MathHelper.roundToMultipleOf(this.x, 2), MathHelper.roundToMultipleOf(this.y, 2));
     }
 
-    public static createRotated(vec: Vec2, center: Vec2, rotation: Rotation): Vec2 {
+    public static rotated(vec: Vec2, center: Vec2, rotation: Rotation): Vec2 {
         const x = vec.x - center.x;
         const y = vec.y - center.y;
 
@@ -98,7 +98,7 @@ export class Vec2 {
         return result;
     }
 
-    public static createMedian(...vecs: Vec2[]) {
+    public static median(...vecs: Vec2[]) {
         let medianX = 0;
         let medianY = 0;
 

@@ -1,4 +1,4 @@
-import { Vec2 } from '@appcore';
+import { Vec2 } from '@app/core';
 
 import { Constraint, DiagramShape } from '@app/wireframes/model';
 
@@ -42,7 +42,7 @@ export class VerticalLine extends AbstractControl {
     }
 
     protected renderInternal(ctx: AbstractContext) {
-        const textItem = ctx.renderer.createRoundedRectangle(ctx.bounds, ctx.shape, 0);
+        const textItem = ctx.renderer.createRectangle(ctx.shape, 0, ctx.bounds);
 
         ctx.renderer.setBackgroundColor(textItem, ctx.shape.appearance.get(DiagramShape.APPEARANCE_STROKE_COLOR));
 
