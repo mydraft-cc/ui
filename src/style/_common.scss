@@ -12,7 +12,11 @@
 }
 
 .no-select {
-    @include no-selection();
+    @include no-selection;
+}
+
+.no-border-radius {
+    @include border-radius(0);
 }
 
 .ant-layout {
@@ -36,14 +40,20 @@
 
 .logo {
     @include fixed(0, 0, 0, 0);
+    color: $color-dark-foreground;
+    font-size: 1.1rem;
+    font-weight: bold;
+    margin-right: 50px;
 }
 
 //
 // Typography
 //
 
-ul.blank {
-    list-style: none;
+ul {
+    &.blank {
+        list-style: none;
+    }
 }
 
 .section {
@@ -180,11 +190,4 @@ $sidebar-size: 320px;
             @include opacity(.4);
         }
     }
-}
-
-.logo {
-    color: $color-dark-foreground;
-    font-size: 1.1rem;
-    font-weight: bold;
-    margin-right: 50px;
 }
