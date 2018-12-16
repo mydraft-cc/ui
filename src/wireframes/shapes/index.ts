@@ -1,3 +1,4 @@
+import { Browser } from './neutral/Browser';
 import { Button } from './neutral/button';
 import { ButtonBar } from './neutral/button-bar';
 import { Checkbox } from './neutral/checkbox';
@@ -17,6 +18,7 @@ import { RadioButton } from './neutral/radio-button';
 import { Rectangle } from './neutral/rectangle';
 import { Shape } from './neutral/shape';
 import { Slider } from './neutral/slider';
+import { Tablet } from './neutral/tablet';
 import { TextArea } from './neutral/text-area';
 import { TextInput } from './neutral/text-input';
 import { Toggle } from './neutral/toggle';
@@ -29,6 +31,7 @@ import { RendererService } from '@app/wireframes/model/renderer.service';
 
 export function registerRenderers(): RendererService {
     return new RendererService()
+        .addRenderer(new Browser())
         .addRenderer(new Button())
         .addRenderer(new ButtonBar())
         .addRenderer(new Checkbox())
@@ -52,6 +55,7 @@ export function registerRenderers(): RendererService {
         .addRenderer(new Slider())
         .addRenderer(new TextArea())
         .addRenderer(new TextInput())
+        .addRenderer(new Tablet())
         .addRenderer(new Toggle())
         .addRenderer(new VerticalLine());
 }

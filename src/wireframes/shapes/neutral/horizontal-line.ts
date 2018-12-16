@@ -9,6 +9,7 @@ import { CommonTheme } from './_theme';
 const DEFAULT_APPEARANCE = {};
 DEFAULT_APPEARANCE[DiagramShape.APPEARANCE_STROKE_COLOR] = CommonTheme.CONTROL_BORDER_COLOR;
 DEFAULT_APPEARANCE[DiagramShape.APPEARANCE_STROKE_THICKNESS] = 2;
+DEFAULT_APPEARANCE[DiagramShape.APPEARANCE_TEXT_DISABLED] = true;
 
 class BorderHeightConstraint implements Constraint {
     public static readonly INSTANCE = new BorderHeightConstraint();
