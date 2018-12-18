@@ -17,6 +17,9 @@ import {
 
 import { SVGRenderer } from '@app/wireframes/shapes/utils/svg-renderer';
 
+const SELECTION_STROKE_COLOR = '#080';
+const SELECTION_FILL_COLOR = 'none';
+
 export interface SelectionAdornerProps {
     // The adorner scope.
     adorners: svg.Container;
@@ -140,8 +143,8 @@ export class SelectionAdorner extends React.Component<SelectionAdornerProps> imp
             if (i >= this.shapesAdorners.length) {
                 shapeAdorner = this.renderer.createRectangle(1);
 
-                this.renderer.setBackgroundColor(shapeAdorner, 'none');
-                this.renderer.setStrokeColor(shapeAdorner, '#00a');
+                this.renderer.setBackgroundColor(shapeAdorner, SELECTION_FILL_COLOR);
+                this.renderer.setStrokeColor(shapeAdorner, SELECTION_STROKE_COLOR);
 
                 this.shapesAdorners.push(shapeAdorner);
             } else {

@@ -79,7 +79,7 @@ const mapDispatchToProps = (dispatch: Dispatch) => bindActionCreators({
     selectItems, changeItemsAppearance, transformItems
 }, dispatch);
 
-const isProduction = process.env.NODE_ENV === 'production';
+const showDebugOutlines = process.env.NODE_ENV === 'false';
 
 class Editor extends React.Component<EditorProps> {
     private adornersSelect: svg.Container;
@@ -134,7 +134,7 @@ class Editor extends React.Component<EditorProps> {
             if (!ref) {
                 const renderer = this.props.rendererService.registeredRenderers[shape.renderer];
 
-                ref = new ShapeRef(this.diagramRendering, renderer, !isProduction);
+                ref = new ShapeRef(this.diagramRendering, renderer, showDebugOutlines);
             }
 
             ref.render(shape);

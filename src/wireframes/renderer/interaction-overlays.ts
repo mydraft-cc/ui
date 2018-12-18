@@ -11,15 +11,15 @@ import {
 import { SVGRenderer } from '@app/wireframes/shapes/utils/svg-renderer';
 
 export class InteractionOverlays {
-    private infoRect: any;
-    private infoText: any;
-    private lineX: any;
-    private lineY: any;
-    private elements: any[] = [];
+    private readonly infoRect: any;
+    private readonly infoText: any;
+    private readonly lineX: any;
+    private readonly lineY: any;
+    private readonly elements: any[] = [];
     private readonly renderer: SVGRenderer;
 
     constructor(
-        private readonly layer: svg.Container
+       layer: svg.Container
     ) {
         this.renderer = new SVGRenderer();
         this.renderer.captureContext(layer);
@@ -59,18 +59,14 @@ export class InteractionOverlays {
     }
 
     public showXLine(value: number, color: Color) {
-        const height = this.layer.height();
-
         this.renderer.setBackgroundColor(this.lineX, color);
-        this.renderer.setTransform(this.lineX, { x: value, y: 0, w: 1, h: height });
+        this.renderer.setTransform(this.lineX, { x: value, y: -4000, w: 1, h: 10000 });
         this.renderer.setVisibility(this.lineX, true);
     }
 
     public showYLine(value: number, color: Color) {
-        const width = this.layer.width();
-
         this.renderer.setBackgroundColor(this.lineY, color);
-        this.renderer.setTransform(this.lineY, { x: 0, y: value, w: width, h: 1 });
+        this.renderer.setTransform(this.lineY, { x: -4000, y: value, w: 10000, h: 1 });
         this.renderer.setVisibility(this.lineY, true);
     }
 
