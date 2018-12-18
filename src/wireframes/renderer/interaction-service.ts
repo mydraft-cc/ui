@@ -40,20 +40,11 @@ const NOOP = () => { /* NOOP */ };
 
 export class InteractionService {
     private readonly interactionHandlers: InteractionHandler[] = [];
-    private readonly pressedKey = {};
     private isDragging = false;
 
     constructor(
         private readonly adornerLayers: svg.Element[], renderings: svg.Element, private readonly diagram: svg.Doc
     ) {
-        document.onkeydown = (event: KeyboardEvent) => {
-            this.pressedKey[event.keyCode + ''] = true;
-        };
-
-        document.onkeyup = (event: KeyboardEvent) => {
-            this.pressedKey[event.keyCode + ''] = false;
-        };
-
         renderings.click((event: MouseEvent) => {
             this.invokeEvent(event, h => h.onClick ? h.onClick.bind(h) : null);
         });
@@ -101,14 +92,6 @@ export class InteractionService {
 
     public setCursorAngle(item: svg.Element, angle: number) {
         item.node['cursorAngle'] = angle;
-    }
-
-    public isControlKeyPressed(): boolean {
-        return this.pressedKey['17'] === true;
-    }
-
-    public isShiftKeyPressed() {
-        return this.pressedKey['16'] === true;
     }
 
     public showAdorners() {

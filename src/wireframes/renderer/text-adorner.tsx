@@ -103,7 +103,7 @@ export class TextAdorner extends React.Component<TextAdornerProps> implements In
     }
 
     private onTextareaKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
-        if ((event.keyCode === KEY_ENTER && !this.props.interactionService.isShiftKeyPressed()) ||
+        if ((event.keyCode === KEY_ENTER && !event.shiftKey) ||
             (event.keyCode === KEY_ESCAPE)) {
 
             if (event.keyCode === KEY_ENTER) {

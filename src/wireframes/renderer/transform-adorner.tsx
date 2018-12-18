@@ -32,6 +32,9 @@ export interface TransformAdornerProps {
     // The current zoom value.
     zoom: number;
 
+    // The view size of the editor.
+    viewSize: Vec2;
+
     // The adorner scope.
     adorners: svg.Container;
 
@@ -143,7 +146,7 @@ export class TransformAdorner extends React.Component<TransformAdornerProps> imp
     }
 
     public onMouseDown(event: SvgEvent, next: () => void) {
-        if (this.props.interactionService.isControlKeyPressed()) {
+        if (event.event.ctrlKey) {
             return next();
         }
 
@@ -212,21 +215,20 @@ export class TransformAdorner extends React.Component<TransformAdornerProps> imp
             this.manipulated = true;
 
             if (this.manipulationMode === MODE_MOVE) {
-                this.move(delta);
+                this.move(delta, event.event.shiftKey);
             } else if (this.manipulationMode === MODE_ROTATE) {
-                this.rotate(event);
+                this.rotate(event, event.event.shiftKey);
             } else {
-                this.resize(delta);
+                this.resize(delta, event.event.shiftKey);
             }
 
             this.layoutShapes();
         }
     }
 
-    private move(delta: Vec2) {
+    private move(delta: Vec2, shiftKey: boolean) {
         const snapResult =
-            this.snapManager.snapMoving(this.props.selectedDiagram, this.startTransform, delta,
-                this.props.interactionService.isShiftKeyPressed());
+            this.snapManager.snapMoving(this.props.selectedDiagram, this.props.viewSize, this.startTransform, delta, shiftKey);
 
         this.transform = this.startTransform.moveBy(snapResult.delta);
 
@@ -238,12 +240,11 @@ export class TransformAdorner extends React.Component<TransformAdornerProps> imp
         this.overlays.showInfo(this.transform, `X: ${x}, Y: ${y}`);
     }
 
-    private rotate(event: SvgEvent) {
+    private rotate(event: SvgEvent, shiftKey: boolean) {
         const delta = this.getCummulativeRotation(event);
 
         const deltaRotation =
-            this.snapManager.snapRotating(this.startTransform, delta,
-                this.props.interactionService.isShiftKeyPressed());
+            this.snapManager.snapRotating(this.startTransform, delta, shiftKey);
 
         this.transform = this.startTransform.rotateBy(Rotation.fromDegree(deltaRotation));
 
@@ -261,10 +262,10 @@ export class TransformAdorner extends React.Component<TransformAdornerProps> imp
         return cummulativeRotation;
     }
 
-    private resize(delta: Vec2) {
+    private resize(delta: Vec2, shiftKey: boolean) {
         const startRotation = this.startTransform.rotation;
 
-        const deltaSize = this.getResizeDeltaSize(startRotation, delta);
+        const deltaSize = this.getResizeDeltaSize(startRotation, delta, shiftKey);
         const deltaPos = this.getResizeDeltaPos(startRotation, deltaSize);
 
         this.transform = this.startTransform.resizeAndMoveBy(deltaSize, deltaPos);
@@ -275,12 +276,11 @@ export class TransformAdorner extends React.Component<TransformAdornerProps> imp
         this.overlays.showInfo(this.transform, `Width: ${w}, Height: ${h}`);
     }
 
-    private getResizeDeltaSize(angle: Rotation, cummulativeTranslation: Vec2) {
+    private getResizeDeltaSize(angle: Rotation, cummulativeTranslation: Vec2, shiftKey: boolean) {
         const delta = Vec2.rotated(cummulativeTranslation.mul(2), Vec2.ZERO, angle.negate()).mul(this.resizeDragOffset);
 
         const snapResult =
-            this.snapManager.snapResizing(this.props.selectedDiagram, this.startTransform, delta,
-                this.props.interactionService.isShiftKeyPressed(),
+            this.snapManager.snapResizing(this.props.selectedDiagram, this.props.viewSize, this.startTransform, delta, shiftKey,
                 this.resizeDragOffset.x,
                 this.resizeDragOffset.y);
 

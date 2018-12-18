@@ -49,14 +49,17 @@ export class CanvasView extends React.Component<CanvasViewProps> {
             const w = props.zoomedWidth / props.zoom;
             const h = props.zoomedHeight / props.zoom;
 
-            this.document.style({ width: sizeInPx(w), height: sizeInPx(h) });
+            this.document.style({ width: sizeInPx(w), height: sizeInPx(h), overflow: 'visible' });
+
             this.document.untransform();
             this.document.scale(
                 props.zoom,
                 props.zoom, 0, 0);
+
             this.document.translate(
                 0.5 * (props.zoomedWidth -  w),
                 0.5 * (props.zoomedHeight - h));
+
             this.document.show();
         }
     }

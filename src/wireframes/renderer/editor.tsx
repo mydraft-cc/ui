@@ -5,7 +5,7 @@ import * as svg from 'svg.js';
 
 import './editor.scss';
 
-import { ImmutableList, sizeInPx } from '@app/core';
+import { ImmutableList, sizeInPx, Vec2 } from '@app/core';
 
 import {
     changeItemsAppearance,
@@ -49,6 +49,9 @@ export interface EditorProps {
     // The zoom value of the canvas.
     zoom: number;
 
+    // The view size of the editor.
+    viewSize: Vec2;
+
     // A function to select a set of items.
     selectItems: (diagram: Diagram, itemIds: string[]) => any;
 
@@ -65,6 +68,7 @@ const mapStateToProps = (state: UIStateInStore & EditorStateInStore) => {
     return {
         selectedDiagram: diagram,
         selectedItems: items,
+        viewSize: editor.size,
         zoomedWidth: editor.size.x * state.ui.zoom,
         zoomedHeight: editor.size.y * state.ui.zoom,
         zoom: state.ui.zoom
@@ -195,6 +199,7 @@ class Editor extends React.Component<EditorProps> {
                             selectedDiagram={this.props.selectedDiagram}
                             selectedItems={this.props.selectedItems}
                             transformItems={this.props.transformItems}
+                            viewSize={this.props.viewSize}
                             zoom={this.props.zoom} />
 
                         <SelectionAdorner

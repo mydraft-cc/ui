@@ -41,7 +41,7 @@ export class SnapManager {
         }
     }
 
-    public snapResizing(diagram: Diagram, transform: Transform, delta: Vec2, snapToGrid: boolean, xMode = 1, yMode = 1): SnapResult {
+    public snapResizing(diagram: Diagram, view: Vec2, transform: Transform, delta: Vec2, snapToGrid: boolean, xMode = 1, yMode = 1): SnapResult {
         const result: SnapResult = { delta };
 
         let dw = delta.x;
@@ -50,7 +50,7 @@ export class SnapManager {
         if (!snapToGrid && transform.rotation.degree === 0) {
             const aabb = transform.aabb;
 
-            const orderedAabbs = this.calculateOrderedAABBs(transform, diagram);
+            const orderedAabbs = this.calculateOrderedAABBs(transform, diagram, view);
 
             const left = aabb.left - delta.x, right = aabb.right + delta.x;
 
@@ -121,7 +121,7 @@ export class SnapManager {
         return result;
     }
 
-    public snapMoving(diagram: Diagram, transform: Transform, delta: Vec2, snapToGrid: boolean): SnapResult {
+    public snapMoving(diagram: Diagram, view: Vec2, transform: Transform, delta: Vec2, snapToGrid: boolean): SnapResult {
         const result: SnapResult = { delta };
 
         const aabb = transform.aabb;
@@ -130,7 +130,7 @@ export class SnapManager {
         let y = aabb.y + delta.y;
 
         if (!snapToGrid) {
-            const orderedAabbs = this.calculateOrderedAABBs(transform, diagram);
+            const orderedAabbs = this.calculateOrderedAABBs(transform, diagram, view);
 
             const left = aabb.left + delta.x, right = aabb.right + delta.x, centerX = aabb.cx + delta.x;
 
@@ -213,7 +213,7 @@ export class SnapManager {
         return result;
     }
 
-    private calculateOrderedAABBs(transform: Transform, diagram: Diagram): Rect2[] {
+    private calculateOrderedAABBs(transform: Transform, diagram: Diagram, view: Vec2): Rect2[] {
         const allShapes = diagram.items.filter(t => t instanceof DiagramShape).filter(t => <DiagramShape>t);
 
         const orderedAabbs =
@@ -222,6 +222,8 @@ export class SnapManager {
                 .map(t => t.aabb)
                 .map(t => { return { t, d: t.center.sub(transform.position).lengtSquared }; })
                 .sort((l, r) => l.d - r.d).map(t => t.t);
+
+        orderedAabbs.push(new Rect2(0, 0, view.x, view.y));
 
         return orderedAabbs;
     }
