@@ -1,6 +1,6 @@
 {
-  "name": "athene2",
-  "version": "0.1.0",
+  "name": "mydraft.cc",
+  "version": "1.0.0",
   "private": true,
   "dependencies": {
     "antd": "3.4.5",
@@ -26,7 +26,7 @@
     "test": "karma start",
     "test:coverage": "karma start karma.coverage.conf.js",
     "start": "webpack-dev-server --config config/webpack.run.dev.js --inline --port 3000",
-    "build": "webpack --config config/webpack.run.prod.js --display-error-details --bail --display-optimization-bailout"
+    "build": "webpack --config config/webpack.run.prod.js --progress"
   },
   "devDependencies": {
     "@types/jasmine": "3.3.1",
@@ -42,11 +42,9 @@
     "@types/react-router-dom": "4.3.1",
     "@types/react-router-redux": "5.0.17",
     "@types/webpack-env": "1.13.6",
-    "ajv": "^6.6.1",
+    "ajv": "6.6.1",
     "awesome-typescript-loader": "5.2.1",
     "css-loader": "2.0.0",
-    "enhanced-resolve": "4.1.0",
-    "exports-loader": "0.7.0",
     "file-loader": "2.0.0",
     "html-loader": "0.5.5",
     "html-webpack-plugin": "3.2.0",
@@ -65,10 +63,7 @@
     "karma-webpack": "3.0.5",
     "mini-css-extract-plugin": "0.5.0",
     "node-sass": "4.11.0",
-    "noop-loader": "1.0.0",
-    "null-loader": "0.1.1",
     "optimize-css-assets-webpack-plugin": "5.0.1",
-    "phantomjs-prebuilt": "2.1.16",
     "raw-loader": "1.0.0",
     "sass-lint": "1.12.1",
     "sass-loader": "7.1.0",
