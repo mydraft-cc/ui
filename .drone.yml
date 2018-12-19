@@ -1,10 +1,8 @@
-clone:
-  git:
-    image: plugins/git:next
-    pull: true
+kind: pipeline
+name: default
     
-pipeline:
-  build:
+steps:
+  - name: build
     image: node
     volumes:
       - name: cache
@@ -14,7 +12,7 @@ pipeline:
       - npm test
       - npm run build
 
-  cleanup:
+  - name: cleanup
     image: docker
     commands:
       - docker system prune -f
