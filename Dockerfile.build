@@ -1,0 +1,14 @@
+FROM squidex/dotnet:2.2-sdk-chromium-phantomjs-node
+
+COPY package.json .
+
+# Install Node packages 
+RUN npm install
+
+COPY . .
+
+WORKDIR /
+
+# Build Frontend
+RUN npm test \
+ && npm run build
