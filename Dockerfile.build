@@ -10,5 +10,5 @@ COPY . .
 WORKDIR /
 
 # Build Frontend
-RUN npm test:coverage \
+RUN npm run test:coverage \
  && npm run build
