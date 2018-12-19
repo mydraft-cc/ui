@@ -1,0 +1,30 @@
+clone:
+  git:
+    image: plugins/git:next
+    pull: true
+    
+pipeline:
+  build:
+    image: node
+    volumes:
+    - name: cache
+      path: /tmp/cache
+    commands:
+    - npm install
+    - npm test
+    - npm run build
+
+  cleanup:
+    image: docker
+    commands:
+      - docker system prune -f
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /var/lib/docker:/var/lib/docker
+    when:
+      status: failure
+
+volumes:
+- name: cache
+  host:
+    path: /var/lib/cache
