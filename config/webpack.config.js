@@ -46,52 +46,51 @@ module.exports = {
          * See: https://webpack.js.org/configuration/module/#module-rules
          */
         rules: [{
-                test: /\.ts[x]?$/,
-                use: [{
-                    loader: 'awesome-typescript-loader'
-                }, {
-                    loader: 'tslint-loader' 
-                }],
-                exclude: [/node_modules/]
-            }, {
-                test: /\.ts[x]?$/,
-                use: [{
-                    loader: 'awesome-typescript-loader' 
-                }],
-                include: [/node_modules/]
-            }, {
-                test: /\.(woff|woff2|ttf|eot)(\?.*$|$)/,
-                use: [{
-                    loader: 'file-loader?name=assets/[name].[hash].[ext]'
-                }]
-            }, {
-                test: /\.(png|jpe?g|gif|svg|ico)(\?.*$|$)/,
-                use: [{
-                    loader: 'file-loader?name=assets/[name].[hash].[ext]'
-                }]
-            }, {
-                test: /\.html$/,
-                use: [{
-                    loader: 'raw-loader' 
-                }]
-            }, {
-                test: /\.css$/,
-                use: [
-                    plugins.MiniCssExtractPlugin.loader,
-                {
-                    loader: 'css-loader'
-                }]
-            }, {
-                test: /\.scss$/,
-                use: [{
-                    loader: 'style-loader'
-                }, {
-                    loader: 'css-loader'
-                }, {
-                    loader: 'sass-loader?sourceMap', options: { includePaths: [helpers.root('src', 'style')] }
-                }]
-            }
-        ]
+			test: /\.ts[x]?$/,
+			use: [{
+				loader: 'awesome-typescript-loader'
+			}, {
+				loader: 'tslint-loader' 
+			}],
+			exclude: [/node_modules/]
+		}, {
+			test: /\.ts[x]?$/,
+			use: [{
+				loader: 'awesome-typescript-loader' 
+			}],
+			include: [/node_modules/]
+		}, {
+			test: /\.(woff|woff2|ttf|eot)(\?.*$|$)/,
+			use: [{
+				loader: 'file-loader?name=assets/[name].[hash].[ext]'
+			}]
+		}, {
+			test: /\.(png|jpe?g|gif|svg|ico)(\?.*$|$)/,
+			use: [{
+				loader: 'file-loader?name=assets/[name].[hash].[ext]'
+			}]
+		}, {
+			test: /\.html$/,
+			use: [{
+				loader: 'raw-loader' 
+			}]
+		}, {
+			test: /\.css$/,
+			use: [
+				plugins.MiniCssExtractPlugin.loader,
+			{
+				loader: 'css-loader'
+			}]
+		}, {
+			test: /\.scss$/,
+			use: [{
+				loader: 'style-loader'
+			}, {
+				loader: 'css-loader'
+			}, {
+				loader: 'sass-loader?sourceMap', options: { includePaths: [helpers.root('src', 'style')] }
+			}]
+		}]
     },
 
     plugins: [
