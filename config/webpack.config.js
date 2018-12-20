@@ -6,7 +6,9 @@ const plugins = {
     // https://github.com/webpack-contrib/mini-css-extract-plugin
     MiniCssExtractPlugin: require('mini-css-extract-plugin'),
     // https://github.com/dividab/tsconfig-paths-webpack-plugin
-    TsconfigPathsPlugin: require('tsconfig-paths-webpack-plugin')
+    TsconfigPathsPlugin: require('tsconfig-paths-webpack-plugin'),
+    // https://github.com/jrparish/tslint-webpack-plugin
+    TsLintPlugin: require('tslint-webpack-plugin')
 };
 
 module.exports = {
@@ -49,16 +51,7 @@ module.exports = {
 			test: /\.ts[x]?$/,
 			use: [{
 				loader: 'awesome-typescript-loader'
-			}, {
-				loader: 'tslint-loader' 
 			}],
-			exclude: [/node_modules/]
-		}, {
-			test: /\.ts[x]?$/,
-			use: [{
-				loader: 'awesome-typescript-loader' 
-			}],
-			include: [/node_modules/]
 		}, {
 			test: /\.(woff|woff2|ttf|eot)(\?.*$|$)/,
 			use: [{
@@ -101,20 +94,22 @@ module.exports = {
          */
         new plugins.MiniCssExtractPlugin('[name].css'),
 
+        new plugins.TsLintPlugin({
+            files: [
+                './src/**/*.ts',
+                './src/**/*.tsx',
+            ],
+            exclude: [
+                './src/**/*.d.ts'
+            ],
+            /**
+             * Path to a configuration file.
+             */
+            config: helpers.root('tslint.json')
+        }),
+
         new webpack.LoaderOptionsPlugin({
             options: {
-                tslint: {
-                    /**
-                    * Run tslint in production build and fail if there is one warning.
-                    * 
-                    * See: https://github.com/wbuchwalter/tslint-loader
-                    */
-                    emitErrors: true,
-                    /**
-                    * Share the configuration file with the IDE
-                    */
-                    configuration: require('./../tslint.json')
-                },
                 htmlLoader: {
                     /**
                      * Define the root for images, so that we can use absolute url's

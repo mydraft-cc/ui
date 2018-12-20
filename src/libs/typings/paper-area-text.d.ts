@@ -4,12 +4,12 @@ declare module paper {
         /**
          * The bounds of the text
          */
-        rectangle: paper.Rectangle;
+        public rectangle: paper.Rectangle;
 
         /**
          * The justification of text paragraphs.
          * String('left', 'right', 'center')
          */
-        justification: string;
+        public justification: string;
     }
 }

@@ -19,16 +19,12 @@ module.exports = webpackMerge(testConfig, {
                 loader: 'istanbul-instrumenter-loader'
 			}, {
 				loader: 'awesome-typescript-loader'
-			}, {
-				loader: 'tslint-loader' 
 			}],
 			exclude: [/node_modules/, /\.(e2e|spec)\.ts$/]
 		}, {
 			test: /\.ts[x]?$/,
 			use: [{
 				loader: 'awesome-typescript-loader'
-			}, {
-				loader: 'tslint-loader' 
 			}],
 			exclude: [/node_modules/], include: [/\.(e2e|spec)\.ts$/]
 		}, {
