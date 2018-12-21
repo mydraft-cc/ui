@@ -5,6 +5,8 @@
     runConfig = require('./webpack.run.base.js');
 
 const plugins = {
+    // https://github.com/mishoo/UglifyJS2/tree/harmony
+    UglifyJsPlugin: require('uglifyjs-webpack-plugin'),
     // https://github.com/webpack-contrib/mini-css-extract-plugin
     MiniCssExtractPlugin: require('mini-css-extract-plugin'),
     // https://github.com/NMFR/optimize-css-assets-webpack-plugin
@@ -74,7 +76,19 @@ module.exports = webpackMerge(runConfig, {
     },
     optimization: {
         minimizer: [
-          new plugins.OptimizeCSSAssetsPlugin({})
+            new plugins.UglifyJsPlugin({
+                uglifyOptions: {
+                    compress: false,
+                    ecma: 6,
+                    mangle: true,
+                    output: {
+                        comments: false
+                    }
+                },
+                extractComments: true
+            }),
+            
+            new plugins.OptimizeCSSAssetsPlugin({})
         ]
     },
 });

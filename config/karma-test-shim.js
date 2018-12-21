@@ -1,10 +1,5 @@
 ﻿Error.stackTraceLimit = Infinity;
 
-require('paper/dist/paper-full');
-
-// Area text extension for paper.js
-require('../src/libs/paper-area-text');
-
 var testContext = require.context('../src', true, /\.spec\.ts/);
 
 /*

@@ -9,10 +9,8 @@ The goal of this project is to create an open source wireframing tool. As a deve
 ## What is the tech stack?
 
 * Ant design (https://ant.design/)
-* Canvas
 * React
 * Redux
-* Paper.js (http://paperjs.org/)
 * Typescript
 * Webpack
 

@@ -50,7 +50,7 @@ module.exports = {
         rules: [{
 			test: /\.ts[x]?$/,
 			use: [{
-				loader: 'awesome-typescript-loader'
+				loader: 'awesome-typescript-loader', options: { useCache: true, useBabel: true }
 			}],
 		}, {
 			test: /\.(woff|woff2|ttf|eot)(\?.*$|$)/,
