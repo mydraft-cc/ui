@@ -9,6 +9,8 @@ import {
 class MockupRenderer implements Renderer {
     public previewOffset() { return Vec2.ZERO; }
 
+    public defaultAppearance() { return {}; }
+
     public identifier(): string { return 'identifier'; }
 
     public showInGallery(): boolean { return false; }

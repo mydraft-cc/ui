@@ -40,6 +40,10 @@ const CONFIGURABLE: Configurable[] = [
 const CONSTRAINT = new TextHeightConstraint(8);
 
 export class Checkbox extends AbstractControl {
+    public defaultAppearance() {
+        return DEFAULT_APPEARANCE;
+    }
+
     public identifier(): string {
         return 'Checkbox';
     }

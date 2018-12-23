@@ -10,6 +10,10 @@ DEFAULT_APPEARANCE[DiagramShape.APPEARANCE_FONT_SIZE] = CommonTheme.CONTROL_FONT
 DEFAULT_APPEARANCE[DiagramShape.APPEARANCE_STROKE_THICKNESS] = 1;
 
 export class Comment extends AbstractControl {
+    public defaultAppearance() {
+        return DEFAULT_APPEARANCE;
+    }
+
     public identifier(): string {
         return 'Comment';
     }

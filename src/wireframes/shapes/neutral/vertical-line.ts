@@ -30,6 +30,10 @@ class BorderWidthConstraint implements Constraint {
 }
 
 export class VerticalLine extends AbstractControl {
+    public defaultAppearance() {
+        return DEFAULT_APPEARANCE;
+    }
+
     public identifier(): string {
         return 'VerticalLine';
     }

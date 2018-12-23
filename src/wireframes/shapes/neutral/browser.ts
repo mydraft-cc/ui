@@ -12,6 +12,10 @@ DEFAULT_APPEARANCE[DiagramShape.APPEARANCE_TEXT_DISABLED] = true;
 const refreshCode = String.fromCharCode(0xf021);
 
 export class Browser extends AbstractControl {
+    public defaultAppearance() {
+        return DEFAULT_APPEARANCE;
+    }
+
     public identifier(): string {
         return 'Browser';
     }

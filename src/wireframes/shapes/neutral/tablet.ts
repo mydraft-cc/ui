@@ -9,6 +9,10 @@ DEFAULT_APPEARANCE[DiagramShape.APPEARANCE_BACKGROUND_COLOR] = 0xFFFFFF;
 DEFAULT_APPEARANCE[DiagramShape.APPEARANCE_TEXT_DISABLED] = true;
 
 export class Tablet extends AbstractControl {
+    public defaultAppearance() {
+        return DEFAULT_APPEARANCE;
+    }
+
     public identifier(): string {
         return 'Tablet';
     }

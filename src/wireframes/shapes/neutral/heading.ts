@@ -11,6 +11,10 @@ DEFAULT_APPEARANCE[DiagramShape.APPEARANCE_FONT_SIZE] = 24;
 const CONSTRAINT = new TextSizeConstraint(10);
 
 export class Heading extends AbstractControl {
+    public defaultAppearance() {
+        return DEFAULT_APPEARANCE;
+    }
+
     public identifier(): string {
         return 'Heading';
     }

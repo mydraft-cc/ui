@@ -29,6 +29,10 @@ const CONFIGURABLES: Configurable[] = [
 ];
 
 export class Toggle extends AbstractControl {
+    public defaultAppearance() {
+        return DEFAULT_APPEARANCE;
+    }
+
     public identifier(): string {
         return 'Toggle';
     }

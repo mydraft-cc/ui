@@ -36,6 +36,10 @@ const CONFIGURABLES: Configurable[] = [
 ];
 
 export class Shape extends AbstractControl {
+    public defaultAppearance() {
+        return DEFAULT_APPEARANCE;
+    }
+
     public identifier(): string {
         return 'Shape';
     }

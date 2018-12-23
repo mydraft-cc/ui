@@ -5,6 +5,8 @@ import { DiagramShape } from '@app/wireframes/model';
 export interface Renderer {
     identifier(): string;
 
+    defaultAppearance(): { [key: string]: any };
+
     previewOffset(): Vec2;
 
     showInGallery(): boolean;

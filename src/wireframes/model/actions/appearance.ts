@@ -2,8 +2,9 @@ import { Reducer } from 'redux';
 
 import {
     DiagramItemSet,
-    DiagramVisual,
+    DiagramShape,
     EditorState,
+    RendererService,
     Transform
 } from '@app/wireframes/model';
 
@@ -14,8 +15,8 @@ import {
 } from './utils';
 
 export const CHANGE_ITEMS_APPEARANCE = 'CHANGE_ITEMS_APPEARANCE';
-export const changeItemsAppearance = (diagram: DiagramRef, visuals: ItemsRef, key: string, val: any) => {
-    return createItemsAction(CHANGE_ITEMS_APPEARANCE, diagram, visuals, { appearance: { key, val } });
+export const changeItemsAppearance = (diagram: DiagramRef, visuals: ItemsRef, key: string, value: any) => {
+    return createItemsAction(CHANGE_ITEMS_APPEARANCE, diagram, visuals, { appearance: { key, value } });
 };
 
 export const TRANSFORM_ITEMS = 'TRANSFORM_ITEMS';
@@ -23,18 +24,27 @@ export const transformItems = (diagram: DiagramRef, items: ItemsRef, oldBounds: 
     return createItemsAction(TRANSFORM_ITEMS, diagram, items, { oldBounds: oldBounds.toJS(), newBounds: newBounds.toJS() });
 };
 
-export function appearance(): Reducer<EditorState> {
+export function appearance(rendererService: RendererService): Reducer<EditorState> {
     const editorReducer: Reducer<EditorState> = (state: EditorState, action: any) => {
         switch (action.type) {
             case CHANGE_ITEMS_APPEARANCE:
                 return state.updateDiagram(action.diagramId, diagram => {
-                    const key = action.appearance.key;
-                    const val = action.appearance.val;
+                    const { key, value } = action.appearance;
 
                     const set = DiagramItemSet.createFromDiagram(action.itemIds, diagram);
 
                     for (let visual of set!.allVisuals) {
-                        diagram = diagram.updateItem(visual.id, i => (<DiagramVisual>i).setAppearance(key, val));
+                        diagram = diagram.updateItem(visual.id, item => {
+                            if (item instanceof DiagramShape) {
+                                const renderer = rendererService.registeredRenderers[item.renderer];
+
+                                if (renderer && renderer.defaultAppearance()[key]) {
+                                    return item.setAppearance(key, value);
+                                }
+                            }
+
+                            return item;
+                        });
                     }
 
                     return diagram;

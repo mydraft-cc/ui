@@ -14,7 +14,9 @@ import {
     DiagramItemSet,
     DiagramShape,
     EditorStateInStore,
-    getSelection
+    getSelection,
+    uniqueAppearance,
+    UniqueValue
 } from '@app/wireframes/model';
 
 interface VisualPropertiesProps {
@@ -25,22 +27,22 @@ interface VisualPropertiesProps {
     selectedItems: DiagramItem[];
 
     // The common font size.
-    fontSize: number;
+    fontSize: UniqueValue<number>;
 
     // The common stroke thickness.
-    strokeThickness: number;
+    strokeThickness: UniqueValue<number>;
 
     // The common stroke color.
-    strokeColor: Color;
+    strokeColor: UniqueValue<Color>;
 
     // The common foreground color.
-    foregroundColor: Color;
+    foregroundColor: UniqueValue<Color>;
 
     // The common background color.
-    backgroundColor: Color;
+    backgroundColor: UniqueValue<Color>;
 
     // The text alignment.
-    textAlignment: string;
+    textAlignment: UniqueValue<string>;
 
     // Orders the items.
     changeItemsAppearance: (diagram: string, items: DiagramItem[], key: string, val: any) => any;
@@ -51,40 +53,19 @@ const mapStateToProps = (state: EditorStateInStore) => {
 
     let set: DiagramItemSet | null = null;
 
-    function uniqueAppearance<T>(key: string, parse: (i: any) => T, compare: (l: T, r: T) => boolean) {
-        if (!diagram) {
-            return undefined;
-        }
-
-        if (set === null) {
-            set = DiagramItemSet.createFromDiagram(diagram!.selectedItemIds.toArray(), diagram);
-        }
-
-        let result: T | undefined = undefined;
-
-        for (let visual of set!.allVisuals) {
-            const appearance = parse(visual.appearance.get(key));
-
-            if (appearance && result && !compare(result, appearance)) {
-                return undefined;
-            }
-
-            result = appearance;
-
-        }
-
-        return result;
+    if (diagram) {
+        set = DiagramItemSet.createFromDiagram(diagram.selectedItemIds.toArray(), diagram);
     }
 
     return {
         selectedDiagramId: editor.selectedDiagramId,
         selectedItems: items,
-        backgroundColor: uniqueAppearance(DiagramShape.APPEARANCE_BACKGROUND_COLOR, x => Color.fromValue(x), (l, r) => l.eq(r)),
-        fontSize: uniqueAppearance(DiagramShape.APPEARANCE_FONT_SIZE, x => x, (l, r) => l !== r),
-        foregroundColor: uniqueAppearance(DiagramShape.APPEARANCE_FOREGROUND_COLOR, x => Color.fromValue(x), (l, r) => l.eq(r)),
-        strokeColor: uniqueAppearance(DiagramShape.APPEARANCE_STROKE_COLOR, x => Color.fromValue(x), (l, r) => l.eq(r)),
-        strokeThickness: uniqueAppearance(DiagramShape.APPEARANCE_STROKE_THICKNESS, x => x, (l, r) => l !== r),
-        textAlignment: uniqueAppearance(DiagramShape.APPEARANCE_TEXT_ALIGNMENT, x => x, (l, r) => l !== r)
+        backgroundColor: uniqueAppearance(set, DiagramShape.APPEARANCE_BACKGROUND_COLOR, x => Color.fromValue(x), Color.eq),
+        fontSize: uniqueAppearance(set, DiagramShape.APPEARANCE_FONT_SIZE, x => x),
+        foregroundColor: uniqueAppearance(set, DiagramShape.APPEARANCE_FOREGROUND_COLOR, x => Color.fromValue(x), Color.eq),
+        strokeColor: uniqueAppearance(set, DiagramShape.APPEARANCE_STROKE_COLOR, x => Color.fromValue(x), Color.eq),
+        strokeThickness: uniqueAppearance(set, DiagramShape.APPEARANCE_STROKE_THICKNESS, x => x),
+        textAlignment: uniqueAppearance(set, DiagramShape.APPEARANCE_TEXT_ALIGNMENT, x => x)
     };
 };
 
@@ -95,9 +76,12 @@ const mapDispatchToProps = (dispatch: Dispatch) => bindActionCreators({
 const DEFINED_STROKE_THICKNESSES = [1, 2, 4, 6, 8];
 const DEFINED_FONT_SIZES = [4, 6, 8, 10, 12, 14, 16, 18, 20, 24, 28, 32, 36, 40, 48, 60];
 
+
+const rowClass = (value: UniqueValue<any>) => value.hasValue ? 'property' : 'hidden';
+
 const VisualProperties = (props: VisualPropertiesProps) => {
     const alignTextType = (value: string): ButtonType => {
-        return value === props.textAlignment ? 'primary' : undefined;
+        return value === props.textAlignment.value ? 'primary' : undefined;
     };
 
     const doAlignText = (value: string) => {
@@ -132,7 +116,7 @@ const VisualProperties = (props: VisualPropertiesProps) => {
                 <>
                     <div style={{display: (props.selectedItems.length > 0 ? 'block' : 'none') }}>
                         <div className='property-subsection visual-properties'>
-                            <Row className='property'>
+                            <Row className={rowClass(props.fontSize)}>
                                 <Col span={12} className='property-label'>
                                     Font Size
                             </Col>
@@ -142,41 +126,41 @@ const VisualProperties = (props: VisualPropertiesProps) => {
                                     </Select>
                                 </Col>
                             </Row>
-                            <Row className='property'>
+                            <Row className={rowClass(props.strokeThickness)}>
                                 <Col span={12} className='property-label'>
                                     Stroke Thickness
                             </Col>
                                 <Col span={12} className='property-value'>
-                                    <Select value={props.strokeThickness ? props.strokeThickness.toString() : undefined} onChange={doChangeStrokeThickness}>
+                                    <Select value={props.strokeThickness.value ? props.strokeThickness.value.toString() : undefined} onChange={doChangeStrokeThickness}>
                                         {strokeThicknesses}
                                     </Select>
                                 </Col>
                             </Row>
-                            <Row className='property'>
+                            <Row className={rowClass(props.strokeColor)}>
                                 <Col span={12} className='property-label'>
                                     Stroke Color
                             </Col>
                                 <Col span={12} className='property-value'>
-                                    <ColorPicker value={props.strokeColor} onChange={doChangeStrokeColor} />
+                                    <ColorPicker value={props.strokeColor.value} onChange={doChangeStrokeColor} />
                                 </Col>
                             </Row>
-                            <Row className='property'>
+                            <Row className={rowClass(props.foregroundColor)}>
                                 <Col span={12} className='property-label'>
                                     Foreground Color
                             </Col>
                                 <Col span={12} className='property-value'>
-                                    <ColorPicker value={props.foregroundColor} onChange={doChangeForegroundColor} />
+                                    <ColorPicker value={props.foregroundColor.value} onChange={doChangeForegroundColor} />
                                 </Col>
                             </Row>
-                            <Row className='property'>
+                            <Row className={rowClass(props.backgroundColor)}>
                                 <Col span={12} className='property-label'>
                                     Background Color
-                            </Col>
+                                </Col>
                                 <Col span={12} className='property-value'>
-                                    <ColorPicker value={props.backgroundColor} onChange={doChangeBackgroundColor} />
+                                    <ColorPicker value={props.backgroundColor.value} onChange={doChangeBackgroundColor} />
                                 </Col>
                             </Row>
-                            <Row className='property'>
+                            <Row className={rowClass(props.textAlignment)}>
                                 <Col span={12} className='property-label'>
                                     Text Alignment
                             </Col>

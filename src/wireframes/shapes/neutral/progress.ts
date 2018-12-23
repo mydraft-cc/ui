@@ -35,6 +35,10 @@ const HEIGHT_TOTAL = 16;
 const CONSTRAINT = new SizeConstraint(undefined, HEIGHT_TOTAL);
 
 export class Progress extends AbstractControl {
+    public defaultAppearance() {
+        return DEFAULT_APPEARANCE;
+    }
+
     public identifier(): string {
         return 'Progress';
     }

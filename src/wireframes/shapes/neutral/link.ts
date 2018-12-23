@@ -15,6 +15,10 @@ DEFAULT_APPEARANCE[DiagramShape.APPEARANCE_STROKE_THICKNESS] = CommonTheme.CONTR
 const CONSTRAINT = new TextSizeConstraint(5);
 
 export class Link extends AbstractControl {
+    public defaultAppearance() {
+        return DEFAULT_APPEARANCE;
+    }
+
     public identifier(): string {
         return 'Link';
     }

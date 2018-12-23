@@ -30,6 +30,10 @@ class BorderHeightConstraint implements Constraint {
 }
 
 export class HorizontalLine extends AbstractControl {
+    public defaultAppearance() {
+        return DEFAULT_APPEARANCE;
+    }
+
     public identifier(): string {
         return 'HorizontalLine';
     }

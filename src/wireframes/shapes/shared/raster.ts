@@ -6,6 +6,10 @@ const DEFAULT_APPEARANCE = {};
 DEFAULT_APPEARANCE[DiagramShape.APPEARANCE_TEXT_DISABLED] = true;
 
 export class Raster extends AbstractControl {
+    public defaultAppearance() {
+        return DEFAULT_APPEARANCE;
+    }
+
     public identifier(): string {
         return 'Raster';
     }

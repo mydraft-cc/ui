@@ -26,6 +26,10 @@ const CONFIGURABLES: Configurable[] = [
 ];
 
 export class ButtonBar extends AbstractControl {
+    public defaultAppearance() {
+        return DEFAULT_APPEARANCE;
+    }
+
     public identifier(): string {
         return 'ButtonBar';
     }

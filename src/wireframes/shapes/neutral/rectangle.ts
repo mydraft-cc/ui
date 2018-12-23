@@ -24,6 +24,10 @@ const CONFIGURABLES: Configurable[] = [
 ];
 
 export class Rectangle extends AbstractControl {
+    public defaultAppearance() {
+        return DEFAULT_APPEARANCE;
+    }
+
     public identifier(): string {
         return 'Rectangle';
     }

@@ -61,12 +61,20 @@ export class Color {
         Object.freeze(this);
     }
 
-    public eq(v: Color): boolean {
-        return this.r === v.r && this.g === v.g && this.b === v.b;
+    public eq(c: Color): boolean {
+        return Color.eq(this, c);
     }
 
-    public ne(v: Color): boolean {
-        return this.r !== v.r || this.g !== v.g || this.b !== v.b;
+    public ne(c: Color): boolean {
+        return Color.ne(this, c);
+    }
+
+    public static eq(lhs: Color, rhs: Color): boolean {
+        return lhs.r === rhs.r && lhs.g === rhs.g && lhs.b === rhs.b;
+    }
+
+    public static ne(lhs: Color, rhs: Color): boolean {
+        return lhs.r !== rhs.r || lhs.g !== rhs.g || lhs.b !== rhs.b;
     }
 
     public toNumber(): number {

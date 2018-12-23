@@ -36,6 +36,10 @@ const HEIGHT_BORDER = 8;
 const CONSTRAINT = new SizeConstraint(undefined, HEIGHT_TOTAL);
 
 export class Slider extends AbstractControl {
+    public defaultAppearance() {
+        return DEFAULT_APPEARANCE;
+    }
+
     public identifier(): string {
         return 'Slider';
     }

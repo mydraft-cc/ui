@@ -135,11 +135,19 @@ export class Rect2 {
     }
 
     public eq(r: Rect2): boolean {
-        return this.x === r.x && this.y === r.y && this.w === r.w && this.h === r.h;
+        return Rect2.eq(this, r);
     }
 
     public ne(r: Rect2): boolean {
-        return this.x !== r.x || this.y !== r.y || this.w !== r.w || this.h !== r.h;
+        return Rect2.ne(this, r);
+    }
+
+    public static eq(lhs: Rect2, rhs: Rect2): boolean {
+        return lhs.x === rhs.x && lhs.y === rhs.y && lhs.w === rhs.w && lhs.h === rhs.h;
+    }
+
+    public static ne(lhs: Rect2, rhs: Rect2): boolean {
+        return lhs.x !== rhs.x || lhs.y !== rhs.y || lhs.w !== rhs.w || lhs.h !== rhs.h;
     }
 
     public toString(): string {

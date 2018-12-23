@@ -40,6 +40,10 @@ const CONFIGURABLES: Configurable[] = [
 const CONSTRAINT = new TextHeightConstraint(8);
 
 export class RadioButton extends AbstractControl {
+    public defaultAppearance() {
+        return DEFAULT_APPEARANCE;
+    }
+
     public identifier(): string {
         return 'RadioButton';
     }

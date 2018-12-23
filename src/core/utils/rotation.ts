@@ -25,11 +25,19 @@ export class Rotation {
     }
 
     public eq(r: Rotation): boolean {
-        return this.radian === r.radian;
+        return Rotation.eq(this, r);
     }
 
     public ne(r: Rotation): boolean {
-        return this.radian !== r.radian;
+        return Rotation.ne(this, r);
+    }
+
+    public static eq(lhs: Rotation, rhs: Rotation): boolean {
+        return lhs.radian === rhs.radian;
+    }
+
+    public static ne(lhs: Rotation, rhs: Rotation): boolean {
+        return lhs.radian !== rhs.radian;
     }
 
     public toString(): string {

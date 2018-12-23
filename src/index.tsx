@@ -34,7 +34,7 @@ const serializer = new Serializer(rendererService);
 
 const reducers: Reducer<EditorState>[] = [
     Reducers.alignment(),
-    Reducers.appearance(),
+    Reducers.appearance(rendererService),
     Reducers.items(rendererService, serializer),
     Reducers.diagrams(),
     Reducers.grouping(),

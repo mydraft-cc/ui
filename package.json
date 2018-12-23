@@ -43,6 +43,7 @@
     "@types/webpack-env": "1.13.6",
     "ajv": "6.6.2",
     "awesome-typescript-loader": "5.2.1",
+    "babel-core": "^6.26.3",
     "css-loader": "2.0.2",
     "file-loader": "3.0.1",
     "html-loader": "0.5.5",

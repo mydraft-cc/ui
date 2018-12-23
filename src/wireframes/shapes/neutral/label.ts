@@ -11,6 +11,10 @@ DEFAULT_APPEARANCE[DiagramShape.APPEARANCE_FONT_SIZE] = CommonTheme.CONTROL_FONT
 const CONSTRAINT = new TextSizeConstraint(5);
 
 export class Label extends AbstractControl {
+    public defaultAppearance() {
+        return DEFAULT_APPEARANCE;
+    }
+
     public identifier(): string {
         return 'Label';
     }

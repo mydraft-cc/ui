@@ -59,11 +59,19 @@ export class Transform {
     }
 
     public eq(t: Transform) {
-        return this.size.eq(t.size) && this.position.eq(t.position) && this.rotation.eq(t.rotation);
+        return Transform.eq(this, t);
     }
 
     public ne(t: Transform) {
-        return this.size.ne(t.size) || this.position.ne(t.position) || this.rotation.ne(t.rotation);
+        return Transform.ne(this, t);
+    }
+
+    public static eq(lhs: Transform, rhs: Transform) {
+        return lhs.size.eq(rhs.size) && lhs.position.eq(rhs.position) && lhs.rotation.eq(rhs.rotation);
+    }
+
+    public static ne(lhs: Transform, rhs: Transform) {
+        return lhs.size.ne(rhs.size) || lhs.position.ne(rhs.position) || lhs.rotation.ne(rhs.rotation);
     }
 
     public toString() {

@@ -10,11 +10,14 @@ import {
     Diagram,
     DiagramShape,
     EditorState,
+    RendererService,
     Transform,
     transformItems
 } from '@app/wireframes/model';
 
-describe('GroupingReducer', () => {
+import { Button } from '@app/wireframes/shapes/neutral/button';
+
+describe('AppearanceReducer', () => {
     const shape1 = DiagramShape.createShape(MathHelper.guid(), 'Button', 100, 100);
     const shape2 = DiagramShape.createShape(MathHelper.guid(), 'Button', 200, 200);
 
@@ -23,7 +26,9 @@ describe('GroupingReducer', () => {
             .addVisual(shape1)
             .addVisual(shape2);
 
-    const reducer = appearance();
+    const rendererService = new RendererService().addRenderer(new Button());
+
+    const reducer = appearance(rendererService);
 
     it('should return same state if action is unknown', () => {
         const action = { type: 'UNKNOWN' };
@@ -34,11 +39,20 @@ describe('GroupingReducer', () => {
     });
 
     it('should change appearance of all items to new value', () => {
-        const action = changeItemsAppearance(diagram, diagram.items.map(t => <DiagramShape>t), 'MyAppearance', 'MyValue');
+        const action = changeItemsAppearance(diagram, diagram.items.map(t => <DiagramShape>t), 'TEXT', 'MyValue');
 
         expectShapesAfterAction(action, (newShape1, newShape2) => {
-            expect(newShape1.appearance.get('MyAppearance')).toEqual('MyValue');
-            expect(newShape2.appearance.get('MyAppearance')).toEqual('MyValue');
+            expect(newShape1.appearance.get('TEXT')).toEqual('MyValue');
+            expect(newShape2.appearance.get('TEXT')).toEqual('MyValue');
+        });
+    });
+
+    it('should not change appearance when renderer does not support it', () => {
+        const action = changeItemsAppearance(diagram, diagram.items.map(t => <DiagramShape>t), '?', 'MyValue');
+
+        expectShapesAfterAction(action, (newShape1, newShape2) => {
+            expect(newShape1.appearance.get('?')).toBeUndefined();
+            expect(newShape2.appearance.get('?')).toBeUndefined();
         });
     });
 
