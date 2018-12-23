@@ -11,10 +11,13 @@ import {
 
 interface ColorPickerProps {
     // The selected color.
-    value?: Color | string | null | undefined;
+    value?: Color | string | null;
 
     // The color palette.
     palette?: ColorPalette;
+
+    // If disabled or not.
+    disabled?: boolean;
 
     // Triggered when the color has changed.
     onChange?: (color: Color) => void;
@@ -78,7 +81,7 @@ export class ColorPicker extends React.PureComponent<ColorPickerProps, ColorPick
 
         return (
             <Popover content={content} title='Colors' visible={this.state.visible}>
-                <Button className='color-picker-button' onClick={this.doToggle}>
+                <Button disabled={this.props.disabled} className='color-picker-button' onClick={this.doToggle}>
                     <div className='color-picker-color'>
                         <div className='color-picker-color-inner' style={{background: selectedColor.toString()}}></div>
                     </div>

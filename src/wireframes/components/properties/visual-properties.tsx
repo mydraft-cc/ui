@@ -77,7 +77,7 @@ const DEFINED_STROKE_THICKNESSES = [1, 2, 4, 6, 8];
 const DEFINED_FONT_SIZES = [4, 6, 8, 10, 12, 14, 16, 18, 20, 24, 28, 32, 36, 40, 48, 60];
 
 
-const rowClass = (value: UniqueValue<any>) => value.hasValue ? 'property' : 'hidden';
+const rowClass = (value: any) => 'property';
 
 const VisualProperties = (props: VisualPropertiesProps) => {
     const alignTextType = (value: string): ButtonType => {
@@ -121,7 +121,7 @@ const VisualProperties = (props: VisualPropertiesProps) => {
                                     Font Size
                             </Col>
                                 <Col span={12} className='property-value'>
-                                    <Select value={props.fontSize ? props.fontSize.toString() : undefined} onChange={doChangeFontSize}>
+                                    <Select disabled={props.fontSize.empty} value={props.fontSize.value ? props.fontSize.value.toString() : undefined} onChange={doChangeFontSize}>
                                         {fontSize}
                                     </Select>
                                 </Col>
@@ -131,7 +131,7 @@ const VisualProperties = (props: VisualPropertiesProps) => {
                                     Stroke Thickness
                             </Col>
                                 <Col span={12} className='property-value'>
-                                    <Select value={props.strokeThickness.value ? props.strokeThickness.value.toString() : undefined} onChange={doChangeStrokeThickness}>
+                                    <Select disabled={props.strokeThickness.empty} value={props.strokeThickness.value ? props.strokeThickness.value.toString() : undefined} onChange={doChangeStrokeThickness}>
                                         {strokeThicknesses}
                                     </Select>
                                 </Col>
@@ -141,7 +141,7 @@ const VisualProperties = (props: VisualPropertiesProps) => {
                                     Stroke Color
                             </Col>
                                 <Col span={12} className='property-value'>
-                                    <ColorPicker value={props.strokeColor.value} onChange={doChangeStrokeColor} />
+                                    <ColorPicker disabled={props.strokeColor.empty} value={props.strokeColor.value} onChange={doChangeStrokeColor} />
                                 </Col>
                             </Row>
                             <Row className={rowClass(props.foregroundColor)}>
@@ -149,7 +149,7 @@ const VisualProperties = (props: VisualPropertiesProps) => {
                                     Foreground Color
                             </Col>
                                 <Col span={12} className='property-value'>
-                                    <ColorPicker value={props.foregroundColor.value} onChange={doChangeForegroundColor} />
+                                    <ColorPicker disabled={props.foregroundColor.empty} value={props.foregroundColor.value} onChange={doChangeForegroundColor} />
                                 </Col>
                             </Row>
                             <Row className={rowClass(props.backgroundColor)}>
@@ -157,7 +157,7 @@ const VisualProperties = (props: VisualPropertiesProps) => {
                                     Background Color
                                 </Col>
                                 <Col span={12} className='property-value'>
-                                    <ColorPicker value={props.backgroundColor.value} onChange={doChangeBackgroundColor} />
+                                    <ColorPicker disabled={props.backgroundColor.empty} value={props.backgroundColor.value} onChange={doChangeBackgroundColor} />
                                 </Col>
                             </Row>
                             <Row className={rowClass(props.textAlignment)}>
@@ -166,13 +166,13 @@ const VisualProperties = (props: VisualPropertiesProps) => {
                             </Col>
                                 <Col span={12} className='property-value'>
                                     <Button.Group className='text-alignment'>
-                                        <Button type={alignTextType('left')} onClick={doAlignTextLeft}>
+                                        <Button disabled={props.textAlignment.empty} type={alignTextType('left')} onClick={doAlignTextLeft}>
                                             <i className='icon-align-left' />
                                         </Button>
-                                        <Button type={alignTextType('center')} onClick={doAlignTextCenter}>
+                                        <Button disabled={props.textAlignment.empty} type={alignTextType('center')} onClick={doAlignTextCenter}>
                                             <i className='icon-align-center' />
                                         </Button>
-                                        <Button type={alignTextType('right')} onClick={doAlignTextRight}>
+                                        <Button disabled={props.textAlignment.empty} type={alignTextType('right')} onClick={doAlignTextRight}>
                                             <i className='icon-align-right' />
                                         </Button>
                                     </Button.Group>

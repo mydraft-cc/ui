@@ -23,7 +23,7 @@ export function getSelection (state: EditorStateInStore) {
 export interface UniqueValue<TValue> {
     value?: TValue;
 
-    hasValue: boolean;
+    empty: boolean;
 }
 
 type Comparer<TComparand> = (lhs: TComparand, rhs: TComparand) => boolean;
@@ -35,7 +35,7 @@ const DEFAULT_PARSER = (value: any) => value;
 
 export function uniqueAppearance<T>(set: DiagramItemSet, key: string, parse?: Parser<T>, compare?: Comparer<T>): UniqueValue<T> {
     if (!set) {
-        return { hasValue: false };
+        return { empty: true };
     }
 
     if (!compare) {
@@ -66,5 +66,5 @@ export function uniqueAppearance<T>(set: DiagramItemSet, key: string, parse?: Pa
         }
     }
 
-    return { value, hasValue };
+    return { value, empty: !hasValue };
 }

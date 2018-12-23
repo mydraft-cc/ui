@@ -11,6 +11,10 @@
     height: 100%;
 }
 
+.hidden {
+    display: none;
+}
+
 .no-select {
     @include no-selection;
 }

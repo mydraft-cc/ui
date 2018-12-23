@@ -5,7 +5,9 @@ $size: 24px;
 
 .color-picker {
     &-button {
-        padding: 2px !important;
+        &, & button {
+            padding: 2px !important;
+        }
     }
 
     &-colors {
@@ -42,5 +44,11 @@ $size: 24px;
         &.selected {
             border-color: $color-theme-blue;
         }
+    }
+}
+
+span {
+    &.color-picker-button {
+        padding: 0 !important;
     }
 }
