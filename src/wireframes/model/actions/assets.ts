@@ -1,6 +1,6 @@
 import { Reducer } from 'redux';
 
-import { AssetsState } from '@app/wireframes/model';
+import { AssetsState } from './../internal';
 
 export const FILTER_SHAPES = 'FILTER_SHAPES';
 export const filterShapes = (filter: string) => {

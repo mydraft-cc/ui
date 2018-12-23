@@ -6,7 +6,7 @@ import {
     Diagram,
     EditorState,
     Transform
-} from '@app/wireframes/model';
+} from './../internal';
 
 import {
     createItemsAction,

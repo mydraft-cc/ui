@@ -2,7 +2,7 @@ import { Reducer } from 'redux';
 
 import {
     EditorState
-} from '@app/wireframes/model';
+} from './../internal';
 
 import {
     createItemsAction,

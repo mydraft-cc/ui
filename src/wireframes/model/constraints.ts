@@ -1,6 +1,6 @@
 import { MathHelper, Vec2 } from '@app/core';
 
-import { DiagramShape } from '@app/wireframes/model';
+import { DiagramShape } from './diagram-shape';
 
 export interface Constraint {
     updateSize(shape: DiagramShape, size: Vec2, prev?: DiagramShape): Vec2;

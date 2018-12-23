@@ -1,7 +1,9 @@
 
 import { Vec2 } from '@app/core';
 
-import { ICONS, RendererService } from '@app/wireframes/model';
+import { RendererService } from './renderer.service';
+
+import { ICONS_FONT_AWESOME } from './icons';
 
 export interface AssetInfo {
     label: string;
@@ -54,8 +56,8 @@ export const createInitialAssetsState: (rendererService: RendererService) => Ass
         shapes: allShapes,
         shapesFilter: '',
         shapesFiltered: allShapes,
-        icons: ICONS,
+        icons: ICONS_FONT_AWESOME,
         iconsFilter: '',
-        iconsFiltered: ICONS
+        iconsFiltered: ICONS_FONT_AWESOME
     };
 };

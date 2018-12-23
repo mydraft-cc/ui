@@ -4,11 +4,9 @@ import {
     Vec2
 } from '@app/core';
 
-import {
-    Diagram,
-    DiagramShape,
-    Transform
-} from '@app/wireframes/model';
+import { Diagram } from './diagram';
+import { DiagramShape } from './diagram-shape';
+import { Transform } from './transform';
 
 export interface SnapResult {
     snapModeX?: SnapMode;

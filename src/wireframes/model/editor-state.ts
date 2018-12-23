@@ -1,6 +1,8 @@
 import { ImmutableIdMap, Vec2 } from '@app/core';
 
-import { Diagram, UndoableState } from '@app/wireframes/model';
+import { Diagram } from './diagram';
+import { EditorStateInStore } from './editor-state';
+import { UndoableState } from './undoable-state';
 
 export class EditorState {
     constructor(

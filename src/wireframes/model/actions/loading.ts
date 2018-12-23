@@ -8,15 +8,15 @@ if (process.env.NODE_ENV === 'test_development') {
 }
 
 import {
-    addDiagram,
     EditorState,
     EditorStateInStore,
     LoadingState,
     LoadingStateInStore,
-    selectItems,
     UndoableState
-} from '@app/wireframes/model';
+} from './../internal';
 
+import { addDiagram } from './diagrams';
+import { selectItems } from './items';
 import { showErrorToast, showInfoToast } from './ui';
 
 export const NEW_DIAGRAM = 'NEW_DIAGRAM';

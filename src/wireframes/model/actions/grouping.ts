@@ -6,7 +6,7 @@ import {
     Diagram,
     DiagramGroup,
     EditorState
-} from '@app/wireframes/model';
+} from './../internal';
 
 import {
     createItemsAction,

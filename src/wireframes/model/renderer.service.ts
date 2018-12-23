@@ -1,4 +1,4 @@
-import { Renderer } from '@app/wireframes/model';
+import { Renderer } from './renderer';
 
 export class RendererService {
     public registeredRenderers: { [id: string]: Renderer } = {};

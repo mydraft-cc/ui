@@ -1,11 +1,11 @@
 import * as Immutable from 'immutable';
 
-import { DiagramItem } from '@app/wireframes/model';
+import { DiagramItem } from './diagram-item';
 
 export abstract class DiagramVisual extends DiagramItem {
-    public static APPEARANCE_OPACITY = 'OPACITY';
-    public static APPEARANCE_STROKE_COLOR = 'STROKE_COLOR';
-    public static APPEARANCE_STROKE_THICKNESS = 'STROKE_THICKNESS';
+    public static readonly APPEARANCE_OPACITY = 'OPACITY';
+    public static readonly APPEARANCE_STROKE_COLOR = 'STROKE_COLOR';
+    public static readonly APPEARANCE_STROKE_THICKNESS = 'STROKE_THICKNESS';
 
     protected constructor(id: string,
         public appearance: Immutable.Map<string, any>

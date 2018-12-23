@@ -1,6 +1,6 @@
 import { Reducer } from 'redux';
 
-import { UndoableState } from '@app/wireframes/model';
+import { UndoableState } from './../internal';
 
 export const UNDO = 'UNDO';
 export const undo = () => {

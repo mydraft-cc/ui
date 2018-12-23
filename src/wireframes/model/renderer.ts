@@ -1,6 +1,6 @@
 import { Vec2 } from '@app/core';
 
-import { DiagramShape } from '@app/wireframes/model';
+import { DiagramShape } from './diagram-shape';
 
 export interface Renderer {
     identifier(): string;

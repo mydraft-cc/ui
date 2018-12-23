@@ -1,7 +1,7 @@
 import { message } from 'antd';
 import { AnyAction, Dispatch, Middleware, Reducer } from 'redux';
 
-import { UIState } from '@app/wireframes/model';
+import { UIState } from './../internal';
 
 export const SHOW_INFO_TOAST = 'SHOW_INFO_TOAST';
 export const showInfoToast = (text: string) => {

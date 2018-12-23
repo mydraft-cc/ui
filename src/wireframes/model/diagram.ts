@@ -4,13 +4,11 @@ import {
     ImmutableSet
 } from '@app/core';
 
-import {
-    DiagramContainer,
-    DiagramGroup,
-    DiagramItem,
-    DiagramItemSet,
-    DiagramVisual
-} from '@app/wireframes/model';
+import { DiagramContainer } from './diagram-container';
+import { DiagramGroup } from './diagram-group';
+import { DiagramItem } from './diagram-item';
+import { DiagramItemSet } from './diagram-item-set';
+import { DiagramVisual } from './diagram-visual';
 
 export class Diagram {
     public get rootIds(): ImmutableList<string> {
@@ -133,7 +131,7 @@ export class Diagram {
             if (oldParent === state.roots) {
                 state.roots = newParent;
             } else {
-                state.items = state.items.update(oldParent.id, c => newParent);
+                state.items = state.items.update(oldParent.id, () => newParent);
             }
 
             oldParent = newParent;

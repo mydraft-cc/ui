@@ -10,7 +10,7 @@ interface IconInfo {
     searchTerm: string;
 }
 
-export const ICONS: IconInfo[] = [];
+export const ICONS_FONT_AWESOME: IconInfo[] = [];
 
 for (let icon of FONT_AWESOME.icons) {
     const text = String.fromCharCode(parseInt(icon.unicode, 16));
@@ -26,7 +26,7 @@ for (let icon of FONT_AWESOME.icons) {
 
     const label = icon.id || icon.name;
 
-    ICONS.push({ label, text, searchTerm, name: icon.id });
+    ICONS_FONT_AWESOME.push({ label, text, searchTerm, name: icon.id });
 }
 
-ICONS.sort((l, r) => l.label.localeCompare(r.label));
+ICONS_FONT_AWESOME.sort((l, r) => l.label.localeCompare(r.label));

@@ -1,6 +1,6 @@
 import { Action } from 'redux';
 
-import { Diagram, DiagramItem } from '@app/wireframes/model';
+import { Diagram, DiagramItem } from './../internal';
 
 export type DiagramRef = string | Diagram;
 

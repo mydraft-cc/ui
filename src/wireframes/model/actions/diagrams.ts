@@ -2,7 +2,7 @@ import { Reducer } from 'redux';
 
 import { MathHelper } from '@app/core';
 
-import { Diagram, EditorState } from '@app/wireframes/model';
+import { Diagram, EditorState } from './../internal';
 
 import { createDiagramAction, DiagramRef } from './utils';
 

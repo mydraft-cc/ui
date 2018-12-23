@@ -6,7 +6,7 @@ import {
     EditorState,
     RendererService,
     Transform
-} from '@app/wireframes/model';
+} from './../internal';
 
 import {
     createItemsAction,

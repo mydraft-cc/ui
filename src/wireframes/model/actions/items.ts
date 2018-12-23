@@ -11,7 +11,7 @@ import {
     EditorState,
     RendererService,
     Serializer
-} from '@app/wireframes/model';
+} from './../internal';
 
 import {
     createDiagramAction,

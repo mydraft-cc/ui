@@ -4,13 +4,11 @@ import {
     Types
 } from '@app/core';
 
-import {
-    Diagram,
-    DiagramContainer,
-    DiagramItemSet,
-    DiagramShape,
-    Transform
-} from '@app/wireframes/model';
+import { Diagram } from './diagram';
+import { DiagramContainer } from './diagram-container';
+import { DiagramItemSet } from './diagram-item-set';
+import { DiagramShape } from './diagram-shape';
+import { Transform } from './transform';
 
 export class DiagramGroup extends DiagramContainer {
     private readonly cachedBounds: { [id: string]: Transform } = {};

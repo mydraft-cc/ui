@@ -19,7 +19,8 @@
     "react-router-redux": "4.0.8",
     "redux": "4.0.1",
     "redux-thunk": "2.3.0",
-    "svg.js": "2.7.1"
+    "svg.js": "2.7.1",
+    "tslib": "^1.9.3"
   },
   "scripts": {
     "test": "karma start",

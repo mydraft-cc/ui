@@ -1,6 +1,7 @@
 ﻿import { ImmutableObject } from '@app/core';
 
-import { Diagram, Transform } from '@app/wireframes/model';
+import { Diagram } from './diagram';
+import { Transform } from './transform';
 
 export abstract class DiagramItem extends ImmutableObject {
     protected constructor(

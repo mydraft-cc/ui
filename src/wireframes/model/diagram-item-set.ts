@@ -1,9 +1,7 @@
-import {
-    Diagram,
-    DiagramGroup,
-    DiagramItem,
-    DiagramVisual
-} from '@app/wireframes/model';
+import { Diagram } from './diagram';
+import { DiagramGroup } from './diagram-group';
+import { DiagramItem } from './diagram-item';
+import { DiagramVisual } from './diagram-visual';
 
 export class DiagramItemSet {
     public readonly rootItems: DiagramItem[] = [];

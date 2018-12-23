@@ -6,13 +6,11 @@ import {
     Rotation
 } from '@app/core';
 
-import {
-    DiagramGroup,
-    DiagramItemSet,
-    DiagramShape,
-    RendererService,
-    Transform
-} from '@app/wireframes/model';
+import { DiagramGroup } from './diagram-group';
+import { DiagramItemSet } from './diagram-item-set';
+import { DiagramShape } from './diagram-shape';
+import { RendererService } from './renderer.service';
+import { Transform } from './transform';
 
 export class Serializer {
     constructor(

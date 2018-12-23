@@ -2,24 +2,22 @@
 
 import { Rotation, Vec2 } from '@app/core';
 
-import {
-    Configurable,
-    Constraint,
-    Diagram,
-    DiagramVisual,
-    Transform
-} from '@app/wireframes/model';
+import { Configurable } from './configurables';
+import { Constraint } from './constraints';
+import { Diagram } from './diagram';
+import { DiagramVisual } from './diagram-visual';
+import { Transform } from './transform';
 
 const EMPTY_CONFIGURABLES: Configurable[] = [];
 const EMPTY_APPEARANCE = {};
 
 export class DiagramShape extends DiagramVisual {
-    public static APPEARANCE_TEXT = 'TEXT';
-    public static APPEARANCE_TEXT_ALIGNMENT = 'TEXT_ALIGNMENT';
-    public static APPEARANCE_TEXT_DISABLED = 'TEXT_DISABLED';
-    public static APPEARANCE_FONT_SIZE = 'FONT_SIZE';
-    public static APPEARANCE_FOREGROUND_COLOR = 'BACKGROUND_COLOR';
-    public static APPEARANCE_BACKGROUND_COLOR = 'FOREGROUND_COLOR';
+    public static readonly APPEARANCE_TEXT = 'TEXT';
+    public static readonly APPEARANCE_TEXT_ALIGNMENT = 'TEXT_ALIGNMENT';
+    public static readonly APPEARANCE_TEXT_DISABLED = 'TEXT_DISABLED';
+    public static readonly APPEARANCE_FONT_SIZE = 'FONT_SIZE';
+    public static readonly APPEARANCE_FOREGROUND_COLOR = 'BACKGROUND_COLOR';
+    public static readonly APPEARANCE_BACKGROUND_COLOR = 'FOREGROUND_COLOR';
 
     private constructor(id: string, appearance: Immutable.Map<string, any>,
         public transform: Transform,

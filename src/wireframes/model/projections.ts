@@ -1,9 +1,7 @@
-import {
-    Diagram,
-    DiagramItem,
-    DiagramItemSet,
-    EditorStateInStore
-} from '@app/wireframes/model';
+import { Diagram } from './diagram';
+import { DiagramItem } from './diagram-item';
+import { DiagramItemSet } from './diagram-item-set';
+import { EditorStateInStore } from './editor-state';
 
 export function getSelection (state: EditorStateInStore) {
     const editor = state.editor.present;
