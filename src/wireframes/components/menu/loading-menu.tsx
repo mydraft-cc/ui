@@ -41,9 +41,9 @@ const mapDispatchToProps = (dispatch: Dispatch) => bindActionCreators({
 }, dispatch);
 
 const LoadingMenu = (props: LoadingMenuProps) => {
-    const getText = () => {
+    const getTitle = () => {
         return props.readToken && props.readToken.length > 0 ?
-            `mydraft.cc - Diaram ${props.readToken}` :
+            `mydraft.cc - Diagram ${props.readToken}` :
             'mydraft.cc - New Diagram';
     };
 
@@ -65,7 +65,7 @@ const LoadingMenu = (props: LoadingMenuProps) => {
 
     return (
         <>
-            <Title text={getText()} />
+            <Title text={getTitle()} />
 
             <Tooltip mouseEnterDelay={1} title='New Diagram (CTRL + N)'>
                 <Button className='menu-item' size='large'
