@@ -20,9 +20,9 @@ steps:
     image: plugins/gh-pages
     settings:
       username:
-        fromSecret: GITHUB_USERNAME
+        from_secret: GITHUB_USERNAME
       password:
-        fromSecret: GITHUB_PASSWORD
+        from_secret: GITHUB_PASSWORD
       pages_directory: /build
     volumes:
       - name: build
