@@ -18,7 +18,11 @@ _test-output
 .env.test.local
 .env.production.local
 
+.drone.yml
+
 npm-debug.log*
 
 yarn-debug.log*
 yarn-error.log*
+
+README.md
