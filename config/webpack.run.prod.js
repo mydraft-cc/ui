@@ -12,7 +12,9 @@ const plugins = {
     // https://github.com/NMFR/optimize-css-assets-webpack-plugin
     OptimizeCSSAssetsPlugin: require("optimize-css-assets-webpack-plugin"),
     // https://github.com/jrparish/tslint-webpack-plugin
-    TsLintPlugin: require('tslint-webpack-plugin')
+    TsLintPlugin: require('tslint-webpack-plugin'),
+    // https://github.com/webpack-contrib/copy-webpack-plugin
+    CopyWebpackPlugin: require('copy-webpack-plugin')
 };
 
 helpers.removeLoaders(runConfig, ['scss']);
@@ -96,6 +98,12 @@ module.exports = webpackMerge(runConfig, {
              */
             waitForLinting: true
         }),
+
+        new plugins.CopyWebpackPlugin([
+            'public/'
+          ], {
+              ignore: ['index.html']
+          })
     ],
 
     optimization: {
