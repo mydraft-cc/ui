@@ -10,7 +10,9 @@ const plugins = {
     // https://github.com/webpack-contrib/mini-css-extract-plugin
     MiniCssExtractPlugin: require('mini-css-extract-plugin'),
     // https://github.com/NMFR/optimize-css-assets-webpack-plugin
-    OptimizeCSSAssetsPlugin: require("optimize-css-assets-webpack-plugin")
+    OptimizeCSSAssetsPlugin: require("optimize-css-assets-webpack-plugin"),
+    // https://github.com/jrparish/tslint-webpack-plugin
+    TsLintPlugin: require('tslint-webpack-plugin')
 };
 
 helpers.removeLoaders(runConfig, ['scss']);
@@ -74,6 +76,28 @@ module.exports = webpackMerge(runConfig, {
             }
         ]
     },
+
+    plugins: [
+        new plugins.TsLintPlugin({
+            files: [
+                './src/**/*.ts',
+                './src/**/*.tsx',
+            ],
+            exclude: [
+                './src/**/*.d.ts'
+            ],
+            /**
+             * Path to a configuration file.
+             */
+            config: helpers.root('tslint.json'),
+
+            /**
+             * Wait for linting and fail the build when linting error occur.
+             */
+            waitForLinting: true
+        }),
+    ],
+
     optimization: {
         minimizer: [
             new plugins.UglifyJsPlugin({
@@ -91,4 +115,8 @@ module.exports = webpackMerge(runConfig, {
             new plugins.OptimizeCSSAssetsPlugin({})
         ]
     },
+
+    performance: {
+        hints: false 
+    }
 });

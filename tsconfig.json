@@ -15,17 +15,17 @@
 	"noImplicitReturns": true,
     "noImplicitThis": true,
     "removeComments": false,
-    "sourceMap": true,
+    "skipLibCheck": true,
     "strictNullChecks": false,
     "suppressImplicitAnyIndexErrors": true,
     "target": "es5",
     "paths": {
       "@app*": [
-        "src/*"
-      ],
-      "paper": [
-        "./node_modules/paper/dist/paper-full"
+        "src*"
       ]
     }
-  }
+  },
+  "exclude": [
+    "node_modules",
+  ]
 }

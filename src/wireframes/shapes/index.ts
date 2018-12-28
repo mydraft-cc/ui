@@ -1,4 +1,4 @@
-import { Browser } from './neutral/Browser';
+import { Browser } from './neutral/browser';
 import { Button } from './neutral/button';
 import { ButtonBar } from './neutral/button-bar';
 import { Checkbox } from './neutral/checkbox';

@@ -5,9 +5,7 @@
  commonConfig = require('./webpack.config.js');
 
 const plugins = {    
-    HtmlWebpackPlugin: require('html-webpack-plugin'),
-    // https://github.com/webpack-contrib/mini-css-extract-plugin
-    MiniCssExtractPlugin: require('mini-css-extract-plugin')
+    HtmlWebpackPlugin: require('html-webpack-plugin')
 };
 
 module.exports = webpackMerge(commonConfig, {

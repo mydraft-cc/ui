@@ -4,6 +4,11 @@
       helpers = require('./helpers'),
     runConfig = require('./webpack.run.base.js');
 
+const plugins = {
+    // https://github.com/jrparish/tslint-webpack-plugin
+    TsLintPlugin: require('tslint-webpack-plugin')
+};
+
 module.exports = webpackMerge(runConfig, {
     mode: 'development',
     
@@ -15,6 +20,22 @@ module.exports = webpackMerge(runConfig, {
         // Set the public path, because we are running the website from another port (5000)
         publicPath: 'http://localhost:3000/'
     },
+
+    plugins: [
+        new plugins.TsLintPlugin({
+            files: [
+                './src/**/*.ts',
+                './src/**/*.tsx',
+            ],
+            exclude: [
+                './src/**/*.d.ts'
+            ],
+            /**
+             * Path to a configuration file.
+             */
+            config: helpers.root('tslint.json')
+        }),
+    ],
 
     devServer: {
         headers: {

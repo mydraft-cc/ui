@@ -6,9 +6,7 @@ const plugins = {
     // https://github.com/webpack-contrib/mini-css-extract-plugin
     MiniCssExtractPlugin: require('mini-css-extract-plugin'),
     // https://github.com/dividab/tsconfig-paths-webpack-plugin
-    TsconfigPathsPlugin: require('tsconfig-paths-webpack-plugin'),
-    // https://github.com/jrparish/tslint-webpack-plugin
-    TsLintPlugin: require('tslint-webpack-plugin')
+    TsconfigPathsPlugin: require('tsconfig-paths-webpack-plugin')
 };
 
 module.exports = {
@@ -26,7 +24,6 @@ module.exports = {
         extensions: ['.js', '.ts', '.tsx', '.css', '.scss'],
         modules: [
             helpers.root('src'),
-            helpers.root('src', 'libs'),
             helpers.root('src', 'style'),
             helpers.root('node_modules')
         ],
@@ -93,20 +90,6 @@ module.exports = {
          * See: https://github.com/webpack-contrib/mini-css-extract-plugin
          */
         new plugins.MiniCssExtractPlugin('[name].css'),
-
-        new plugins.TsLintPlugin({
-            files: [
-                './src/**/*.ts',
-                './src/**/*.tsx',
-            ],
-            exclude: [
-                './src/**/*.d.ts'
-            ],
-            /**
-             * Path to a configuration file.
-             */
-            config: helpers.root('tslint.json')
-        }),
 
         new webpack.LoaderOptionsPlugin({
             options: {
