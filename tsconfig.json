@@ -15,7 +15,6 @@
 	"noImplicitReturns": true,
     "noImplicitThis": true,
     "removeComments": false,
-    "skipLibCheck": true,
     "strictNullChecks": false,
     "suppressImplicitAnyIndexErrors": true,
     "target": "es5",
