@@ -24,7 +24,7 @@ module.exports = webpackMerge(commonConfig, {
          * Simplifies creation of HTML files to serve your webpack bundles.
          */
         new plugins.HtmlWebpackPlugin({
-            template: 'public/index.html', hash: true
+            template: 'src/index.html', hash: true
         })
     ]
 });

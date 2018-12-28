@@ -13,8 +13,8 @@ const plugins = {
     OptimizeCSSAssetsPlugin: require("optimize-css-assets-webpack-plugin"),
     // https://github.com/jrparish/tslint-webpack-plugin
     TsLintPlugin: require('tslint-webpack-plugin'),
-    // https://github.com/webpack-contrib/copy-webpack-plugin
-    CopyWebpackPlugin: require('copy-webpack-plugin')
+    // https://github.com/jantimon/favicons-webpack-plugin
+    FaviconsWebpackPlugin: require('favicons-webpack-plugin')
 };
 
 helpers.removeLoaders(runConfig, ['scss']);
@@ -97,11 +97,7 @@ module.exports = webpackMerge(runConfig, {
             waitForLinting: true
         }),
 
-        new plugins.CopyWebpackPlugin([
-            'public/'
-          ], {
-              ignore: ['index.html']
-          })
+        new plugins.FaviconsWebpackPlugin('images/logo-square.png')
     ],
 
     optimization: {
