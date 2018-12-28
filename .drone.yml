@@ -24,6 +24,9 @@ steps:
       password:
         fromSecret: GITHUB_PASSWORD
       pages_directory: /build
+    volumes:
+      - name: build
+        path: /build
 
   - name: cleanup
     image: docker
