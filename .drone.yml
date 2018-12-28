@@ -23,7 +23,7 @@ steps:
         from_secret: GITHUB_USERNAME
       password:
         from_secret: GITHUB_PASSWORD
-      pages_directory: /build
+      pages_directory: /build/
     volumes:
       - name: build
         path: /build
