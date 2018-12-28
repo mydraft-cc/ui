@@ -18,7 +18,7 @@ module.exports = webpackMerge(runConfig, {
         filename: '[name].js',
         
         /**
-         * Set the public path, because we are running the website from another port (5000)
+         * Set the public path, because we are running the website from another port (5000).
          */
         publicPath: 'http://localhost:3000/'
     },

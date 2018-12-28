@@ -3,14 +3,14 @@
 module.exports = function (config) {
     var configuration = {
         /** 
-         * Base path that will be used to resolve all patterns (e.g. files, exclude)
+         * Base path that will be used to resolve all patterns (e.g. files, exclude).
          */
         basePath: '',
 
         frameworks: ['jasmine'],
 
         /**
-         * Load additional test shim to setup angular2 for testing
+         * Load additional test shim to setup angular2 for testing.
          */
         files: [
             { pattern: './config/karma-test-shim.js', watched: false }
@@ -34,7 +34,7 @@ module.exports = function (config) {
         },
 
         /**
-         * Leave Jasmine Spec Runner output visible in browser
+         * Leave Jasmine Spec Runner output visible in browser.
          */
         client: {
             clearContext: false
@@ -47,7 +47,7 @@ module.exports = function (config) {
 
 
         /**
-         * Run with chrome to enable debugging
+         * Run with chrome to enable debugging.
          * 
          * available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
          */
