@@ -33,7 +33,7 @@ steps:
       branch:
         - master
 
-  - name: cleanup
+  - name: cleanup-build
     image: docker
     commands:
       - docker rm build-container
@@ -46,6 +46,19 @@ steps:
       status:
         - failure
         - success
+
+  - name: cleanup
+    image: docker
+    commands:
+      - docker system prune -f
+    volumes:
+      - name: docker1
+        path: /var/run/docker.sock
+      - name: docker2
+        path: /var/lib/docker
+    when:
+      status:
+        - failure
       
 volumes:
   - name: build
