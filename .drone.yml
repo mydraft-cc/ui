@@ -27,6 +27,11 @@ steps:
     volumes:
       - name: build
         path: /build
+    when:
+      event:
+        - push
+      branch:
+        - master
 
   - name: cleanup
     image: docker
