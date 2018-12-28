@@ -7,7 +7,7 @@ steps:
     commands:
       - docker build . -t build-image -f Dockerfile.build
       - docker create --name build-container build-image
-      - docker cp build-container:/build-image ./src/build
+      - docker cp build-container:/src/build ./build
       - docker rm build-container
     volumes:
       - name: build
