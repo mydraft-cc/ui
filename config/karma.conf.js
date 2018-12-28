@@ -33,14 +33,14 @@ module.exports = function (config) {
             noInfo: true
         },
 
-        /*
+        /**
          * Leave Jasmine Spec Runner output visible in browser
          */
         client: {
             clearContext: false
         },
 
-        /*
+        /**
          * Use a mocha style console reporter and html reporter.
          */
         reporters: ['kjhtml', 'mocha'],

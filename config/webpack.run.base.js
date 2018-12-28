@@ -11,8 +11,7 @@ const plugins = {
 
 module.exports = webpackMerge(commonConfig, {
     /**
-     * The entry point for the bundle
-     * Our Angular.js app
+     * The entry point for the bundle. Our react app.
      *
      * See: https://webpack.js.org/configuration/entry-context/
      */
@@ -23,10 +22,6 @@ module.exports = webpackMerge(commonConfig, {
     plugins: [
         /**
          * Simplifies creation of HTML files to serve your webpack bundles.
-         * This is especially useful for webpack bundles that include a hash in the filename
-         * which changes every compilation.
-         *
-         * See: https://github.com/ampedandwired/html-webpack-plugin
          */
         new plugins.HtmlWebpackPlugin({
             template: 'public/index.html', hash: true
