@@ -5,7 +5,7 @@ WORKDIR /src
 COPY package*.json /src/
 
 # Install Node packages 
-RUN npm set audit false && npm install
+RUN npm install --loglevel=error
 
 # Copy the rest
 COPY . .
