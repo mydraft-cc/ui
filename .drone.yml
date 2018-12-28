@@ -8,7 +8,6 @@ steps:
       - docker build . -t build-image -f Dockerfile.build
       - docker create --name build-container build-image
       - docker cp build-container:/src/build ./build
-      - docker rm build-container
     volumes:
       - name: build
         path: /build
@@ -25,6 +24,20 @@ steps:
       password:
         fromSecret: GITHUB_PASSWORD
       pages_directory: /build
+
+  - name: cleanup
+    image: docker
+    commands:
+      - docker rm build-container
+    volumes:
+      - name: docker1
+        path: /var/run/docker.sock
+      - name: docker2
+        path: /var/lib/docker
+    when:
+      status:
+        - failure
+        - success
       
 volumes:
   - name: build
