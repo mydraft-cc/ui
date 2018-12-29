@@ -1,9 +1,9 @@
-
 import { Vec2 } from '@app/core';
 
 import { RendererService } from './renderer.service';
 
-import { ICONS_FONT_AWESOME } from './icons';
+import { ICONS_FONT_AWESOME } from './../../icons/font_awesome_unified';
+import { ICONS_MATERIAL_DESIGN } from './../../icons/material_icons_unified';
 
 export interface AssetInfo {
     label: string;
@@ -20,21 +20,23 @@ export interface ShapeInfo extends AssetInfo {
 export interface IconInfo extends AssetInfo {
     text: string;
 
+    fontFamily: string;
+
+    fontClass: string;
+
     name: string;
 }
 
 export interface AssetsState {
-    icons: IconInfo[];
+    icons: { [name: string]: IconInfo[] };
+
+    iconSet: string;
 
     iconsFilter: string;
-
-    iconsFiltered: IconInfo[];
 
     shapes: ShapeInfo[];
 
     shapesFilter: string;
-
-    shapesFiltered: ShapeInfo[];
 }
 
 export const createInitialAssetsState: (rendererService: RendererService) => AssetsState = (rendererService: RendererService) => {
@@ -55,9 +57,8 @@ export const createInitialAssetsState: (rendererService: RendererService) => Ass
     return {
         shapes: allShapes,
         shapesFilter: '',
-        shapesFiltered: allShapes,
-        icons: ICONS_FONT_AWESOME,
+        icons: { 'Font Awesome': ICONS_FONT_AWESOME, 'Material Design': ICONS_MATERIAL_DESIGN },
         iconsFilter: '',
-        iconsFiltered: ICONS_FONT_AWESOME
+        iconSet: 'Font Awesome'
     };
 };

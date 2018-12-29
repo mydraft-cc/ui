@@ -4,9 +4,7 @@
   "private": true,
   "dependencies": {
     "antd": "3.11.6",
-    "font-awesome": "4.7.0",
     "immutable": "4.0.0-rc.12",
-    "moment": "2.23.0",
     "mousetrap": "1.6.2",
     "react": "16.7.0",
     "react-dnd": "7.0.2",

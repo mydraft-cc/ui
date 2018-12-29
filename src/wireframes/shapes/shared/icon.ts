@@ -31,7 +31,7 @@ export class Icon extends AbstractControl {
         const textItem = ctx.renderer.createSinglelineText(config, ctx.bounds);
 
         ctx.renderer.setForegroundColor(textItem, ctx.shape);
-        ctx.renderer.setFontFamily(textItem, 'FontAwesome');
+        ctx.renderer.setFontFamily(textItem, ctx.shape.appearance.get(DiagramShape.APPEARANCE_ICON_FONT_FAMILY) || 'FontAwesome');
 
         ctx.add(textItem);
     }

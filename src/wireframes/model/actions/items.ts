@@ -33,8 +33,8 @@ export const addImage = (diagram: DiagramRef, source: string, x: number, y: numb
 };
 
 export const ADD_ICON = 'ADD_ICON';
-export const addIcon = (diagram: DiagramRef, char: string, x: number, y: number, shapeId?: string) => {
-    return createDiagramAction(ADD_ICON, diagram, { shapeId: shapeId || MathHelper.guid(), char, position: { x, y } });
+export const addIcon = (diagram: DiagramRef, text: string, fontFamily: string, x: number, y: number, shapeId?: string) => {
+    return createDiagramAction(ADD_ICON, diagram, { shapeId: shapeId || MathHelper.guid(), text, fontFamily, position: { x, y } });
 };
 
 export const SELECT_ITEMS = 'SELECT_ITEMS';
@@ -98,7 +98,9 @@ export function items(rendererService: RendererService, serializer: Serializer):
                             action.position.y + shape.transform.size.y * 0.5);
 
                     const configured =
-                        shape.transformWith(t => t.moveTo(position)).setAppearance(DiagramShape.APPEARANCE_TEXT, action.char);
+                        shape.transformWith(t => t.moveTo(position))
+                            .setAppearance(DiagramShape.APPEARANCE_TEXT, action.text)
+                            .setAppearance(DiagramShape.APPEARANCE_ICON_FONT_FAMILY, action.fontFamily);
 
                     return diagram.addVisual(configured).selectItems([configured.id]);
                 });

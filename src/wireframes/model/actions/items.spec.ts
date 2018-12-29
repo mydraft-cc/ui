@@ -74,7 +74,7 @@ describe('ItemsReducer', () => {
     it('should add icon to diagram and select the shape', () => {
         const shapeId = 'shape';
 
-        const action = addIcon(diagram, 'Icon', 20, 40, shapeId);
+        const action = addIcon(diagram, 'Icon', 'FontAwesome', 20, 40, shapeId);
         const state_1 = EditorState.empty().addDiagram(diagram);
         const state_2 = reducer(state_1, action);
 
@@ -82,6 +82,7 @@ describe('ItemsReducer', () => {
 
         expect(newIcon.id).toBe(shapeId);
         expect(newIcon.appearance.get('TEXT')).toBe('Icon');
+        expect(newIcon.appearance.get('ICON_FONT_FAMILY')).toBe('FontAwesome');
         expect(newIcon.renderer).toBe('Icon');
         expect(newIcon.transform).toEqual(new Transform(new Vec2(40, 60), new Vec2(40, 40), Rotation.ZERO));
 

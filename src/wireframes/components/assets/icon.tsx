@@ -13,7 +13,7 @@ interface IconProps {
 
 const IconTarget: DragSourceSpec<IconProps, any> = {
     beginDrag: props => {
-        return { icon: props.icon.text };
+        return { text: props.icon.text, fontFamily: props.icon.fontFamily };
     }
 };
 
@@ -25,7 +25,7 @@ const IconConnect: DragSourceCollector<{}> = (connector, monitor) => {
 export class Icon extends React.PureComponent<IconProps> {
     public render() {
         return this.props.connectDragSource!(
-            <i className={`fa fa-${this.props.icon.name}`} />,
+            <i className={this.props.icon.fontClass}>{this.props.icon.text}</i>,
         {
             dropEffect: 'copy'
         });

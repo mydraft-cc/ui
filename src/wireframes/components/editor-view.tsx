@@ -41,7 +41,7 @@ export interface EditorViewProps {
     selectedDiagramId: string;
 
     // Adds an icon.
-    addIcon: (diagram: string, char: string, x: number, y: number) => any;
+    addIcon: (diagram: string, text: string, fontFamily: string, x: number, y: number) => any;
 
     // Adds a visual.
     addVisual: (diagram: string, renderer: string, x: number, y: number, properties?: object) => any;
@@ -89,7 +89,7 @@ const AssetTarget: DropTargetSpec<EditorViewProps> = {
 
         switch (itemType) {
             case 'DND_ICON':
-                props.addIcon(props.selectedDiagramId, item['icon'], x, y);
+                props.addIcon(props.selectedDiagramId, item['text'], item['fontFamily'], x, y);
                 break;
             case 'DND_ASSET':
                 props.addVisual(props.selectedDiagramId, item['shape'], x, y);

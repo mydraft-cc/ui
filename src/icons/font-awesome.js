@@ -1,4 +1,4 @@
-export var FONT_AWESOME = {
+export var ICONS = {
     "icons": [
       {
         "name": "Glass",

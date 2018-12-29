@@ -1,4 +1,4 @@
-import { Input } from 'antd';
+import { Icon, Input } from 'antd';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators, Dispatch } from 'redux';
@@ -11,6 +11,7 @@ import {
     addVisual,
     AssetsState,
     EditorState,
+    filteredShapes,
     filterShapes,
     ShapeInfo,
     UndoableState
@@ -42,7 +43,7 @@ const addVisualToPosition = (diagram: string, renderer: string) => {
 const mapStateToProps = (state: { assets: AssetsState, editor: UndoableState<EditorState> }) => {
     return {
         selectedDiagramId: state.editor.present.selectedDiagramId,
-        shapesFiltered: state.assets.shapesFiltered,
+        shapesFiltered: filteredShapes(state.assets),
         shapesFilter: state.assets.shapesFilter
     };
 };
@@ -76,7 +77,9 @@ class Shapes extends React.PureComponent<ShapesProps> {
         return (
             <>
                 <div className='asset-shapes-search'>
-                    <Input placeholder='Find shape' value={this.props.shapesFilter} onChange={event => this.props.filterShapes(event.target.value)} />
+                    <Input value={this.props.shapesFilter} onChange={event => this.props.filterShapes(event.target.value)}
+                        placeholder='Find shape'
+                        prefix={<Icon type='search' style={{ color: 'rgba(0,0,0,.25)' }} />} />
                 </div>
 
                 <Grid className='asset-shapes-list' renderer={this.cellRenderer} columns={2} items={this.props.shapesFiltered} keyBuilder={shape => shape.searchTerm} />

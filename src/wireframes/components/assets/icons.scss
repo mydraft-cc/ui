@@ -30,10 +30,16 @@
 
 .asset-icons {
     &-search {
-        input {
+        input, .ant-select-selection {
             @include border-radius(0);
             border-left: 0;
             border-right: 0;
+        }
+
+        .ant-select {
+            margin: 0;
+            margin-top: 4px;
+            display: block;
         }
     }
 
