@@ -37,7 +37,7 @@ module.exports = webpackMerge(runConfig, {
          *
          * See: https://webpack.js.org/configuration/output/#output-filename
          */
-        filename: '[name].js',
+        filename: '[name].[hash].js',
 
         /**
          * The filename of non-entry chunks as relative path inside the output.path directory.
