@@ -68,7 +68,7 @@ class Shapes extends React.PureComponent<ShapesProps> {
                     <ShapeImage shape={shape} />
                 </div>
 
-                <div className='asset-shape-title'>{shape.label}</div>
+                <div className='asset-shape-title'>{shape.displayName}</div>
             </div>
         );
     }

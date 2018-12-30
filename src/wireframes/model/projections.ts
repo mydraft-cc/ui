@@ -32,13 +32,13 @@ export const getSelectedIcons = createSelector(
 export const getFilteredIcons = createSelector(
     getSelectedIcons,
     getIconsFilter,
-    (icons, filter) => filter && filter.length > 0 ? icons.filter(x => x.searchTerm.indexOf(filter) >= 0) : icons
+    (icons, filter) => filter && filter.length > 0 ? icons.filter(x => x.displaySearch.indexOf(filter) >= 0) : icons
 );
 
 export const getFilteredShapes = createSelector(
     getShapes,
     getShapesFilter,
-    (shapes, filter) => filter && filter.length > 0 ? shapes.filter(x => x.searchTerm.indexOf(filter) >= 0) : shapes
+    (shapes, filter) => filter && filter.length > 0 ? shapes.filter(x => x.displaySearch.indexOf(filter) >= 0) : shapes
 );
 
 export const getEditor = (state: EditorStateInStore) => state.editor.present;

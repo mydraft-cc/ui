@@ -8,9 +8,9 @@ import { ICONS_MATERIAL_DESIGN } from './../../icons/material_icons_unified';
 export interface AssetInfo {
     name: string;
 
-    label: string;
+    displayName: string;
 
-    searchTerm: string;
+    displaySearch: string;
 }
 
 export interface ShapeInfo extends AssetInfo {
@@ -45,12 +45,12 @@ export const createInitialAssetsState: (rendererService: RendererService) => Ass
             const renderer = rendererService.registeredRenderers[rendererKey];
 
             if (renderer.showInGallery()) {
-                allShapes.push({ searchTerm: rendererKey.toLowerCase(), label: rendererKey, name: rendererKey, offset: renderer.previewOffset() });
+                allShapes.push({ displaySearch: rendererKey.toLowerCase(), displayName: rendererKey, name: rendererKey, offset: renderer.previewOffset() });
             }
         }
     }
 
-    allShapes.sort((l, r) => l.label.localeCompare(r.label));
+    allShapes.sort((l, r) => l.displayName.localeCompare(r.displayName));
 
     return {
         shapes: allShapes,

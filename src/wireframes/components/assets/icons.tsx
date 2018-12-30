@@ -83,7 +83,7 @@ class Icons extends React.PureComponent<IconsProps> {
                     <Icon icon={icon} />
                 </div>
 
-                <div className='asset-icon-title'>{icon.label}</div>
+                <div className='asset-icon-title'>{icon.displayName}</div>
             </div>
         );
     }

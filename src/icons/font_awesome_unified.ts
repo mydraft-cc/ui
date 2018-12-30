@@ -3,16 +3,16 @@ import { ICONS } from './font-awesome';
 export const ICONS_FONT_AWESOME = ICONS.icons.map(icon => {
     const text = String.fromCharCode(parseInt(icon.unicode, 16));
 
-    let searchTerm = icon.id;
+    let displaySearch = icon.id;
 
     if (icon.filter) {
         for (let filter of icon.filter) {
-            searchTerm += ' ';
-            searchTerm += filter;
+            displaySearch += ' ';
+            displaySearch += filter;
         }
     }
 
-    const label = icon.id || icon.name;
+    const displayName = icon.id || icon.name;
 
-    return { label, text, searchTerm, name: `FontAwesome_${text}`, fontClass: 'fa', fontFamily: 'FontAwesome' };
-}).sort((l, r) => l.label.localeCompare(r.label));
+    return { displayName, text, displaySearch, name: `fa-${text}`, fontClass: 'fa', fontFamily: 'FontAwesome' };
+}).sort((l, r) => l.displayName.localeCompare(r.displayName));
