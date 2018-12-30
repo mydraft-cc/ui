@@ -9,10 +9,11 @@ import {
     changeItemsAppearance,
     ColorConfigurable,
     Configurable,
-    DiagramShape,
     DiagramVisual,
     EditorStateInStore,
-    getSelection,
+    getDiagramId,
+    getSelectedConfigurables,
+    getSelectedShape,
     NumberConfigurable,
     SelectionConfigurable,
     SliderConfigurable
@@ -28,29 +29,17 @@ interface CustomPropertiesProps {
     selectedShape: DiagramVisual | null;
 
     // The configurable properties.
-    configurables: Configurable[];
+    selectedConfigurables: Configurable[];
 
     // Change the items appearance..
     changeItemsAppearance: (diagram: string, visuals: DiagramVisual[], key: string, val: any) => any;
 }
 
 const mapStateToProps = (state: EditorStateInStore) => {
-    const { editor, items } = getSelection(state);
-
-    let selectedShape: DiagramShape | null = null;
-
-    if (items.length === 1) {
-        const single = items[0];
-
-        if (single instanceof DiagramShape) {
-            selectedShape = single;
-        }
-    }
-
     return {
-        selectedDiagramId: editor.selectedDiagramId!,
-        selectedShape,
-        configurables: selectedShape ? selectedShape.configurables : []
+        selectedDiagramId: getDiagramId(state),
+        selectedShape: getSelectedShape(state),
+        selectedConfigurables: getSelectedConfigurables(state)
     };
 };
 
@@ -61,7 +50,7 @@ const mapDispatchToProps = (dispatch: Dispatch) => bindActionCreators({
 const CustomProperties = (props: CustomPropertiesProps) => {
     return (
         <>
-            {props.selectedDiagramId && props.configurables.map(c =>
+            {props.selectedDiagramId && props.selectedConfigurables.map(c =>
                 <Row key={c.name} className='property'>
                     <Col span={12} className='property-label'>
                         {c.label}

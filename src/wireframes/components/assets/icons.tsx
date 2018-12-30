@@ -9,16 +9,16 @@ import { Grid } from '@app/core';
 
 import {
     addIcon,
-    AssetsState,
-    EditorState,
+    AssetsStateInStore,
+    EditorStateInStore,
     filterIcons,
+    getDiagramId,
     getFilteredIcons,
     getIconSet,
     getIconSets,
     getIconsFilter,
     IconInfo,
-    selectIcons,
-    UndoableState
+    selectIcons
 } from '@app/wireframes/model';
 
 import { Icon } from './icon';
@@ -53,9 +53,9 @@ const addIconToPosition = (diagram: string, text: string, fontFamily: string) =>
     return addIcon(diagram, text, fontFamily, 100, 100);
 };
 
-const mapStateToProps = (state: { assets: AssetsState, editor: UndoableState<EditorState> }) => {
+const mapStateToProps = (state: AssetsStateInStore & EditorStateInStore) => {
     return {
-        selectedDiagramId: state.editor.present.selectedDiagramId,
+        selectedDiagramId: getDiagramId(state),
         iconsFiltered: getFilteredIcons(state),
         iconsFilter: getIconsFilter(state),
         iconSets: getIconSets(state),
@@ -110,7 +110,7 @@ class Icons extends React.PureComponent<IconsProps> {
 
                     <Select value={this.props.iconSet} onChange={this.doSelectIcons}>
                         {this.props.iconSets.map(x =>
-                            <Select.Option value={x}>{x}</Select.Option>
+                            <Select.Option key={x} value={x}>{x}</Select.Option>
                         )}
                     </Select>
                 </div>

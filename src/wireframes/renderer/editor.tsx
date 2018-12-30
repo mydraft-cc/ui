@@ -15,7 +15,9 @@ import {
     DiagramShape,
     DiagramVisual,
     EditorStateInStore,
-    getSelection,
+    getDiagram,
+    getEditor,
+    getSelectedItems,
     Renderer,
     RendererService,
     selectItems,
@@ -63,11 +65,11 @@ export interface EditorProps {
 }
 
 const mapStateToProps = (state: UIStateInStore & EditorStateInStore) => {
-    const { editor, diagram, items} = getSelection(state);
+    const editor = getEditor(state);
 
     return {
-        selectedDiagram: diagram,
-        selectedItems: items,
+        selectedDiagram: getDiagram(state),
+        selectedItems: getSelectedItems(state),
         viewSize: editor.size,
         zoomedWidth: editor.size.x * state.ui.zoom,
         zoomedHeight: editor.size.y * state.ui.zoom,

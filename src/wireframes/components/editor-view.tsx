@@ -15,7 +15,8 @@ import {
     addImage,
     addVisual,
     EditorStateInStore,
-    getSelection,
+    getDiagramId,
+    getEditor,
     UIStateInStore
 } from '@app/wireframes/model';
 
@@ -51,10 +52,10 @@ export interface EditorViewProps {
 }
 
 const mapStateToProps = (state: UIStateInStore & EditorStateInStore) => {
-    const { editor } = getSelection(state);
+    const editor = getEditor(state);
 
     return {
-        selectedDiagramId: editor.selectedDiagramId,
+        selectedDiagramId: getDiagramId(state),
         zoomedWidth: editor.size.x * state.ui.zoom,
         zoomedHeight: editor.size.y * state.ui.zoom,
         zoom: state.ui.zoom

@@ -11,7 +11,9 @@ import {
     DiagramGroup,
     DiagramItem,
     EditorStateInStore,
-    getSelection,
+    getDiagram,
+    getSelectedGroups,
+    getSelectedItems,
     groupItems,
     removeItems,
     selectItems,
@@ -51,12 +53,12 @@ interface ArrangeMenuProps {
 }
 
 const mapStateToProps = (state: EditorStateInStore) => {
-    const { diagram, items } = getSelection(state);
+    const items = getSelectedItems(state);
 
-    const groups = items.filter(s => s instanceof DiagramGroup);
+    const groups = getSelectedGroups(state);
 
     return {
-        selectedDiagram: diagram,
+        selectedDiagram: getDiagram(state),
         selectedGroups: groups,
         selectedItems: items,
         canGroup: items.length > 1,

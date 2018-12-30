@@ -60,3 +60,7 @@ export const createInitialAssetsState: (rendererService: RendererService) => Ass
         iconSet: 'Font Awesome'
     };
 };
+
+export interface AssetsStateInStore {
+    assets: AssetsState;
+}

@@ -9,14 +9,13 @@ import { Grid } from '@app/core';
 
 import {
     addVisual,
-    AssetsState,
-    EditorState,
+    AssetsStateInStore,
+    EditorStateInStore,
     filterShapes,
+    getDiagramId,
     getFilteredShapes,
     getShapesFilter,
-    ShapeInfo,
-    UndoableState
-} from '@app/wireframes/model';
+    ShapeInfo} from '@app/wireframes/model';
 
 import { ShapeImage } from './shape-image';
 
@@ -41,9 +40,9 @@ const addVisualToPosition = (diagram: string, renderer: string) => {
     return addVisual(diagram, renderer, 100, 100);
 };
 
-const mapStateToProps = (state: { assets: AssetsState, editor: UndoableState<EditorState> }) => {
+const mapStateToProps = (state: AssetsStateInStore & EditorStateInStore) => {
     return {
-        selectedDiagramId: state.editor.present.selectedDiagramId,
+        selectedDiagramId: getDiagramId(state),
         shapesFiltered: getFilteredShapes(state),
         shapesFilter: getShapesFilter(state)
     };

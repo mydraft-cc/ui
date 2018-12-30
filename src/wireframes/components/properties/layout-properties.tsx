@@ -19,7 +19,8 @@ import {
     DISTRIBUTE_H,
     DISTRIBUTE_V,
     EditorStateInStore,
-    getSelection,
+    getDiagramId,
+    getSelectedItems,
     orderItems,
     SEND_BACKWARDS,
     SEND_TO_BACK
@@ -49,10 +50,10 @@ interface LayoutPropertiesProps {
 }
 
 const mapStateToProps = (state: EditorStateInStore) => {
-    const { editor, items } = getSelection(state);
+    const items = getSelectedItems(state);
 
     return {
-        selectedDiagramId: editor.selectedDiagramId,
+        selectedDiagramId: getDiagramId(state),
         selectedItems: items,
         canAlign: items.length > 1,
         canOrder: items.length > 0,

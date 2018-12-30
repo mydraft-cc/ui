@@ -22,6 +22,9 @@ interface LoadingMenuProps {
     // Indicates if the info dialog, should be shown.
     showInfoDialog: boolean;
 
+    // The window title.
+    title: string;
+
     // Creates a new diagram.
     newDiagram: () => any;
 
@@ -33,7 +36,13 @@ interface LoadingMenuProps {
 }
 
 const mapStateToProps = (state: LoadingStateInStore & UIStateInStore) => {
-    return { readToken: state.loading.readToken, showInfoDialog: state.ui.showInfoDialog };
+    const readToken = state.loading.readToken;
+
+    const title =  readToken && readToken.length > 0 ?
+        `mydraft.cc - Diagram ${readToken}` :
+        'mydraft.cc - Diagram (unsaved)';
+
+    return { readToken: readToken, title, showInfoDialog: state.ui.showInfoDialog };
 };
 
 const mapDispatchToProps = (dispatch: Dispatch) => bindActionCreators({
@@ -41,12 +50,6 @@ const mapDispatchToProps = (dispatch: Dispatch) => bindActionCreators({
 }, dispatch);
 
 class LoadingMenu extends React.PureComponent<LoadingMenuProps> {
-    private getTitle = () => {
-        return this.props.readToken && this.props.readToken.length > 0 ?
-            `mydraft.cc - Diagram ${this.props.readToken}` :
-            'mydraft.cc - New Diagram';
-    }
-
     private doNewDiagram = () => {
         this.props.newDiagram();
     }
@@ -66,7 +69,7 @@ class LoadingMenu extends React.PureComponent<LoadingMenuProps> {
     public render() {
         return (
             <>
-                <Title text={this.getTitle()} />
+                <Title text={this.props.title} />
 
                 <Tooltip mouseEnterDelay={1} title='New Diagram (CTRL + N)'>
                     <Button className='menu-item' size='large'

@@ -14,5 +14,5 @@ export const ICONS_FONT_AWESOME = ICONS.icons.map(icon => {
 
     const label = icon.id || icon.name;
 
-    return { label, text, searchTerm, name: `FontAwesome_${icon.id}`, fontClass: 'fa', fontFamily: 'FontAwesome' };
+    return { label, text, searchTerm, name: `FontAwesome_${text}`, fontClass: 'fa', fontFamily: 'FontAwesome' };
 }).sort((l, r) => l.label.localeCompare(r.label));

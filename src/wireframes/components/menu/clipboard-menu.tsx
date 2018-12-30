@@ -9,7 +9,8 @@ import {
     Diagram,
     DiagramItemSet,
     EditorStateInStore,
-    getSelection,
+    getDiagram,
+    getSelectedItemIds,
     pasteItems,
     removeItems,
     Serializer
@@ -41,12 +42,12 @@ interface ClipboardMenuState {
 }
 
 const mapStateToProps = (state: EditorStateInStore) => {
-    const { diagram, items } = getSelection(state);
+    const selectedItemIds = getSelectedItemIds(state);
 
     return {
-        selectedDiagram: diagram,
-        selectedItemIds: items.map(x => x.id),
-        canCopy: items.length > 0
+        selectedDiagram: getDiagram(state),
+        selectedItemIds: selectedItemIds,
+        canCopy: selectedItemIds.length > 0
     };
 };
 
