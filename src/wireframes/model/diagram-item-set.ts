@@ -1,3 +1,5 @@
+import { Types } from '@app/core';
+
 import { Diagram } from './diagram';
 import { DiagramGroup } from './diagram-group';
 import { DiagramItem } from './diagram-item';
@@ -11,6 +13,10 @@ export class DiagramItemSet {
 
     public get rootIds(): string[] {
         return this.rootItems.map(i => i.id);
+    }
+
+    public get allIds(): string[] {
+        return this.allItems.map(i => i.id);
     }
 
     constructor(
@@ -41,15 +47,21 @@ export class DiagramItemSet {
         Object.freeze(this);
     }
 
-    public static createFromDiagram(itemIds: string[], diagram: Diagram): DiagramItemSet {
+    public static createFromDiagram(items: (string | DiagramItem)[], diagram: Diagram): DiagramItemSet {
         const g: DiagramGroup[] = [];
         const v: DiagramVisual[] = [];
 
-        let flatItemsArray: (ids: string[], isTopLevel: boolean) => void;
+        let flatItemsArray: (itemsOrIds: (string | DiagramItem)[], isTopLevel: boolean) => void;
 
-        flatItemsArray = (ids: string[]) => {
-            for (let itemId of ids) {
-                const item = diagram.items.get(itemId);
+        flatItemsArray = (itemsOrIds: (string | DiagramItem)[]) => {
+            for (let itemOrId of itemsOrIds) {
+                let item: DiagramItem;
+
+                if (Types.isString(itemOrId)) {
+                    item = diagram.items.get(itemOrId);
+                } else {
+                    item = itemOrId;
+                }
 
                 if (!item) {
                     continue;
@@ -67,8 +79,8 @@ export class DiagramItemSet {
             }
         };
 
-        if (itemIds) {
-            flatItemsArray(itemIds, true);
+        if (items) {
+            flatItemsArray(items, true);
         }
 
         return new DiagramItemSet(g, v);

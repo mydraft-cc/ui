@@ -61,14 +61,24 @@ export const getSelectedItemIds = createSelector(
     diagram => diagram ? diagram.selectedItemIds.toArray() : EMPTY_STRING_ARRAY
 );
 
-export const getSelectedItems = createSelector(
+export const getSelectedItemsWithLocked = createSelector(
     getDiagram,
     diagram => diagram ? <DiagramItem[]>diagram.selectedItemIds.map(i => diagram!.items.get(i)) : EMPTY_ITEMS_ARRAY
+);
+
+export const getSelectedItems = createSelector(
+    getSelectedItemsWithLocked,
+    items => items.filter(x => !x.isLocked)
 );
 
 export const getSelectedGroups = createSelector(
     getSelectedItems,
     items => items.filter(i => i instanceof DiagramGroup).map(i => <DiagramGroup>i)
+);
+
+export const getSelectedItemWithLocked = createSelector(
+    getSelectedItemsWithLocked,
+    items => items.length === 1 ? items[0] : null
 );
 
 export const getSelectedShape = createSelector(
@@ -79,24 +89,6 @@ export const getSelectedShape = createSelector(
 export const getSelectedConfigurables = createSelector(
     getSelectedShape,
     shape => shape ? shape.configurables : EMPTY_CONFIGURABLES
-);
-
-export const getSelection = createSelector(
-    getEditor,
-    getDiagram,
-    (editor, diagram) => {
-        const selectedItemIds =
-            diagram ?
-            diagram.selectedItemIds.toArray() :
-            [];
-
-        const selectedItems =
-            diagram ?
-            <DiagramItem[]>diagram.selectedItemIds.map(i => diagram!.items.get(i)) :
-            [];
-
-        return { editor, diagram, selectedItemIds, selectedItems };
-    }
 );
 
 export interface UniqueValue<TValue> {

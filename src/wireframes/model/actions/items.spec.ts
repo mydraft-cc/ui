@@ -19,12 +19,15 @@ import {
     RendererService,
     selectItems,
     Serializer,
-    Transform
+    Transform,
+    unlockItems
 } from '@app/wireframes/model';
 
 import { Button }   from '@app/wireframes/shapes/neutral/button';
 import { Icon }     from '@app/wireframes/shapes/shared/icon';
 import { Raster }   from '@app/wireframes/shapes/shared/raster';
+import { DiagramVisual } from '../diagram-visual';
+import { lockItems } from './items';
 
 describe('ItemsReducer', () => {
     const groupId = 'group1';
@@ -35,7 +38,7 @@ describe('ItemsReducer', () => {
     let diagram =
         Diagram.empty(MathHelper.guid())
             .addVisual(shape1)
-            .addVisual(shape2)
+            .addVisual(<DiagramVisual>shape2.lock())
             .addVisual(shape3);
     diagram = diagram.group(groupId, [shape1.id, shape2.id]);
 
@@ -69,6 +72,22 @@ describe('ItemsReducer', () => {
         const state_2 = reducer(state_1, action);
 
         expect(state_2.diagrams.last.items.size).toBe(1);
+    });
+
+    it('should lock item', () => {
+        const action = lockItems(diagram, [shape1]);
+        const state_1 = EditorState.empty().addDiagram(diagram);
+        const state_2 = reducer(state_1, action);
+
+        expect(state_2.diagrams.last.items.get(shape1.id).isLocked).toBeTruthy();
+    });
+
+    it('should unlock item', () => {
+        const action = unlockItems(diagram, [shape2]);
+        const state_1 = EditorState.empty().addDiagram(diagram);
+        const state_2 = reducer(state_1, action);
+
+        expect(state_2.diagrams.last.items.get(shape2.id).isLocked).toBeFalsy();
     });
 
     it('should add icon to diagram and select the shape', () => {

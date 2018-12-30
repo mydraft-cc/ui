@@ -14,7 +14,7 @@ import {
 
 class CustomVisual extends DiagramVisual {
     public static createCustom(id: string) {
-        return new CustomVisual(id, null!);
+        return new CustomVisual(id, false, null!);
     }
 
     public bounds(): Transform {

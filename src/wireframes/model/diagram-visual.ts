@@ -7,10 +7,10 @@ export abstract class DiagramVisual extends DiagramItem {
     public static readonly APPEARANCE_STROKE_COLOR = 'STROKE_COLOR';
     public static readonly APPEARANCE_STROKE_THICKNESS = 'STROKE_THICKNESS';
 
-    protected constructor(id: string,
+    protected constructor(id: string, isLocked: boolean,
         public appearance: Immutable.Map<string, any>
     ) {
-        super(id);
+        super(id, isLocked);
     }
 
     public replaceAppearance(appearance: Immutable.Map<string, any>) {

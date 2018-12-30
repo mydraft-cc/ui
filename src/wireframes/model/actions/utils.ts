@@ -1,10 +1,14 @@
 import { Action } from 'redux';
 
+import { Types } from '@app/core';
+
 import { Diagram, DiagramItem } from './../internal';
 
 export type DiagramRef = string | Diagram;
 
-export type ItemsRef = string[] | DiagramItem[];
+export type ItemRef = string | DiagramItem;
+
+export type ItemsRef = ItemRef[];
 
 interface ItemsAction extends DiagramAction {
     readonly diagramId: string;
@@ -13,17 +17,13 @@ interface ItemsAction extends DiagramAction {
 export function createItemsAction<T extends {}>(type: string, diagram: DiagramRef, items: ItemsRef, action?: T): T & Action & ItemsAction {
     let result: any = createDiagramAction(type, diagram, action);
 
-    const itemIds: string[] = [];
-
-    for (let item of items) {
-        if (item instanceof DiagramItem) {
-            itemIds.push(item.id);
+    result.itemIds = items.map(itemOrId => {
+        if (Types.isString(itemOrId)) {
+            return itemOrId;
         } else {
-            itemIds.push(item);
+            return itemOrId.id;
         }
-    }
-
-    result.itemIds = itemIds;
+    });
 
     return result;
 }

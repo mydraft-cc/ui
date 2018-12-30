@@ -20,17 +20,17 @@ export class DiagramShape extends DiagramVisual {
     public static readonly APPEARANCE_BACKGROUND_COLOR = 'FOREGROUND_COLOR';
     public static readonly APPEARANCE_ICON_FONT_FAMILY = 'ICON_FONT_FAMILY';
 
-    private constructor(id: string, appearance: Immutable.Map<string, any>,
+    private constructor(id: string, isLocked: boolean, appearance: Immutable.Map<string, any>,
         public transform: Transform,
         public configurables: Configurable[],
         public constraint: Constraint | undefined,
         public renderer: string
     ) {
-        super(id, appearance);
+        super(id, isLocked, appearance);
     }
 
     public static createShape(id: string, renderer: string, w: number, h: number, configurable?: Configurable[], appearance?: { [key: string]: any }, constraint?: Constraint): DiagramShape {
-        const result = new DiagramShape(id,
+        const result = new DiagramShape(id, false,
             DiagramShape.createAppearance(appearance),
             DiagramShape.createTransform(w, h),
             DiagramShape.createConfigurables(configurable),
@@ -103,6 +103,7 @@ export class DiagramShape extends DiagramVisual {
     public clone(): DiagramShape {
         return new DiagramShape(
             this.id,
+            this.isLocked,
             this.appearance,
             this.transform,
             this.configurables,

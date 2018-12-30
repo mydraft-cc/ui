@@ -4,6 +4,7 @@ import { MathHelper, Vec2 } from '@app/core';
 
 import {
     Diagram,
+    DiagramGroup,
     DiagramItem,
     DiagramItemSet,
     DiagramShape,
@@ -37,9 +38,19 @@ export const addIcon = (diagram: DiagramRef, text: string, fontFamily: string, x
     return createDiagramAction(ADD_ICON, diagram, { shapeId: shapeId || MathHelper.guid(), text, fontFamily, position: { x, y } });
 };
 
+export const LOCK_ITEMS = 'LOCK_ITEMS';
+export const lockItems = (diagram: DiagramRef, items: ItemsRef) => {
+    return createItemsAction(LOCK_ITEMS, diagram, items);
+};
+
+export const UNLOCK_ITEMS = 'UNLOCK_ITEMS';
+export const unlockItems = (diagram: DiagramRef, items: ItemsRef) => {
+    return createItemsAction(UNLOCK_ITEMS, diagram, items);
+};
+
 export const SELECT_ITEMS = 'SELECT_ITEMS';
-export const selectItems = (diagram: DiagramRef, itemIds: ItemsRef) => {
-    return createItemsAction(SELECT_ITEMS, diagram, itemIds);
+export const selectItems = (diagram: DiagramRef, items: ItemsRef) => {
+    return createItemsAction(SELECT_ITEMS, diagram, items);
 };
 
 export const REMOVE_ITEMS = 'REMOVE_ITEMS';
@@ -67,6 +78,26 @@ export function items(rendererService: RendererService, serializer: Serializer):
 
                     return diagram.removeItems(set!);
                 });
+            case LOCK_ITEMS:
+                return state.updateDiagram(action.diagramId, diagram => {
+                    const set = DiagramItemSet.createFromDiagram(action.itemIds, diagram);
+
+                    for (let item of set!.allItems) {
+                        diagram = diagram.updateItem(item.id, i => i.lock());
+                    }
+
+                    return diagram;
+                });
+            case UNLOCK_ITEMS:
+                return state.updateDiagram(action.diagramId, diagram => {
+                    const set = DiagramItemSet.createFromDiagram(action.itemIds, diagram);
+
+                    for (let item of set!.allItems) {
+                        diagram = diagram.updateItem(item.id, i => i.unlock());
+                    }
+
+                    return diagram;
+                });
             case PASTE_ITEMS:
                 return state.updateDiagram(action.diagramId, diagram => {
                     const set = serializer.deserializeSet(action.json);
@@ -82,7 +113,7 @@ export function items(rendererService: RendererService, serializer: Serializer):
                         });
                     }
 
-                    diagram = diagram.selectItems(set.rootItems.map(i => i.id));
+                    diagram = diagram.selectItems(set.rootIds);
 
                     return diagram;
                 });
@@ -168,56 +199,70 @@ export function items(rendererService: RendererService, serializer: Serializer):
     return reducer;
 }
 
-export function calculateSelection(items: DiagramItem[], diagram: Diagram, isSingleSelection?: boolean, isMultiSelection?: boolean): string[] {
+export function calculateSelection(items: DiagramItem[], diagram: Diagram, isSingleSelection?: boolean, isCtrl?: boolean): string[] {
     if (!items) {
         return [];
     }
 
-    if (items.length === 1 && isSingleSelection) {
-        const item = items[0];
+    let selectedItems: DiagramItem[] = [];
 
-        if (item) {
+    function resolveGroup(item: DiagramItem, stop?: DiagramGroup) {
+        while (true) {
             const group = diagram.parent(item.id);
 
+            if (!group || group === stop) {
+                break;
+            } else {
+                item = group;
+            }
+        }
+
+        return item;
+    }
+
+    if (isSingleSelection) {
+        if (items.length === 1 && items[0]) {
+            const item = items[0];
             const itemId = item.id;
 
-            if (isSingleSelection && group && diagram.selectedItemIds.contains(group.id)) {
-                return [item.id];
-            }
-
-            if (isMultiSelection) {
-                if (diagram.selectedItemIds.contains(itemId)) {
-                    return diagram.selectedItemIds.remove(itemId).toArray();
+            if (isCtrl) {
+                if (!item.isLocked) {
+                    if (diagram.selectedItemIds.contains(itemId)) {
+                        return diagram.selectedItemIds.remove(itemId).toArray();
+                    } else {
+                        return diagram.selectedItemIds.add(resolveGroup(item).id).toArray();
+                    }
                 } else {
-                    return diagram.selectedItemIds.add(itemId).toArray();
+                    return diagram.selectedItemIds.toArray();
                 }
-            }
-        }
-    }
-
-    const selection: string[] = [];
-
-    for (let item of items) {
-        if (item) {
-            while (true) {
+            } else {
                 const group = diagram.parent(item.id);
 
-                if (group) {
-                    item = group;
+                if (group && diagram.selectedItemIds.contains(group.id)) {
+                    selectedItems.push(resolveGroup(item, group));
                 } else {
-                    break;
+                    selectedItems.push(resolveGroup(item));
                 }
             }
         }
+    } else {
+        const selection: { [id: string]: DiagramItem } = {};
 
-        if (item) {
-            if (selection.indexOf(item.id) < 0) {
-                selection.push(item.id);
+        for (let item of items) {
+            if (item) {
+                item = resolveGroup(item);
+
+                if (!selection[item.id]) {
+                    selection[item.id] = item;
+                    selectedItems.push(item);
+                }
             }
-        } else {
-            return [];
         }
     }
 
-    return selection;
+    if (selectedItems.length > 1) {
+        selectedItems = selectedItems.filter(i => !i.isLocked);
+    }
+
+    return selectedItems.map(i => i.id);
 }

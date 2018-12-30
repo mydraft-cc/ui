@@ -13,19 +13,19 @@ import { Transform } from './transform';
 export class DiagramGroup extends DiagramContainer {
     private readonly cachedBounds: { [id: string]: Transform } = {};
 
-    private constructor(id: string, childIds: ImmutableList<string>,
+    private constructor(id: string, isLocked: boolean, childIds: ImmutableList<string>,
         public rotation: Rotation
     ) {
-        super(id, childIds);
+        super(id, isLocked, childIds);
     }
 
     public static createGroup(id: string, childIds: ImmutableList<string> | string[], rotation?: Rotation): DiagramGroup {
         let result: DiagramGroup;
 
         if (Types.isArrayOfString(childIds)) {
-            result = new DiagramGroup(id, ImmutableList.of(...childIds), rotation || Rotation.ZERO);
+            result = new DiagramGroup(id, false, ImmutableList.of(...childIds), rotation || Rotation.ZERO);
         } else {
-            result = new DiagramGroup(id, childIds, Rotation.ZERO);
+            result = new DiagramGroup(id, false, childIds, Rotation.ZERO);
         }
 
         Object.freeze(result);
@@ -62,6 +62,7 @@ export class DiagramGroup extends DiagramContainer {
     public clone(): DiagramGroup {
         return new DiagramGroup(
             this.id,
+            this.isLocked,
             this.childIds,
             this.rotation);
     }

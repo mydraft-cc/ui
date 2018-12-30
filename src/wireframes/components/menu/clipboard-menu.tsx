@@ -7,10 +7,11 @@ import { Shortcut } from '@app/core';
 
 import {
     Diagram,
+    DiagramItem,
     DiagramItemSet,
     EditorStateInStore,
     getDiagram,
-    getSelectedItemIds,
+    getSelectedItems,
     pasteItems,
     removeItems,
     Serializer
@@ -19,17 +20,14 @@ import {
 import { SerializerContext } from '@app/context';
 
 interface ClipboardMenuProps {
-    // Indicates if items can be copied.
-    canCopy: boolean;
-
     // The selected diagram.
     selectedDiagram: Diagram | null;
 
     // The selected items.
-    selectedItemIds: string[];
+    selectedItems: DiagramItem[];
 
     // Remove items.
-    removeItems: (diagram: Diagram, items: string[]) => any;
+    removeItems: (diagram: Diagram, items: DiagramItem[]) => any;
 
     // Ungroup items.
     pasteItems: (diagram: Diagram, json: string, offset?: number) => any;
@@ -42,12 +40,9 @@ interface ClipboardMenuState {
 }
 
 const mapStateToProps = (state: EditorStateInStore) => {
-    const selectedItemIds = getSelectedItemIds(state);
-
     return {
         selectedDiagram: getDiagram(state),
-        selectedItemIds: selectedItemIds,
-        canCopy: selectedItemIds.length > 0
+        selectedItems: getSelectedItems(state)
     };
 };
 
@@ -67,7 +62,7 @@ class ClipboardMenu extends React.PureComponent<ClipboardMenuProps, ClipboardMen
     private doCopy = (serializer: Serializer) => {
         const set =
             DiagramItemSet.createFromDiagram(
-                this.props.selectedItemIds,
+                this.props.selectedItems,
                 this.props.selectedDiagram!);
 
         this.setState({ offset: 0, clipboard: serializer.serializeSet(set) });
@@ -76,7 +71,7 @@ class ClipboardMenu extends React.PureComponent<ClipboardMenuProps, ClipboardMen
     private doCut = (serializer: Serializer) => {
         this.doCopy(serializer);
 
-        this.props.removeItems(this.props.selectedDiagram!, this.props.selectedItemIds);
+        this.props.removeItems(this.props.selectedDiagram!, this.props.selectedItems);
     }
 
     private doPaste = () => {
@@ -86,29 +81,31 @@ class ClipboardMenu extends React.PureComponent<ClipboardMenuProps, ClipboardMen
     }
 
     public render() {
+        const canCopy = this.props.selectedItems.length > 0;
+
         return (
             <SerializerContext.Consumer>
                 {serializer =>
                 <>
                     <Tooltip mouseEnterDelay={1} title='Copy items (CTRL + C)'>
                         <Button className='menu-item' size='large'
-                            disabled={!this.props.canCopy}
+                            disabled={!canCopy}
                             onClick={() => this.doCopy(serializer)}>
                             <i className='icon-copy' />
                         </Button>
                     </Tooltip>
 
-                    <Shortcut disabled={!this.props.canCopy} onPressed={() => this.doCopy(serializer)} keys='ctrl+c' />
+                    <Shortcut disabled={!canCopy} onPressed={() => this.doCopy(serializer)} keys='ctrl+c' />
 
                     <Tooltip mouseEnterDelay={1} title='Cut items (CTRL + X)'>
                         <Button className='menu-item' size='large'
-                            disabled={!this.props.canCopy}
+                            disabled={!canCopy}
                             onClick={() => this.doCut(serializer)}>
                             <i className='icon-cut' />
                         </Button>
                     </Tooltip>
 
-                    <Shortcut disabled={!this.props.canCopy} onPressed={() => this.doCut(serializer)} keys='ctrl+x' />
+                    <Shortcut disabled={!canCopy} onPressed={() => this.doCut(serializer)} keys='ctrl+x' />
 
                     <Tooltip mouseEnterDelay={1} title='Paste items (CTRL + V)'>
                         <Button className='menu-item' size='large'

@@ -18,6 +18,7 @@ import {
 import { SVGRenderer } from '@app/wireframes/shapes/utils/svg-renderer';
 
 const SELECTION_STROKE_COLOR = '#080';
+const SELECTION_STROKE_LOCK_COLOR = '#f00';
 const SELECTION_FILL_COLOR = 'none';
 
 export interface SelectionAdornerProps {
@@ -115,20 +116,18 @@ export class SelectionAdorner extends React.Component<SelectionAdornerProps> imp
     }
 
     private selectMultiple(rect: Rect2, diagram: Diagram): string[] {
-        const selectedItems = diagram.rootIds.map(id => diagram.items.get(id)).filter(i => i && rect.contains(i.bounds(diagram).aabb)).map(i => i!);
-        const selection = calculateSelection(selectedItems, diagram, true);
+        const selectedItems = diagram.rootIds.map(id => diagram.items.get(id)).filter(i => i && rect.contains(i.bounds(diagram).aabb));
+        const selection = calculateSelection(selectedItems, diagram, false);
 
         return selection;
     }
 
     private selectSingle(event: SvgEvent, diagram: Diagram): string[] {
-        let selection: string[] = [];
-
         if (event.shape && event.shape.bounds(diagram).aabb.contains(event.position)) {
-            selection = calculateSelection([event.shape], diagram, true, event.event.ctrlKey);
+            return calculateSelection([event.shape], diagram, true, event.event.ctrlKey);
+        } else {
+            return [];
         }
-
-        return selection;
     }
 
     private markItems() {
@@ -143,13 +142,18 @@ export class SelectionAdorner extends React.Component<SelectionAdornerProps> imp
             if (i >= this.shapesAdorners.length) {
                 shapeAdorner = this.renderer.createRectangle(1);
 
-                this.renderer.setBackgroundColor(shapeAdorner, SELECTION_FILL_COLOR);
-                this.renderer.setStrokeColor(shapeAdorner, SELECTION_STROKE_COLOR);
-
                 this.shapesAdorners.push(shapeAdorner);
             } else {
                 shapeAdorner = this.shapesAdorners[i];
             }
+
+            const strokeColor =
+                item.isLocked ?
+                    SELECTION_STROKE_LOCK_COLOR :
+                    SELECTION_STROKE_COLOR;
+
+            this.renderer.setBackgroundColor(shapeAdorner, SELECTION_FILL_COLOR);
+            this.renderer.setStrokeColor(shapeAdorner, strokeColor);
 
             const bounds = item.bounds(this.props.selectedDiagram);
 

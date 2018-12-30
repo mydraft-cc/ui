@@ -5,12 +5,12 @@ import { DiagramItem } from './diagram-item';
 import { Transform } from './transform';
 
 export class DiagramContainer extends DiagramItem {
-    protected constructor(id: string, public childIds: ImmutableList<string>) {
-        super(id);
+    protected constructor(id: string, isLocked: boolean, public childIds: ImmutableList<string>) {
+        super(id, isLocked);
     }
 
     public static createContainer(): DiagramContainer {
-        const result = new DiagramContainer('root', ImmutableList.empty<string>());
+        const result = new DiagramContainer('root', false, ImmutableList.empty<string>());
 
         Object.freeze(result);
 
@@ -60,6 +60,7 @@ export class DiagramContainer extends DiagramItem {
     public clone(): DiagramContainer {
         return new DiagramContainer(
             this.id,
+            this.isLocked,
             this.childIds);
     }
 }

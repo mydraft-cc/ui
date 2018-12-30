@@ -12,6 +12,7 @@ import {
     IconsContainer,
     LayoutPropertiesContainer,
     LoadingMenuContainer,
+    LockMenuContainer,
     ShapesContainer,
     UIMenuContainer,
     VisualPropertiesContainer
@@ -115,6 +116,9 @@ class App extends React.PureComponent<AppProps & AppOwnProps> {
                     <img className='logo' src={logo} alt='mydraft.cc' />
 
                     <HistoryMenuContainer />
+                    <span className='menu-separator' />
+
+                    <LockMenuContainer />
                     <span className='menu-separator' />
 
                     <ArrangeMenuContainer />

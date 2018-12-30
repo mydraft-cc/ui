@@ -18,6 +18,7 @@ import {
     getDiagram,
     getEditor,
     getSelectedItems,
+    getSelectedItemsWithLocked,
     Renderer,
     RendererService,
     selectItems,
@@ -41,6 +42,9 @@ export interface EditorProps {
 
     // The selected items.
     selectedItems: DiagramItem[];
+
+    // The selected items including locked items.
+    selectedItemsWithLocked: DiagramItem[];
 
     // The width of the canvas.
     zoomedWidth: number;
@@ -70,6 +74,7 @@ const mapStateToProps = (state: UIStateInStore & EditorStateInStore) => {
     return {
         selectedDiagram: getDiagram(state),
         selectedItems: getSelectedItems(state),
+        selectedItemsWithLocked: getSelectedItemsWithLocked(state),
         viewSize: editor.size,
         zoomedWidth: editor.size.x * state.ui.zoom,
         zoomedHeight: editor.size.y * state.ui.zoom,
@@ -208,7 +213,7 @@ class Editor extends React.Component<EditorProps> {
                             adorners={this.adornersSelect}
                             interactionService={this.interactionService}
                             selectedDiagram={this.props.selectedDiagram}
-                            selectedItems={this.props.selectedItems}
+                            selectedItems={this.props.selectedItemsWithLocked}
                             selectItems={this.props.selectItems} />
 
                         <TextAdorner

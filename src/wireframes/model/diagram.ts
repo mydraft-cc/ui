@@ -108,7 +108,7 @@ export class Diagram {
             return this;
         }
 
-        const allIds = set.allItems.map(i => i.id);
+        const allIds = set.allIds;
 
         return this.cloned(this.items.remove(...allIds), this.roots.removeItems(...set.rootIds), this.selectedItemIds.remove(...allIds));
     }
