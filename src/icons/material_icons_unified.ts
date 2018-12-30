@@ -6,5 +6,5 @@ export const ICONS_MATERIAL_DESIGN = ICONS.map(icon => {
     const text = String.fromCharCode(parseInt(parts[1], 16));
     const name = parts[0];
 
-    return { label: name, text, searchTerm: name, name, fontClass: 'material-icons', fontFamily: 'Material Icons' };
+    return { label: name, text, searchTerm: name, name: `MaterialIcons_${name}`, fontClass: 'material-icons', fontFamily: 'Material Icons' };
 }).filter(x => x.name.length > 0);

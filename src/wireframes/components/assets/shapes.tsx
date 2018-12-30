@@ -11,8 +11,9 @@ import {
     addVisual,
     AssetsState,
     EditorState,
-    filteredShapes,
     filterShapes,
+    getFilteredShapes,
+    getShapesFilter,
     ShapeInfo,
     UndoableState
 } from '@app/wireframes/model';
@@ -43,8 +44,8 @@ const addVisualToPosition = (diagram: string, renderer: string) => {
 const mapStateToProps = (state: { assets: AssetsState, editor: UndoableState<EditorState> }) => {
     return {
         selectedDiagramId: state.editor.present.selectedDiagramId,
-        shapesFiltered: filteredShapes(state.assets),
-        shapesFilter: state.assets.shapesFilter
+        shapesFiltered: getFilteredShapes(state),
+        shapesFilter: getShapesFilter(state)
     };
 };
 
@@ -58,7 +59,7 @@ class Shapes extends React.PureComponent<ShapesProps> {
             const diagramId = this.props.selectedDiagramId;
 
             if (diagramId) {
-                this.props.addVisualToPosition(diagramId, shape.key);
+                this.props.addVisualToPosition(diagramId, shape.name);
             }
         };
 
@@ -73,16 +74,24 @@ class Shapes extends React.PureComponent<ShapesProps> {
         );
     }
 
+    private doFilterShapes = (event: React.ChangeEvent<HTMLInputElement>) => {
+        this.props.filterShapes(event.target.value);
+    }
+
+    private keyBuilder = (shape: ShapeInfo) => {
+        return shape.name;
+    }
+
     public render() {
         return (
             <>
                 <div className='asset-shapes-search'>
-                    <Input value={this.props.shapesFilter} onChange={event => this.props.filterShapes(event.target.value)}
+                    <Input value={this.props.shapesFilter} onChange={this.doFilterShapes}
                         placeholder='Find shape'
                         prefix={<Icon type='search' style={{ color: 'rgba(0,0,0,.25)' }} />} />
                 </div>
 
-                <Grid className='asset-shapes-list' renderer={this.cellRenderer} columns={2} items={this.props.shapesFiltered} keyBuilder={shape => shape.searchTerm} />
+                <Grid className='asset-shapes-list' renderer={this.cellRenderer} columns={2} items={this.props.shapesFiltered} keyBuilder={this.keyBuilder} />
             </>
         );
     }

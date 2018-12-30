@@ -11,8 +11,11 @@ import {
     addIcon,
     AssetsState,
     EditorState,
-    filteredIcons,
     filterIcons,
+    getFilteredIcons,
+    getIconSet,
+    getIconSets,
+    getIconsFilter,
     IconInfo,
     selectIcons,
     UndoableState
@@ -53,10 +56,10 @@ const addIconToPosition = (diagram: string, text: string, fontFamily: string) =>
 const mapStateToProps = (state: { assets: AssetsState, editor: UndoableState<EditorState> }) => {
     return {
         selectedDiagramId: state.editor.present.selectedDiagramId,
-        iconsFiltered: filteredIcons(state.assets),
-        iconsFilter: state.assets.iconsFilter,
-        iconSets: Object.keys(state.assets.icons),
-        iconSet: state.assets.iconSet
+        iconsFiltered: getFilteredIcons(state),
+        iconsFilter: getIconsFilter(state),
+        iconSets: getIconSets(state),
+        iconSet: getIconSet(state)
     };
 };
 
@@ -89,11 +92,19 @@ class Icons extends React.PureComponent<IconsProps> {
         this.props.selectIcons(iconSet);
     }
 
+    private doFilterIcons = (event: React.ChangeEvent<HTMLInputElement>) => {
+        this.props.filterIcons(event.target.value);
+    }
+
+    private keyBuilder = (icon: IconInfo) => {
+        return icon.name;
+    }
+
     public render() {
         return (
             <>
                 <div className='asset-icons-search'>
-                    <Input value={this.props.iconsFilter} onChange={event => this.props.filterIcons(event.target.value)}
+                    <Input value={this.props.iconsFilter} onChange={this.doFilterIcons}
                         placeholder='Find icon'
                         prefix={<AntdIcon type='search' style={{ color: 'rgba(0,0,0,.25)' }} />} />
 
@@ -104,7 +115,7 @@ class Icons extends React.PureComponent<IconsProps> {
                     </Select>
                 </div>
 
-                <Grid className='asset-icons-list' renderer={this.cellRenderer} columns={3} items={this.props.iconsFiltered} keyBuilder={icon => icon.name} />
+                <Grid className='asset-icons-list' renderer={this.cellRenderer} columns={3} items={this.props.iconsFiltered} keyBuilder={this.keyBuilder} />
             </>
         );
     }

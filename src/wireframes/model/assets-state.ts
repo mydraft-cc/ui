@@ -6,6 +6,8 @@ import { ICONS_FONT_AWESOME } from './../../icons/font_awesome_unified';
 import { ICONS_MATERIAL_DESIGN } from './../../icons/material_icons_unified';
 
 export interface AssetInfo {
+    name: string;
+
     label: string;
 
     searchTerm: string;
@@ -13,8 +15,6 @@ export interface AssetInfo {
 
 export interface ShapeInfo extends AssetInfo {
     offset: Vec2;
-
-    key: string;
 }
 
 export interface IconInfo extends AssetInfo {
@@ -23,8 +23,6 @@ export interface IconInfo extends AssetInfo {
     fontFamily: string;
 
     fontClass: string;
-
-    name: string;
 }
 
 export interface AssetsState {
@@ -47,7 +45,7 @@ export const createInitialAssetsState: (rendererService: RendererService) => Ass
             const renderer = rendererService.registeredRenderers[rendererKey];
 
             if (renderer.showInGallery()) {
-                allShapes.push({ searchTerm: rendererKey.toLowerCase(), label: rendererKey, key: rendererKey, offset: renderer.previewOffset() });
+                allShapes.push({ searchTerm: rendererKey.toLowerCase(), label: rendererKey, name: rendererKey, offset: renderer.previewOffset() });
             }
         }
     }

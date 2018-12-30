@@ -33,41 +33,43 @@ const mapDispatchToProps = (dispatch: Dispatch) => bindActionCreators({
     setZoom
 }, dispatch);
 
-const UIMenu = (props: UIMenuProps) => {
-    const doZoomOut = () => {
-        props.setZoom(props.zoom - .25);
-    };
+class UIMenu extends React.PureComponent<UIMenuProps> {
+    private doZoomOut = () => {
+        this.props.setZoom(this.props.zoom - .25);
+    }
 
-    const doZoomIn = () => {
-        props.setZoom(props.zoom + .25);
-    };
+    private doZoomIn = () => {
+        this.props.setZoom(this.props.zoom + .25);
+    }
 
-    return (
-        <>
-            <Tooltip mouseEnterDelay={1} title='Zoom Out (ALT + [-])'>
-                <Button className='menu-item' size='large'
-                    disabled={!props.canZoomOut}
-                    onClick={doZoomOut}>
-                    <Icon type='minus-circle-o' />
-                </Button>
-            </Tooltip>
+    public render() {
+        return (
+            <>
+                <Tooltip mouseEnterDelay={1} title='Zoom Out (ALT + [-])'>
+                    <Button className='menu-item' size='large'
+                        disabled={!this.props.canZoomOut}
+                        onClick={this.doZoomOut}>
+                        <Icon type='minus-circle-o' />
+                    </Button>
+                </Tooltip>
 
-            <Shortcut disabled={!props.canZoomOut} onPressed={doZoomOut} keys='alt+-' />
+                <Shortcut disabled={!this.props.canZoomOut} onPressed={this.doZoomOut} keys='alt+-' />
 
-            <span className='menu-item'>{props.zoom * 100}</span>
+                <span className='menu-item'>{this.props.zoom * 100}</span>
 
-            <Tooltip mouseEnterDelay={1} title='Zoom In (ALT + [+])'>
-                <Button className='menu-item' size='large'
-                    disabled={!props.canZoomIn}
-                    onClick={doZoomIn}>
-                    <Icon type='plus-circle-o' />
-                </Button>
-            </Tooltip>
+                <Tooltip mouseEnterDelay={1} title='Zoom In (ALT + [+])'>
+                    <Button className='menu-item' size='large'
+                        disabled={!this.props.canZoomIn}
+                        onClick={this.doZoomIn}>
+                        <Icon type='plus-circle-o' />
+                    </Button>
+                </Tooltip>
 
-            <Shortcut disabled={!props.canZoomIn} onPressed={doZoomIn} keys='alt+plus' />
-        </>
-    );
-};
+                <Shortcut disabled={!this.props.canZoomIn} onPressed={this.doZoomIn} keys='alt+plus' />
+            </>
+        );
+    }
+}
 
 export const UIMenuContainer = connect(
     mapStateToProps,

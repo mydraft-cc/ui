@@ -40,61 +40,63 @@ const mapDispatchToProps = (dispatch: Dispatch) => bindActionCreators({
     newDiagram, saveDiagramAsync, toggleInfoDialog
 }, dispatch);
 
-const LoadingMenu = (props: LoadingMenuProps) => {
-    const getTitle = () => {
-        return props.readToken && props.readToken.length > 0 ?
-            `mydraft.cc - Diagram ${props.readToken}` :
+class LoadingMenu extends React.PureComponent<LoadingMenuProps> {
+    private getTitle = () => {
+        return this.props.readToken && this.props.readToken.length > 0 ?
+            `mydraft.cc - Diagram ${this.props.readToken}` :
             'mydraft.cc - New Diagram';
-    };
+    }
 
-    const doNewDiagram = () => {
-        props.newDiagram();
-    };
+    private doNewDiagram = () => {
+        this.props.newDiagram();
+    }
 
-    const doSaveDiagram = () => {
-        props.saveDiagramAsync();
-    };
+    private doSaveDiagram = () => {
+        this.props.saveDiagramAsync();
+    }
 
-    const doOpenInfoDialog = () => {
-        props.toggleInfoDialog(true);
-    };
+    private doOpenInfoDialog = () => {
+        this.props.toggleInfoDialog(true);
+    }
 
-    const doCloseInfoDialog = () => {
-        props.toggleInfoDialog(false);
-    };
+    private doCloseInfoDialog = () => {
+        this.props.toggleInfoDialog(false);
+    }
 
-    return (
-        <>
-            <Title text={getTitle()} />
+    public render() {
+        return (
+            <>
+                <Title text={this.getTitle()} />
 
-            <Tooltip mouseEnterDelay={1} title='New Diagram (CTRL + N)'>
-                <Button className='menu-item' size='large'
-                    onClick={doNewDiagram}>
-                    <i className='icon-new' /> New
+                <Tooltip mouseEnterDelay={1} title='New Diagram (CTRL + N)'>
+                    <Button className='menu-item' size='large'
+                        onClick={this.doNewDiagram}>
+                        <i className='icon-new' /> New
+                    </Button>
+                </Tooltip>
+
+                <Shortcut onPressed={this.doNewDiagram} keys='ctrl+n' />
+
+                <Tooltip mouseEnterDelay={1} title='New Diagram (CTRL + S)'>
+                    <Button type='primary' size='large'
+                        onClick={this.doSaveDiagram}>
+                        <i className='icon-save' /> Save
+                    </Button>
+                </Tooltip>
+
+                <Shortcut onPressed={this.doSaveDiagram} keys='ctrl+s' />
+
+                <Button className='menu-item' size='large' onClick={this.doOpenInfoDialog}>
+                    <Icon type='question-circle-o' />
                 </Button>
-            </Tooltip>
 
-            <Shortcut onPressed={doNewDiagram} keys='ctrl+n' />
-
-            <Tooltip mouseEnterDelay={1} title='New Diagram (CTRL + S)'>
-                <Button type='primary' size='large'
-                    onClick={doSaveDiagram}>
-                    <i className='icon-save' /> Save
-                </Button>
-            </Tooltip>
-
-            <Shortcut onPressed={doSaveDiagram} keys='ctrl+s' />
-
-            <Button className='menu-item' size='large' onClick={doOpenInfoDialog}>
-                <Icon type='question-circle-o' />
-            </Button>
-
-            <Modal title='About' visible={props.showInfoDialog} onOk={doCloseInfoDialog} onCancel={doCloseInfoDialog}>
-                <div dangerouslySetInnerHTML={{__html: text }} />
-            </Modal>
-        </>
-    );
-};
+                <Modal title='About' visible={this.props.showInfoDialog} onOk={this.doCloseInfoDialog} onCancel={this.doCloseInfoDialog}>
+                    <div dangerouslySetInnerHTML={{__html: text }} />
+                </Modal>
+            </>
+        );
+    }
+}
 
 export const LoadingMenuContainer = connect(
     mapStateToProps,

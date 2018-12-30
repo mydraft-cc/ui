@@ -36,39 +36,41 @@ const mapDispatchToProps = (dispatch: Dispatch) => bindActionCreators({
     undo, redo
 }, dispatch);
 
-const HistoryMenu = (props: HistoryMenuProps) => {
-    const doUndo = () => {
-        props.undo();
-    };
+class HistoryMenu extends React.PureComponent<HistoryMenuProps> {
+    private doUndo = () => {
+        this.props.undo();
+    }
 
-    const doRedo = () => {
-        props.redo();
-    };
+    private doRedo = () => {
+        this.props.redo();
+    }
 
-    return (
-        <>
-            <Tooltip mouseEnterDelay={1} title='Undo (CTRL + Z)'>
-                <Button className='menu-item' size='large'
-                    disabled={!props.canUndo}
-                    onClick={doUndo}>
-                    <i className='icon-undo' />
-                </Button>
-            </Tooltip>
+    public render() {
+        return (
+            <>
+                <Tooltip mouseEnterDelay={1} title='Undo (CTRL + Z)'>
+                    <Button className='menu-item' size='large'
+                        disabled={!this.props.canUndo}
+                        onClick={this.doUndo}>
+                        <i className='icon-undo' />
+                    </Button>
+                </Tooltip>
 
-            <Shortcut keys='ctrl+z' disabled={!props.canUndo} onPressed={doUndo} />
+                <Shortcut keys='ctrl+z' disabled={!this.props.canUndo} onPressed={this.doUndo} />
 
-            <Tooltip mouseEnterDelay={1} title='Redo (CTRL + Y)'>
-                <Button className='menu-item' size='large'
-                    disabled={!props.canRedo}
-                    onClick={doRedo}>
-                    <i className='icon-redo' />
-                </Button>
-            </Tooltip>
+                <Tooltip mouseEnterDelay={1} title='Redo (CTRL + Y)'>
+                    <Button className='menu-item' size='large'
+                        disabled={!this.props.canRedo}
+                        onClick={this.doRedo}>
+                        <i className='icon-redo' />
+                    </Button>
+                </Tooltip>
 
-            <Shortcut keys='ctrl+y' disabled={!props.canRedo} onPressed={doRedo} />
-        </>
-    );
-};
+                <Shortcut keys='ctrl+y' disabled={!this.props.canRedo} onPressed={this.doRedo} />
+            </>
+        );
+    }
+}
 
 export const HistoryMenuContainer = connect(
     mapStateToProps,
