@@ -74,7 +74,7 @@ class LoadingMenu extends React.PureComponent<LoadingMenuProps> {
                 <Tooltip mouseEnterDelay={1} title='New Diagram (CTRL + N)'>
                     <Button className='menu-item' size='large'
                         onClick={this.doNewDiagram}>
-                        <i className='icon-new' /> New
+                        <i className='icon-new' />&nbsp;New
                     </Button>
                 </Tooltip>
 
@@ -83,7 +83,7 @@ class LoadingMenu extends React.PureComponent<LoadingMenuProps> {
                 <Tooltip mouseEnterDelay={1} title='New Diagram (CTRL + S)'>
                     <Button type='primary' size='large'
                         onClick={this.doSaveDiagram}>
-                        <i className='icon-save' /> Save
+                        <i className='icon-save' />&nbsp;Save
                     </Button>
                 </Tooltip>
 
