@@ -97,10 +97,10 @@ class Editor extends React.Component<EditorProps> {
     private shapeRefsById: { [id: string]: ShapeRef } = {};
 
     public componentDidUpdate() {
-        this.renderDiagram();
+        this.forceRender();
     }
 
-    public initDiagramScope(doc: svg.Doc) {
+    private initDiagramScope = (doc: svg.Doc) => {
         this.diagramTools = doc.rect().fill('transparent');
         this.diagramRendering = doc.group();
         this.adornersSelect = doc.group();
@@ -108,18 +108,17 @@ class Editor extends React.Component<EditorProps> {
 
         this.interactionService = new InteractionService([this.adornersSelect, this.adornersTransform], this.diagramRendering, doc);
 
-        this.renderDiagram();
-
+        this.forceRender();
         this.forceUpdate();
     }
 
-    private renderDiagram() {
+    private forceRender() {
         if (!this.interactionService) {
             return;
         }
 
         const allShapesById: { [id: string]: boolean } = {};
-        const allShapes = this.getFlattenShapes();
+        const allShapes = this.getOrderedShapes();
 
         allShapes.forEach(item => allShapesById[item.id] = true);
 
@@ -150,7 +149,7 @@ class Editor extends React.Component<EditorProps> {
         }
     }
 
-    private getFlattenShapes() {
+    private getOrderedShapes() {
         const flattenShapes: DiagramShape[] = [];
 
         const diagram = this.props.selectedDiagram;
@@ -193,7 +192,7 @@ class Editor extends React.Component<EditorProps> {
 
         return (
             <div className='editor' style={{ position: 'relative', width: sizeInPx(w), height: sizeInPx(h) }}>
-                <CanvasView onInit={(doc) => this.initDiagramScope(doc)}
+                <CanvasView onInit={this.initDiagramScope}
                     zoom={this.props.zoom}
                     zoomedWidth={this.props.zoomedWidth}
                     zoomedHeight={this.props.zoomedHeight} />
@@ -257,7 +256,7 @@ class ShapeRef {
         if (mustRender) {
             this.renderer.setContext(this.doc);
 
-            this.renderedElement = this.renderer.render(shape, this.showDebugMarkers);
+            this.renderedElement = this.renderer.render(shape, { debug: this.showDebugMarkers });
             this.renderedElement.node['shape'] = shape;
         } else {
             this.doc.add(this.renderedElement);

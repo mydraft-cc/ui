@@ -74,7 +74,7 @@ export class InteractionOverlays {
         const aabb = transform.aabb;
 
         this.renderer.setText(this.infoText, text);
-        this.renderer.setTransform(this.infoText, { x: aabb.right + 4, y: aabb.bottom + 24, w: 120, h: 24 });
+        this.renderer.setTransform(this.infoText, { x: aabb.right + 4, y: aabb.bottom + 24, w: 160, h: 24 });
         this.renderer.setVisibility(this.infoText, true);
 
         const bounds = this.renderer.getBounds(this.infoText);

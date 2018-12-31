@@ -24,10 +24,10 @@ export class CanvasView extends React.Component<CanvasViewProps> {
     private docElement: any;
     private document: svg.Doc;
 
-    public initialize(canvas: any) {
-        this.docElement = canvas;
+    private initialize = (element: any) => {
+        this.docElement = element;
 
-        if (canvas) {
+        if (element) {
             this.document = svg(this.docElement);
 
             this.updateViewSettings(this.props);
@@ -65,6 +65,6 @@ export class CanvasView extends React.Component<CanvasViewProps> {
     }
 
     public render() {
-        return <div className={this.props.className} ref={canvas => this.initialize(canvas)} />;
+        return <div className={this.props.className} ref={this.initialize} />;
     }
 }

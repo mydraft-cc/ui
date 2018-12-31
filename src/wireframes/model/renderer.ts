@@ -13,7 +13,7 @@ export interface Renderer {
 
     createDefaultShape(id: string): DiagramShape;
 
-    setContext(context: any): void;
+    setContext(context: any): Renderer;
 
-    render(shape: DiagramShape, showDebugMarkers: boolean): any;
+    render(shape: DiagramShape, options?: { debug?: boolean, noOpacity?: boolean, noTransform?: boolean }): any;
 }

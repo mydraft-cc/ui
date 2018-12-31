@@ -44,10 +44,14 @@ export abstract class AbstractControl implements Renderer {
 
     public setContext(context: any) {
         RENDERER.captureContext(context);
+
+        return this;
     }
 
-    public render(shape: DiagramShape, showDebugMarkers: boolean): any {
+    public render(shape: DiagramShape, options?: { debug?: boolean, noOpacity?: boolean, noTransform?: boolean }): any {
         const ctx = new AbstractContext(RENDERER, shape, new Rect2(0, 0, shape.transform.size.x, shape.transform.size.y));
+
+        options = options || {};
 
         if (RENDER_BACKGROUND) {
             const backgroundItem = ctx.renderer.createRectangle(0);
@@ -61,7 +65,7 @@ export abstract class AbstractControl implements Renderer {
 
         this.renderInternal(ctx);
 
-        if (showDebugMarkers) {
+        if (options.debug) {
             const boxItem = ctx.renderer.createRectangle(1);
 
             ctx.renderer.setStrokeColor(boxItem, 0xff0000);
@@ -72,8 +76,13 @@ export abstract class AbstractControl implements Renderer {
 
         const rootItem = ctx.renderer.createGroup(ctx.items);
 
-        ctx.renderer.setTransform(rootItem, shape);
-        ctx.renderer.setOpacity(rootItem, shape);
+        if (!options.noTransform) {
+            ctx.renderer.setTransform(rootItem, shape);
+        }
+
+        if (!options.noOpacity) {
+            ctx.renderer.setOpacity(rootItem, shape);
+        }
 
         return rootItem;
     }
