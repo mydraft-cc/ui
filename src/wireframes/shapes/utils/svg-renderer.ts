@@ -191,11 +191,15 @@ export class SVGRenderer implements AbstractRenderer {
         return element;
     }
 
-    public createGroup(items: RendererElement[]): RendererElement {
+    public createGroup(items: RendererElement[], clipItem: any): RendererElement {
         const group = this.container.group();
 
         for (let item of items) {
             group.add(item.groupElement ? item.groupElement : item);
+        }
+
+        if (clipItem) {
+            group.clipWith(clipItem);
         }
 
         return group;

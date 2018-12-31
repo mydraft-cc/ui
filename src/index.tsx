@@ -80,23 +80,21 @@ const store = createStore(
 import { AppContainer } from './App';
 
 const Root = (
-    <>
-        <DragDropContextProvider backend={HTML5Backend}>
-            <SerializerContext.Provider value={serializer}>
-                <RendererContext.Provider value={rendererService}>
-                    <Provider store={store}>
-                        <Router history={history}>
-                            <Route path='/:token?' render={props => (
-                                <AppContainer token={props.match.params.token} />
-                            )} />
-                        </Router>
-                    </Provider>
-                </RendererContext.Provider>
-            </SerializerContext.Provider>
+    <DragDropContextProvider backend={HTML5Backend}>
+        <SerializerContext.Provider value={serializer}>
+            <RendererContext.Provider value={rendererService}>
+                <Provider store={store}>
+                    <Router history={history}>
+                        <Route path='/:token?' render={props => (
+                            <AppContainer token={props.match.params.token} />
+                        )} />
+                    </Router>
+                </Provider>
+            </RendererContext.Provider>
+        </SerializerContext.Provider>
 
-            <UserReport />
-        </DragDropContextProvider>
-    </>
+        <UserReport />
+    </DragDropContextProvider>
 );
 
 ReactDOM.render(Root, document.getElementById('root') as HTMLElement);

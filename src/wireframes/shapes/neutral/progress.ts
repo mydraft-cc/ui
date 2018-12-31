@@ -71,7 +71,7 @@ export class Progress extends AbstractControl {
     }
 
     private createBorder(ctx: AbstractContext) {
-        const borderItem = ctx.renderer.createRectangle(ctx.shape, ctx.bounds.height * 0.51, ctx.bounds);
+        const borderItem = ctx.renderer.createRectangle(ctx.shape, ctx.bounds.height * 0.5, ctx.bounds);
 
         ctx.renderer.setStrokeColor(borderItem, ctx.shape);
 

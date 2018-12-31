@@ -29,7 +29,10 @@ export class ShapeImage extends React.PureComponent<ShapeImageProps> {
     public render() {
         const preview = (node: any) => {
             if (node) {
-                this.props.connectDragPreview(node.cloneNode(), {
+                const clone = node.cloneNode();
+                clone.src = dragPath(this.props.shape);
+
+                this.props.connectDragPreview(clone, {
                     dropEffect: 'copy',
                     anchorX: 0,
                     anchorY: 0
@@ -38,7 +41,7 @@ export class ShapeImage extends React.PureComponent<ShapeImageProps> {
         };
 
         return this.props.connectDragSource!(
-            <img ref={preview} className='asset-shape-image' alt={this.props.shape.displayName} src={urlPath(this.props.shape)} />,
+            <img ref={preview} className='asset-shape-image' alt={this.props.shape.displayName} src={previewPath(this.props.shape)} />,
         {
             dropEffect: 'copy'
         });
@@ -47,6 +50,14 @@ export class ShapeImage extends React.PureComponent<ShapeImageProps> {
 
 const pathToShapes = require.context('../../../images/shapes', true);
 
-const urlPath = (shape: ShapeInfo) => {
+const previewPath = (shape: ShapeInfo) => {
+    try {
+        return pathToShapes(`./${shape.displaySearch}-preview.png`);
+    } catch {
+        return pathToShapes(`./${shape.displaySearch}.png`);
+    }
+};
+
+const dragPath = (shape: ShapeInfo) => {
     return pathToShapes(`./${shape.displaySearch}.png`);
 };

@@ -45,7 +45,7 @@ export class Comment extends AbstractControl {
     }
 
     private createText(ctx: AbstractContext) {
-        const textItem = ctx.renderer.createMultilineText(ctx.shape, ctx.bounds.deflate(20));
+        const textItem = ctx.renderer.createMultilineText(ctx.shape, ctx.bounds.deflate(10, 20));
 
         ctx.add(textItem);
     }
