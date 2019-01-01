@@ -15,8 +15,10 @@ import {
     getSelectedConfigurables,
     getSelectedShape,
     NumberConfigurable,
+    selectColorTab,
     SelectionConfigurable,
-    SliderConfigurable
+    SliderConfigurable,
+    UIStateInStore
 } from '@app/wireframes/model';
 
 import { CustomSlider } from './custom-slider';
@@ -31,20 +33,27 @@ interface CustomPropertiesProps {
     // The configurable properties.
     selectedConfigurables: Configurable[];
 
+    // The selected color tab.
+    selectedColorTab: string;
+
     // Change the items appearance..
     changeItemsAppearance: (diagram: string, visuals: DiagramVisual[], key: string, val: any) => any;
+
+    // Selectes the color tab.
+    selectColorTab: (key: string) => any;
 }
 
-const mapStateToProps = (state: EditorStateInStore) => {
+const mapStateToProps = (state: EditorStateInStore & UIStateInStore) => {
     return {
         selectedDiagramId: getDiagramId(state),
         selectedShape: getSelectedShape(state),
-        selectedConfigurables: getSelectedConfigurables(state)
+        selectedConfigurables: getSelectedConfigurables(state),
+        selectedColorTab: state.ui.selectedColorTab
     };
 };
 
 const mapDispatchToProps = (dispatch: Dispatch) => bindActionCreators({
-    changeItemsAppearance
+    changeItemsAppearance, selectColorTab
 }, dispatch);
 
 const CustomProperties = (props: CustomPropertiesProps) => {
@@ -77,8 +86,9 @@ const CustomProperties = (props: CustomPropertiesProps) => {
                             </Select>
                         }
                         {c instanceof ColorConfigurable &&
-                            <ColorPicker value={props.selectedShape!.appearance.get(c.name)}
-                                onChange={value => props.changeItemsAppearance(props.selectedDiagramId!, [props.selectedShape!], c.name, value.toNumber())} />
+                            <ColorPicker activeColorTab={props.selectedColorTab} value={props.selectedShape!.appearance.get(c.name)}
+                                onChange={value => props.changeItemsAppearance(props.selectedDiagramId!, [props.selectedShape!], c.name, value.toNumber())}
+                                onActiveColorTabChanged={key => props.selectColorTab(key)} />
                         }
                     </Col>
                 </Row>

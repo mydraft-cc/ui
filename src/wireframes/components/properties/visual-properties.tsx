@@ -16,6 +16,8 @@ import {
     getDiagramId,
     getSelectedItems,
     getSelectionSet,
+    selectColorTab,
+    UIStateInStore,
     uniqueAppearance,
     UniqueValue
 } from '@app/wireframes/model';
@@ -26,6 +28,9 @@ interface VisualPropertiesProps {
 
     // The selected items.
     selectedItems: DiagramItem[];
+
+    // The selected color tab.
+    selectedColorTab: string;
 
     // The common font size.
     fontSize: UniqueValue<number>;
@@ -47,9 +52,12 @@ interface VisualPropertiesProps {
 
     // Orders the items.
     changeItemsAppearance: (diagram: string, items: DiagramItem[], key: string, val: any) => any;
+
+    // Selectes the color tab.
+    selectColorTab: (key: string) => any;
 }
 
-const mapStateToProps = (state: EditorStateInStore) => {
+const mapStateToProps = (state: EditorStateInStore & UIStateInStore) => {
     const set = getSelectionSet(state);
 
     return {
@@ -60,12 +68,13 @@ const mapStateToProps = (state: EditorStateInStore) => {
         foregroundColor: uniqueAppearance(set, DiagramShape.APPEARANCE_FOREGROUND_COLOR, x => Color.fromValue(x), Color.eq),
         strokeColor: uniqueAppearance(set, DiagramShape.APPEARANCE_STROKE_COLOR, x => Color.fromValue(x), Color.eq),
         strokeThickness: uniqueAppearance(set, DiagramShape.APPEARANCE_STROKE_THICKNESS, x => x),
-        textAlignment: uniqueAppearance(set, DiagramShape.APPEARANCE_TEXT_ALIGNMENT, x => x)
+        textAlignment: uniqueAppearance(set, DiagramShape.APPEARANCE_TEXT_ALIGNMENT, x => x),
+        selectedColorTab: state.ui.selectedColorTab
     };
 };
 
 const mapDispatchToProps = (dispatch: Dispatch) => bindActionCreators({
-    changeItemsAppearance
+    changeItemsAppearance, selectColorTab
 }, dispatch);
 
 const DEFINED_STROKE_THICKNESSES = [1, 2, 4, 6, 8];
@@ -82,6 +91,10 @@ class VisualProperties extends React.PureComponent<VisualPropertiesProps> {
 
     private doChangeAppearance = (key: string, value: any) => {
         this.props.changeItemsAppearance(this.props.selectedDiagramId!, this.props.selectedItems, key, value);
+    }
+
+    private doSelectColorTab = (key: string) => {
+        this.props.selectColorTab(key);
     }
 
     private doAlignTextLeft =   () => this.doAlignText('left');
@@ -134,7 +147,9 @@ class VisualProperties extends React.PureComponent<VisualPropertiesProps> {
                                         Stroke Color
                                 </Col>
                                     <Col span={12} className='property-value'>
-                                        <ColorPicker disabled={this.props.strokeColor.empty} value={this.props.strokeColor.value} onChange={this.doChangeStrokeColor} />
+                                        <ColorPicker activeColorTab={this.props.selectedColorTab} disabled={this.props.strokeColor.empty} value={this.props.strokeColor.value}
+                                            onChange={this.doChangeStrokeColor}
+                                            onActiveColorTabChanged={this.doSelectColorTab} />
                                     </Col>
                                 </Row>
                                 <Row className='property'>
@@ -142,7 +157,9 @@ class VisualProperties extends React.PureComponent<VisualPropertiesProps> {
                                         Foreground Color
                                 </Col>
                                     <Col span={12} className='property-value'>
-                                        <ColorPicker disabled={this.props.foregroundColor.empty} value={this.props.foregroundColor.value} onChange={this.doChangeForegroundColor} />
+                                        <ColorPicker activeColorTab={this.props.selectedColorTab} disabled={this.props.foregroundColor.empty} value={this.props.foregroundColor.value}
+                                            onChange={this.doChangeForegroundColor}
+                                            onActiveColorTabChanged={this.doSelectColorTab} />
                                     </Col>
                                 </Row>
                                 <Row className='property'>
@@ -150,7 +167,9 @@ class VisualProperties extends React.PureComponent<VisualPropertiesProps> {
                                         Background Color
                                     </Col>
                                     <Col span={12} className='property-value'>
-                                        <ColorPicker disabled={this.props.backgroundColor.empty} value={this.props.backgroundColor.value} onChange={this.doChangeBackgroundColor} />
+                                        <ColorPicker activeColorTab={this.props.selectedColorTab} disabled={this.props.backgroundColor.empty} value={this.props.backgroundColor.value}
+                                            onChange={this.doChangeBackgroundColor}
+                                            onActiveColorTabChanged={this.doSelectColorTab} />
                                     </Col>
                                 </Row>
                                 <Row className='property'>

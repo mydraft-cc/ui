@@ -18,6 +18,11 @@ export const setZoom = (zoomLevel: number) => {
     return { type: SET_ZOOM, zoomLevel };
 };
 
+export const SELECT_COLOR_TAB = 'SELECT_COLOR_TAB';
+export const selectColorTab = (tab: string) => {
+    return { type: SELECT_COLOR_TAB, tab };
+};
+
 export const SELECT_TAB = 'SELECT_TAB';
 export const selectTab = (tab: string) => {
     return { type: SELECT_TAB, tab };
@@ -59,15 +64,17 @@ export function ui(initialState: UIState): Reducer<UIState> {
     const reducer: Reducer<UIState> = (state = initialState, action: any) => {
         switch (action.type) {
             case SET_ZOOM:
-                return {...state, zoom: action.zoomLevel };
+                return { ...state, zoom: action.zoomLevel };
             case SELECT_TAB:
-                return {...state, selectedTab: action.tab };
+                return { ...state, selectedTab: action.tab };
+            case SELECT_COLOR_TAB:
+                return { ...state, selectedColorTab: action.tab };
             case TOGGLE_INFO_DIALOG:
                 return { ...state, showInfoDialog: action.isOpen };
             case TOGGLE_LEFT_SIDEBAR:
-                return {...state, showLeftSidebar: !state.showLeftSidebar };
+                return { ...state, showLeftSidebar: !state.showLeftSidebar };
             case TOGGlE_RIGHT_SIDEBAR:
-                return {...state, showRightSidebar: !state.showRightSidebar };
+                return { ...state, showRightSidebar: !state.showRightSidebar };
             default:
                 return state;
         }

@@ -1,4 +1,5 @@
 import { Button, Popover, Tabs } from 'antd';
+import { TooltipPlacement } from 'antd/lib/tooltip';
 import * as React from 'react';
 import { ColorResult, SketchPicker } from 'react-color';
 
@@ -16,17 +17,27 @@ interface ColorPickerProps {
     // The color palette.
     palette?: ColorPalette;
 
+    // The active color tab.
+    activeColorTab?: string;
+
+    // Where to place the popover
+    popoverPlacement?: TooltipPlacement;
+
     // If disabled or not.
     disabled?: boolean;
 
     // Triggered when the color has changed.
     onChange?: (color: Color) => void;
+
+    // Triggered when the active color tab has changed.
+    onActiveColorTabChanged?: (key: string) => void;
 }
 
 interface ColorPickerState {
     visible: boolean;
 
     color: Color;
+
     colorHex: string;
 }
 
@@ -45,12 +56,22 @@ export class ColorPicker extends React.PureComponent<ColorPickerProps, ColorPick
         this.setState(s => ({ ...s, color, colorHex: color.toString() }));
     }
 
+    private doSetVisibility = (visible: boolean) => {
+        this.setState(s => ({ ...s, visible }));
+    }
+
     private doToggle = () => {
         this.setState(s => ({ ...s, visible: !s.visible }));
     }
 
     private doSelectColorResult = (color: ColorResult) => {
         this.setState({ visible: true, colorHex: color.hex });
+    }
+
+    private doSelectTab = (key: string) => {
+        if (this.props.onActiveColorTabChanged) {
+            this.props.onActiveColorTabChanged(key);
+        }
     }
 
     private doSelectColor = (color: Color) => {
@@ -85,7 +106,7 @@ export class ColorPicker extends React.PureComponent<ColorPickerProps, ColorPick
         };
 
         const content = (
-            <Tabs size='small' className='color-picker-tabs' animated={false}>
+            <Tabs size='small' className='color-picker-tabs' animated={false} activeKey={this.props.activeColorTab} onChange={this.doSelectTab}>
                 <Tabs.TabPane key='palette' tab='Palette'>
                     <div className='color-picker-colors'>
                         {selectedPalette.colors.map(c =>
@@ -103,8 +124,10 @@ export class ColorPicker extends React.PureComponent<ColorPickerProps, ColorPick
             </Tabs>
         );
 
+        const placement = this.props.popoverPlacement || 'left';
+
         return (
-            <Popover content={content} title='Colors' visible={this.state.visible} placement='left'>
+            <Popover content={content} visible={this.state.visible} placement={placement} trigger='click' onVisibleChange={this.doSetVisibility}>
                 <Button disabled={this.props.disabled} className='color-picker-button' onClick={this.doToggle}>
                     <div className='color-picker-color'>
                         <div className='color-picker-color-inner' style={{ background: this.state.colorHex }}></div>

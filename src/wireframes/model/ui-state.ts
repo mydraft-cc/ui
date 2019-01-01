@@ -19,6 +19,9 @@ export interface UIState {
 
     // The selected tab on the left sidebar.
     selectedTab: string;
+
+    // The color tab.
+    selectedColorTab: string;
 }
 
 export interface UIStateInStore {
@@ -31,6 +34,7 @@ export const createInitialUIState: () => UIState = () => {
         selectedTab: 'shapes',
         showInfoDialog: false,
         showLeftSidebar: true,
-        showRightSidebar: true
+        showRightSidebar: true,
+        selectedColorTab: 'palette'
     };
 };
