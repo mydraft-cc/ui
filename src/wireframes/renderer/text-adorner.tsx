@@ -39,6 +39,7 @@ export interface TextAdornerProps {
 }
 
 export class TextAdorner extends React.Component<TextAdornerProps> implements InteractionHandler {
+    private readonly style = { display: 'none '};
     private selectedShape: DiagramShape | null = null;
     private textareaElement: HTMLTextAreaElement;
 
@@ -98,11 +99,15 @@ export class TextAdorner extends React.Component<TextAdornerProps> implements In
         }
     }
 
-    private onTextareaBlur = () => {
+    private doInitialize = (textarea: HTMLTextAreaElement) => {
+        this.textareaElement = textarea;
+    }
+
+    private doHide = () => {
         this.hide();
     }
 
-    private onTextareaKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    private doSubmit = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
         if ((event.keyCode === KEY_ENTER && !event.shiftKey) ||
             (event.keyCode === KEY_ESCAPE)) {
 
@@ -145,10 +150,10 @@ export class TextAdorner extends React.Component<TextAdornerProps> implements In
 
     public render() {
         return (
-            <textarea className='ant-input no-border-radius' style={{ display: 'none '}}
-                ref={(element) => { this.textareaElement = element!; }}
-                onBlur={this.onTextareaBlur}
-                onKeyDown={this.onTextareaKeyDown} />
+            <textarea className='ant-input no-border-radius' style={this.style}
+                ref={this.doInitialize}
+                onBlur={this.doHide}
+                onKeyDown={this.doSubmit} />
         );
     }
 }
