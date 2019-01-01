@@ -3,10 +3,12 @@
   "version": "1.0.0",
   "private": true,
   "dependencies": {
+    "@types/react-color": "^2.14.0",
     "antd": "3.11.6",
     "immutable": "4.0.0-rc.12",
     "mousetrap": "1.6.2",
     "react": "16.7.0",
+    "react-color": "^2.17.0",
     "react-dnd": "7.0.2",
     "react-dnd-html5-backend": "7.0.2",
     "react-dom": "16.7.0",

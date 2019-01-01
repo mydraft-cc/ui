@@ -235,9 +235,9 @@
 }
 
 @mixin box-shadow-none() {
-    -webkit-box-shadow: none;
-       -moz-box-shadow: none;
-            box-shadow: none;
+    -webkit-box-shadow: none !important;
+       -moz-box-shadow: none !important;
+            box-shadow: none !important;
 }
 
 @mixin box-shadow($x-axis: 0, $y-axis: 1px, $blur: 2px, $alpha: 0.1) {

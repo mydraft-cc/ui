@@ -1,12 +1,12 @@
-import { Button, Popover } from 'antd';
+import { Button, Popover, Tabs } from 'antd';
 import * as React from 'react';
+import { ColorResult, SketchPicker } from 'react-color';
 
 import './color-picker.scss';
 
 import {
     Color,
-    ColorPalette,
-    Types
+    ColorPalette
 } from '@app/core';
 
 interface ColorPickerProps {
@@ -25,17 +25,32 @@ interface ColorPickerProps {
 
 interface ColorPickerState {
     visible: boolean;
+
+    color: Color;
+    colorHex: string;
 }
 
 export class ColorPicker extends React.PureComponent<ColorPickerProps, ColorPickerState> {
     constructor(props: ColorPickerProps) {
         super(props);
 
-        this.state = { visible: false };
+        const color = props.value ? Color.fromValue(props.value) : Color.BLACK;
+
+        this.state = { visible: false, color, colorHex: color.toString() };
+    }
+
+    public componentWillReceiveProps(newProps: ColorPickerProps) {
+        const color = newProps.value ? Color.fromValue(newProps.value) : Color.BLACK;
+
+        this.setState(s => ({ ...s, color, colorHex: color.toString() }));
     }
 
     private doToggle = () => {
-        this.setState(s => { return { visible: !s.visible }; });
+        this.setState(s => ({ ...s, visible: !s.visible }));
+    }
+
+    private doSelectColorResult = (color: ColorResult) => {
+        this.setState({ visible: true, colorHex: color.hex });
     }
 
     private doSelectColor = (color: Color) => {
@@ -43,26 +58,26 @@ export class ColorPicker extends React.PureComponent<ColorPickerProps, ColorPick
             this.props.onChange(color);
         }
 
+        this.setState({ visible: false, colorHex: color.toString() });
+    }
+
+    private doConfirmCoclor = () => {
+        if (this.props.onChange) {
+            const color = this.state.colorHex;
+
+            if (color) {
+                this.props.onChange(Color.fromValue(this.state.colorHex));
+            }
+        }
+
         this.setState({ visible: false });
     }
 
     public render() {
-        let selectedColor = Color.BLACK;
-
-        const value = this.props.value;
-
-        if (Types.is(value, Color)) {
-            selectedColor = value;
-        } else if (Types.isString(value)) {
-            selectedColor = Color.fromString(value);
-        } else if (Types.isNumber(value)) {
-            selectedColor = Color.fromNumber(value);
-        }
-
         const selectedPalette = this.props.palette || ColorPalette.colors();
 
         const colorClassName = (color: Color) => {
-            if (color.eq(selectedColor)) {
+            if (color.eq(this.state.color)) {
                 return 'color-picker-color selected';
             } else {
                 return 'color-picker-color';
@@ -70,20 +85,29 @@ export class ColorPicker extends React.PureComponent<ColorPickerProps, ColorPick
         };
 
         const content = (
-            <div className='color-picker-colors'>
-                {selectedPalette.colors.map(c =>
-                    <div className={colorClassName(c)} key={c.toString()}>
-                        <div className='color-picker-color-inner' onClick={() => this.doSelectColor(c)} style={{background: c.toString()}}></div>
+            <Tabs size='small' className='color-picker-tabs' animated={false}>
+                <Tabs.TabPane key='palette' tab='Palette'>
+                    <div className='color-picker-colors'>
+                        {selectedPalette.colors.map(c =>
+                            <div className={colorClassName(c)} key={c.toString()}>
+                                <div className='color-picker-color-inner' onClick={() => this.doSelectColor(c)} style={{background: c.toString()}}></div>
+                            </div>
+                        )}
                     </div>
-                )}
-            </div>
+                </Tabs.TabPane>
+                <Tabs.TabPane key='advanced' tab='Advanced'>
+                    <SketchPicker color={this.state.colorHex} onChange={this.doSelectColorResult} disableAlpha={true} width='210px' />
+
+                    <Button onClick={this.doConfirmCoclor}>Apply</Button>
+                </Tabs.TabPane>
+            </Tabs>
         );
 
         return (
-            <Popover content={content} title='Colors' visible={this.state.visible}>
+            <Popover content={content} title='Colors' visible={this.state.visible} placement='left'>
                 <Button disabled={this.props.disabled} className='color-picker-button' onClick={this.doToggle}>
                     <div className='color-picker-color'>
-                        <div className='color-picker-color-inner' style={{background: selectedColor.toString()}}></div>
+                        <div className='color-picker-color-inner' style={{ background: this.state.colorHex }}></div>
                     </div>
                 </Button>
             </Popover>

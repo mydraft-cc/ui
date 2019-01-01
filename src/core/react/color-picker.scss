@@ -45,6 +45,20 @@ $size: 24px;
             border-color: $color-theme-blue;
         }
     }
+
+    &-tabs {
+        margin-top: -10px;
+        min-height: 365px;
+        max-height: 365px;
+    }
+}
+
+.sketch-picker {
+    @include box-shadow-none;
+    padding: 0 !important;
+    background: 'none' !important;
+    border: 0 !important;
+    border-radius: 0 !important;
 }
 
 span {
