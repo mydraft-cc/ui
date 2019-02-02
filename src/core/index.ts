@@ -12,8 +12,8 @@ export * from './utils/types';
 export * from './utils/vec2';
 export * from './utils/rect2';
 
-export * from './react/color-picker';
-export * from './react/grid';
-export * from './react/shortcut';
-export * from './react/title';
-export * from './react/user-report';
+export * from './react/ColorPicker';
+export * from './react/Grid';
+export * from './react/Shortcut';
+export * from './react/Title';
+export * from './react/UserReport';
