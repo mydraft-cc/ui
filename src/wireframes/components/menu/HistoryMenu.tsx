@@ -25,17 +25,6 @@ interface HistoryMenuProps {
     redo: () => any;
 }
 
-const mapStateToProps = (state: EditorStateInStore) => {
-    return {
-        canUndo: state.editor.canUndo,
-        canRedo: state.editor.canRedo
-    };
-};
-
-const mapDispatchToProps = (dispatch: Dispatch) => bindActionCreators({
-    undo, redo
-}, dispatch);
-
 class HistoryMenu extends React.PureComponent<HistoryMenuProps> {
     private doUndo = () => {
         this.props.undo();
@@ -71,6 +60,17 @@ class HistoryMenu extends React.PureComponent<HistoryMenuProps> {
         );
     }
 }
+
+const mapStateToProps = (state: EditorStateInStore) => {
+    return {
+        canUndo: state.editor.canUndo,
+        canRedo: state.editor.canRedo
+    };
+};
+
+const mapDispatchToProps = (dispatch: Dispatch) => bindActionCreators({
+    undo, redo
+}, dispatch);
 
 export const HistoryMenuContainer = connect(
     mapStateToProps,

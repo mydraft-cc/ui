@@ -21,7 +21,7 @@ import {
     UIStateInStore
 } from '@app/wireframes/model';
 
-import { CustomSlider } from './custom-slider';
+import { CustomSlider } from './CustomSlider';
 
 interface CustomPropertiesProps {
     // The selected diagram.
@@ -42,19 +42,6 @@ interface CustomPropertiesProps {
     // Selectes the color tab.
     selectColorTab: (key: string) => any;
 }
-
-const mapStateToProps = (state: EditorStateInStore & UIStateInStore) => {
-    return {
-        selectedDiagramId: getDiagramId(state),
-        selectedShape: getSelectedShape(state),
-        selectedConfigurables: getSelectedConfigurables(state),
-        selectedColorTab: state.ui.selectedColorTab
-    };
-};
-
-const mapDispatchToProps = (dispatch: Dispatch) => bindActionCreators({
-    changeItemsAppearance, selectColorTab
-}, dispatch);
 
 const CustomProperties = (props: CustomPropertiesProps) => {
     return (
@@ -96,6 +83,19 @@ const CustomProperties = (props: CustomPropertiesProps) => {
         </>
     );
 };
+
+const mapStateToProps = (state: EditorStateInStore & UIStateInStore) => {
+    return {
+        selectedDiagramId: getDiagramId(state),
+        selectedShape: getSelectedShape(state),
+        selectedConfigurables: getSelectedConfigurables(state),
+        selectedColorTab: state.ui.selectedColorTab
+    };
+};
+
+const mapDispatchToProps = (dispatch: Dispatch) => bindActionCreators({
+    changeItemsAppearance, selectColorTab
+}, dispatch);
 
 export const CustomPropertiesContainer = connect(
     mapStateToProps,

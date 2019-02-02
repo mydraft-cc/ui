@@ -4,6 +4,7 @@ import * as React from 'react';
 declare function TogetherJS(t?: any): any;
 
 interface CollaborateMenuState {
+    // The menu button.
     button: any;
 }
 

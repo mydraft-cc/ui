@@ -35,20 +35,6 @@ interface LoadingMenuProps {
     toggleInfoDialog: (isOpen: boolean) => any;
 }
 
-const mapStateToProps = (state: LoadingStateInStore & UIStateInStore) => {
-    const readToken = state.loading.readToken;
-
-    const title =  readToken && readToken.length > 0 ?
-        `mydraft.cc - Diagram ${readToken}` :
-        'mydraft.cc - Diagram (unsaved)';
-
-    return { readToken: readToken, title, showInfoDialog: state.ui.showInfoDialog };
-};
-
-const mapDispatchToProps = (dispatch: Dispatch) => bindActionCreators({
-    newDiagram, saveDiagramAsync, toggleInfoDialog
-}, dispatch);
-
 class LoadingMenu extends React.PureComponent<LoadingMenuProps> {
     private doNewDiagram = () => {
         this.props.newDiagram();
@@ -100,6 +86,20 @@ class LoadingMenu extends React.PureComponent<LoadingMenuProps> {
         );
     }
 }
+
+const mapStateToProps = (state: LoadingStateInStore & UIStateInStore) => {
+    const readToken = state.loading.readToken;
+
+    const title =  readToken && readToken.length > 0 ?
+        `mydraft.cc - Diagram ${readToken}` :
+        'mydraft.cc - Diagram (unsaved)';
+
+    return { readToken: readToken, title, showInfoDialog: state.ui.showInfoDialog };
+};
+
+const mapDispatchToProps = (dispatch: Dispatch) => bindActionCreators({
+    newDiagram, saveDiagramAsync, toggleInfoDialog
+}, dispatch);
 
 export const LoadingMenuContainer = connect(
     mapStateToProps,

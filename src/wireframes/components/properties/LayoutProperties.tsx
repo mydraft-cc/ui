@@ -3,7 +3,7 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators, Dispatch } from 'redux';
 
-import './layout-properties.scss';
+import './LayoutProperties.scss';
 
 import {
     ALIGN_H_CENTER,
@@ -48,22 +48,6 @@ interface LayoutPropertiesProps {
     // Align the items.
     alignItems: (mode: string, diagram: string, items: DiagramItem[]) => any;
 }
-
-const mapStateToProps = (state: EditorStateInStore) => {
-    const items = getSelectedItems(state);
-
-    return {
-        selectedDiagramId: getDiagramId(state),
-        selectedItems: items,
-        canAlign: items.length > 1,
-        canOrder: items.length > 0,
-        canDistribute: items.length > 1
-    };
-};
-
-const mapDispatchToProps = (dispatch: Dispatch) => bindActionCreators({
-    orderItems, alignItems
-}, dispatch);
 
 const LayoutProperties = (props: LayoutPropertiesProps) => {
     const doOrder = (mode: string) => {
@@ -145,6 +129,22 @@ const LayoutProperties = (props: LayoutPropertiesProps) => {
         </>
     );
 };
+
+const mapStateToProps = (state: EditorStateInStore) => {
+    const items = getSelectedItems(state);
+
+    return {
+        selectedDiagramId: getDiagramId(state),
+        selectedItems: items,
+        canAlign: items.length > 1,
+        canOrder: items.length > 0,
+        canDistribute: items.length > 1
+    };
+};
+
+const mapDispatchToProps = (dispatch: Dispatch) => bindActionCreators({
+    orderItems, alignItems
+}, dispatch);
 
 export const LayoutPropertiesContainer = connect(
     mapStateToProps,

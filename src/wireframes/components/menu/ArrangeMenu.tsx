@@ -52,25 +52,6 @@ interface ArrangeMenuProps {
     selectItems: (diagram: Diagram, itemsIds: string[]) => any;
 }
 
-const mapStateToProps = (state: EditorStateInStore) => {
-    const items = getSelectedItems(state);
-
-    const groups = getSelectedGroups(state);
-
-    return {
-        selectedDiagram: getDiagram(state),
-        selectedGroups: groups,
-        selectedItems: items,
-        canGroup: items.length > 1,
-        canRemove: items.length > 0,
-        canUngroup: groups.length > 0
-    };
-};
-
-const mapDispatchToProps = (dispatch: Dispatch) => bindActionCreators({
-    groupItems, removeItems, ungroupItems, selectItems
-}, dispatch);
-
 class ArrangeMenu extends React.PureComponent<ArrangeMenuProps> {
     private doGroup = () => {
         this.props.groupItems(this.props.selectedDiagram!, this.props.selectedItems, MathHelper.guid());
@@ -127,6 +108,25 @@ class ArrangeMenu extends React.PureComponent<ArrangeMenuProps> {
         );
     }
 }
+
+const mapStateToProps = (state: EditorStateInStore) => {
+    const items = getSelectedItems(state);
+
+    const groups = getSelectedGroups(state);
+
+    return {
+        selectedDiagram: getDiagram(state),
+        selectedGroups: groups,
+        selectedItems: items,
+        canGroup: items.length > 1,
+        canRemove: items.length > 0,
+        canUngroup: groups.length > 0
+    };
+};
+
+const mapDispatchToProps = (dispatch: Dispatch) => bindActionCreators({
+    groupItems, removeItems, ungroupItems, selectItems
+}, dispatch);
 
 export const ArrangeMenuContainer = connect(
     mapStateToProps,

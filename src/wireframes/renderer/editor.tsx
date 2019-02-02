@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators, Dispatch } from 'redux';
 import * as svg from 'svg.js';
 
-import './editor.scss';
+import './Editor.scss';
 
 import { ImmutableList, sizeInPx, Vec2 } from '@app/core';
 
@@ -27,11 +27,11 @@ import {
     UIStateInStore
 } from '@app/wireframes/model';
 
-import { CanvasView }           from './canvas-view';
+import { CanvasView }           from './CanvasView';
 import { InteractionService }   from './interaction-service';
-import { SelectionAdorner }     from './selection-adorner';
-import { TextAdorner }          from './text-adorner';
-import { TransformAdorner }     from './transform-adorner';
+import { SelectionAdorner }     from './SelectionAdorner';
+import { TextAdorner }          from './TextAdorner';
+import { TransformAdorner }     from './TransformAdorner';
 
 export interface EditorProps {
     // The renderer service.
@@ -67,24 +67,6 @@ export interface EditorProps {
     // A function to transform a set of items.
     transformItems: (diagram: Diagram, items: DiagramItem[], oldBounds: Transform, newBounds: Transform) => any;
 }
-
-const mapStateToProps = (state: UIStateInStore & EditorStateInStore) => {
-    const editor = getEditor(state);
-
-    return {
-        selectedDiagram: getDiagram(state),
-        selectedItems: getSelectedItems(state),
-        selectedItemsWithLocked: getSelectedItemsWithLocked(state),
-        viewSize: editor.size,
-        zoomedWidth: editor.size.x * state.ui.zoom,
-        zoomedHeight: editor.size.y * state.ui.zoom,
-        zoom: state.ui.zoom
-    };
-};
-
-const mapDispatchToProps = (dispatch: Dispatch) => bindActionCreators({
-    selectItems, changeItemsAppearance, transformItems
-}, dispatch);
 
 const showDebugOutlines = process.env.NODE_ENV === 'false';
 
@@ -265,6 +247,24 @@ class ShapeRef {
         this.shape = shape;
     }
 }
+
+const mapStateToProps = (state: UIStateInStore & EditorStateInStore) => {
+    const editor = getEditor(state);
+
+    return {
+        selectedDiagram: getDiagram(state),
+        selectedItems: getSelectedItems(state),
+        selectedItemsWithLocked: getSelectedItemsWithLocked(state),
+        viewSize: editor.size,
+        zoomedWidth: editor.size.x * state.ui.zoom,
+        zoomedHeight: editor.size.y * state.ui.zoom,
+        zoom: state.ui.zoom
+    };
+};
+
+const mapDispatchToProps = (dispatch: Dispatch) => bindActionCreators({
+    selectItems, changeItemsAppearance, transformItems
+}, dispatch);
 
 export const EditorContainer = connect(
     mapStateToProps,

@@ -51,21 +51,6 @@ export interface EditorViewProps {
     addImage: (diagram: string, source: string, x: number, y: number, w: number, h: number) => any;
 }
 
-const mapStateToProps = (state: UIStateInStore & EditorStateInStore) => {
-    const editor = getEditor(state);
-
-    return {
-        selectedDiagramId: getDiagramId(state),
-        zoomedWidth: editor.size.x * state.ui.zoom,
-        zoomedHeight: editor.size.y * state.ui.zoom,
-        zoom: state.ui.zoom
-    };
-};
-
-const mapDispatchToProps = (dispatch: Dispatch) => bindActionCreators({
-    addIcon, addImage, addVisual
-}, dispatch);
-
 const AssetTarget: DropTargetSpec<EditorViewProps> = {
     drop: (props, monitor, component) => {
         if (!monitor) {
@@ -169,6 +154,21 @@ class EditorView extends React.Component<EditorViewProps> {
         );
     }
 }
+
+const mapStateToProps = (state: UIStateInStore & EditorStateInStore) => {
+    const editor = getEditor(state);
+
+    return {
+        selectedDiagramId: getDiagramId(state),
+        zoomedWidth: editor.size.x * state.ui.zoom,
+        zoomedHeight: editor.size.y * state.ui.zoom,
+        zoom: state.ui.zoom
+    };
+};
+
+const mapDispatchToProps = (dispatch: Dispatch) => bindActionCreators({
+    addIcon, addImage, addVisual
+}, dispatch);
 
 export const EditorViewContainer = connect(
     mapStateToProps,

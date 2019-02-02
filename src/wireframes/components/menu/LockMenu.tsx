@@ -29,17 +29,6 @@ interface LockMenuProps {
     unlockItems: (diagram: Diagram, items: string[]) => any;
 }
 
-const mapStateToProps = (state: EditorStateInStore) => {
-    return {
-        selectedDiagram: getDiagram(state),
-        selectedItem: getSelectedItemWithLocked(state)
-    };
-};
-
-const mapDispatchToProps = (dispatch: Dispatch) => bindActionCreators({
-    lockItems, unlockItems
-}, dispatch);
-
 class LockMenu extends React.PureComponent<LockMenuProps> {
     private doToggle = () => {
         if (this.props.selectedItem) {
@@ -71,6 +60,17 @@ class LockMenu extends React.PureComponent<LockMenuProps> {
         );
     }
 }
+
+const mapStateToProps = (state: EditorStateInStore) => {
+    return {
+        selectedDiagram: getDiagram(state),
+        selectedItem: getSelectedItemWithLocked(state)
+    };
+};
+
+const mapDispatchToProps = (dispatch: Dispatch) => bindActionCreators({
+    lockItems, unlockItems
+}, dispatch);
 
 export const LockMenuContainer = connect(
     mapStateToProps,

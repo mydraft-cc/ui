@@ -34,21 +34,12 @@ interface ClipboardMenuProps {
 }
 
 interface ClipboardMenuState {
+    // The current clipboard value.
     clipboard?: string;
 
+    // The offset for new items.
     offset: number;
 }
-
-const mapStateToProps = (state: EditorStateInStore) => {
-    return {
-        selectedDiagram: getDiagram(state),
-        selectedItems: getSelectedItems(state)
-    };
-};
-
-const mapDispatchToProps = (dispatch: Dispatch) => bindActionCreators({
-    removeItems, pasteItems
-}, dispatch);
 
 const OFFSET = 50;
 
@@ -122,6 +113,17 @@ class ClipboardMenu extends React.PureComponent<ClipboardMenuProps, ClipboardMen
         );
     }
 }
+
+const mapStateToProps = (state: EditorStateInStore) => {
+    return {
+        selectedDiagram: getDiagram(state),
+        selectedItems: getSelectedItems(state)
+    };
+};
+
+const mapDispatchToProps = (dispatch: Dispatch) => bindActionCreators({
+    removeItems, pasteItems
+}, dispatch);
 
 export const ClipboardMenuContainer = connect(
     mapStateToProps,

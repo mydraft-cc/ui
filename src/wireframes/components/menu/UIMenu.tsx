@@ -21,18 +21,6 @@ interface UIMenuProps {
     setZoom: (value: number) => any;
 }
 
-const mapStateToProps = (state: UIStateInStore) => {
-    return {
-        canZoomIn: state.ui.zoom < 2,
-        canZoomOut: state.ui.zoom > .25,
-        zoom: state.ui.zoom
-    };
-};
-
-const mapDispatchToProps = (dispatch: Dispatch) => bindActionCreators({
-    setZoom
-}, dispatch);
-
 class UIMenu extends React.PureComponent<UIMenuProps> {
     private doZoomOut = () => {
         this.props.setZoom(this.props.zoom - .25);
@@ -70,6 +58,18 @@ class UIMenu extends React.PureComponent<UIMenuProps> {
         );
     }
 }
+
+const mapStateToProps = (state: UIStateInStore) => {
+    return {
+        canZoomIn: state.ui.zoom < 2,
+        canZoomOut: state.ui.zoom > .25,
+        zoom: state.ui.zoom
+    };
+};
+
+const mapDispatchToProps = (dispatch: Dispatch) => bindActionCreators({
+    setZoom
+}, dispatch);
 
 export const UIMenuContainer = connect(
     mapStateToProps,

@@ -4,7 +4,7 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators, Dispatch } from 'redux';
 
-import './visual-properties.scss';
+import './VisualProperties.scss';
 
 import { Color, ColorPicker } from '@app/core';
 
