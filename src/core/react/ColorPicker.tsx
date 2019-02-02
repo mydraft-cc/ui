@@ -3,7 +3,7 @@ import { TooltipPlacement } from 'antd/lib/tooltip';
 import * as React from 'react';
 import { ColorResult, SketchPicker } from 'react-color';
 
-import './color-picker.scss';
+import './ColorPicker.scss';
 
 import {
     Color,
