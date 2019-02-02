@@ -3,7 +3,7 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators, Dispatch } from 'redux';
 
-import './shapes.scss';
+import './Shapes.scss';
 
 import { Grid } from '@app/core';
 
@@ -17,7 +17,7 @@ import {
     getShapesFilter,
     ShapeInfo} from '@app/wireframes/model';
 
-import { ShapeImage } from './shape-image';
+import { ShapeImage } from './ShapeImage';
 
 interface ShapesProps {
     // The filtered shapes.

@@ -3,7 +3,7 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators, Dispatch } from 'redux';
 
-import './icons.scss';
+import './Icons.scss';
 
 import { Grid } from '@app/core';
 
@@ -21,7 +21,7 @@ import {
     selectIcons
 } from '@app/wireframes/model';
 
-import { Icon } from './icon';
+import { Icon } from './Icon';
 
 interface IconsProps {
     // The filtered icons.

@@ -1,5 +1,5 @@
-export * from './assets/icons';
-export * from './assets/shapes';
+export * from './assets/Icons';
+export * from './assets/Shapes';
 
 export * from './menu/ArrangeMenu';
 export * from './menu/ClipboardMenu';
