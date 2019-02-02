@@ -135,10 +135,12 @@ export class Grid extends React.PureComponent<GridProps, GridState> {
     }
 
     public render() {
+        const { className } = this.props;
+
         return (
             <Measurer onResize={() => this.measure()}>
                 {({ measureRef }) =>
-                    <div className={this.props.className} ref={element => { this.initialize(element!); measureRef(element); }}>
+                    <div className={className} ref={element => { this.initialize(element!); measureRef(element); }}>
                         <div style={{ height: sizeInPx(this.state.height), position: 'relative' }}>
                             {this.renderItems()}
                         </div>

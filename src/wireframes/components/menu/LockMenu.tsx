@@ -31,11 +31,13 @@ interface LockMenuProps {
 
 class LockMenu extends React.PureComponent<LockMenuProps> {
     private doToggle = () => {
-        if (this.props.selectedItem) {
+        const { selectedDiagram, selectedItem } = this.props;
+
+        if (selectedDiagram && selectedItem) {
             if (this.props.selectedItem.isLocked) {
-                this.props.unlockItems(this.props.selectedDiagram!, [this.props.selectedItem.id]);
+                this.props.unlockItems(selectedDiagram, [selectedItem.id]);
             } else {
-                this.props.lockItems(this.props.selectedDiagram!, [this.props.selectedItem.id]);
+                this.props.lockItems(selectedDiagram, [selectedItem.id]);
             }
         }
     }
@@ -45,13 +47,15 @@ class LockMenu extends React.PureComponent<LockMenuProps> {
     }
 
     public render() {
+        const { selectedItem } = this.props;
+
         return (
             <>
-                <Shortcut disabled={!this.props.selectedItem} onPressed={this.doToggle} keys='ctl+l' />
+                <Shortcut disabled={!selectedItem} onPressed={this.doToggle} keys='ctl+l' />
 
                 <Tooltip mouseEnterDelay={1} title='Lock or unlock item (CTRL + L)'>
                     <Button className='menu-item' size='large'
-                        disabled={!this.props.selectedItem}
+                        disabled={!selectedItem}
                         onClick={this.doToggle}>
                         <Icon type={this.getIcon()} />
                     </Button>

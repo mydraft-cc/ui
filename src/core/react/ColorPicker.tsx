@@ -95,6 +95,8 @@ export class ColorPicker extends React.PureComponent<ColorPickerProps, ColorPick
     }
 
     public render() {
+        const { activeColorTab, disabled } = this.props;
+
         const selectedPalette = this.props.palette || ColorPalette.colors();
 
         const colorClassName = (color: Color) => {
@@ -106,7 +108,7 @@ export class ColorPicker extends React.PureComponent<ColorPickerProps, ColorPick
         };
 
         const content = (
-            <Tabs size='small' className='color-picker-tabs' animated={false} activeKey={this.props.activeColorTab} onChange={this.doSelectTab}>
+            <Tabs size='small' className='color-picker-tabs' animated={false} activeKey={activeColorTab} onChange={this.doSelectTab}>
                 <Tabs.TabPane key='palette' tab='Palette'>
                     <div className='color-picker-colors'>
                         {selectedPalette.colors.map(c =>
@@ -128,7 +130,7 @@ export class ColorPicker extends React.PureComponent<ColorPickerProps, ColorPick
 
         return (
             <Popover content={content} visible={this.state.visible} placement={placement} trigger='click' onVisibleChange={this.doSetVisibility}>
-                <Button disabled={this.props.disabled} className='color-picker-button' onClick={this.doToggle}>
+                <Button disabled={disabled} className='color-picker-button' onClick={this.doToggle}>
                     <div className='color-picker-color'>
                         <div className='color-picker-color-inner' style={{ background: this.state.colorHex }}></div>
                     </div>

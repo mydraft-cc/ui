@@ -1,5 +1,7 @@
 import { Reducer } from 'redux';
 
+import { Types } from '@app/core';
+
 import {
     DiagramItemSet,
     DiagramShape,
@@ -38,7 +40,7 @@ export function appearance(rendererService: RendererService): Reducer<EditorStat
                             if (item instanceof DiagramShape) {
                                 const renderer = rendererService.registeredRenderers[item.renderer];
 
-                                if (renderer && renderer.defaultAppearance()[key]) {
+                                if (renderer && !Types.isUndefined(renderer.defaultAppearance()[key])) {
                                     return item.setAppearance(key, value);
                                 }
                             }

@@ -45,20 +45,20 @@ export class CanvasView extends React.Component<CanvasViewProps> {
     }
 
     private updateViewSettings(props: CanvasViewProps) {
+        const { zoom, zoomedHeight, zoomedWidth } = props;
+
         if (this.document) {
-            const w = props.zoomedWidth / props.zoom;
-            const h = props.zoomedHeight / props.zoom;
+            const w = zoomedWidth / zoom;
+            const h = zoomedHeight / zoom;
 
             this.document.style({ width: sizeInPx(w), height: sizeInPx(h), overflow: 'visible' });
 
             this.document.untransform();
-            this.document.scale(
-                props.zoom,
-                props.zoom, 0, 0);
+            this.document.scale(zoom, zoom, 0, 0);
 
             this.document.translate(
-                0.5 * (props.zoomedWidth -  w),
-                0.5 * (props.zoomedHeight - h));
+                0.5 * (zoomedWidth -  w),
+                0.5 * (zoomedHeight - h));
 
             this.document.show();
         }

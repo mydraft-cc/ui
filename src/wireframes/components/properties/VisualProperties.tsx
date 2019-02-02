@@ -86,11 +86,19 @@ class VisualProperties extends React.PureComponent<VisualPropertiesProps> {
     }
 
     private doAlignText = (value: string) => {
-        this.props.changeItemsAppearance(this.props.selectedDiagramId!, this.props.selectedItems, DiagramShape.APPEARANCE_TEXT_ALIGNMENT, value);
+        const selectedDiagramId = this.props.selectedDiagramId;
+
+        if (selectedDiagramId) {
+            this.props.changeItemsAppearance(selectedDiagramId, this.props.selectedItems, DiagramShape.APPEARANCE_TEXT_ALIGNMENT, value);
+        }
     }
 
     private doChangeAppearance = (key: string, value: any) => {
-        this.props.changeItemsAppearance(this.props.selectedDiagramId!, this.props.selectedItems, key, value);
+        const selectedDiagramId = this.props.selectedDiagramId;
+
+        if (selectedDiagramId) {
+            this.props.changeItemsAppearance(selectedDiagramId, this.props.selectedItems, key, value);
+        }
     }
 
     private doSelectColorTab = (key: string) => {
@@ -116,18 +124,30 @@ class VisualProperties extends React.PureComponent<VisualPropertiesProps> {
     );
 
     public render() {
+        const {
+            backgroundColor,
+            fontSize,
+            foregroundColor,
+            selectedColorTab,
+            selectedDiagramId,
+            selectedItems,
+            strokeColor,
+            strokeThickness,
+            textAlignment
+        } = this.props;
+
         return (
             <>
-                {this.props.selectedDiagramId &&
+                {selectedDiagramId &&
                     <>
-                        <div style={{display: (this.props.selectedItems.length > 0 ? 'block' : 'none') }}>
+                        <div style={{display: (selectedItems.length > 0 ? 'block' : 'none') }}>
                             <div className='property-subsection visual-properties'>
                                 <Row className='property'>
                                     <Col span={12} className='property-label'>
                                         Font Size
                                 </Col>
                                     <Col span={12} className='property-value'>
-                                        <Select disabled={this.props.fontSize.empty} value={this.props.fontSize.value ? this.props.fontSize.value.toString() : undefined} onChange={this.doChangeFontSize}>
+                                        <Select disabled={fontSize.empty} value={fontSize.value ? fontSize.value.toString() : undefined} onChange={this.doChangeFontSize}>
                                             {this.fontSizes}
                                         </Select>
                                     </Col>
@@ -137,7 +157,7 @@ class VisualProperties extends React.PureComponent<VisualPropertiesProps> {
                                         Stroke Thickness
                                 </Col>
                                     <Col span={12} className='property-value'>
-                                        <Select disabled={this.props.strokeThickness.empty} value={this.props.strokeThickness.value ? this.props.strokeThickness.value.toString() : undefined} onChange={this.doChangeStrokeThickness}>
+                                        <Select disabled={strokeThickness.empty} value={strokeThickness.value ? strokeThickness.value.toString() : undefined} onChange={this.doChangeStrokeThickness}>
                                             {this.strokeThicknesses}
                                         </Select>
                                     </Col>
@@ -147,7 +167,7 @@ class VisualProperties extends React.PureComponent<VisualPropertiesProps> {
                                         Stroke Color
                                 </Col>
                                     <Col span={12} className='property-value'>
-                                        <ColorPicker activeColorTab={this.props.selectedColorTab} disabled={this.props.strokeColor.empty} value={this.props.strokeColor.value}
+                                        <ColorPicker activeColorTab={selectedColorTab} disabled={strokeColor.empty} value={strokeColor.value}
                                             onChange={this.doChangeStrokeColor}
                                             onActiveColorTabChanged={this.doSelectColorTab} />
                                     </Col>
@@ -157,7 +177,7 @@ class VisualProperties extends React.PureComponent<VisualPropertiesProps> {
                                         Foreground Color
                                 </Col>
                                     <Col span={12} className='property-value'>
-                                        <ColorPicker activeColorTab={this.props.selectedColorTab} disabled={this.props.foregroundColor.empty} value={this.props.foregroundColor.value}
+                                        <ColorPicker activeColorTab={selectedColorTab} disabled={foregroundColor.empty} value={foregroundColor.value}
                                             onChange={this.doChangeForegroundColor}
                                             onActiveColorTabChanged={this.doSelectColorTab} />
                                     </Col>
@@ -167,7 +187,7 @@ class VisualProperties extends React.PureComponent<VisualPropertiesProps> {
                                         Background Color
                                     </Col>
                                     <Col span={12} className='property-value'>
-                                        <ColorPicker activeColorTab={this.props.selectedColorTab} disabled={this.props.backgroundColor.empty} value={this.props.backgroundColor.value}
+                                        <ColorPicker activeColorTab={selectedColorTab} disabled={backgroundColor.empty} value={backgroundColor.value}
                                             onChange={this.doChangeBackgroundColor}
                                             onActiveColorTabChanged={this.doSelectColorTab} />
                                     </Col>
@@ -178,13 +198,13 @@ class VisualProperties extends React.PureComponent<VisualPropertiesProps> {
                                     </Col>
                                     <Col span={12} className='property-value'>
                                         <Button.Group className='text-alignment'>
-                                            <Button disabled={this.props.textAlignment.empty} type={this.textAlignment('left')} onClick={this.doAlignTextLeft}>
+                                            <Button disabled={textAlignment.empty} type={this.textAlignment('left')} onClick={this.doAlignTextLeft}>
                                                 <i className='icon-align-left' />
                                             </Button>
-                                            <Button disabled={this.props.textAlignment.empty} type={this.textAlignment('center')} onClick={this.doAlignTextCenter}>
+                                            <Button disabled={textAlignment.empty} type={this.textAlignment('center')} onClick={this.doAlignTextCenter}>
                                                 <i className='icon-align-center' />
                                             </Button>
-                                            <Button disabled={this.props.textAlignment.empty} type={this.textAlignment('right')} onClick={this.doAlignTextRight}>
+                                            <Button disabled={textAlignment.empty} type={this.textAlignment('right')} onClick={this.doAlignTextRight}>
                                                 <i className='icon-align-right' />
                                             </Button>
                                         </Button.Group>

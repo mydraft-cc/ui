@@ -110,6 +110,8 @@ class App extends React.PureComponent<AppProps & AppOwnProps> {
     }
 
     public render() {
+        const { selectedTab, showLeftSidebar, showRightSidebar } = this.props;
+
         return (
             <Layout>
                 <Layout.Header>
@@ -135,10 +137,10 @@ class App extends React.PureComponent<AppProps & AppOwnProps> {
                 </Layout.Header>
                 <Layout className='content'>
                     <Layout.Sider width={320} className='sidebar-left'
-                        collapsed={!this.props.showLeftSidebar}
+                        collapsed={!showLeftSidebar}
                         collapsedWidth={0}>
 
-                        <Tabs type='card' onTabClick={this.doSelectTab} activeKey={this.props.selectedTab}>
+                        <Tabs type='card' onTabClick={this.doSelectTab} activeKey={selectedTab}>
                             <Tabs.TabPane key='shapes' tab='Shapes'>
                                 <ShapesContainer />
                             </Tabs.TabPane>
@@ -151,7 +153,7 @@ class App extends React.PureComponent<AppProps & AppOwnProps> {
                         <EditorViewContainer spacing={40} />
                     </Layout.Content>
                     <Layout.Sider width={330} className='sidebar-right'
-                        collapsed={!this.props.showRightSidebar}
+                        collapsed={!showRightSidebar}
                         collapsedWidth={0}>
 
                         <Collapse bordered={false} defaultActiveKey={['layout', 'visual', 'custom']}>
@@ -167,14 +169,14 @@ class App extends React.PureComponent<AppProps & AppOwnProps> {
                         </Collapse>
                     </Layout.Sider>
 
-                    <Button icon={toggleIcon(this.props.showLeftSidebar)}
-                        className={toggleClass(this.props.showLeftSidebar, 'left')}
+                    <Button icon={toggleIcon(showLeftSidebar)}
+                        className={toggleClass(showLeftSidebar, 'left')}
                         size='small'
                         shape='circle'
                         onClick={this.doToggleLeftSidebar} />
 
-                    <Button icon={toggleIcon(!this.props.showRightSidebar)}
-                        className={toggleClass(this.props.showRightSidebar, 'right')}
+                    <Button icon={toggleIcon(!showRightSidebar)}
+                        className={toggleClass(showRightSidebar, 'right')}
                         size='small'
                         shape='circle'
                         onClick={this.doToggleRightSidebar} />

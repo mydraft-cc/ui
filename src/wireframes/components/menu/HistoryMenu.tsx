@@ -35,27 +35,29 @@ class HistoryMenu extends React.PureComponent<HistoryMenuProps> {
     }
 
     public render() {
+        const { canRedo, canUndo } = this.props;
+
         return (
             <>
                 <Tooltip mouseEnterDelay={1} title='Undo (CTRL + Z)'>
                     <Button className='menu-item' size='large'
-                        disabled={!this.props.canUndo}
+                        disabled={!canUndo}
                         onClick={this.doUndo}>
                         <i className='icon-undo' />
                     </Button>
                 </Tooltip>
 
-                <Shortcut keys='ctrl+z' disabled={!this.props.canUndo} onPressed={this.doUndo} />
+                <Shortcut keys='ctrl+z' disabled={!canUndo} onPressed={this.doUndo} />
 
                 <Tooltip mouseEnterDelay={1} title='Redo (CTRL + Y)'>
                     <Button className='menu-item' size='large'
-                        disabled={!this.props.canRedo}
+                        disabled={!canRedo}
                         onClick={this.doRedo}>
                         <i className='icon-redo' />
                     </Button>
                 </Tooltip>
 
-                <Shortcut keys='ctrl+y' disabled={!this.props.canRedo} onPressed={this.doRedo} />
+                <Shortcut keys='ctrl+y' disabled={!canRedo} onPressed={this.doRedo} />
             </>
         );
     }

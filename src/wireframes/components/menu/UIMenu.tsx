@@ -31,29 +31,31 @@ class UIMenu extends React.PureComponent<UIMenuProps> {
     }
 
     public render() {
+        const { canZoomIn, canZoomOut, zoom } = this.props;
+
         return (
             <>
                 <Tooltip mouseEnterDelay={1} title='Zoom Out (ALT + [-])'>
                     <Button className='menu-item' size='large'
-                        disabled={!this.props.canZoomOut}
+                        disabled={!canZoomOut}
                         onClick={this.doZoomOut}>
                         <Icon type='minus-circle-o' />
                     </Button>
                 </Tooltip>
 
-                <Shortcut disabled={!this.props.canZoomOut} onPressed={this.doZoomOut} keys='alt+-' />
+                <Shortcut disabled={!canZoomOut} onPressed={this.doZoomOut} keys='alt+-' />
 
-                <span className='menu-item'>{this.props.zoom * 100}</span>
+                <span className='menu-item'>{zoom * 100}</span>
 
                 <Tooltip mouseEnterDelay={1} title='Zoom In (ALT + [+])'>
                     <Button className='menu-item' size='large'
-                        disabled={!this.props.canZoomIn}
+                        disabled={!canZoomIn}
                         onClick={this.doZoomIn}>
                         <Icon type='plus-circle-o' />
                     </Button>
                 </Tooltip>
 
-                <Shortcut disabled={!this.props.canZoomIn} onPressed={this.doZoomIn} keys='alt+plus' />
+                <Shortcut disabled={!canZoomIn} onPressed={this.doZoomIn} keys='alt+plus' />
             </>
         );
     }

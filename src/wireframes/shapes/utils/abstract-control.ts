@@ -91,36 +91,51 @@ export abstract class AbstractControl implements Renderer {
 }
 
 export class TextSizeConstraint implements Constraint {
-    constructor(private readonly padding: number) { }
+    constructor(
+        private readonly padding = 0,
+        private readonly lineHeight = 1.2,
+        private readonly resizeWidth = false,
+        private readonly minWidth = 0
+    ) { }
 
     public updateSize(shape: DiagramShape, size: Vec2, prev: DiagramShape): Vec2 {
-        const fontSize = shape.appearance.get(DiagramShape.APPEARANCE_FONT_SIZE);
+        const fontSize = shape.appearance.get(DiagramShape.APPEARANCE_FONT_SIZE) || 10;
+        const fontFamily = shape.appearance.get(DiagramShape.APPEARANCE_FONT_FAMILY) || 'inherit';
 
         let finalWidth = size.x;
 
         const text = shape.appearance.get(DiagramShape.APPEARANCE_TEXT);
 
+        let prevText = '';
+        let prevFontSize = 0;
+        let prevFontFamily = '';
+
         if (prev) {
-            const prevText = prev.appearance.get(DiagramShape.APPEARANCE_TEXT);
+            prevText = prev.appearance.get(DiagramShape.APPEARANCE_TEXT);
 
-            if (prevText !== text) {
-                let textWidth = RENDERER.getTextWidth(text, fontSize, 'sans serif');
+            prevFontSize = prev.appearance.get(DiagramShape.APPEARANCE_FONT_SIZE) || 10;
+            prevFontFamily = prev.appearance.get(DiagramShape.APPEARANCE_FONT_FAMILY) || 'inherit';
+        }
 
-                if (textWidth) {
-                    textWidth += 2 * this.padding + text.length * 0.1 * fontSize;
+        if (prevText !== text || prevFontSize !== fontSize || prevFontFamily !== fontFamily) {
+            let textWidth = RENDERER.getTextWidth(text, fontSize, fontFamily);
 
-                    if (finalWidth < textWidth) {
-                        finalWidth = textWidth;
-                    }
+            if (textWidth) {
+                textWidth += 2 * this.padding;
+
+                if (finalWidth < textWidth || !this.resizeWidth) {
+                    finalWidth = textWidth;
                 }
+
+                finalWidth = Math.max(this.minWidth, finalWidth);
             }
         }
 
-        return new Vec2(finalWidth, fontSize * 1.2 + this.padding * 2).roundToMultipleOfTwo();
+        return new Vec2(finalWidth, fontSize * this.lineHeight + this.padding * 2).roundToMultipleOfTwo();
     }
 
     public calculateSizeX(): boolean {
-        return false;
+        return !this.resizeWidth;
     }
 
     public calculateSizeY(): boolean {

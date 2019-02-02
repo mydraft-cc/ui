@@ -53,9 +53,11 @@ class LoadingMenu extends React.PureComponent<LoadingMenuProps> {
     }
 
     public render() {
+        const { showInfoDialog, title } = this.props;
+
         return (
             <>
-                <Title text={this.props.title} />
+                <Title text={title} />
 
                 <Tooltip mouseEnterDelay={1} title='New Diagram (CTRL + N)'>
                     <Button className='menu-item' size='large'
@@ -79,7 +81,7 @@ class LoadingMenu extends React.PureComponent<LoadingMenuProps> {
                     <Icon type='question-circle-o' />
                 </Button>
 
-                <Modal title='About' visible={this.props.showInfoDialog} onOk={this.doCloseInfoDialog} onCancel={this.doCloseInfoDialog}>
+                <Modal title='About' visible={showInfoDialog} onOk={this.doCloseInfoDialog} onCancel={this.doCloseInfoDialog}>
                     <div dangerouslySetInnerHTML={{__html: text }} />
                 </Modal>
             </>

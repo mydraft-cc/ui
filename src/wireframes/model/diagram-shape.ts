@@ -15,6 +15,7 @@ export class DiagramShape extends DiagramVisual {
     public static readonly APPEARANCE_TEXT = 'TEXT';
     public static readonly APPEARANCE_TEXT_ALIGNMENT = 'TEXT_ALIGNMENT';
     public static readonly APPEARANCE_TEXT_DISABLED = 'TEXT_DISABLED';
+    public static readonly APPEARANCE_FONT_FAMILY = 'FONT_FAMILY';
     public static readonly APPEARANCE_FONT_SIZE = 'FONT_SIZE';
     public static readonly APPEARANCE_FOREGROUND_COLOR = 'BACKGROUND_COLOR';
     public static readonly APPEARANCE_BACKGROUND_COLOR = 'FOREGROUND_COLOR';
@@ -36,6 +37,8 @@ export class DiagramShape extends DiagramVisual {
             DiagramShape.createConfigurables(configurable),
             constraint,
             renderer);
+
+        result.afterClone(undefined!);
 
         Object.freeze(result);
 

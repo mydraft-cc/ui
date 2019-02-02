@@ -54,54 +54,72 @@ interface ArrangeMenuProps {
 
 class ArrangeMenu extends React.PureComponent<ArrangeMenuProps> {
     private doGroup = () => {
-        this.props.groupItems(this.props.selectedDiagram!, this.props.selectedItems, MathHelper.guid());
+        const selectedDiagram = this.props.selectedDiagram;
+
+        if (selectedDiagram) {
+            this.props.groupItems(selectedDiagram, this.props.selectedItems, MathHelper.guid());
+        }
     }
 
     private doUngroup = () => {
-        this.props.ungroupItems(this.props.selectedDiagram!, this.props.selectedGroups);
+        const selectedDiagram = this.props.selectedDiagram;
+
+        if (selectedDiagram) {
+            this.props.ungroupItems(selectedDiagram, this.props.selectedGroups);
+        }
     }
 
     private doRemove = () => {
-        this.props.removeItems(this.props.selectedDiagram!, this.props.selectedItems);
+        const selectedDiagram = this.props.selectedDiagram;
+
+        if (selectedDiagram) {
+            this.props.removeItems(selectedDiagram, this.props.selectedItems);
+        }
     }
 
     private doSelectAll = () => {
-        this.props.selectItems(this.props.selectedDiagram!, calculateSelection(this.props.selectedDiagram!.items.toArray(), this.props.selectedDiagram!));
+        const selectedDiagram = this.props.selectedDiagram;
+
+        if (selectedDiagram) {
+            this.props.selectItems(selectedDiagram, calculateSelection(selectedDiagram.items.toArray(), selectedDiagram));
+        }
     }
 
     public render() {
+        const { canGroup, canRemove, canUngroup } = this.props;
+
         return (
             <>
                 <Tooltip mouseEnterDelay={1} title='Group items (CTRL + G)'>
                     <Button className='menu-item' size='large'
-                        disabled={!this.props.canGroup}
+                        disabled={!canGroup}
                         onClick={this.doGroup}>
                         <i className='icon-group' />
                     </Button>
                 </Tooltip>
 
-                <Shortcut disabled={!this.props.canGroup} onPressed={this.doGroup} keys='ctrl+g' />
+                <Shortcut disabled={!canGroup} onPressed={this.doGroup} keys='ctrl+g' />
 
                 <Tooltip mouseEnterDelay={1} title='Ungroup items (CTRL + SHIFT + G)'>
                     <Button className='menu-item' size='large'
-                        disabled={!this.props.canUngroup}
+                        disabled={!canUngroup}
                         onClick={this.doUngroup}>
                         <i className='icon-ungroup' />
                     </Button>
                 </Tooltip>
 
-                <Shortcut disabled={!this.props.canUngroup} onPressed={this.doUngroup} keys='ctrl+shift+g' />
+                <Shortcut disabled={!canUngroup} onPressed={this.doUngroup} keys='ctrl+shift+g' />
 
                 <Tooltip mouseEnterDelay={1} title='Delete selected items (DELETE)'>
                     <Button className='menu-item' size='large'
-                        disabled={!this.props.canRemove}
+                        disabled={!canRemove}
                         onClick={this.doRemove}>
                         <i className='icon-delete' />
                     </Button>
                 </Tooltip>
 
-                <Shortcut disabled={!this.props.canRemove} onPressed={this.doRemove} keys='del' />
-                <Shortcut disabled={!this.props.canRemove} onPressed={this.doRemove} keys='backspace' />
+                <Shortcut disabled={!canRemove} onPressed={this.doRemove} keys='del' />
+                <Shortcut disabled={!canRemove} onPressed={this.doRemove} keys='backspace' />
 
                 <Shortcut disabled={!this.props.selectedDiagram} onPressed={this.doSelectAll} keys='ctrl+a' />
             </>

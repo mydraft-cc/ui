@@ -44,44 +44,46 @@ interface CustomPropertiesProps {
 }
 
 const CustomProperties = (props: CustomPropertiesProps) => {
-    return (
+    const { selectedColorTab, selectedConfigurables, selectedDiagramId, selectedShape } = props;
+
+    return selectedShape && selectedDiagramId ? (
         <>
-            {props.selectedDiagramId && props.selectedConfigurables.map(c =>
+            {selectedDiagramId && selectedConfigurables.map(c =>
                 <Row key={c.name} className='property'>
                     <Col span={12} className='property-label'>
                         {c.label}
                     </Col>
                     <Col span={12} className='property-value'>
                         {c instanceof SliderConfigurable &&
-                            <CustomSlider value={props.selectedShape!.appearance.get(c.name)}
+                            <CustomSlider value={selectedShape.appearance.get(c.name)}
                                 min={c.min}
                                 max={c.max}
-                                onChange={value => props.changeItemsAppearance(props.selectedDiagramId!, [props.selectedShape!], c.name, value)} />
+                                onChange={value => props.changeItemsAppearance(selectedDiagramId, [selectedShape], c.name, value)} />
                         }
                         {c instanceof NumberConfigurable &&
-                            <InputNumber value={props.selectedShape!.appearance.get(c.name)}
+                            <InputNumber value={selectedShape.appearance.get(c.name)}
                                 min={c.min}
                                 max={c.max}
-                                onChange={value => props.changeItemsAppearance(props.selectedDiagramId!, [props.selectedShape!], c.name, value)} />
+                                onChange={value => props.changeItemsAppearance(selectedDiagramId, [selectedShape], c.name, value)} />
                         }
                         {c instanceof SelectionConfigurable &&
-                            <Select value={props.selectedShape!.appearance.get(c.name)}
-                                onChange={value => props.changeItemsAppearance(props.selectedDiagramId!, [props.selectedShape!], c.name, value)}>
+                            <Select value={selectedShape.appearance.get(c.name)}
+                                onChange={value => props.changeItemsAppearance(selectedDiagramId, [selectedShape], c.name, value)}>
                                 {c.options.map(o =>
                                     <Select.Option key={o} value={o}>{o}</Select.Option>
                                 )}
                             </Select>
                         }
                         {c instanceof ColorConfigurable &&
-                            <ColorPicker activeColorTab={props.selectedColorTab} value={props.selectedShape!.appearance.get(c.name)}
-                                onChange={value => props.changeItemsAppearance(props.selectedDiagramId!, [props.selectedShape!], c.name, value.toNumber())}
+                            <ColorPicker activeColorTab={selectedColorTab} value={selectedShape.appearance.get(c.name)}
+                                onChange={value => props.changeItemsAppearance(selectedDiagramId, [selectedShape], c.name, value.toNumber())}
                                 onActiveColorTabChanged={key => props.selectColorTab(key)} />
                         }
                     </Col>
                 </Row>
             )}
         </>
-    );
+    ) : null;
 };
 
 const mapStateToProps = (state: EditorStateInStore & UIStateInStore) => {

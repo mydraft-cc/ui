@@ -78,56 +78,54 @@ const LayoutProperties = (props: LayoutPropertiesProps) => {
     const doSendBackwards = () => doOrder(SEND_BACKWARDS);
     const doSendToBack    = () => doOrder(SEND_TO_BACK);
 
-    return (
+    const { canAlign, canDistribute, canOrder, selectedDiagramId } = props;
+
+    return selectedDiagramId ? (
         <>
-            {props.selectedDiagramId &&
-                <>
-                    <div className='properties-subsection layout-properties'>
-                        <Button disabled={!props.canAlign} onClick={doAlignHLeft}>
-                            <i className='icon-align-h-left' />
-                        </Button>
-                        <Button disabled={!props.canAlign} onClick={doAlignHCenter}>
-                            <i className='icon-align-h-center' />
-                        </Button>
-                        <Button disabled={!props.canAlign} onClick={doAlignHRight}>
-                            <i className='icon-align-h-right' />
-                        </Button>
+            <div className='properties-subsection layout-properties'>
+                <Button disabled={!canAlign} onClick={doAlignHLeft}>
+                    <i className='icon-align-h-left' />
+                </Button>
+                <Button disabled={!canAlign} onClick={doAlignHCenter}>
+                    <i className='icon-align-h-center' />
+                </Button>
+                <Button disabled={!canAlign} onClick={doAlignHRight}>
+                    <i className='icon-align-h-right' />
+                </Button>
 
-                        <Button disabled={!props.canAlign} onClick={doAlignVTop}>
-                            <i className='icon-align-v-top' />
-                        </Button>
-                        <Button disabled={!props.canAlign} onClick={doAlignVCenter}>
-                            <i className='icon-align-v-center' />
-                        </Button>
-                        <Button disabled={!props.canAlign} onClick={doAlignVBottom}>
-                            <i className='icon-align-v-bottom' />
-                        </Button>
-                        <Button disabled={!props.canDistribute} onClick={doDistributeH}>
-                            <i className='icon-distribute-h2' />
-                        </Button>
-                        <Button disabled={!props.canDistribute} onClick={doDistributeV}>
-                            <i className='icon-distribute-v2' />
-                        </Button>
-                    </div>
+                <Button disabled={!canAlign} onClick={doAlignVTop}>
+                    <i className='icon-align-v-top' />
+                </Button>
+                <Button disabled={!canAlign} onClick={doAlignVCenter}>
+                    <i className='icon-align-v-center' />
+                </Button>
+                <Button disabled={!canAlign} onClick={doAlignVBottom}>
+                    <i className='icon-align-v-bottom' />
+                </Button>
+                <Button disabled={!canDistribute} onClick={doDistributeH}>
+                    <i className='icon-distribute-h2' />
+                </Button>
+                <Button disabled={!canDistribute} onClick={doDistributeV}>
+                    <i className='icon-distribute-v2' />
+                </Button>
+            </div>
 
-                    <div className='properties-subsection layout-properties'>
-                        <Button disabled={!props.canOrder} onClick={doBringToFront}>
-                            <i className='icon-bring-to-front' />
-                        </Button>
-                        <Button disabled={!props.canOrder} onClick={doBringForwards}>
-                            <i className='icon-bring-forwards' />
-                        </Button>
-                        <Button disabled={!props.canOrder} onClick={doSendBackwards}>
-                            <i className='icon-send-backwards'></i>
-                        </Button>
-                        <Button disabled={!props.canOrder} onClick={doSendToBack}>
-                            <i className='icon-send-to-back'></i>
-                        </Button>
-                    </div>
-                </>
-            }
+            <div className='properties-subsection layout-properties'>
+                <Button disabled={!canOrder} onClick={doBringToFront}>
+                    <i className='icon-bring-to-front' />
+                </Button>
+                <Button disabled={!canOrder} onClick={doBringForwards}>
+                    <i className='icon-bring-forwards' />
+                </Button>
+                <Button disabled={!canOrder} onClick={doSendBackwards}>
+                    <i className='icon-send-backwards'></i>
+                </Button>
+                <Button disabled={!canOrder} onClick={doSendToBack}>
+                    <i className='icon-send-to-back'></i>
+                </Button>
+            </div>
         </>
-    );
+    ) : null;
 };
 
 const mapStateToProps = (state: EditorStateInStore) => {
