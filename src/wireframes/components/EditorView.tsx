@@ -20,7 +20,7 @@ import {
     UIStateInStore
 } from '@app/wireframes/model';
 
-import { EditorContainer } from '@app/wireframes/renderer/editor';
+import { EditorContainer } from '@app/wireframes/renderer/Editor';
 
 export interface EditorViewProps {
     // The width of the canvas.
