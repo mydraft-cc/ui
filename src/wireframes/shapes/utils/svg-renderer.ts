@@ -312,6 +312,10 @@ export class SVGRenderer implements AbstractRenderer {
     public getBounds(element: RendererElement, untransformed?: boolean): Rect2 {
         const e = this.getElement(element);
 
+        if (!e.visible()) {
+            return Rect2.EMPTY;
+        }
+
         let box: svg.Box = e.bbox();
 
         if (!untransformed) {

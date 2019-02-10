@@ -190,7 +190,7 @@ export class TransformAdorner extends React.Component<TransformAdornerProps> imp
         for (let element of this.allElements) {
             const box = this.renderer.getBounds(element, true);
 
-            if (box.contains(unrotated) && element.visible()) {
+            if (box.contains(unrotated)) {
                 return element;
             }
         }
