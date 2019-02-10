@@ -1,4 +1,4 @@
-import { Rect2, Vec2 } from '@app/core';
+import { Color, Rect2, Vec2 } from '@app/core';
 
 import {
     Constraint,
@@ -56,8 +56,8 @@ export abstract class AbstractControl implements Renderer {
         if (RENDER_BACKGROUND) {
             const backgroundItem = ctx.renderer.createRectangle(0);
 
-            ctx.renderer.setBackgroundColor(backgroundItem, 'transparent');
-            ctx.renderer.setOpacity(backgroundItem, 0);
+            ctx.renderer.setBackgroundColor(backgroundItem, Color.WHITE);
+            ctx.renderer.setOpacity(backgroundItem, 0.001);
             ctx.renderer.setTransform(backgroundItem, { rect: ctx.bounds });
 
             ctx.add(backgroundItem);

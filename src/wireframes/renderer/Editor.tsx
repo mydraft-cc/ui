@@ -162,8 +162,22 @@ class Editor extends React.Component<EditorProps> {
     }
 
     public render() {
-        const w = this.props.zoomedWidth;
-        const h = this.props.zoomedHeight;
+        // tslint:disable:no-shadowed-variable
+        const {
+            changeItemsAppearance,
+            selectedDiagram,
+            selectedItems,
+            selectItems,
+            selectedItemsWithLocked,
+            transformItems,
+            zoom,
+            zoomedHeight,
+            zoomedWidth,
+            viewSize
+        } = this.props;
+
+        const w = viewSize.x;
+        const h = viewSize.y;
 
         if (this.interactionService) {
             this.diagramTools.size(w, h);
@@ -173,39 +187,43 @@ class Editor extends React.Component<EditorProps> {
         }
 
         return (
-            <div className='editor' style={{ position: 'relative', width: sizeInPx(w), height: sizeInPx(h) }}>
-                <CanvasView onInit={this.initDiagramScope}
-                    zoom={this.props.zoom}
-                    zoomedWidth={this.props.zoomedWidth}
-                    zoomedHeight={this.props.zoomedHeight} />
+            <>
+                {selectedDiagram &&
+                    <div className='editor' style={{ position: 'relative', width: sizeInPx(w), height: sizeInPx(h) }}>
+                        <CanvasView onInit={this.initDiagramScope}
+                            zoom={zoom}
+                            zoomedWidth={zoomedWidth}
+                            zoomedHeight={zoomedHeight} />
 
-                {this.interactionService && this.props.selectedDiagram && (
-                    <>
-                        <TransformAdorner
-                            adorners={this.adornersTransform}
-                            interactionService={this.interactionService}
-                            selectedDiagram={this.props.selectedDiagram}
-                            selectedItems={this.props.selectedItems}
-                            transformItems={this.props.transformItems}
-                            viewSize={this.props.viewSize}
-                            zoom={this.props.zoom} />
+                        {this.interactionService && selectedDiagram && (
+                            <>
+                                <TransformAdorner
+                                    adorners={this.adornersTransform}
+                                    interactionService={this.interactionService}
+                                    selectedDiagram={selectedDiagram}
+                                    selectedItems={selectedItems}
+                                    transformItems={transformItems}
+                                    viewSize={viewSize}
+                                    zoom={zoom} />
 
-                        <SelectionAdorner
-                            adorners={this.adornersSelect}
-                            interactionService={this.interactionService}
-                            selectedDiagram={this.props.selectedDiagram}
-                            selectedItems={this.props.selectedItemsWithLocked}
-                            selectItems={this.props.selectItems} />
+                                <SelectionAdorner
+                                    adorners={this.adornersSelect}
+                                    interactionService={this.interactionService}
+                                    selectedDiagram={selectedDiagram}
+                                    selectedItems={selectedItemsWithLocked}
+                                    selectItems={selectItems} />
 
-                        <TextAdorner
-                            changeItemsAppearance={this.props.changeItemsAppearance}
-                            interactionService={this.interactionService}
-                            selectedDiagram={this.props.selectedDiagram}
-                            selectedItems={this.props.selectedItems}
-                            zoom={this.props.zoom} />
-                    </>
-                )}
-            </div>
+                                <TextAdorner
+                                    changeItemsAppearance={changeItemsAppearance}
+                                    interactionService={this.interactionService}
+                                    selectedDiagram={selectedDiagram}
+                                    selectedItems={selectedItems}
+                                    zoom={zoom} />
+                            </>
+                        )}
+                    </div>
+                }
+            </>
         );
     }
 }

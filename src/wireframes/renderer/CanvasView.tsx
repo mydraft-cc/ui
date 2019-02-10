@@ -1,8 +1,6 @@
 import * as React from 'react';
 import * as svg from 'svg.js';
 
-import { sizeInPx } from '@app/core';
-
 export interface CanvasViewProps {
     // The width of the canvas.
     zoomedWidth: number;
@@ -30,6 +28,10 @@ export class CanvasView extends React.Component<CanvasViewProps> {
         if (element) {
             this.document = svg(this.docElement);
 
+            if (document) {
+                this.document.style({ position: 'relative', overflow: 'visible' });
+            }
+
             this.updateViewSettings(this.props);
 
             this.props.onInit(this.document);
@@ -45,22 +47,13 @@ export class CanvasView extends React.Component<CanvasViewProps> {
     }
 
     private updateViewSettings(props: CanvasViewProps) {
-        const { zoom, zoomedHeight, zoomedWidth } = props;
-
         if (this.document) {
-            const w = zoomedWidth / zoom;
-            const h = zoomedHeight / zoom;
+            const { zoomedWidth, zoomedHeight } = props;
 
-            this.document.style({ width: sizeInPx(w), height: sizeInPx(h), overflow: 'visible' });
+            const w = zoomedWidth / props.zoom;
+            const h = zoomedHeight / props.zoom;
 
-            this.document.untransform();
-            this.document.scale(zoom, zoom, 0, 0);
-
-            this.document.translate(
-                0.5 * (zoomedWidth -  w),
-                0.5 * (zoomedHeight - h));
-
-            this.document.show();
+            this.document.size(zoomedWidth, zoomedHeight).viewbox(0, 0, w, h);
         }
     }
 

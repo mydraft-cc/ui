@@ -55,7 +55,7 @@ export class TransformAdorner extends React.Component<TransformAdornerProps> imp
     private renderer: SVGRenderer;
     private transform: Transform;
     private startTransform: Transform;
-    private allElements: any[];
+    private allElements: svg.Element[];
     private overlays: InteractionOverlays;
     private canResizeX: boolean;
     private canResizeY: boolean;
@@ -190,7 +190,7 @@ export class TransformAdorner extends React.Component<TransformAdornerProps> imp
         for (let element of this.allElements) {
             const box = this.renderer.getBounds(element, true);
 
-            if (box.contains(unrotated)) {
+            if (box.contains(unrotated) && element.visible()) {
                 return element;
             }
         }
