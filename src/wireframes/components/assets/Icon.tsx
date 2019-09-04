@@ -1,33 +1,21 @@
 import * as React from 'react';
-import { DragSource, DragSourceCollector, DragSourceSpec } from 'react-dnd';
+import { useDrag } from 'react-dnd';
 
 import { IconInfo } from '@app/wireframes/model';
 
 interface IconProps {
     // The icon data.
     icon: IconInfo;
-
-    // The drag source.
-    connectDragSource?: any;
 }
 
-const IconTarget: DragSourceSpec<IconProps, any> = {
-    beginDrag: props => {
-        return { text: props.icon.text, fontFamily: props.icon.fontFamily };
-    }
-};
+export const Icon = (props: IconProps) => {
+    const { icon } = props;
 
-const IconConnect: DragSourceCollector<{}> = (connector, monitor) => {
-    return { connectDragSource: connector.dragSource() };
-};
+    const [, drag] = useDrag({
+        item: { text: icon.text, fontFamily: props.icon.fontFamily, type: 'DND_ICON' }
+    });
 
-@DragSource('DND_ICON', IconTarget, IconConnect)
-export class Icon extends React.PureComponent<IconProps> {
-    public render() {
-        return this.props.connectDragSource!(
-            <i className={this.props.icon.fontClass}>{this.props.icon.text}</i>,
-        {
-            dropEffect: 'copy'
-        });
-    }
-}
+    return (
+        <i ref={drag} className={props.icon.fontClass}>{props.icon.text}</i>
+    );
+};

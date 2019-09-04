@@ -5,10 +5,8 @@ import { ColorResult, SketchPicker } from 'react-color';
 
 import './ColorPicker.scss';
 
-import {
-    Color,
-    ColorPalette
-} from '@app/core';
+import { Color } from './../utils/color';
+import { ColorPalette } from './../utils/color-palette';
 
 interface ColorPickerProps {
     // The selected color.

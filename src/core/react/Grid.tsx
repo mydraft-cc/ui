@@ -1,7 +1,7 @@
 import * as React from 'react';
 import Measurer from 'react-measure';
 
-import { sizeInPx } from '@app/core';
+import { sizeInPx } from './../utils/react';
 
 interface GridProps {
     // The items to render.

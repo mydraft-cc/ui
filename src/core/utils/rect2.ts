@@ -1,4 +1,6 @@
-import { Rotation, Vec2 } from '@app/core';
+import { Rotation } from './rotation';
+
+import { Vec2 } from './vec2';
 
 export class Rect2 {
     public static readonly ZERO = new Rect2(0, 0, 0, 0);

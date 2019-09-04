@@ -9,22 +9,24 @@ const plugins = {
     HtmlWebpackPlugin: require('html-webpack-plugin')
 };
 
-module.exports = webpackMerge(commonConfig, {
-    /**
-     * The entry point for the bundle. Our react app.
-     *
-     * See: https://webpack.js.org/configuration/entry-context/
-     */
-    entry: {
-        'src': './src/index.tsx'
-    },
+module.exports = env => {
+    env = env || {};
 
-    plugins: [
+    return webpackMerge(commonConfig(env), {
         /**
-         * Simplifies creation of HTML files to serve your webpack bundles.
+         * The entry point for the bundle. Our react app.
+         *
+         * See: https://webpack.js.org/configuration/entry-context/
          */
-        new plugins.HtmlWebpackPlugin({
-            template: 'src/index.html', hash: true
-        })
-    ]
-});
+        entry: {
+            'src': './src/index.tsx'
+        },
+
+        plugins: [
+            /**
+             * Simplifies creation of HTML files to serve your webpack bundles.
+             */
+            new plugins.HtmlWebpackPlugin({ template: 'src/index.html', hash: true })
+        ]
+    });
+};

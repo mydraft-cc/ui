@@ -9,7 +9,7 @@ const plugins = {
     TsLintPlugin: require('tslint-webpack-plugin')
 };
 
-module.exports = webpackMerge(runConfig, {
+module.exports = env => webpackMerge(runConfig(env), {
     mode: 'development',
     
     devtool: 'source-map',

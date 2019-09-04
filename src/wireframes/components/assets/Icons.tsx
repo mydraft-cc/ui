@@ -104,9 +104,11 @@ class Icons extends React.PureComponent<IconsProps> {
         return (
             <>
                 <div className='asset-icons-search'>
-                    <Input value={this.props.iconsFilter} onChange={this.doFilterIcons}
-                        placeholder='Find icon'
-                        prefix={<AntdIcon type='search' style={{ color: 'rgba(0,0,0,.25)' }} />} />
+                    <Input value={this.props.iconsFilter} onChange={this.doFilterIcons} placeholder='Find icon'
+                        prefix={
+                            <AntdIcon type='search' style={{ color: 'rgba(0,0,0,.25)' }} />
+                        }
+                    />
 
                     <Select value={this.props.iconSet} onChange={this.doSelectIcons}>
                         {this.props.iconSets.map(x =>

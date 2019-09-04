@@ -1,4 +1,6 @@
-﻿import { MathHelper, Rotation } from '@app/core';
+﻿import { MathHelper } from './math-helper';
+
+import { Rotation } from './rotation';
 
 export class Vec2 {
     public static readonly ZERO = new Vec2(0, 0);

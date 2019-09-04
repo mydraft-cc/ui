@@ -4,9 +4,7 @@
       helpers = require('./helpers'),
    testConfig = require('./webpack.test.js');
 
-helpers.removeLoaders(testConfig, ['ts']);
-
-module.exports = webpackMerge(testConfig, {
+module.exports = webpackMerge(helpers.removeLoaders(testConfig, ['ts']), {
     module: {        
         /**
          * An array of Rules which are matched to requests when modules are created.
@@ -16,21 +14,21 @@ module.exports = webpackMerge(testConfig, {
         rules: [{
 			test: /\.ts[x]?$/,
 			use: [{
-                loader: 'istanbul-instrumenter-loader'
+                loader: 'istanbul-instrumenter-loader?esModules=true'
 			}, {
-				loader: 'awesome-typescript-loader'
+				loader: 'ts-loader'
 			}],
 			exclude: [/node_modules/, /\.(e2e|spec)\.ts$/]
 		}, {
 			test: /\.ts[x]?$/,
 			use: [{
-				loader: 'awesome-typescript-loader'
+				loader: 'ts-loader'
 			}],
 			exclude: [/node_modules/], include: [/\.(e2e|spec)\.ts$/]
 		}, {
 			test: /\.ts[x]?$/,
 			use: [{
-				loader: 'awesome-typescript-loader' 
+				loader: 'ts-loader' 
 			}],
 			include: [/node_modules/]
 		}]

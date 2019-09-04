@@ -1,52 +1,28 @@
 import * as React from 'react';
-import { DragSource, DragSourceCollector, DragSourceSpec } from 'react-dnd';
+import { DragPreviewImage, useDrag } from 'react-dnd';
 
 import { ShapeInfo } from '@app/wireframes/model';
 
 interface ShapeImageProps {
     // The shape data.
     shape: ShapeInfo;
-
-    // The drag source.
-    connectDragSource?: any;
-
-    // The drag preview.
-    connectDragPreview?: any;
 }
 
-const ShapeTarget: DragSourceSpec<ShapeImageProps, any> = {
-    beginDrag: props => {
-        return { shape: props.shape.name, offset: props.shape.offset };
-    }
+export const ShapeImage = (props: ShapeImageProps) => {
+    const { shape } = props;
+
+    const [, drag, connectDragPreview] = useDrag({
+        item: { shape: shape.name, offset: shape.offset, type: 'DND_ASSET' }
+    });
+
+    return (
+        <>
+            <DragPreviewImage src={dragPath(shape)} connect={connectDragPreview} />
+
+            <img ref={drag} className='asset-shape-image' alt={props.shape.displayName} src={previewPath(props.shape)} />
+        </>
+    );
 };
-
-const ShapeConnect: DragSourceCollector<any> = (connector, monitor) => {
-    return { connectDragSource: connector.dragSource(), connectDragPreview: connector.dragPreview() };
-};
-
-@DragSource('DND_ASSET', ShapeTarget, ShapeConnect)
-export class ShapeImage extends React.PureComponent<ShapeImageProps> {
-    public render() {
-        const preview = (node: any) => {
-            if (node) {
-                const clone = node.cloneNode();
-                clone.src = dragPath(this.props.shape);
-
-                this.props.connectDragPreview(clone, {
-                    dropEffect: 'copy',
-                    anchorX: 0,
-                    anchorY: 0
-                });
-            }
-        };
-
-        return this.props.connectDragSource!(
-            <img ref={preview} className='asset-shape-image' alt={this.props.shape.displayName} src={previewPath(this.props.shape)} />,
-        {
-            dropEffect: 'copy'
-        });
-    }
-}
 
 const pathToShapes = require.context('../../../images/shapes', true);
 

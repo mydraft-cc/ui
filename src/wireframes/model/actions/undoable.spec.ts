@@ -45,7 +45,7 @@ describe('Undoable', () => {
     it('should call inner reducer for other action', () => {
         let reducerCalled = false;
 
-        const reducer = undoable(() => { reducerCalled = true; return 16; }, {}, []);
+        const reducer = undoable(() => { reducerCalled = true; return 16; }, 0, []);
         const state_2 = reducer(state_1, { type: 'OTHER' });
 
         expect(state_2.present).toBe(16);
@@ -55,7 +55,7 @@ describe('Undoable', () => {
     it('should call inner reducer for ignored action', () => {
         let reducerCalled = false;
 
-        const reducer = undoable(() => { reducerCalled = true; return 16; }, {}, ['OTHER']);
+        const reducer = undoable(() => { reducerCalled = true; return 16; }, 0, ['OTHER']);
         const state_2 = reducer(state_1, { type: 'OTHER' });
 
         expect(state_2.present).toBe(16);

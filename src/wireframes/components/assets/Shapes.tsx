@@ -15,7 +15,8 @@ import {
     getDiagramId,
     getFilteredShapes,
     getShapesFilter,
-    ShapeInfo} from '@app/wireframes/model';
+    ShapeInfo
+} from '@app/wireframes/model';
 
 import { ShapeImage } from './ShapeImage';
 

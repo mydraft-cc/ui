@@ -68,7 +68,7 @@ const CustomProperties = (props: CustomPropertiesProps) => {
                         }
                         {c instanceof SelectionConfigurable &&
                             <Select value={selectedShape.appearance.get(c.name)}
-                                onChange={value => props.changeItemsAppearance(selectedDiagramId, [selectedShape], c.name, value)}>
+                                onChange={(value: any) => props.changeItemsAppearance(selectedDiagramId, [selectedShape], c.name, value)}>
                                 {c.options.map(o =>
                                     <Select.Option key={o} value={o}>{o}</Select.Option>
                                 )}

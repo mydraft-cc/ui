@@ -2,7 +2,7 @@ import './index.scss';
 
 import { createBrowserHistory } from 'history';
 import * as React from 'react';
-import { DragDropContextProvider } from 'react-dnd';
+import { DndProvider } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 import * as ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
@@ -80,7 +80,7 @@ const store = createStore(
 import { AppContainer } from './App';
 
 const Root = (
-    <DragDropContextProvider backend={HTML5Backend}>
+    <DndProvider backend={HTML5Backend}>
         <SerializerContext.Provider value={serializer}>
             <RendererContext.Provider value={rendererService}>
                 <Provider store={store}>
@@ -94,7 +94,7 @@ const Root = (
         </SerializerContext.Provider>
 
         <UserReport />
-    </DragDropContextProvider>
+    </DndProvider>
 );
 
 ReactDOM.render(Root, document.getElementById('root') as HTMLElement);
