@@ -69,7 +69,9 @@ export class TransformAdorner extends React.Component<TransformAdornerProps> imp
     private resizeShapes: any[] = [];
     private snapManager = new SnapManager();
 
-    public componentWillMount() {
+    constructor(props: TransformAdornerProps) {
+        super(props);
+
         this.renderer = new SVGRenderer();
         this.renderer.captureContext(this.props.adorners);
 
@@ -88,16 +90,14 @@ export class TransformAdorner extends React.Component<TransformAdornerProps> imp
         this.props.interactionService.removeHandler(this);
     }
 
-    public componentWillReceiveProps(nextProps: TransformAdornerProps) {
-        if (this.props.selectedDiagram.selectedItemIds !== nextProps.selectedDiagram.selectedItemIds) {
+    public componentDidUpdate(prevProps: TransformAdornerProps) {
+        if (this.props.selectedDiagram.selectedItemIds !== prevProps.selectedDiagram.selectedItemIds) {
             this.rotation = Rotation.ZERO;
         }
 
         this.manipulationMode = 0;
         this.manipulated = false;
-    }
 
-    public componentDidUpdate() {
         if (this.hasSelection()) {
             this.calculateInitializeTransform();
             this.calculateResizeRestrictions();

@@ -4,18 +4,10 @@ export interface TitleProps {
     text: string;
 }
 
-export class Title extends React.PureComponent<TitleProps> {
-    constructor(props: TitleProps) {
-        super(props);
-
+export const Title = (props: TitleProps) => {
+    React.useEffect(() => {
         document.title = props.text;
-    }
+    });
 
-    public componentWillReceiveProps(props: TitleProps) {
-        document.title = props.text;
-    }
-
-    public render(): any {
-        return null;
-    }
-}
+    return (<></>);
+};
