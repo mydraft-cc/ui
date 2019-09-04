@@ -114,6 +114,8 @@ function AssetTarget(props: EditorViewProps, ref: React.RefObject<HTMLElement>) 
 }
 
 const EditorView = (props: EditorViewProps) => {
+    const renderer = React.useContext(RendererContext);
+
     const ref = React.useRef();
 
     const [, drop] = useDrop({
@@ -149,11 +151,7 @@ const EditorView = (props: EditorViewProps) => {
 
     return (
         <div ref={ref} className='editor-view' style={calculateStyle()}>
-            <RendererContext.Consumer>
-                {renderer =>
-                    <EditorContainer rendererService={renderer} />
-                }
-            </RendererContext.Consumer>
+            <EditorContainer rendererService={renderer} />
         </div>
     );
 };
