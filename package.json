@@ -45,6 +45,7 @@
     "@types/webpack-env": "1.14.0",
     "circular-dependency-plugin": "5.2.0",
     "css-loader": "3.2.0",
+    "eslint": "^6.3.0",
     "favicons-webpack-plugin": "1.0.1",
     "file-loader": "4.2.0",
     "html-loader": "0.5.5",
