@@ -1,66 +1,66 @@
-import { ImmutableList } from '@app/core';
+import { List, Record } from 'immutable';
 
-import { Diagram } from './diagram';
-import { DiagramItem } from './diagram-item';
-import { Transform } from './transform';
+import {
+    bringForwards,
+    bringToFront,
+    sendBackwards,
+    sendToBack
+} from '@app/core';
 
-export class DiagramContainer extends DiagramItem {
-    protected constructor(id: string, isLocked: boolean, public childIds: ImmutableList<string>) {
-        super(id, isLocked);
+export class DiagramContainer extends Record<{ ids: List<string> }>({ ids: List<string>() }) {
+    public static of(...ids: string[]) {
+        return new DiagramContainer({ ids: List<string>(ids) });
     }
 
-    public static createContainer(): DiagramContainer {
-        const result = new DiagramContainer('root', false, ImmutableList.empty<string>());
-
-        Object.freeze(result);
-
-        return result;
+    public get values() {
+        return this.get('ids').toArray();
     }
 
-    public bounds(diagram: Diagram): Transform {
-        throw new Error('Not supported');
+    public at(index: number) {
+        return this.get('ids').get(index);
     }
 
-    public transformByBounds(oldBounds: Transform, newBounds: Transform): DiagramItem {
-        throw new Error('Not supported');
+    public push(...itemIds: string[]) {
+        return this.replaceIds(ids => {
+            return ids.withMutations(mutator => {
+                for (let id of itemIds) {
+                    mutator.push(id);
+                }
+            });
+        });
     }
 
-    public addItems(...itemIds: string[]): DiagramContainer {
-        return this.clonedWithChildren(this.childIds.add(...itemIds));
+    public remove(...itemIds: string[]) {
+        return this.replaceIds(ids => {
+            return ids.withMutations(mutator => {
+                for (let id of itemIds) {
+                    mutator.remove(mutator.indexOf(id));
+                }
+            });
+        });
     }
 
-    public removeItems(...itemIds: string[]): DiagramContainer {
-        return this.clonedWithChildren(this.childIds.remove(...itemIds));
+    public bringToFront(itemIds: string[]) {
+        return this.replaceIds(ids => bringToFront(ids, itemIds));
     }
 
-    public bringToFront(itemIds: string[]): DiagramContainer {
-        return this.clonedWithChildren(this.childIds.bringToFront(itemIds));
+    public bringForwards(itemIds: string[]) {
+        return this.replaceIds(ids => bringForwards(ids, itemIds));
     }
 
-    public bringForwards(itemIds: string[]): DiagramContainer {
-        return this.clonedWithChildren(this.childIds.bringForwards(itemIds));
+    public sendToBack(itemIds: string[]) {
+        return this.replaceIds(ids => sendToBack(ids, itemIds));
     }
 
-    public sendToBack(itemIds: string[]): DiagramContainer {
-        return this.clonedWithChildren(this.childIds.sendToBack(itemIds));
+    public sendBackwards(itemIds: string[]) {
+        return this.replaceIds(ids => sendBackwards(ids, itemIds));
     }
 
-    public sendBackwards(itemIds: string[]): DiagramContainer {
-        return this.clonedWithChildren(this.childIds.sendBackwards(itemIds));
+    private replaceIds(mutator: (ids: List<string>) => List<string>) {
+        return this.set('ids', mutator(this.ids));
     }
+}
 
-    private clonedWithChildren(children: ImmutableList<string>): DiagramContainer {
-        if (children !== this.childIds) {
-            return this.cloned<DiagramContainer>((container: DiagramContainer) => container.childIds = children);
-        } else {
-            return this;
-        }
-    }
-
-    public clone(): DiagramContainer {
-        return new DiagramContainer(
-            this.id,
-            this.isLocked,
-            this.childIds);
-    }
+export function createContainer() {
+    return new DiagramContainer();
 }

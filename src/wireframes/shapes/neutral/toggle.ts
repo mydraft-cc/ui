@@ -2,7 +2,7 @@ import { Rect2, Vec2 } from '@app/core';
 
 import {
     Configurable,
-    DiagramShape,
+    DiagramItem,
     SelectionConfigurable
 } from '@app/wireframes/model';
 
@@ -13,11 +13,11 @@ const STATE_NORMAL = 'Normal';
 const STATE_CHECKED = 'Checked';
 
 const DEFAULT_APPEARANCE = {};
-DEFAULT_APPEARANCE[DiagramShape.APPEARANCE_FOREGROUND_COLOR] = 0x238b45;
-DEFAULT_APPEARANCE[DiagramShape.APPEARANCE_BACKGROUND_COLOR] = 0xbdbdbd;
-DEFAULT_APPEARANCE[DiagramShape.APPEARANCE_TEXT_DISABLED] = true;
-DEFAULT_APPEARANCE[DiagramShape.APPEARANCE_STROKE_COLOR] = 0xffffff;
-DEFAULT_APPEARANCE[DiagramShape.APPEARANCE_STROKE_THICKNESS] = 4;
+DEFAULT_APPEARANCE[DiagramItem.APPEARANCE_FOREGROUND_COLOR] = 0x238b45;
+DEFAULT_APPEARANCE[DiagramItem.APPEARANCE_BACKGROUND_COLOR] = 0xbdbdbd;
+DEFAULT_APPEARANCE[DiagramItem.APPEARANCE_TEXT_DISABLED] = true;
+DEFAULT_APPEARANCE[DiagramItem.APPEARANCE_STROKE_COLOR] = 0xffffff;
+DEFAULT_APPEARANCE[DiagramItem.APPEARANCE_STROKE_THICKNESS] = 4;
 DEFAULT_APPEARANCE[STATE_KEY] = STATE_CHECKED;
 
 const CONFIGURABLES: Configurable[] = [
@@ -37,12 +37,12 @@ export class Toggle extends AbstractControl {
         return 'Toggle';
     }
 
-    public createDefaultShape(shapeId: string): DiagramShape {
-        return DiagramShape.createShape(shapeId, this.identifier(), 60, 30, CONFIGURABLES, DEFAULT_APPEARANCE);
+    public createDefaultShape(shapeId: string): DiagramItem {
+        return DiagramItem.createShape(shapeId, this.identifier(), 60, 30, CONFIGURABLES, DEFAULT_APPEARANCE);
     }
 
     protected renderInternal(ctx: AbstractContext) {
-        const border = ctx.shape.appearance.get(DiagramShape.APPEARANCE_STROKE_THICKNESS);
+        const border = ctx.shape.appearance.get(DiagramItem.APPEARANCE_STROKE_THICKNESS);
 
         const radius = Math.min(ctx.shape.transform.size.x, ctx.shape.transform.size.y) * 0.5;
 
@@ -59,14 +59,14 @@ export class Toggle extends AbstractControl {
         const circleSize = radius - border;
         const circleItem = ctx.renderer.createEllipse(0, Rect2.fromCenter(circleCenter, circleSize));
 
-        ctx.renderer.setBackgroundColor(circleItem, ctx.shape.appearance.get(DiagramShape.APPEARANCE_STROKE_COLOR));
+        ctx.renderer.setBackgroundColor(circleItem, ctx.shape.appearance.get(DiagramItem.APPEARANCE_STROKE_COLOR));
 
         const pillItem = ctx.renderer.createRectangle(0, radius, ctx.bounds);
 
         if (isUnchecked) {
             ctx.renderer.setBackgroundColor(pillItem, ctx.shape);
         } else {
-            ctx.renderer.setBackgroundColor(pillItem, ctx.shape.appearance.get(DiagramShape.APPEARANCE_FOREGROUND_COLOR));
+            ctx.renderer.setBackgroundColor(pillItem, ctx.shape.appearance.get(DiagramItem.APPEARANCE_FOREGROUND_COLOR));
         }
 
         ctx.add(pillItem);

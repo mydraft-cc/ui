@@ -8,7 +8,6 @@ import { MathHelper, Shortcut } from '@app/core';
 import {
     calculateSelection,
     Diagram,
-    DiagramGroup,
     DiagramItem,
     EditorStateInStore,
     getDiagram,
@@ -37,7 +36,7 @@ interface ArrangeMenuProps {
     selectedItems: DiagramItem[];
 
     // The selected groups.
-    selectedGroups: DiagramGroup[];
+    selectedGroups: DiagramItem[];
 
     // Group items.
     groupItems: (diagram: Diagram, items: DiagramItem[], id: string) => any;
@@ -46,7 +45,7 @@ interface ArrangeMenuProps {
     removeItems: (diagram: Diagram, items: DiagramItem[]) => any;
 
     // Ungroup items.
-    ungroupItems: (diagram: Diagram, groups: DiagramGroup[]) => any;
+    ungroupItems: (diagram: Diagram, groups: DiagramItem[]) => any;
 
     // Selcts items.
     selectItems: (diagram: Diagram, itemsIds: string[]) => any;
@@ -81,7 +80,7 @@ class ArrangeMenu extends React.PureComponent<ArrangeMenuProps> {
         const selectedDiagram = this.props.selectedDiagram;
 
         if (selectedDiagram) {
-            this.props.selectItems(selectedDiagram, calculateSelection(selectedDiagram.items.toArray(), selectedDiagram));
+            this.props.selectItems(selectedDiagram, calculateSelection(selectedDiagram.items.values(), selectedDiagram));
         }
     }
 

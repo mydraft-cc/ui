@@ -1,11 +1,9 @@
-import { MathHelper } from '@app/core';
-
 import { Diagram, EditorState } from '@app/wireframes/model';
 
 describe('EditorState', () => {
     const state_1 = EditorState.empty();
 
-    const diagram = Diagram.empty(MathHelper.guid());
+    const diagram = Diagram.empty('1');
 
     it('should instantiate', () => {
         const state = EditorState.empty();
@@ -16,7 +14,7 @@ describe('EditorState', () => {
     it('should add diagram', () => {
         const state_2 = state_1.addDiagram(diagram);
 
-        expect(state_2.diagrams.contains(diagram.id)).toBeTruthy();
+        expect(state_2.diagrams.has(diagram.id)).toBeTruthy();
     });
 
     it('should return original state when diagram to add is null', () => {
@@ -29,7 +27,7 @@ describe('EditorState', () => {
         const state_2 = state_1.addDiagram(diagram);
         const state_3 = state_2.removeDiagram(diagram.id);
 
-        expect(state_3.diagrams.contains(diagram.id)).toBeFalsy();
+        expect(state_3.diagrams.has(diagram.id)).toBeFalsy();
     });
 
     it('should return original state when diagram to remove is null', () => {
@@ -51,7 +49,7 @@ describe('EditorState', () => {
         const state_3 = state_2.selectDiagram(diagram.id);
         const state_4 = state_3.removeDiagram(diagram.id);
 
-        expect(state_4.diagrams.contains(diagram.id)).toBeFalsy();
+        expect(state_4.diagrams.has(diagram.id)).toBeFalsy();
         expect(state_4.selectedDiagramId).toBeNull();
     });
 
@@ -119,16 +117,5 @@ describe('EditorState', () => {
         const state_3 = state_2.updateDiagram(diagram.id, d => d);
 
         expect(state_2).toBe(state_3);
-    });
-
-    it('should move shape to new index', () => {
-        const d1 = Diagram.empty(MathHelper.guid());
-        const d2 = Diagram.empty(MathHelper.guid());
-        const d3 = Diagram.empty(MathHelper.guid());
-
-        const state_2 = state_1.addDiagram(d1).addDiagram(d2).addDiagram(d3);
-        const state_3 = state_2.moveDiagram(d3.id, 1);
-
-        expect(state_3.diagrams.toArray()).toEqual([d1, d3, d2]);
     });
 });

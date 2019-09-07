@@ -1,39 +1,33 @@
-import { ImmutableIdMap, Vec2 } from '@app/core';
+import { Map, Record } from 'immutable';
+
+import { MathHelper, Vec2 } from '@app/core';
 
 import { Diagram } from './diagram';
 import { EditorStateInStore } from './editor-state';
 import { UndoableState } from './undoable-state';
 
-export class EditorState {
-    constructor(
-        public readonly diagrams: ImmutableIdMap<Diagram>,
-        public readonly selectedDiagramId: string | null,
-        public readonly size: Vec2
-    ) {
-        Object.freeze(this);
+type DiagramMap = Map<string, Diagram>;
+
+type EditorProps = { selectedDiagramId?: string | null, diagrams: DiagramMap, size: Vec2 };
+
+export class EditorState extends Record<EditorProps>({ diagrams: Map(), size: new Vec2(1200, 1000) }) {
+    public static empty(id = MathHelper.guid()): EditorState {
+        return new EditorState().addDiagram(Diagram.empty(id));
     }
 
-    public static empty(): EditorState {
-        return new EditorState(ImmutableIdMap.empty<Diagram>(), null, new Vec2(1200, 1000));
+    public addDiagram(diagram: Diagram) {
+        return this.clone(d => d.set(diagram.id, diagram), diagram.id);
     }
 
-    public addDiagram(diagram: Diagram): EditorState {
-        return this.clone(this.diagrams.add(diagram), diagram ? diagram.id : this.selectedDiagramId);
+    public removeDiagram(diagramId: string) {
+        return this.clone(d => d.remove(diagramId), diagramId === this.selectedDiagramId ? null : this.selectedDiagramId);
     }
 
-    public removeDiagram(diagramId: string): EditorState {
-        return this.clone(this.diagrams.remove(diagramId), diagramId === this.selectedDiagramId ? null : this.selectedDiagramId);
+    public updateDiagram(diagramId: string, updater: (value: Diagram) => Diagram) {
+        return this.clone(d => d.update(diagramId, updater), this.selectedDiagramId);
     }
 
-    public updateDiagram(diagramId: string, updater: (value: Diagram) => Diagram): EditorState {
-        return this.clone(this.diagrams.update(diagramId, updater), this.selectedDiagramId);
-    }
-
-    public moveDiagram(diagramId: string, position: number): EditorState {
-        return this.clone(this.diagrams.moveTo([diagramId], position), this.selectedDiagramId);
-    }
-
-    public selectDiagram(diagramId: string | null): EditorState {
+    public selectDiagram(diagramId: string | null) {
         if (diagramId) {
             const diagram = this.diagrams.get(diagramId);
 
@@ -42,15 +36,11 @@ export class EditorState {
             }
         }
 
-        return this.clone(this.diagrams, diagramId);
+        return this.clone(m => m, diagramId);
     }
 
-    private clone(diagrams: ImmutableIdMap<Diagram>, selectedDiagramId: string | null): EditorState {
-        if (diagrams !== this.diagrams || selectedDiagramId !== this.selectedDiagramId) {
-            return new EditorState(diagrams, selectedDiagramId, this.size);
-        } else {
-            return this;
-        }
+    private clone(update: (diagrams: DiagramMap) => DiagramMap, selectedDiagramId: string | null): EditorState {
+        return this.withMutations(m => m.set('diagrams', update(this.diagrams)).set('selectedDiagramId', selectedDiagramId));
     }
 }
 

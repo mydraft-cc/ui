@@ -230,12 +230,7 @@ describe('Rect2', () => {
     });
 
     it('should make valid equal comparisons', () => {
-        expect(new Rect2(10, 10, 10, 10).eq(new Rect2(10, 10, 10, 10))).toBeTruthy();
-        expect(new Rect2(10, 10, 10, 10).eq(new Rect2(20, 20, 20, 20))).toBeFalsy();
-    });
-
-    it('should make valid not equal comparisons', () => {
-        expect(new Rect2(10, 10, 10, 10).ne(new Rect2(10, 10, 10, 10))).toBeFalsy();
-        expect(new Rect2(10, 10, 10, 10).ne(new Rect2(20, 20, 20, 20))).toBeTruthy();
+        expect(new Rect2(10, 10, 10, 10).equals(new Rect2(10, 10, 10, 10))).toBeTruthy();
+        expect(new Rect2(10, 10, 10, 10).equals(new Rect2(20, 20, 20, 20))).toBeFalsy();
     });
 });

@@ -1,9 +1,9 @@
 import * as svg from 'svg.js';
 
-import { DiagramShape, Renderer } from '@app/wireframes/model';
+import { DiagramItem, Renderer } from '@app/wireframes/model';
 
 export class ShapeRef {
-    private shape: DiagramShape;
+    private shape: DiagramItem;
 
     public renderedElement: svg.Element;
 
@@ -24,7 +24,7 @@ export class ShapeRef {
         }
     }
 
-    public render(shape: DiagramShape) {
+    public render(shape: DiagramItem) {
         const mustRender = this.shape !== shape || !this.renderedElement;
 
         if (mustRender) {

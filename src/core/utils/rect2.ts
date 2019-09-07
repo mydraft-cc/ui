@@ -136,20 +136,12 @@ export class Rect2 {
         return Rect2.fromVecs([lb, lt, rb, rt]);
     }
 
-    public eq(r: Rect2): boolean {
-        return Rect2.eq(this, r);
+    public equals(r: Rect2): boolean {
+        return Rect2.equals(this, r);
     }
 
-    public ne(r: Rect2): boolean {
-        return Rect2.ne(this, r);
-    }
-
-    public static eq(lhs: Rect2, rhs: Rect2): boolean {
+    public static equals(lhs: Rect2, rhs: Rect2): boolean {
         return lhs.x === rhs.x && lhs.y === rhs.y && lhs.w === rhs.w && lhs.h === rhs.h;
-    }
-
-    public static ne(lhs: Rect2, rhs: Rect2): boolean {
-        return lhs.x !== rhs.x || lhs.y !== rhs.y || lhs.w !== rhs.w || lhs.h !== rhs.h;
     }
 
     public toString(): string {

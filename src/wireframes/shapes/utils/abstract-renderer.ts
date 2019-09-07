@@ -4,16 +4,16 @@ import {
     Rect2
 } from '@app/core';
 
-import { DiagramShape, Transform } from '@app/wireframes/model';
+import { DiagramItem, Transform } from '@app/wireframes/model';
 
 export interface TextConfig { text: string; fontSize?: number; alignment?: string; }
 
-export type RendererColor = string | number | Color | DiagramShape;
+export type RendererColor = string | number | Color | DiagramItem;
 export type RendererElement = any;
-export type RendererOpacity = number | DiagramShape;
-export type RendererText = TextConfig | DiagramShape;
-export type RendererWidth = number | DiagramShape;
-export type RendererTransform = Transform | MatrixTransform | DiagramShape;
+export type RendererOpacity = number | DiagramItem;
+export type RendererText = TextConfig | DiagramItem;
+export type RendererWidth = number | DiagramItem;
+export type RendererTransform = Transform | MatrixTransform | DiagramItem;
 
 export interface AbstractRenderer {
     createRoundedRectangleLeft(strokeWidth: RendererWidth, radius: number, bounds: Rect2): RendererElement;

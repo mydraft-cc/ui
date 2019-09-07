@@ -1,19 +1,19 @@
 
 import { Rect2 } from '@app/core';
 
-import { DiagramShape } from '@app/wireframes/model';
+import { DiagramItem } from '@app/wireframes/model';
 
 import { AbstractContext, AbstractControl } from '@app/wireframes/shapes/utils/abstract-control';
 import { CommonTheme } from './_theme';
 
 const DEFAULT_APPEARANCE = {};
-DEFAULT_APPEARANCE[DiagramShape.APPEARANCE_FOREGROUND_COLOR] = CommonTheme.CONTROL_TEXT_COLOR;
-DEFAULT_APPEARANCE[DiagramShape.APPEARANCE_BACKGROUND_COLOR] = CommonTheme.CONTROL_BACKGROUND_COLOR;
-DEFAULT_APPEARANCE[DiagramShape.APPEARANCE_TEXT] = '43';
-DEFAULT_APPEARANCE[DiagramShape.APPEARANCE_TEXT_ALIGNMENT] = 'left';
-DEFAULT_APPEARANCE[DiagramShape.APPEARANCE_FONT_SIZE] = CommonTheme.CONTROL_FONT_SIZE;
-DEFAULT_APPEARANCE[DiagramShape.APPEARANCE_STROKE_COLOR] = CommonTheme.CONTROL_BORDER_COLOR;
-DEFAULT_APPEARANCE[DiagramShape.APPEARANCE_STROKE_THICKNESS] = CommonTheme.CONTROL_BORDER_THICKNESS;
+DEFAULT_APPEARANCE[DiagramItem.APPEARANCE_FOREGROUND_COLOR] = CommonTheme.CONTROL_TEXT_COLOR;
+DEFAULT_APPEARANCE[DiagramItem.APPEARANCE_BACKGROUND_COLOR] = CommonTheme.CONTROL_BACKGROUND_COLOR;
+DEFAULT_APPEARANCE[DiagramItem.APPEARANCE_TEXT] = '43';
+DEFAULT_APPEARANCE[DiagramItem.APPEARANCE_TEXT_ALIGNMENT] = 'left';
+DEFAULT_APPEARANCE[DiagramItem.APPEARANCE_FONT_SIZE] = CommonTheme.CONTROL_FONT_SIZE;
+DEFAULT_APPEARANCE[DiagramItem.APPEARANCE_STROKE_COLOR] = CommonTheme.CONTROL_BORDER_COLOR;
+DEFAULT_APPEARANCE[DiagramItem.APPEARANCE_STROKE_THICKNESS] = CommonTheme.CONTROL_BORDER_THICKNESS;
 
 export class Numeric extends AbstractControl {
     public defaultAppearance() {
@@ -24,8 +24,8 @@ export class Numeric extends AbstractControl {
         return 'Numeric';
     }
 
-    public createDefaultShape(shapeId: string): DiagramShape {
-        return DiagramShape.createShape(shapeId, this.identifier(), 80, 30, undefined, DEFAULT_APPEARANCE);
+    public createDefaultShape(shapeId: string): DiagramItem {
+        return DiagramItem.createShape(shapeId, this.identifier(), 80, 30, undefined, DEFAULT_APPEARANCE);
     }
 
     protected renderInternal(ctx: AbstractContext) {
@@ -56,7 +56,7 @@ export class Numeric extends AbstractControl {
 
         const incrementerItem = ctx.renderer.createPath(0, `M${x - 0.5 * w},${y} L${x},${y - h},L${x + 0.5 * w},${y} z`);
 
-        ctx.renderer.setBackgroundColor(incrementerItem, ctx.shape.appearance.get(DiagramShape.APPEARANCE_STROKE_COLOR));
+        ctx.renderer.setBackgroundColor(incrementerItem, ctx.shape.appearance.get(DiagramItem.APPEARANCE_STROKE_COLOR));
 
         ctx.add(incrementerItem);
     }
@@ -69,7 +69,7 @@ export class Numeric extends AbstractControl {
 
         const decrementerItem = ctx.renderer.createPath(0, `M${x - 0.5 * w},${y} L${x},${y + h},L${x + 0.5 * w},${y} z`);
 
-        ctx.renderer.setBackgroundColor(decrementerItem, ctx.shape.appearance.get(DiagramShape.APPEARANCE_STROKE_COLOR));
+        ctx.renderer.setBackgroundColor(decrementerItem, ctx.shape.appearance.get(DiagramItem.APPEARANCE_STROKE_COLOR));
 
         ctx.add(decrementerItem);
     }

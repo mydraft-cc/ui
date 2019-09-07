@@ -1,40 +1,20 @@
-import { MathHelper, Vec2 } from '@app/core';
+import { Vec2 } from '@app/core';
 
 import { Checkbox } from '@app/wireframes/shapes/neutral/checkbox';
 
 import {
     Diagram,
+    DiagramItem,
     DiagramItemSet,
-    DiagramShape,
-    DiagramVisual,
     RendererService,
-    Serializer,
-    Transform
+    Serializer
 } from '@app/wireframes/model';
-
-class CustomVisual extends DiagramVisual {
-    public static createCustom(id: string) {
-        return new CustomVisual(id, false, null!);
-    }
-
-    public bounds(): Transform {
-        throw new Error('Not supported');
-    }
-
-    public transformByBounds(): DiagramVisual {
-        throw new Error('Not supported');
-    }
-
-    public clone(): DiagramVisual {
-        throw new Error('Not supported');
-    }
-}
 
 describe('Serializer', () => {
     const checkbox = new Checkbox();
 
-    const oldShape1 = checkbox.createDefaultShape(MathHelper.guid()).transformWith(t => t.moveTo(new Vec2(100, 20)));
-    const oldShape2 = checkbox.createDefaultShape(MathHelper.guid()).transformWith(t => t.moveTo(new Vec2(30, 10)));
+    const oldShape1 = checkbox.createDefaultShape('1').transformWith(t => t.moveTo(new Vec2(100, 20)));
+    const oldShape2 = checkbox.createDefaultShape('2').transformWith(t => t.moveTo(new Vec2(30, 10)));
 
     let renderers: RendererService;
 
@@ -45,22 +25,23 @@ describe('Serializer', () => {
 
     it('should serialize and deserialize', () => {
         const serializer = new Serializer(renderers);
-        const groupId = MathHelper.guid();
+
+        const groupId = '3';
 
         let oldDiagram =
-            Diagram.empty(MathHelper.guid())
+            Diagram.empty('1')
                 .addVisual(oldShape1)
                 .addVisual(oldShape2)
-                .addVisual(CustomVisual.createCustom(MathHelper.guid()))
+                .addVisual(DiagramItem.createShape('1', 'Custom', 100, 100))
                 .group(groupId, [oldShape1.id, oldShape2.id]);
 
-        const oldSet = DiagramItemSet.createFromDiagram([oldDiagram.items.last.id], oldDiagram) !;
+        const oldSet = DiagramItemSet.createFromDiagram([oldDiagram.items.last()], oldDiagram) !;
 
         const json = serializer.serializeSet(oldSet);
 
         const newSet = serializer.deserializeSet(serializer.generateNewIds(json));
-        const newShape1 = <DiagramShape>newSet.allVisuals[0];
-        const newShape2 = <DiagramShape>newSet.allVisuals[1];
+        const newShape1 = <DiagramItem>newSet.allVisuals[0];
+        const newShape2 = <DiagramItem>newSet.allVisuals[1];
 
         expect(newSet).toBeDefined();
         expect(newSet.allVisuals.length).toBe(2);
@@ -70,11 +51,11 @@ describe('Serializer', () => {
 
         const group = newSet.allGroups[0];
 
-        expect(group.childIds.get(0)).toBe(newShape1.id);
-        expect(group.childIds.get(1)).toBe(newShape2.id);
+        expect(group.childIds.at(0)).toBe(newShape1.id);
+        expect(group.childIds.at(1)).toBe(newShape2.id);
     });
 
-    function compareShapes(newShape: DiagramShape, originalShape: DiagramShape) {
+    function compareShapes(newShape: DiagramItem, originalShape: DiagramItem) {
         expect(newShape.renderer).toBe(originalShape.renderer);
         expect(newShape.configurables.length).toBe(originalShape.configurables.length);
         expect(newShape.transform.position.x).toBe(originalShape.transform.position.x);

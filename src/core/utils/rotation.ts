@@ -24,20 +24,12 @@ export class Rotation {
         return new Rotation(MathHelper.toRad(degree), degree);
     }
 
-    public eq(r: Rotation): boolean {
-        return Rotation.eq(this, r);
+    public equals(r: Rotation): boolean {
+        return Rotation.equals(this, r);
     }
 
-    public ne(r: Rotation): boolean {
-        return Rotation.ne(this, r);
-    }
-
-    public static eq(lhs: Rotation, rhs: Rotation): boolean {
+    public static equals(lhs: Rotation, rhs: Rotation): boolean {
         return lhs.radian === rhs.radian;
-    }
-
-    public static ne(lhs: Rotation, rhs: Rotation): boolean {
-        return lhs.radian !== rhs.radian;
     }
 
     public toString(): string {

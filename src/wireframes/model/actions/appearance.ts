@@ -4,7 +4,6 @@ import { Types } from '@app/core';
 
 import {
     DiagramItemSet,
-    DiagramShape,
     EditorState,
     RendererService,
     Transform
@@ -37,7 +36,7 @@ export function appearance(rendererService: RendererService): Reducer<EditorStat
 
                     for (let visual of set!.allVisuals) {
                         diagram = diagram.updateItem(visual.id, item => {
-                            if (item instanceof DiagramShape) {
+                            if (item.type === 'Shape') {
                                 const renderer = rendererService.registeredRenderers[item.renderer];
 
                                 if (renderer && !Types.isUndefined(renderer.defaultAppearance()[key])) {

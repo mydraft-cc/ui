@@ -1,8 +1,4 @@
-import {
-    MathHelper,
-    Rotation,
-    Vec2
-} from '@app/core';
+import { Rotation, Vec2 } from '@app/core';
 
 import {
     addIcon,
@@ -10,8 +6,8 @@ import {
     addVisual,
     calculateSelection,
     Diagram,
+    DiagramItem,
     DiagramItemSet,
-    DiagramShape,
     EditorState,
     items,
     pasteItems,
@@ -26,19 +22,18 @@ import {
 import { Button }   from '@app/wireframes/shapes/neutral/button';
 import { Icon }     from '@app/wireframes/shapes/shared/icon';
 import { Raster }   from '@app/wireframes/shapes/shared/raster';
-import { DiagramVisual } from '../diagram-visual';
 import { lockItems } from './items';
 
 describe('ItemsReducer', () => {
     const groupId = 'group1';
-    const shape1 = DiagramShape.createShape(MathHelper.guid(), 'Button', 100, 100);
-    const shape2 = DiagramShape.createShape(MathHelper.guid(), 'Button', 100, 100);
-    const shape3 = DiagramShape.createShape(MathHelper.guid(), 'Button', 100, 100);
+    const shape1 = DiagramItem.createShape('1', 'Button', 100, 100);
+    const shape2 = DiagramItem.createShape('2', 'Button', 100, 100);
+    const shape3 = DiagramItem.createShape('3', 'Button', 100, 100);
 
     let diagram =
-        Diagram.empty(MathHelper.guid())
+        Diagram.empty('1')
             .addVisual(shape1)
-            .addVisual(<DiagramVisual>shape2.lock())
+            .addVisual(shape2.lock())
             .addVisual(shape3);
     diagram = diagram.group(groupId, [shape1.id, shape2.id]);
 
@@ -52,6 +47,7 @@ describe('ItemsReducer', () => {
 
     it('should return same state if action is unknown', () => {
         const action = { type: 'UNKNOWN' };
+
         const state_1 = EditorState.empty();
         const state_2 = reducer(state_1, action);
 
@@ -60,79 +56,97 @@ describe('ItemsReducer', () => {
 
     it('should select shapes and set the ids of these shapes', () => {
         const action = selectItems(diagram, [groupId]);
+
         const state_1 = EditorState.empty().addDiagram(diagram);
         const state_2 = reducer(state_1, action);
 
-        expect(state_2.diagrams.last.selectedItemIds.toArray()).toEqual([groupId]);
+        const newDiagram = state_2.diagrams.get(diagram.id);
+
+        expect(newDiagram.selectedIds.toArray()).toEqual([groupId]);
     });
 
     it('should remove items and all children', () => {
-        const action = removeItems(diagram, [diagram.items.get(groupId)!]);
+        const action = removeItems(diagram, [diagram.items.get(groupId)]);
+
         const state_1 = EditorState.empty().addDiagram(diagram);
         const state_2 = reducer(state_1, action);
 
-        expect(state_2.diagrams.last.items.size).toBe(1);
+        const newDiagram = state_2.diagrams.get(diagram.id);
+
+        expect(newDiagram.selectedIds.size).toBe(1);
     });
 
     it('should lock item', () => {
         const action = lockItems(diagram, [shape1]);
+
         const state_1 = EditorState.empty().addDiagram(diagram);
         const state_2 = reducer(state_1, action);
 
-        expect(state_2.diagrams.last.items.get(shape1.id).isLocked).toBeTruthy();
+        const newShape = state_2.diagrams.get(diagram.id).items.get('1');
+
+        expect(newShape.isLocked).toBeTruthy();
     });
 
     it('should unlock item', () => {
         const action = unlockItems(diagram, [shape2]);
+
         const state_1 = EditorState.empty().addDiagram(diagram);
         const state_2 = reducer(state_1, action);
 
-        expect(state_2.diagrams.last.items.get(shape2.id).isLocked).toBeFalsy();
+        const newShape = state_2.diagrams.get(diagram.id).items.get('2');
+
+        expect(newShape.isLocked).toBeFalsy();
     });
 
     it('should add icon to diagram and select the shape', () => {
         const shapeId = 'shape';
 
         const action = addIcon(diagram, 'Icon', 'FontAwesome', 20, 40, shapeId);
+
         const state_1 = EditorState.empty().addDiagram(diagram);
         const state_2 = reducer(state_1, action);
 
-        const newIcon = <DiagramShape>state_2.diagrams.last.items.get(shapeId);
+        const newDiagram = state_2.diagrams.get(diagram.id);
+        const newIcon = newDiagram.items.get(shapeId);
 
         expect(newIcon.id).toBe(shapeId);
-        expect(newIcon.appearance.get('TEXT')).toBe('Icon');
-        expect(newIcon.appearance.get('ICON_FONT_FAMILY')).toBe('FontAwesome');
         expect(newIcon.renderer).toBe('Icon');
+        expect(newIcon.appearance.get(DiagramItem.APPEARANCE_TEXT)).toBe('Icon');
+        expect(newIcon.appearance.get(DiagramItem.APPEARANCE_FONT_FAMILY)).toBe('FontAwesome');
         expect(newIcon.transform).toEqual(new Transform(new Vec2(40, 60), new Vec2(40, 40), Rotation.ZERO));
 
-        expect(state_2.diagrams.last.selectedItemIds.toArray()).toEqual([shapeId]);
+        expect(newDiagram.selectedIds.toArray()).toEqual([shapeId]);
     });
 
     it('should add raster to diagram and select the shape', () => {
         const shapeId = 'shape';
 
         const action = addImage(diagram, 'source', 20, 40, 60, 80, shapeId);
+
         const state_1 = EditorState.empty().addDiagram(diagram);
         const state_2 = reducer(state_1, action);
 
-        const newImage = <DiagramShape>state_2.diagrams.last.items.get(shapeId);
+        const newDiagram = state_2.diagrams.get(diagram.id);
+        const newImage = newDiagram.items.get(shapeId);
 
         expect(newImage.id).toBe(shapeId);
         expect(newImage.appearance.get('SOURCE')).toBe('source');
         expect(newImage.renderer).toBe('Raster');
         expect(newImage.transform).toEqual(new Transform(new Vec2(50, 80), new Vec2(60, 80), Rotation.ZERO));
 
-        expect(state_2.diagrams.last.selectedItemIds.toArray()).toEqual([shapeId]);
+        expect(newDiagram.selectedIds.toArray()).toEqual([shapeId]);
     });
 
     it('should add raster and resize to max height of 300 if height is larger', () => {
         const shapeId = 'shape';
 
         const action = addImage(diagram, 'source', 20, 40, 600, 800, shapeId);
+
         const state_1 = EditorState.empty().addDiagram(diagram);
         const state_2 = reducer(state_1, action);
 
-        const newImage = <DiagramShape>state_2.diagrams.last.items.get(shapeId);
+        const newDiagram = state_2.diagrams.get(diagram.id);
+        const newImage = newDiagram.items.get(shapeId);
 
         expect(newImage.transform.size).toEqual(new Vec2(225, 300));
     });
@@ -141,10 +155,12 @@ describe('ItemsReducer', () => {
         const shapeId = 'shape';
 
         const action = addImage(diagram, 'source', 20, 40, 600, 300, shapeId);
+
         const state_1 = EditorState.empty().addDiagram(diagram);
         const state_2 = reducer(state_1, action);
 
-        const newImage = <DiagramShape>state_2.diagrams.last.items.get(shapeId);
+        const newDiagram = state_2.diagrams.get(diagram.id);
+        const newImage = newDiagram.items.get(shapeId);
 
         expect(newImage.transform.size).toEqual(new Vec2(300, 150));
     });
@@ -153,31 +169,35 @@ describe('ItemsReducer', () => {
         const shapeId = 'shape';
 
         const action = addVisual(diagram, 'Button', 100, 20, { }, shapeId);
+
         const state_1 = EditorState.empty().addDiagram(diagram);
         const state_2 = reducer(state_1, action);
 
-        const newShape = <DiagramShape>state_2.diagrams.last.items.get(shapeId);
+        const newDiagram = state_2.diagrams.get(diagram.id);
+        const newShape = newDiagram.items.get(shapeId);
 
         expect(newShape.id).toBe(shapeId);
         expect(newShape.transform.position).toEqual(new Vec2(150, 35));
 
-        expect(state_2.diagrams.last.selectedItemIds.toArray()).toEqual([shapeId]);
+        expect(newDiagram.selectedIds.toArray()).toEqual([shapeId]);
     });
 
     it('should add visual with default properties and select this visual', () => {
         const shapeId = 'shape';
 
         const action = addVisual(diagram, 'Button', 100, 20, { TEXT: 'hello' }, shapeId);
+
         const state_1 = EditorState.empty().addDiagram(diagram);
         const state_2 = reducer(state_1, action);
 
-        const newShape = <DiagramShape>state_2.diagrams.last.items.get(shapeId);
+        const newDiagram = state_2.diagrams.get(diagram.id);
+        const newShape = newDiagram.items.get(shapeId);
 
         expect(newShape.id).toBe(shapeId);
         expect(newShape.appearance.get('TEXT')).toEqual('hello');
         expect(newShape.transform.position).toEqual(new Vec2(150, 35));
 
-        expect(state_2.diagrams.last.selectedItemIds.toArray()).toEqual([shapeId]);
+        expect(newDiagram.selectedIds.toArray()).toEqual([shapeId]);
     });
 
     it('should paste json and add group and items', () => {
@@ -186,14 +206,15 @@ describe('ItemsReducer', () => {
         const json = serializer.serializeSet(DiagramItemSet.createFromDiagram(diagram.rootIds.toArray(), diagram)!);
 
         const action = pasteItems(diagram, serializer.generateNewIds(json));
+
         const state_1 = EditorState.empty().addDiagram(diagram);
         const state_2 = reducer(state_1, action);
 
-        const newDiagram = state_2.diagrams.last;
+        const newDiagram = state_2.diagrams.get(diagram.id);
 
         expect(newDiagram.items.size).toBe(8);
         expect(newDiagram.rootIds.size).toBe(4);
-        expect(newDiagram.selectedItemIds.size).toBe(2);
+        expect(newDiagram.selectedIds.size).toBe(2);
     });
 
     it('should not throw when pasting invalid json to diagram', () => {
@@ -221,7 +242,6 @@ describe('ItemsReducer', () => {
         const itemIds = calculateSelection([diagram.items.get(groupId)!], diagram, true);
 
         expect(itemIds).toEqual([groupId]);
-
     });
 
     it('should return group id when selecting grouped items', () => {

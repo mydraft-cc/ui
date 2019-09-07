@@ -25,20 +25,12 @@ export class Vec2 {
         Object.freeze(this);
     }
 
-    public eq(v: Vec2): boolean {
-        return Vec2.eq(this, v);
+    public equals(v: Vec2): boolean {
+        return Vec2.equals(this, v);
     }
 
-    public ne(v: Vec2): boolean {
-        return Vec2.ne(this, v);
-    }
-
-    public static eq(lhs: Vec2, rhs: Vec2): boolean {
+    public static equals(lhs: Vec2, rhs: Vec2): boolean {
         return lhs.x === rhs.x && lhs.y === rhs.y;
-    }
-
-    public static ne(lhs: Vec2, rhs: Vec2): boolean {
-        return lhs.x !== rhs.x || lhs.y !== rhs.y;
     }
 
     public toString(): string {

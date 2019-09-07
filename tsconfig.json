@@ -4,6 +4,7 @@
     "baseUrl": ".",
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
+    "downlevelIteration": true,
     "importHelpers": true,
     "jsx": "react",
     "lib": ["es6", "dom"],

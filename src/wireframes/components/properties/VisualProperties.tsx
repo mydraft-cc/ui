@@ -11,7 +11,6 @@ import { Color, ColorPicker } from '@app/core';
 import {
     changeItemsAppearance,
     DiagramItem,
-    DiagramShape,
     EditorStateInStore,
     getDiagramId,
     getSelectedItems,
@@ -63,12 +62,12 @@ const mapStateToProps = (state: EditorStateInStore & UIStateInStore) => {
     return {
         selectedDiagramId: getDiagramId(state),
         selectedItems: getSelectedItems(state),
-        backgroundColor: uniqueAppearance(set, DiagramShape.APPEARANCE_BACKGROUND_COLOR, x => Color.fromValue(x), Color.eq),
-        fontSize: uniqueAppearance(set, DiagramShape.APPEARANCE_FONT_SIZE, x => x),
-        foregroundColor: uniqueAppearance(set, DiagramShape.APPEARANCE_FOREGROUND_COLOR, x => Color.fromValue(x), Color.eq),
-        strokeColor: uniqueAppearance(set, DiagramShape.APPEARANCE_STROKE_COLOR, x => Color.fromValue(x), Color.eq),
-        strokeThickness: uniqueAppearance(set, DiagramShape.APPEARANCE_STROKE_THICKNESS, x => x),
-        textAlignment: uniqueAppearance(set, DiagramShape.APPEARANCE_TEXT_ALIGNMENT, x => x),
+        backgroundColor: uniqueAppearance(set, DiagramItem.APPEARANCE_BACKGROUND_COLOR, x => Color.fromValue(x), Color.eq),
+        fontSize: uniqueAppearance(set, DiagramItem.APPEARANCE_FONT_SIZE, x => x),
+        foregroundColor: uniqueAppearance(set, DiagramItem.APPEARANCE_FOREGROUND_COLOR, x => Color.fromValue(x), Color.eq),
+        strokeColor: uniqueAppearance(set, DiagramItem.APPEARANCE_STROKE_COLOR, x => Color.fromValue(x), Color.eq),
+        strokeThickness: uniqueAppearance(set, DiagramItem.APPEARANCE_STROKE_THICKNESS, x => x),
+        textAlignment: uniqueAppearance(set, DiagramItem.APPEARANCE_TEXT_ALIGNMENT, x => x),
         selectedColorTab: state.ui.selectedColorTab
     };
 };
@@ -89,7 +88,7 @@ class VisualProperties extends React.PureComponent<VisualPropertiesProps> {
         const selectedDiagramId = this.props.selectedDiagramId;
 
         if (selectedDiagramId) {
-            this.props.changeItemsAppearance(selectedDiagramId, this.props.selectedItems, DiagramShape.APPEARANCE_TEXT_ALIGNMENT, value);
+            this.props.changeItemsAppearance(selectedDiagramId, this.props.selectedItems, DiagramItem.APPEARANCE_TEXT_ALIGNMENT, value);
         }
     }
 
@@ -109,11 +108,11 @@ class VisualProperties extends React.PureComponent<VisualPropertiesProps> {
     private doAlignTextCenter = () => this.doAlignText('center');
     private doAlignTextRight =  () => this.doAlignText('right');
 
-    private doChangeFontSize =    	  (value: any) => this.doChangeAppearance(DiagramShape.APPEARANCE_FONT_SIZE, value);
-    private doChangeStrokeColor =     (value: any) => this.doChangeAppearance(DiagramShape.APPEARANCE_STROKE_COLOR, value);
-    private doChangeStrokeThickness = (value: any) => this.doChangeAppearance(DiagramShape.APPEARANCE_STROKE_THICKNESS, value);
-    private doChangeForegroundColor = (value: any) => this.doChangeAppearance(DiagramShape.APPEARANCE_FOREGROUND_COLOR, value);
-    private doChangeBackgroundColor = (value: any) => this.doChangeAppearance(DiagramShape.APPEARANCE_BACKGROUND_COLOR, value);
+    private doChangeFontSize =    	  (value: any) => this.doChangeAppearance(DiagramItem.APPEARANCE_FONT_SIZE, value);
+    private doChangeStrokeColor =     (value: any) => this.doChangeAppearance(DiagramItem.APPEARANCE_STROKE_COLOR, value);
+    private doChangeStrokeThickness = (value: any) => this.doChangeAppearance(DiagramItem.APPEARANCE_STROKE_THICKNESS, value);
+    private doChangeForegroundColor = (value: any) => this.doChangeAppearance(DiagramItem.APPEARANCE_FOREGROUND_COLOR, value);
+    private doChangeBackgroundColor = (value: any) => this.doChangeAppearance(DiagramItem.APPEARANCE_BACKGROUND_COLOR, value);
 
     private fontSizes = DEFINED_FONT_SIZES.map(o =>
         <Select.Option key={o.toString()} value={o}>{o}</Select.Option>

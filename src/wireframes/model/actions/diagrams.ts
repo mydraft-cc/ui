@@ -21,11 +21,6 @@ export const removeDiagram = (diagram: DiagramRef) => {
     return createDiagramAction(REMOVE_DIAGRAM, diagram);
 };
 
-export const MOVE_DIAGRAM = 'MOVE_DIAGRAM';
-export const moveDiagram = (diagram: DiagramRef, position: number) => {
-    return createDiagramAction(MOVE_DIAGRAM, diagram, { position });
-};
-
 export function diagrams(): Reducer<EditorState> {
     const reducer: Reducer<EditorState> = (state: EditorState, action: any) => {
         switch (action.type) {
@@ -35,8 +30,6 @@ export function diagrams(): Reducer<EditorState> {
                 return state.addDiagram(Diagram.empty(action.diagramId)).selectDiagram(action.diagramId);
             case REMOVE_DIAGRAM:
                 return state.removeDiagram(action.diagramId);
-            case MOVE_DIAGRAM:
-                return state.moveDiagram(action.diagramId, action.position);
             default:
                 return state;
         }

@@ -58,20 +58,12 @@ export class Transform {
         return new Transform(new Vec2(rect.cx, rect.cy), new Vec2(rect.w, rect.h), rotation);
     }
 
-    public eq(t: Transform) {
-        return Transform.eq(this, t);
+    public equals(t: Transform) {
+        return Transform.equals(this, t);
     }
 
-    public ne(t: Transform) {
-        return Transform.ne(this, t);
-    }
-
-    public static eq(lhs: Transform, rhs: Transform) {
-        return lhs.size.eq(rhs.size) && lhs.position.eq(rhs.position) && lhs.rotation.eq(rhs.rotation);
-    }
-
-    public static ne(lhs: Transform, rhs: Transform) {
-        return lhs.size.ne(rhs.size) || lhs.position.ne(rhs.position) || lhs.rotation.ne(rhs.rotation);
+    public static equals(lhs: Transform, rhs: Transform) {
+        return lhs.size.equals(rhs.size) && lhs.position.equals(rhs.position) && lhs.rotation.equals(rhs.rotation);
     }
 
     public toString() {
@@ -137,7 +129,7 @@ export class Transform {
     }
 
     public resizeTopLeft(newSize: Vec2): Transform {
-        if (this.size.eq(newSize)) {
+        if (this.size.equals(newSize)) {
             return this;
         }
 
@@ -166,7 +158,7 @@ export class Transform {
             y += 0.5;
         }
 
-        if (size.ne(this.size) || this.position.x !== x || this.position.y !== y) {
+        if (!size.equals(this.size) || this.position.x !== x || this.position.y !== y) {
             return new Transform(new Vec2(x, y), size, this.rotation);
         } else {
             return this;

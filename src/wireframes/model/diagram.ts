@@ -1,98 +1,130 @@
-import {
-    ImmutableIdMap,
-    ImmutableList,
-    ImmutableSet
-} from '@app/core';
+import { Map, Record, Set } from 'immutable';
 
 import { DiagramContainer } from './diagram-container';
-import { DiagramGroup } from './diagram-group';
 import { DiagramItem } from './diagram-item';
 import { DiagramItemSet } from './diagram-item-set';
-import { DiagramVisual } from './diagram-visual';
 
-export class Diagram {
-    public get rootIds(): ImmutableList<string> {
-        return this.roots.childIds;
+type DiagramProps = {
+    // The unique id of the diagram.
+    id?: string;
+
+    // The list of items.
+    items: Map<string, DiagramItem>;
+
+    // The selected ids.
+    selectedIds: Set<string>;
+
+    // The root ids.
+    root: DiagramContainer;
+};
+
+export class Diagram extends Record<DiagramProps>({ items: Map<string, DiagramItem>(), selectedIds: Set<string>(), root: new DiagramContainer() }) {
+    private parents: { [id: string]: DiagramItem };
+
+    public get rootIds() {
+        return this.get('root').ids;
     }
 
-    private constructor(
-        public readonly id: string,
-        public readonly items: ImmutableIdMap<DiagramItem>,
-        public readonly roots: DiagramContainer,
-        public readonly selectedItemIds: ImmutableSet,
-        private readonly parents: { [id: string]: DiagramGroup }
-    ) {
-        Object.freeze(this);
+    public get rootItems() {
+        return this.get('root').ids.map(x => this.items.get(x)).filter(x => !!x).toArray();
     }
 
-    public static empty(id: string): Diagram {
-        return new Diagram(id, ImmutableIdMap.empty<DiagramItem>(), DiagramContainer.createContainer(), ImmutableSet.empty(), {});
+    public static empty(id: string) {
+        return new Diagram({ id });
     }
 
-    public parent(id: string): DiagramGroup | null {
-        return id ? this.parents[id] : null;
+    public parent(id: string) {
+        if (!this.parents) {
+            this.parents = {};
+
+            this.items.forEach((item) => {
+                if (item.type === 'Group') {
+                    item.childIds.ids.forEach(childId => {
+                        this.parents[childId] = item;
+                    });
+                }
+            });
+        }
+
+        return this.parents[id];
     }
 
-    public updateItem(itemId: string, updater: (value: DiagramItem) => DiagramItem): Diagram {
-        return this.cloned(this.items.update(itemId, updater), this.roots);
-    }
-
-    public selectItems(itemIds: string[]): Diagram {
+    public selectItems(itemIds: string[]) {
         const items = this.findItems(itemIds);
 
         if (!items) {
             return this;
         }
 
-        return this.cloned(this.items, this.roots, this.selectedItemIds.set(...itemIds));
+        return this.set('selectedIds', Set<string>(itemIds));
     }
 
-    public addVisual(visual: DiagramVisual): Diagram {
-        const newItems = this.items.add(visual);
+    public addVisual(visual: DiagramItem) {
+        const items = this.items.set(visual.id, visual);
 
-        let newChildIds = this.roots;
+        let root = this.root;
 
-        if (newItems !== this.items) {
-            newChildIds = newChildIds.addItems(visual.id);
+        if (items !== this.items) {
+            root = root.push(visual.id);
         }
 
-        return this.cloned(newItems, newChildIds);
+        return this.withMutations(m => m.set('items', items).set('root', root));
     }
 
-    public bringToFront(itemIds: string[]): Diagram {
-        return this.withMutations(itemIds, (_, u) => u(c => c.bringToFront(itemIds)));
+    public bringToFront(ids: string[]) {
+        if (!this.findItems(ids)) {
+            return this;
+        }
+
+        return this.set('root', this.root.bringToFront(ids));
     }
 
-    public bringForwards(itemIds: string[]): Diagram {
-        return this.withMutations(itemIds, (_, u) => u(c => c.bringForwards(itemIds)));
+    public bringForwards(ids: string[]) {
+        if (!this.findItems(ids)) {
+            return this;
+        }
+
+        return this.set('root', this.root.bringForwards(ids));
     }
 
-    public sendToBack(itemIds: string[]): Diagram {
-        return this.withMutations(itemIds, (_, u) => u(c => c.sendToBack(itemIds)));
+    public sendToBack(ids: string[]) {
+        if (!this.findItems(ids)) {
+            return this;
+        }
+
+        return this.set('root', this.root.sendToBack(ids));
     }
 
-    public sendBackwards(itemIds: string[]): Diagram {
-        return this.withMutations(itemIds, (_, u) => u(c => c.sendBackwards(itemIds)));
+    public sendBackwards(ids: string[]) {
+        if (!this.findItems(ids)) {
+            return this;
+        }
+
+        return this.set('root', this.root.sendBackwards(ids));
     }
 
-    public group(groupId: string, itemIds: string[]): Diagram {
-        return this.withMutations(itemIds, (m, u) => {
-            const group = DiagramGroup.createGroup(groupId, itemIds);
-
-            u(c => c.removeItems(...itemIds).addItems(group.id));
-
-            m.items = m.items.add(group);
-        });
+    public updateItem(id: string, updater: (value: DiagramItem) => DiagramItem) {
+        return this.set('items', this.items.update(id, updater));
     }
 
-    public ungroup(groupId: string): Diagram {
-        return this.withMutations([groupId], (m, u) => {
-            const group = <DiagramGroup>this.items.get(groupId);
+    public group(groupId: string, ids: string[]) {
+        if (!this.findItems(ids)) {
+            return this;
+        }
 
-            u(c => c.removeItems(group.id).addItems(...group.childIds.toArray()));
+        const group = DiagramItem.createGroup(groupId, ids);
 
-            m.items = m.items.remove(groupId);
-        });
+        return this.withMutations(m => m.set('items', this.items.set(groupId, group)).set('root', this.root.push(group.id).remove(...ids)));
+    }
+
+    public ungroup(groupId: string) {
+        const group = this.items.get(groupId);
+
+        if (!group) {
+            return this;
+        }
+
+        return this.withMutations(m => m.set('items', this.items.remove(group.id)).set('root', this.root.push(...group.childIds.values)));
     }
 
     public addItems(set: DiagramItemSet): Diagram {
@@ -100,7 +132,15 @@ export class Diagram {
             return this;
         }
 
-        return this.cloned(this.items.add(...set.allItems), this.roots.addItems(...set.rootIds));
+        const items = this.items.withMutations(m => {
+            for (let item of set.allItems) {
+                m.set(item.id, item);
+            }
+        });
+
+        const root = this.root.push(...set.rootIds);
+
+        return this.withMutations(m => m.set('items', items).set('root', root));
     }
 
     public removeItems(set: DiagramItemSet): Diagram {
@@ -108,38 +148,15 @@ export class Diagram {
             return this;
         }
 
-        const allIds = set.allIds;
-
-        return this.cloned(this.items.remove(...allIds), this.roots.removeItems(...set.rootIds), this.selectedItemIds.remove(...allIds));
-    }
-
-    private withMutations(itemIds: string[], mutator: (mutable: MutableDiagram, updater: (m: (container: DiagramContainer) => DiagramContainer) => void) => void): Diagram {
-        const items = this.findItems(itemIds);
-
-        if (!items) {
-            return this;
-        }
-
-        let oldParent = this.parent(items[0].id) || this.roots;
-        let newParent = oldParent;
-
-        const state: MutableDiagram = { items: this.items, roots: this.roots, selectedItemIds: this.selectedItemIds };
-
-        const updater: (m: (container: DiagramContainer) => DiagramContainer) => void = m => {
-            newParent = m(oldParent);
-
-            if (oldParent === state.roots) {
-                state.roots = newParent;
-            } else {
-                state.items = state.items.update(oldParent.id, () => newParent);
+        const items = this.items.withMutations(m => {
+            for (let id of set.allIds) {
+                m.remove(id);
             }
+        });
 
-            oldParent = newParent;
-        };
+        const root = this.root.remove(...set.allIds);
 
-        mutator(state, updater);
-
-        return this.cloned(state.items, state.roots, state.selectedItemIds);
+        return this.withMutations(m => m.set('items', items).set('root', root));
     }
 
     private findItems(itemIds: string[]): DiagramItem[] | null {
@@ -149,7 +166,7 @@ export class Diagram {
 
         const result: DiagramItem[] = [];
 
-        let firstParent = <DiagramContainer>this.parent(itemIds[0]);
+        let firstParent = this.parent(itemIds[0]);
 
         for (let itemId of itemIds) {
             const item = this.items.get(itemId);
@@ -167,28 +184,4 @@ export class Diagram {
 
         return result;
     }
-
-    private cloned(items: ImmutableIdMap<DiagramItem>, roots: DiagramContainer, selectedItemIds?: ImmutableSet): Diagram {
-        selectedItemIds = selectedItemIds || this.selectedItemIds;
-
-        if (items !== this.items || selectedItemIds !== this.selectedItemIds || this.roots !== roots) {
-            const parents: { [id: string]: DiagramGroup } = {};
-
-            items.forEach(group => {
-                if (group instanceof DiagramGroup) {
-                    group.childIds.forEach(id => {
-                        parents[id] = <DiagramGroup>group;
-                    });
-                }
-            });
-
-            return new Diagram(this.id, items, roots, selectedItemIds, parents);
-        } else {
-            return this;
-        }
-    }
-}
-
-interface MutableDiagram {
-    items: ImmutableIdMap<DiagramItem>; roots: DiagramContainer; selectedItemIds: ImmutableSet;
 }

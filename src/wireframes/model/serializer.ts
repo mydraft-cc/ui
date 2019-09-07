@@ -1,14 +1,13 @@
-import * as Immutable from 'immutable';
+import { Map } from 'immutable';
 
 import {
-    ImmutableList,
     MathHelper,
     Rotation
 } from '@app/core';
 
-import { DiagramGroup } from './diagram-group';
+import { DiagramContainer } from './diagram-container';
+import { DiagramItem } from './diagram-item';
 import { DiagramItemSet } from './diagram-item-set';
-import { DiagramShape } from './diagram-shape';
 import { RendererService } from './renderer.service';
 import { Transform } from './transform';
 
@@ -49,8 +48,8 @@ export class Serializer {
     }
 
     public deserializeSet(json: string): DiagramItemSet {
-        const s: DiagramShape[] = [];
-        const g: DiagramGroup[] = [];
+        const s: DiagramItem[] = [];
+        const g: DiagramItem[] = [];
 
         const input = JSON.parse(json);
 
@@ -73,7 +72,7 @@ export class Serializer {
         const output: any = { visuals: [], groups: [] };
 
         for (let visual of set.allVisuals) {
-            const json = Serializer.serializeShape(visual as DiagramShape);
+            const json = Serializer.serializeShape(visual as DiagramItem);
 
             output.visuals.push(json);
         }
@@ -87,13 +86,13 @@ export class Serializer {
         return JSON.stringify(output);
     }
 
-    private static deserializeGroup(input: any): DiagramGroup {
-        return DiagramGroup.createGroup(input.id,
+    private static deserializeGroup(input: any): DiagramItem {
+        return DiagramItem.createGroup(input.id,
             Serializer.deserializeChildIds(input),
             Serializer.deserializeRotation(input));
     }
 
-    private static serializeGroup(group: DiagramGroup) {
+    private static serializeGroup(group: DiagramItem) {
         const output = { id: group.id };
 
         Serializer.serializeChildIds(group.childIds, output);
@@ -102,7 +101,7 @@ export class Serializer {
         return output;
     }
 
-    private deserializeShape(input: any): DiagramShape {
+    private deserializeShape(input: any): DiagramItem {
         const renderer = Serializer.deserializeRenderer(input);
 
         let shape = this.rendererService.registeredRenderers[renderer].createDefaultShape(input.id);
@@ -113,7 +112,7 @@ export class Serializer {
         return shape;
     }
 
-    private static serializeShape(shape: DiagramShape): any {
+    private static serializeShape(shape: DiagramItem): any {
         const output = { id: shape.id };
 
         Serializer.serializeRenderer(shape.renderer, output);
@@ -123,19 +122,19 @@ export class Serializer {
         return output;
     }
 
-    private static serializeChildIds(childIds: ImmutableList<string>, output: any) {
-        output.childIds = childIds.toArray();
+    private static serializeChildIds(childIds: DiagramContainer, output: any) {
+        output.childIds = childIds.values;
     }
 
-    private static deserializeChildIds(input: any): ImmutableList<string> {
-        return ImmutableList.of(...input.childIds);
+    private static deserializeChildIds(input: any) {
+        return DiagramContainer.of(input.childIds);
     }
 
     private static serializeRotation(rotation: Rotation, output: any) {
         output.rotation = rotation.degree;
     }
 
-    private static deserializeRotation(input: any): Rotation {
+    private static deserializeRotation(input: any) {
         return Rotation.fromDegree(input.rotation);
     }
 
@@ -147,19 +146,19 @@ export class Serializer {
         return input.renderer;
     }
 
-    private static serializeAppearance(appearance: Immutable.Map<string, any>, output: any) {
+    private static serializeAppearance(appearance: Map<string, any>, output: any) {
         output.appearance = appearance.toJS();
     }
 
-    private static deserializeAppearance(shape: DiagramShape, input: any): DiagramShape {
-        return shape.replaceAppearance(shape.appearance.merge(Immutable.Map<string, any>(input.appearance))) as DiagramShape;
+    private static deserializeAppearance(shape: DiagramItem, input: any) {
+        return shape.replaceAppearance(shape.appearance.merge(Map<string, any>(input.appearance))) as DiagramItem;
     }
 
     private static serializeTransform(transform: Transform, output: any) {
         output.transform = transform.toJS();
     }
 
-    private static deserializeTransform(shape: DiagramShape, input: any): DiagramShape {
+    private static deserializeTransform(shape: DiagramItem, input: any) {
         return shape.transformTo(Transform.fromJS(input.transform));
     }
 }

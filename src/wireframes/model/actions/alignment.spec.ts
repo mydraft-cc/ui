@@ -1,4 +1,4 @@
-import { MathHelper, Vec2 } from '@app/core';
+import { Vec2 } from '@app/core';
 
 import {
     ALIGN_H_CENTER,
@@ -10,7 +10,7 @@ import {
     alignItems,
     alignment,
     Diagram,
-    DiagramShape,
+    DiagramItem,
     DISTRIBUTE_H,
     DISTRIBUTE_V,
     EditorState
@@ -18,17 +18,19 @@ import {
 
 describe('AlignmentReducer', () => {
     const reducer = alignment();
-    const shape1 = DiagramShape.createShape(MathHelper.guid(), 'btn', 20, 20).transformWith(t => t.moveTo(new Vec2(100, 100)));
-    const shape2 = DiagramShape.createShape(MathHelper.guid(), 'btn', 40, 40).transformWith(t => t.moveTo(new Vec2(200, 200)));
-    const shape3 = DiagramShape.createShape(MathHelper.guid(), 'btn', 80, 80).transformWith(t => t.moveTo(new Vec2(300, 300)));
+    const shape1 = DiagramItem.createShape('1', 'btn', 20, 20).transformWith(t => t.moveTo(new Vec2(100, 100)));
+    const shape2 = DiagramItem.createShape('2', 'btn', 40, 40).transformWith(t => t.moveTo(new Vec2(200, 200)));
+    const shape3 = DiagramItem.createShape('3', 'btn', 80, 80).transformWith(t => t.moveTo(new Vec2(300, 300)));
+
     const diagram =
-        Diagram.empty(MathHelper.guid())
+        Diagram.empty('1')
             .addVisual(shape1)
             .addVisual(shape2)
             .addVisual(shape3);
 
     it('should return same state if action is unknown', () => {
         const action = { type: 'UNKNOWN' };
+
         const state_1 = EditorState.empty();
         const state_2 = reducer(state_1, action);
 
@@ -37,6 +39,7 @@ describe('AlignmentReducer', () => {
 
     it('should return same state if action has unknown alignment type', () => {
         const action = alignItems('UNKNOWN', diagram, []);
+
         const state_1 = EditorState.empty();
         const state_2 = reducer(state_1, action);
 
@@ -76,14 +79,18 @@ describe('AlignmentReducer', () => {
     });
 
     function expectPositionsAfterAlignment(type: string, positions: Vec2[]) {
-        const action = alignItems(type, diagram, diagram.items.toArray());
+        const action = alignItems(type, diagram, diagram.items.values());
+
         const state_1 = EditorState.empty().addDiagram(diagram);
         const state_2 = reducer(state_1, action);
 
-        const shapes = state_2.diagrams.last.items.toArray();
+        const shapes = state_2.diagrams.get(diagram.id).items.values();
 
-        for (let i = 0; i < shapes.length; i++) {
-            expect((<DiagramShape>shapes[i]).transform.position).toEqual(positions[i]);
+        let i = 0;
+
+        for (let shape of shapes) {
+            expect(shape.transform.position).toBe(positions[i]);
+            i++;
         }
     }
 });

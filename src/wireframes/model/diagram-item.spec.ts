@@ -1,9 +1,7 @@
-import { MathHelper} from '@app/core';
-
-import { DiagramShape } from '@app/wireframes/model';
+import { DiagramItem } from './diagram-item';
 
 describe('DiagramItem', () => {
-    const item_1 = DiagramShape.createShape(MathHelper.guid(), 'btn', 100, 20);
+    const item_1 = DiagramItem.createShape('1', 'btn', 100, 20);
 
     it('should return original item when already unlocked', () => {
         const item_2 = item_1.unlock();

@@ -2,10 +2,8 @@ import { createSelector } from 'reselect';
 
 import { AssetsStateInStore } from './assets-state';
 import { Configurable } from './configurables';
-import { DiagramGroup } from './diagram-group';
 import { DiagramItem } from './diagram-item';
 import { DiagramItemSet } from './diagram-item-set';
-import { DiagramShape } from './diagram-shape';
 import { EditorStateInStore } from './editor-state';
 
 const EMPTY_STRING_ARRAY: string[] = [];
@@ -53,17 +51,17 @@ export const getDiagram = createSelector(
 
 export const getSelectionSet = createSelector(
     getDiagram,
-    diagram => diagram ? DiagramItemSet.createFromDiagram(diagram.selectedItemIds.toArray(), diagram) : null
+    diagram => diagram ? DiagramItemSet.createFromDiagram(diagram.selectedIds.toArray(), diagram) : null
 );
 
-export const getSelectedItemIds = createSelector(
+export const getselectedIds = createSelector(
     getDiagram,
-    diagram => diagram ? diagram.selectedItemIds.toArray() : EMPTY_STRING_ARRAY
+    diagram => diagram ? diagram.selectedIds.toArray() : EMPTY_STRING_ARRAY
 );
 
 export const getSelectedItemsWithLocked = createSelector(
     getDiagram,
-    diagram => diagram ? <DiagramItem[]>diagram.selectedItemIds.map(i => diagram!.items.get(i)) : EMPTY_ITEMS_ARRAY
+    diagram => diagram ? diagram.selectedIds.map(i => diagram!.items.get(i)).toArray() : EMPTY_ITEMS_ARRAY
 );
 
 export const getSelectedItems = createSelector(
@@ -73,7 +71,7 @@ export const getSelectedItems = createSelector(
 
 export const getSelectedGroups = createSelector(
     getSelectedItems,
-    items => items.filter(i => i instanceof DiagramGroup).map(i => <DiagramGroup>i)
+    items => items.filter(i => i.type === 'Group')
 );
 
 export const getSelectedItemWithLocked = createSelector(
@@ -83,7 +81,7 @@ export const getSelectedItemWithLocked = createSelector(
 
 export const getSelectedShape = createSelector(
     getSelectedItems,
-    items => items.length === 1 && items[0] instanceof DiagramShape ? <DiagramShape>items[0] : null
+    items => items.length === 1 && items[0].type === 'Shape' ? items[0] : null
 );
 
 export const getSelectedConfigurables = createSelector(

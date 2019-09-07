@@ -55,12 +55,7 @@ describe('Rotation', () => {
     });
 
     it('should make correct equal comparisons', () => {
-        expect(Rotation.fromDegree(123).eq(Rotation.fromDegree(123))).toBeTruthy();
-        expect(Rotation.fromDegree(123).eq(Rotation.fromDegree(234))).toBeFalsy();
-    });
-
-    it('should make correct not equal comparisons', () => {
-        expect(Rotation.fromDegree(123).ne(Rotation.fromDegree(123))).toBeFalsy();
-        expect(Rotation.fromDegree(123).ne(Rotation.fromDegree(234))).toBeTruthy();
+        expect(Rotation.fromDegree(123).equals(Rotation.fromDegree(123))).toBeTruthy();
+        expect(Rotation.fromDegree(123).equals(Rotation.fromDegree(234))).toBeFalsy();
     });
 });

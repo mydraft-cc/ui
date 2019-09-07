@@ -9,7 +9,7 @@ import {
     changeItemsAppearance,
     ColorConfigurable,
     Configurable,
-    DiagramVisual,
+    DiagramItem,
     EditorStateInStore,
     getDiagramId,
     getSelectedConfigurables,
@@ -28,7 +28,7 @@ interface CustomPropertiesProps {
     selectedDiagramId: string | null;
 
     // The selected items.
-    selectedShape: DiagramVisual | null;
+    selectedShape: DiagramItem | null;
 
     // The configurable properties.
     selectedConfigurables: Configurable[];
@@ -37,7 +37,7 @@ interface CustomPropertiesProps {
     selectedColorTab: string;
 
     // Change the items appearance..
-    changeItemsAppearance: (diagram: string, visuals: DiagramVisual[], key: string, val: any) => any;
+    changeItemsAppearance: (diagram: string, visuals: DiagramItem[], key: string, val: any) => any;
 
     // Selectes the color tab.
     selectColorTab: (key: string) => any;
