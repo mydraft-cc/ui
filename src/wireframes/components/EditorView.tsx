@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { DropTarget, DropTargetCollector, DropTargetSpec } from 'react-dnd';
+import { DropTargetMonitor, useDrop } from 'react-dnd';
 import { findDOMNode } from 'react-dom';
 import { connect } from 'react-redux';
 import { bindActionCreators, Dispatch } from 'redux';
@@ -35,9 +35,6 @@ export interface EditorViewProps {
     // The spacing.
     spacing: number;
 
-    // The drop target.
-    connectDropTarget?: any;
-
     // The selected diagram.
     selectedDiagramId: string;
 
@@ -51,20 +48,18 @@ export interface EditorViewProps {
     addImage: (diagram: string, source: string, x: number, y: number, w: number, h: number) => any;
 }
 
-const AssetTarget: DropTargetSpec<EditorViewProps> = {
-    drop: (props, monitor, component) => {
-        if (!monitor) {
+function AssetTarget(props: EditorViewProps, ref: React.RefObject<HTMLElement>) {
+    return (item: any, monitor: DropTargetMonitor) => {
+        if (!monitor || !ref.current) {
             return;
         }
 
         const offset = monitor.getSourceClientOffset() || monitor.getClientOffset()!;
 
-        const componentRect = (findDOMNode(component!) as HTMLElement)!.getBoundingClientRect();
+        const componentRect = (findDOMNode(ref.current) as HTMLElement)!.getBoundingClientRect();
 
         let x = (offset.x - props.spacing - componentRect.left) / props.zoom;
         let y = (offset.y - props.spacing - componentRect.top) / props.zoom;
-
-        const item: any = monitor.getItem();
 
         if (item.offset) {
             x += item.offset.x;
@@ -75,13 +70,13 @@ const AssetTarget: DropTargetSpec<EditorViewProps> = {
 
         switch (itemType) {
             case 'DND_ICON':
-                props.addIcon(props.selectedDiagramId, item['text'], item['fontFamily'], x, y);
+                props.addIcon(props.selectedDiagramId, item.text, item.fontFamily, x, y);
                 break;
             case 'DND_ASSET':
                 props.addVisual(props.selectedDiagramId, item['shape'], x, y);
                 break;
             case NativeTypes.TEXT:
-                props.addVisual(props.selectedDiagramId, 'Label', x, y, { TEXT: item['text'] });
+                props.addVisual(props.selectedDiagramId, 'Label', x, y, { TEXT: item.text });
                 break;
             case NativeTypes.FILE: {
                 const files = item.files as File[];
@@ -115,54 +110,62 @@ const AssetTarget: DropTargetSpec<EditorViewProps> = {
                 break;
             }
         }
-    }
-};
-
-const EditorViewConnect: DropTargetCollector<any> = (connector, monitor) => {
-    return { connectDropTarget: connector.dropTarget() };
-};
-
-@DropTarget([
-    NativeTypes.URL,
-    NativeTypes.FILE,
-    NativeTypes.TEXT,
-    'DND_ASSET',
-    'DND_ICON'
-], AssetTarget, EditorViewConnect)
-class EditorView extends React.Component<EditorViewProps> {
-    public render() {
-        const calculateStyle = () => {
-            const zoomedOuterWidth = 2 * this.props.spacing + this.props.zoomedWidth;
-            const zoomedOuterHeight = 2 * this.props.spacing + this.props.zoomedHeight;
-
-            const w = sizeInPx(zoomedOuterWidth);
-            const h = sizeInPx(zoomedOuterHeight);
-
-            const padding = sizeInPx(this.props.spacing);
-
-            return { width: w, height: h, padding, margin: 'auto' };
-        };
-
-        return this.props.connectDropTarget(
-            <div className='editor-view' style={calculateStyle()}>
-                <RendererContext.Consumer>
-                    {renderer =>
-                        <EditorContainer rendererService={renderer} />
-                    }
-                </RendererContext.Consumer>
-            </div>
-        );
-    }
+    };
 }
+
+const EditorView = (props: EditorViewProps) => {
+    const renderer = React.useContext(RendererContext);
+
+    const ref = React.useRef();
+
+    const [, drop] = useDrop({
+        accept: [
+            NativeTypes.URL,
+            NativeTypes.FILE,
+            NativeTypes.TEXT,
+            'DND_ASSET',
+            'DND_ICON'
+        ],
+        drop: AssetTarget(props, ref)
+    });
+
+    const calculateStyle = () => {
+        const {
+            spacing,
+            zoomedWidth,
+            zoomedHeight
+        } = props;
+
+        const zoomedOuterWidth  = 2 * spacing + zoomedWidth;
+        const zoomedOuterHeight = 2 * spacing + zoomedHeight;
+
+        const w = sizeInPx(zoomedOuterWidth);
+        const h = sizeInPx(zoomedOuterHeight);
+
+        const padding = sizeInPx(spacing);
+
+        return { width: w, height: h, padding, margin: 'auto' };
+    };
+
+    drop(ref);
+
+    return (
+        <div ref={ref} className='editor-view' style={calculateStyle()}>
+            <EditorContainer rendererService={renderer} />
+        </div>
+    );
+};
 
 const mapStateToProps = (state: UIStateInStore & EditorStateInStore) => {
     const editor = getEditor(state);
 
+    const zoom = state.ui.zoom;
+
     return {
         selectedDiagramId: getDiagramId(state),
-        zoomedWidth: editor.size.x * state.ui.zoom,
-        zoomedHeight: editor.size.y * state.ui.zoom,
-        zoom: state.ui.zoom
+        zoomedWidth: editor.size.x * zoom,
+        zoomedHeight: editor.size.y * zoom,
+        zoom: zoom
     };
 };
 

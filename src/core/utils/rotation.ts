@@ -1,4 +1,4 @@
-import { MathHelper } from '@app/core';
+import { MathHelper } from './math-helper';
 
 export class Rotation {
     public static readonly ZERO = Rotation.fromRadian(0);

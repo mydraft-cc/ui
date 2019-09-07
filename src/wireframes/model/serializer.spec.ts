@@ -58,7 +58,7 @@ describe('Serializer', () => {
 
         const json = serializer.serializeSet(oldSet);
 
-        const newSet = serializer.deserializeSet(json);
+        const newSet = serializer.deserializeSet(serializer.generateNewIds(json));
         const newShape1 = <DiagramShape>newSet.allVisuals[0];
         const newShape2 = <DiagramShape>newSet.allVisuals[1];
 

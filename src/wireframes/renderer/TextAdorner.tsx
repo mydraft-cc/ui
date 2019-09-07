@@ -55,8 +55,8 @@ export class TextAdorner extends React.Component<TextAdornerProps> implements In
         window.removeEventListener('mousedown', this.handleMouseDown);
     }
 
-    public componentWillReceiveProps(nextProps: TextAdornerProps) {
-        if (this.props.selectedItems !== nextProps.selectedItems) {
+    public componentDidUpdate(prevProps: TextAdornerProps) {
+        if (this.props.selectedItems !== prevProps.selectedItems) {
             this.updateText();
         }
     }

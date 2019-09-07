@@ -1,20 +1,22 @@
-﻿var path = require('path');
+﻿const path = require('path');
 
-var appRoot = path.resolve(__dirname, '..');
+const appRoot = path.resolve(__dirname, '..');
 
-exports.root = function () {
-    var newArgs = Array.prototype.slice.call(arguments, 0);
+function root() {
+    const newArgs = Array.prototype.slice.call(arguments, 0);
 
     return path.join.apply(path, [appRoot].concat(newArgs));
-};
+}
 
-exports.removeLoaders = function (config, extensions) {
-    var rules = config.module.rules;
+exports.root = root;
 
-    for (var i = 0; i < rules.length; i += 1) {
-        var rule = rules[i];
+function removeLoaders(config, extensions) {
+    const rules = config.module.rules;
 
-        for (var j = 0; j < extensions.length; j += 1) {
+    for (let i = 0; i < rules.length; i += 1) {
+        const rule = rules[i];
+
+        for (let j = 0; j < extensions.length; j += 1) {
             if (rule.test.source.indexOf(extensions[j]) >= 0) {
                 rules.splice(i, 1);
                 i--;
@@ -22,4 +24,8 @@ exports.removeLoaders = function (config, extensions) {
             }
         }
     }
+
+    return config;
 }
+
+exports.removeLoaders = removeLoaders;

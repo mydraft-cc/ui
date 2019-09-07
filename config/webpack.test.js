@@ -4,7 +4,7 @@
       helpers = require('./helpers'),
  commonConfig = require('./webpack.config.js');
 
-module.exports = webpackMerge(commonConfig, {
+module.exports = webpackMerge(commonConfig(), {
     mode: 'development',
 
     /**

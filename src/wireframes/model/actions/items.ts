@@ -1,4 +1,4 @@
-import { Reducer } from 'redux';
+import { Action, Middleware, Reducer } from 'redux';
 
 import { MathHelper, Vec2 } from '@app/core';
 
@@ -64,6 +64,18 @@ export const pasteItems = (diagram: DiagramRef, json: string, offset = 0) => {
 };
 
 const MAX_IMAGE_SIZE = 300;
+
+export function itemsMiddleware(serializer: Serializer): Middleware {
+    const middleware: Middleware = store => next => (action: Action & any) => {
+        if (action.type === PASTE_ITEMS) {
+            action.json = serializer.generateNewIds(action.json);
+        }
+
+        return next(action);
+    };
+
+    return middleware;
+}
 
 export function items(rendererService: RendererService, serializer: Serializer): Reducer<EditorState> {
     const reducer: Reducer<EditorState> = (state: EditorState, action: any) => {
