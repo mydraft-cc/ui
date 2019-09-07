@@ -74,7 +74,7 @@ const store = createStore(
             routing: routerReducer,
                  ui: Reducers.ui(createInitialUIState())
     }), undoableReducer, editorReducer),
-    composeEnhancers(applyMiddleware(thunk, Reducers.toastMiddleware(), routerMiddleware(history)))
+    composeEnhancers(applyMiddleware(thunk, Reducers.toastMiddleware(), routerMiddleware(history), Reducers.itemsMiddleware(serializer)))
 );
 
 import { AppContainer } from './App';
