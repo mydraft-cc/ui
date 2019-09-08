@@ -16,6 +16,7 @@
 	"noImplicitReturns": true,
     "noImplicitThis": true,
     "removeComments": false,
+    "sourceMap": true,
     "strictNullChecks": false,
     "suppressImplicitAnyIndexErrors": true,
     "target": "es5",

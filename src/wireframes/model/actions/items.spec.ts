@@ -25,7 +25,7 @@ import { Raster }   from '@app/wireframes/shapes/shared/raster';
 import { lockItems } from './items';
 
 describe('ItemsReducer', () => {
-    const groupId = 'group1';
+    const groupId = 'group-1';
     const shape1 = DiagramItem.createShape('1', 'Button', 100, 100);
     const shape2 = DiagramItem.createShape('2', 'Button', 100, 100);
     const shape3 = DiagramItem.createShape('3', 'Button', 100, 100);
@@ -73,7 +73,7 @@ describe('ItemsReducer', () => {
 
         const newDiagram = state_2.diagrams.get(diagram.id);
 
-        expect(newDiagram.selectedIds.size).toBe(1);
+        expect(newDiagram.selectedIds.size).toBe(0);
     });
 
     it('should lock item', () => {
@@ -112,7 +112,7 @@ describe('ItemsReducer', () => {
         expect(newIcon.id).toBe(shapeId);
         expect(newIcon.renderer).toBe('Icon');
         expect(newIcon.appearance.get(DiagramItem.APPEARANCE_TEXT)).toBe('Icon');
-        expect(newIcon.appearance.get(DiagramItem.APPEARANCE_FONT_FAMILY)).toBe('FontAwesome');
+        expect(newIcon.appearance.get(DiagramItem.APPEARANCE_ICON_FONT_FAMILY)).toBe('FontAwesome');
         expect(newIcon.transform).toEqual(new Transform(new Vec2(40, 60), new Vec2(40, 40), Rotation.ZERO));
 
         expect(newDiagram.selectedIds.toArray()).toEqual([shapeId]);

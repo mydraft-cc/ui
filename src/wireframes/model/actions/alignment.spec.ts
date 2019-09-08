@@ -89,7 +89,7 @@ describe('AlignmentReducer', () => {
         let i = 0;
 
         for (let shape of shapes) {
-            expect(shape.transform.position).toBe(positions[i]);
+            expect(shape.transform.position).toEqual(positions[i]);
             i++;
         }
     }

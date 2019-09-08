@@ -12,7 +12,7 @@ export class DiagramContainer extends Record<{ ids: List<string> }>({ ids: List<
         return new DiagramContainer({ ids: List<string>(ids) });
     }
 
-    public get values() {
+    public toArray() {
         return this.get('ids').toArray();
     }
 

@@ -1,4 +1,12 @@
-import { List } from 'immutable';
+import { List, Map } from 'immutable';
+
+export function updateWhenFound<K, V>(map: Map<K, V>, key: K, updater: (v: V) => V) {
+    if (!map.has(key)) {
+        return map;
+    }
+
+    return map.update(key, updater);
+}
 
 export function singleOrDefault<T>(iterable: Iterable<T>): T {
     let itemFound = false;

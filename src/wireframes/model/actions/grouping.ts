@@ -40,7 +40,7 @@ export function grouping(): Reducer<EditorState> {
                         const target = diagram.items.get(groupId);
 
                         if (target) {
-                            childIds.push(...target.childIds.values);
+                            childIds.push(...target.childIds.toArray());
 
                             diagram = diagram.ungroup(groupId);
                         }

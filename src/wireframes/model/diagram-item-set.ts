@@ -46,8 +46,8 @@ export class DiagramItemSet {
     }
 
     public static createFromDiagram(items: (string | DiagramItem)[], diagram: Diagram): DiagramItemSet {
-        const g: DiagramItem[] = [];
-        const v: DiagramItem[] = [];
+        const allGroups: DiagramItem[] = [];
+        const allVisuals: DiagramItem[] = [];
 
         let flatItemsArray: (itemsOrIds: (string | DiagramItem)[], isTopLevel: boolean) => void;
 
@@ -66,10 +66,12 @@ export class DiagramItemSet {
                 }
 
                 if (item.type === 'Group') {
-                    flatItemsArray(item.childIds.values, false);
-                }
+                    allGroups.push(item);
 
-                g.push(item);
+                    flatItemsArray(item.childIds.toArray(), false);
+                } else {
+                    allVisuals.push(item);
+                }
             }
         };
 
@@ -77,7 +79,7 @@ export class DiagramItemSet {
             flatItemsArray(items, true);
         }
 
-        return new DiagramItemSet(g, v);
+        return new DiagramItemSet(allGroups, allVisuals);
     }
 
     public canAdd(diagram: Diagram): boolean {

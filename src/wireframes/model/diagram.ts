@@ -1,12 +1,14 @@
 import { Map, Record, Set } from 'immutable';
 
+import { Types, updateWhenFound } from '@app/core';
+
 import { DiagramContainer } from './diagram-container';
 import { DiagramItem } from './diagram-item';
 import { DiagramItemSet } from './diagram-item-set';
 
-type DiagramProps = {
+type Props = {
     // The unique id of the diagram.
-    id?: string;
+    id: string;
 
     // The list of items.
     items: Map<string, DiagramItem>;
@@ -18,7 +20,7 @@ type DiagramProps = {
     root: DiagramContainer;
 };
 
-export class Diagram extends Record<DiagramProps>({ items: Map<string, DiagramItem>(), selectedIds: Set<string>(), root: new DiagramContainer() }) {
+export class Diagram extends Record<Props>({ id: '0', items: Map(), selectedIds: Set(), root: new DiagramContainer() }) {
     private parents: { [id: string]: DiagramItem };
 
     public get rootIds() {
@@ -33,7 +35,15 @@ export class Diagram extends Record<DiagramProps>({ items: Map<string, DiagramIt
         return new Diagram({ id });
     }
 
-    public parent(id: string) {
+    public parent(id: string | DiagramItem) {
+        if (!id) {
+            return undefined;
+        }
+
+        if (Types.is(id, DiagramItem)) {
+            id = id.id;
+        }
+
         if (!this.parents) {
             this.parents = {};
 
@@ -49,114 +59,165 @@ export class Diagram extends Record<DiagramProps>({ items: Map<string, DiagramIt
         return this.parents[id];
     }
 
-    public selectItems(itemIds: string[]) {
+    public addVisual(visual: DiagramItem) {
+        if (!visual) {
+            return this;
+        }
+
+        return this.mutate([], ({ root, items }) => {
+            items = items.set(visual.id, visual);
+
+            if (items !== this.items) {
+                root = root.push(visual.id);
+            }
+
+            return { items, root };
+        });
+    }
+
+    public selectItems(ids: string[]) {
+        return this.mutate(ids, () => {
+            const selectedIds = Set(ids);
+
+            return { selectedIds };
+        });
+    }
+
+    public bringToFront(ids: string[]) {
+        return this.mutate(ids, ({ root }) => {
+            root = root.bringToFront(ids);
+
+            return { root };
+        });
+    }
+
+    public bringForwards(ids: string[]) {
+        return this.mutate(ids, ({ root }) => {
+            root = root.bringForwards(ids);
+
+            return { root };
+        });
+    }
+
+    public sendToBack(ids: string[]) {
+        return this.mutate(ids, ({ root }) => {
+            root = root.sendToBack(ids);
+
+            return { root };
+        });
+    }
+
+    public sendBackwards(ids: string[]) {
+        return this.mutate(ids, ({ root }) => {
+            root = root.sendBackwards(ids);
+
+            return { root };
+        });
+    }
+
+    public updateItem(id: string, updater: (value: DiagramItem) => DiagramItem) {
+        return this.mutate([id], ({ items }) => {
+            items = updateWhenFound(items, id, updater);
+
+            return { items };
+        });
+    }
+
+    public group(groupId: string, ids: string[]) {
+        return this.mutate(ids, ({ root, items }) => {
+            root = root.push(groupId).remove(...ids);
+
+            items = items.set(groupId, DiagramItem.createGroup(groupId, ids));
+
+            return { items, root };
+        });
+    }
+
+    public ungroup(groupId: string) {
+        return this.mutate([groupId], ({ root, items }) => {
+            root = root.push(...items.get(groupId).childIds.toArray()).remove(groupId);
+
+            items = items.remove(groupId);
+
+            return { items, root };
+        });
+    }
+
+    public addItems(set: DiagramItemSet): Diagram {
+        if (!set.canAdd(this)) {
+            return this;
+        }
+
+        return this.mutate([], ({ root, items }) => {
+            items = items.withMutations(m => {
+                for (let item of set.allItems) {
+                    m.set(item.id, item);
+                }
+            });
+
+            root = root.push(...set.rootIds);
+
+            return { items, root };
+        });
+    }
+
+    public removeItems(set: DiagramItemSet): Diagram {
+        if (!set.canRemove(this)) {
+            return this;
+        }
+
+        return this.mutate([], ({ root, items, selectedIds }) => {
+            items = items.withMutations(m => {
+                for (let id of set.allIds) {
+                    m.remove(id);
+                }
+            });
+
+            selectedIds = selectedIds.withMutations(m => {
+                for (let id of set.allIds) {
+                    m.remove(id);
+                }
+            });
+
+            root = root.remove(...set.rootIds);
+
+            return { items, root };
+        });
+    }
+
+    private mutate(itemIds: string[], updater: (diagram: Props) => Partial<Props>): Diagram {
         const items = this.findItems(itemIds);
 
         if (!items) {
             return this;
         }
 
-        return this.set('selectedIds', Set<string>(itemIds));
-    }
+        return this.withMutations(m => {
+            const parent = this.parent(items[0]);
 
-    public addVisual(visual: DiagramItem) {
-        const items = this.items.set(visual.id, visual);
+            const root =
+                parent ?
+                parent.childIds :
+                this.root;
 
-        let root = this.root;
+            const update = updater({ root, items: this.items, selectedIds: this.selectedIds, id: this.id });
 
-        if (items !== this.items) {
-            root = root.push(visual.id);
-        }
+            if (update.items) {
+                m.set('items', update.items);
+            }
 
-        return this.withMutations(m => m.set('items', items).set('root', root));
-    }
+            if (update.selectedIds) {
+                m.set('selectedIds', update.selectedIds);
+            }
 
-    public bringToFront(ids: string[]) {
-        if (!this.findItems(ids)) {
-            return this;
-        }
-
-        return this.set('root', this.root.bringToFront(ids));
-    }
-
-    public bringForwards(ids: string[]) {
-        if (!this.findItems(ids)) {
-            return this;
-        }
-
-        return this.set('root', this.root.bringForwards(ids));
-    }
-
-    public sendToBack(ids: string[]) {
-        if (!this.findItems(ids)) {
-            return this;
-        }
-
-        return this.set('root', this.root.sendToBack(ids));
-    }
-
-    public sendBackwards(ids: string[]) {
-        if (!this.findItems(ids)) {
-            return this;
-        }
-
-        return this.set('root', this.root.sendBackwards(ids));
-    }
-
-    public updateItem(id: string, updater: (value: DiagramItem) => DiagramItem) {
-        return this.set('items', this.items.update(id, updater));
-    }
-
-    public group(groupId: string, ids: string[]) {
-        if (!this.findItems(ids)) {
-            return this;
-        }
-
-        const group = DiagramItem.createGroup(groupId, ids);
-
-        return this.withMutations(m => m.set('items', this.items.set(groupId, group)).set('root', this.root.push(group.id).remove(...ids)));
-    }
-
-    public ungroup(groupId: string) {
-        const group = this.items.get(groupId);
-
-        if (!group) {
-            return this;
-        }
-
-        return this.withMutations(m => m.set('items', this.items.remove(group.id)).set('root', this.root.push(...group.childIds.values)));
-    }
-
-    public addItems(set: DiagramItemSet): Diagram {
-        if (!set || !set.canAdd(this)) {
-            return this;
-        }
-
-        const items = this.items.withMutations(m => {
-            for (let item of set.allItems) {
-                m.set(item.id, item);
+            if (update.root) {
+                if (parent) {
+                    m.set('items', updateWhenFound(m.items, parent.id, p => p.set('childIds', update.root)));
+                } else {
+                    m.set('root', update.root);
+                }
             }
         });
-
-        const root = this.root.push(...set.rootIds);
-
-        return this.withMutations(m => m.set('items', items).set('root', root));
-    }
-
-    public removeItems(set: DiagramItemSet): Diagram {
-        if (!set || !set.canRemove(this)) {
-            return this;
-        }
-
-        const items = this.items.withMutations(m => {
-            for (let id of set.allIds) {
-                m.remove(id);
-            }
-        });
-
-        const root = this.root.remove(...set.allIds);
-
-        return this.withMutations(m => m.set('items', items).set('root', root));
     }
 
     private findItems(itemIds: string[]): DiagramItem[] | null {

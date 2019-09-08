@@ -28,7 +28,7 @@ describe('GroupingReducer', () => {
                 .addVisual(DiagramItem.createShape(id1, 'btn', 100, 100))
                 .addVisual(DiagramItem.createShape(id2, 'btn', 100, 100));
 
-        const groupId = 'group1';
+        const groupId = 'group-1';
 
         const action = groupItems(diagram, diagram.items.values(), groupId);
 
@@ -42,8 +42,8 @@ describe('GroupingReducer', () => {
     });
 
     it('should ungroup multiple groups and select their children', () => {
-        const groupId1 = 'group1';
-        const groupId2 = 'group2';
+        const groupId1 = 'group-1';
+        const groupId2 = 'group-2';
 
         const id1 = '1';
         const id2 = '2';

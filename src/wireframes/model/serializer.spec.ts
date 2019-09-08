@@ -26,24 +26,26 @@ describe('Serializer', () => {
     it('should serialize and deserialize', () => {
         const serializer = new Serializer(renderers);
 
-        const groupId = '3';
+        const groupId = 'group-1';
 
         let oldDiagram =
             Diagram.empty('1')
                 .addVisual(oldShape1)
                 .addVisual(oldShape2)
-                .addVisual(DiagramItem.createShape('1', 'Custom', 100, 100))
+                .addVisual(DiagramItem.createShape('3', null!, 100, 100))
                 .group(groupId, [oldShape1.id, oldShape2.id]);
 
-        const oldSet = DiagramItemSet.createFromDiagram([oldDiagram.items.last()], oldDiagram) !;
+        const oldSet = DiagramItemSet.createFromDiagram([oldDiagram.items.get(groupId)], oldDiagram) !;
 
         const json = serializer.serializeSet(oldSet);
 
         const newSet = serializer.deserializeSet(serializer.generateNewIds(json));
-        const newShape1 = <DiagramItem>newSet.allVisuals[0];
-        const newShape2 = <DiagramItem>newSet.allVisuals[1];
 
         expect(newSet).toBeDefined();
+
+        const newShape1 = newSet.allVisuals[0];
+        const newShape2 = newSet.allVisuals[1];
+
         expect(newSet.allVisuals.length).toBe(2);
 
         compareShapes(newShape1, oldShape1);
@@ -56,13 +58,13 @@ describe('Serializer', () => {
     });
 
     function compareShapes(newShape: DiagramItem, originalShape: DiagramItem) {
-        expect(newShape.renderer).toBe(originalShape.renderer);
+        expect(newShape.appearance.size).toBe(originalShape.appearance.size);
         expect(newShape.configurables.length).toBe(originalShape.configurables.length);
+        expect(newShape.renderer).toBe(originalShape.renderer);
         expect(newShape.transform.position.x).toBe(originalShape.transform.position.x);
         expect(newShape.transform.position.y).toBe(originalShape.transform.position.y);
         expect(newShape.transform.size.x).toBe(originalShape.transform.size.x);
         expect(newShape.transform.size.y).toBe(originalShape.transform.size.y);
-        expect(newShape.appearance.size).toBe(originalShape.appearance.size);
         expect(newShape.id).not.toBe(originalShape.id);
     }
 });

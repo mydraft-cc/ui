@@ -56,7 +56,7 @@ type ShapeProps = {
 type Props = ItemProps & GroupProps & ShapeProps & VisualProps;
 
 const DEFAULT: Props = {
-    id: '',
+    id: '0',
     appearance: Map(),
     childIds: DiagramContainer.of(),
     constraint: null,
