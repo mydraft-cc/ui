@@ -49,7 +49,7 @@ export const Icons = () => {
                 <div className='asset-icon-title'>{icon.displayName}</div>
             </div>
         );
-    }, [dispatch, selectedDiagramId]);
+    }, [selectedDiagramId]);
 
     const doFilterIcons = React.useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
         dispatch(filterIcons(event.target.value));

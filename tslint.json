@@ -1,7 +1,4 @@
 {
-  "extends": [
-    "tslint-react-hooks"
-  ],
   "rules": {
     "class-name": true,
     "comment-format": [
@@ -75,8 +72,6 @@
       "single"
     ],
     "radix": true,
-    "react-hooks/rules-of-hooks": "error",
-    "react-hooks/exhaustive-deps": "warn",
     "semicolon": [
       true,
       "always"

@@ -38,7 +38,7 @@ export const ClipboardMenu = () => {
             setClipboard(serializer.serializeSet(set));
             setOffset(0);
         }
-    }, [offset, selectedDiagram, selectedItems, serializer, setClipboard, setOffset]);
+    }, [offset, selectedDiagram, selectedItems, serializer]);
 
     const doCut = React.useCallback(() => {
         if (selectedDiagram) {
@@ -46,7 +46,7 @@ export const ClipboardMenu = () => {
 
             dispatch(removeItems(selectedDiagram, selectedItems));
         }
-    }, [dispatch, doCopy]);
+    }, [doCopy]);
 
     const doPaste = React.useCallback(() => {
         if (selectedDiagram) {
@@ -54,7 +54,7 @@ export const ClipboardMenu = () => {
 
             dispatch(pasteItems(selectedDiagram, clipboard, offset));
         }
-    }, [dispatch, clipboard, offset, selectedDiagram, setOffset]);
+    }, [clipboard, offset, selectedDiagram]);
 
     return (
         <>

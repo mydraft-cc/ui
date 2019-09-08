@@ -50,13 +50,17 @@ export const ColorPicker = (props: ColorPickerProps) => {
 
     const selectedPalette = palette || ColorPalette.colors();
 
+    React.useEffect(() => {
+        setColorHex(valueColor.toString());
+    }, [valueColor]);
+
     const doToggle = React.useCallback(() => {
         setVisible(!visible);
-    }, [visible, setVisible]);
+    }, [visible]);
 
     const doSelectColorResult = React.useCallback((result: ColorResult) => {
         setColorHex(result.hex);
-    }, [setColorHex, setVisible]);
+    }, []);
 
     const doSelectTab = React.useCallback((key: string) => {
         if (onActiveColorTabChanged) {
@@ -71,7 +75,7 @@ export const ColorPicker = (props: ColorPickerProps) => {
 
         setVisible(false);
         setColorHex(color.toString());
-    }, [onChange, setColorHex, setVisible]);
+    }, [onChange]);
 
     const doConfirmColor = React.useCallback(() => {
         if (onChange && colorHex) {
@@ -80,7 +84,7 @@ export const ColorPicker = (props: ColorPickerProps) => {
 
         setVisible(false);
         setColorHex(colorHex);
-    }, [colorHex, onChange, setColorHex, setVisible]);
+    }, [colorHex, onChange]);
 
     const colorClassName = (c: Color) => {
         if (c.eq(color)) {

@@ -25,7 +25,7 @@ export const LockMenu = () => {
                 dispatch(lockItems(selectedDiagram, [selectedItem.id]));
             }
         }
-    }, [dispatch, selectedDiagram, selectedItem]);
+    }, [selectedDiagram, selectedItem]);
 
     const icon = selectedItem && selectedItem.isLocked ? 'lock' : 'unlock';
 

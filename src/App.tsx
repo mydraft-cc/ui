@@ -45,7 +45,7 @@ export const App = ({ token }: AppProps) => {
         } else {
             dispatch(newDiagram(false));
         }
-    }, [dispatch, token]);
+    }, [token]);
 
     const doSelectTab = React.useCallback((key: string) => {
         dispatch(selectTab(key));

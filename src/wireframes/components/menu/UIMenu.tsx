@@ -14,11 +14,11 @@ export const UIMenu = () => {
 
     const doZoomOut = React.useCallback(() => {
         dispatch(setZoom(zoom - .25));
-    }, [dispatch, zoom]);
+    }, [zoom]);
 
     const doZoomIn = React.useCallback(() => {
         dispatch(setZoom(zoom + .25));
-    }, [dispatch, zoom]);
+    }, [zoom]);
 
     return (
         <>

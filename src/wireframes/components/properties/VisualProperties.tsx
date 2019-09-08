@@ -42,13 +42,13 @@ export const VisualProperties = () => {
         if (selectedDiagramId) {
             dispatch(changeItemsAppearance(selectedDiagramId, selectedItems, DiagramItem.APPEARANCE_TEXT_ALIGNMENT, value));
         }
-    }, [dispatch, selectedDiagramId, selectedItems]);
+    }, [selectedDiagramId, selectedItems]);
 
     const doChangeAppearance = React.useCallback((key: string, value: any) => {
         if (selectedDiagramId) {
             dispatch(changeItemsAppearance(selectedDiagramId, selectedItems, key, value));
         }
-    }, [dispatch, selectedDiagramId, selectedItems]);
+    }, [selectedDiagramId, selectedItems]);
 
     const doSelectColorTab = React.useCallback((key: string) => {
         dispatch(selectColorTab(key));

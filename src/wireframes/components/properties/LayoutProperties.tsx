@@ -36,13 +36,13 @@ export const LayoutProperties = () => {
         if (selectedDiagramId) {
             dispatch(orderItems(mode, selectedDiagramId, selectedItems));
         }
-    }, [dispatch, selectedDiagramId, selectedItems]);
+    }, [selectedDiagramId, selectedItems]);
 
     const doAlign = React.useCallback((mode: string) => {
         if (selectedDiagramId) {
             dispatch(alignItems(mode, selectedDiagramId, selectedItems));
         }
-    }, [dispatch, selectedDiagramId, selectedItems]);
+    }, [selectedDiagramId, selectedItems]);
 
     const doAlignHLeft   = React.useCallback(() => doAlign(ALIGN_H_LEFT), [doAlign]);
     const doAlignHCenter = React.useCallback(() => doAlign(ALIGN_H_CENTER), [doAlign]);

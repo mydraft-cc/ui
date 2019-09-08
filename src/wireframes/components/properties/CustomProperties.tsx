@@ -107,7 +107,7 @@ const CustomProperties = () => {
 
     const doChange = React.useCallback((key: string, value: any) => {
         dispatch(changeItemsAppearance(selectedDiagramId, [selectedShape], key, value));
-    }, [dispatch, selectedDiagramId, selectedShape]);
+    }, [selectedDiagramId, selectedShape]);
 
     if (!selectedShape || !selectedDiagramId) {
         return null;

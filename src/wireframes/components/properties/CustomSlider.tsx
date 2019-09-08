@@ -16,11 +16,15 @@ interface CustomSliderProps {
 }
 
 export const CustomSlider = ({ max, min, onChange, value }: CustomSliderProps) => {
-    const [sliderValue, setValue] = React.useState<number>(value);
+    const [sliderValue, setSliderValue] = React.useState<number>(value);
+
+    React.useEffect(() => {
+        setSliderValue(value);
+    }, [value]);
 
     const doChangeValue = React.useCallback((v: number) => {
-        setValue(value);
-    }, [setValue]);
+        setSliderValue(value);
+    }, []);
 
     return (
         <Slider
