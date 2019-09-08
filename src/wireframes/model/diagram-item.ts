@@ -1,6 +1,6 @@
-﻿import { Map, Record } from 'immutable';
-
-import {
+﻿import {
+    ImmutableMap,
+    Record,
     Rotation,
     Types,
     Vec2
@@ -13,7 +13,7 @@ import { DiagramContainer } from './diagram-container';
 import { DiagramItemSet } from './diagram-item-set';
 import { Transform } from './transform';
 
-type Appearance = Map<string, any>;
+type Appearance = ImmutableMap<any>;
 
 type ItemProps = {
     // The unique id for each item.
@@ -55,20 +55,11 @@ type ShapeProps = {
 
 type Props = ItemProps & GroupProps & ShapeProps & VisualProps;
 
-const DEFAULT: Props = {
-    id: '0',
-    appearance: Map(),
-    childIds: DiagramContainer.of(),
-    constraint: null,
-    configurables: [],
-    isLocked: false,
-    renderer: 'NONE',
-    rotation: Rotation.ZERO,
-    transform: Transform.ZERO,
-    type: 'Shape'
-};
+const DEFAULT_APPEARANCE = ImmutableMap.empty();
+const DEFAULT_CHILD_IDS = DiagramContainer.default();
+const DEFAULT_CONFIGURABLES: Configurable[] = [];
 
-export class DiagramItem extends Record<Props>(DEFAULT) {
+export class DiagramItem extends Record<Props> {
     private readonly cachedBounds: { [id: string]: Transform } = {};
 
     public static readonly APPEARANCE_BACKGROUND_COLOR = 'FOREGROUND_COLOR';
@@ -83,28 +74,56 @@ export class DiagramItem extends Record<Props>(DEFAULT) {
     public static readonly APPEARANCE_TEXT_ALIGNMENT = 'TEXT_ALIGNMENT';
     public static readonly APPEARANCE_TEXT_DISABLED = 'TEXT_DISABLED';
 
-    public get configurables() {
-        return this.get('configurables', []);
+    public get appearance() {
+        return this.get('appearance') || DEFAULT_APPEARANCE;
     }
 
-    public get rotation() {
-        return this.get('rotation', Rotation.ZERO);
+    public get childIds() {
+        return this.get('childIds') || DEFAULT_CHILD_IDS;
+    }
+
+    public get configurables() {
+        return this.get('configurables') || DEFAULT_CONFIGURABLES;
+    }
+
+    public get constraint() {
+        return this.get('constraint');
     }
 
     public get isLocked() {
-        return this.get('isLocked', false);
+        return this.get('isLocked') || false;
+    }
+
+    public get id() {
+        return this.get('id');
+    }
+
+    public get rotation() {
+        return this.get('rotation') || Rotation.ZERO;
+    }
+
+    public get renderer() {
+        return this.get('renderer');
+    }
+
+    public get transform() {
+        return this.get('transform');
+    }
+
+    public get type() {
+        return this.get('type');
     }
 
     public static createGroup(id: string, ids: DiagramContainer | string[], rotation?: Rotation) {
         const childIds = getChildIds(ids);
 
-        return new DiagramItem({ id, type: 'Group', childIds, rotation });
+        return new DiagramItem({ id, type: 'Group', isLocked: false, childIds, rotation });
     }
 
     public static createShape(id: string, renderer: string, w: number, h: number, configurables?: Configurable[], visual?: Appearance | { [key: string]: any }, constraint?: Constraint) {
         const appearance = getAppearance(visual);
 
-        return new DiagramItem({ id, type: 'Shape', transform: createTransform(w, h), renderer, appearance, configurables, constraint });
+        return new DiagramItem({ id, type: 'Shape', isLocked: false, transform: createTransform(w, h), renderer, appearance, configurables, constraint });
     }
 
     public lock() {
@@ -194,9 +213,9 @@ export class DiagramItem extends Record<Props>(DEFAULT) {
     }
 }
 
-function getAppearance(visual: Map<string, any> | { [key: string]: any; }) {
+function getAppearance(visual: ImmutableMap<any> | { [key: string]: any; }) {
     if (Types.isObject(visual)) {
-        return Map<string, any>(<any>visual);
+        return ImmutableMap.of(<any>visual);
     }
 
     return visual;
@@ -207,7 +226,7 @@ function getChildIds(childIds: DiagramContainer | string[] | undefined): Diagram
         return DiagramContainer.of(...childIds);
     }
 
-    return childIds || new DiagramContainer();
+    return childIds || new DiagramContainer([]);
 }
 
 function createTransform(w: number, h: number): Transform {

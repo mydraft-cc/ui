@@ -127,18 +127,17 @@ export class TransformAdorner extends React.Component<TransformAdornerProps> imp
         this.canResizeY = false;
 
         for (let item of this.props.selectedItems) {
-            if (item instanceof DiagramItem) {
-                if (item.constraint) {
-                    if (!item.constraint.calculateSizeX()) {
-                        this.canResizeX = true;
-                    }
-
-                    if (!item.constraint.calculateSizeY()) {
-                        this.canResizeY = true;
-                    }
-                    continue;
+            if (item.constraint) {
+                if (!item.constraint.calculateSizeX()) {
+                    this.canResizeX = true;
                 }
+
+                if (!item.constraint.calculateSizeY()) {
+                    this.canResizeY = true;
+                }
+                continue;
             }
+
             this.canResizeX = true;
             this.canResizeY = true;
         }

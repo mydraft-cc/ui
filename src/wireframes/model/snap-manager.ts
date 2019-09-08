@@ -212,11 +212,11 @@ export class SnapManager {
 
     private calculateOrderedAABBs(transform: Transform, diagram: Diagram, view: Vec2): Rect2[] {
         const orderedAabbs =
-            diagram.items.valueSeq().toArray()
+            diagram.items.values
                 .map(t => t)
                 .map(t => t.bounds(diagram)).filter(t => t !== transform)
                 .map(t => t.aabb)
-                .map(t => { return { t, d: t.center.sub(transform.position).lengtSquared }; })
+                .map(t => ({ t, d: t.center.sub(transform.position).lengtSquared }))
                 .sort((l, r) => l.d - r.d).map(t => t.t);
 
         orderedAabbs.push(new Rect2(0, 0, view.x, view.y));

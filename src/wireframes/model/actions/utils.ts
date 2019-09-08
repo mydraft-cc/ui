@@ -6,7 +6,7 @@ import { Diagram, DiagramItem } from './../internal';
 
 export type DiagramRef = string | Diagram;
 export type ItemRef = string | DiagramItem;
-export type ItemsRef = ItemRef[] | IterableIterator<DiagramItem>;
+export type ItemsRef = ItemRef[];
 
 interface ItemsAction extends DiagramAction {
     readonly diagramId: string;

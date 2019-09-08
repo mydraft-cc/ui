@@ -27,13 +27,13 @@ export class DiagramItemSet {
         const parents: { [id: string]: boolean } = {};
 
         for (let group of this.allGroups) {
-            group.childIds.ids.forEach(childId => {
+            for (let childId of group.childIds.values) {
                 if (!this.allItems.find(i => i.id === childId) || parents[childId]) {
                     this.isValid = false;
                 }
 
                 parents[childId] = true;
-            });
+            }
         }
 
         for (let item of this.allItems) {
@@ -68,7 +68,7 @@ export class DiagramItemSet {
                 if (item.type === 'Group') {
                     allGroups.push(item);
 
-                    flatItemsArray(item.childIds.toArray(), false);
+                    flatItemsArray(item.childIds.values, false);
                 } else {
                     allVisuals.push(item);
                 }

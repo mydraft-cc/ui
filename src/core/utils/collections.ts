@@ -1,119 +1,169 @@
-import { List, Map } from 'immutable';
-
-export function updateWhenFound<K, V>(map: Map<K, V>, key: K, updater: (v: V) => V) {
-    if (!map.has(key)) {
-        return map;
-    }
-
-    return map.update(key, updater);
-}
-
-export function singleOrDefault<T>(iterable: Iterable<T>): T {
-    let itemFound = false;
-    let item: T;
-
-    for (let i of iterable) {
-        if (!itemFound) {
-            item = i;
-            itemFound = true;
-        } else {
-            break;
+export module Collections {
+    export function withMovedTo<T>(source: T[], items: T[], target: number, relative = false): T[] {
+        if (source.length === 0 || !items || items.length === 0 || items.filter(x => !x).length > 0) {
+            return source;
         }
-    }
 
-    return itemFound ? item : undefined;
-}
+        const itemsToStay: ItemToSort<T>[] = [];
+        const itemsToMove: ItemToSort<T>[] = [];
 
-export function bringToFront<T>(list: List<T>, items: T[]) {
-    return moveTo(list, items, Number.MAX_VALUE);
-}
+        const allItems = [...source];
 
-export function bringForwards<T>(list: List<T>, items: T[]) {
-    return moveTo(list, items, 1, true);
-}
+        for (let i = 0; i < allItems.length; i++) {
+            const item = allItems[i];
 
-export function sendBackwards<T>(list: List<T>, items: T[]) {
-    return moveTo(list, items, -1, true);
-}
+            const itemToAdd: ItemToSort<T> = { isInItems: items && items.indexOf(item) >= 0, index: i, value: item };
 
-export function sendToBack<T>(list: List<T>, items: T[]) {
-    return moveTo(list, items, 0);
-}
-
-type ItemToSort<T> = { isInItems: boolean; index: number; value: T; };
-
-export function moveTo<T>(list: List<T>, items: T[], target: number, relative = false): List<T> {
-    if (list.size === 0) {
-        return list;
-    }
-
-    const itemsToStay: ItemToSort<T>[] = [];
-    const itemsToMove: ItemToSort<T>[] = [];
-
-    const allItems = [...list.toArray()];
-
-    for (let i = 0; i < allItems.length; i++) {
-        const item = allItems[i];
-
-        const itemToAdd: ItemToSort<T> = { isInItems: items && items.indexOf(item) >= 0, index: i, value: item };
-
-        if (itemToAdd.isInItems) {
-            itemsToMove.push(itemToAdd);
-        } else {
-            itemsToStay.push(itemToAdd);
-        }
-    }
-
-    if (itemsToMove.length === 0) {
-        return list;
-    }
-
-    let isBackwards = false, newIndex = 0;
-
-    if (relative) {
-        isBackwards = target <= 0;
-
-        let currentIndex =
-            target > 0 ?
-                Number.MIN_VALUE :
-                Number.MAX_VALUE;
-
-        for (let itemFromIds of itemsToMove) {
-            if (target > 0) {
-                currentIndex = Math.max(itemFromIds.index, currentIndex);
+            if (itemToAdd.isInItems) {
+                itemsToMove.push(itemToAdd);
             } else {
-                currentIndex = Math.min(itemFromIds.index, currentIndex);
+                itemsToStay.push(itemToAdd);
             }
         }
 
-        newIndex = currentIndex + target;
-    } else {
-        newIndex = target;
-
-        if (itemsToMove[0].index > newIndex) {
-            isBackwards = true;
-        }
-    }
-
-    const newItems: T[] = [];
-
-    for (let item of itemsToStay) {
-        if ((isBackwards && item.index >= newIndex) || item.index > newIndex) {
-            break;
+        if (itemsToMove.length === 0) {
+            return source;
         }
 
-        newItems.push(item.value);
-    }
+        let isBackwards = false, newIndex = 0;
 
-    for (let item of itemsToMove) {
-        newItems.push(item.value);
-    }
+        if (relative) {
+            isBackwards = target <= 0;
 
-    for (let item of itemsToStay) {
-        if ((isBackwards && item.index >= newIndex) || item.index > newIndex) {
+            let currentIndex =
+                target > 0 ?
+                    Number.MIN_VALUE :
+                    Number.MAX_VALUE;
+
+            for (let itemFromIds of itemsToMove) {
+                if (target > 0) {
+                    currentIndex = Math.max(itemFromIds.index, currentIndex);
+                } else {
+                    currentIndex = Math.min(itemFromIds.index, currentIndex);
+                }
+            }
+
+            newIndex = currentIndex + target;
+        } else {
+            newIndex = target;
+
+            if (itemsToMove[0].index > newIndex) {
+                isBackwards = true;
+            }
+        }
+
+        const newItems: T[] = [];
+
+        for (let item of itemsToStay) {
+            if ((isBackwards && item.index >= newIndex) || item.index > newIndex) {
+                break;
+            }
+
             newItems.push(item.value);
         }
+
+        for (let item of itemsToMove) {
+            newItems.push(item.value);
+        }
+
+        for (let item of itemsToStay) {
+            if ((isBackwards && item.index >= newIndex) || item.index > newIndex) {
+                newItems.push(item.value);
+            }
+        }
+
+        return newItems;
     }
 
-    return List.of(...newItems);
+    export function withAdded<T>(source: T[], items: T[], predicate?: (item: T) => boolean): T[] {
+        if (!items || items.length === 0) {
+            return source;
+        }
+
+        let newItems: T[] | null = null;
+
+        for (let item of items) {
+            if (!item || (predicate && !predicate(item))) {
+                return source;
+            }
+
+            if (!newItems) {
+                newItems = [...source];
+            }
+
+            newItems.push(item);
+        }
+
+        return newItems || source;
+    }
+
+    export function withRemoved<T>(source: T[], items: T[]): T[] {
+        if (source.length === 0 || !items || items.length === 0) {
+            return source;
+        }
+
+        let hasChanged = false;
+
+        const newItems: T[] = [...source];
+
+        for (let item of items) {
+            if (!item) {
+                return source;
+            }
+
+            const index = newItems.indexOf(item);
+
+            if (index < 0) {
+                return source;
+            }
+
+            newItems.splice(index, 1);
+
+            hasChanged = true;
+        }
+
+        return hasChanged ? newItems : source;
+    }
+
+    export function withUpdated<T>(source: T[], items: T[], updater: (item: T) => T, predicate?: (lhs: T, rhs: T) => boolean): T[] {
+        if (!items || items.length === 0 || source.length === 0 || !updater) {
+            return source;
+        }
+
+        let newItems: T[] | null = null;
+
+        for (let item of items) {
+            if (!item) {
+                return source;
+            }
+
+            const index = source.indexOf(item);
+
+            if (index < 0) {
+                return source;
+            }
+
+            const newItem = updater(item);
+
+            if (!newItem) {
+                return source;
+            }
+
+            if (newItem !== item) {
+                if (predicate && !predicate(newItem, item)) {
+                    return source;
+                }
+
+                if (newItems === null) {
+                    newItems = [...source];
+                }
+
+                newItems[index] = newItem;
+            }
+        }
+
+        return newItems || source;
+    }
 }
+
+interface ItemToSort<T> { isInItems: boolean; index: number; value: T; }

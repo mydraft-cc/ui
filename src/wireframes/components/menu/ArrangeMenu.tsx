@@ -80,7 +80,7 @@ class ArrangeMenu extends React.PureComponent<ArrangeMenuProps> {
         const selectedDiagram = this.props.selectedDiagram;
 
         if (selectedDiagram) {
-            this.props.selectItems(selectedDiagram, calculateSelection(selectedDiagram.items.values(), selectedDiagram));
+            this.props.selectItems(selectedDiagram, calculateSelection(selectedDiagram.items.values, selectedDiagram));
         }
     }
 

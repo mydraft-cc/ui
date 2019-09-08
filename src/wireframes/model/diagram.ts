@@ -1,6 +1,9 @@
-import { Map, Record, Set } from 'immutable';
-
-import { Types, updateWhenFound } from '@app/core';
+import {
+    ImmutableMap,
+    ImmutableSet,
+    Record,
+    Types
+} from '@app/core';
 
 import { DiagramContainer } from './diagram-container';
 import { DiagramItem } from './diagram-item';
@@ -11,28 +14,44 @@ type Props = {
     id: string;
 
     // The list of items.
-    items: Map<string, DiagramItem>;
+    items: ImmutableMap<DiagramItem>;
 
     // The selected ids.
-    selectedIds: Set<string>;
+    selectedIds: ImmutableSet;
 
     // The root ids.
     root: DiagramContainer;
 };
 
-export class Diagram extends Record<Props>({ id: '0', items: Map(), selectedIds: Set(), root: new DiagramContainer() }) {
+export class Diagram extends Record<Props> {
     private parents: { [id: string]: DiagramItem };
 
+    public get id() {
+        return this.get('id');
+    }
+
+    public get items() {
+        return this.get('items');
+    }
+
+    public get root() {
+        return this.get('root');
+    }
+
     public get rootIds() {
-        return this.get('root').ids;
+        return this.get('root');
     }
 
     public get rootItems() {
-        return this.get('root').ids.map(x => this.items.get(x)).filter(x => !!x).toArray();
+        return this.get('root').values.map(x => this.items.get(x)).filter(x => !!x);
+    }
+
+    public get selectedIds() {
+        return this.get('selectedIds');
     }
 
     public static empty(id: string) {
-        return new Diagram({ id });
+        return new Diagram({ id, items: ImmutableMap.empty(), root: DiagramContainer.empty(), selectedIds: ImmutableSet.empty() });
     }
 
     public parent(id: string | DiagramItem) {
@@ -47,13 +66,15 @@ export class Diagram extends Record<Props>({ id: '0', items: Map(), selectedIds:
         if (!this.parents) {
             this.parents = {};
 
-            this.items.forEach((item) => {
+            for (let key of this.items.keys) {
+                const item = this.items.get(key);
+
                 if (item.type === 'Group') {
-                    item.childIds.ids.forEach(childId => {
+                    for (let childId of item.childIds.values) {
                         this.parents[childId] = item;
-                    });
+                    }
                 }
-            });
+            }
         }
 
         return this.parents[id];
@@ -68,7 +89,7 @@ export class Diagram extends Record<Props>({ id: '0', items: Map(), selectedIds:
             items = items.set(visual.id, visual);
 
             if (items !== this.items) {
-                root = root.push(visual.id);
+                root = root.add(visual.id);
             }
 
             return { items, root };
@@ -77,7 +98,7 @@ export class Diagram extends Record<Props>({ id: '0', items: Map(), selectedIds:
 
     public selectItems(ids: string[]) {
         return this.mutate(ids, () => {
-            const selectedIds = Set(ids);
+            const selectedIds = ImmutableSet.of(...ids);
 
             return { selectedIds };
         });
@@ -117,7 +138,7 @@ export class Diagram extends Record<Props>({ id: '0', items: Map(), selectedIds:
 
     public updateItem(id: string, updater: (value: DiagramItem) => DiagramItem) {
         return this.mutate([id], ({ items }) => {
-            items = updateWhenFound(items, id, updater);
+            items = items.update(id, updater);
 
             return { items };
         });
@@ -125,7 +146,7 @@ export class Diagram extends Record<Props>({ id: '0', items: Map(), selectedIds:
 
     public group(groupId: string, ids: string[]) {
         return this.mutate(ids, ({ root, items }) => {
-            root = root.push(groupId).remove(...ids);
+            root = root.add(groupId).remove(...ids);
 
             items = items.set(groupId, DiagramItem.createGroup(groupId, ids));
 
@@ -135,7 +156,7 @@ export class Diagram extends Record<Props>({ id: '0', items: Map(), selectedIds:
 
     public ungroup(groupId: string) {
         return this.mutate([groupId], ({ root, items }) => {
-            root = root.push(...items.get(groupId).childIds.toArray()).remove(groupId);
+            root = root.add(...items.get(groupId).childIds.values).remove(groupId);
 
             items = items.remove(groupId);
 
@@ -149,13 +170,13 @@ export class Diagram extends Record<Props>({ id: '0', items: Map(), selectedIds:
         }
 
         return this.mutate([], ({ root, items }) => {
-            items = items.withMutations(m => {
+            items = items.mutate(m => {
                 for (let item of set.allItems) {
                     m.set(item.id, item);
                 }
             });
 
-            root = root.push(...set.rootIds);
+            root = root.add(...set.rootIds);
 
             return { items, root };
         });
@@ -167,13 +188,13 @@ export class Diagram extends Record<Props>({ id: '0', items: Map(), selectedIds:
         }
 
         return this.mutate([], ({ root, items, selectedIds }) => {
-            items = items.withMutations(m => {
+            items = items.mutate(m => {
                 for (let id of set.allIds) {
                     m.remove(id);
                 }
             });
 
-            selectedIds = selectedIds.withMutations(m => {
+            selectedIds = selectedIds.mutate(m => {
                 for (let id of set.allIds) {
                     m.remove(id);
                 }
@@ -192,32 +213,23 @@ export class Diagram extends Record<Props>({ id: '0', items: Map(), selectedIds:
             return this;
         }
 
-        return this.withMutations(m => {
-            const parent = this.parent(items[0]);
+        const parent = this.parent(items[0]);
 
-            const root =
-                parent ?
-                parent.childIds :
-                this.root;
+        const root =
+            parent ?
+            parent.childIds :
+            this.root;
 
-            const update = updater({ root, items: this.items, selectedIds: this.selectedIds, id: this.id });
+        const update = updater({ root, items: this.items, selectedIds: this.selectedIds, id: this.id });
 
-            if (update.items) {
-                m.set('items', update.items);
-            }
+        if (update.root && parent) {
+            update.items = update.items || this.items;
+            update.items = update.items.update(parent.id, p => p.set('childIds', update.root));
 
-            if (update.selectedIds) {
-                m.set('selectedIds', update.selectedIds);
-            }
+            delete update.root;
+        }
 
-            if (update.root) {
-                if (parent) {
-                    m.set('items', updateWhenFound(m.items, parent.id, p => p.set('childIds', update.root)));
-                } else {
-                    m.set('root', update.root);
-                }
-            }
-        });
+        return this.merge(update);
     }
 
     private findItems(itemIds: string[]): DiagramItem[] | null {

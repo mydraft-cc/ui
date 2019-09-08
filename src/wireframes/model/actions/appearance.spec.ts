@@ -35,7 +35,7 @@ describe('AppearanceReducer', () => {
     });
 
     it('should change appearance of all items to new value', () => {
-        const action = changeItemsAppearance(diagram, diagram.items.values(), 'TEXT', 'MyValue');
+        const action = changeItemsAppearance(diagram, diagram.items.values, 'TEXT', 'MyValue');
 
         expectShapesAfterAction(action, (newShape1, newShape2) => {
             expect(newShape1.appearance.get('TEXT')).toEqual('MyValue');
@@ -44,7 +44,7 @@ describe('AppearanceReducer', () => {
     });
 
     it('should not change appearance when renderer does not support it', () => {
-        const action = changeItemsAppearance(diagram, diagram.items.values(), '?', 'MyValue');
+        const action = changeItemsAppearance(diagram, diagram.items.values, '?', 'MyValue');
 
         expectShapesAfterAction(action, (newShape1, newShape2) => {
             expect(newShape1.appearance.get('?')).toBeUndefined();
@@ -56,7 +56,7 @@ describe('AppearanceReducer', () => {
         const oldBounds = new Transform(Vec2.ZERO, new Vec2(200, 200), Rotation.ZERO);
         const newBounds = new Transform(Vec2.ZERO, new Vec2(300, 300), Rotation.ZERO);
 
-        const action = transformItems(diagram, diagram.items.values(), oldBounds, newBounds);
+        const action = transformItems(diagram, diagram.items.values, oldBounds, newBounds);
 
         expectShapesAfterAction(action, (newShape1, newShape2) => {
             expect(newShape1.transform.size).toEqual(new Vec2(150, 150));

@@ -1,10 +1,6 @@
 import { Action, Middleware, Reducer } from 'redux';
 
-import {
-    MathHelper,
-    singleOrDefault,
-    Vec2
-} from '@app/core';
+import { MathHelper, Vec2 } from '@app/core';
 
 import {
     Diagram,
@@ -212,7 +208,7 @@ export function items(rendererService: RendererService, serializer: Serializer):
     return reducer;
 }
 
-export function calculateSelection(items: DiagramItem[] | Iterable<DiagramItem>, diagram: Diagram, isSingleSelection?: boolean, isCtrl?: boolean): string[] {
+export function calculateSelection(items: DiagramItem[], diagram: Diagram, isSingleSelection?: boolean, isCtrl?: boolean): string[] {
     if (!items) {
         return [];
     }
@@ -234,28 +230,30 @@ export function calculateSelection(items: DiagramItem[] | Iterable<DiagramItem>,
     }
 
     if (isSingleSelection) {
-        const single = singleOrDefault(items);
+        if (items.length === 1) {
+            const single = items[0];
 
-        if (single) {
-            const singleId = single.id;
+            if (single) {
+                const singleId = single.id;
 
-            if (isCtrl) {
-                if (!single.isLocked) {
-                    if (diagram.selectedIds.contains(singleId)) {
-                        return diagram.selectedIds.remove(singleId).toArray();
+                if (isCtrl) {
+                    if (!single.isLocked) {
+                        if (diagram.selectedIds.has(singleId)) {
+                            return diagram.selectedIds.remove(singleId).values;
+                        } else {
+                            return diagram.selectedIds.add(resolveGroup(single).id).values;
+                        }
                     } else {
-                        return diagram.selectedIds.add(resolveGroup(single).id).toArray();
+                        return diagram.selectedIds.values;
                     }
                 } else {
-                    return diagram.selectedIds.toArray();
-                }
-            } else {
-                const group = diagram.parent(single.id);
+                    const group = diagram.parent(single.id);
 
-                if (group && diagram.selectedIds.contains(group.id)) {
-                    selectedItems.push(resolveGroup(single, group));
-                } else {
-                    selectedItems.push(resolveGroup(single));
+                    if (group && diagram.selectedIds.has(group.id)) {
+                        selectedItems.push(resolveGroup(single, group));
+                    } else {
+                        selectedItems.push(resolveGroup(single));
+                    }
                 }
             }
         }

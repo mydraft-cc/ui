@@ -1,6 +1,5 @@
-import { Map } from 'immutable';
-
 import {
+    ImmutableMap,
     MathHelper,
     Rotation
 } from '@app/core';
@@ -132,7 +131,7 @@ export class Serializer {
 }
 
 function serializeChildIds(childIds: DiagramContainer, output: any) {
-    output.childIds = childIds.toArray();
+    output.childIds = childIds.values;
 }
 
 function deserializeChildIds(input: any) {
@@ -155,12 +154,12 @@ function deserializeRenderer(input: any): string {
     return input.renderer;
 }
 
-function serializeAppearance(appearance: Map<string, any>, output: any) {
-    output.appearance = appearance.toJS();
+function serializeAppearance(appearance: ImmutableMap<any>, output: any) {
+    output.appearance = appearance.values;
 }
 
 function deserializeAppearance(shape: DiagramItem, input: any) {
-    return shape.replaceAppearance(shape.appearance.merge(Map<string, any>(input.appearance))) as DiagramItem;
+    return shape.replaceAppearance(ImmutableMap.of(input.appearance));
 }
 
 function serializeTransform(transform: Transform, output: any) {

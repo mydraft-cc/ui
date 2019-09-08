@@ -62,7 +62,7 @@ describe('ItemsReducer', () => {
 
         const newDiagram = state_2.diagrams.get(diagram.id);
 
-        expect(newDiagram.selectedIds.toArray()).toEqual([groupId]);
+        expect(newDiagram.selectedIds.values).toEqual([groupId]);
     });
 
     it('should remove items and all children', () => {
@@ -115,7 +115,7 @@ describe('ItemsReducer', () => {
         expect(newIcon.appearance.get(DiagramItem.APPEARANCE_ICON_FONT_FAMILY)).toBe('FontAwesome');
         expect(newIcon.transform).toEqual(new Transform(new Vec2(40, 60), new Vec2(40, 40), Rotation.ZERO));
 
-        expect(newDiagram.selectedIds.toArray()).toEqual([shapeId]);
+        expect(newDiagram.selectedIds.values).toEqual([shapeId]);
     });
 
     it('should add raster to diagram and select the shape', () => {
@@ -134,7 +134,7 @@ describe('ItemsReducer', () => {
         expect(newImage.renderer).toBe('Raster');
         expect(newImage.transform).toEqual(new Transform(new Vec2(50, 80), new Vec2(60, 80), Rotation.ZERO));
 
-        expect(newDiagram.selectedIds.toArray()).toEqual([shapeId]);
+        expect(newDiagram.selectedIds.values).toEqual([shapeId]);
     });
 
     it('should add raster and resize to max height of 300 if height is larger', () => {
@@ -179,7 +179,7 @@ describe('ItemsReducer', () => {
         expect(newShape.id).toBe(shapeId);
         expect(newShape.transform.position).toEqual(new Vec2(150, 35));
 
-        expect(newDiagram.selectedIds.toArray()).toEqual([shapeId]);
+        expect(newDiagram.selectedIds.values).toEqual([shapeId]);
     });
 
     it('should add visual with default properties and select this visual', () => {
@@ -197,13 +197,13 @@ describe('ItemsReducer', () => {
         expect(newShape.appearance.get('TEXT')).toEqual('hello');
         expect(newShape.transform.position).toEqual(new Vec2(150, 35));
 
-        expect(newDiagram.selectedIds.toArray()).toEqual([shapeId]);
+        expect(newDiagram.selectedIds.values).toEqual([shapeId]);
     });
 
     it('should paste json and add group and items', () => {
         const serializer = new Serializer(rendererService);
 
-        const json = serializer.serializeSet(DiagramItemSet.createFromDiagram(diagram.rootIds.toArray(), diagram)!);
+        const json = serializer.serializeSet(DiagramItemSet.createFromDiagram(diagram.rootIds.values, diagram)!);
 
         const action = pasteItems(diagram, serializer.generateNewIds(json));
 
@@ -263,7 +263,7 @@ describe('ItemsReducer', () => {
 
         const itemIds = calculateSelection([shape3], selectedDiagram, true, true);
 
-        expect(itemIds).toEqual([groupId, shape3.id]);
+        expect(itemIds).toEqual([shape3.id, groupId]);
     });
 
     it('should remove item from selection list', () => {

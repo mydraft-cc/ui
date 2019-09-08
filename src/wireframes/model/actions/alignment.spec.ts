@@ -79,12 +79,12 @@ describe('AlignmentReducer', () => {
     });
 
     function expectPositionsAfterAlignment(type: string, positions: Vec2[]) {
-        const action = alignItems(type, diagram, diagram.items.values());
+        const action = alignItems(type, diagram, diagram.items.values);
 
         const state_1 = EditorState.empty().addDiagram(diagram);
         const state_2 = reducer(state_1, action);
 
-        const shapes = state_2.diagrams.get(diagram.id).items.values();
+        const shapes = state_2.diagrams.get(diagram.id).items.values;
 
         let i = 0;
 

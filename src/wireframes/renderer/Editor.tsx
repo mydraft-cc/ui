@@ -138,7 +138,7 @@ class Editor extends React.Component<EditorProps> {
             let handleContainer: (itemIds: DiagramContainer) => any;
 
             handleContainer = itemIds => {
-                for (let id of itemIds.ids) {
+                for (let id of itemIds.values) {
                     const item = diagram.items.get(id);
 
                     if (item) {

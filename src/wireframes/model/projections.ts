@@ -51,17 +51,17 @@ export const getDiagram = createSelector(
 
 export const getSelectionSet = createSelector(
     getDiagram,
-    diagram => diagram ? DiagramItemSet.createFromDiagram(diagram.selectedIds.toArray(), diagram) : null
+    diagram => diagram ? DiagramItemSet.createFromDiagram(diagram.selectedIds.values, diagram) : null
 );
 
 export const getselectedIds = createSelector(
     getDiagram,
-    diagram => diagram ? diagram.selectedIds.toArray() : EMPTY_STRING_ARRAY
+    diagram => diagram ? diagram.selectedIds.values : EMPTY_STRING_ARRAY
 );
 
 export const getSelectedItemsWithLocked = createSelector(
     getDiagram,
-    diagram => diagram ? diagram.selectedIds.map(i => diagram!.items.get(i)).toArray() : EMPTY_ITEMS_ARRAY
+    diagram => diagram ? diagram.selectedIds.values.map(i => diagram!.items.get(i)) : EMPTY_ITEMS_ARRAY
 );
 
 export const getSelectedItems = createSelector(
