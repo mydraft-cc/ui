@@ -1,7 +1,6 @@
 import { Button } from 'antd';
 import * as React from 'react';
-import { connect } from 'react-redux';
-import { bindActionCreators, Dispatch } from 'redux';
+import { useDispatch } from 'react-redux';
 
 import './LayoutProperties.scss';
 
@@ -15,72 +14,57 @@ import {
     alignItems,
     BRING_FORWARDS,
     BRING_TO_FRONT,
-    DiagramItem,
     DISTRIBUTE_H,
     DISTRIBUTE_V,
-    EditorStateInStore,
     getDiagramId,
     getSelectedItems,
     orderItems,
     SEND_BACKWARDS,
-    SEND_TO_BACK
+    SEND_TO_BACK,
+    useStore
 } from '@app/wireframes/model';
 
-interface LayoutPropertiesProps {
-    // The selected diagram.
-    selectedDiagramId: string | null;
+export const LayoutProperties = () => {
+    const dispatch = useDispatch();
+    const selectedDiagramId = useStore(s => getDiagramId(s));
+    const selectedItems = useStore(s => getSelectedItems(s));
+    const canAlign = selectedItems.length > 1;
+    const canOrder = selectedItems.length > 0;
+    const canDistribute = selectedItems.length > 1;
 
-    // The selected items.
-    selectedItems: DiagramItem[];
-
-    // Indicates wherther the items can be aligned.
-    canAlign: boolean;
-
-    // Indicates whether the items can be ordered.
-    canOrder: boolean;
-
-    // Indicates whether the items can be distributed.
-    canDistribute: boolean;
-
-    // Orders the items.
-    orderItems: (mode: string, diagram: string, items: DiagramItem[]) => any;
-
-    // Align the items.
-    alignItems: (mode: string, diagram: string, items: DiagramItem[]) => any;
-}
-
-const LayoutProperties = (props: LayoutPropertiesProps) => {
-    const doOrder = (mode: string) => {
-        if (props.selectedDiagramId) {
-            props.orderItems(mode, props.selectedDiagramId, props.selectedItems);
+    const doOrder = React.useCallback((mode: string) => {
+        if (selectedDiagramId) {
+            dispatch(orderItems(mode, selectedDiagramId, selectedItems));
         }
-    };
+    }, [dispatch, selectedDiagramId, selectedItems]);
 
-    const doAlign = (mode: string) => {
-        if (props.selectedDiagramId) {
-            props.alignItems(mode, props.selectedDiagramId, props.selectedItems);
+    const doAlign = React.useCallback((mode: string) => {
+        if (selectedDiagramId) {
+            dispatch(alignItems(mode, selectedDiagramId, selectedItems));
         }
-    };
+    }, [dispatch, selectedDiagramId, selectedItems]);
 
-    const doAlignHLeft   = () => doAlign(ALIGN_H_LEFT);
-    const doAlignHCenter = () => doAlign(ALIGN_H_CENTER);
-    const doAlignHRight  = () => doAlign(ALIGN_H_RIGHT);
+    const doAlignHLeft   = React.useCallback(() => doAlign(ALIGN_H_LEFT), [doAlign]);
+    const doAlignHCenter = React.useCallback(() => doAlign(ALIGN_H_CENTER), [doAlign]);
+    const doAlignHRight  = React.useCallback(() => doAlign(ALIGN_H_RIGHT), [doAlign]);
 
-    const doAlignVTop    = () => doAlign(ALIGN_V_TOP);
-    const doAlignVCenter = () => doAlign(ALIGN_V_CENTER);
-    const doAlignVBottom = () => doAlign(ALIGN_V_BOTTOM);
+    const doAlignVTop    = React.useCallback(() => doAlign(ALIGN_V_TOP), [doAlign]);
+    const doAlignVCenter = React.useCallback(() => doAlign(ALIGN_V_CENTER), [doAlign]);
+    const doAlignVBottom = React.useCallback(() => doAlign(ALIGN_V_BOTTOM), [doAlign]);
 
-    const doDistributeH  = () => doAlign(DISTRIBUTE_H);
-    const doDistributeV  = () => doAlign(DISTRIBUTE_V);
+    const doDistributeH  = React.useCallback(() => doAlign(DISTRIBUTE_H), [doAlign]);
+    const doDistributeV  = React.useCallback(() => doAlign(DISTRIBUTE_V), [doAlign]);
 
-    const doBringToFront  = () => doOrder(BRING_TO_FRONT);
-    const doBringForwards = () => doOrder(BRING_FORWARDS);
-    const doSendBackwards = () => doOrder(SEND_BACKWARDS);
-    const doSendToBack    = () => doOrder(SEND_TO_BACK);
+    const doBringToFront  = React.useCallback(() => doOrder(BRING_TO_FRONT), [doOrder]);
+    const doBringForwards = React.useCallback(() => doOrder(BRING_FORWARDS), [doOrder]);
+    const doSendBackwards = React.useCallback(() => doOrder(SEND_BACKWARDS), [doOrder]);
+    const doSendToBack    = React.useCallback(() => doOrder(SEND_TO_BACK), [doOrder]);
 
-    const { canAlign, canDistribute, canOrder, selectedDiagramId } = props;
+    if (!selectedDiagramId) {
+        return null;
+    }
 
-    return selectedDiagramId ? (
+    return (
         <>
             <div className='properties-subsection layout-properties'>
                 <Button disabled={!canAlign} onClick={doAlignHLeft}>
@@ -125,26 +109,5 @@ const LayoutProperties = (props: LayoutPropertiesProps) => {
                 </Button>
             </div>
         </>
-    ) : null;
+    );
 };
-
-const mapStateToProps = (state: EditorStateInStore) => {
-    const items = getSelectedItems(state);
-
-    return {
-        selectedDiagramId: getDiagramId(state),
-        selectedItems: items,
-        canAlign: items.length > 1,
-        canOrder: items.length > 0,
-        canDistribute: items.length > 1
-    };
-};
-
-const mapDispatchToProps = (dispatch: Dispatch) => bindActionCreators({
-    orderItems, alignItems
-}, dispatch);
-
-export const LayoutPropertiesContainer = connect(
-    mapStateToProps,
-    mapDispatchToProps
-)(LayoutProperties);

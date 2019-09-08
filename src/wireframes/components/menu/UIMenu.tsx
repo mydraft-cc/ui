@@ -1,79 +1,48 @@
 import { Button, Icon, Tooltip } from 'antd';
 import * as React from 'react';
-import { connect } from 'react-redux';
-import { bindActionCreators, Dispatch } from 'redux';
+import { useDispatch } from 'react-redux';
 
 import { Shortcut } from '@app/core';
 
-import { setZoom, UIStateInStore } from '@app/wireframes/model';
+import { setZoom, useStore } from '@app/wireframes/model';
 
-interface UIMenuProps {
-    // Indicates if you can zoom in.
-    canZoomIn: boolean;
+export const UIMenu = () => {
+    const dispatch = useDispatch();
+    const zoom = useStore(x => x.ui.zoom);
+    const canZoomIn = zoom < 2;
+    const canZoomOut = zoom > .25;
 
-    // Indicates if you can zoom out.
-    canZoomOut: boolean;
+    const doZoomOut = React.useCallback(() => {
+        dispatch(setZoom(zoom - .25));
+    }, [dispatch, zoom]);
 
-    // The zoom level.
-    zoom: number;
+    const doZoomIn = React.useCallback(() => {
+        dispatch(setZoom(zoom + .25));
+    }, [dispatch, zoom]);
 
-    // Sets the zoom.
-    setZoom: (value: number) => any;
-}
+    return (
+        <>
+            <Tooltip mouseEnterDelay={1} title='Zoom Out (ALT + [-])'>
+                <Button className='menu-item' size='large'
+                    disabled={!canZoomOut}
+                    onClick={doZoomOut}>
+                    <Icon type='minus-circle-o' />
+                </Button>
+            </Tooltip>
 
-class UIMenu extends React.PureComponent<UIMenuProps> {
-    private doZoomOut = () => {
-        this.props.setZoom(this.props.zoom - .25);
-    }
+            <Shortcut disabled={!canZoomOut} onPressed={doZoomOut} keys='alt+-' />
 
-    private doZoomIn = () => {
-        this.props.setZoom(this.props.zoom + .25);
-    }
+            <span className='menu-item'>{zoom * 100}</span>
 
-    public render() {
-        const { canZoomIn, canZoomOut, zoom } = this.props;
+            <Tooltip mouseEnterDelay={1} title='Zoom In (ALT + [+])'>
+                <Button className='menu-item' size='large'
+                    disabled={!canZoomIn}
+                    onClick={doZoomIn}>
+                    <Icon type='plus-circle-o' />
+                </Button>
+            </Tooltip>
 
-        return (
-            <>
-                <Tooltip mouseEnterDelay={1} title='Zoom Out (ALT + [-])'>
-                    <Button className='menu-item' size='large'
-                        disabled={!canZoomOut}
-                        onClick={this.doZoomOut}>
-                        <Icon type='minus-circle-o' />
-                    </Button>
-                </Tooltip>
-
-                <Shortcut disabled={!canZoomOut} onPressed={this.doZoomOut} keys='alt+-' />
-
-                <span className='menu-item'>{zoom * 100}</span>
-
-                <Tooltip mouseEnterDelay={1} title='Zoom In (ALT + [+])'>
-                    <Button className='menu-item' size='large'
-                        disabled={!canZoomIn}
-                        onClick={this.doZoomIn}>
-                        <Icon type='plus-circle-o' />
-                    </Button>
-                </Tooltip>
-
-                <Shortcut disabled={!canZoomIn} onPressed={this.doZoomIn} keys='alt+plus' />
-            </>
-        );
-    }
-}
-
-const mapStateToProps = (state: UIStateInStore) => {
-    return {
-        canZoomIn: state.ui.zoom < 2,
-        canZoomOut: state.ui.zoom > .25,
-        zoom: state.ui.zoom
-    };
+            <Shortcut disabled={!canZoomIn} onPressed={doZoomIn} keys='alt+plus' />
+        </>
+    );
 };
-
-const mapDispatchToProps = (dispatch: Dispatch) => bindActionCreators({
-    setZoom
-}, dispatch);
-
-export const UIMenuContainer = connect(
-    mapStateToProps,
-    mapDispatchToProps
-)(UIMenu);

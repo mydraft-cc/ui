@@ -1,7 +1,6 @@
 import { Icon as AntdIcon, Input, Select } from 'antd';
 import * as React from 'react';
-import { connect } from 'react-redux';
-import { bindActionCreators, Dispatch } from 'redux';
+import { useDispatch } from 'react-redux';
 
 import './Icons.scss';
 
@@ -9,8 +8,6 @@ import { Grid } from '@app/core';
 
 import {
     addIcon,
-    AssetsStateInStore,
-    EditorStateInStore,
     filterIcons,
     getDiagramId,
     getFilteredIcons,
@@ -18,62 +15,28 @@ import {
     getIconSets,
     getIconsFilter,
     IconInfo,
-    selectIcons
+    selectIcons,
+    useStore
 } from '@app/wireframes/model';
 
 import { Icon } from './Icon';
 
-interface IconsProps {
-    // The filtered icons.
-    iconsFiltered: IconInfo[];
-
-    // The icons filter.
-    iconsFilter: string;
-
-    // The current icon set.
-    iconSet: string;
-
-    // All icon sets.
-    iconSets: string[];
-
-    // The selected diagram.
-    selectedDiagramId: string | null;
-
-    // Filter the icons.
-    filterIcons: (value: string) => any;
-
-    // Select an icon set.
-    selectIcons: (iconSet: string) => any;
-
-    // Adds an Icon.
-    addIconToPosition: (diagram: string, text: string, fontFamily: string) => any;
-}
-
-const addIconToPosition = (diagram: string, text: string, fontFamily: string) => {
-    return addIcon(diagram, text, fontFamily, 100, 100);
+const keyBuilder = (icon: IconInfo) => {
+    return icon.name;
 };
 
-const mapStateToProps = (state: AssetsStateInStore & EditorStateInStore) => {
-    return {
-        selectedDiagramId: getDiagramId(state),
-        iconsFiltered: getFilteredIcons(state),
-        iconsFilter: getIconsFilter(state),
-        iconSets: getIconSets(state),
-        iconSet: getIconSet(state)
-    };
-};
+export const Icons = () => {
+    const dispatch = useDispatch();
+    const selectedDiagramId = useStore(s => getDiagramId(s));
+    const iconsFiltered = useStore(s => getFilteredIcons(s));
+    const iconsFilter = useStore(s => getIconsFilter(s));
+    const iconSets = useStore(s => getIconSets(s));
+    const iconSet = useStore(s => getIconSet(s));
 
-const mapDispatchToProps = (dispatch: Dispatch) => bindActionCreators({
-    filterIcons, addIconToPosition, selectIcons
-}, dispatch);
-
-class Icons extends React.PureComponent<IconsProps> {
-    private cellRenderer = (icon: IconInfo) => {
+    const cellRenderer = React.useCallback((icon: IconInfo) => {
         const doAdd = () => {
-            const diagramId = this.props.selectedDiagramId;
-
-            if (diagramId) {
-                this.props.addIconToPosition(diagramId, icon.text, icon.fontFamily);
+            if (selectedDiagramId) {
+                dispatch(addIcon(selectedDiagramId, icon.text, icon.fontFamily, 100, 100));
             }
         };
 
@@ -86,44 +49,33 @@ class Icons extends React.PureComponent<IconsProps> {
                 <div className='asset-icon-title'>{icon.displayName}</div>
             </div>
         );
-    }
+    }, [dispatch, selectedDiagramId]);
 
-    private doSelectIcons = (iconSet: string) => {
-        this.props.selectIcons(iconSet);
-    }
+    const doFilterIcons = React.useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+        dispatch(filterIcons(event.target.value));
+    }, [dispatch]);
 
-    private doFilterIcons = (event: React.ChangeEvent<HTMLInputElement>) => {
-        this.props.filterIcons(event.target.value);
-    }
+    const doSelectIcons = React.useCallback((set: string) => {
+        dispatch(selectIcons(set));
+    }, [dispatch]);
 
-    private keyBuilder = (icon: IconInfo) => {
-        return icon.name;
-    }
+    return (
+        <>
+            <div className='asset-icons-search'>
+                <Input value={iconsFilter} onChange={doFilterIcons} placeholder='Find icon'
+                    prefix={
+                        <AntdIcon type='search' style={{ color: 'rgba(0,0,0,.25)' }} />
+                    }
+                />
 
-    public render() {
-        return (
-            <>
-                <div className='asset-icons-search'>
-                    <Input value={this.props.iconsFilter} onChange={this.doFilterIcons} placeholder='Find icon'
-                        prefix={
-                            <AntdIcon type='search' style={{ color: 'rgba(0,0,0,.25)' }} />
-                        }
-                    />
+                <Select value={iconSet} onChange={doSelectIcons}>
+                    {iconSets.map(x =>
+                        <Select.Option key={x} value={x}>{x}</Select.Option>
+                    )}
+                </Select>
+            </div>
 
-                    <Select value={this.props.iconSet} onChange={this.doSelectIcons}>
-                        {this.props.iconSets.map(x =>
-                            <Select.Option key={x} value={x}>{x}</Select.Option>
-                        )}
-                    </Select>
-                </div>
-
-                <Grid className='asset-icons-list' renderer={this.cellRenderer} columns={3} items={this.props.iconsFiltered} keyBuilder={this.keyBuilder} />
-            </>
-        );
-    }
-}
-
-export const IconsContainer = connect(
-    mapStateToProps,
-    mapDispatchToProps
-)(Icons);
+            <Grid className='asset-icons-list' renderer={cellRenderer} columns={3} items={iconsFiltered} keyBuilder={keyBuilder} />
+        </>
+    );
+};

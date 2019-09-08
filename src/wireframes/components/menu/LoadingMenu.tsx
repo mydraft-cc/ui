@@ -1,109 +1,72 @@
 import { Button, Icon, Modal, Tooltip } from 'antd';
 import * as React from 'react';
-import { connect } from 'react-redux';
-import { bindActionCreators, Dispatch } from 'redux';
+import { useDispatch } from 'react-redux';
 
 import { Shortcut, Title } from '@app/core';
 
 import {
-    LoadingStateInStore,
     newDiagram,
     saveDiagramAsync,
     toggleInfoDialog,
-    UIStateInStore
+    useStore
 } from '@app/wireframes/model';
 
 const text = require('@app/legal.html');
 
-interface LoadingMenuProps {
-    // The current read token.
-    readToken: string;
-
-    // Indicates if the info dialog, should be shown.
-    showInfoDialog: boolean;
-
-    // The window title.
-    title: string;
-
-    // Creates a new diagram.
-    newDiagram: () => any;
-
-    // Creates a new diagram.
-    saveDiagramAsync: () => any;
-
-    // Toggle the info dialog.
-    toggleInfoDialog: (isOpen: boolean) => any;
-}
-
-class LoadingMenu extends React.PureComponent<LoadingMenuProps> {
-    private doNewDiagram = () => {
-        this.props.newDiagram();
-    }
-
-    private doSaveDiagram = () => {
-        this.props.saveDiagramAsync();
-    }
-
-    private doOpenInfoDialog = () => {
-        this.props.toggleInfoDialog(true);
-    }
-
-    private doCloseInfoDialog = () => {
-        this.props.toggleInfoDialog(false);
-    }
-
-    public render() {
-        const { showInfoDialog, title } = this.props;
-
-        return (
-            <>
-                <Title text={title} />
-
-                <Tooltip mouseEnterDelay={1} title='New Diagram (CTRL + N)'>
-                    <Button className='menu-item' size='large'
-                        onClick={this.doNewDiagram}>
-                        <i className='icon-new' />&nbsp;New
-                    </Button>
-                </Tooltip>
-
-                <Shortcut onPressed={this.doNewDiagram} keys='ctrl+n' />
-
-                <Tooltip mouseEnterDelay={1} title='New Diagram (CTRL + S)'>
-                    <Button type='primary' size='large'
-                        onClick={this.doSaveDiagram}>
-                        <i className='icon-save' />&nbsp;Save
-                    </Button>
-                </Tooltip>
-
-                <Shortcut onPressed={this.doSaveDiagram} keys='ctrl+s' />
-
-                <Button className='menu-item' size='large' onClick={this.doOpenInfoDialog}>
-                    <Icon type='question-circle-o' />
-                </Button>
-
-                <Modal title='About' visible={showInfoDialog} onOk={this.doCloseInfoDialog} onCancel={this.doCloseInfoDialog}>
-                    <div dangerouslySetInnerHTML={{__html: text }} />
-                </Modal>
-            </>
-        );
-    }
-}
-
-const mapStateToProps = (state: LoadingStateInStore & UIStateInStore) => {
-    const readToken = state.loading.readToken;
+export const LoadingMenu = () => {
+    const dispatch = useDispatch();
+    const readToken = useStore(s => s.loading.readToken);
+    const showInfoDialog = useStore(s => s.ui.showInfoDialog);
 
     const title =  readToken && readToken.length > 0 ?
         `mydraft.cc - Diagram ${readToken}` :
         'mydraft.cc - Diagram (unsaved)';
 
-    return { readToken: readToken, title, showInfoDialog: state.ui.showInfoDialog };
+    const doNewDiagram = React.useCallback(() => {
+        dispatch(newDiagram());
+    }, [dispatch]);
+
+    const doSaveDiagram = React.useCallback(() => {
+        dispatch(saveDiagramAsync());
+    }, [dispatch]);
+
+    const doOpenInfoDialog = React.useCallback(() => {
+        dispatch(toggleInfoDialog(true));
+    }, [dispatch]);
+
+    const doCloseInfoDialog = React.useCallback(() => {
+        dispatch(toggleInfoDialog(false));
+    }, [dispatch]);
+
+    return (
+        <>
+            <Title text={title} />
+
+            <Tooltip mouseEnterDelay={1} title='New Diagram (CTRL + N)'>
+                <Button className='menu-item' size='large'
+                    onClick={doNewDiagram}>
+                    <i className='icon-new' />&nbsp;New
+                </Button>
+            </Tooltip>
+
+            <Shortcut onPressed={doNewDiagram} keys='ctrl+n' />
+
+            <Tooltip mouseEnterDelay={1} title='New Diagram (CTRL + S)'>
+                <Button type='primary' size='large'
+                    onClick={doSaveDiagram}>
+                    <i className='icon-save' />&nbsp;Save
+                </Button>
+            </Tooltip>
+
+            <Shortcut onPressed={doSaveDiagram} keys='ctrl+s' />
+
+            <Button className='menu-item' size='large' onClick={doOpenInfoDialog}>
+                <Icon type='question-circle-o' />
+            </Button>
+
+            <Modal title='About' visible={showInfoDialog} onOk={doCloseInfoDialog} onCancel={doCloseInfoDialog}>
+                <div dangerouslySetInnerHTML={{__html: text }} />
+            </Modal>
+        </>
+    );
 };
-
-const mapDispatchToProps = (dispatch: Dispatch) => bindActionCreators({
-    newDiagram, saveDiagramAsync, toggleInfoDialog
-}, dispatch);
-
-export const LoadingMenuContainer = connect(
-    mapStateToProps,
-    mapDispatchToProps
-)(LoadingMenu);

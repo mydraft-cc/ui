@@ -4,18 +4,18 @@ import { connect } from 'react-redux';
 import { bindActionCreators, Dispatch } from 'redux';
 
 import {
-    ArrangeMenuContainer,
-    ClipboardMenuContainer,
+    ArrangeMenu,
+    ClipboardMenu,
     CustomPropertiesContainer,
     EditorViewContainer,
-    HistoryMenuContainer,
-    IconsContainer,
-    LayoutPropertiesContainer,
-    LoadingMenuContainer,
-    LockMenuContainer,
-    ShapesContainer,
-    UIMenuContainer,
-    VisualPropertiesContainer
+    HistoryMenu,
+    Icons,
+    LayoutProperties,
+    LoadingMenu,
+    LockMenu,
+    Shapes,
+    UIMenu,
+    VisualProperties
 } from '@app/wireframes/components';
 
 import {
@@ -117,22 +117,22 @@ class App extends React.PureComponent<AppProps & AppOwnProps> {
                 <Layout.Header>
                     <img className='logo' src={logo} alt='mydraft.cc' />
 
-                    <HistoryMenuContainer />
+                    <HistoryMenu />
                     <span className='menu-separator' />
 
-                    <LockMenuContainer />
+                    <LockMenu />
                     <span className='menu-separator' />
 
-                    <ArrangeMenuContainer />
+                    <ArrangeMenu />
                     <span className='menu-separator' />
 
-                    <ClipboardMenuContainer />
+                    <ClipboardMenu />
                     <span className='menu-separator' />
 
-                    <UIMenuContainer />
+                    <UIMenu />
 
                     <span style={{ float: 'right' }}>
-                        <LoadingMenuContainer />
+                        <LoadingMenu />
                     </span>
                 </Layout.Header>
                 <Layout className='content'>
@@ -142,10 +142,10 @@ class App extends React.PureComponent<AppProps & AppOwnProps> {
 
                         <Tabs type='card' onTabClick={this.doSelectTab} activeKey={selectedTab}>
                             <Tabs.TabPane key='shapes' tab='Shapes'>
-                                <ShapesContainer />
+                                <Shapes />
                             </Tabs.TabPane>
                             <Tabs.TabPane key='icons' tab='Icons'>
-                                <IconsContainer />
+                                <Icons />
                             </Tabs.TabPane>
                         </Tabs>
                     </Layout.Sider>
@@ -158,10 +158,10 @@ class App extends React.PureComponent<AppProps & AppOwnProps> {
 
                         <Collapse bordered={false} defaultActiveKey={['layout', 'visual', 'custom']}>
                             <Collapse.Panel key='layout' header='Layout'>
-                                <LayoutPropertiesContainer />
+                                <LayoutProperties />
                             </Collapse.Panel>
                             <Collapse.Panel key='visual' header='Visual'>
-                                <VisualPropertiesContainer />
+                                <VisualProperties />
                             </Collapse.Panel>
                             <Collapse.Panel key='custom' header='Custom'>
                                 <CustomPropertiesContainer />

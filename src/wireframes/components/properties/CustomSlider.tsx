@@ -15,38 +15,19 @@ interface CustomSliderProps {
     onChange: (value: number) => void;
 }
 
-interface CustomSliderState {
-    // The slider value.
-    value: number;
-}
+export const CustomSlider = ({ max, min, onChange, value }: CustomSliderProps) => {
+    const [sliderValue, setValue] = React.useState<number>(value);
 
-export class CustomSlider extends React.PureComponent<CustomSliderProps, CustomSliderState> {
-    constructor(props: CustomSliderProps) {
-        super(props);
+    const doChangeValue = React.useCallback((v: number) => {
+        setValue(value);
+    }, [setValue]);
 
-        this.state = { value: props.value };
-    }
-
-    public componentWillReceiveProps(nextProps: CustomSliderProps) {
-        this.doSetValue(nextProps.value);
-    }
-
-    private doSetValue = (value: number) => {
-        this.setState({ value });
-    }
-
-    private doEmitValue = (value: number) => {
-        this.props.onChange(value);
-    }
-
-    public render() {
-        return (
-            <Slider
-                value={this.state.value}
-                min={this.props.min}
-                max={this.props.max}
-                onChange={this.doSetValue}
-                onAfterChange={this.doEmitValue} />
-        );
-    }
-}
+    return (
+        <Slider
+            value={sliderValue}
+            min={min}
+            max={max}
+            onChange={doChangeValue}
+            onAfterChange={onChange} />
+    );
+};

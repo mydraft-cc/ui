@@ -9,5 +9,5 @@ export const Title = (props: TitleProps) => {
         document.title = props.text;
     });
 
-    return (<></>);
+    return null as JSX.Element;
 };
