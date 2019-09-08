@@ -40,29 +40,31 @@ export const VisualProperties = () => {
 
     const doAlignText = React.useCallback((value: string) => {
         if (selectedDiagramId) {
-            changeItemsAppearance(selectedDiagramId, selectedItems, DiagramItem.APPEARANCE_TEXT_ALIGNMENT, value);
+            dispatch(changeItemsAppearance(selectedDiagramId, selectedItems, DiagramItem.APPEARANCE_TEXT_ALIGNMENT, value));
         }
     }, [dispatch, selectedDiagramId, selectedItems]);
 
     const doChangeAppearance = React.useCallback((key: string, value: any) => {
         if (selectedDiagramId) {
-            changeItemsAppearance(selectedDiagramId, selectedItems, key, value);
+            dispatch(changeItemsAppearance(selectedDiagramId, selectedItems, key, value));
         }
     }, [dispatch, selectedDiagramId, selectedItems]);
 
     const doSelectColorTab = React.useCallback((key: string) => {
-        selectColorTab(key);
+        dispatch(selectColorTab(key));
     }, [dispatch]);
 
-    const doAlignTextLeft =   React.useCallback(() => doAlignText('left'), [dispatch]);
-    const doAlignTextCenter = React.useCallback(() => doAlignText('center'), [dispatch]);
-    const doAlignTextRight =  React.useCallback(() => doAlignText('right'), [dispatch]);
+    console.log(selectedItems.length);
 
-    const doChangeFontSize =    	React.useCallback((value: any) => doChangeAppearance(DiagramItem.APPEARANCE_FONT_SIZE, value), [dispatch]);
-    const doChangeStrokeColor =     React.useCallback((value: any) => doChangeAppearance(DiagramItem.APPEARANCE_STROKE_COLOR, value), [dispatch]);
-    const doChangeStrokeThickness = React.useCallback((value: any) => doChangeAppearance(DiagramItem.APPEARANCE_STROKE_THICKNESS, value), [dispatch]);
-    const doChangeForegroundColor = React.useCallback((value: any) => doChangeAppearance(DiagramItem.APPEARANCE_FOREGROUND_COLOR, value), [dispatch]);
-    const doChangeBackgroundColor = React.useCallback((value: any) => doChangeAppearance(DiagramItem.APPEARANCE_BACKGROUND_COLOR, value), [dispatch]);
+    const doAlignTextLeft =   React.useCallback(() => doAlignText('left'), [doAlignText]);
+    const doAlignTextCenter = React.useCallback(() => doAlignText('center'), [doAlignText]);
+    const doAlignTextRight =  React.useCallback(() => doAlignText('right'), [doAlignText]);
+
+    const doChangeFontSize =    	React.useCallback((value: any) => doChangeAppearance(DiagramItem.APPEARANCE_FONT_SIZE, value), [doChangeAppearance]);
+    const doChangeStrokeColor =     React.useCallback((value: any) => doChangeAppearance(DiagramItem.APPEARANCE_STROKE_COLOR, value), [doChangeAppearance]);
+    const doChangeStrokeThickness = React.useCallback((value: any) => doChangeAppearance(DiagramItem.APPEARANCE_STROKE_THICKNESS, value), [doChangeAppearance]);
+    const doChangeForegroundColor = React.useCallback((value: any) => doChangeAppearance(DiagramItem.APPEARANCE_FOREGROUND_COLOR, value), [doChangeAppearance]);
+    const doChangeBackgroundColor = React.useCallback((value: any) => doChangeAppearance(DiagramItem.APPEARANCE_BACKGROUND_COLOR, value), [doChangeAppearance]);
 
     if (!selectedDiagramId) {
         return null;

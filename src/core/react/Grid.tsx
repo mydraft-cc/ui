@@ -53,7 +53,7 @@ export class Grid extends React.PureComponent<GridProps, GridState> {
         window.removeEventListener('scroll', this.onScroll);
     }
 
-    public componentWillReceiveProps() {
+    public componentDidUpdate() {
         this.measure();
     }
 

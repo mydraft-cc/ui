@@ -77,7 +77,7 @@ const store = createStore(
     composeEnhancers(applyMiddleware(thunk, Reducers.toastMiddleware(), routerMiddleware(history), Reducers.itemsMiddleware(serializer)))
 );
 
-import { AppContainer } from './App';
+import { App } from './App';
 
 const Root = (
     <DndProvider backend={HTML5Backend}>
@@ -86,7 +86,7 @@ const Root = (
                 <Provider store={store}>
                     <Router history={history}>
                         <Route path='/:token?' render={props => (
-                            <AppContainer token={props.match.params.token} />
+                            <App token={props.match.params.token} />
                         )} />
                     </Router>
                 </Provider>

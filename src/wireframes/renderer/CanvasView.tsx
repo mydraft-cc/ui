@@ -18,46 +18,40 @@ export interface CanvasViewProps {
     onInit: (scope: svg.Doc) => any;
 }
 
-export class CanvasView extends React.Component<CanvasViewProps> {
-    private docElement: any;
-    private document: svg.Doc;
+export const CanvasView = (props: CanvasViewProps) => {
+    const {
+        className,
+        onInit,
+        zoom,
+        zoomedHeight,
+        zoomedWidth
+    } = props;
 
-    private initialize = (element: any) => {
-        this.docElement = element;
+    let [document, setDocument] = React.useState<svg.Doc>();
 
-        if (element) {
-            this.document = svg(this.docElement);
+    const ref = React.useRef();
 
-            if (document) {
-                this.document.style({ position: 'relative', overflow: 'visible' });
-            }
+    React.useLayoutEffect(() => {
+        const element = ref.current;
 
-            this.updateViewSettings(this.props);
+        if (element && !document) {
+            document = svg(element);
+            document.style({ position: 'relative', overflow: 'visible' });
 
-            this.props.onInit(this.document);
+            onInit(document);
+
+            setDocument(document);
         }
-    }
+    }, [ref.current, setDocument]);
 
-    public componentWillReceiveProps(nextProps: CanvasViewProps) {
-        this.updateViewSettings(nextProps);
-    }
+    React.useLayoutEffect(() => {
+        if (document) {
+            const w = zoomedWidth / zoom;
+            const h = zoomedHeight / zoom;
 
-    public shouldComponentUpdate() {
-        return false;
-    }
-
-    private updateViewSettings(props: CanvasViewProps) {
-        if (this.document) {
-            const { zoomedWidth, zoomedHeight } = props;
-
-            const w = zoomedWidth / props.zoom;
-            const h = zoomedHeight / props.zoom;
-
-            this.document.size(zoomedWidth, zoomedHeight).viewbox(0, 0, w, h);
+            document.size(zoomedWidth, zoomedHeight).viewbox(0, 0, w, h);
         }
-    }
+    }, [ref.current, zoom, zoomedHeight, zoomedWidth, document]);
 
-    public render() {
-        return <div className={this.props.className} ref={this.initialize} />;
-    }
-}
+    return <div className={className} ref={ref} />;
+};
