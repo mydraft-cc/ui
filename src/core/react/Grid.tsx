@@ -1,5 +1,5 @@
 import * as React from 'react';
-import Measurer from 'react-measure';
+import Measurer, { ContentRect } from 'react-measure';
 
 import { sizeInPx } from './../utils/react';
 
@@ -34,8 +34,62 @@ interface GridState {
     cellSize: number;
 }
 
+const cache: { [key: string]:  JSX.Element } = {};
+
+export const GridList = React.memo((props: GridProps & GridState) => {
+    const {
+        cellSize,
+        indexFirst,
+        indexLast,
+        columns,
+        height,
+        items,
+        keyBuilder,
+        renderer
+    } = props;
+
+    const cells = [];
+
+    for (let index = indexFirst; index < indexLast; index++) {
+        const item = items[index];
+
+        if (!item) {
+            continue;
+        }
+
+        const itemKey = keyBuilder(item);
+
+        let cell = cache[itemKey];
+
+        if (!cell) {
+            cell = renderer(item);
+
+            cache[itemKey] = cell;
+        }
+
+
+        const col = sizeInPx(cellSize * Math.floor(index % columns));
+        const row = sizeInPx(cellSize * Math.floor(index / columns));
+
+        const cellPx = sizeInPx(cellSize);
+
+        cell = (
+            <div key={index} style={{ position: 'absolute', height: cellPx, width: cellPx, top: row, left: col }}>
+                {cell}
+            </div>
+        );
+
+        cells.push(cell);
+    }
+
+    return (
+        <div style={{ height: sizeInPx(height), position: 'relative' }}>
+            {...cells}
+        </div>
+    );
+});
+
 export class Grid extends React.PureComponent<GridProps, GridState> {
-    private cache: { [key: string]:  JSX.Element } = {};
     private container: HTMLElement;
 
     constructor(props: GridProps) {
@@ -58,76 +112,35 @@ export class Grid extends React.PureComponent<GridProps, GridState> {
         }
     }
 
-    private measure = () => {
+    private measure = (rect?: ContentRect) => {
         const { columns, items } = this.props;
+
+        let containerHeight = 0;
+
+        if (rect && rect.entry) {
+            containerHeight = rect.entry.height;
+        } else {
+            containerHeight = this.container.getBoundingClientRect().height;
+        }
 
         const cellSize = this.container.scrollWidth / columns;
 
         const height = cellSize * items.length / columns;
 
         const scrollTop = this.container.scrollTop;
-        const scrollBottom = this.container.getBoundingClientRect().height + scrollTop;
+        const scrollBottom = containerHeight + scrollTop;
 
         const indexFirst = Math.floor(scrollTop / cellSize) * columns;
         const indexLast  = Math.floor(scrollBottom / cellSize) * columns + columns * 2;
 
-        this.setState({ cellSize, indexFirst, indexLast, height });
-    }
+        const state = this.state;
 
-    private renderItems(): JSX.Element[] {
-        const {
-            cellSize,
-            indexFirst,
-            indexLast
-        } = this.state;
-
-        const {
-            columns,
-            items,
-            keyBuilder,
-            renderer
-        } = this.props;
-
-        const cells = [];
-
-        for (let index = indexFirst; index < indexLast; index++) {
-            const item = items[index];
-
-            if (!item) {
-                continue;
-            }
-
-            let cell = this.renderCell(keyBuilder, item, renderer);
-
-            const col = sizeInPx(cellSize * Math.floor(index % columns));
-            const row = sizeInPx(cellSize * Math.floor(index / columns));
-
-            const cellPx = sizeInPx(cellSize);
-
-            cell = (
-                <div key={index} style={{ position: 'absolute', height: cellPx, width: cellPx, top: row, left: col }}>
-                    {cell}
-                </div>
-            );
-
-            cells.push(cell);
+        if (state.cellSize !== cellSize ||
+            state.indexFirst !== indexFirst ||
+            state.indexLast !== indexLast ||
+            state.height !== height) {
+            this.setState({ cellSize, indexFirst, indexLast, height });
         }
-
-        return cells;
-    }
-
-    private renderCell(keyBuilder: (item: any) => string, item: any, renderer: (item: any) => JSX.Element) {
-        const itemKey = keyBuilder(item);
-
-        let cell = this.cache[itemKey];
-
-        if (!cell) {
-            cell = renderer(item);
-
-            this.cache[itemKey] = cell;
-        }
-
-        return cell;
     }
 
     public render() {
@@ -136,10 +149,8 @@ export class Grid extends React.PureComponent<GridProps, GridState> {
         return (
             <Measurer onResize={this.measure}>
                 {({ measureRef }) =>
-                    <div className={className} ref={element => this.initialize(element, measureRef)} onScroll={this.scroll}>
-                        <div style={{ height: sizeInPx(this.state.height), position: 'relative' }}>
-                            {this.renderItems()}
-                        </div>
+                    <div className={className} ref={element => this.initialize(element, measureRef)}>
+                        <GridList {...this.props} {...this.state} />
                     </div>
                 }
             </Measurer>

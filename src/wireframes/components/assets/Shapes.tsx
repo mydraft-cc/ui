@@ -47,7 +47,7 @@ export const Shapes = () => {
                 <div className='asset-shape-title'>{shape.displayName}</div>
             </div>
         );
-    }, [dispatch]);
+    }, []);
 
     const doFilterShapes = React.useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
         dispatch(filterShapes(event.target.value));

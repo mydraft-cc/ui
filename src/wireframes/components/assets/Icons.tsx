@@ -1,6 +1,6 @@
 import { Icon as AntdIcon, Input, Select } from 'antd';
 import * as React from 'react';
-import { useDispatch } from 'react-redux';
+import { ReactReduxContext, useDispatch } from 'react-redux';
 
 import './Icons.scss';
 
@@ -27,14 +27,17 @@ const keyBuilder = (icon: IconInfo) => {
 
 export const Icons = React.memo(() => {
     const dispatch = useDispatch();
-    const selectedDiagramId = useStore(s => getDiagramId(s));
     const iconsFiltered = useStore(s => getFilteredIcons(s));
     const iconsFilter = useStore(s => getIconsFilter(s));
     const iconSets = useStore(s => getIconSets(s));
     const iconSet = useStore(s => getIconSet(s));
 
+    const storeContext = React.useContext(ReactReduxContext);
+
     const cellRenderer = React.useCallback((icon: IconInfo) => {
         const doAdd = () => {
+            const selectedDiagramId = getDiagramId(storeContext.store.getState());
+
             if (selectedDiagramId) {
                 dispatch(addIcon(selectedDiagramId, icon.text, icon.fontFamily, 100, 100));
             }
@@ -49,7 +52,7 @@ export const Icons = React.memo(() => {
                 <div className='asset-icon-title'>{icon.displayName}</div>
             </div>
         );
-    }, [selectedDiagramId]);
+    }, []);
 
     const doFilterIcons = React.useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
         dispatch(filterIcons(event.target.value));
