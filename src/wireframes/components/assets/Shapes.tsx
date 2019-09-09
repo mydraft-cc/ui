@@ -1,6 +1,6 @@
 import { Icon, Input } from 'antd';
 import * as React from 'react';
-import { useDispatch } from 'react-redux';
+import { ReactReduxContext, useDispatch } from 'react-redux';
 
 import './Shapes.scss';
 
@@ -24,12 +24,15 @@ const keyBuilder = (shape: ShapeInfo) => {
 
 export const Shapes = () => {
     const dispatch = useDispatch();
-    const selectedDiagramId = useStore(s => getDiagramId(s));
     const shapesFiltered = useStore(s => getFilteredShapes(s));
     const shapesFilter = useStore(s => getShapesFilter(s));
 
+    const storeContext = React.useContext(ReactReduxContext);
+
     const cellRenderer = React.useCallback((shape: ShapeInfo) => {
         const doAdd = () => {
+            const selectedDiagramId = getDiagramId(storeContext.store.getState());
+
             if (selectedDiagramId) {
                 dispatch(addVisual(selectedDiagramId, shape.name, 100, 100));
             }
@@ -44,7 +47,7 @@ export const Shapes = () => {
                 <div className='asset-shape-title'>{shape.displayName}</div>
             </div>
         );
-    }, [selectedDiagramId]);
+    }, [dispatch]);
 
     const doFilterShapes = React.useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
         dispatch(filterShapes(event.target.value));

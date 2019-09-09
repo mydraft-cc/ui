@@ -12,26 +12,28 @@ export interface ShortcutProps {
     onPressed: () => any;
 }
 
-export const Shortcut = (props: ShortcutProps) => {
+export const Shortcut = React.memo((props: ShortcutProps) => {
     const { keys, disabled, onPressed } = props;
 
     React.useEffect(() => {
-        Mousetrap.bind(keys, (e) =>  {
-            if (disabled !== true) {
+        if (!disabled) {
+            Mousetrap.bind(keys, (e) =>  {
                 onPressed();
 
                 e.preventDefault();
                 e.stopPropagation();
                 e.stopImmediatePropagation();
-            }
 
-            return false;
-        });
+                return false;
+            });
 
-        return () => {
-            Mousetrap.unbind(keys);
-        };
-    }, [keys]);
+            return () => {
+                Mousetrap.unbind(keys);
+            };
+        }
 
-    return null as JSX.Element;
-};
+        return undefined;
+    }, [disabled, keys]);
+
+    return null;
+});

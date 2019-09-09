@@ -25,7 +25,7 @@ const keyBuilder = (icon: IconInfo) => {
     return icon.name;
 };
 
-export const Icons = () => {
+export const Icons = React.memo(() => {
     const dispatch = useDispatch();
     const selectedDiagramId = useStore(s => getDiagramId(s));
     const iconsFiltered = useStore(s => getFilteredIcons(s));
@@ -78,4 +78,4 @@ export const Icons = () => {
             <Grid className='asset-icons-list' renderer={cellRenderer} columns={3} items={iconsFiltered} keyBuilder={keyBuilder} />
         </>
     );
-};
+});

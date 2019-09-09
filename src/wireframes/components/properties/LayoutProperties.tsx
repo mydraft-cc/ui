@@ -24,7 +24,7 @@ import {
     useStore
 } from '@app/wireframes/model';
 
-export const LayoutProperties = () => {
+export const LayoutProperties = React.memo(() => {
     const dispatch = useDispatch();
     const selectedDiagramId = useStore(s => getDiagramId(s));
     const selectedItems = useStore(s => getSelectedItems(s));
@@ -110,4 +110,4 @@ export const LayoutProperties = () => {
             </div>
         </>
     );
-};
+});

@@ -15,7 +15,7 @@ interface CustomSliderProps {
     onChange: (value: number) => void;
 }
 
-export const CustomSlider = ({ max, min, onChange, value }: CustomSliderProps) => {
+export const CustomSlider = React.memo(({ max, min, onChange, value }: CustomSliderProps) => {
     const [sliderValue, setSliderValue] = React.useState<number>(value);
 
     React.useEffect(() => {
@@ -34,4 +34,4 @@ export const CustomSlider = ({ max, min, onChange, value }: CustomSliderProps) =
             onChange={doChangeValue}
             onAfterChange={onChange} />
     );
-};
+});

@@ -31,7 +31,7 @@ interface ColorPickerProps {
     onActiveColorTabChanged?: (key: string) => void;
 }
 
-export const ColorPicker = (props: ColorPickerProps) => {
+export const ColorPicker = React.memo((props: ColorPickerProps) => {
     const {
         activeColorTab,
         disabled,
@@ -124,4 +124,4 @@ export const ColorPicker = (props: ColorPickerProps) => {
             </Button>
         </Popover>
     );
-};
+});

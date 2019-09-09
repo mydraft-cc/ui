@@ -12,7 +12,7 @@ import {
     useStore
 } from '@app/wireframes/model';
 
-export const LockMenu = () => {
+export const LockMenu = React.memo(() => {
     const dispatch = useDispatch();
     const selectedDiagram = useStore(s => getDiagram(s));
     const selectedItem = useStore(s => getSelectedItemWithLocked(s));
@@ -42,4 +42,4 @@ export const LockMenu = () => {
             </Tooltip>
         </>
     );
-};
+});

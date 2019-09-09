@@ -6,7 +6,7 @@ import { Shortcut } from '@app/core';
 
 import { setZoom, useStore } from '@app/wireframes/model';
 
-export const UIMenu = () => {
+export const UIMenu = React.memo(() => {
     const dispatch = useDispatch();
     const zoom = useStore(x => x.ui.zoom);
     const canZoomIn = zoom < 2;
@@ -45,4 +45,4 @@ export const UIMenu = () => {
             <Shortcut disabled={!canZoomIn} onPressed={doZoomIn} keys='alt+plus' />
         </>
     );
-};
+});

@@ -17,7 +17,7 @@ import { SerializerContext } from '@app/context';
 
 const OFFSET = 50;
 
-export const ClipboardMenu = () => {
+export const ClipboardMenu = React.memo(() => {
     let [offset, setOffset] = React.useState<number>();
 
     const [clipboard, setClipboard] = React.useState<string>();
@@ -89,4 +89,4 @@ export const ClipboardMenu = () => {
             <Shortcut disabled={!clipboard} onPressed={doPaste} keys='ctrl+v' />
         </>
     );
-};
+});

@@ -16,7 +16,7 @@ import {
     useStore
 } from '@app/wireframes/model';
 
-export const ArrangeMenu = () => {
+export const ArrangeMenu = React.memo(() => {
     const dispatch = useDispatch();
     const selectedDiagram = useStore(s => getDiagram(s));
     const selectedGroups = useStore(s => getSelectedGroups(s));
@@ -85,4 +85,4 @@ export const ArrangeMenu = () => {
             <Shortcut disabled={!selectedDiagram} onPressed={doSelectAll} keys='ctrl+a' />
         </>
     );
-};
+});

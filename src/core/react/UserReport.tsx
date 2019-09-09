@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-export const UserReport = () => {
+export const UserReport = React.memo(() => {
     React.useEffect(() => {
         window['_urq'] = window['_urq'] || [];
         window['_urq'].push(['initSite', 'b64f8170-a1e3-46fa-8c63-34514d064c15']);
@@ -15,5 +15,5 @@ export const UserReport = () => {
         }, 1000);
     });
 
-    return null as JSX.Element;
-};
+    return null;
+});

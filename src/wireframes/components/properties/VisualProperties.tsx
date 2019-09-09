@@ -21,18 +21,36 @@ import {
 const DEFINED_STROKE_THICKNESSES = [1, 2, 4, 6, 8];
 const DEFINED_FONT_SIZES = [4, 6, 8, 10, 12, 14, 16, 18, 20, 24, 28, 32, 36, 40, 48, 60];
 
-export const VisualProperties = () => {
+export const VisualProperties = React.memo(() => {
     const dispatch = useDispatch();
     const selectionSet = useStore(s => getSelectionSet(s));
-    const backgroundColor = uniqueAppearance(selectionSet, DiagramItem.APPEARANCE_BACKGROUND_COLOR, x => Color.fromValue(x), Color.eq);
-    const fontSize = uniqueAppearance(selectionSet, DiagramItem.APPEARANCE_FONT_SIZE, x => x);
-    const foregroundColor = uniqueAppearance(selectionSet, DiagramItem.APPEARANCE_FOREGROUND_COLOR, x => Color.fromValue(x), Color.eq);
     const selectedColorTab = useStore(s => s.ui.selectedColorTab);
     const selectedDiagramId = useStore(s => getDiagramId(s));
     const selectedItems = useStore(s => getSelectedItems(s));
-    const strokeColor = uniqueAppearance(selectionSet, DiagramItem.APPEARANCE_STROKE_COLOR, x => Color.fromValue(x), Color.eq);
-    const strokeThickness = uniqueAppearance(selectionSet, DiagramItem.APPEARANCE_STROKE_THICKNESS, x => x);
-    const textAlignment = uniqueAppearance(selectionSet, DiagramItem.APPEARANCE_TEXT_ALIGNMENT, x => x);
+
+    const backgroundColor = React.useMemo(() =>
+        uniqueAppearance(selectionSet, DiagramItem.APPEARANCE_BACKGROUND_COLOR, x => Color.fromValue(x), Color.eq)
+    , [selectionSet]);
+
+    const fontSize = React.useMemo(() =>
+        uniqueAppearance(selectionSet, DiagramItem.APPEARANCE_FONT_SIZE, x => x)
+    , [selectionSet]);
+
+    const foregroundColor = React.useMemo(() =>
+        uniqueAppearance(selectionSet, DiagramItem.APPEARANCE_FOREGROUND_COLOR, x => Color.fromValue(x), Color.eq)
+    , [selectionSet]);
+
+    const strokeColor = React.useMemo(() =>
+        uniqueAppearance(selectionSet, DiagramItem.APPEARANCE_STROKE_COLOR, x => Color.fromValue(x), Color.eq)
+    , [selectionSet]);
+
+    const strokeThickness = React.useMemo(() =>
+        uniqueAppearance(selectionSet, DiagramItem.APPEARANCE_STROKE_THICKNESS, x => x)
+    , [selectionSet]);
+
+    const textAlignment = React.useMemo(() =>
+        uniqueAppearance(selectionSet, DiagramItem.APPEARANCE_TEXT_ALIGNMENT, x => x)
+    , [selectionSet]);
 
     const getTextAlignment = React.useCallback((value: string): ButtonType => {
         return value === textAlignment.value ? 'primary' : undefined;
@@ -53,8 +71,6 @@ export const VisualProperties = () => {
     const doSelectColorTab = React.useCallback((key: string) => {
         dispatch(selectColorTab(key));
     }, [dispatch]);
-
-    console.log(selectedItems.length);
 
     const doAlignTextLeft =   React.useCallback(() => doAlignText('left'), [doAlignText]);
     const doAlignTextCenter = React.useCallback(() => doAlignText('center'), [doAlignText]);
@@ -154,4 +170,4 @@ export const VisualProperties = () => {
             </div>
         </>
     );
-};
+});

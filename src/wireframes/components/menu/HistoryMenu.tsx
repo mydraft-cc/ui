@@ -10,7 +10,7 @@ import {
     useStore
 } from '@app/wireframes/model';
 
-export const HistoryMenu = () => {
+export const HistoryMenu = React.memo(() => {
     const dispatch = useDispatch();
     const canRedo = useStore(s => s.editor.canRedo);
     const canUndo = useStore(s => s.editor.canUndo);
@@ -46,4 +46,4 @@ export const HistoryMenu = () => {
             <Shortcut keys='ctrl+y' disabled={!canRedo} onPressed={doRedo} />
         </>
     );
-};
+});

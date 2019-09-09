@@ -37,7 +37,6 @@ interface GridState {
 export class Grid extends React.PureComponent<GridProps, GridState> {
     private cache: { [key: string]:  JSX.Element } = {};
     private container: HTMLElement;
-    private isInitialized = false;
 
     constructor(props: GridProps) {
         super(props);
@@ -45,102 +44,99 @@ export class Grid extends React.PureComponent<GridProps, GridState> {
         this.state = { cellSize: 0, indexFirst: 0, indexLast: 0, height: 0 };
     }
 
-    public componentDidMount() {
-        window.addEventListener('scroll', this.onScroll, true);
-    }
-
-    public componentWillUnmount() {
-        window.removeEventListener('scroll', this.onScroll);
-    }
-
     public componentDidUpdate() {
         this.measure();
     }
 
-    private initialize(element: HTMLElement) {
-        if (element && !this.isInitialized) {
+    private initialize(element: HTMLElement, forward: (element: HTMLElement) => void) {
+        forward(element);
+
+        if (!this.container) {
             this.container = element;
 
             this.measure();
-
-            this.isInitialized = true;
         }
     }
 
-    private onScroll = (element: UIEvent) => {
-        if (this.container === element.target) {
-            this.measure();
-        }
-    }
+    private measure = () => {
+        const { columns, items } = this.props;
 
-    private measure() {
-        const columns = this.props.columns;
+        const cellSize = this.container.scrollWidth / columns;
 
-        const itemSize = this.container.scrollWidth / columns;
-        const itemsHeight = itemSize * this.props.items.length / columns;
+        const height = cellSize * items.length / columns;
 
         const scrollTop = this.container.scrollTop;
         const scrollBottom = this.container.getBoundingClientRect().height + scrollTop;
 
-        const indexFirst = Math.floor(scrollTop / itemSize) * columns;
-        const indexLast  = Math.floor(scrollBottom / itemSize) * columns + columns * 2;
+        const indexFirst = Math.floor(scrollTop / cellSize) * columns;
+        const indexLast  = Math.floor(scrollBottom / cellSize) * columns + columns * 2;
 
-        const state = this.state;
-
-        if (state.cellSize !== itemSize ||
-            state.indexFirst !== indexFirst ||
-            state.indexLast !== indexLast ||
-            state.height !== itemsHeight) {
-            this.setState({ cellSize: itemSize, indexFirst: indexFirst, indexLast: indexLast, height: itemsHeight });
-        }
+        this.setState({ cellSize, indexFirst, indexLast, height });
     }
 
     private renderItems(): JSX.Element[] {
-        const cellSize = this.state.cellSize;
+        const {
+            cellSize,
+            indexFirst,
+            indexLast
+        } = this.state;
 
-        const items = [];
+        const {
+            columns,
+            items,
+            keyBuilder,
+            renderer
+        } = this.props;
 
-        for (let index = this.state.indexFirst; index < this.state.indexLast; index++) {
-            const item = this.props.items[index];
+        const cells = [];
+
+        for (let index = indexFirst; index < indexLast; index++) {
+            const item = items[index];
 
             if (!item) {
                 continue;
             }
 
-            const itemKey = this.props.keyBuilder(item);
+            let cell = this.renderCell(keyBuilder, item, renderer);
 
-            let element = this.cache[itemKey];
+            const col = sizeInPx(cellSize * Math.floor(index % columns));
+            const row = sizeInPx(cellSize * Math.floor(index / columns));
 
-            if (!element) {
-                element = this.props.renderer(item);
+            const cellPx = sizeInPx(cellSize);
 
-                this.cache[itemKey] = element;
-            }
-
-            const dim = cellSize;
-
-            const col = Math.floor(index % this.props.columns);
-            const row = Math.floor(index / this.props.columns);
-
-            element = (
-                <div key={index} style={{ position: 'absolute', height: sizeInPx(dim), width: sizeInPx(dim), top: sizeInPx(row * dim), left: sizeInPx(col * dim) }}>
-                    {element}
+            cell = (
+                <div key={index} style={{ position: 'absolute', height: cellPx, width: cellPx, top: row, left: col }}>
+                    {cell}
                 </div>
             );
 
-            items.push(element);
+            cells.push(cell);
         }
 
-        return items;
+        return cells;
+    }
+
+    private renderCell(keyBuilder: (item: any) => string, item: any, renderer: (item: any) => JSX.Element) {
+        const itemKey = keyBuilder(item);
+
+        let cell = this.cache[itemKey];
+
+        if (!cell) {
+            cell = renderer(item);
+
+            this.cache[itemKey] = cell;
+        }
+
+        return cell;
     }
 
     public render() {
         const { className } = this.props;
 
         return (
-            <Measurer onResize={() => this.measure()}>
+            <Measurer onResize={this.measure}>
                 {({ measureRef }) =>
-                    <div className={className} ref={element => { this.initialize(element!); measureRef(element); }}>
+                    <div className={className} ref={element => this.initialize(element, measureRef)} onScroll={this.scroll}>
                         <div style={{ height: sizeInPx(this.state.height), position: 'relative' }}>
                             {this.renderItems()}
                         </div>

@@ -13,7 +13,7 @@ import {
 
 const text = require('@app/legal.html');
 
-export const LoadingMenu = () => {
+export const LoadingMenu = React.memo(() => {
     const dispatch = useDispatch();
     const readToken = useStore(s => s.loading.readToken);
     const showInfoDialog = useStore(s => s.ui.showInfoDialog);
@@ -69,4 +69,4 @@ export const LoadingMenu = () => {
             </Modal>
         </>
     );
-};
+});
