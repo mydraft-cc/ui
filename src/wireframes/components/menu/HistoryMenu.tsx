@@ -1,80 +1,49 @@
 import { Button, Tooltip } from 'antd';
 import * as React from 'react';
-import { connect } from 'react-redux';
-import { bindActionCreators, Dispatch } from 'redux';
+import { useDispatch } from 'react-redux';
 
 import { Shortcut } from '@app/core';
 
 import {
-    EditorStateInStore,
     redo,
-    undo
+    undo,
+    useStore
 } from '@app/wireframes/model';
 
-interface HistoryMenuProps {
-    // Indicated if the state can be undo.
-    canUndo: boolean;
+export const HistoryMenu = React.memo(() => {
+    const dispatch = useDispatch();
+    const canRedo = useStore(s => s.editor.canRedo);
+    const canUndo = useStore(s => s.editor.canUndo);
 
-    // Indicated if the state can be redo.
-    canRedo: boolean;
+    const doRedo = React.useCallback(() => {
+        dispatch(redo());
+    }, [dispatch]);
 
-    // Undo the latest action.
-    undo: () => any;
+    const doUndo = React.useCallback(() => {
+        dispatch(undo());
+    }, [dispatch]);
 
-    // Redo the latest undone action.
-    redo: () => any;
-}
+    return (
+        <>
+            <Tooltip mouseEnterDelay={1} title='Undo (CTRL + Z)'>
+                <Button className='menu-item' size='large'
+                    disabled={!canUndo}
+                    onClick={doUndo}>
+                    <i className='icon-undo' />
+                </Button>
+            </Tooltip>
 
-class HistoryMenu extends React.PureComponent<HistoryMenuProps> {
-    private doUndo = () => {
-        this.props.undo();
-    }
+            <Shortcut keys='ctrl+z' disabled={!canUndo} onPressed={doUndo} />
 
-    private doRedo = () => {
-        this.props.redo();
-    }
+            <Tooltip mouseEnterDelay={1} title='Redo (CTRL + Y)'>
+                <Button className='menu-item' size='large'
+                    disabled={!canRedo}
+                    onClick={doRedo}>
+                    <i className='icon-redo' />
+                </Button>
+            </Tooltip>
 
-    public render() {
-        const { canRedo, canUndo } = this.props;
-
-        return (
-            <>
-                <Tooltip mouseEnterDelay={1} title='Undo (CTRL + Z)'>
-                    <Button className='menu-item' size='large'
-                        disabled={!canUndo}
-                        onClick={this.doUndo}>
-                        <i className='icon-undo' />
-                    </Button>
-                </Tooltip>
-
-                <Shortcut keys='ctrl+z' disabled={!canUndo} onPressed={this.doUndo} />
-
-                <Tooltip mouseEnterDelay={1} title='Redo (CTRL + Y)'>
-                    <Button className='menu-item' size='large'
-                        disabled={!canRedo}
-                        onClick={this.doRedo}>
-                        <i className='icon-redo' />
-                    </Button>
-                </Tooltip>
-
-                <Shortcut keys='ctrl+y' disabled={!canRedo} onPressed={this.doRedo} />
-            </>
-        );
-    }
-}
-
-const mapStateToProps = (state: EditorStateInStore) => {
-    return {
-        canUndo: state.editor.canUndo,
-        canRedo: state.editor.canRedo
-    };
-};
-
-const mapDispatchToProps = (dispatch: Dispatch) => bindActionCreators({
-    undo, redo
-}, dispatch);
-
-export const HistoryMenuContainer = connect(
-    mapStateToProps,
-    mapDispatchToProps
-)(HistoryMenu);
+            <Shortcut keys='ctrl+y' disabled={!canRedo} onPressed={doRedo} />
+        </>
+    );
+});

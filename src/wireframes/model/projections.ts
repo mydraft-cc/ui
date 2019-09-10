@@ -1,3 +1,4 @@
+import { useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
 
 import { AssetsStateInStore } from './assets-state';
@@ -5,6 +6,8 @@ import { Configurable } from './configurables';
 import { DiagramItem } from './diagram-item';
 import { DiagramItemSet } from './diagram-item-set';
 import { EditorStateInStore } from './editor-state';
+import { LoadingStateInStore } from './loading-state';
+import { UIStateInStore } from './ui-state';
 
 const EMPTY_STRING_ARRAY: string[] = [];
 const EMPTY_ITEMS_ARRAY: DiagramItem[] = [];
@@ -136,4 +139,10 @@ export function uniqueAppearance<T>(set: DiagramItemSet, key: string, parse?: Pa
     }
 
     return { value, empty: !hasValue };
+}
+
+type State = AssetsStateInStore & EditorStateInStore & UIStateInStore & LoadingStateInStore;
+
+export function useStore<T> (selector: ((state: State) => T)) {
+    return useSelector<State, T>(p => selector(p));
 }

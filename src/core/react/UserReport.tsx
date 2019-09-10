@@ -1,7 +1,7 @@
 import * as React from 'react';
 
-export class UserReport extends React.Component {
-    public componentDidMount() {
+export const UserReport = React.memo(() => {
+    React.useEffect(() => {
         window['_urq'] = window['_urq'] || [];
         window['_urq'].push(['initSite', 'b64f8170-a1e3-46fa-8c63-34514d064c15']);
 
@@ -13,9 +13,7 @@ export class UserReport extends React.Component {
 
             document.body.appendChild(script);
         }, 1000);
-    }
+    });
 
-    public render(): any {
-        return null;
-    }
-}
+    return null;
+});

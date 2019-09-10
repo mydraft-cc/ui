@@ -11,6 +11,7 @@ export abstract class Record<T> {
 
     constructor(values?: Partial<T>) {
         this.values = ImmutableMap.of(values as any);
+        this.values = this.afterClone(this.values);
     }
 
     public set<K extends keyof T>(key: K, value: T[K]): this {
@@ -39,7 +40,12 @@ export abstract class Record<T> {
         const record = Object.create(Object.getPrototypeOf(this));
 
         record.values = values;
+        record.values = record.afterClone(values, this);
 
         return record;
+    }
+
+    protected afterClone(values: ImmutableMap<any>, prev?: any) {
+        return values;
     }
 }

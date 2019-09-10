@@ -215,6 +215,16 @@ export class DiagramItem extends Record<Props> {
             return this.transformTo(transform);
         }
     }
+
+    protected afterClone(values: ImmutableMap<any>, prev?: DiagramItem) {
+        if (this.constraint) {
+            const size = this.constraint.updateSize(this, this.transform.size, prev);
+
+            return values.set('transform', this.transform.resizeTopLeft(size).round());
+        } else {
+            return values;
+        }
+    }
 }
 
 function getAppearance(visual: ImmutableMap<any> | { [key: string]: any; }) {

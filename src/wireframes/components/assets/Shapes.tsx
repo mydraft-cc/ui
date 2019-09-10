@@ -1,7 +1,6 @@
 import { Icon, Input } from 'antd';
 import * as React from 'react';
-import { connect } from 'react-redux';
-import { bindActionCreators, Dispatch } from 'redux';
+import { ReactReduxContext, useDispatch } from 'react-redux';
 
 import './Shapes.scss';
 
@@ -9,57 +8,33 @@ import { Grid } from '@app/core';
 
 import {
     addVisual,
-    AssetsStateInStore,
-    EditorStateInStore,
     filterShapes,
     getDiagramId,
     getFilteredShapes,
     getShapesFilter,
-    ShapeInfo
+    ShapeInfo,
+    useStore
 } from '@app/wireframes/model';
 
 import { ShapeImage } from './ShapeImage';
 
-interface ShapesProps {
-    // The filtered shapes.
-    shapesFiltered: ShapeInfo[];
-
-    // The shapes filter.
-    shapesFilter: string;
-
-    // The selected diagram.
-    selectedDiagramId: string | null;
-
-    // Filter the shapes.
-    filterShapes: (value: string) => any;
-
-    // Adds an visual.
-    addVisualToPosition: (diagram: string, renderer: string) => any;
-}
-
-const addVisualToPosition = (diagram: string, renderer: string) => {
-    return addVisual(diagram, renderer, 100, 100);
+const keyBuilder = (shape: ShapeInfo) => {
+    return shape.name;
 };
 
-const mapStateToProps = (state: AssetsStateInStore & EditorStateInStore) => {
-    return {
-        selectedDiagramId: getDiagramId(state),
-        shapesFiltered: getFilteredShapes(state),
-        shapesFilter: getShapesFilter(state)
-    };
-};
+export const Shapes = () => {
+    const dispatch = useDispatch();
+    const shapesFiltered = useStore(s => getFilteredShapes(s));
+    const shapesFilter = useStore(s => getShapesFilter(s));
 
-const mapDispatchToProps = (dispatch: Dispatch) => bindActionCreators({
-    filterShapes, addVisualToPosition
-}, dispatch);
+    const storeContext = React.useContext(ReactReduxContext);
 
-class Shapes extends React.PureComponent<ShapesProps> {
-    private cellRenderer = (shape: ShapeInfo) => {
+    const cellRenderer = React.useCallback((shape: ShapeInfo) => {
         const doAdd = () => {
-            const diagramId = this.props.selectedDiagramId;
+            const selectedDiagramId = getDiagramId(storeContext.store.getState());
 
-            if (diagramId) {
-                this.props.addVisualToPosition(diagramId, shape.name);
+            if (selectedDiagramId) {
+                dispatch(addVisual(selectedDiagramId, shape.name, 100, 100));
             }
         };
 
@@ -72,32 +47,21 @@ class Shapes extends React.PureComponent<ShapesProps> {
                 <div className='asset-shape-title'>{shape.displayName}</div>
             </div>
         );
-    }
+    }, []);
 
-    private doFilterShapes = (event: React.ChangeEvent<HTMLInputElement>) => {
-        this.props.filterShapes(event.target.value);
-    }
+    const doFilterShapes = React.useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+        dispatch(filterShapes(event.target.value));
+    }, [dispatch]);
 
-    private keyBuilder = (shape: ShapeInfo) => {
-        return shape.name;
-    }
+    return (
+        <>
+            <div className='asset-shapes-search'>
+                <Input value={shapesFilter} onChange={doFilterShapes}
+                    placeholder='Find shape'
+                    prefix={<Icon type='search' style={{ color: 'rgba(0,0,0,.25)' }} />} />
+            </div>
 
-    public render() {
-        return (
-            <>
-                <div className='asset-shapes-search'>
-                    <Input value={this.props.shapesFilter} onChange={this.doFilterShapes}
-                        placeholder='Find shape'
-                        prefix={<Icon type='search' style={{ color: 'rgba(0,0,0,.25)' }} />} />
-                </div>
-
-                <Grid className='asset-shapes-list' renderer={this.cellRenderer} columns={2} items={this.props.shapesFiltered} keyBuilder={this.keyBuilder} />
-            </>
-        );
-    }
-}
-
-export const ShapesContainer = connect(
-    mapStateToProps,
-    mapDispatchToProps
-)(Shapes);
+            <Grid className='asset-shapes-list' renderer={cellRenderer} columns={2} items={shapesFiltered} keyBuilder={keyBuilder} />
+        </>
+    );
+};
