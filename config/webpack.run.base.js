@@ -26,7 +26,8 @@ module.exports = env => {
             /**
              * Simplifies creation of HTML files to serve your webpack bundles.
              */
-            new plugins.HtmlWebpackPlugin({ template: 'src/index.html', hash: true })
+            new plugins.HtmlWebpackPlugin({ template: 'src/index.html', hash: true }),
+            new plugins.HtmlWebpackPlugin({ template: 'src/index.html', hash: true, filename: '404.html' }),
         ]
     });
 };
