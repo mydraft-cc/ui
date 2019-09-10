@@ -1,4 +1,4 @@
-import { Collections } from './collections';
+import { moveItems } from './collections';
 
 import { equalsArray } from './types';
 
@@ -37,11 +37,33 @@ export class ImmutableList<T> {
     }
 
     public add(...items: T[]) {
-        return this.replace(Collections.withAdded(this.items, items));
+        if (!items || items.length === 0) {
+            return this;
+        }
+
+        const newItems = [...this.items, ...items];
+
+        return this.replace(newItems);
     }
 
     public remove(...items: T[]) {
-        return this.replace(Collections.withRemoved(this.items, items));
+        if (!items || items.length === 0) {
+            return this;
+        }
+
+        const newItems: T[] = [...this.items];
+
+        for (let item of items) {
+            const index = newItems.indexOf(item);
+
+            if (index < 0) {
+                return this;
+            }
+
+            newItems.splice(index, 1);
+        }
+
+        return this.replace(newItems);
     }
 
     public bringToFront(items: T[]) {
@@ -61,7 +83,7 @@ export class ImmutableList<T> {
     }
 
     public moveTo(items: T[], target: number, relative = false) {
-        return this.replace(Collections.withMovedTo(this.items, items, target, relative));
+        return this.replace(moveItems(this.items, items, target, relative));
     }
 
     private replace(items: T[]): this {

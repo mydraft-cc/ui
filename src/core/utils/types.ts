@@ -127,7 +127,7 @@ export function equalsArray(lhs: any[], rhs: any[]) {
         return false;
     }
 
-    for (let i = 0; i < lhs[i]; i++) {
+    for (let i = 0; i < lhs.length; i++) {
         if (!equals(lhs[i], rhs[i])) {
             return false;
         }

@@ -40,6 +40,8 @@ describe('Types', () => {
     });
 
     it('should make number array check', () => {
+        expect(Types.isArrayOfString(0)).toBeFalsy();
+
         expect(Types.isArrayOfNumber([])).toBeTruthy();
         expect(Types.isArrayOfNumber([0, 1])).toBeTruthy();
 

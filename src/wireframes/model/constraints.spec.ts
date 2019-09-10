@@ -9,7 +9,7 @@ import {
 
 const shape =
     DiagramItem.createShape('1', 'button', 100, 100)
-        .setAppearance(DiagramItem.APPEARANCE_FONT_SIZE, 12) as DiagramItem;
+        .setAppearance(DiagramItem.APPEARANCE_FONT_SIZE, 12);
 
 describe('TextHeightConstraint', () => {
     it('should set y size from font size', () => {

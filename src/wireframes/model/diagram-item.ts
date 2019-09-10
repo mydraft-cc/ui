@@ -135,7 +135,7 @@ export class DiagramItem extends Record<Props> {
     }
 
     public replaceAppearance(appearance: Appearance) {
-        if (this.type === 'Group') {
+        if (this.type === 'Group' || !appearance) {
             return this;
         }
 
@@ -201,6 +201,10 @@ export class DiagramItem extends Record<Props> {
     }
 
     public transformByBounds(oldBounds: Transform, newBounds: Transform) {
+        if (!oldBounds || !newBounds || oldBounds.equals(newBounds)) {
+            return this;
+        }
+
         if (this.type === 'Group') {
             const rotation = this.rotation.add(newBounds.rotation).sub(oldBounds.rotation);
 
@@ -218,7 +222,7 @@ function getAppearance(visual: ImmutableMap<any> | { [key: string]: any; }) {
         return ImmutableMap.of(<any>visual);
     }
 
-    return visual;
+    return visual || DEFAULT_APPEARANCE;
 }
 
 function getChildIds(childIds: DiagramContainer | string[] | undefined): DiagramContainer {

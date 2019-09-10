@@ -35,8 +35,8 @@ describe('ImmutableSet', () => {
         const array = set_1.values;
 
         expect(array.length).toBe(2);
-        expect(array.indexOf('a') >= 0).toBeTruthy();
-        expect(array.indexOf('b') >= 0).toBeTruthy();
+        expect(array).toContain('a');
+        expect(array).toContain('b');
     });
 
     it('should return original set when item to add is null', () => {
@@ -84,5 +84,59 @@ describe('ImmutableSet', () => {
         const set_2 = set_1.remove(null!);
 
         expect(set_2).toBe(set_1);
+    });
+
+    it('should mutate set', () => {
+        const set_1 = ImmutableSet.of('1', '2', '3');
+        const set_2 = set_1.mutate(m => {
+            m.add('4');
+            m.remove('2');
+            m.remove('3');
+        });
+
+        expect(set_2.size).toBe(2);
+        expect(set_2.has('1')).toBeTruthy();
+        expect(set_2.has('4')).toBeTruthy();
+    });
+
+    it('should return orginal set when nothing has been mutated', () => {
+        const set_1 = ImmutableSet.of('1', '2', '3');
+        const set_2 = set_1.mutate(() => false);
+
+        expect(set_2).toBe(set_1);
+    });
+
+    it('should return true for equals when sets have same value in same order', () => {
+        const set_a = ImmutableSet.of('1', '2', '3');
+        const set_b = ImmutableSet.of('1', '2', '3');
+
+        expect(set_a.equals(set_b)).toBeTruthy();
+    });
+
+    it('should return true for equals when sets have same value in different order', () => {
+        const set_a = ImmutableSet.of('1', '2', '3');
+        const set_b = ImmutableSet.of('1', '3', '2');
+
+        expect(set_a.equals(set_b)).toBeTruthy();
+    });
+
+    it('should return for equals when sets are the same', () => {
+        const set_a = ImmutableSet.of('1', '2', '3');
+        const set_b = set_a;
+
+        expect(set_a.equals(set_b)).toBeTruthy();
+    });
+
+    it('should return false for equals when sets have different values', () => {
+        const set_a = ImmutableSet.of('1', '2', '3');
+        const set_b = ImmutableSet.of('1', '2', '4');
+
+        expect(set_a.equals(set_b)).toBeFalsy();
+    });
+
+    it('should return false for equals when checking with undefined value', () => {
+        const set_a = ImmutableSet.of('1', '2', '3');
+
+        expect(set_a.equals(null!)).toBeFalsy();
     });
 });
