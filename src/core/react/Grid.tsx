@@ -1,5 +1,5 @@
 import * as React from 'react';
-import Measurer from 'react-measure';
+import Measurer, { ContentRect } from 'react-measure';
 
 import { sizeInPx } from './../utils/react';
 
@@ -34,10 +34,63 @@ interface GridState {
     cellSize: number;
 }
 
+const cache: { [key: string]:  JSX.Element } = {};
+
+export const GridList = React.memo((props: GridProps & GridState) => {
+    const {
+        cellSize,
+        indexFirst,
+        indexLast,
+        columns,
+        height,
+        items,
+        keyBuilder,
+        renderer
+    } = props;
+
+    const cells = [];
+
+    for (let index = indexFirst; index < indexLast; index++) {
+        const item = items[index];
+
+        if (!item) {
+            continue;
+        }
+
+        const itemKey = keyBuilder(item);
+
+        let cell = cache[itemKey];
+
+        if (!cell) {
+            cell = renderer(item);
+
+            cache[itemKey] = cell;
+        }
+
+
+        const col = sizeInPx(cellSize * Math.floor(index % columns));
+        const row = sizeInPx(cellSize * Math.floor(index / columns));
+
+        const cellPx = sizeInPx(cellSize);
+
+        cell = (
+            <div key={index} style={{ position: 'absolute', height: cellPx, width: cellPx, top: row, left: col }}>
+                {cell}
+            </div>
+        );
+
+        cells.push(cell);
+    }
+
+    return (
+        <div style={{ height: sizeInPx(height), position: 'relative' }}>
+            {...cells}
+        </div>
+    );
+});
+
 export class Grid extends React.PureComponent<GridProps, GridState> {
-    private cache: { [key: string]:  JSX.Element } = {};
     private container: HTMLElement;
-    private isInitialized = false;
 
     constructor(props: GridProps) {
         super(props);
@@ -45,105 +98,59 @@ export class Grid extends React.PureComponent<GridProps, GridState> {
         this.state = { cellSize: 0, indexFirst: 0, indexLast: 0, height: 0 };
     }
 
-    public componentDidMount() {
-        window.addEventListener('scroll', this.onScroll, true);
-    }
-
-    public componentWillUnmount() {
-        window.removeEventListener('scroll', this.onScroll);
-    }
-
-    public componentWillReceiveProps() {
+    public componentDidUpdate() {
         this.measure();
     }
 
-    private initialize(element: HTMLElement) {
-        if (element && !this.isInitialized) {
+    private initialize(element: HTMLElement, forward: (element: HTMLElement) => void) {
+        forward(element);
+
+        if (!this.container) {
             this.container = element;
 
             this.measure();
-
-            this.isInitialized = true;
         }
     }
 
-    private onScroll = (element: UIEvent) => {
-        if (this.container === element.target) {
-            this.measure();
+    private measure = (rect?: ContentRect) => {
+        const { columns, items } = this.props;
+
+        let containerHeight = 0;
+
+        if (rect && rect.entry) {
+            containerHeight = rect.entry.height;
+        } else {
+            containerHeight = this.container.getBoundingClientRect().height;
         }
-    }
 
-    private measure() {
-        const columns = this.props.columns;
+        const cellSize = this.container.scrollWidth / columns;
 
-        const itemSize = this.container.scrollWidth / columns;
-        const itemsHeight = itemSize * this.props.items.length / columns;
+        const height = cellSize * items.length / columns;
 
         const scrollTop = this.container.scrollTop;
-        const scrollBottom = this.container.getBoundingClientRect().height + scrollTop;
+        const scrollBottom = containerHeight + scrollTop;
 
-        const indexFirst = Math.floor(scrollTop / itemSize) * columns;
-        const indexLast  = Math.floor(scrollBottom / itemSize) * columns + columns * 2;
+        const indexFirst = Math.floor(scrollTop / cellSize) * columns;
+        const indexLast  = Math.floor(scrollBottom / cellSize) * columns + columns * 2;
 
         const state = this.state;
 
-        if (state.cellSize !== itemSize ||
+        if (state.cellSize !== cellSize ||
             state.indexFirst !== indexFirst ||
             state.indexLast !== indexLast ||
-            state.height !== itemsHeight) {
-            this.setState({ cellSize: itemSize, indexFirst: indexFirst, indexLast: indexLast, height: itemsHeight });
+            state.height !== height) {
+            this.setState({ cellSize, indexFirst, indexLast, height });
         }
-    }
-
-    private renderItems(): JSX.Element[] {
-        const cellSize = this.state.cellSize;
-
-        const items = [];
-
-        for (let index = this.state.indexFirst; index < this.state.indexLast; index++) {
-            const item = this.props.items[index];
-
-            if (!item) {
-                continue;
-            }
-
-            const itemKey = this.props.keyBuilder(item);
-
-            let element = this.cache[itemKey];
-
-            if (!element) {
-                element = this.props.renderer(item);
-
-                this.cache[itemKey] = element;
-            }
-
-            const dim = cellSize;
-
-            const col = Math.floor(index % this.props.columns);
-            const row = Math.floor(index / this.props.columns);
-
-            element = (
-                <div key={index} style={{ position: 'absolute', height: sizeInPx(dim), width: sizeInPx(dim), top: sizeInPx(row * dim), left: sizeInPx(col * dim) }}>
-                    {element}
-                </div>
-            );
-
-            items.push(element);
-        }
-
-        return items;
     }
 
     public render() {
         const { className } = this.props;
 
         return (
-            <Measurer onResize={() => this.measure()}>
+            <Measurer onResize={this.measure}>
                 {({ measureRef }) =>
-                    <div className={className} ref={element => { this.initialize(element!); measureRef(element); }}>
-                        <div style={{ height: sizeInPx(this.state.height), position: 'relative' }}>
-                            {this.renderItems()}
-                        </div>
+                    <div className={className} ref={element => this.initialize(element, measureRef)}>
+                        <GridList {...this.props} {...this.state} />
                     </div>
                 }
             </Measurer>

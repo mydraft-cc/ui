@@ -2,7 +2,7 @@ import { Rect2 } from '@app/core';
 
 import {
     Configurable,
-    DiagramShape,
+    DiagramItem,
     SelectionConfigurable,
     TextHeightConstraint
 } from '@app/wireframes/model';
@@ -19,13 +19,13 @@ const BOX_MARGIN = 4;
 const TEXT_POSITION_X = BOX_SIZE + 2 * BOX_MARGIN;
 
 const DEFAULT_APPEARANCE = {};
-DEFAULT_APPEARANCE[DiagramShape.APPEARANCE_FOREGROUND_COLOR] = CommonTheme.CONTROL_TEXT_COLOR;
-DEFAULT_APPEARANCE[DiagramShape.APPEARANCE_BACKGROUND_COLOR] = CommonTheme.CONTROL_BACKGROUND_COLOR;
-DEFAULT_APPEARANCE[DiagramShape.APPEARANCE_TEXT] = 'Checkbox';
-DEFAULT_APPEARANCE[DiagramShape.APPEARANCE_TEXT_ALIGNMENT] = 'left';
-DEFAULT_APPEARANCE[DiagramShape.APPEARANCE_FONT_SIZE] = CommonTheme.CONTROL_FONT_SIZE;
-DEFAULT_APPEARANCE[DiagramShape.APPEARANCE_STROKE_COLOR] = CommonTheme.CONTROL_BORDER_COLOR;
-DEFAULT_APPEARANCE[DiagramShape.APPEARANCE_STROKE_THICKNESS] = CommonTheme.CONTROL_BORDER_THICKNESS;
+DEFAULT_APPEARANCE[DiagramItem.APPEARANCE_FOREGROUND_COLOR] = CommonTheme.CONTROL_TEXT_COLOR;
+DEFAULT_APPEARANCE[DiagramItem.APPEARANCE_BACKGROUND_COLOR] = CommonTheme.CONTROL_BACKGROUND_COLOR;
+DEFAULT_APPEARANCE[DiagramItem.APPEARANCE_TEXT] = 'Checkbox';
+DEFAULT_APPEARANCE[DiagramItem.APPEARANCE_TEXT_ALIGNMENT] = 'left';
+DEFAULT_APPEARANCE[DiagramItem.APPEARANCE_FONT_SIZE] = CommonTheme.CONTROL_FONT_SIZE;
+DEFAULT_APPEARANCE[DiagramItem.APPEARANCE_STROKE_COLOR] = CommonTheme.CONTROL_BORDER_COLOR;
+DEFAULT_APPEARANCE[DiagramItem.APPEARANCE_STROKE_THICKNESS] = CommonTheme.CONTROL_BORDER_THICKNESS;
 DEFAULT_APPEARANCE[STATE_KEY] = STATE_NORMAL;
 
 const CONFIGURABLE: Configurable[] = [
@@ -48,8 +48,8 @@ export class Checkbox extends AbstractControl {
         return 'Checkbox';
     }
 
-    public createDefaultShape(shapeId: string): DiagramShape {
-        return DiagramShape.createShape(shapeId, this.identifier(), 104, 36, CONFIGURABLE, DEFAULT_APPEARANCE, CONSTRAINT);
+    public createDefaultShape(shapeId: string): DiagramItem {
+        return DiagramItem.createShape(shapeId, this.identifier(), 104, 36, CONFIGURABLE, DEFAULT_APPEARANCE, CONSTRAINT);
     }
 
     protected renderInternal(ctx: AbstractContext) {
@@ -76,7 +76,7 @@ export class Checkbox extends AbstractControl {
         if (state === STATE_INTERDEMINATE) {
             const interdeminateBoxItem = ctx.renderer.createRectangle(0, 0, bounds.deflate(4));
 
-            ctx.renderer.setBackgroundColor(interdeminateBoxItem, ctx.shape.appearance.get(DiagramShape.APPEARANCE_STROKE_COLOR));
+            ctx.renderer.setBackgroundColor(interdeminateBoxItem, ctx.shape.appearance.get(DiagramItem.APPEARANCE_STROKE_COLOR));
 
             ctx.add(interdeminateBoxItem);
         } else if (state === STATE_CHECKED) {

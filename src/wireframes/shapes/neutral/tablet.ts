@@ -1,12 +1,12 @@
-import { DiagramShape } from '@app/wireframes/model';
+import { DiagramItem } from '@app/wireframes/model';
 
 import { Rect2, Vec2 } from '@app/core';
 
 import { AbstractContext, AbstractControl } from '@app/wireframes/shapes/utils/abstract-control';
 
 const DEFAULT_APPEARANCE = {};
-DEFAULT_APPEARANCE[DiagramShape.APPEARANCE_BACKGROUND_COLOR] = 0xFFFFFF;
-DEFAULT_APPEARANCE[DiagramShape.APPEARANCE_TEXT_DISABLED] = true;
+DEFAULT_APPEARANCE[DiagramItem.APPEARANCE_BACKGROUND_COLOR] = 0xFFFFFF;
+DEFAULT_APPEARANCE[DiagramItem.APPEARANCE_TEXT_DISABLED] = true;
 
 export class Tablet extends AbstractControl {
     public defaultAppearance() {
@@ -21,8 +21,8 @@ export class Tablet extends AbstractControl {
         return new Vec2(15, 50);
     }
 
-    public createDefaultShape(shapeId: string): DiagramShape {
-        return DiagramShape.createShape(shapeId, this.identifier(), 640, 480, undefined, DEFAULT_APPEARANCE);
+    public createDefaultShape(shapeId: string): DiagramItem {
+        return DiagramItem.createShape(shapeId, this.identifier(), 640, 480, undefined, DEFAULT_APPEARANCE);
     }
 
     protected renderInternal(ctx: AbstractContext) {

@@ -1,6 +1,6 @@
 import {
     Configurable,
-    DiagramShape,
+    DiagramItem,
     SliderConfigurable
 } from '@app/wireframes/model';
 
@@ -10,13 +10,13 @@ import { CommonTheme } from './_theme';
 const BORDER_RADIUS_KEY = 'BORDER_RADIUS';
 
 const DEFAULT_APPEARANCE = {};
-DEFAULT_APPEARANCE[DiagramShape.APPEARANCE_FOREGROUND_COLOR] = 0;
-DEFAULT_APPEARANCE[DiagramShape.APPEARANCE_BACKGROUND_COLOR] = 0xFFFFFF;
-DEFAULT_APPEARANCE[DiagramShape.APPEARANCE_TEXT] = 'Rectangle';
-DEFAULT_APPEARANCE[DiagramShape.APPEARANCE_TEXT_ALIGNMENT] = 'center';
-DEFAULT_APPEARANCE[DiagramShape.APPEARANCE_FONT_SIZE] = CommonTheme.CONTROL_FONT_SIZE;
-DEFAULT_APPEARANCE[DiagramShape.APPEARANCE_STROKE_COLOR] = CommonTheme.CONTROL_BORDER_COLOR;
-DEFAULT_APPEARANCE[DiagramShape.APPEARANCE_STROKE_THICKNESS] = CommonTheme.CONTROL_BORDER_THICKNESS;
+DEFAULT_APPEARANCE[DiagramItem.APPEARANCE_FOREGROUND_COLOR] = 0;
+DEFAULT_APPEARANCE[DiagramItem.APPEARANCE_BACKGROUND_COLOR] = 0xFFFFFF;
+DEFAULT_APPEARANCE[DiagramItem.APPEARANCE_TEXT] = 'Rectangle';
+DEFAULT_APPEARANCE[DiagramItem.APPEARANCE_TEXT_ALIGNMENT] = 'center';
+DEFAULT_APPEARANCE[DiagramItem.APPEARANCE_FONT_SIZE] = CommonTheme.CONTROL_FONT_SIZE;
+DEFAULT_APPEARANCE[DiagramItem.APPEARANCE_STROKE_COLOR] = CommonTheme.CONTROL_BORDER_COLOR;
+DEFAULT_APPEARANCE[DiagramItem.APPEARANCE_STROKE_THICKNESS] = CommonTheme.CONTROL_BORDER_THICKNESS;
 DEFAULT_APPEARANCE[BORDER_RADIUS_KEY] = 0;
 
 const CONFIGURABLES: Configurable[] = [
@@ -32,8 +32,8 @@ export class Rectangle extends AbstractControl {
         return 'Rectangle';
     }
 
-    public createDefaultShape(shapeId: string): DiagramShape {
-        return DiagramShape.createShape(shapeId, this.identifier(), 100, 60, CONFIGURABLES, DEFAULT_APPEARANCE);
+    public createDefaultShape(shapeId: string): DiagramItem {
+        return DiagramItem.createShape(shapeId, this.identifier(), 100, 60, CONFIGURABLES, DEFAULT_APPEARANCE);
     }
 
     protected renderInternal(ctx: AbstractContext) {

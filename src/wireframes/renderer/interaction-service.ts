@@ -2,14 +2,14 @@ import * as svg from 'svg.js';
 
 import { MathHelper, Vec2 } from '@app/core';
 
-import { DiagramShape } from '@app/wireframes/model';
+import { DiagramItem } from '@app/wireframes/model';
 
 export class SvgEvent {
     constructor(
         public readonly event: MouseEvent,
         public readonly position: Vec2,
         public readonly element?: Element | null,
-        public readonly shape?: DiagramShape | null
+        public readonly shape?: DiagramItem | null
     ) {
     }
 }

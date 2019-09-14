@@ -1,143 +1,92 @@
 import { Button, Tooltip } from 'antd';
 import * as React from 'react';
-import { connect } from 'react-redux';
-import { bindActionCreators, Dispatch } from 'redux';
+import { useDispatch } from 'react-redux';
 
 import { Shortcut } from '@app/core';
 
 import {
-    Diagram,
-    DiagramItem,
     DiagramItemSet,
-    EditorStateInStore,
     getDiagram,
     getSelectedItems,
     pasteItems,
     removeItems,
-    Serializer
+    useStore
 } from '@app/wireframes/model';
 
 import { SerializerContext } from '@app/context';
 
-interface ClipboardMenuProps {
-    // The selected diagram.
-    selectedDiagram: Diagram | null;
-
-    // The selected items.
-    selectedItems: DiagramItem[];
-
-    // Remove items.
-    removeItems: (diagram: Diagram, items: DiagramItem[]) => any;
-
-    // Ungroup items.
-    pasteItems: (diagram: Diagram, json: string, offset?: number) => any;
-}
-
-interface ClipboardMenuState {
-    // The current clipboard value.
-    clipboard?: string;
-
-    // The offset for new items.
-    offset: number;
-}
-
 const OFFSET = 50;
 
-class ClipboardMenu extends React.PureComponent<ClipboardMenuProps, ClipboardMenuState> {
-    constructor(props: ClipboardMenuProps) {
-        super(props);
+export const ClipboardMenu = React.memo(() => {
+    let [offset, setOffset] = React.useState<number>();
 
-        this.state = { offset: 0 };
-    }
+    const [clipboard, setClipboard] = React.useState<string>();
 
-    private doCopy = (serializer: Serializer) => {
-        const { selectedDiagram, selectedItems } = this.props;
+    const dispatch = useDispatch();
+    const selectedDiagram = useStore(s => getDiagram(s));
+    const selectedItems = useStore(s => getSelectedItems(s));
+    const serializer = React.useContext(SerializerContext);
+    const canCopy = selectedItems.length > 0;
 
+    const doCopy = React.useCallback(() => {
         if (selectedDiagram) {
             const set =
                 DiagramItemSet.createFromDiagram(
                     selectedItems,
                     selectedDiagram);
 
-            this.setState({ offset: 0, clipboard: serializer.serializeSet(set) });
+            setClipboard(serializer.serializeSet(set));
+            setOffset(0);
         }
-    }
+    }, [offset, selectedDiagram, selectedItems, serializer]);
 
-    private doCut = (serializer: Serializer) => {
-        const selectedDiagram = this.props.selectedDiagram;
-
+    const doCut = React.useCallback(() => {
         if (selectedDiagram) {
-            this.doCopy(serializer);
+            doCopy();
 
-            this.props.removeItems(selectedDiagram, this.props.selectedItems);
+            dispatch(removeItems(selectedDiagram, selectedItems));
         }
-    }
+    }, [doCopy]);
 
-    private doPaste = () => {
-        const selectedDiagram = this.props.selectedDiagram;
-
+    const doPaste = React.useCallback(() => {
         if (selectedDiagram) {
-            this.setState(s => ({ offset: s.offset + OFFSET, clipboard: s.clipboard }));
+            setOffset(offset += OFFSET);
 
-            this.props.pasteItems(selectedDiagram, this.state.clipboard!, this.state.offset);
+            dispatch(pasteItems(selectedDiagram, clipboard, offset));
         }
-    }
+    }, [clipboard, offset, selectedDiagram]);
 
-    public render() {
-        const canCopy = this.props.selectedItems.length > 0;
+    return (
+        <>
+            <Tooltip mouseEnterDelay={1} title='Copy items (CTRL + C)'>
+                <Button className='menu-item' size='large'
+                    disabled={!canCopy}
+                    onClick={doCopy}>
+                    <i className='icon-copy' />
+                </Button>
+            </Tooltip>
 
-        return (
-            <SerializerContext.Consumer>
-                {serializer =>
-                    <>
-                        <Tooltip mouseEnterDelay={1} title='Copy items (CTRL + C)'>
-                            <Button className='menu-item' size='large'
-                                disabled={!canCopy}
-                                onClick={() => this.doCopy(serializer)}>
-                                <i className='icon-copy' />
-                            </Button>
-                        </Tooltip>
+            <Shortcut disabled={!canCopy} onPressed={doCopy} keys='ctrl+c' />
 
-                        <Shortcut disabled={!canCopy} onPressed={() => this.doCopy(serializer)} keys='ctrl+c' />
+            <Tooltip mouseEnterDelay={1} title='Cut items (CTRL + X)'>
+                <Button className='menu-item' size='large'
+                    disabled={!canCopy}
+                    onClick={doCut}>
+                    <i className='icon-cut' />
+                </Button>
+            </Tooltip>
 
-                        <Tooltip mouseEnterDelay={1} title='Cut items (CTRL + X)'>
-                            <Button className='menu-item' size='large'
-                                disabled={!canCopy}
-                                onClick={() => this.doCut(serializer)}>
-                                <i className='icon-cut' />
-                            </Button>
-                        </Tooltip>
+            <Shortcut disabled={!canCopy} onPressed={doCut} keys='ctrl+x' />
 
-                        <Shortcut disabled={!canCopy} onPressed={() => this.doCut(serializer)} keys='ctrl+x' />
+            <Tooltip mouseEnterDelay={1} title='Paste items (CTRL + V)'>
+                <Button className='menu-item' size='large'
+                    disabled={!clipboard}
+                    onClick={doPaste}>
+                    <i className='icon-paste' />
+                </Button>
+            </Tooltip>
 
-                        <Tooltip mouseEnterDelay={1} title='Paste items (CTRL + V)'>
-                            <Button className='menu-item' size='large'
-                                disabled={!this.state.clipboard}
-                                onClick={this.doPaste}>
-                                <i className='icon-paste' />
-                            </Button>
-                        </Tooltip>
-
-                        <Shortcut disabled={!this.state.clipboard} onPressed={this.doPaste} keys='ctrl+v' />
-                    </>
-                }
-            </SerializerContext.Consumer>
-        );
-    }
-}
-
-const mapStateToProps = (state: EditorStateInStore) => {
-    return {
-        selectedDiagram: getDiagram(state),
-        selectedItems: getSelectedItems(state)
-    };
-};
-
-const mapDispatchToProps = (dispatch: Dispatch) => bindActionCreators({
-    removeItems, pasteItems
-}, dispatch);
-
-export const ClipboardMenuContainer = connect(
-    mapStateToProps,
-    mapDispatchToProps
-)(ClipboardMenu);
+            <Shortcut disabled={!clipboard} onPressed={doPaste} keys='ctrl+v' />
+        </>
+    );
+});

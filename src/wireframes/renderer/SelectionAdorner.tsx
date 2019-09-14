@@ -116,7 +116,7 @@ export class SelectionAdorner extends React.Component<SelectionAdornerProps> imp
     }
 
     private selectMultiple(rect: Rect2, diagram: Diagram): string[] {
-        const selectedItems = diagram.rootIds.map(id => diagram.items.get(id)).filter(i => i && rect.contains(i.bounds(diagram).aabb));
+        const selectedItems = diagram.rootItems.filter(i => rect.contains(i.bounds(diagram).aabb));
         const selection = calculateSelection(selectedItems, diagram, false);
 
         return selection;

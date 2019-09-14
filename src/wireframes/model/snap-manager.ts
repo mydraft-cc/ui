@@ -5,7 +5,6 @@ import {
 } from '@app/core';
 
 import { Diagram } from './diagram';
-import { DiagramShape } from './diagram-shape';
 import { Transform } from './transform';
 
 export interface SnapResult {
@@ -212,13 +211,12 @@ export class SnapManager {
     }
 
     private calculateOrderedAABBs(transform: Transform, diagram: Diagram, view: Vec2): Rect2[] {
-        const allShapes = diagram.items.filter(t => t instanceof DiagramShape).filter(t => <DiagramShape>t);
-
         const orderedAabbs =
-            allShapes
+            diagram.items.values
+                .map(t => t)
                 .map(t => t.bounds(diagram)).filter(t => t !== transform)
                 .map(t => t.aabb)
-                .map(t => { return { t, d: t.center.sub(transform.position).lengtSquared }; })
+                .map(t => ({ t, d: t.center.sub(transform.position).lengtSquared }))
                 .sort((l, r) => l.d - r.d).map(t => t.t);
 
         orderedAabbs.push(new Rect2(0, 0, view.x, view.y));

@@ -4,11 +4,8 @@ import { MathHelper, Vec2 } from '@app/core';
 
 import {
     Diagram,
-    DiagramGroup,
     DiagramItem,
     DiagramItemSet,
-    DiagramShape,
-    DiagramVisual,
     EditorState,
     RendererService,
     Serializer
@@ -142,8 +139,8 @@ export function items(rendererService: RendererService, serializer: Serializer):
 
                     const configured =
                         shape.transformWith(t => t.moveTo(position))
-                            .setAppearance(DiagramShape.APPEARANCE_TEXT, action.text)
-                            .setAppearance(DiagramShape.APPEARANCE_ICON_FONT_FAMILY, action.fontFamily);
+                            .setAppearance(DiagramItem.APPEARANCE_TEXT, action.text)
+                            .setAppearance(DiagramItem.APPEARANCE_ICON_FONT_FAMILY, action.fontFamily);
 
                     return diagram.addVisual(configured).selectItems([configured.id]);
                 });
@@ -190,7 +187,7 @@ export function items(rendererService: RendererService, serializer: Serializer):
                             action.position.x + shape.transform.size.x * 0.5,
                             action.position.y + shape.transform.size.y * 0.5);
 
-                    let configured = <DiagramVisual>shape.transformWith(t => t.moveTo(position));
+                    let configured = shape.transformWith(t => t.moveTo(position));
 
                     let properties = action.properties;
                     if (properties) {
@@ -218,7 +215,7 @@ export function calculateSelection(items: DiagramItem[], diagram: Diagram, isSin
 
     let selectedItems: DiagramItem[] = [];
 
-    function resolveGroup(item: DiagramItem, stop?: DiagramGroup) {
+    function resolveGroup(item: DiagramItem, stop?: DiagramItem) {
         while (true) {
             const group = diagram.parent(item.id);
 
@@ -233,27 +230,30 @@ export function calculateSelection(items: DiagramItem[], diagram: Diagram, isSin
     }
 
     if (isSingleSelection) {
-        if (items.length === 1 && items[0]) {
-            const item = items[0];
-            const itemId = item.id;
+        if (items.length === 1) {
+            const single = items[0];
 
-            if (isCtrl) {
-                if (!item.isLocked) {
-                    if (diagram.selectedItemIds.contains(itemId)) {
-                        return diagram.selectedItemIds.remove(itemId).toArray();
+            if (single) {
+                const singleId = single.id;
+
+                if (isCtrl) {
+                    if (!single.isLocked) {
+                        if (diagram.selectedIds.has(singleId)) {
+                            return diagram.selectedIds.remove(singleId).values;
+                        } else {
+                            return diagram.selectedIds.add(resolveGroup(single).id).values;
+                        }
                     } else {
-                        return diagram.selectedItemIds.add(resolveGroup(item).id).toArray();
+                        return diagram.selectedIds.values;
                     }
                 } else {
-                    return diagram.selectedItemIds.toArray();
-                }
-            } else {
-                const group = diagram.parent(item.id);
+                    const group = diagram.parent(single.id);
 
-                if (group && diagram.selectedItemIds.contains(group.id)) {
-                    selectedItems.push(resolveGroup(item, group));
-                } else {
-                    selectedItems.push(resolveGroup(item));
+                    if (group && diagram.selectedIds.has(group.id)) {
+                        selectedItems.push(resolveGroup(single, group));
+                    } else {
+                        selectedItems.push(resolveGroup(single));
+                    }
                 }
             }
         }

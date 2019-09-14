@@ -2,7 +2,7 @@ import { Color, Rect2, Vec2 } from '@app/core';
 
 import {
     Constraint,
-    DiagramShape,
+    DiagramItem,
     Renderer
 } from '@app/wireframes/model';
 
@@ -15,7 +15,7 @@ export class AbstractContext {
 
     constructor(
         public readonly renderer: AbstractRenderer,
-        public readonly shape: DiagramShape,
+        public readonly shape: DiagramItem,
         public readonly bounds: Rect2
     ) {
     }
@@ -28,7 +28,7 @@ export class AbstractContext {
 const RENDERER = new SVGRenderer();
 
 export abstract class AbstractControl implements Renderer {
-    public abstract createDefaultShape(shapeId: string): DiagramShape;
+    public abstract createDefaultShape(shapeId: string): DiagramItem;
 
     public abstract identifier(): string;
 
@@ -48,7 +48,7 @@ export abstract class AbstractControl implements Renderer {
         return this;
     }
 
-    public render(shape: DiagramShape, options?: { debug?: boolean, noOpacity?: boolean, noTransform?: boolean }): any {
+    public render(shape: DiagramItem, options?: { debug?: boolean, noOpacity?: boolean, noTransform?: boolean }): any {
         const ctx = new AbstractContext(RENDERER, shape, new Rect2(0, 0, shape.transform.size.x, shape.transform.size.y));
 
         options = options || {};
@@ -98,23 +98,23 @@ export class TextSizeConstraint implements Constraint {
         private readonly minWidth = 0
     ) { }
 
-    public updateSize(shape: DiagramShape, size: Vec2, prev: DiagramShape): Vec2 {
-        const fontSize = shape.appearance.get(DiagramShape.APPEARANCE_FONT_SIZE) || 10;
-        const fontFamily = shape.appearance.get(DiagramShape.APPEARANCE_FONT_FAMILY) || 'inherit';
+    public updateSize(shape: DiagramItem, size: Vec2, prev: DiagramItem): Vec2 {
+        const fontSize = shape.appearance.get(DiagramItem.APPEARANCE_FONT_SIZE) || 10;
+        const fontFamily = shape.appearance.get(DiagramItem.APPEARANCE_FONT_FAMILY) || 'inherit';
 
         let finalWidth = size.x;
 
-        const text = shape.appearance.get(DiagramShape.APPEARANCE_TEXT);
+        const text = shape.appearance.get(DiagramItem.APPEARANCE_TEXT);
 
         let prevText = '';
         let prevFontSize = 0;
         let prevFontFamily = '';
 
         if (prev) {
-            prevText = prev.appearance.get(DiagramShape.APPEARANCE_TEXT);
+            prevText = prev.appearance.get(DiagramItem.APPEARANCE_TEXT);
 
-            prevFontSize = prev.appearance.get(DiagramShape.APPEARANCE_FONT_SIZE) || 10;
-            prevFontFamily = prev.appearance.get(DiagramShape.APPEARANCE_FONT_FAMILY) || 'inherit';
+            prevFontSize = prev.appearance.get(DiagramItem.APPEARANCE_FONT_SIZE) || 10;
+            prevFontFamily = prev.appearance.get(DiagramItem.APPEARANCE_FONT_FAMILY) || 'inherit';
         }
 
         if (prevText !== text || prevFontSize !== fontSize || prevFontFamily !== fontFamily) {

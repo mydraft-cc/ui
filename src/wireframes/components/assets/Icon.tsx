@@ -8,7 +8,7 @@ interface IconProps {
     icon: IconInfo;
 }
 
-export const Icon = (props: IconProps) => {
+export const Icon = React.memo((props: IconProps) => {
     const { icon } = props;
 
     const [, drag] = useDrag({
@@ -18,4 +18,4 @@ export const Icon = (props: IconProps) => {
     return (
         <i ref={drag} className={props.icon.fontClass}>{props.icon.text}</i>
     );
-};
+});

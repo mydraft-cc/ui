@@ -3,7 +3,7 @@ import { Color, Rect2 } from '@app/core';
 import {
     ColorConfigurable,
     Configurable,
-    DiagramShape
+    DiagramItem
 } from '@app/wireframes/model';
 
 import { AbstractContext, AbstractControl } from '@app/wireframes/shapes/utils/abstract-control';
@@ -12,13 +12,13 @@ import { CommonTheme } from './_theme';
 const ACCENT_COLOR = 'ACCENT_COLOR';
 
 const DEFAULT_APPEARANCE = {};
-DEFAULT_APPEARANCE[DiagramShape.APPEARANCE_FOREGROUND_COLOR] = CommonTheme.CONTROL_TEXT_COLOR;
-DEFAULT_APPEARANCE[DiagramShape.APPEARANCE_BACKGROUND_COLOR] = CommonTheme.CONTROL_BACKGROUND_COLOR;
-DEFAULT_APPEARANCE[DiagramShape.APPEARANCE_TEXT] = 'left,middle*,right';
-DEFAULT_APPEARANCE[DiagramShape.APPEARANCE_TEXT_ALIGNMENT] = 'center';
-DEFAULT_APPEARANCE[DiagramShape.APPEARANCE_FONT_SIZE] = CommonTheme.CONTROL_FONT_SIZE;
-DEFAULT_APPEARANCE[DiagramShape.APPEARANCE_STROKE_COLOR] = CommonTheme.CONTROL_BORDER_COLOR;
-DEFAULT_APPEARANCE[DiagramShape.APPEARANCE_STROKE_THICKNESS] = CommonTheme.CONTROL_BORDER_THICKNESS;
+DEFAULT_APPEARANCE[DiagramItem.APPEARANCE_FOREGROUND_COLOR] = CommonTheme.CONTROL_TEXT_COLOR;
+DEFAULT_APPEARANCE[DiagramItem.APPEARANCE_BACKGROUND_COLOR] = CommonTheme.CONTROL_BACKGROUND_COLOR;
+DEFAULT_APPEARANCE[DiagramItem.APPEARANCE_TEXT] = 'left,middle*,right';
+DEFAULT_APPEARANCE[DiagramItem.APPEARANCE_TEXT_ALIGNMENT] = 'center';
+DEFAULT_APPEARANCE[DiagramItem.APPEARANCE_FONT_SIZE] = CommonTheme.CONTROL_FONT_SIZE;
+DEFAULT_APPEARANCE[DiagramItem.APPEARANCE_STROKE_COLOR] = CommonTheme.CONTROL_BORDER_COLOR;
+DEFAULT_APPEARANCE[DiagramItem.APPEARANCE_STROKE_THICKNESS] = CommonTheme.CONTROL_BORDER_THICKNESS;
 DEFAULT_APPEARANCE[ACCENT_COLOR] = 0x2171b5;
 
 const CONFIGURABLES: Configurable[] = [
@@ -34,8 +34,8 @@ export class ButtonBar extends AbstractControl {
         return 'ButtonBar';
     }
 
-    public createDefaultShape(shapeId: string): DiagramShape {
-        return DiagramShape.createShape(shapeId, this.identifier(), 180, 30, CONFIGURABLES, DEFAULT_APPEARANCE);
+    public createDefaultShape(shapeId: string): DiagramItem {
+        return DiagramItem.createShape(shapeId, this.identifier(), 180, 30, CONFIGURABLES, DEFAULT_APPEARANCE);
     }
 
     protected renderInternal(ctx: AbstractContext) {
@@ -88,8 +88,8 @@ export class ButtonBar extends AbstractControl {
         }
     }
 
-    private parseText(shape: DiagramShape) {
-        const text: string = shape.appearance.get(DiagramShape.APPEARANCE_TEXT) || '';
+    private parseText(shape: DiagramItem) {
+        const text: string = shape.appearance.get(DiagramItem.APPEARANCE_TEXT) || '';
         const parts = text.split(',');
 
         return parts.map(t => {

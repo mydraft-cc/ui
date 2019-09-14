@@ -1,10 +1,31 @@
+import { equalsObject, without } from './types';
+
+type Mutator = {
+    add: (item: string) => void,
+
+    remove: (item: string) => void
+};
+
 export class ImmutableSet {
-    private static readonly EMPTY = new ImmutableSet({}, 0);
+    private static readonly EMPTY = new ImmutableSet({});
+
+    public get size() {
+        return Object.keys(this.items).length;
+    }
+
+    public get values() {
+        return Object.keys(this.items);
+    }
+
+    public has(item: string) {
+        return this.items.hasOwnProperty(item);
+    }
 
     private constructor(
-        private readonly items: { [item: string]: boolean }, public readonly size: number
+        private readonly items: { [item: string]: boolean }
     ) {
         Object.freeze(this);
+        Object.freeze(items);
     }
 
     public static empty(): ImmutableSet {
@@ -21,87 +42,68 @@ export class ImmutableSet {
                 itemMap[item] = true;
             }
 
-            return new ImmutableSet(itemMap, Object.keys(itemMap).length);
+            return new ImmutableSet(itemMap);
         }
-    }
-
-    public contains(item: string): boolean {
-        return this.items[item];
-    }
-
-    public toArray(): string[] {
-        return Object.keys(this.items);
-    }
-
-    public map<R>(projection: (item: string) => R): R[] {
-        return Object.keys(this.items).map(v => projection(v!));
-    }
-
-    public filter(projection: (item: string) => boolean): string[] {
-        return Object.keys(this.items).filter(v => projection(v!));
-    }
-
-    public forEach(projection: (item: string) => void): void {
-        Object.keys(this.items).forEach(v => projection(v!));
     }
 
     public add(item: string): ImmutableSet {
-        if (!item || this.items[item]) {
+        if (!item || this.has(item)) {
             return this;
         }
 
-        const newItems = {...this.items};
+        const items = { ...this.items, [item]: true };
 
-        newItems[item] = true;
-
-        return new ImmutableSet(newItems, this.size + 1);
+        return new ImmutableSet(items);
     }
 
-    public remove(...items: string[]): ImmutableSet {
-        if (!items) {
+    public remove(item: string): ImmutableSet {
+        if (!item || !this.has(item)) {
             return this;
         }
 
-        const newItems = {...this.items};
+        const items = without(this.items, item);
 
-        for (let item of items) {
-            if (!item || !this.items[item]) {
-                return this;
-            }
-
-            delete newItems[item];
-        }
-
-        return new ImmutableSet(newItems, this.size - items.length);
+        return new ImmutableSet(items);
     }
 
-    public set(...items: string[]): ImmutableSet {
-        if (!items) {
+    public mutate(updater: (mutator: Mutator) => void) {
+        const items = { ...this.items };
+
+        let updated = false;
+
+        updater({
+            add: (k) => {
+                if (k) {
+                    if (!items.hasOwnProperty(k)) {
+                        updated = true;
+
+                        items[k] = true;
+                    }
+                }
+            },
+            remove: (k) => {
+                if (k) {
+                    if (items.hasOwnProperty(k)) {
+                        updated = true;
+
+                        delete items[k];
+                    }
+                }
+            }
+        });
+
+        if (!updated) {
             return this;
         }
 
-        const newItems = {};
+        return new ImmutableSet(items);
+    }
 
-        for (let item of items) {
-            if (!item) {
-                return this;
-            }
-
-            newItems[item] = true;
+    public equals(other: ImmutableSet) {
+        if (!other) {
+            return false;
         }
 
-        const newSize = Object.keys(newItems).length;
-
-        if (newSize !== this.size) {
-            return new ImmutableSet(newItems, newSize);
-        }
-
-        for (let item of items) {
-            if (!this.items[item]) {
-                return new ImmutableSet(newItems, newSize);
-            }
-        }
-
-        return this;
+        return equalsObject(this.items, other.items);
     }
 }

@@ -1,15 +1,15 @@
-import { MathHelper, Vec2 } from '@app/core';
+import { Vec2 } from '@app/core';
 
 import {
-    DiagramShape,
+    DiagramItem,
     MinSizeConstraint,
     SizeConstraint,
     TextHeightConstraint
 } from '@app/wireframes/model';
 
 const shape =
-    DiagramShape.createShape(MathHelper.guid(), 'button', 100, 100)
-        .setAppearance(DiagramShape.APPEARANCE_FONT_SIZE, 12) as DiagramShape;
+    DiagramItem.createShape('1', 'button', 100, 100)
+        .setAppearance(DiagramItem.APPEARANCE_FONT_SIZE, 12);
 
 describe('TextHeightConstraint', () => {
     it('should set y size from font size', () => {

@@ -4,7 +4,6 @@ import { MathHelper } from '@app/core';
 
 import {
     Diagram,
-    DiagramGroup,
     EditorState
 } from './../internal';
 
@@ -38,10 +37,10 @@ export function grouping(): Reducer<EditorState> {
                     const childIds: string[] = [];
 
                     for (let groupId of action.itemIds) {
-                        const target = <DiagramGroup>diagram.items.get(groupId);
+                        const target = diagram.items.get(groupId);
 
                         if (target) {
-                            childIds.push(...target.childIds.toArray());
+                            childIds.push(...target.childIds.values);
 
                             diagram = diagram.ungroup(groupId);
                         }

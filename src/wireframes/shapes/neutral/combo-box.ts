@@ -1,18 +1,18 @@
 import { Rect2 } from '@app/core';
 
-import { DiagramShape } from '@app/wireframes/model';
+import { DiagramItem } from '@app/wireframes/model';
 
 import { AbstractContext, AbstractControl } from '@app/wireframes/shapes/utils/abstract-control';
 import { CommonTheme } from './_theme';
 
 const DEFAULT_APPEARANCE = {};
-DEFAULT_APPEARANCE[DiagramShape.APPEARANCE_FOREGROUND_COLOR] = CommonTheme.CONTROL_TEXT_COLOR;
-DEFAULT_APPEARANCE[DiagramShape.APPEARANCE_BACKGROUND_COLOR] = CommonTheme.CONTROL_BACKGROUND_COLOR;
-DEFAULT_APPEARANCE[DiagramShape.APPEARANCE_TEXT] = 'ComboBox';
-DEFAULT_APPEARANCE[DiagramShape.APPEARANCE_TEXT_ALIGNMENT] = 'left';
-DEFAULT_APPEARANCE[DiagramShape.APPEARANCE_FONT_SIZE] = CommonTheme.CONTROL_FONT_SIZE;
-DEFAULT_APPEARANCE[DiagramShape.APPEARANCE_STROKE_COLOR] = CommonTheme.CONTROL_BORDER_COLOR;
-DEFAULT_APPEARANCE[DiagramShape.APPEARANCE_STROKE_THICKNESS] = CommonTheme.CONTROL_BORDER_THICKNESS;
+DEFAULT_APPEARANCE[DiagramItem.APPEARANCE_FOREGROUND_COLOR] = CommonTheme.CONTROL_TEXT_COLOR;
+DEFAULT_APPEARANCE[DiagramItem.APPEARANCE_BACKGROUND_COLOR] = CommonTheme.CONTROL_BACKGROUND_COLOR;
+DEFAULT_APPEARANCE[DiagramItem.APPEARANCE_TEXT] = 'ComboBox';
+DEFAULT_APPEARANCE[DiagramItem.APPEARANCE_TEXT_ALIGNMENT] = 'left';
+DEFAULT_APPEARANCE[DiagramItem.APPEARANCE_FONT_SIZE] = CommonTheme.CONTROL_FONT_SIZE;
+DEFAULT_APPEARANCE[DiagramItem.APPEARANCE_STROKE_COLOR] = CommonTheme.CONTROL_BORDER_COLOR;
+DEFAULT_APPEARANCE[DiagramItem.APPEARANCE_STROKE_THICKNESS] = CommonTheme.CONTROL_BORDER_THICKNESS;
 
 export class ComboBox extends AbstractControl {
     public defaultAppearance() {
@@ -23,8 +23,8 @@ export class ComboBox extends AbstractControl {
         return 'ComboBox';
     }
 
-    public createDefaultShape(shapeId: string): DiagramShape {
-        return DiagramShape.createShape(shapeId, this.identifier(), 140, 30, undefined, DEFAULT_APPEARANCE);
+    public createDefaultShape(shapeId: string): DiagramItem {
+        return DiagramItem.createShape(shapeId, this.identifier(), 140, 30, undefined, DEFAULT_APPEARANCE);
     }
 
     protected renderInternal(ctx: AbstractContext) {
@@ -54,7 +54,7 @@ export class ComboBox extends AbstractControl {
 
         const triangleItem = ctx.renderer.createPath(0, `M${x - 0.5 * w},${y - 0.4 * h} L${x},${y + 0.6 * h},L${x + 0.5 * w},${y - 0.4 * h} z`);
 
-        ctx.renderer.setBackgroundColor(triangleItem, ctx.shape.appearance.get(DiagramShape.APPEARANCE_STROKE_COLOR));
+        ctx.renderer.setBackgroundColor(triangleItem, ctx.shape.appearance.get(DiagramItem.APPEARANCE_STROKE_COLOR));
 
         ctx.add(triangleItem);
     }

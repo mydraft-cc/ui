@@ -12,30 +12,28 @@ export interface ShortcutProps {
     onPressed: () => any;
 }
 
-export class Shortcut extends React.Component<ShortcutProps> {
-    public componentDidMount() {
-        Mousetrap.bind(this.props.keys, (e) =>  {
-            if (this.props.disabled !== true) {
-                this.props.onPressed();
+export const Shortcut = React.memo((props: ShortcutProps) => {
+    const { keys, disabled, onPressed } = props;
+
+    React.useEffect(() => {
+        if (!disabled) {
+            Mousetrap.bind(keys, (e) =>  {
+                onPressed();
 
                 e.preventDefault();
                 e.stopPropagation();
                 e.stopImmediatePropagation();
-            }
 
-            return false;
-        });
-    }
+                return false;
+            });
 
-    public componentWillUnmount() {
-        Mousetrap.unbind(this.props.keys);
-    }
+            return () => {
+                Mousetrap.unbind(keys);
+            };
+        }
 
-    public shouldComponentUpdate() {
-        return false;
-    }
+        return undefined;
+    }, [disabled, keys]);
 
-    public render(): any {
-        return null;
-    }
-}
+    return null;
+});

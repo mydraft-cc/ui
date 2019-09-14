@@ -1,6 +1,6 @@
 import { Vec2 } from '@app/core';
 
-import { DiagramShape } from './diagram-shape';
+import { DiagramItem } from './diagram-item';
 
 export interface Renderer {
     identifier(): string;
@@ -11,9 +11,9 @@ export interface Renderer {
 
     showInGallery(): boolean;
 
-    createDefaultShape(id: string): DiagramShape;
+    createDefaultShape(id: string): DiagramItem;
 
     setContext(context: any): Renderer;
 
-    render(shape: DiagramShape, options?: { debug?: boolean, noOpacity?: boolean, noTransform?: boolean }): any;
+    render(shape: DiagramItem, options?: { debug?: boolean, noOpacity?: boolean, noTransform?: boolean }): any;
 }

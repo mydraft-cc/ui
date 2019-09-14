@@ -1,15 +1,14 @@
 import { Col, InputNumber, Row, Select } from 'antd';
 import * as React from 'react';
-import { connect } from 'react-redux';
+import { connect, useDispatch } from 'react-redux';
 import { bindActionCreators, Dispatch } from 'redux';
 
-import { ColorPicker } from '@app/core';
+import { Color, ColorPicker } from '@app/core';
 
 import {
     changeItemsAppearance,
     ColorConfigurable,
     Configurable,
-    DiagramVisual,
     EditorStateInStore,
     getDiagramId,
     getSelectedConfigurables,
@@ -18,72 +17,115 @@ import {
     selectColorTab,
     SelectionConfigurable,
     SliderConfigurable,
-    UIStateInStore
+    UIStateInStore,
+    useStore
 } from '@app/wireframes/model';
 
 import { CustomSlider } from './CustomSlider';
 
-interface CustomPropertiesProps {
-    // The selected diagram.
-    selectedDiagramId: string | null;
+interface CustomPropertyProps {
+    // The configurable.
+    configurable: Configurable;
 
-    // The selected items.
-    selectedShape: DiagramVisual | null;
-
-    // The configurable properties.
-    selectedConfigurables: Configurable[];
+    // The appearance value.
+    value: any;
 
     // The selected color tab.
     selectedColorTab: string;
 
-    // Change the items appearance..
-    changeItemsAppearance: (diagram: string, visuals: DiagramVisual[], key: string, val: any) => any;
+    // When the value has changed.
+    onChange: (name: string, value: any) => void;
 
-    // Selectes the color tab.
-    selectColorTab: (key: string) => any;
+    // The color tab has changed.
+    onColorTabChange: (key: string) => void;
 }
 
-const CustomProperties = (props: CustomPropertiesProps) => {
-    const { selectedColorTab, selectedConfigurables, selectedDiagramId, selectedShape } = props;
+export const CustomProperty = (props: CustomPropertyProps) => {
+    const {
+        configurable,
+        onChange,
+        onColorTabChange,
+        selectedColorTab,
+        value
+    } = props;
 
-    return selectedShape && selectedDiagramId ? (
+    const doChangeValue = React.useCallback((newValue: any) => {
+        onChange(configurable.name, newValue);
+    }, [configurable, onChange]);
+
+    const doChangeColor = React.useCallback((color: Color) => {
+        onChange(configurable.name, color.toNumber());
+    }, [configurable, onChange]);
+
+    return (
+        <Row className='property'>
+            <Col span={12} className='property-label'>
+                {configurable.label}
+            </Col>
+            <Col span={12} className='property-value'>
+                {configurable instanceof SliderConfigurable &&
+                    <CustomSlider value={value}
+                        min={configurable.min}
+                        max={configurable.max}
+                        onChange={doChangeValue} />
+                }
+                {configurable instanceof NumberConfigurable &&
+                    <InputNumber value={value}
+                        min={configurable.min}
+                        max={configurable.max}
+                        onChange={doChangeValue} />
+                }
+                {configurable instanceof SelectionConfigurable &&
+                    <Select value={value}
+                        onChange={doChangeValue}
+                    >
+                        {configurable.options.map(o =>
+                            <Select.Option key={o} value={o}>{o}</Select.Option>
+                        )}
+                    </Select>
+                }
+                {configurable instanceof ColorConfigurable &&
+                    <ColorPicker activeColorTab={selectedColorTab} value={value}
+                        onChange={doChangeColor}
+                        onActiveColorTabChanged={onColorTabChange} />
+                }
+            </Col>
+        </Row>
+    );
+};
+
+const CustomProperties = () => {
+    const dispatch = useDispatch();
+    const selectedDiagramId = useStore(s => getDiagramId(s));
+    const selectedColorTab = useStore(s => s.ui.selectedColorTab);
+    const selectedConfigurables = useStore(s => getSelectedConfigurables(s));
+    const selectedShape = useStore(s => getSelectedShape(s));
+
+    const doSelectColorTab = React.useCallback((key: string) => {
+        dispatch(selectColorTab(key));
+    }, [dispatch]);
+
+    const doChange = React.useCallback((key: string, value: any) => {
+        dispatch(changeItemsAppearance(selectedDiagramId, [selectedShape], key, value));
+    }, [selectedDiagramId, selectedShape]);
+
+    if (!selectedShape || !selectedDiagramId) {
+        return null;
+    }
+
+    return (
         <>
             {selectedDiagramId && selectedConfigurables.map(c =>
-                <Row key={c.name} className='property'>
-                    <Col span={12} className='property-label'>
-                        {c.label}
-                    </Col>
-                    <Col span={12} className='property-value'>
-                        {c instanceof SliderConfigurable &&
-                            <CustomSlider value={selectedShape.appearance.get(c.name)}
-                                min={c.min}
-                                max={c.max}
-                                onChange={value => props.changeItemsAppearance(selectedDiagramId, [selectedShape], c.name, value)} />
-                        }
-                        {c instanceof NumberConfigurable &&
-                            <InputNumber value={selectedShape.appearance.get(c.name)}
-                                min={c.min}
-                                max={c.max}
-                                onChange={value => props.changeItemsAppearance(selectedDiagramId, [selectedShape], c.name, value)} />
-                        }
-                        {c instanceof SelectionConfigurable &&
-                            <Select value={selectedShape.appearance.get(c.name)}
-                                onChange={(value: any) => props.changeItemsAppearance(selectedDiagramId, [selectedShape], c.name, value)}>
-                                {c.options.map(o =>
-                                    <Select.Option key={o} value={o}>{o}</Select.Option>
-                                )}
-                            </Select>
-                        }
-                        {c instanceof ColorConfigurable &&
-                            <ColorPicker activeColorTab={selectedColorTab} value={selectedShape.appearance.get(c.name)}
-                                onChange={value => props.changeItemsAppearance(selectedDiagramId, [selectedShape], c.name, value.toNumber())}
-                                onActiveColorTabChanged={key => props.selectColorTab(key)} />
-                        }
-                    </Col>
-                </Row>
+                <CustomProperty key={c.name}
+                    selectedColorTab={selectedColorTab}
+                    configurable={c}
+                    onChange={doChange}
+                    onColorTabChange={doSelectColorTab}
+                    value={selectedShape.appearance.get(c.name)}
+                />
             )}
         </>
-    ) : null;
+    );
 };
 
 const mapStateToProps = (state: EditorStateInStore & UIStateInStore) => {

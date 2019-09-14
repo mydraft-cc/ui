@@ -1,9 +1,6 @@
-import { MathHelper } from '@app/core';
-
 import {
     Diagram,
-    DiagramGroup,
-    DiagramShape,
+    DiagramItem,
     EditorState,
     grouping,
     groupItems,
@@ -15,6 +12,7 @@ describe('GroupingReducer', () => {
 
     it('should return same state if action is unknown', () => {
         const action = { type: 'UNKNOWN' };
+
         const state_1 = EditorState.empty();
         const state_2 = reducer(state_1, action);
 
@@ -22,51 +20,61 @@ describe('GroupingReducer', () => {
     });
 
     it('should group shapes and select new group', () => {
+        const id1 = '1';
+        const id2 = '2';
+
         const diagram =
-            Diagram.empty(MathHelper.guid())
-                .addVisual(DiagramShape.createShape(MathHelper.guid(), 'btn', 100, 100))
-                .addVisual(DiagramShape.createShape(MathHelper.guid(), 'btn', 100, 100));
+            Diagram.empty('1')
+                .addVisual(DiagramItem.createShape(id1, 'btn', 100, 100))
+                .addVisual(DiagramItem.createShape(id2, 'btn', 100, 100));
 
-        const groupId = 'group1';
+        const groupId = 'group-1';
 
-        const action = groupItems(diagram, diagram.items.toArray(), groupId);
+        const action = groupItems(diagram, diagram.items.values, groupId);
+
         const state_1 = EditorState.empty().addDiagram(diagram);
         const state_2 = reducer(state_1, action);
 
-        const newDiagram = state_2.diagrams.last;
+        const newDiagram = state_2.diagrams.get(diagram.id);
 
-        expect(newDiagram.selectedItemIds.toArray()).toEqual([groupId]);
-        expect(newDiagram.rootIds.toArray()).toEqual([groupId]);
+        expect(newDiagram.selectedIds.values).toEqual([groupId]);
+        expect(newDiagram.rootIds.values).toEqual([groupId]);
     });
 
     it('should ungroup multiple groups and select their children', () => {
-        const groupId1 = 'group1';
-        const groupId2 = 'group2';
+        const groupId1 = 'group-1';
+        const groupId2 = 'group-2';
+
+        const id1 = '1';
+        const id2 = '2';
+        const id3 = '3';
+        const id4 = '4';
 
         let diagram =
-            Diagram.empty(MathHelper.guid())
-                .addVisual(DiagramShape.createShape(MathHelper.guid(), 'btn', 100, 100))
-                .addVisual(DiagramShape.createShape(MathHelper.guid(), 'btn', 100, 100))
-                .addVisual(DiagramShape.createShape(MathHelper.guid(), 'btn', 100, 100))
-                .addVisual(DiagramShape.createShape(MathHelper.guid(), 'btn', 100, 100));
+            Diagram.empty('1')
+                .addVisual(DiagramItem.createShape(id1, 'btn', 100, 100))
+                .addVisual(DiagramItem.createShape(id2, 'btn', 100, 100))
+                .addVisual(DiagramItem.createShape(id3, 'btn', 100, 100))
+                .addVisual(DiagramItem.createShape(id4, 'btn', 100, 100));
 
-        const shapes = diagram.items.toArray();
+        const shapes = diagram.items;
 
-        diagram = diagram.group(groupId1, [shapes[0].id, shapes[1].id]);
-        diagram = diagram.group(groupId2, [shapes[2].id, shapes[3].id]);
+        diagram = diagram.group(groupId1, [id1, id2]);
+        diagram = diagram.group(groupId2, [id3, id4]);
 
-        const group1 = <DiagramGroup>diagram.items.get(groupId1);
-        const group2 = <DiagramGroup>diagram.items.get(groupId2);
+        const group1 = diagram.items.get(groupId1);
+        const group2 = diagram.items.get(groupId2);
 
-        const action = ungroupItems(diagram, [group1, group2, DiagramGroup.createGroup(MathHelper.guid(), [])]);
+        const action = ungroupItems(diagram, [group1, group2, DiagramItem.createGroup('5', [])]);
+
         const state_1 = EditorState.empty().addDiagram(diagram);
         const state_2 = reducer(state_1, action);
 
-        const newDiagram = state_2.diagrams.last;
+        const newDiagram = state_2.diagrams.get(diagram.id);
 
-        const ids = shapes.map(i => i.id);
+        const ids = shapes.keys;
 
-        expect(newDiagram.selectedItemIds.toArray()).toEqual(ids);
-        expect(newDiagram.rootIds.toArray()).toEqual(ids);
+        expect(newDiagram.selectedIds.values).toEqual(ids);
+        expect(newDiagram.rootIds.values).toEqual(ids);
     });
 });

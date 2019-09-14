@@ -42,13 +42,8 @@ describe('Transform', () => {
     });
 
     it('should make correct equal comparisons', () => {
-        expect(transform.eq(transform.moveBy(Vec2.ZERO))).toBeTruthy();
-        expect(transform.eq(transform.moveBy(Vec2.ONE))).toBeFalsy();
-    });
-
-    it('should make correct not equal comparisons', () => {
-        expect(transform.ne(transform.moveBy(Vec2.ZERO))).toBeFalsy();
-        expect(transform.ne(transform.moveBy(Vec2.ONE))).toBeTruthy();
+        expect(transform.equals(transform.moveBy(Vec2.ZERO))).toBeTruthy();
+        expect(transform.equals(transform.moveBy(Vec2.ONE))).toBeFalsy();
     });
 
     it('should adjust position for size', () => {

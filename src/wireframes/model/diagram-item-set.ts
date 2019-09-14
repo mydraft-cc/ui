@@ -1,9 +1,7 @@
 import { Types } from '@app/core';
 
 import { Diagram } from './diagram';
-import { DiagramGroup } from './diagram-group';
 import { DiagramItem } from './diagram-item';
-import { DiagramVisual } from './diagram-visual';
 
 export class DiagramItemSet {
     public readonly rootItems: DiagramItem[] = [];
@@ -20,8 +18,8 @@ export class DiagramItemSet {
     }
 
     constructor(
-        public readonly allGroups: DiagramGroup[],
-        public readonly allVisuals: DiagramVisual[]
+        public readonly allGroups: DiagramItem[],
+        public readonly allVisuals: DiagramItem[]
     ) {
         this.allItems.push(...allGroups);
         this.allItems.push(...allVisuals);
@@ -29,13 +27,13 @@ export class DiagramItemSet {
         const parents: { [id: string]: boolean } = {};
 
         for (let group of this.allGroups) {
-            group.childIds.forEach(childId => {
+            for (let childId of group.childIds.values) {
                 if (!this.allItems.find(i => i.id === childId) || parents[childId]) {
                     this.isValid = false;
                 }
 
                 parents[childId] = true;
-            });
+            }
         }
 
         for (let item of this.allItems) {
@@ -48,8 +46,8 @@ export class DiagramItemSet {
     }
 
     public static createFromDiagram(items: (string | DiagramItem)[], diagram: Diagram): DiagramItemSet {
-        const g: DiagramGroup[] = [];
-        const v: DiagramVisual[] = [];
+        const allGroups: DiagramItem[] = [];
+        const allVisuals: DiagramItem[] = [];
 
         let flatItemsArray: (itemsOrIds: (string | DiagramItem)[], isTopLevel: boolean) => void;
 
@@ -67,14 +65,12 @@ export class DiagramItemSet {
                     continue;
                 }
 
-                if (item instanceof DiagramGroup) {
-                    const group = <DiagramGroup>item;
+                if (item.type === 'Group') {
+                    allGroups.push(item);
 
-                    flatItemsArray(group.childIds.toArray(), false);
-
-                    g.push(item);
+                    flatItemsArray(item.childIds.values, false);
                 } else {
-                    v.push(<DiagramVisual>item);
+                    allVisuals.push(item);
                 }
             }
         };
@@ -83,7 +79,7 @@ export class DiagramItemSet {
             flatItemsArray(items, true);
         }
 
-        return new DiagramItemSet(g, v);
+        return new DiagramItemSet(allGroups, allVisuals);
     }
 
     public canAdd(diagram: Diagram): boolean {
@@ -92,7 +88,7 @@ export class DiagramItemSet {
         }
 
         for (let item of this.allItems) {
-            if (diagram.items.contains(item.id)) {
+            if (diagram.items.has(item.id)) {
                 return false;
             }
         }
@@ -106,7 +102,7 @@ export class DiagramItemSet {
         }
 
         for (let item of this.allItems) {
-            if (!diagram.items.contains(item.id)) {
+            if (!diagram.items.has(item.id)) {
                 return false;
             }
         }

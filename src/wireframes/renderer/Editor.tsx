@@ -5,15 +5,13 @@ import * as svg from 'svg.js';
 
 import './Editor.scss';
 
-import { ImmutableList, sizeInPx, Vec2 } from '@app/core';
+import { sizeInPx, Vec2 } from '@app/core';
 
 import {
     changeItemsAppearance,
     Diagram,
-    DiagramGroup,
+    DiagramContainer,
     DiagramItem,
-    DiagramShape,
-    DiagramVisual,
     EditorStateInStore,
     getDiagram,
     getEditor,
@@ -62,7 +60,7 @@ export interface EditorProps {
     selectItems: (diagram: Diagram, itemIds: string[]) => any;
 
     // A function to change the appearance of a visual.
-    changeItemsAppearance: (diagram: Diagram, visuals: DiagramVisual[], key: string, val: any) => any;
+    changeItemsAppearance: (diagram: Diagram, visuals: DiagramItem[], key: string, val: any) => any;
 
     // A function to transform a set of items.
     transformItems: (diagram: Diagram, items: DiagramItem[], oldBounds: Transform, newBounds: Transform) => any;
@@ -132,30 +130,28 @@ class Editor extends React.Component<EditorProps> {
     }
 
     private getOrderedShapes() {
-        const flattenShapes: DiagramShape[] = [];
+        const flattenShapes: DiagramItem[] = [];
 
         const diagram = this.props.selectedDiagram;
 
         if (diagram) {
-            let handleContainer: (itemIds: ImmutableList<string>) => any;
+            let handleContainer: (itemIds: DiagramContainer) => any;
 
             handleContainer = itemIds => {
-                itemIds.forEach(itemId => {
-                    const item = diagram.items.get(itemId);
+                for (let id of itemIds.values) {
+                    const item = diagram.items.get(id);
 
                     if (item) {
-                        if (item instanceof DiagramShape) {
-                            flattenShapes.push(item);
-                        }
+                        flattenShapes.push(item);
 
-                        if (item instanceof DiagramGroup) {
+                        if (item.type === 'Group') {
                             handleContainer(item.childIds);
                         }
                     }
-                });
+                }
             };
 
-            handleContainer(diagram.rootIds);
+            handleContainer(diagram.root);
         }
 
         return flattenShapes;

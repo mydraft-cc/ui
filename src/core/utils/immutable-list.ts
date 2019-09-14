@@ -1,31 +1,34 @@
-import { Collections } from '@app/core/utils/collections';
+import { moveItems } from './collections';
+
+import { equalsArray } from './types';
 
 export class ImmutableList<T> {
     private static readonly EMPTY = new ImmutableList<any>([]);
 
-    public get size(): number {
+    public get size() {
         return this.items.length;
     }
 
-    public get first(): T {
-        return this.items[0];
+    public get values() {
+        return this.items;
     }
 
-    public get last(): T {
-        return this.items[this.items.length - 1];
+    public at(index: number): T | undefined {
+        return this.items[index];
     }
 
-    private constructor(
+    constructor(
         private readonly items: T[]
     ) {
         Object.freeze(this);
+        Object.freeze(items);
     }
 
     public static empty<V>(): ImmutableList<V> {
         return ImmutableList.EMPTY;
     }
 
-    public static of<V>(...items: V[]): ImmutableList<V> {
+    public static of<V>(...items: V[]) {
         if (!items || items.length === 0) {
             return ImmutableList.EMPTY;
         } else {
@@ -33,63 +36,73 @@ export class ImmutableList<T> {
         }
     }
 
-    public get(index: number): T | undefined {
-        return this.items[index];
+    public add(...items: T[]) {
+        if (!items || items.length === 0) {
+            return this;
+        }
+
+        const newItems = [...this.items, ...items];
+
+        return this.replace(newItems);
     }
 
-    public toArray(): T[] {
-        return [...this.items];
+    public remove(...items: T[]) {
+        if (!items || items.length === 0) {
+            return this;
+        }
+
+        const newItems: T[] = [...this.items];
+
+        for (let item of items) {
+            const index = newItems.indexOf(item);
+
+            if (index < 0) {
+                return this;
+            }
+
+            newItems.splice(index, 1);
+        }
+
+        return this.replace(newItems);
     }
 
-    public map<R>(projection: (item: T) => R): R[] {
-        return this.items.map(v => projection(v!));
-    }
-
-    public filter(projection: (item: T) => boolean): T[] {
-        return this.items.filter(v => projection(v!));
-    }
-
-    public forEach(projection: (item: T) => void): void {
-        this.items.forEach(v => projection(v!));
-    }
-
-    public add(...items: T[]): ImmutableList<T> {
-        return this.replace(Collections.withAdded(this.items, items));
-    }
-
-    public remove(...items: T[]): ImmutableList<T> {
-        return this.replace(Collections.withRemoved(this.items, items));
-    }
-
-    public update(item: T, updater: (item: T) => T): ImmutableList<T> {
-        return this.replace(Collections.withUpdated(this.items, [item], updater));
-    }
-
-    public bringToFront(items: T[]): ImmutableList<T> {
+    public bringToFront(items: T[]) {
         return this.moveTo(items, Number.MAX_VALUE);
     }
 
-    public bringForwards(items: T[]): ImmutableList<T> {
+    public bringForwards(items: T[]) {
         return this.moveTo(items, 1, true);
     }
 
-    public sendBackwards(items: T[]): ImmutableList<T> {
+    public sendBackwards(items: T[]) {
         return this.moveTo(items, -1, true);
     }
 
-    public sendToBack(items: T[]): ImmutableList<T> {
+    public sendToBack(items: T[]) {
         return this.moveTo(items, 0);
     }
 
-    public moveTo(items: T[], target: number, relative = false): ImmutableList<T> {
-        return this.replace(Collections.withMovedTo(this.items, items, target, relative));
+    public moveTo(items: T[], target: number, relative = false) {
+        return this.replace(moveItems(this.items, items, target, relative));
     }
 
-    private replace(items: T[]): ImmutableList<T>  {
+    private replace(items: T[]): this {
         if (items === this.items) {
             return this;
         } else {
-            return new ImmutableList(items);
+            const newValue = Object.create(Object.getPrototypeOf(this));
+
+            newValue.items = items;
+
+            return newValue;
         }
+    }
+
+    public equals(other: ImmutableList<T>) {
+        if (!other) {
+            return false;
+        }
+
+        return equalsArray(this.items, other.items);
     }
 }

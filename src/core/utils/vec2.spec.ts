@@ -11,13 +11,8 @@ describe('Vec2', () => {
     });
 
     it('should make valid equal comparisons', () => {
-        expect(new Vec2(10, 10).eq(new Vec2(10, 10))).toBeTruthy();
-        expect(new Vec2(10, 10).eq(new Vec2(20, 20))).toBeFalsy();
-    });
-
-    it('should make valid not equal comparisons', () => {
-        expect(new Vec2(10, 10).ne(new Vec2(20, 20))).toBeTruthy();
-        expect(new Vec2(10, 10).ne(new Vec2(10, 10))).toBeFalsy();
+        expect(new Vec2(10, 10).equals(new Vec2(10, 10))).toBeTruthy();
+        expect(new Vec2(10, 10).equals(new Vec2(20, 20))).toBeFalsy();
     });
 
     it('should calculate multiple of 10', () => {

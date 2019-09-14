@@ -1,9 +1,9 @@
 import { MathHelper, Vec2 } from '@app/core';
 
-import { DiagramShape } from './diagram-shape';
+import { DiagramItem } from './diagram-item';
 
 export interface Constraint {
-    updateSize(shape: DiagramShape, size: Vec2, prev?: DiagramShape): Vec2;
+    updateSize(shape: DiagramItem, size: Vec2, prev?: DiagramItem): Vec2;
 
     calculateSizeX(): boolean;
 
@@ -18,7 +18,7 @@ export class SizeConstraint implements Constraint {
         Object.freeze(this);
     }
 
-    public updateSize(shape: DiagramShape, size: Vec2): Vec2 {
+    public updateSize(shape: DiagramItem, size: Vec2): Vec2 {
         let w = size.x;
         let h = size.y;
 
@@ -47,7 +47,7 @@ export class MinSizeConstraint implements Constraint {
         Object.freeze(this);
     }
 
-    public updateSize(shape: DiagramShape, size: Vec2): Vec2 {
+    public updateSize(shape: DiagramItem, size: Vec2): Vec2 {
         const minSize = Math.min(size.x, size.y);
 
         return new Vec2(minSize, minSize);
@@ -69,8 +69,8 @@ export class TextHeightConstraint implements Constraint {
         Object.freeze(this);
     }
 
-    public updateSize(shape: DiagramShape, size: Vec2): Vec2 {
-        const fontSize = shape.appearance.get(DiagramShape.APPEARANCE_FONT_SIZE);
+    public updateSize(shape: DiagramItem, size: Vec2): Vec2 {
+        const fontSize = shape.appearance.get(DiagramItem.APPEARANCE_FONT_SIZE);
 
         return new Vec2(size.x, MathHelper.roundToMultipleOfTwo(fontSize * 1.2 + this.padding * 2));
     }

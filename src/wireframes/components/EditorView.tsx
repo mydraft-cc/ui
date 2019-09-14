@@ -1,10 +1,8 @@
 import * as React from 'react';
 import { DropTargetMonitor, useDrop } from 'react-dnd';
-import { findDOMNode } from 'react-dom';
-import { connect } from 'react-redux';
-import { bindActionCreators, Dispatch } from 'redux';
-
 import { NativeTypes } from 'react-dnd-html5-backend';
+import { findDOMNode } from 'react-dom';
+import { useDispatch } from 'react-redux';
 
 import { sizeInPx } from '@app/core';
 
@@ -14,106 +12,26 @@ import {
     addIcon,
     addImage,
     addVisual,
-    EditorStateInStore,
     getDiagramId,
     getEditor,
-    UIStateInStore
+    useStore
 } from '@app/wireframes/model';
 
 import { EditorContainer } from '@app/wireframes/renderer/Editor';
 
 export interface EditorViewProps {
-    // The width of the canvas.
-    zoomedWidth: number;
-
-    // The height of the canvas.
-    zoomedHeight: number;
-
-    // The zoom value of the canvas.
-    zoom: number;
-
     // The spacing.
     spacing: number;
-
-    // The selected diagram.
-    selectedDiagramId: string;
-
-    // Adds an icon.
-    addIcon: (diagram: string, text: string, fontFamily: string, x: number, y: number) => any;
-
-    // Adds a visual.
-    addVisual: (diagram: string, renderer: string, x: number, y: number, properties?: object) => any;
-
-    // Adds an image.
-    addImage: (diagram: string, source: string, x: number, y: number, w: number, h: number) => any;
 }
 
-function AssetTarget(props: EditorViewProps, ref: React.RefObject<HTMLElement>) {
-    return (item: any, monitor: DropTargetMonitor) => {
-        if (!monitor || !ref.current) {
-            return;
-        }
-
-        const offset = monitor.getSourceClientOffset() || monitor.getClientOffset()!;
-
-        const componentRect = (findDOMNode(ref.current) as HTMLElement)!.getBoundingClientRect();
-
-        let x = (offset.x - props.spacing - componentRect.left) / props.zoom;
-        let y = (offset.y - props.spacing - componentRect.top) / props.zoom;
-
-        if (item.offset) {
-            x += item.offset.x;
-            y += item.offset.y;
-        }
-
-        const itemType = monitor.getItemType();
-
-        switch (itemType) {
-            case 'DND_ICON':
-                props.addIcon(props.selectedDiagramId, item.text, item.fontFamily, x, y);
-                break;
-            case 'DND_ASSET':
-                props.addVisual(props.selectedDiagramId, item['shape'], x, y);
-                break;
-            case NativeTypes.TEXT:
-                props.addVisual(props.selectedDiagramId, 'Label', x, y, { TEXT: item.text });
-                break;
-            case NativeTypes.FILE: {
-                const files = item.files as File[];
-
-                for (let file of files) {
-                    if (file.type.indexOf('image') === 0) {
-                        const reader = new FileReader();
-
-                        reader.onload = (loadedFile: any) => {
-                            const imageSource: string = loadedFile.target.result;
-                            const imageElement = document.createElement('img');
-
-                            imageElement.onload = () => {
-                                props.addImage(props.selectedDiagramId, imageSource, x, y, imageElement.width, imageElement.height);
-                            };
-                            imageElement.src = imageSource;
-                        };
-                        reader.readAsDataURL(file);
-                        break;
-                    }
-                }
-                break;
-            }
-            case NativeTypes.URL: {
-                const urls = item.urls as string[];
-
-                for (let url of urls) {
-                    props.addVisual(props.selectedDiagramId, 'Link', x, y, { TEXT: url });
-                    break;
-                }
-                break;
-            }
-        }
-    };
-}
-
-const EditorView = (props: EditorViewProps) => {
+export const EditorView = ({ spacing }: EditorViewProps) => {
+    const dispatch = useDispatch();
+    const selectedDiagramId = useStore(s => getDiagramId(s));
+    const editor = useStore(s => getEditor(s));
+    const editorSize = editor.size;
+    const zoom = useStore(s => s.ui.zoom);
+    const zoomedWidth = editorSize.x * zoom;
+    const zoomedHeight = editorSize.y * zoom;
     const renderer = React.useContext(RendererContext);
 
     const ref = React.useRef();
@@ -126,54 +44,85 @@ const EditorView = (props: EditorViewProps) => {
             'DND_ASSET',
             'DND_ICON'
         ],
-        drop: AssetTarget(props, ref)
+        drop: (item: any, monitor: DropTargetMonitor) => {
+            if (!monitor || !ref.current) {
+                return;
+            }
+
+            const offset = monitor.getSourceClientOffset() || monitor.getClientOffset()!;
+
+            const componentRect = (findDOMNode(ref.current) as HTMLElement)!.getBoundingClientRect();
+
+            let x = (offset.x - spacing - componentRect.left) / zoom;
+            let y = (offset.y - spacing - componentRect.top) / zoom;
+
+            if (item.offset) {
+                x += item.offset.x;
+                y += item.offset.y;
+            }
+
+            const itemType = monitor.getItemType();
+
+            switch (itemType) {
+                case 'DND_ICON':
+                    dispatch(addIcon(selectedDiagramId, item.text, item.fontFamily, x, y));
+                    break;
+                case 'DND_ASSET':
+                    dispatch(addVisual(selectedDiagramId, item['shape'], x, y));
+                    break;
+                case NativeTypes.TEXT:
+                    dispatch(addVisual(selectedDiagramId, 'Label', x, y, { TEXT: item.text }));
+                    break;
+                case NativeTypes.FILE: {
+                    const files = item.files as File[];
+
+                    for (let file of files) {
+                        if (file.type.indexOf('image') === 0) {
+                            const reader = new FileReader();
+
+                            reader.onload = (loadedFile: any) => {
+                                const imageSource: string = loadedFile.target.result;
+                                const imageElement = document.createElement('img');
+
+                                imageElement.onload = () => {
+                                    dispatch(addImage(selectedDiagramId, imageSource, x, y, imageElement.width, imageElement.height));
+                                };
+                                imageElement.src = imageSource;
+                            };
+                            reader.readAsDataURL(file);
+                            break;
+                        }
+                    }
+                    break;
+                }
+                case NativeTypes.URL: {
+                    const urls = item.urls as string[];
+
+                    for (let url of urls) {
+                        dispatch(addVisual(selectedDiagramId, 'Link', x, y, { TEXT: url }));
+                        break;
+                    }
+                    break;
+                }
+            }
+        }
     });
 
-    const calculateStyle = () => {
-        const {
-            spacing,
-            zoomedWidth,
-            zoomedHeight
-        } = props;
+    const zoomedOuterWidth  = 2 * spacing + zoomedWidth;
+    const zoomedOuterHeight = 2 * spacing + zoomedHeight;
 
-        const zoomedOuterWidth  = 2 * spacing + zoomedWidth;
-        const zoomedOuterHeight = 2 * spacing + zoomedHeight;
+    const w = sizeInPx(zoomedOuterWidth);
+    const h = sizeInPx(zoomedOuterHeight);
 
-        const w = sizeInPx(zoomedOuterWidth);
-        const h = sizeInPx(zoomedOuterHeight);
+    const padding = sizeInPx(spacing);
 
-        const padding = sizeInPx(spacing);
-
-        return { width: w, height: h, padding, margin: 'auto' };
-    };
+    const style = { width: w, height: h, padding, margin: 'auto' };
 
     drop(ref);
 
     return (
-        <div ref={ref} className='editor-view' style={calculateStyle()}>
+        <div ref={ref} className='editor-view' style={style}>
             <EditorContainer rendererService={renderer} />
         </div>
     );
 };
-
-const mapStateToProps = (state: UIStateInStore & EditorStateInStore) => {
-    const editor = getEditor(state);
-
-    const zoom = state.ui.zoom;
-
-    return {
-        selectedDiagramId: getDiagramId(state),
-        zoomedWidth: editor.size.x * zoom,
-        zoomedHeight: editor.size.y * zoom,
-        zoom: zoom
-    };
-};
-
-const mapDispatchToProps = (dispatch: Dispatch) => bindActionCreators({
-    addIcon, addImage, addVisual
-}, dispatch);
-
-export const EditorViewContainer = connect(
-    mapStateToProps,
-    mapDispatchToProps
-)(EditorView);

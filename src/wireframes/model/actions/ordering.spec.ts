@@ -1,10 +1,8 @@
-import { MathHelper } from '@app/core';
-
 import {
     BRING_FORWARDS,
     BRING_TO_FRONT,
     Diagram,
-    DiagramShape,
+    DiagramItem,
     EditorState,
     ordering,
     orderItems,
@@ -14,11 +12,13 @@ import {
 
 describe('OrderingReducer', () => {
     const reducer = ordering();
-    const shape1 = DiagramShape.createShape(MathHelper.guid(), 'btn', 100, 100);
-    const shape2 = DiagramShape.createShape(MathHelper.guid(), 'btn', 100, 100);
-    const shape3 = DiagramShape.createShape(MathHelper.guid(), 'btn', 100, 100);
+
+    const shape1 = DiagramItem.createShape('1', 'btn', 100, 100);
+    const shape2 = DiagramItem.createShape('2', 'btn', 100, 100);
+    const shape3 = DiagramItem.createShape('3', 'btn', 100, 100);
+
     const diagram =
-        Diagram.empty(MathHelper.guid())
+        Diagram.empty('1')
             .addVisual(shape1)
             .addVisual(shape2)
             .addVisual(shape3);
@@ -55,11 +55,12 @@ describe('OrderingReducer', () => {
         testOrdering(SEND_TO_BACK, shape3, [shape3.id, shape1.id, shape2.id]);
     });
 
-    function testOrdering(type: string, shape: DiagramShape, expectedIds: string[]) {
+    function testOrdering(type: string, shape: DiagramItem, expectedIds: string[]) {
         const action = orderItems(type, diagram, [shape]);
+
         const state_1 = EditorState.empty().addDiagram(diagram);
         const state_2 = reducer(state_1, action);
 
-        expect(state_2.diagrams.last.rootIds.toArray()).toEqual(expectedIds);
+        expect(state_2.diagrams.get(diagram.id).rootIds.values).toEqual(expectedIds);
     }
 });

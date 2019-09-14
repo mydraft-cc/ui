@@ -8,7 +8,7 @@ interface ShapeImageProps {
     shape: ShapeInfo;
 }
 
-export const ShapeImage = (props: ShapeImageProps) => {
+export const ShapeImage = React.memo((props: ShapeImageProps) => {
     const { shape } = props;
 
     const [, drag, connectDragPreview] = useDrag({
@@ -22,7 +22,7 @@ export const ShapeImage = (props: ShapeImageProps) => {
             <img ref={drag} className='asset-shape-image' alt={props.shape.displayName} src={previewPath(props.shape)} />
         </>
     );
-};
+});
 
 const pathToShapes = require.context('../../../images/shapes', true);
 

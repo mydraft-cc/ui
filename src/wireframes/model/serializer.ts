@@ -1,14 +1,12 @@
-import * as Immutable from 'immutable';
-
 import {
-    ImmutableList,
+    ImmutableMap,
     MathHelper,
     Rotation
 } from '@app/core';
 
-import { DiagramGroup } from './diagram-group';
+import { DiagramContainer } from './diagram-container';
+import { DiagramItem } from './diagram-item';
 import { DiagramItemSet } from './diagram-item-set';
-import { DiagramShape } from './diagram-shape';
 import { RendererService } from './renderer.service';
 import { Transform } from './transform';
 
@@ -49,31 +47,33 @@ export class Serializer {
     }
 
     public deserializeSet(json: string): DiagramItemSet {
-        const s: DiagramShape[] = [];
-        const g: DiagramGroup[] = [];
+        const allShapes: DiagramItem[] = [];
+        const allGroups: DiagramItem[] = [];
 
         const input = JSON.parse(json);
 
         for (const jsonShape of input.visuals) {
             const shape = this.deserializeShape(jsonShape);
 
-            s.push(shape);
+            if (shape) {
+                allShapes.push(shape);
+            }
         }
 
         for (const jsonGroup of input.groups) {
             const group = Serializer.deserializeGroup(jsonGroup);
 
-            g.push(group);
+            allGroups.push(group);
         }
 
-        return new DiagramItemSet(g, s);
+        return new DiagramItemSet(allGroups, allShapes);
     }
 
-    public serializeSet(set: DiagramItemSet): string {
+    public serializeSet(set: DiagramItemSet) {
         const output: any = { visuals: [], groups: [] };
 
         for (let visual of set.allVisuals) {
-            const json = Serializer.serializeShape(visual as DiagramShape);
+            const json = Serializer.serializeShape(visual);
 
             output.visuals.push(json);
         }
@@ -87,79 +87,86 @@ export class Serializer {
         return JSON.stringify(output);
     }
 
-    private static deserializeGroup(input: any): DiagramGroup {
-        return DiagramGroup.createGroup(input.id,
-            Serializer.deserializeChildIds(input),
-            Serializer.deserializeRotation(input));
+    private static deserializeGroup(input: any) {
+        return DiagramItem.createGroup(input.id,
+            deserializeChildIds(input),
+            deserializeRotation(input));
     }
 
-    private static serializeGroup(group: DiagramGroup) {
+    private static serializeGroup(group: DiagramItem) {
         const output = { id: group.id };
 
-        Serializer.serializeChildIds(group.childIds, output);
-        Serializer.serializeRotation(group.rotation, output);
+        serializeChildIds(group.childIds, output);
+        serializeRotation(group.rotation, output);
 
         return output;
     }
 
-    private deserializeShape(input: any): DiagramShape {
-        const renderer = Serializer.deserializeRenderer(input);
+    private deserializeShape(input: any) {
+        const rendererId = deserializeRenderer(input);
 
-        let shape = this.rendererService.registeredRenderers[renderer].createDefaultShape(input.id);
+        const renderer = this.rendererService.registeredRenderers[rendererId];
 
-        shape = Serializer.deserializeAppearance(shape, input);
-        shape = Serializer.deserializeTransform(shape, input);
+        if (!renderer) {
+            return null;
+        }
+
+        const transform = deserializeTransform(input);
+
+        const shape =
+            renderer.createDefaultShape(input.id)
+                .merge({ appearance: deserializeAppearance(input), transform });
 
         return shape;
     }
 
-    private static serializeShape(shape: DiagramShape): any {
+    private static serializeShape(shape: DiagramItem): any {
         const output = { id: shape.id };
 
-        Serializer.serializeRenderer(shape.renderer, output);
-        Serializer.serializeTransform(shape.transform, output);
-        Serializer.serializeAppearance(shape.appearance, output);
+        serializeRenderer(shape.renderer, output);
+        serializeTransform(shape.transform, output);
+        serializeAppearance(shape.appearance, output);
 
         return output;
     }
+}
 
-    private static serializeChildIds(childIds: ImmutableList<string>, output: any) {
-        output.childIds = childIds.toArray();
-    }
+function serializeChildIds(childIds: DiagramContainer, output: any) {
+    output.childIds = childIds.values;
+}
 
-    private static deserializeChildIds(input: any): ImmutableList<string> {
-        return ImmutableList.of(...input.childIds);
-    }
+function deserializeChildIds(input: any) {
+    return DiagramContainer.of(...input.childIds);
+}
 
-    private static serializeRotation(rotation: Rotation, output: any) {
-        output.rotation = rotation.degree;
-    }
+function serializeRotation(rotation: Rotation, output: any) {
+    output.rotation = rotation.degree;
+}
 
-    private static deserializeRotation(input: any): Rotation {
-        return Rotation.fromDegree(input.rotation);
-    }
+function deserializeRotation(input: any) {
+    return Rotation.fromDegree(input.rotation);
+}
 
-    private static serializeRenderer(renderer: string, output: any) {
-        output.renderer = renderer;
-    }
+function serializeRenderer(renderer: string, output: any) {
+    output.renderer = renderer;
+}
 
-    private static deserializeRenderer(input: any): string {
-        return input.renderer;
-    }
+function deserializeRenderer(input: any): string {
+    return input.renderer;
+}
 
-    private static serializeAppearance(appearance: Immutable.Map<string, any>, output: any) {
-        output.appearance = appearance.toJS();
-    }
+function serializeAppearance(appearance: ImmutableMap<any>, output: any) {
+    output.appearance = appearance.values;
+}
 
-    private static deserializeAppearance(shape: DiagramShape, input: any): DiagramShape {
-        return shape.replaceAppearance(shape.appearance.merge(Immutable.Map<string, any>(input.appearance))) as DiagramShape;
-    }
+function deserializeAppearance(input: any) {
+    return ImmutableMap.of(input.appearance);
+}
 
-    private static serializeTransform(transform: Transform, output: any) {
-        output.transform = transform.toJS();
-    }
+function serializeTransform(transform: Transform, output: any) {
+    output.transform = transform.toJS();
+}
 
-    private static deserializeTransform(shape: DiagramShape, input: any): DiagramShape {
-        return shape.transformTo(Transform.fromJS(input.transform));
-    }
+function deserializeTransform(input: any) {
+    return Transform.fromJS(input.transform);
 }

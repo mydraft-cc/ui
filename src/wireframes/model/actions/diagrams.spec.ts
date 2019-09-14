@@ -1,11 +1,8 @@
-import { MathHelper } from '@app/core';
-
 import {
     addDiagram,
     Diagram,
     diagrams,
     EditorState,
-    moveDiagram,
     removeDiagram,
     selectDiagram
 } from '@app/wireframes/model';
@@ -15,6 +12,7 @@ describe('DiagramReducer', () => {
 
     it('should return same state if action is unknown', () => {
         const action = { type: 'UNKNOWN' };
+
         const state_1 = EditorState.empty();
         const state_2 = reducer(state_1, action);
 
@@ -22,44 +20,35 @@ describe('DiagramReducer', () => {
     });
 
     it('should add diagram', () => {
-        const diagramId = MathHelper.guid();
+        const action = addDiagram('1');
 
-        const action = addDiagram(diagramId);
         const state_1 = EditorState.empty();
         const state_2 = reducer(state_1, action);
 
         expect(state_2.diagrams.size).toBe(1);
-        expect(state_2.diagrams.last.id).toBe(diagramId);
+        expect(state_2.diagrams.get('1').id).toBe('1');
+        expect(state_2.selectedDiagramId).toBe('1');
     });
 
     it('should select diagram', () => {
-        const diagram = Diagram.empty(MathHelper.guid());
+        const diagram = Diagram.empty('1');
 
         const action = selectDiagram(diagram);
+
         const state_1 = EditorState.empty().addDiagram(diagram);
         const state_2 = reducer(state_1, action);
 
-        expect(state_2.selectedDiagramId).toBe(state_2.diagrams.last.id);
+        expect(state_2.selectedDiagramId).toBe(diagram.id);
     });
 
     it('should remove diagram', () => {
-        const diagram = Diagram.empty(MathHelper.guid());
+        const diagram = Diagram.empty('1');
 
         const action = removeDiagram(diagram);
+
         const state_1 = EditorState.empty().addDiagram(diagram);
         const state_2 = reducer(state_1, action);
 
         expect(state_2.diagrams.size).toBe(0);
-    });
-
-    it('should move diagram to new position', () => {
-        const diagram1 = Diagram.empty(MathHelper.guid());
-        const diagram2 = Diagram.empty(MathHelper.guid());
-
-        const action = moveDiagram(diagram2, 0);
-        const state_1 = EditorState.empty().addDiagram(diagram1).addDiagram(diagram2);
-        const state_2 = reducer(state_1, action);
-
-        expect(state_2.diagrams.map(d => d.id)).toEqual([ diagram2.id, diagram1.id ]);
     });
 });

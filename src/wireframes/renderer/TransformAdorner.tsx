@@ -6,7 +6,6 @@ import { Rotation, Vec2 } from '@app/core';
 import {
     Diagram,
     DiagramItem,
-    DiagramShape,
     SnapManager,
     Transform
 } from '@app/wireframes/model';
@@ -91,7 +90,7 @@ export class TransformAdorner extends React.Component<TransformAdornerProps> imp
     }
 
     public componentDidUpdate(prevProps: TransformAdornerProps) {
-        if (this.props.selectedDiagram.selectedItemIds !== prevProps.selectedDiagram.selectedItemIds) {
+        if (this.props.selectedDiagram.selectedIds !== prevProps.selectedDiagram.selectedIds) {
             this.rotation = Rotation.ZERO;
         }
 
@@ -128,18 +127,17 @@ export class TransformAdorner extends React.Component<TransformAdornerProps> imp
         this.canResizeY = false;
 
         for (let item of this.props.selectedItems) {
-            if (item instanceof DiagramShape) {
-                if (item.constraint) {
-                    if (!item.constraint.calculateSizeX()) {
-                        this.canResizeX = true;
-                    }
-
-                    if (!item.constraint.calculateSizeY()) {
-                        this.canResizeY = true;
-                    }
-                    continue;
+            if (item.constraint) {
+                if (!item.constraint.calculateSizeX()) {
+                    this.canResizeX = true;
                 }
+
+                if (!item.constraint.calculateSizeY()) {
+                    this.canResizeY = true;
+                }
+                continue;
             }
+
             this.canResizeX = true;
             this.canResizeY = true;
         }

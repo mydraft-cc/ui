@@ -3,7 +3,7 @@ import { Rect2, Vec2 } from '@app/core';
 import {
     ColorConfigurable,
     Configurable,
-    DiagramShape,
+    DiagramItem,
     SizeConstraint,
     SliderConfigurable
 } from '@app/wireframes/model';
@@ -16,12 +16,12 @@ const ACCENT_COLOR = 'ACCENT_COLOR';
 const VALUE = 'VALUE';
 
 const DEFAULT_APPEARANCE = {};
-DEFAULT_APPEARANCE[DiagramShape.APPEARANCE_FOREGROUND_COLOR] = 0xffffff;
-DEFAULT_APPEARANCE[DiagramShape.APPEARANCE_BACKGROUND_COLOR] = CommonTheme.CONTROL_BACKGROUND_COLOR;
-DEFAULT_APPEARANCE[DiagramShape.APPEARANCE_FONT_SIZE] = CommonTheme.CONTROL_FONT_SIZE;
-DEFAULT_APPEARANCE[DiagramShape.APPEARANCE_STROKE_COLOR] = CommonTheme.CONTROL_BORDER_COLOR;
-DEFAULT_APPEARANCE[DiagramShape.APPEARANCE_STROKE_THICKNESS] = CommonTheme.CONTROL_BORDER_THICKNESS;
-DEFAULT_APPEARANCE[DiagramShape.APPEARANCE_TEXT_DISABLED] = true;
+DEFAULT_APPEARANCE[DiagramItem.APPEARANCE_FOREGROUND_COLOR] = 0xffffff;
+DEFAULT_APPEARANCE[DiagramItem.APPEARANCE_BACKGROUND_COLOR] = CommonTheme.CONTROL_BACKGROUND_COLOR;
+DEFAULT_APPEARANCE[DiagramItem.APPEARANCE_FONT_SIZE] = CommonTheme.CONTROL_FONT_SIZE;
+DEFAULT_APPEARANCE[DiagramItem.APPEARANCE_STROKE_COLOR] = CommonTheme.CONTROL_BORDER_COLOR;
+DEFAULT_APPEARANCE[DiagramItem.APPEARANCE_STROKE_THICKNESS] = CommonTheme.CONTROL_BORDER_THICKNESS;
+DEFAULT_APPEARANCE[DiagramItem.APPEARANCE_TEXT_DISABLED] = true;
 DEFAULT_APPEARANCE[ACCENT_COLOR] = 0x2171b5;
 DEFAULT_APPEARANCE[VALUE] = 50;
 
@@ -44,8 +44,8 @@ export class Slider extends AbstractControl {
         return 'Slider';
     }
 
-    public createDefaultShape(shapeId: string): DiagramShape {
-        return DiagramShape.createShape(shapeId, this.identifier(), 150, HEIGHT_TOTAL, CONFIGURABLES, DEFAULT_APPEARANCE, CONSTRAINT);
+    public createDefaultShape(shapeId: string): DiagramItem {
+        return DiagramItem.createShape(shapeId, this.identifier(), 150, HEIGHT_TOTAL, CONFIGURABLES, DEFAULT_APPEARANCE, CONSTRAINT);
     }
 
     protected renderInternal(ctx: AbstractContext) {
@@ -63,7 +63,7 @@ export class Slider extends AbstractControl {
         const thumbItem = ctx.renderer.createEllipse(ctx.shape, Rect2.fromCenter(thumbCenter, 0.5 * HEIGHT_TOTAL));
 
         ctx.renderer.setStrokeColor(thumbItem, ctx.shape);
-        ctx.renderer.setBackgroundColor(thumbItem, ctx.shape.appearance.get(DiagramShape.APPEARANCE_FOREGROUND_COLOR));
+        ctx.renderer.setBackgroundColor(thumbItem, ctx.shape.appearance.get(DiagramItem.APPEARANCE_FOREGROUND_COLOR));
 
         ctx.add(thumbItem);
     }

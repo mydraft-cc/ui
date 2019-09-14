@@ -1,13 +1,9 @@
 import * as React from 'react';
 
-export interface TitleProps {
-    text: string;
-}
-
-export const Title = (props: TitleProps) => {
+export const Title = React.memo(({ text }: { text: string }) => {
     React.useEffect(() => {
-        document.title = props.text;
-    });
+        document.title = text;
+    }, [text]);
 
-    return (<></>);
-};
+    return null;
+});

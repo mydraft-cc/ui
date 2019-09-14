@@ -7,7 +7,7 @@ import {
     SVGHelper
 } from '@app/core';
 
-import { DiagramShape, Transform } from '@app/wireframes/model';
+import { DiagramItem, Transform } from '@app/wireframes/model';
 
 import {
     AbstractRenderer,
@@ -148,11 +148,11 @@ export class SVGRenderer implements AbstractRenderer {
     public createSinglelineText(config?: RendererText, bounds?: Rect2): RendererElement {
         let element: svg.Element;
 
-        if (config instanceof DiagramShape) {
+        if (config instanceof DiagramItem) {
             element = SVGHelper.createSinglelineText(this.container,
-                config.appearance.get(DiagramShape.APPEARANCE_TEXT),
-                config.appearance.get(DiagramShape.APPEARANCE_FONT_SIZE),
-                config.appearance.get(DiagramShape.APPEARANCE_TEXT_ALIGNMENT));
+                config.appearance.get(DiagramItem.APPEARANCE_TEXT),
+                config.appearance.get(DiagramItem.APPEARANCE_FONT_SIZE),
+                config.appearance.get(DiagramItem.APPEARANCE_TEXT_ALIGNMENT));
         } else if (config) {
             element = SVGHelper.createSinglelineText(this.container, config.text, config.fontSize, config.alignment);
         } else {
@@ -167,11 +167,11 @@ export class SVGRenderer implements AbstractRenderer {
     public createMultilineText(config?: RendererText, bounds?: Rect2): RendererElement {
         let element: svg.Element;
 
-        if (config instanceof DiagramShape) {
+        if (config instanceof DiagramItem) {
             element = SVGHelper.createMultilineText(this.container,
-                config.appearance.get(DiagramShape.APPEARANCE_TEXT),
-                config.appearance.get(DiagramShape.APPEARANCE_FONT_SIZE),
-                config.appearance.get(DiagramShape.APPEARANCE_TEXT_ALIGNMENT));
+                config.appearance.get(DiagramItem.APPEARANCE_TEXT),
+                config.appearance.get(DiagramItem.APPEARANCE_FONT_SIZE),
+                config.appearance.get(DiagramItem.APPEARANCE_TEXT_ALIGNMENT));
         } else if (config) {
             element = SVGHelper.createMultilineText(this.container, config.text, config.fontSize, config.alignment);
         } else {
@@ -214,7 +214,7 @@ export class SVGRenderer implements AbstractRenderer {
     }
 
     public setForegroundColor(element: RendererElement, color: RendererColor): AbstractRenderer {
-        const c = this.getColor(color, DiagramShape.APPEARANCE_FOREGROUND_COLOR);
+        const c = this.getColor(color, DiagramItem.APPEARANCE_FOREGROUND_COLOR);
         const e = this.getElement(element);
 
         if (c) {
@@ -225,7 +225,7 @@ export class SVGRenderer implements AbstractRenderer {
     }
 
     public setBackgroundColor(element: RendererElement, color: RendererColor): AbstractRenderer {
-        const c = this.getColor(color, DiagramShape.APPEARANCE_BACKGROUND_COLOR);
+        const c = this.getColor(color, DiagramItem.APPEARANCE_BACKGROUND_COLOR);
         const e = this.getElement(element);
 
         if (c) {
@@ -236,7 +236,7 @@ export class SVGRenderer implements AbstractRenderer {
     }
 
     public setStrokeColor(element: RendererElement, color: RendererColor): AbstractRenderer {
-        const c = this.getColor(color, DiagramShape.APPEARANCE_STROKE_COLOR);
+        const c = this.getColor(color, DiagramItem.APPEARANCE_STROKE_COLOR);
         const e = this.getElement(element);
 
         if (c) {
@@ -290,7 +290,7 @@ export class SVGRenderer implements AbstractRenderer {
     public setTransform(element: any, to: RendererTransform): AbstractRenderer {
         const e = this.getElement(element);
 
-        if (to instanceof DiagramShape) {
+        if (to instanceof DiagramItem) {
             this.setTransform(element, to.transform);
         } else if (to instanceof Transform) {
             SVGHelper.transform(e, {
@@ -338,7 +338,7 @@ export class SVGRenderer implements AbstractRenderer {
     }
 
     private getColor(color: RendererColor, key: string): string {
-        if (color instanceof DiagramShape) {
+        if (color instanceof DiagramItem) {
             return SVGHelper.toColor(color.appearance.get(key));
         } else {
             return SVGHelper.toColor(color);
@@ -346,16 +346,16 @@ export class SVGRenderer implements AbstractRenderer {
     }
 
     private getOpacity(opacity: RendererWidth): number {
-        if (opacity instanceof DiagramShape) {
-            return opacity.appearance.get(DiagramShape.APPEARANCE_OPACITY);
+        if (opacity instanceof DiagramItem) {
+            return opacity.appearance.get(DiagramItem.APPEARANCE_OPACITY);
         } else {
             return opacity;
         }
     }
 
     private getStrokeWidth(strokeWidth: RendererWidth): number {
-        if (strokeWidth instanceof DiagramShape) {
-            return strokeWidth.appearance.get(DiagramShape.APPEARANCE_STROKE_THICKNESS);
+        if (strokeWidth instanceof DiagramItem) {
+            return strokeWidth.appearance.get(DiagramItem.APPEARANCE_STROKE_THICKNESS);
         } else {
             return strokeWidth;
         }

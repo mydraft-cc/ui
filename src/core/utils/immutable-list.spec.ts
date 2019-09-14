@@ -1,240 +1,174 @@
 import { ImmutableList } from '@app/core';
 
 describe('ImmutableList', () => {
-    const v1 = 'value1';
-    const v2 = 'value2';
-    const v3 = 'value3';
-    const v4 = 'value4';
-    const v5 = 'value5';
-    const v6 = 'value6';
-
     it('should instantiate without arguments', () => {
-        const list = ImmutableList.empty<string>();
+        const list = ImmutableList.empty<number>();
 
-        expect(list).toBeDefined();
+        expect(list.size).toBe(0);
+    });
+
+    it('should cache empty instance', () => {
+        const list = ImmutableList.of(...[]);
+
+        expect(list).toBe(ImmutableList.empty());
     });
 
     it('should instantiate from array of items', () => {
-        const list_1 = ImmutableList.of(v1, v2, v3);
+        const list_1 = ImmutableList.of(1, 2, 3);
 
         expect(list_1.size).toBe(3);
-        expect(list_1.get(0)).toBe(v1);
-        expect(list_1.get(1)).toBe(v2);
-        expect(list_1.get(2)).toBe(v3);
+        expect(list_1.at(0)).toBe(1);
+        expect(list_1.at(1)).toBe(2);
+        expect(list_1.at(2)).toBe(3);
     });
 
-    it('should return first item', () => {
-        const list_1 = ImmutableList.of(v1, v2, v3);
+    it('should add values', () => {
+        const list_1 = ImmutableList.empty<number>();
+        const list_2 = list_1.add(1);
+        const list_3 = list_2.add(2, 3);
 
-        expect(list_1.first).toBe(v1);
+        expect(list_3.values).toEqual([1, 2, 3]);
     });
 
-    it('should return last item', () => {
-        const list_1 = ImmutableList.of(v1, v2, v3);
+    it('should original list when values to add is null', () => {
+        const items: number[] = null;
 
-        expect(list_1.last).toBe(v3);
+        const list_1 = ImmutableList.empty<number>();
+        const list_2 = list_1.add(...items);
+
+        expect(list_2).toEqual(list_1);
     });
 
-    it('should add values to list', () => {
-        const list_1 = ImmutableList.empty<string>();
-        const list_2 = list_1.add(v1);
-        const list_3 = list_2.add(v2);
-        const list_4 = list_3.add(v3);
+    it('should original list when values to add is empty', () => {
+        const list_1 = ImmutableList.empty<number>();
+        const list_2 = list_1.add();
 
-        expect(list_4.size).toBe(3);
-        expect(list_4.get(0)).toBe(v1);
-        expect(list_4.get(1)).toBe(v2);
-        expect(list_4.get(2)).toBe(v3);
+        expect(list_2).toEqual(list_1);
     });
 
-    it('should convert to array', () => {
-        const list_1 = ImmutableList.of(v1, v2, v3);
+    it('should return undefined for invalid index', () => {
+        const list_1 = ImmutableList.of(1);
 
-        const items = list_1.toArray();
-
-        expect(items.length).toBe(3);
-        expect(items[0]).toBe(v1);
-        expect(items[1]).toBe(v2);
-        expect(items[2]).toBe(v3);
+        expect(list_1.at(-1)).toBeUndefined();
     });
 
-    it('should return original list when value to add is null', () => {
-        const list_1 = ImmutableList.empty<string>();
-        const list_2 = list_1.add(null!);
+    it('should remove values', () => {
+        const list_1 = ImmutableList.of(1, 2, 3, 4);
+        const list_2 = list_1.remove(2, 3);
+
+        expect(list_2.values).toEqual([1, 4]);
+    });
+
+    it('should return original list when item to remove is null', () => {
+        const items: string[] = null;
+
+        const list_1 = ImmutableList.of(1);
+        const list_2 = list_1.remove(...items);
 
         expect(list_2).toBe(list_1);
     });
 
-    it('should update item', () => {
-        const newValue = 'v1New';
+    it('should return original list when item to remove is empty', () => {
+        const list_1 = ImmutableList.of(1);
+        const list_2 = list_1.remove();
 
-        const list_1 = ImmutableList.empty<string>();
-        const list_2 = list_1.add(v1);
-        const list_3 = list_2.update(v1, t => newValue);
-
-        expect(list_3.size).toBe(1);
-        expect(list_3.get(0)).toBe(newValue);
-    });
-
-    it('should return undefined for invalid index', () => {
-        const list_1 = ImmutableList.empty<string>();
-        const list_2 = list_1.add(v1);
-
-        expect(list_2.get(-10)).toBeUndefined();
-        expect(list_2.get(100)).toBeUndefined();
-    });
-
-    it('should return original list when item to update is null', () => {
-        const newValue = 'v1New';
-
-        const list_1 = ImmutableList.empty<string>();
-        const list_2 = list_1.add(v1);
-        const list_3 = list_2.update(null!, t => newValue);
-
-        expect(list_3).toBe(list_2);
-    });
-
-    it('should return original list when updater is null', () => {
-        const list_1 = ImmutableList.empty<string>();
-        const list_2 = list_1.add(v1);
-        const list_3 = list_2.update(v1, null!);
-
-        expect(list_3).toBe(list_2);
-    });
-
-    it('should return original list when updater returns same item', () => {
-        const list_1 = ImmutableList.empty<string>();
-        const list_2 = list_1.add(v1);
-        const list_3 = list_2.update(v1, t => t);
-
-        expect(list_3).toBe(list_2);
-    });
-
-    it('should remove values from list', () => {
-        const list_1 = ImmutableList.empty<string>();
-        const list_2 = list_1.add(v1);
-        const list_3 = list_2.add(v2);
-        const list_4 = list_3.remove(v1);
-
-        expect(list_4.size).toBe(1);
-        expect(list_4.get(0)).toBe(v2);
-    });
-
-    it('should return original list when item to remove is null', () => {
-        const list_1 = ImmutableList.empty<string>();
-        const list_2 = list_1.add(v1);
-        const list_3 = list_2.remove(null!);
-
-        expect(list_3).toBe(list_2);
+        expect(list_2).toBe(list_2);
     });
 
     it('should return original list when item to remove does not exists', () => {
-        const list_1 = ImmutableList.empty<string>();
-        const list_2 = list_1.add(v1);
-        const list_3 = list_2.remove(v4);
+        const list_1 = ImmutableList.of(1);
+        const list_2 = list_1.remove(3);
 
-        expect(list_3).toBe(list_2);
+        expect(list_2).toBe(list_1);
     });
 
     it('should bring to front', () => {
-        const list_1 = ImmutableList.of(v1, v2, v3, v4, v5, v6);
-        const list_2 = list_1.bringToFront([v3, v5]);
+        const list_1 = ImmutableList.of(1, 2, 3, 4, 5, 6);
+        const list_2 = list_1.bringToFront([3, 5]);
 
-        expect(list_2.toArray()).toEqual([v1, v2, v4, v6, v3, v5]);
+        expect(list_2.values).toEqual([1, 2, 4, 6, 3, 5]);
     });
 
     it('should bring forwards', () => {
-        const list_1 = ImmutableList.of(v1, v2, v3, v4, v5, v6);
-        const list_2 = list_1.bringForwards([v3, v4]);
+        const list_1 = ImmutableList.of(1, 2, 3, 4, 5, 6);
+        const list_2 = list_1.bringForwards([3, 4]);
 
-        expect(list_2.toArray()).toEqual([v1, v2, v5, v3, v4, v6]);
+        expect(list_2.values).toEqual([1, 2, 5, 3, 4, 6]);
     });
 
     it('should send to back', () => {
-        const list_1 = ImmutableList.of(v1, v2, v3, v4, v5, v6);
-        const list_2 = list_1.sendToBack([v3, v5]);
+        const list_1 = ImmutableList.of(1, 2, 3, 4, 5, 6);
+        const list_2 = list_1.sendToBack([4, 5]);
 
-        expect(list_2.toArray()).toEqual([v3, v5, v1, v2, v4, v6]);
+        expect(list_2.values).toEqual([4, 5, 1, 2, 3, 6]);
     });
 
     it('should send backwards', () => {
-        const list_1 = ImmutableList.of(v1, v2, v3, v4, v5, v6);
-        const list_2 = list_1.sendBackwards([v3, v5]);
+        const list_1 = ImmutableList.of(1, 2, 3, 4, 5, 6);
+        const list_2 = list_1.sendBackwards([3, 5]);
 
-        expect(list_2.toArray()).toEqual([v1, v3, v5, v2, v4, v6]);
+        expect(list_2.values).toEqual([1, 3, 5, 2, 4, 6]);
     });
 
     it('should move item', () => {
-        const list_1 = ImmutableList.of(v1, v2, v3, v4, v5, v6);
-        const list_2 = list_1.moveTo([v4], 1);
+        const list_1 = ImmutableList.of(1, 2, 3, 4, 5, 6);
+        const list_2 = list_1.moveTo([3], 1);
 
-        expect(list_2.toArray()).toEqual([v1, v4, v2, v3, v5, v6]);
+        expect(list_2.values).toEqual([1, 3, 2, 4, 5, 6]);
     });
 
     it('should ignore items that are not found', () => {
-        const list_1 = ImmutableList.of(v1, v2, v3, v4, v5, v6);
-        const list_2 = list_1.bringToFront([v3, 'not found']);
+        const list_1 = ImmutableList.of(1, 2, 3, 4, 5, 6);
+        const list_2 = list_1.bringToFront([3, 'not found']);
 
-        expect(list_2.toArray()).toEqual([v1, v2, v4, v5, v6, v3]);
+        expect(list_2.values).toEqual([1, 2, 4, 5, 6, 3]);
     });
 
-    it('should return original list no id found', () => {
-        const list_1 = ImmutableList.of(v1, v2, v3, v4, v5, v6);
+    it('should return original list no id to sort found', () => {
+        const list_1 = ImmutableList.of(1, 2, 3, 5, 5, 6);
         const list_2 = list_1.sendBackwards(['not found']);
 
         expect(list_2).toBe(list_1);
     });
 
-    it('should return original list when ids is null', () => {
-        const list_1 = ImmutableList.of(v1, v2, v3, v4, v5, v6);
+    it('should return original list when ids to sort is null', () => {
+        const list_1 = ImmutableList.of(1, 2, 3, 4, 5, 6);
         const list_2 = list_1.sendBackwards(null!);
 
         expect(list_2).toBe(list_1);
     });
 
-    it('should return correct result for map', () => {
-        const list_1 = ImmutableList.of(v1, v2, v3, v4, v5, v6);
+    it('should return true for equals when lists have same value in same order', () => {
+        const list_a = ImmutableList.of(1, 2, 3);
+        const list_b = ImmutableList.of(1, 2, 3);
 
-        const result = list_1.map(t => 'x_' + t);
-
-        expect(result).toEqual(['x_value1', 'x_value2', 'x_value3', 'x_value4', 'x_value5', 'x_value6']);
+        expect(list_a.equals(list_b)).toBeTruthy();
     });
 
-    it('should return correct result for forEach', () => {
-        const list_1 = ImmutableList.of(v1, v2, v3, v4, v5, v6);
+    it('should return true for equals when lists are the same', () => {
+        const list_a = ImmutableList.of(1, 2, 3);
+        const list_b = list_a;
 
-        const result: string[] = [];
-
-        list_1.forEach(t => result.push('x_' + t));
-
-        expect(result).toEqual(['x_value1', 'x_value2', 'x_value3', 'x_value4', 'x_value5', 'x_value6']);
+        expect(list_a.equals(list_b)).toBeTruthy();
     });
 
-    it('should return correct result for filter', () => {
-        const list_1 = ImmutableList.of(v1, v2, v3, v4, v5, v6);
+    it('should return false for equals when lists have different values', () => {
+        const list_a = ImmutableList.of(1, 2, 3);
+        const list_b = ImmutableList.of(1, 2, 4);
 
-        let i = 0;
-
-        const result = list_1.filter(t => { i++; return i % 2 === 1; });
-
-        expect(result).toEqual([v1, v3, v5]);
+        expect(list_a.equals(list_b)).toBeFalsy();
     });
 
-    it('should add and remove large item set', () => {
-        const size = 1000;
-        const items: string[] = [];
+    it('should return false for equals when lists have different lengths', () => {
+        const list_a = ImmutableList.of(1, 2, 3);
+        const list_b = ImmutableList.of(1, 2);
 
-        for (let i = 0; i < size; i++) {
-            items.push('id' + i);
-        }
+        expect(list_a.equals(list_b)).toBeFalsy();
+    });
 
-        const list_1 = ImmutableList.empty<string>();
-        const list_2 = list_1.add(...items);
+    it('should return false for equals when checking with undefined value', () => {
+        const list_a = ImmutableList.of(1, 2, 3);
 
-        expect(list_2.toArray()).toEqual(items);
-
-        const list_3 = list_2.remove(...items);
-
-        expect(list_3.size).toEqual(0);
+        expect(list_a.equals(null!)).toBeFalsy();
     });
 });
