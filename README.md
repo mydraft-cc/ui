@@ -1,6 +1,6 @@
 # mydraft.cc: Open Source Wireframing Tools
 
-Test it out at: https://mydraft.cc/ (Work in progress)
+Test it out at: https://mydraft.cc/ (Work in progress, WIP)
 
 The goal of this project is to create an open source wireframing tool. As a developer I have to create wireframes from time to time and there are great commercial tool in the market. But most of them cost more than a full Office suite per month. I think there is a need for a good and free solutions.
 
@@ -10,6 +10,7 @@ The goal of this project is to create an open source wireframing tool. As a deve
 
 * Ant design (https://ant.design/)
 * React
+* React Hooks
 * Redux
 * Typescript
 * Webpack
