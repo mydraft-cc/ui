@@ -111,10 +111,11 @@ export class Serializer {
             return null;
         }
 
-        let shape = renderer.createDefaultShape(input.id);
+        const transform = deserializeTransform(input);
 
-        shape = deserializeAppearance(shape, input);
-        shape = deserializeTransform(shape, input);
+        const shape =
+            renderer.createDefaultShape(input.id)
+                .merge({ appearance: deserializeAppearance(input), transform });
 
         return shape;
     }
@@ -158,14 +159,14 @@ function serializeAppearance(appearance: ImmutableMap<any>, output: any) {
     output.appearance = appearance.values;
 }
 
-function deserializeAppearance(shape: DiagramItem, input: any) {
-    return shape.replaceAppearance(ImmutableMap.of(input.appearance));
+function deserializeAppearance(input: any) {
+    return ImmutableMap.of(input.appearance);
 }
 
 function serializeTransform(transform: Transform, output: any) {
     output.transform = transform.toJS();
 }
 
-function deserializeTransform(shape: DiagramItem, input: any) {
-    return shape.transformTo(Transform.fromJS(input.transform));
+function deserializeTransform(input: any) {
+    return Transform.fromJS(input.transform);
 }

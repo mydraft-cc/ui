@@ -220,10 +220,12 @@ export class DiagramItem extends Record<Props> {
         if (this.constraint) {
             const size = this.constraint.updateSize(this, this.transform.size, prev);
 
-            return values.set('transform', this.transform.resizeTopLeft(size).round());
-        } else {
-            return values;
+            if (size.x > 0 && size.y > 0) {
+                return values.set('transform', this.transform.resizeTopLeft(size).round());
+            }
         }
+
+        return values;
     }
 }
 
