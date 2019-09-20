@@ -33,7 +33,7 @@ export const Shortcut = React.memo((props: ShortcutProps) => {
         }
 
         return undefined;
-    }, [disabled, keys]);
+    }, [disabled, keys, onPressed]);
 
     return null;
 });

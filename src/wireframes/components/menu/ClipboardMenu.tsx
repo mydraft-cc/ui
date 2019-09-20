@@ -35,7 +35,9 @@ export const ClipboardMenu = React.memo(() => {
                     selectedItems,
                     selectedDiagram);
 
-            setClipboard(serializer.serializeSet(set));
+            const json = serializer.serializeSet(set);
+
+            setClipboard(json);
             setOffset(0);
         }
     }, [offset, selectedDiagram, selectedItems, serializer]);

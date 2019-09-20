@@ -157,10 +157,12 @@ export module SVGHelper {
             return 'transparent';
         } else if (value === 'none') {
             return 'none';
-        } else {
+        } else if (value) {
             const color = Color.fromValue(value);
 
             return new svg.Color({ r: color.r * 255, g: color.g * 255, b: color.b * 255 }).toHex();
+        } else {
+            return 'black';
         }
     }
 }

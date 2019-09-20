@@ -21,6 +21,10 @@ export class ImmutableMap<T> {
         return this.keys.map(k => this.items[k]);
     }
 
+    public toJS() {
+        return this.items;
+    }
+
     public get(key: string): T | undefined {
         return this.items[key];
     }

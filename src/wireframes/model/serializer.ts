@@ -156,7 +156,7 @@ function deserializeRenderer(input: any): string {
 }
 
 function serializeAppearance(appearance: ImmutableMap<any>, output: any) {
-    output.appearance = appearance.values;
+    output.appearance = appearance.toJS();
 }
 
 function deserializeAppearance(input: any) {

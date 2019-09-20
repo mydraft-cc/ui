@@ -57,7 +57,7 @@ export const getSelectionSet = createSelector(
     diagram => diagram ? DiagramItemSet.createFromDiagram(diagram.selectedIds.values, diagram) : null
 );
 
-export const getselectedIds = createSelector(
+export const getSelectedIds = createSelector(
     getDiagram,
     diagram => diagram ? diagram.selectedIds.values : EMPTY_STRING_ARRAY
 );
