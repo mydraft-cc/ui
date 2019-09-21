@@ -8,9 +8,6 @@ export interface UIState {
     // The info toast from any loading operation.
     infoToast?: string;
 
-    // Indicates if the info dialog is open.
-    showInfoDialog: boolean;
-
     // Indicates if the left sidebar is open.
     showLeftSidebar: boolean;
 
@@ -32,7 +29,6 @@ export const createInitialUIState: () => UIState = () => {
     return {
         zoom: 1,
         selectedTab: 'shapes',
-        showInfoDialog: false,
         showLeftSidebar: true,
         showRightSidebar: true,
         selectedColorTab: 'palette'

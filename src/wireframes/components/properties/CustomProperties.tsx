@@ -103,7 +103,7 @@ const CustomProperties = () => {
 
     const doSelectColorTab = React.useCallback((key: string) => {
         dispatch(selectColorTab(key));
-    }, [dispatch]);
+    }, []);
 
     const doChange = React.useCallback((key: string, value: any) => {
         dispatch(changeItemsAppearance(selectedDiagramId, [selectedShape], key, value));

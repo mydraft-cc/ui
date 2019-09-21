@@ -70,7 +70,7 @@ export const VisualProperties = React.memo(() => {
 
     const doSelectColorTab = React.useCallback((key: string) => {
         dispatch(selectColorTab(key));
-    }, [dispatch]);
+    }, []);
 
     const doAlignTextLeft =   React.useCallback(() => doAlignText('left'), [doAlignText]);
     const doAlignTextCenter = React.useCallback(() => doAlignText('center'), [doAlignText]);

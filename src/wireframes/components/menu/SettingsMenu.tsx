@@ -44,8 +44,8 @@ export const SettingsMenu = React.memo(() => {
             <Modal title='Diagram Options'
                 visible={isOpen}
                 onCancel={doToggle}
-                onOk={doChangeSize}>
-
+                onOk={doChangeSize}
+            >
                 <Row className='property'>
                     <Col span={12} className='property-label'>Width</Col>
                     <Col span={12} className='property-value'>

@@ -7,16 +7,16 @@ import { Shortcut, Title } from '@app/core';
 import {
     newDiagram,
     saveDiagramAsync,
-    toggleInfoDialog,
     useStore
 } from '@app/wireframes/model';
 
 const text = require('@app/legal.html');
 
 export const LoadingMenu = React.memo(() => {
+    const [isOpen, setIsOpen] = React.useState(false);
+
     const dispatch = useDispatch();
     const readToken = useStore(s => s.loading.readToken);
-    const showInfoDialog = useStore(s => s.ui.showInfoDialog);
 
     const title =  readToken && readToken.length > 0 ?
         `mydraft.cc - Diagram ${readToken}` :
@@ -24,19 +24,15 @@ export const LoadingMenu = React.memo(() => {
 
     const doNewDiagram = React.useCallback(() => {
         dispatch(newDiagram());
-    }, [dispatch]);
+    }, []);
 
     const doSaveDiagram = React.useCallback(() => {
         dispatch(saveDiagramAsync());
-    }, [dispatch]);
+    }, []);
 
-    const doOpenInfoDialog = React.useCallback(() => {
-        dispatch(toggleInfoDialog(true));
-    }, [dispatch]);
-
-    const doCloseInfoDialog = React.useCallback(() => {
-        dispatch(toggleInfoDialog(false));
-    }, [dispatch]);
+    const doToggleInfoDialog = React.useCallback(() => {
+        setIsOpen(!isOpen);
+    }, [isOpen]);
 
     return (
         <>
@@ -60,12 +56,15 @@ export const LoadingMenu = React.memo(() => {
 
             <Shortcut onPressed={doSaveDiagram} keys='ctrl+s' />
 
-            <Button className='menu-item' size='large' onClick={doOpenInfoDialog}>
+            <Button className='menu-item' size='large' onClick={doToggleInfoDialog}>
                 <Icon type='question-circle-o' />
             </Button>
 
-            <Modal title='About' visible={showInfoDialog} onOk={doCloseInfoDialog} onCancel={doCloseInfoDialog}>
-                <div dangerouslySetInnerHTML={{__html: text }} />
+            <Modal title='About' visible={isOpen}
+                onCancel={doToggleInfoDialog}
+                onOk={doToggleInfoDialog}
+            >
+                <div dangerouslySetInnerHTML={{__html: text.default }} />
             </Modal>
         </>
     );

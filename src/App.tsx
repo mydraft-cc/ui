@@ -50,15 +50,15 @@ export const App = ({ token }: AppProps) => {
 
     const doSelectTab = React.useCallback((key: string) => {
         dispatch(selectTab(key));
-    }, [dispatch]);
+    }, []);
 
     const doToggleLeftSidebar = React.useCallback(() => {
         dispatch(toggleLeftSidebar());
-    }, [dispatch]);
+    }, []);
 
     const doToggleRightSidebar = React.useCallback(() => {
         dispatch(toggleRightSidebar());
-    }, [dispatch]);
+    }, []);
 
     return (
         <Layout>
