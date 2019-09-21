@@ -6,6 +6,7 @@ export * from './menu/ClipboardMenu';
 export * from './menu/HistoryMenu';
 export * from './menu/LoadingMenu';
 export * from './menu/LockMenu';
+export * from './menu/SettingsMenu';
 export * from './menu/UIMenu';
 
 export * from './properties/CustomProperties';

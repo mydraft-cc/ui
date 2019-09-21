@@ -31,6 +31,10 @@ export class EditorState extends Record<EditorProps> {
         return new EditorState({ diagrams: ImmutableMap.empty(), size: DEFAULT_SIZE });
     }
 
+    public changeSize(size: Vec2) {
+        return this.set('size', size);
+    }
+
     public addDiagram(diagram: Diagram) {
         return this.mutate(d => d.set(diagram.id, diagram), diagram.id);
     }

@@ -99,9 +99,7 @@ export const VisualProperties = React.memo(() => {
             <div style={{display: (selectedItems.length > 0 ? 'block' : 'none') }}>
                 <div className='property-subsection visual-properties'>
                     <Row className='property'>
-                        <Col span={12} className='property-label'>
-                            Font Size
-                    </Col>
+                        <Col span={12} className='property-label'>Font Size</Col>
                         <Col span={12} className='property-value'>
                             <Select disabled={fontSize.empty} value={fontSize.value ? fontSize.value.toString() : undefined} onChange={doChangeFontSize}>
                                 {fontSizes}
@@ -109,9 +107,7 @@ export const VisualProperties = React.memo(() => {
                         </Col>
                     </Row>
                     <Row className='property'>
-                        <Col span={12} className='property-label'>
-                            Stroke Thickness
-                    </Col>
+                        <Col span={12} className='property-label'>Stroke Thickness</Col>
                         <Col span={12} className='property-value'>
                             <Select disabled={strokeThickness.empty} value={strokeThickness.value ? strokeThickness.value.toString() : undefined} onChange={doChangeStrokeThickness}>
                                 {strokeThicknesses}
@@ -119,9 +115,7 @@ export const VisualProperties = React.memo(() => {
                         </Col>
                     </Row>
                     <Row className='property'>
-                        <Col span={12} className='property-label'>
-                            Stroke Color
-                    </Col>
+                        <Col span={12} className='property-label'>Stroke Color</Col>
                         <Col span={12} className='property-value'>
                             <ColorPicker activeColorTab={selectedColorTab} disabled={strokeColor.empty} value={strokeColor.value}
                                 onChange={doChangeStrokeColor}
@@ -129,9 +123,7 @@ export const VisualProperties = React.memo(() => {
                         </Col>
                     </Row>
                     <Row className='property'>
-                        <Col span={12} className='property-label'>
-                            Foreground Color
-                    </Col>
+                        <Col span={12} className='property-label'>Foreground Color</Col>
                         <Col span={12} className='property-value'>
                             <ColorPicker activeColorTab={selectedColorTab} disabled={foregroundColor.empty} value={foregroundColor.value}
                                 onChange={doChangeForegroundColor}
@@ -139,9 +131,7 @@ export const VisualProperties = React.memo(() => {
                         </Col>
                     </Row>
                     <Row className='property'>
-                        <Col span={12} className='property-label'>
-                            Background Color
-                        </Col>
+                        <Col span={12} className='property-label'>Background Color</Col>
                         <Col span={12} className='property-value'>
                             <ColorPicker activeColorTab={selectedColorTab} disabled={backgroundColor.empty} value={backgroundColor.value}
                                 onChange={doChangeBackgroundColor}
@@ -149,9 +139,7 @@ export const VisualProperties = React.memo(() => {
                         </Col>
                     </Row>
                     <Row className='property'>
-                        <Col span={12} className='property-label'>
-                            Text Alignment
-                        </Col>
+                        <Col span={12} className='property-label'>Text Alignment</Col>
                         <Col span={12} className='property-value'>
                             <Button.Group className='text-alignment'>
                                 <Button disabled={textAlignment.empty} type={getTextAlignment('left')} onClick={doAlignTextLeft}>

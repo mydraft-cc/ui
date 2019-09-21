@@ -1,6 +1,6 @@
 import { Reducer } from 'redux';
 
-import { MathHelper } from '@app/core';
+import { MathHelper, Vec2 } from '@app/core';
 
 import { Diagram, EditorState } from './../internal';
 
@@ -21,6 +21,11 @@ export const removeDiagram = (diagram: DiagramRef) => {
     return createDiagramAction(REMOVE_DIAGRAM, diagram);
 };
 
+export const CHANGE_SIZE = 'CHANGE_SIZE';
+export const changeSize = (width: number, height: number) => {
+    return { type: CHANGE_SIZE, width, height };
+};
+
 export function diagrams(): Reducer<EditorState> {
     const reducer: Reducer<EditorState> = (state: EditorState, action: any) => {
         switch (action.type) {
@@ -30,6 +35,8 @@ export function diagrams(): Reducer<EditorState> {
                 return state.addDiagram(Diagram.empty(action.diagramId)).selectDiagram(action.diagramId);
             case REMOVE_DIAGRAM:
                 return state.removeDiagram(action.diagramId);
+            case CHANGE_SIZE:
+                return state.changeSize(new Vec2(action.width, action.height));
             default:
                 return state;
         }

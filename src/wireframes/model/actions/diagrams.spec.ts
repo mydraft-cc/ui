@@ -1,5 +1,8 @@
+import { Vec2 } from '@app/core';
+
 import {
     addDiagram,
+    changeSize,
     Diagram,
     diagrams,
     EditorState,
@@ -50,5 +53,14 @@ describe('DiagramReducer', () => {
         const state_2 = reducer(state_1, action);
 
         expect(state_2.diagrams.size).toBe(0);
+    });
+
+    it('should change size', () => {
+        const action = changeSize(1500, 1200);
+
+        const state_1 = EditorState.empty();
+        const state_2 = reducer(state_1, action);
+
+        expect(state_2.size).toEqual(new Vec2(1500, 1200));
     });
 });

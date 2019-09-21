@@ -12,6 +12,7 @@ import {
     LayoutProperties,
     LoadingMenu,
     LockMenu,
+    SettingsMenu,
     Shapes,
     UIMenu,
     VisualProperties
@@ -77,6 +78,9 @@ export const App = ({ token }: AppProps) => {
                 <span className='menu-separator' />
 
                 <UIMenu />
+                <span className='menu-separator' />
+
+                <SettingsMenu />
 
                 <span style={{ float: 'right' }}>
                     <LoadingMenu />

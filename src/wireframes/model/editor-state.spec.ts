@@ -1,3 +1,5 @@
+import { Vec2 } from '@app/core';
+
 import { Diagram, EditorState } from '@app/wireframes/model';
 
 describe('EditorState', () => {
@@ -28,7 +30,7 @@ describe('EditorState', () => {
         const state_2 = state_1.addDiagram(diagram);
         const state_3 = state_2.removeDiagram('unfound');
 
-        expect(state_2).toBe(state_3);
+        expect(state_3).toBe(state_2);
     });
 
     it('should unselect diagram when diagram to remove is selected', () => {
@@ -51,7 +53,7 @@ describe('EditorState', () => {
         const state_2 = state_1.addDiagram(diagram);
         const state_3 = state_2.selectDiagram('unfound');
 
-        expect(state_2).toBe(state_3);
+        expect(state_3).toBe(state_2);
     });
 
     it('should update diagram', () => {
@@ -64,17 +66,31 @@ describe('EditorState', () => {
         expect(state_3.diagrams.get(diagram.id)).toEqual(newDiagram);
     });
 
-    it('sshould return orignal state when diagram to update is not found', () => {
+    it('should return orignal state when diagram to update is not found', () => {
         const state_2 = state_1.addDiagram(diagram);
         const state_3 = state_2.updateDiagram('unfound', d => Diagram.empty(d.id));
 
-        expect(state_2).toBe(state_3);
+        expect(state_3).toBe(state_2);
     });
 
-    it('sshould return orignal state when updater returns same diagram', () => {
+    it('should return orignal state when updater returns same diagram', () => {
         const state_2 = state_1.addDiagram(diagram);
         const state_3 = state_2.updateDiagram(diagram.id, d => d);
 
-        expect(state_2).toBe(state_3);
+        expect(state_3).toBe(state_2);
+    });
+
+    it('should change size', () => {
+        const newSize = new Vec2(1500, 1200);
+
+        const state_2 = state_1.changeSize(newSize);
+
+        expect(state_2.size).toEqual(newSize);
+    });
+
+    it('should return orignal state when size not changed', () => {
+        const state_2 = state_1.changeSize(new Vec2(1000, 1000));
+
+        expect(state_2).toBe(state_1);
     });
 });
