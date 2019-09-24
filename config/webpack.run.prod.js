@@ -113,7 +113,16 @@ module.exports = env => {
                 stripPrefix: helpers.root('build/').replace(/\\/g, '/'),
             }),
 
-            new plugins.FaviconsWebpackPlugin('images/logo-square.png')
+            new plugins.FaviconsWebpackPlugin({
+                logo: 'images/logo-square.png',
+                favicons: {
+                    appName: 'mydraft.cc',
+                    appDescription: 'Open Source Wireframe Editor',
+                    developerName: 'Sebastian Stehle',
+                    developerUrl: 'https://sstehle.com',
+                    start_url: PUBLIC_PATH
+                }
+            })
         ],
 
         optimization: {
