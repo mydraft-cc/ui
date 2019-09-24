@@ -97,4 +97,8 @@ const Root = (
     </DndProvider>
 );
 
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/service-worker.js');
+}
+
 ReactDOM.render(Root, document.getElementById('root') as HTMLElement);

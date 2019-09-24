@@ -14,8 +14,12 @@ const plugins = {
     // https://github.com/jrparish/tslint-webpack-plugin
     TsLintPlugin: require('tslint-webpack-plugin'),
     // https://github.com/jantimon/favicons-webpack-plugin
-    FaviconsWebpackPlugin: require('favicons-webpack-plugin')
+    FaviconsWebpackPlugin: require('favicons-webpack-plugin'),
+    // https://github.com/goldhand/sw-precache-webpack-plugin
+    SWPrecacheWebpackPlugin: require('sw-precache-webpack-plugin')
 };
+
+const PUBLIC_PATH = 'https://mydraft.cc/';
 
 module.exports = env => {
     env = env || {};
@@ -31,7 +35,7 @@ module.exports = env => {
              */
             path: helpers.root('build/'),
 
-            publicPath: '/',
+            publicPath: PUBLIC_PATH,
 
             /**
              * Specifies the name of each output file on disk.
@@ -101,6 +105,10 @@ module.exports = env => {
                  * Wait for linting and fail the build when linting error occur.
                  */
                 waitForLinting: true
+            }),
+
+            new plugins.SWPrecacheWebpackPlugin({
+                stripPrefix: helpers.root('build/').replace(/\\/g, '/'),
             }),
 
             new plugins.FaviconsWebpackPlugin('images/logo-square.png')
