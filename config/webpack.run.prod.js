@@ -108,6 +108,8 @@ module.exports = env => {
             }),
 
             new plugins.SWPrecacheWebpackPlugin({
+                navigateFallback: `${PUBLIC_PATH}index.html`,
+                // To fix a bug with windows.
                 stripPrefix: helpers.root('build/').replace(/\\/g, '/'),
             }),
 
