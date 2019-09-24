@@ -1,12 +1,12 @@
 {
   "name": "mydraft.cc",
   "short_name": "mydraft.cc",
-  "description": null,
+  "description": "Open Source Wireframe Editor",
   "dir": "auto",
   "lang": "en-US",
   "display": "standalone",
   "orientation": "any",
-  "start_url": "/?homescreen=1",
+  "start_url": "https://mydraft.cc/",
   "background_color": "#fff",
   "theme_color": "#fff",
   "icons": [
