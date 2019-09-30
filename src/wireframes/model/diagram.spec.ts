@@ -43,6 +43,16 @@ describe('Diagram', () => {
         expect(diagram_3.items.has(shape1.id)).toBeFalsy();
     });
 
+    it('should remove selected visual from items', () => {
+        const diagram_2 = diagram_1.addVisual(shape1);
+        const diagram_3 = diagram_2.selectItems([shape1.id]);
+        const diagram_4 = diagram_3.removeItems(DiagramItemSet.createFromDiagram([shape1.id], diagram_2)!);
+
+        expect(diagram_3.selectedIds.has(shape1.id)).toBeTruthy();
+        expect(diagram_4.selectedIds.has(shape1.id)).toBeFalsy();
+        expect(diagram_4.items.has(shape1.id)).toBeFalsy();
+    });
+
     it('should remove children when removing group', () => {
         const groupId = 'group-1';
 

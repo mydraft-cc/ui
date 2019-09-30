@@ -29,7 +29,7 @@ export const ArrangeMenu = React.memo(() => {
         if (selectedDiagram) {
             dispatch(groupItems(selectedDiagram, selectedItems, MathHelper.guid()));
         }
-    }, [selectedDiagram, selectItems]);
+    }, [selectedDiagram, selectedItems]);
 
     const doUngroup = React.useCallback(() => {
         if (selectedDiagram) {
@@ -41,7 +41,7 @@ export const ArrangeMenu = React.memo(() => {
         if (selectedDiagram) {
             dispatch(removeItems(selectedDiagram, selectedItems));
         }
-    }, [selectedDiagram, selectItems]);
+    }, [selectedDiagram, selectedItems]);
 
     const doSelectAll = React.useCallback(() => {
         if (selectedDiagram) {

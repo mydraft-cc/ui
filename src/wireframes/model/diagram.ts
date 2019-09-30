@@ -202,7 +202,7 @@ export class Diagram extends Record<Props> {
 
             root = root.remove(...set.rootIds);
 
-            return { items, root };
+            return { items, root, selectedIds };
         });
     }
 
