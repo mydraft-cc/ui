@@ -27,6 +27,9 @@ import {
 
 import { RendererContext, SerializerContext } from '@app/context';
 import { registerRenderers } from '@app/wireframes/shapes';
+import { registerServiceWorker } from './registerServiceWorker';
+
+import { App } from './App';
 
 const rendererService = registerRenderers();
 
@@ -77,7 +80,6 @@ const store = createStore(
     composeEnhancers(applyMiddleware(thunk, Reducers.toastMiddleware(), routerMiddleware(history), Reducers.itemsMiddleware(serializer)))
 );
 
-import { App } from './App';
 
 const Root = (
     <DndProvider backend={HTML5Backend}>
@@ -97,8 +99,6 @@ const Root = (
     </DndProvider>
 );
 
-if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/service-worker.js');
-}
+registerServiceWorker();
 
 ReactDOM.render(Root, document.getElementById('root') as HTMLElement);

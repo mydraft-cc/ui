@@ -60,7 +60,8 @@ const DEFAULT_CHILD_IDS = DiagramContainer.default();
 const DEFAULT_CONFIGURABLES: Configurable[] = [];
 
 export class DiagramItem extends Record<Props> {
-    private readonly cachedBounds: { [id: string]: Transform } = {};
+    private cachedBounds: { [id: string]: Transform } | undefined;
+    private cachedDiagram: Diagram;
 
     public static readonly APPEARANCE_BACKGROUND_COLOR = 'FOREGROUND_COLOR';
     public static readonly APPEARANCE_FONT_FAMILY = 'FONT_FAMILY';
@@ -182,6 +183,11 @@ export class DiagramItem extends Record<Props> {
 
     public bounds(diagram: Diagram): Transform {
         if (this.type === 'Group') {
+            if (!this.cachedBounds || this.cachedDiagram !== diagram) {
+                this.cachedBounds = {};
+                this.cachedDiagram = diagram;
+            }
+
             if (!this.cachedBounds[diagram.id]) {
                 const set = DiagramItemSet.createFromDiagram([this.id], diagram);
 
