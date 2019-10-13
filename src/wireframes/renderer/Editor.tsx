@@ -142,7 +142,9 @@ class Editor extends React.Component<EditorProps> {
                     const item = diagram.items.get(id);
 
                     if (item) {
-                        flattenShapes.push(item);
+                        if (item.type === 'Shape') {
+                            flattenShapes.push(item);
+                        }
 
                         if (item.type === 'Group') {
                             handleContainer(item.childIds);
