@@ -1,23 +1,12 @@
+import { RendererContext } from '@app/context';
+import { sizeInPx } from '@app/core';
+import { addIcon, addImage, addVisual, getDiagramId, getEditor, useStore } from '@app/wireframes/model';
+import { EditorContainer } from '@app/wireframes/renderer/Editor';
 import * as React from 'react';
 import { DropTargetMonitor, useDrop } from 'react-dnd';
 import { NativeTypes } from 'react-dnd-html5-backend';
 import { findDOMNode } from 'react-dom';
 import { useDispatch } from 'react-redux';
-
-import { sizeInPx } from '@app/core';
-
-import { RendererContext } from '@app/context';
-
-import {
-    addIcon,
-    addImage,
-    addVisual,
-    getDiagramId,
-    getEditor,
-    useStore
-} from '@app/wireframes/model';
-
-import { EditorContainer } from '@app/wireframes/renderer/Editor';
 
 export interface EditorViewProps {
     // The spacing.

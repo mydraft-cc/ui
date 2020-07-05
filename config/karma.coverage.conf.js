@@ -1,4 +1,4 @@
-﻿var webpackConfig = require('./webpack.test.coverage');
+﻿const webpackConfig = require('./webpack.config');
 
 module.exports = function (config) {
     var _config = {
@@ -10,20 +10,20 @@ module.exports = function (config) {
         frameworks: ['jasmine'],
 
         /**
-         * Load additional test shim to setup angular2 for testing.
+         * Load additional test shim to setup angular for testing.
          */
         files: [
             { pattern: './config/karma-test-shim.js', watched: false }
         ],
 
         preprocessors: {
-            './config/karma-test-shim.js': ['webpack', 'sourcemap'],
+            './config/karma-test-shim.js': ['webpack', 'sourcemap']
         },
 
         /**
          * Load the files with webpack and use test configuration for it.
          */
-        webpack: webpackConfig,
+        webpack: webpackConfig({ target: 'tests', coverage: true, jit: true }),
 
         webpackMiddleware: {
             stats: 'errors-only'
@@ -69,7 +69,7 @@ module.exports = function (config) {
 
         customLaunchers: {
             ChromeCustom: {
-                base: 'ChromeHeadless',
+			    base: 'ChromeHeadless',
                 /**
                  * We must disable the Chrome sandbox (Chrome's sandbox needs more permissions than Docker allows by default).
                  */
@@ -80,7 +80,7 @@ module.exports = function (config) {
         /**
          * Run with chrome because phantom js does not provide all types.
          * 
-         * available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
+         * Available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
          */
         browsers: ['ChromeCustom']
     };

@@ -1,12 +1,9 @@
 import * as svg from 'svg.js';
-
 import { Color } from './color';
-
 import { sizeInPx } from './react';
-
 import { Rect2 } from './rect2';
-
 import { Vec2 } from './vec2';
+
 
 export interface MatrixTransform {
     rect?: Rect2;

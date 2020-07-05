@@ -1,10 +1,9 @@
-import { Button, Icon, Tooltip } from 'antd';
+import { MinusCircleOutlined, PlusCircleOutlined } from '@ant-design/icons';
+import { Shortcut } from '@app/core';
+import { setZoom, useStore } from '@app/wireframes/model';
+import { Button, Tooltip } from 'antd';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
-
-import { Shortcut } from '@app/core';
-
-import { setZoom, useStore } from '@app/wireframes/model';
 
 export const UIMenu = React.memo(() => {
     const dispatch = useDispatch();
@@ -20,29 +19,27 @@ export const UIMenu = React.memo(() => {
         dispatch(setZoom(zoom + .25));
     }, [zoom]);
 
-    return (
-        <>
-            <Tooltip mouseEnterDelay={1} title='Zoom Out (ALT + [-])'>
-                <Button className='menu-item' size='large'
-                    disabled={!canZoomOut}
-                    onClick={doZoomOut}>
-                    <Icon type='minus-circle-o' />
-                </Button>
-            </Tooltip>
+    return <>
+        <Tooltip mouseEnterDelay={1} title='Zoom Out (ALT + [-])'>
+            <Button className='menu-item' size='large'
+                disabled={!canZoomOut}
+                onClick={doZoomOut}>
+                <MinusCircleOutlined />
+            </Button>
+        </Tooltip>
 
-            <Shortcut disabled={!canZoomOut} onPressed={doZoomOut} keys='alt+-' />
+        <Shortcut disabled={!canZoomOut} onPressed={doZoomOut} keys='alt+-' />
 
-            <span className='menu-item'>{zoom * 100}</span>
+        <span className='menu-item'>{zoom * 100}</span>
 
-            <Tooltip mouseEnterDelay={1} title='Zoom In (ALT + [+])'>
-                <Button className='menu-item' size='large'
-                    disabled={!canZoomIn}
-                    onClick={doZoomIn}>
-                    <Icon type='plus-circle-o' />
-                </Button>
-            </Tooltip>
+        <Tooltip mouseEnterDelay={1} title='Zoom In (ALT + [+])'>
+            <Button className='menu-item' size='large'
+                disabled={!canZoomIn}
+                onClick={doZoomIn}>
+                <PlusCircleOutlined />
+            </Button>
+        </Tooltip>
 
-            <Shortcut disabled={!canZoomIn} onPressed={doZoomIn} keys='alt+plus' />
-        </>
-    );
+        <Shortcut disabled={!canZoomIn} onPressed={doZoomIn} keys='alt+plus' />
+    </>;
 });

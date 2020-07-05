@@ -1,11 +1,5 @@
 import { Rect2, Vec2 } from '@app/core';
-
-import {
-    Configurable,
-    DiagramItem,
-    SelectionConfigurable
-} from '@app/wireframes/model';
-
+import { Configurable, DiagramItem, SelectionConfigurable } from '@app/wireframes/model';
 import { AbstractContext, AbstractControl } from '@app/wireframes/shapes/utils/abstract-control';
 
 const STATE_KEY = 'STATE';

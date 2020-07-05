@@ -1,17 +1,7 @@
-import * as React from 'react';
-
 import { sizeInPx } from '@app/core';
-
-import {
-    Diagram,
-    DiagramItem
-} from '@app/wireframes/model';
-
-import {
-    InteractionHandler,
-    InteractionService,
-    SvgEvent
-} from './interaction-service';
+import { Diagram, DiagramItem } from '@app/wireframes/model';
+import * as React from 'react';
+import { InteractionHandler, InteractionService, SvgEvent } from './interaction-service';
 
 const MIN_WIDTH = 150;
 const MIN_HEIGHT = 30;

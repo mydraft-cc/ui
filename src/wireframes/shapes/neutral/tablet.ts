@@ -1,7 +1,5 @@
-import { DiagramItem } from '@app/wireframes/model';
-
 import { Rect2, Vec2 } from '@app/core';
-
+import { DiagramItem } from '@app/wireframes/model';
 import { AbstractContext, AbstractControl } from '@app/wireframes/shapes/utils/abstract-control';
 
 const DEFAULT_APPEARANCE = {};

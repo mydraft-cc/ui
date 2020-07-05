@@ -1,7 +1,5 @@
-import { Action } from 'redux';
-
 import { Types } from '@app/core';
-
+import { Action } from 'redux';
 import { Diagram, DiagramItem } from './../internal';
 
 export type DiagramRef = string | Diagram;

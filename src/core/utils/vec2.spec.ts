@@ -1,4 +1,4 @@
-﻿import { Rotation, Vec2 } from '@app/core';
+import { Rotation, Vec2 } from '@app/core';
 
 describe('Vec2', () => {
     it('should instantiate from x and y value', () => {

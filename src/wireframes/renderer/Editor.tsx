@@ -1,35 +1,17 @@
+import { sizeInPx, Vec2 } from '@app/core';
+import { changeItemsAppearance, Diagram, DiagramContainer, DiagramItem, EditorStateInStore, getDiagram, getEditor, getSelectedItems, getSelectedItemsWithLocked, RendererService, selectItems, Transform, transformItems, UIStateInStore } from '@app/wireframes/model';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators, Dispatch } from 'redux';
 import * as svg from 'svg.js';
-
+import { CanvasView } from './CanvasView';
 import './Editor.scss';
+import { InteractionService } from './interaction-service';
+import { SelectionAdorner } from './SelectionAdorner';
+import { ShapeRef } from './shape-ref';
+import { TextAdorner } from './TextAdorner';
+import { TransformAdorner } from './TransformAdorner';
 
-import { sizeInPx, Vec2 } from '@app/core';
-
-import {
-    changeItemsAppearance,
-    Diagram,
-    DiagramContainer,
-    DiagramItem,
-    EditorStateInStore,
-    getDiagram,
-    getEditor,
-    getSelectedItems,
-    getSelectedItemsWithLocked,
-    RendererService,
-    selectItems,
-    Transform,
-    transformItems,
-    UIStateInStore
-} from '@app/wireframes/model';
-
-import { CanvasView }           from './CanvasView';
-import { InteractionService }   from './interaction-service';
-import { SelectionAdorner }     from './SelectionAdorner';
-import { ShapeRef }             from './shape-ref';
-import { TextAdorner }          from './TextAdorner';
-import { TransformAdorner }     from './TransformAdorner';
 
 export interface EditorProps {
     // The renderer service.

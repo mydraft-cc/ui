@@ -1,5 +1,4 @@
-﻿import { ImmutableMap } from './immutable-map';
-
+import { ImmutableMap } from './immutable-map';
 import { equals } from './types';
 
 export abstract class Record<T> {

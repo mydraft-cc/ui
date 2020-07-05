@@ -1,23 +1,15 @@
 import { push } from 'react-router-redux';
 import { Dispatch, Reducer } from 'redux';
+import { EditorState, EditorStateInStore, LoadingState, LoadingStateInStore, UndoableState } from './../internal';
+import { addDiagram } from './diagrams';
+import { selectItems } from './items';
+import { showErrorToast, showInfoToast } from './ui';
 
 let url = 'https://api.mydraft.cc';
 
 if (process.env.NODE_ENV === 'test_development') {
     url = 'http://localhost:4000';
 }
-
-import {
-    EditorState,
-    EditorStateInStore,
-    LoadingState,
-    LoadingStateInStore,
-    UndoableState
-} from './../internal';
-
-import { addDiagram } from './diagrams';
-import { selectItems } from './items';
-import { showErrorToast, showInfoToast } from './ui';
 
 export const NEW_DIAGRAM = 'NEW_DIAGRAM';
 export const newDiagram = (navigate = true) => {

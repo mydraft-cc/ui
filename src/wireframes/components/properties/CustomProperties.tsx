@@ -1,26 +1,9 @@
+import { Color, ColorPicker } from '@app/core';
+import { changeItemsAppearance, ColorConfigurable, Configurable, EditorStateInStore, getDiagramId, getSelectedConfigurables, getSelectedShape, NumberConfigurable, selectColorTab, SelectionConfigurable, SliderConfigurable, UIStateInStore, useStore } from '@app/wireframes/model';
 import { Col, InputNumber, Row, Select } from 'antd';
 import * as React from 'react';
 import { connect, useDispatch } from 'react-redux';
 import { bindActionCreators, Dispatch } from 'redux';
-
-import { Color, ColorPicker } from '@app/core';
-
-import {
-    changeItemsAppearance,
-    ColorConfigurable,
-    Configurable,
-    EditorStateInStore,
-    getDiagramId,
-    getSelectedConfigurables,
-    getSelectedShape,
-    NumberConfigurable,
-    selectColorTab,
-    SelectionConfigurable,
-    SliderConfigurable,
-    UIStateInStore,
-    useStore
-} from '@app/wireframes/model';
-
 import { CustomSlider } from './CustomSlider';
 
 interface CustomPropertyProps {

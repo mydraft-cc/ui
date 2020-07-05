@@ -1,8 +1,4 @@
-import {
-    Diagram,
-    DiagramItem,
-    DiagramItemSet
-} from '@app/wireframes/model';
+import { Diagram, DiagramItem, DiagramItemSet } from '@app/wireframes/model';
 
 describe('Diagram', () => {
     const shape1 = DiagramItem.createShape('1', 'btn', 100, 20);

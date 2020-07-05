@@ -1,22 +1,7 @@
-import { Action, Middleware, Reducer } from 'redux';
-
 import { MathHelper, Vec2 } from '@app/core';
-
-import {
-    Diagram,
-    DiagramItem,
-    DiagramItemSet,
-    EditorState,
-    RendererService,
-    Serializer
-} from './../internal';
-
-import {
-    createDiagramAction,
-    createItemsAction,
-    DiagramRef,
-    ItemsRef
-} from './utils';
+import { Action, Middleware, Reducer } from 'redux';
+import { Diagram, DiagramItem, DiagramItemSet, EditorState, RendererService, Serializer } from './../internal';
+import { createDiagramAction, createItemsAction, DiagramRef, ItemsRef } from './utils';
 
 // tslint:disable:no-shadowed-variable
 

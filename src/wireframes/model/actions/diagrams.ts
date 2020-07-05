@@ -1,9 +1,6 @@
-import { Reducer } from 'redux';
-
 import { MathHelper, Vec2 } from '@app/core';
-
+import { Reducer } from 'redux';
 import { Diagram, EditorState } from './../internal';
-
 import { createDiagramAction, DiagramRef } from './utils';
 
 export const ADD_DIAGRAM = 'ADD_DIAGRAM';

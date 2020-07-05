@@ -1,11 +1,5 @@
 import { Color, Rect2, Vec2 } from '@app/core';
-
-import {
-    Constraint,
-    DiagramItem,
-    Renderer
-} from '@app/wireframes/model';
-
+import { Constraint, DiagramItem, Renderer } from '@app/wireframes/model';
 import { AbstractRenderer, SVGRenderer } from './svg-renderer';
 
 const RENDER_BACKGROUND = 1;

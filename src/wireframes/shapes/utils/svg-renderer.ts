@@ -1,23 +1,9 @@
+import { Rect2, sizeInPx, SVGHelper } from '@app/core';
+import { DiagramItem, Transform } from '@app/wireframes/model';
 import * as svg from 'svg.js';
+import { AbstractRenderer, RendererColor, RendererElement, RendererOpacity, RendererText, RendererTransform, RendererWidth } from './abstract-renderer';
 export * from './abstract-renderer';
 
-import {
-    Rect2,
-    sizeInPx,
-    SVGHelper
-} from '@app/core';
-
-import { DiagramItem, Transform } from '@app/wireframes/model';
-
-import {
-    AbstractRenderer,
-    RendererColor,
-    RendererElement,
-    RendererOpacity,
-    RendererText,
-    RendererTransform,
-    RendererWidth
-} from './abstract-renderer';
 
 export class SVGRenderer implements AbstractRenderer {
     private measureDiv: HTMLDivElement;

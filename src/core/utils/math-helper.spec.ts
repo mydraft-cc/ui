@@ -1,4 +1,4 @@
-﻿import { MathHelper } from '@app/core';
+import { MathHelper } from '@app/core';
 
 describe('MathHelper', () => {
     it('should calculate same crc32 for same input', () => {

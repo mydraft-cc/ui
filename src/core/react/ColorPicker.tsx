@@ -2,11 +2,9 @@ import { Button, Popover, Tabs } from 'antd';
 import { TooltipPlacement } from 'antd/lib/tooltip';
 import * as React from 'react';
 import { ColorResult, SketchPicker } from 'react-color';
-
-import './ColorPicker.scss';
-
 import { Color } from './../utils/color';
 import { ColorPalette } from './../utils/color-palette';
+import './ColorPicker.scss';
 
 interface ColorPickerProps {
     // The selected color.

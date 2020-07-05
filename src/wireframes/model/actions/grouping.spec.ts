@@ -1,11 +1,4 @@
-import {
-    Diagram,
-    DiagramItem,
-    EditorState,
-    grouping,
-    groupItems,
-    ungroupItems
-} from '@app/wireframes/model';
+import { Diagram, DiagramItem, EditorState, grouping, groupItems, ungroupItems } from '@app/wireframes/model';
 
 describe('GroupingReducer', () => {
     const reducer = grouping();

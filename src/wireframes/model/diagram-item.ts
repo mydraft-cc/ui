@@ -1,11 +1,4 @@
-﻿import {
-    ImmutableMap,
-    Record,
-    Rotation,
-    Types,
-    Vec2
-} from '@app/core';
-
+import { ImmutableMap, Record, Rotation, Types, Vec2 } from '@app/core';
 import { Configurable } from './configurables';
 import { Constraint } from './constraints';
 import { Diagram } from './diagram';

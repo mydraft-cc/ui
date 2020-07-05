@@ -1,3 +1,4 @@
+import { RendererService } from '@app/wireframes/model/renderer.service';
 import { Browser } from './neutral/browser';
 import { Button } from './neutral/button';
 import { ButtonBar } from './neutral/button-bar';
@@ -23,11 +24,8 @@ import { TextArea } from './neutral/text-area';
 import { TextInput } from './neutral/text-input';
 import { Toggle } from './neutral/toggle';
 import { VerticalLine } from './neutral/vertical-line';
-
 import { Icon } from './shared/icon';
 import { Raster } from './shared/raster';
-
-import { RendererService } from '@app/wireframes/model/renderer.service';
 
 export function registerRenderers(): RendererService {
     return new RendererService()

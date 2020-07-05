@@ -1,5 +1,4 @@
 import { DiagramItem } from '@app/wireframes/model';
-
 import { AbstractContext, AbstractControl } from '@app/wireframes/shapes/utils/abstract-control';
 import { CommonTheme } from './_theme';
 

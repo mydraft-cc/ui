@@ -1,20 +1,5 @@
 import { Vec2 } from '@app/core';
-
-import {
-    ALIGN_H_CENTER,
-    ALIGN_H_LEFT,
-    ALIGN_H_RIGHT,
-    ALIGN_V_BOTTOM,
-    ALIGN_V_CENTER,
-    ALIGN_V_TOP,
-    alignItems,
-    alignment,
-    Diagram,
-    DiagramItem,
-    DISTRIBUTE_H,
-    DISTRIBUTE_V,
-    EditorState
-} from '@app/wireframes/model';
+import { alignItems, alignment, ALIGN_H_CENTER, ALIGN_H_LEFT, ALIGN_H_RIGHT, ALIGN_V_BOTTOM, ALIGN_V_CENTER, ALIGN_V_TOP, Diagram, DiagramItem, DISTRIBUTE_H, DISTRIBUTE_V, EditorState } from '@app/wireframes/model';
 
 describe('AlignmentReducer', () => {
     const reducer = alignment();

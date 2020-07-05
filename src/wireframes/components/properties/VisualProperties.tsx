@@ -1,22 +1,10 @@
+import { Color, ColorPicker } from '@app/core';
+import { changeItemsAppearance, DiagramItem, getDiagramId, getSelectedItems, getSelectionSet, selectColorTab, uniqueAppearance, useStore } from '@app/wireframes/model';
 import { Button, Col, Row, Select } from 'antd';
 import { ButtonType } from 'antd/lib/button';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
-
 import './VisualProperties.scss';
-
-import { Color, ColorPicker } from '@app/core';
-
-import {
-    changeItemsAppearance,
-    DiagramItem,
-    getDiagramId,
-    getSelectedItems,
-    getSelectionSet,
-    selectColorTab,
-    uniqueAppearance,
-    useStore
-} from '@app/wireframes/model';
 
 const DEFINED_STROKE_THICKNESSES = [1, 2, 4, 6, 8];
 const DEFINED_FONT_SIZES = [4, 6, 8, 10, 12, 14, 16, 18, 20, 24, 28, 32, 36, 40, 48, 60];

@@ -1,7 +1,7 @@
-﻿var webpackConfig = require('./webpack.test');
+﻿const webpackConfig = require('./webpack.config');
 
 module.exports = function (config) {
-    var configuration = {
+    var _config = {
         /** 
          * Base path that will be used to resolve all patterns (e.g. files, exclude).
          */
@@ -10,20 +10,20 @@ module.exports = function (config) {
         frameworks: ['jasmine'],
 
         /**
-         * Load additional test shim to setup angular2 for testing.
+         * Load additional test shim to setup angular for testing.
          */
         files: [
             { pattern: './config/karma-test-shim.js', watched: false }
         ],
 
         preprocessors: {
-            './config/karma-test-shim.js': ['webpack', 'sourcemap'],
+            './config/karma-test-shim.js': ['webpack', 'sourcemap']
         },
 
         /**
          * Load the files with webpack and use test configuration for it.
          */
-        webpack: webpackConfig,
+        webpack: webpackConfig({ target: 'tests', jit: true }),
 
         webpackMiddleware: {
             stats: 'errors-only'
@@ -54,5 +54,5 @@ module.exports = function (config) {
         browsers: ['Chrome']
     };
 
-    config.set(configuration);
+    config.set(_config);
 };

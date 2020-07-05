@@ -1,9 +1,4 @@
-import {
-    redo,
-    undo,
-    undoable,
-    UndoableState
-} from '@app/wireframes/model';
+import { redo, undo, undoable, UndoableState } from '@app/wireframes/model';
 
 describe('Undoable', () => {
     const state_1: UndoableState<number> =

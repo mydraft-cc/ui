@@ -1,9 +1,4 @@
-import {
-    MathHelper,
-    Rect2,
-    Rotation,
-    Vec2
-} from '@app/core';
+import { MathHelper, Rect2, Rotation, Vec2 } from '@app/core';
 
 export class Transform {
     public static readonly ZERO = new Transform(Vec2.ZERO, Vec2.ZERO, Rotation.ZERO);

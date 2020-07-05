@@ -1,13 +1,7 @@
-import {
-    ImmutableMap,
-    Rotation,
-    Vec2
-} from '@app/core';
-
+import { ImmutableMap, Rotation, Vec2 } from '@app/core';
 import { Diagram } from './diagram';
 import { DiagramItem } from './diagram-item';
-
-import {Transform } from './transform';
+import { Transform } from './transform';
 
 describe('DiagramItem', () => {
     const item_1 = DiagramItem.createShape('1', 'btn', 100, 20);

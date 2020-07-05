@@ -1,5 +1,4 @@
 import { Types } from '@app/core';
-
 import { Diagram } from './diagram';
 import { DiagramItem } from './diagram-item';
 

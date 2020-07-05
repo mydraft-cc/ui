@@ -1,14 +1,5 @@
 import { Vec2 } from '@app/core';
-
-import {
-    addDiagram,
-    changeSize,
-    Diagram,
-    diagrams,
-    EditorState,
-    removeDiagram,
-    selectDiagram
-} from '@app/wireframes/model';
+import { addDiagram, changeSize, Diagram, diagrams, EditorState, removeDiagram, selectDiagram } from '@app/wireframes/model';
 
 describe('DiagramReducer', () => {
     const reducer = diagrams();

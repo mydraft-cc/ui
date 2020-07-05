@@ -1,21 +1,10 @@
+import { Rect2, Vec2 } from '@app/core';
+import { calculateSelection, Diagram, DiagramItem } from '@app/wireframes/model';
+import { SVGRenderer } from '@app/wireframes/shapes/utils/svg-renderer';
 import * as React from 'react';
 import * as svg from 'svg.js';
+import { InteractionHandler, InteractionService, SvgEvent } from './interaction-service';
 
-import { Rect2, Vec2 } from '@app/core';
-
-import {
-    calculateSelection,
-    Diagram,
-    DiagramItem
-} from '@app/wireframes/model';
-
-import {
-    InteractionHandler,
-    InteractionService,
-    SvgEvent
-} from './interaction-service';
-
-import { SVGRenderer } from '@app/wireframes/shapes/utils/svg-renderer';
 
 const SELECTION_STROKE_COLOR = '#080';
 const SELECTION_STROKE_LOCK_COLOR = '#f00';

@@ -1,5 +1,4 @@
 import { moveItems } from './collections';
-
 import { equalsArray } from './types';
 
 export class ImmutableList<T> {

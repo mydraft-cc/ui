@@ -1,14 +1,10 @@
+import { Shortcut } from '@app/core';
+import { redo, undo, useStore } from '@app/wireframes/model';
 import { Button, Tooltip } from 'antd';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
 
-import { Shortcut } from '@app/core';
 
-import {
-    redo,
-    undo,
-    useStore
-} from '@app/wireframes/model';
 
 export const HistoryMenu = React.memo(() => {
     const dispatch = useDispatch();

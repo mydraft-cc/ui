@@ -1,11 +1,5 @@
 import { Vec2 } from '@app/core';
-
-import {
-    DiagramItem,
-    MinSizeConstraint,
-    SizeConstraint,
-    TextHeightConstraint
-} from '@app/wireframes/model';
+import { DiagramItem, MinSizeConstraint, SizeConstraint, TextHeightConstraint } from '@app/wireframes/model';
 
 const shape =
     DiagramItem.createShape('1', 'button', 100, 100)

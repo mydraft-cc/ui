@@ -1,6 +1,5 @@
 import { useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
-
 import { AssetsStateInStore } from './assets-state';
 import { Configurable } from './configurables';
 import { DiagramItem } from './diagram-item';

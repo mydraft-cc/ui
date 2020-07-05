@@ -1,5 +1,4 @@
 import { Reducer } from 'redux';
-
 import { UndoableState } from './../internal';
 
 export const UNDO = 'UNDO';

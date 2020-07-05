@@ -1,24 +1,11 @@
+import { Rotation, Vec2 } from '@app/core';
+import { Diagram, DiagramItem, SnapManager, Transform } from '@app/wireframes/model';
+import { SVGRenderer } from '@app/wireframes/shapes/utils/svg-renderer';
 import * as React from 'react';
 import * as svg from 'svg.js';
-
-import { Rotation, Vec2 } from '@app/core';
-
-import {
-    Diagram,
-    DiagramItem,
-    SnapManager,
-    Transform
-} from '@app/wireframes/model';
-
 import { InteractionOverlays } from './interaction-overlays';
+import { InteractionHandler, InteractionService, SvgEvent } from './interaction-service';
 
-import {
-    InteractionHandler,
-    InteractionService,
-    SvgEvent
-} from './interaction-service';
-
-import { SVGRenderer } from '@app/wireframes/shapes/utils/svg-renderer';
 
 const MODE_RESIZE = 2;
 const MODE_MOVE = 3;

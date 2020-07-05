@@ -1,13 +1,5 @@
 import { Rect2, Vec2 } from '@app/core';
-
-import {
-    ColorConfigurable,
-    Configurable,
-    DiagramItem,
-    SizeConstraint,
-    SliderConfigurable
-} from '@app/wireframes/model';
-
+import { ColorConfigurable, Configurable, DiagramItem, SizeConstraint, SliderConfigurable } from '@app/wireframes/model';
 import { AbstractContext, AbstractControl } from '@app/wireframes/shapes/utils/abstract-control';
 import { CommonTheme } from './_theme';
 

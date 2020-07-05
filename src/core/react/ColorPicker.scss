@@ -1,11 +1,9 @@
-@import '_mixins';
-@import '_vars';
-
 $size: 24px;
 
 .color-picker {
     &-button {
-        &, & button {
+        &,
+        & button {
             padding: 2px !important;
         }
     }

@@ -1,11 +1,5 @@
-import {
-    ImmutableMap,
-    Record,
-    Vec2
-} from '@app/core';
-
+import { ImmutableMap, Record, Vec2 } from '@app/core';
 import { Diagram } from './diagram';
-import { EditorStateInStore } from './editor-state';
 import { UndoableState } from './undoable-state';
 
 type DiagramMap = ImmutableMap<Diagram>;

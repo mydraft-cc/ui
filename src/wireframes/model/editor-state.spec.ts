@@ -1,5 +1,4 @@
 import { Vec2 } from '@app/core';
-
 import { Diagram, EditorState } from '@app/wireframes/model';
 
 describe('EditorState', () => {

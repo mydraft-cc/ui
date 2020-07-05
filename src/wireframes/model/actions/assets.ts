@@ -1,5 +1,4 @@
 import { Reducer } from 'redux';
-
 import { AssetsState } from './../internal';
 
 export const FILTER_SHAPES = 'FILTER_SHAPES';

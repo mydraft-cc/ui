@@ -1,6 +1,5 @@
-import * as React from 'react';
-
 import { RendererService, Serializer } from '@app/wireframes/model';
+import * as React from 'react';
 
 export const RendererContext = React.createContext<RendererService>(null!);
 

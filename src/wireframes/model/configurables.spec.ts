@@ -1,8 +1,4 @@
-import {
-    ColorConfigurable,
-    SelectionConfigurable,
-    SliderConfigurable
-} from '@app/wireframes/model';
+import { ColorConfigurable, SelectionConfigurable, SliderConfigurable } from '@app/wireframes/model';
 
 describe('SelectionConfigurable', () => {
     it('should instantiate', () => {

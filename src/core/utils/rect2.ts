@@ -1,5 +1,4 @@
 import { Rotation } from './rotation';
-
 import { Vec2 } from './vec2';
 
 export class Rect2 {

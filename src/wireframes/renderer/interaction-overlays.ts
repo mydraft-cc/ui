@@ -1,14 +1,8 @@
+import { Color } from '@app/core';
+import { SnapMode, SnapResult, Transform } from '@app/wireframes/model';
+import { SVGRenderer } from '@app/wireframes/shapes/utils/svg-renderer';
 import * as svg from 'svg.js';
 
-import { Color } from '@app/core';
-
-import {
-    SnapMode,
-    SnapResult,
-    Transform
-} from '@app/wireframes/model';
-
-import { SVGRenderer } from '@app/wireframes/shapes/utils/svg-renderer';
 
 export class InteractionOverlays {
     private readonly infoRect: any;

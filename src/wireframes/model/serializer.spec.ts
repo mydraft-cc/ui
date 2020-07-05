@@ -1,14 +1,6 @@
 import { Vec2 } from '@app/core';
-
+import { Diagram, DiagramItem, DiagramItemSet, RendererService, Serializer } from '@app/wireframes/model';
 import { Checkbox } from '@app/wireframes/shapes/neutral/checkbox';
-
-import {
-    Diagram,
-    DiagramItem,
-    DiagramItemSet,
-    RendererService,
-    Serializer
-} from '@app/wireframes/model';
 
 describe('Serializer', () => {
     const checkbox = new Checkbox();

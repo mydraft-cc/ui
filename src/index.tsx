@@ -1,5 +1,8 @@
-import './index.scss';
-
+import { RendererContext, SerializerContext } from '@app/context';
+import { UserReport } from '@app/core';
+import { createInitialAssetsState, createInitialLoadingState, createInitialUIState, EditorState, SELECT_DIAGRAM, SELECT_ITEMS, Serializer } from '@app/wireframes/model';
+import * as Reducers from '@app/wireframes/model/actions';
+import { registerRenderers } from '@app/wireframes/shapes';
 import { createBrowserHistory } from 'history';
 import * as React from 'react';
 import { DndProvider } from 'react-dnd';
@@ -10,26 +13,10 @@ import { Route, Router } from 'react-router';
 import { routerMiddleware, routerReducer } from 'react-router-redux';
 import { applyMiddleware, combineReducers, compose, createStore, Reducer } from 'redux';
 import thunk from 'redux-thunk';
-
-import { UserReport } from '@app/core';
-
-import * as Reducers from '@app/wireframes/model/actions';
-
-import {
-    createInitialAssetsState,
-    createInitialLoadingState,
-    createInitialUIState,
-    EditorState,
-    SELECT_DIAGRAM,
-    SELECT_ITEMS,
-    Serializer
-} from '@app/wireframes/model';
-
-import { RendererContext, SerializerContext } from '@app/context';
-import { registerRenderers } from '@app/wireframes/shapes';
+import { App } from './App';
+import './index.scss';
 import { registerServiceWorker } from './registerServiceWorker';
 
-import { App } from './App';
 
 const rendererService = registerRenderers();
 

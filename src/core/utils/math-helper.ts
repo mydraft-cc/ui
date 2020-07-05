@@ -1,4 +1,4 @@
-﻿/* tslint:disable: no-bitwise */
+/* tslint:disable: no-bitwise */
 
 export module MathHelper {
     const CRC32_TABLE: number[] = [];

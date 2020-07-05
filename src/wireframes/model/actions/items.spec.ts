@@ -1,27 +1,8 @@
 import { Rotation, Vec2 } from '@app/core';
-
-import {
-    addIcon,
-    addImage,
-    addVisual,
-    calculateSelection,
-    Diagram,
-    DiagramItem,
-    DiagramItemSet,
-    EditorState,
-    items,
-    pasteItems,
-    removeItems,
-    RendererService,
-    selectItems,
-    Serializer,
-    Transform,
-    unlockItems
-} from '@app/wireframes/model';
-
-import { Button }   from '@app/wireframes/shapes/neutral/button';
-import { Icon }     from '@app/wireframes/shapes/shared/icon';
-import { Raster }   from '@app/wireframes/shapes/shared/raster';
+import { addIcon, addImage, addVisual, calculateSelection, Diagram, DiagramItem, DiagramItemSet, EditorState, items, pasteItems, removeItems, RendererService, selectItems, Serializer, Transform, unlockItems } from '@app/wireframes/model';
+import { Button } from '@app/wireframes/shapes/neutral/button';
+import { Icon } from '@app/wireframes/shapes/shared/icon';
+import { Raster } from '@app/wireframes/shapes/shared/raster';
 import { lockItems } from './items';
 
 describe('ItemsReducer', () => {

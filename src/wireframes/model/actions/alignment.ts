@@ -1,18 +1,7 @@
-import { Reducer } from 'redux';
-
 import { Rect2, Vec2 } from '@app/core';
-
-import {
-    Diagram,
-    EditorState,
-    Transform
-} from './../internal';
-
-import {
-    createItemsAction,
-    DiagramRef,
-    ItemsRef
-} from './utils';
+import { Reducer } from 'redux';
+import { Diagram, EditorState, Transform } from './../internal';
+import { createItemsAction, DiagramRef, ItemsRef } from './utils';
 
 export const ALIGN_H_LEFT   = 'ALIGN_H_LEFT';
 export const ALIGN_H_RIGHT  = 'ALIGN_H_RIGHT';

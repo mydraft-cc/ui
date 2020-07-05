@@ -1,19 +1,7 @@
-import { Reducer } from 'redux';
-
 import { Types } from '@app/core';
-
-import {
-    DiagramItemSet,
-    EditorState,
-    RendererService,
-    Transform
-} from './../internal';
-
-import {
-    createItemsAction,
-    DiagramRef,
-    ItemsRef
-} from './utils';
+import { Reducer } from 'redux';
+import { DiagramItemSet, EditorState, RendererService, Transform } from './../internal';
+import { createItemsAction, DiagramRef, ItemsRef } from './utils';
 
 export const CHANGE_ITEMS_APPEARANCE = 'CHANGE_ITEMS_APPEARANCE';
 export const changeItemsAppearance = (diagram: DiagramRef, visuals: ItemsRef, key: string, value: any) => {

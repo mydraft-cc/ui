@@ -1,9 +1,4 @@
-import {
-    Color,
-    MatrixTransform,
-    Rect2
-} from '@app/core';
-
+import { Color, MatrixTransform, Rect2 } from '@app/core';
 import { DiagramItem, Transform } from '@app/wireframes/model';
 
 export interface TextConfig { text: string; fontSize?: number; alignment?: string; }

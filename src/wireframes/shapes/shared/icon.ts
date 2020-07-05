@@ -1,5 +1,4 @@
 import { DiagramItem } from '@app/wireframes/model';
-
 import { AbstractContext, AbstractControl } from '@app/wireframes/shapes/utils/abstract-control';
 
 const DEFAULT_APPEARANCE = {};

@@ -1,9 +1,6 @@
 import { Vec2 } from '@app/core';
-
 import { Constraint, DiagramItem } from '@app/wireframes/model';
-
 import { AbstractContext, AbstractControl } from '@app/wireframes/shapes/utils/abstract-control';
-
 import { CommonTheme } from './_theme';
 
 const DEFAULT_APPEARANCE = {};

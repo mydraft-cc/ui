@@ -1,9 +1,4 @@
-import {
-    ImmutableMap,
-    MathHelper,
-    Rotation
-} from '@app/core';
-
+import { ImmutableMap, MathHelper, Rotation } from '@app/core';
 import { DiagramContainer } from './diagram-container';
 import { DiagramItem } from './diagram-item';
 import { DiagramItemSet } from './diagram-item-set';

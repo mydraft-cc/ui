@@ -1,8 +1,4 @@
-import {
-    Rect2,
-    Rotation,
-    Vec2
-} from '@app/core';
+import { Rect2, Rotation, Vec2 } from '@app/core';
 
 describe('Rect2', () => {
     it('should provide values from constructor', () => {

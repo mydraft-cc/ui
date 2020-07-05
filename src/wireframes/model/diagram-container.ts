@@ -1,6 +1,4 @@
-import {
-    ImmutableList
-} from '@app/core';
+import { ImmutableList } from '@app/core';
 
 export class DiagramContainer extends ImmutableList<string> {
     public static readonly DEFAULT = new DiagramContainer([]);

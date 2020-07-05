@@ -1,5 +1,4 @@
 import { MathHelper, Vec2 } from '@app/core';
-
 import { DiagramItem } from './diagram-item';
 
 export interface Constraint {

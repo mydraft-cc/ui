@@ -1,20 +1,8 @@
+import { MathHelper, Shortcut } from '@app/core';
+import { calculateSelection, getDiagram, getSelectedGroups, getSelectedItems, groupItems, removeItems, selectItems, ungroupItems, useStore } from '@app/wireframes/model';
 import { Button, Tooltip } from 'antd';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
-
-import { MathHelper, Shortcut } from '@app/core';
-
-import {
-    calculateSelection,
-    getDiagram,
-    getSelectedGroups,
-    getSelectedItems,
-    groupItems,
-    removeItems,
-    selectItems,
-    ungroupItems,
-    useStore
-} from '@app/wireframes/model';
 
 export const ArrangeMenu = React.memo(() => {
     const dispatch = useDispatch();

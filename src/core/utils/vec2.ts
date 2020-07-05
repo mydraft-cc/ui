@@ -1,5 +1,4 @@
-﻿import { MathHelper } from './math-helper';
-
+import { MathHelper } from './math-helper';
 import { Rotation } from './rotation';
 
 export class Vec2 {

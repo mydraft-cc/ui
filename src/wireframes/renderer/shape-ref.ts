@@ -1,6 +1,6 @@
+import { DiagramItem, Renderer } from '@app/wireframes/model';
 import * as svg from 'svg.js';
 
-import { DiagramItem, Renderer } from '@app/wireframes/model';
 
 export class ShapeRef {
     private shape: DiagramItem;
