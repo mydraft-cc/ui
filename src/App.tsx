@@ -1,4 +1,11 @@
-import { LeftCircleOutlined, RightCircleOutlined } from '@ant-design/icons';
+/*
+ * Notifo.io
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
+
+import { LeftOutlined, RightOutlined } from '@ant-design/icons';
 import { ArrangeMenu, ClipboardMenu, CustomPropertiesContainer, EditorView, HistoryMenu, Icons, LayoutProperties, LoadingMenu, LockMenu, SettingsMenu, Shapes, UIMenu, VisualProperties } from '@app/wireframes/components';
 import { loadDiagramAsync, newDiagram, selectTab, toggleLeftSidebar, toggleRightSidebar, useStore } from '@app/wireframes/model';
 import { Button, Collapse, Layout, Tabs } from 'antd';
@@ -10,7 +17,7 @@ interface AppProps {
     token: string;
 }
 
-const logo = require('./images/logo-square-64.png');
+const logo = require('./images/logo-square-64.png').default;
 
 export const App = ({ token }: AppProps) => {
     const dispatch = useDispatch();
@@ -104,7 +111,7 @@ export const App = ({ token }: AppProps) => {
                     shape='circle'
                     onClick={doToggleLeftSidebar} />
 
-                <Button icon={<ToggleIcon left={showRightSidebar} />}
+                <Button icon={<ToggleIcon left={!showRightSidebar} />}
                     className={toggleClass(showRightSidebar, 'right')}
                     size='small'
                     shape='circle'
@@ -115,9 +122,9 @@ export const App = ({ token }: AppProps) => {
 };
 
 const ToggleIcon = ({ left }: { left: boolean }) => {
-    return left ? <LeftCircleOutlined /> : <RightCircleOutlined />
+    return left ? <LeftOutlined /> : <RightOutlined />;
 };
 
 const toggleClass = (visible: boolean, side: string) => {
-    return `toggle-button-${side}` + (visible ? ' visible' : '');
+    return `toggle-button-${side} ${visible ? 'visible' : ''}`;
 };

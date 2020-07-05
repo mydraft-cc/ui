@@ -1,3 +1,10 @@
+/*
+ * Notifo.io
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
+
 import { Rect2, Vec2 } from '@app/core';
 import { Reducer } from 'redux';
 import { Diagram, EditorState, Transform } from './../internal';
@@ -66,20 +73,19 @@ export function alignment(): Reducer<EditorState> {
 
 function distributeHorizontally(itemIds: string[], diagram: Diagram) {
     const targets = findTargets(itemIds, diagram);
-
-    const bounds = Rect2.fromRects(targets.map(t => t.aabb));
+    const targetBounds = Rect2.fromRects(targets.map(t => t.aabb));
 
     let totalWidth = 0;
 
-    for (let target of targets) {
+    for (const target of targets) {
         totalWidth += target.aabb.width;
     }
 
-    const margin = (bounds.width - totalWidth) / (targets.length - 1);
+    const margin = (targetBounds.width - totalWidth) / (targets.length - 1);
 
-    let x = bounds.left;
+    let x = targetBounds.left;
 
-    for (let target of targets.sort((a, b) => a.aabb.x - b.aabb.x)) {
+    for (const target of targets.sort((a, b) => a.aabb.x - b.aabb.x)) {
         if (x !== target.aabb.x) {
             const newPosition = new Vec2(x, target.aabb.y);
 
@@ -99,20 +105,19 @@ function distributeHorizontally(itemIds: string[], diagram: Diagram) {
 
 function distributeVertically(itemIds: string[], diagram: Diagram) {
     const targets = findTargets(itemIds, diagram);
-
-    const bounds = Rect2.fromRects(targets.map(t => t.aabb));
+    const targetBounds = Rect2.fromRects(targets.map(t => t.aabb));
 
     let totalHeight = 0;
 
-    for (let target of targets) {
+    for (const target of targets) {
         totalHeight += target.aabb.height;
     }
 
-    const margin = (bounds.height - totalHeight) / (targets.length - 1);
+    const margin = (targetBounds.height - totalHeight) / (targets.length - 1);
 
-    let y = bounds.top;
+    let y = targetBounds.top;
 
-    for (let target of targets.sort((a, b) => a.aabb.y - b.aabb.y)) {
+    for (const target of targets.sort((a, b) => a.aabb.y - b.aabb.y)) {
         if (y !== target.aabb.y) {
             const newPosition = new Vec2(target.aabb.x, y);
 
@@ -132,11 +137,10 @@ function distributeVertically(itemIds: string[], diagram: Diagram) {
 
 function alignShapes(itemIds: string[], diagram: Diagram, transformer: (bounds: Rect2, item: Rect2) => Vec2): Diagram {
     const targets = findTargets(itemIds, diagram);
+    const targetBounds = Rect2.fromRects(targets.map(t => t.aabb));
 
-    const bounds = Rect2.fromRects(targets.map(t => t.aabb));
-
-    for (let target of targets) {
-        const newPosition = transformer(bounds, target.aabb);
+    for (const target of targets) {
+        const newPosition = transformer(targetBounds, target.aabb);
 
         const dx = newPosition.x - target.aabb.x;
         const dy = newPosition.y - target.aabb.y;

@@ -1,3 +1,10 @@
+/*
+ * Notifo.io
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
+
 import { ImmutableMap, Rotation, Vec2 } from '@app/core';
 import { Diagram } from './diagram';
 import { DiagramItem } from './diagram-item';
@@ -231,7 +238,7 @@ describe('DiagramItem', () => {
     });
 
     it('should create zero bounds if child id is not in diagram', () => {
-        let diagram = Diagram.empty(groupId);
+        const diagram = Diagram.empty(groupId);
 
         const group = DiagramItem.createGroup(groupId, ['invalid']);
 

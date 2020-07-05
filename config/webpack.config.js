@@ -87,6 +87,11 @@ module.exports = function (env) {
              * See: https://webpack.js.org/configuration/module/#module-rules
              */
             rules: [{
+                test: /\.html$/,
+                use: [{
+                    loader: 'raw-loader' 
+                }]
+            }, {
                 test: /\.d\.ts?$/,
                 use: [{
                     loader: 'ignore-loader'
@@ -95,22 +100,12 @@ module.exports = function (env) {
             }, {
                 test: /\.(woff|woff2|ttf|eot)(\?.*$|$)/,
                 use: [{
-                    loader: 'file-loader?name=[name].[hash].[ext]',
-                    options: {
-                        outputPath: 'assets',
-                        /*
-                        * Use custom public path as ./ is not supported by fonts.
-                        */
-                        publicPath: isDevServer ? undefined : 'assets'
-                    }
+                    loader: 'file-loader?name=assets/[name].[hash].[ext]'
                 }]
             }, {
                 test: /\.(png|jpe?g|gif|svg|ico)(\?.*$|$)/,
                 use: [{
-                    loader: 'file-loader?name=[name].[hash].[ext]',
-                    options: {
-                        outputPath: 'assets'
-                    }
+                    loader: 'file-loader?name=assets/[name].[hash].[ext]'
                 }]
             }, {
                 test: /\.css$/,

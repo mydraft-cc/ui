@@ -1,9 +1,16 @@
+/*
+ * Notifo.io
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
+
 import { equalsObject, without } from './types';
 
 type Mutator = {
     add: (item: string) => void,
 
-    remove: (item: string) => void
+    remove: (item: string) => void,
 };
 
 export class ImmutableSet {
@@ -22,7 +29,7 @@ export class ImmutableSet {
     }
 
     private constructor(
-        private readonly items: { [item: string]: boolean }
+        private readonly items: { [item: string]: boolean },
     ) {
         Object.freeze(this);
         Object.freeze(items);
@@ -38,7 +45,7 @@ export class ImmutableSet {
         } else {
             const itemMap = {};
 
-            for (let item of items) {
+            for (const item of items) {
                 itemMap[item] = true;
             }
 
@@ -89,7 +96,7 @@ export class ImmutableSet {
                         delete items[k];
                     }
                 }
-            }
+            },
         });
 
         if (!updated) {

@@ -1,3 +1,10 @@
+/*
+ * Notifo.io
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
+
 import { Vec2 } from '@app/core';
 import { Constraint, DiagramItem } from '@app/wireframes/model';
 import { AbstractContext, AbstractControl } from '@app/wireframes/shapes/utils/abstract-control';

@@ -1,3 +1,10 @@
+/*
+ * Notifo.io
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
+
 interface State<T> {
     state: T;
     action?: any;
@@ -24,7 +31,7 @@ export class UndoableState<T> {
         private readonly past: State<T>[],
         private readonly pastCapacity: number,
         private readonly future: State<T>[],
-        private readonly presentState: State<T>
+        private readonly presentState: State<T>,
     ) {
         Object.freeze(this);
     }

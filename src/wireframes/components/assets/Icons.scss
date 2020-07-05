@@ -1,8 +1,11 @@
+@import '_mixins';
+@import '_vars';
+
 .asset-icon {
     & {
-        border-right: 1px solid $color-border;
-        border-bottom: 1px solid $color-border;
         background: transparent;
+        border-bottom: 1px solid $color-border;
+        border-right: 1px solid $color-border;
         text-align: center;
         text-decoration: none;
     }
@@ -38,15 +41,15 @@
         }
 
         .ant-select {
+            display: block;
             margin: 0;
             margin-top: 4px;
-            display: block;
         }
     }
 
     &-list {
         @include flex-grow(1);
-        overflow-y: scroll;
         overflow-x: hidden;
+        overflow-y: scroll;
     }
 }

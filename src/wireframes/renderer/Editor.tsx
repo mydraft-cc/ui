@@ -1,3 +1,10 @@
+/*
+ * Notifo.io
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
+
 import { sizeInPx, Vec2 } from '@app/core';
 import { changeItemsAppearance, Diagram, DiagramContainer, DiagramItem, EditorStateInStore, getDiagram, getEditor, getSelectedItems, getSelectedItemsWithLocked, RendererService, selectItems, Transform, transformItems, UIStateInStore } from '@app/wireframes/model';
 import * as React from 'react';
@@ -5,13 +12,13 @@ import { connect } from 'react-redux';
 import { bindActionCreators, Dispatch } from 'redux';
 import * as svg from 'svg.js';
 import { CanvasView } from './CanvasView';
-import './Editor.scss';
 import { InteractionService } from './interaction-service';
 import { SelectionAdorner } from './SelectionAdorner';
 import { ShapeRef } from './shape-ref';
 import { TextAdorner } from './TextAdorner';
 import { TransformAdorner } from './TransformAdorner';
 
+import './Editor.scss';
 
 export interface EditorProps {
     // The renderer service.
@@ -84,7 +91,7 @@ class Editor extends React.Component<EditorProps> {
 
         allShapes.forEach(item => allShapesById[item.id] = true);
 
-        for (let id in this.shapeRefsById) {
+        for (const id in this.shapeRefsById) {
             if (this.shapeRefsById.hasOwnProperty(id)) {
                 const ref = this.shapeRefsById[id];
 
@@ -96,7 +103,7 @@ class Editor extends React.Component<EditorProps> {
             }
         }
 
-        for (let shape of allShapes) {
+        for (const shape of allShapes) {
             let ref = this.shapeRefsById[shape.id];
 
             if (!ref) {
@@ -120,7 +127,7 @@ class Editor extends React.Component<EditorProps> {
             let handleContainer: (itemIds: DiagramContainer) => any;
 
             handleContainer = itemIds => {
-                for (let id of itemIds.values) {
+                for (const id of itemIds.values) {
                     const item = diagram.items.get(id);
 
                     if (item) {
@@ -153,7 +160,7 @@ class Editor extends React.Component<EditorProps> {
             zoom,
             zoomedHeight,
             zoomedWidth,
-            viewSize
+            viewSize,
         } = this.props;
 
         const w = viewSize.x;
@@ -218,15 +225,15 @@ const mapStateToProps = (state: UIStateInStore & EditorStateInStore) => {
         viewSize: editor.size,
         zoomedWidth: editor.size.x * state.ui.zoom,
         zoomedHeight: editor.size.y * state.ui.zoom,
-        zoom: state.ui.zoom
+        zoom: state.ui.zoom,
     };
 };
 
 const mapDispatchToProps = (dispatch: Dispatch) => bindActionCreators({
-    selectItems, changeItemsAppearance, transformItems
+    selectItems, changeItemsAppearance, transformItems,
 }, dispatch);
 
 export const EditorContainer = connect(
     mapStateToProps,
-    mapDispatchToProps
+    mapDispatchToProps,
 )(Editor);

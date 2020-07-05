@@ -1,3 +1,6 @@
+@import '_mixins';
+@import '_vars';
+
 $size: 24px;
 
 .color-picker {
@@ -17,9 +20,10 @@ $size: 24px;
     &-color {
         & {
             @include circle($size);
-            float: left;
-            border: 2px solid $color-border;
             background: $color-dark-foreground;
+            border: 2px solid $color-border;
+            border-radius: 0;
+            float: left;
             margin: 1px;
         }
 
@@ -46,17 +50,17 @@ $size: 24px;
 
     &-tabs {
         margin-top: -10px;
-        min-height: 375px;
         max-height: 375px;
+        min-height: 375px;
     }
 }
 
 .sketch-picker {
     @include box-shadow-none;
-    padding: 0 !important;
     background: 'none' !important;
     border: 0 !important;
     border-radius: 0 !important;
+    padding: 0 !important;
 }
 
 span {

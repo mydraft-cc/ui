@@ -1,9 +1,17 @@
+/*
+ * Notifo.io
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
+
 import { Button, Popover, Tabs } from 'antd';
 import { TooltipPlacement } from 'antd/lib/tooltip';
 import * as React from 'react';
 import { ColorResult, SketchPicker } from 'react-color';
 import { Color } from './../utils/color';
 import { ColorPalette } from './../utils/color-palette';
+
 import './ColorPicker.scss';
 
 interface ColorPickerProps {
@@ -37,7 +45,7 @@ export const ColorPicker = React.memo((props: ColorPickerProps) => {
         onChange,
         palette,
         popoverPlacement,
-        value
+        value,
     } = props;
 
     const valueColor = value ? Color.fromValue(props.value) : Color.BLACK;
@@ -98,8 +106,8 @@ export const ColorPicker = React.memo((props: ColorPickerProps) => {
                 <div className='color-picker-colors'>
                     {selectedPalette.colors.map(c =>
                         <div className={colorClassName(c)} key={c.toString()}>
-                            <div className='color-picker-color-inner' onClick={() => doSelectColor(c)} style={{background: c.toString()}}></div>
-                        </div>
+                            <div className='color-picker-color-inner' onClick={() => doSelectColor(c)} style={{ background: c.toString() }}></div>
+                        </div>,
                     )}
                 </div>
             </Tabs.TabPane>

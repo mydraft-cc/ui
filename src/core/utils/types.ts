@@ -1,3 +1,10 @@
+/*
+ * Notifo.io
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
+
 export module Types {
     export function hash(value: any): string {
         try {
@@ -47,15 +54,15 @@ export module Types {
         return value instanceof c;
     }
 
-    export function isArray(value: any): value is Array<any> {
+    export function isArray(value: any): value is any[] {
         return Array.isArray(value);
     }
 
-    export function isArrayOfNumber(value: any): value is Array<number> {
+    export function isArrayOfNumber(value: any): value is number[] {
         return isArrayOf(value, v => isNumber(v));
     }
 
-    export function isArrayOfString(value: any): value is Array<string> {
+    export function isArrayOfString(value: any): value is string[] {
         return isArrayOf(value, v => isString(v));
     }
 
@@ -64,7 +71,7 @@ export module Types {
             return false;
         }
 
-        for (let v of value) {
+        for (const v of value) {
             if (!validator(v)) {
                 return false;
             }
@@ -107,7 +114,7 @@ export function equalsObject(lhs: { [key: string]: any }, rhs: { [key: string]: 
         return false;
     }
 
-    for (let key in lhs) {
+    for (const key in lhs) {
         if (lhs.hasOwnProperty(key)) {
             if (!equals(lhs[key], rhs[key])) {
                 return false;

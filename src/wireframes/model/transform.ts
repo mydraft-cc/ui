@@ -1,3 +1,10 @@
+/*
+ * Notifo.io
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
+
 import { MathHelper, Rect2, Rotation, Vec2 } from '@app/core';
 
 export class Transform {
@@ -16,7 +23,7 @@ export class Transform {
     constructor(
         public readonly position: Vec2,
         public readonly size: Vec2,
-        public readonly rotation: Rotation
+        public readonly rotation: Rotation,
     ) {
         Object.freeze(this);
     }
@@ -174,13 +181,13 @@ export class Transform {
         return {
             position: {
                 x: this.position.x,
-                y: this.position.y
+                y: this.position.y,
             },
             size: {
                 x: this.size.x,
-                y: this.size.y
+                y: this.size.y,
             },
-            rotation: this.rotation.degree
+            rotation: this.rotation.degree,
         };
     }
 }

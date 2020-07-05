@@ -1,3 +1,10 @@
+/*
+ * Notifo.io
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
+
 import { Vec2 } from '@app/core';
 import { alignItems, alignment, ALIGN_H_CENTER, ALIGN_H_LEFT, ALIGN_H_RIGHT, ALIGN_V_BOTTOM, ALIGN_V_CENTER, ALIGN_V_TOP, Diagram, DiagramItem, DISTRIBUTE_H, DISTRIBUTE_V, EditorState } from '@app/wireframes/model';
 
@@ -73,7 +80,7 @@ describe('AlignmentReducer', () => {
 
         let i = 0;
 
-        for (let shape of shapes) {
+        for (const shape of shapes) {
             expect(shape.transform.position).toEqual(positions[i]);
             i++;
         }

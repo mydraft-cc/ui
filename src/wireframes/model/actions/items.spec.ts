@@ -1,3 +1,10 @@
+/*
+ * Notifo.io
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
+
 import { Rotation, Vec2 } from '@app/core';
 import { addIcon, addImage, addVisual, calculateSelection, Diagram, DiagramItem, DiagramItemSet, EditorState, items, pasteItems, removeItems, RendererService, selectItems, Serializer, Transform, unlockItems } from '@app/wireframes/model';
 import { Button } from '@app/wireframes/shapes/neutral/button';

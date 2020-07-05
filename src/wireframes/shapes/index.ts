@@ -1,3 +1,10 @@
+/*
+ * Notifo.io
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
+
 import { RendererService } from '@app/wireframes/model/renderer.service';
 import { Browser } from './neutral/browser';
 import { Button } from './neutral/button';

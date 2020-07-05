@@ -1,3 +1,10 @@
+/*
+ * Notifo.io
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
+
 import { Color, MatrixTransform, Rect2 } from '@app/core';
 import { DiagramItem, Transform } from '@app/wireframes/model';
 

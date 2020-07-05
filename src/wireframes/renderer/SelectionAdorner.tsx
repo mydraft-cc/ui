@@ -1,10 +1,16 @@
+/*
+ * Notifo.io
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
+
 import { Rect2, Vec2 } from '@app/core';
 import { calculateSelection, Diagram, DiagramItem } from '@app/wireframes/model';
 import { SVGRenderer } from '@app/wireframes/shapes/utils/svg-renderer';
 import * as React from 'react';
 import * as svg from 'svg.js';
 import { InteractionHandler, InteractionService, SvgEvent } from './interaction-service';
-
 
 const SELECTION_STROKE_COLOR = '#080';
 const SELECTION_STROKE_LOCK_COLOR = '#f00';
@@ -120,12 +126,12 @@ export class SelectionAdorner extends React.Component<SelectionAdornerProps> imp
     }
 
     private markItems() {
-        for (let adorner of this.shapesAdorners) {
+        for (const adorner of this.shapesAdorners) {
             adorner.hide();
         }
 
         let i = 0;
-        for (let item of this.props.selectedItems) {
+        for (const item of this.props.selectedItems) {
             let shapeAdorner: any;
 
             if (i >= this.shapesAdorners.length) {
@@ -157,7 +163,7 @@ export class SelectionAdorner extends React.Component<SelectionAdornerProps> imp
             y: position.y - offset,
             w: size.x + 2 * offset,
             h: size.y + 2 * offset,
-            rotation
+            rotation,
         });
         this.renderer.setVisibility(shape, true);
     }

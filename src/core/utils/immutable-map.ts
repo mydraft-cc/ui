@@ -1,9 +1,16 @@
+/*
+ * Notifo.io
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
+
 import { equals, equalsObject, without } from './types';
 
 type Mutator<T> = {
     remove: (key: string) => void,
 
-    set: (key: string, value: T) => void
+    set: (key: string, value: T) => void,
 };
 
 export class ImmutableMap<T> {
@@ -34,7 +41,7 @@ export class ImmutableMap<T> {
     }
 
     private constructor(
-        private readonly items: { [key: string]: T }
+        private readonly items: { [key: string]: T },
     ) {
         Object.freeze(this);
         Object.freeze(items);
@@ -111,7 +118,7 @@ export class ImmutableMap<T> {
                         delete items[k];
                     }
                 }
-            }
+            },
         });
 
         if (!updated) {

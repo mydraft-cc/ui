@@ -1,7 +1,13 @@
+/*
+ * Notifo.io
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
+
 import * as React from 'react';
 import Measurer, { ContentRect } from 'react-measure';
 import { sizeInPx } from './../utils/react';
-
 
 interface GridProps {
     // The items to render.
@@ -45,7 +51,7 @@ export const GridList = React.memo((props: GridProps & GridState) => {
         height,
         items,
         keyBuilder,
-        renderer
+        renderer,
     } = props;
 
     const cells = [];
@@ -66,7 +72,6 @@ export const GridList = React.memo((props: GridProps & GridState) => {
 
             cache[itemKey] = cell;
         }
-
 
         const col = sizeInPx(cellSize * Math.floor(index % columns));
         const row = sizeInPx(cellSize * Math.floor(index / columns));

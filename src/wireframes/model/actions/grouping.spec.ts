@@ -1,3 +1,10 @@
+/*
+ * Notifo.io
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
+
 import { Diagram, DiagramItem, EditorState, grouping, groupItems, ungroupItems } from '@app/wireframes/model';
 
 describe('GroupingReducer', () => {

@@ -1,3 +1,10 @@
+/*
+ * Notifo.io
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
+
 import { SettingOutlined } from '@ant-design/icons';
 import { Shortcut } from '@app/core';
 import { changeSize, useStore } from '@app/wireframes/model';

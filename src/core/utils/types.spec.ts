@@ -1,3 +1,10 @@
+/*
+ * Notifo.io
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
+
 import { Types } from './types';
 
 describe('Types', () => {
@@ -114,7 +121,7 @@ describe('Types', () => {
 
 class MyClass {
     constructor(
-        public readonly value: number
+        public readonly value: number,
     ) {
     }
 }

@@ -1,3 +1,10 @@
+/*
+ * Notifo.io
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
+
 import { Rotation } from './rotation';
 import { Vec2 } from './vec2';
 
@@ -66,7 +73,7 @@ export class Rect2 {
         public readonly x: number,
         public readonly y: number,
         public readonly w: number,
-        public readonly h: number
+        public readonly h: number,
     ) {
         Object.freeze(this);
     }
@@ -85,7 +92,7 @@ export class Rect2 {
         let maxX = Number.MIN_VALUE;
         let maxY = Number.MIN_VALUE;
 
-        for (let v of vecs) {
+        for (const v of vecs) {
             minX = Math.min(minX, v.x);
             minY = Math.min(minY, v.y);
             maxX = Math.max(maxX, v.x);
@@ -105,7 +112,7 @@ export class Rect2 {
         let maxX = Number.MIN_VALUE;
         let maxY = Number.MIN_VALUE;
 
-        for (let r of rects) {
+        for (const r of rects) {
             minX = Math.min(minX, r.left);
             minY = Math.min(minY, r.top);
             maxX = Math.max(maxX, r.right);

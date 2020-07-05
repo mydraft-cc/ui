@@ -1,3 +1,10 @@
+/*
+ * Notifo.io
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
+
 import { Rect2 } from '@app/core';
 import { Configurable, DiagramItem, SelectionConfigurable, TextHeightConstraint } from '@app/wireframes/model';
 import { AbstractContext, AbstractControl } from '@app/wireframes/shapes/utils/abstract-control';
@@ -26,8 +33,8 @@ const CONFIGURABLE: Configurable[] = [
         [
             STATE_NORMAL,
             STATE_CHECKED,
-            STATE_INTERDEMINATE
-        ])
+            STATE_INTERDEMINATE,
+        ]),
 ];
 
 const CONSTRAINT = new TextHeightConstraint(8);

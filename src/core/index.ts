@@ -1,3 +1,10 @@
+/*
+ * Notifo.io
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
+
 export * from './react/ColorPicker';
 export * from './react/Grid';
 export * from './react/Shortcut';
@@ -17,4 +24,3 @@ export * from './utils/rotation';
 export * from './utils/svg-helper';
 export * from './utils/types';
 export * from './utils/vec2';
-

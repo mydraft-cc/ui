@@ -1,3 +1,10 @@
+/*
+ * Notifo.io
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
+
 import { Color, Rect2, Vec2 } from '@app/core';
 import { Constraint, DiagramItem, Renderer } from '@app/wireframes/model';
 import { AbstractRenderer, SVGRenderer } from './svg-renderer';
@@ -10,7 +17,7 @@ export class AbstractContext {
     constructor(
         public readonly renderer: AbstractRenderer,
         public readonly shape: DiagramItem,
-        public readonly bounds: Rect2
+        public readonly bounds: Rect2,
     ) {
     }
 
@@ -89,7 +96,7 @@ export class TextSizeConstraint implements Constraint {
         private readonly padding = 0,
         private readonly lineHeight = 1.2,
         private readonly resizeWidth = false,
-        private readonly minWidth = 0
+        private readonly minWidth = 0,
     ) { }
 
     public updateSize(shape: DiagramItem, size: Vec2, prev: DiagramItem): Vec2 {

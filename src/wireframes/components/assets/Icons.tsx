@@ -1,3 +1,10 @@
+/*
+ * Notifo.io
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
+
 import { SearchOutlined } from '@ant-design/icons';
 import { Grid } from '@app/core';
 import { addIcon, filterIcons, getDiagramId, getFilteredIcons, getIconSet, getIconSets, getIconsFilter, IconInfo, selectIcons, useStore } from '@app/wireframes/model';
@@ -5,6 +12,7 @@ import { Input, Select } from 'antd';
 import * as React from 'react';
 import { ReactReduxContext, useDispatch } from 'react-redux';
 import { Icon } from './Icon';
+
 import './Icons.scss';
 
 const keyBuilder = (icon: IconInfo) => {
@@ -58,7 +66,7 @@ export const Icons = React.memo(() => {
 
             <Select value={iconSet} onChange={doSelectIcons}>
                 {iconSets.map(x =>
-                    <Select.Option key={x} value={x}>{x}</Select.Option>
+                    <Select.Option key={x} value={x}>{x}</Select.Option>,
                 )}
             </Select>
         </div>

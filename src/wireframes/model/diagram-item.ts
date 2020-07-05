@@ -1,3 +1,10 @@
+/*
+ * Notifo.io
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
+
 import { ImmutableMap, Record, Rotation, Types, Vec2 } from '@app/core';
 import { Configurable } from './configurables';
 import { Constraint } from './constraints';

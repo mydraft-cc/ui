@@ -1,3 +1,10 @@
+/*
+ * Notifo.io
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
+
 import { push } from 'react-router-redux';
 import { Dispatch, Reducer } from 'redux';
 import { EditorState, EditorStateInStore, LoadingState, LoadingStateInStore, UndoableState } from './../internal';
@@ -74,9 +81,9 @@ export const saveDiagramAsync = (navigate = true) => {
             putPromise = fetch(`${url}/${readToken}/${writeToken}`, {
                 method: 'PUT',
                 headers: {
-                    ContentType: 'text/json'
+                    ContentType: 'text/json',
                 },
-                body
+                body,
             }).then(() => ({ readToken, writeToken }));
         } else {
             putPromise = Promise.reject({});
@@ -86,9 +93,9 @@ export const saveDiagramAsync = (navigate = true) => {
             fetch(`${url}/`, {
                 method: 'POST',
                 headers: {
-                    ContentType: 'text/json'
+                    ContentType: 'text/json',
                 },
-                body
+                body,
             })
             .then(response => {
                 if (response.ok) {
@@ -162,11 +169,11 @@ export function rootLoading(innerReducer: Reducer<any>, undoableReducer: Reducer
 
                 let editor = UndoableState.create(editorReducer(EditorState.empty(), firstAction), firstAction);
 
-                for (let loadedAction of action.actions) {
+                for (const loadedAction of action.actions) {
                     editor = undoableReducer(editor, loadedAction);
                 }
 
-                let present = editor.present;
+                const present = editor.present;
 
                 const diagram = present.diagrams.get(present.selectedDiagramId!);
 

@@ -1,3 +1,10 @@
+/*
+ * Notifo.io
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
+
 export interface LoadingState {
     // Indicates if the loading operation is in progress.
     isLoading: boolean;
@@ -19,6 +26,6 @@ export interface LoadingStateInStore {
 export const createInitialLoadingState: () => LoadingState = () => {
     return {
         isLoading: false,
-        isSaving: false
+        isSaving: false,
     };
 };

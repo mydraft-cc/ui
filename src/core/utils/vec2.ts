@@ -1,3 +1,10 @@
+/*
+ * Notifo.io
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
+
 import { MathHelper } from './math-helper';
 import { Rotation } from './rotation';
 
@@ -19,7 +26,7 @@ export class Vec2 {
 
     constructor(
         public readonly x: number,
-        public readonly y: number
+        public readonly y: number,
     ) {
         Object.freeze(this);
     }
@@ -103,7 +110,7 @@ export class Vec2 {
         let medianX = 0;
         let medianY = 0;
 
-        for (let v of vecs) {
+        for (const v of vecs) {
             medianX += v.x;
             medianY += v.y;
         }

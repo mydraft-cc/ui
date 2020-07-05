@@ -1,3 +1,10 @@
+/*
+ * Notifo.io
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
+
 import { Diagram, DiagramItem, DiagramItemSet } from '@app/wireframes/model';
 
 describe('Diagram', () => {

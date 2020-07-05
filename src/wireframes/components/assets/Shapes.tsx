@@ -1,3 +1,10 @@
+/*
+ * Notifo.io
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
+
 import { SearchOutlined } from '@ant-design/icons';
 import { Grid } from '@app/core';
 import { addVisual, filterShapes, getDiagramId, getFilteredShapes, getShapesFilter, ShapeInfo, useStore } from '@app/wireframes/model';
@@ -5,6 +12,7 @@ import { Input } from 'antd';
 import * as React from 'react';
 import { ReactReduxContext, useDispatch } from 'react-redux';
 import { ShapeImage } from './ShapeImage';
+
 import './Shapes.scss';
 
 const keyBuilder = (shape: ShapeInfo) => {

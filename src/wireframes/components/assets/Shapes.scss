@@ -1,11 +1,14 @@
+@import '_mixins';
+@import '_vars';
+
 .asset-shape {
     & {
-        border-right: 1px solid $color-border;
-        border-bottom: 1px solid $color-border;
         background: transparent;
+        border-bottom: 1px solid $color-border;
+        border-right: 1px solid $color-border;
+        height: 100%;
         text-align: center;
         text-decoration: none;
-        height: 100%;
     }
 
     &-title {
@@ -19,8 +22,8 @@
 
     &-image {
         @include improve-image;
-        max-width: 120px;
         max-height: 70px;
+        max-width: 120px;
     }
 }
 
@@ -35,7 +38,7 @@
 
     &-list {
         @include flex-grow(1);
-        overflow-y: scroll;
         overflow-x: hidden;
+        overflow-y: scroll;
     }
 }

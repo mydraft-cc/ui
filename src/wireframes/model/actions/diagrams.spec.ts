@@ -1,3 +1,10 @@
+/*
+ * Notifo.io
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
+
 import { Vec2 } from '@app/core';
 import { addDiagram, changeSize, Diagram, diagrams, EditorState, removeDiagram, selectDiagram } from '@app/wireframes/model';
 

@@ -1,3 +1,10 @@
+/*
+ * Notifo.io
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
+
 import { Rect2, Rotation, Vec2 } from '@app/core';
 import { Transform } from '@app/wireframes/model';
 
@@ -8,13 +15,13 @@ describe('Transform', () => {
         const json = {
             position: {
                 x: 10,
-                y: 20
+                y: 20,
             },
             size: {
                 x: 30,
-                y: 40
+                y: 40,
             },
-            rotation: 45
+            rotation: 45,
         };
 
         const parsed = Transform.fromJS(json);
@@ -130,7 +137,7 @@ describe('Transform', () => {
     it('Should create from rects', () => {
         const rects = [
             new Rect2(100, 60, 30, 40),
-            new Rect2(200, 60, 30, 40)
+            new Rect2(200, 60, 30, 40),
         ];
 
         const actual = Transform.fromRects(rects);
@@ -165,13 +172,13 @@ describe('Transform', () => {
     });
 
     [{
-        rotation: 0, expectedPosition: new Vec2(150, 100)
+        rotation: 0, expectedPosition: new Vec2(150, 100),
     }, {
-        rotation: 90, expectedPosition: new Vec2(100, 150)
+        rotation: 90, expectedPosition: new Vec2(100, 150),
     }, {
-        rotation: 180, expectedPosition: new Vec2(50, 100)
+        rotation: 180, expectedPosition: new Vec2(50, 100),
     }, {
-        rotation: 270, expectedPosition: new Vec2(100, 50)
+        rotation: 270, expectedPosition: new Vec2(100, 50),
     }].forEach(x =>  {
         it(`should resize top left with ${x.rotation} rotation`, () => {
             const oldSize = new Vec2(100, 100);

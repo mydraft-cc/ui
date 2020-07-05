@@ -1,7 +1,15 @@
+/*
+ * Notifo.io
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
+
 import { alignItems, ALIGN_H_CENTER, ALIGN_H_LEFT, ALIGN_H_RIGHT, ALIGN_V_BOTTOM, ALIGN_V_CENTER, ALIGN_V_TOP, BRING_FORWARDS, BRING_TO_FRONT, DISTRIBUTE_H, DISTRIBUTE_V, getDiagramId, getSelectedItems, orderItems, SEND_BACKWARDS, SEND_TO_BACK, useStore } from '@app/wireframes/model';
 import { Button } from 'antd';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
+
 import './LayoutProperties.scss';
 
 export const LayoutProperties = React.memo(() => {

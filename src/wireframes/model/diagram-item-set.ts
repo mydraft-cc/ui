@@ -1,3 +1,10 @@
+/*
+ * Notifo.io
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
+
 import { Types } from '@app/core';
 import { Diagram } from './diagram';
 import { DiagramItem } from './diagram-item';
@@ -18,15 +25,15 @@ export class DiagramItemSet {
 
     constructor(
         public readonly allGroups: DiagramItem[],
-        public readonly allVisuals: DiagramItem[]
+        public readonly allVisuals: DiagramItem[],
     ) {
         this.allItems.push(...allGroups);
         this.allItems.push(...allVisuals);
 
         const parents: { [id: string]: boolean } = {};
 
-        for (let group of this.allGroups) {
-            for (let childId of group.childIds.values) {
+        for (const group of this.allGroups) {
+            for (const childId of group.childIds.values) {
                 if (!this.allItems.find(i => i.id === childId) || parents[childId]) {
                     this.isValid = false;
                 }
@@ -35,7 +42,7 @@ export class DiagramItemSet {
             }
         }
 
-        for (let item of this.allItems) {
+        for (const item of this.allItems) {
             if (!parents[item.id]) {
                 this.rootItems.push(item);
             }
@@ -51,7 +58,7 @@ export class DiagramItemSet {
         let flatItemsArray: (itemsOrIds: (string | DiagramItem)[], isTopLevel: boolean) => void;
 
         flatItemsArray = (itemsOrIds: (string | DiagramItem)[]) => {
-            for (let itemOrId of itemsOrIds) {
+            for (const itemOrId of itemsOrIds) {
                 let item: DiagramItem;
 
                 if (Types.isString(itemOrId)) {
@@ -86,7 +93,7 @@ export class DiagramItemSet {
             return false;
         }
 
-        for (let item of this.allItems) {
+        for (const item of this.allItems) {
             if (diagram.items.has(item.id)) {
                 return false;
             }
@@ -100,7 +107,7 @@ export class DiagramItemSet {
             return false;
         }
 
-        for (let item of this.allItems) {
+        for (const item of this.allItems) {
             if (!diagram.items.has(item.id)) {
                 return false;
             }

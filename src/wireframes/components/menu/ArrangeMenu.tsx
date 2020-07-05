@@ -1,3 +1,10 @@
+/*
+ * Notifo.io
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
+
 import { MathHelper, Shortcut } from '@app/core';
 import { calculateSelection, getDiagram, getSelectedGroups, getSelectedItems, groupItems, removeItems, selectItems, ungroupItems, useStore } from '@app/wireframes/model';
 import { Button, Tooltip } from 'antd';

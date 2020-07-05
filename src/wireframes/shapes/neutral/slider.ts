@@ -1,3 +1,10 @@
+/*
+ * Notifo.io
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
+
 import { Rect2, Vec2 } from '@app/core';
 import { ColorConfigurable, Configurable, DiagramItem, SizeConstraint, SliderConfigurable } from '@app/wireframes/model';
 import { AbstractContext, AbstractControl } from '@app/wireframes/shapes/utils/abstract-control';
@@ -19,7 +26,7 @@ DEFAULT_APPEARANCE[VALUE] = 50;
 
 const CONFIGURABLES: Configurable[] = [
     new SliderConfigurable(VALUE, 'Value'),
-    new ColorConfigurable(ACCENT_COLOR, 'Accent Color')
+    new ColorConfigurable(ACCENT_COLOR, 'Accent Color'),
 ];
 
 const HEIGHT_TOTAL = 20;

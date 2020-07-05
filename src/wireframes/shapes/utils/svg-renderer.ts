@@ -1,9 +1,15 @@
+/*
+ * Notifo.io
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
+
 import { Rect2, sizeInPx, SVGHelper } from '@app/core';
 import { DiagramItem, Transform } from '@app/wireframes/model';
 import * as svg from 'svg.js';
 import { AbstractRenderer, RendererColor, RendererElement, RendererOpacity, RendererText, RendererTransform, RendererWidth } from './abstract-renderer';
 export * from './abstract-renderer';
-
 
 export class SVGRenderer implements AbstractRenderer {
     private measureDiv: HTMLDivElement;
@@ -96,7 +102,7 @@ export class SVGRenderer implements AbstractRenderer {
         const pathArray = new svg.PathArray(path);
         const pathSegments: svg.PathArrayPoint[] = <any>pathArray.valueOf();
 
-        for (let segment of pathSegments) {
+        for (const segment of pathSegments) {
             if (segment.length >= 3) {
                 let x = <number>segment[segment.length - 2];
                 let y = <number>segment[segment.length - 1];
@@ -180,7 +186,7 @@ export class SVGRenderer implements AbstractRenderer {
     public createGroup(items: RendererElement[], clipItem: any): RendererElement {
         const group = this.container.group();
 
-        for (let item of items) {
+        for (const item of items) {
             group.add(item.groupElement ? item.groupElement : item);
         }
 
@@ -286,7 +292,7 @@ export class SVGRenderer implements AbstractRenderer {
                 h:  to.size.y,
                 rx: to.position.x,
                 ry: to.position.y,
-                rotation: to.rotation.degree
+                rotation: to.rotation.degree,
             });
         } else {
             SVGHelper.transform(element, to);

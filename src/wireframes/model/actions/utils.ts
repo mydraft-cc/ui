@@ -1,3 +1,10 @@
+/*
+ * Notifo.io
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
+
 import { Types } from '@app/core';
 import { Action } from 'redux';
 import { Diagram, DiagramItem } from './../internal';
@@ -11,11 +18,11 @@ interface ItemsAction extends DiagramAction {
 }
 
 export function createItemsAction<T extends {}>(type: string, diagram: DiagramRef, items: ItemsRef, action?: T): T & Action & ItemsAction {
-    let result: any = createDiagramAction(type, diagram, action);
+    const result: any = createDiagramAction(type, diagram, action);
 
     result.itemIds = [];
 
-    for (let itemOrId of items) {
+    for (const itemOrId of items) {
         if (Types.isString(itemOrId)) {
             result.itemIds.push(itemOrId);
         } else {

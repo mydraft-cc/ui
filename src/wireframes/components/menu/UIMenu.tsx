@@ -1,3 +1,10 @@
+/*
+ * Notifo.io
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
+
 import { MinusCircleOutlined, PlusCircleOutlined } from '@ant-design/icons';
 import { Shortcut } from '@app/core';
 import { setZoom, useStore } from '@app/wireframes/model';

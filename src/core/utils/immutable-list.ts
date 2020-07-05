@@ -1,3 +1,10 @@
+/*
+ * Notifo.io
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
+
 import { moveItems } from './collections';
 import { equalsArray } from './types';
 
@@ -17,7 +24,7 @@ export class ImmutableList<T> {
     }
 
     constructor(
-        private readonly items: T[]
+        private readonly items: T[],
     ) {
         Object.freeze(this);
         Object.freeze(items);
@@ -52,7 +59,7 @@ export class ImmutableList<T> {
 
         const newItems: T[] = [...this.items];
 
-        for (let item of items) {
+        for (const item of items) {
             const index = newItems.indexOf(item);
 
             if (index < 0) {

@@ -1,3 +1,10 @@
+/*
+ * Notifo.io
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
+
 import { MathHelper } from '@app/core';
 import { Reducer } from 'redux';
 import { Diagram, EditorState } from './../internal';
@@ -26,7 +33,7 @@ export function grouping(): Reducer<EditorState> {
                 return state.updateDiagram(action.diagramId, diagram => {
                     const childIds: string[] = [];
 
-                    for (let groupId of action.itemIds) {
+                    for (const groupId of action.itemIds) {
                         const target = diagram.items.get(groupId);
 
                         if (target) {

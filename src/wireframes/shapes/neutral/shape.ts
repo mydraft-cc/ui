@@ -1,3 +1,10 @@
+/*
+ * Notifo.io
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
+
 import { Configurable, DiagramItem, SelectionConfigurable } from '@app/wireframes/model';
 import { AbstractContext, AbstractControl } from '@app/wireframes/shapes/utils/abstract-control';
 import { CommonTheme } from './_theme';
@@ -26,8 +33,8 @@ const CONFIGURABLES: Configurable[] = [
             SHAPE_ROUNDED_RECTANGLE,
             SHAPE_ELLIPSE,
             SHAPE_TRIANGLE,
-            SHAPE_RHOMBUS
-        ])
+            SHAPE_RHOMBUS,
+        ]),
 ];
 
 export class Shape extends AbstractControl {

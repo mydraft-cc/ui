@@ -1,3 +1,10 @@
+/*
+ * Notifo.io
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
+
 import { Color, ColorPicker } from '@app/core';
 import { changeItemsAppearance, DiagramItem, getDiagramId, getSelectedItems, getSelectionSet, selectColorTab, uniqueAppearance, useStore } from '@app/wireframes/model';
 import { Button, Col, Row, Select } from 'antd';
@@ -75,16 +82,16 @@ export const VisualProperties = React.memo(() => {
     }
 
     const fontSizes = DEFINED_FONT_SIZES.map(o =>
-        <Select.Option key={o.toString()} value={o}>{o}</Select.Option>
+        <Select.Option key={o.toString()} value={o}>{o}</Select.Option>,
     );
 
     const strokeThicknesses = DEFINED_STROKE_THICKNESSES.map(o =>
-        <Select.Option key={o.toString()} value={o}>{o}</Select.Option>
+        <Select.Option key={o.toString()} value={o}>{o}</Select.Option>,
     );
 
     return (
         <>
-            <div style={{display: (selectedItems.length > 0 ? 'block' : 'none') }}>
+            <div style={{ display: (selectedItems.length > 0 ? 'block' : 'none') }}>
                 <div className='property-subsection visual-properties'>
                     <Row className='property'>
                         <Col span={12} className='property-label'>Font Size</Col>

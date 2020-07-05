@@ -1,3 +1,10 @@
+/*
+ * Notifo.io
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
+
 import { ImmutableMap, Record, Vec2 } from '@app/core';
 import { Diagram } from './diagram';
 import { UndoableState } from './undoable-state';

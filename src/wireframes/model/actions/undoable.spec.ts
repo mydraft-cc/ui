@@ -1,3 +1,10 @@
+/*
+ * Notifo.io
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
+
 import { redo, undo, undoable, UndoableState } from '@app/wireframes/model';
 
 describe('Undoable', () => {

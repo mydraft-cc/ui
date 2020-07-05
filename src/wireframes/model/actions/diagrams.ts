@@ -1,3 +1,10 @@
+/*
+ * Notifo.io
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
+
 import { MathHelper, Vec2 } from '@app/core';
 import { Reducer } from 'redux';
 import { Diagram, EditorState } from './../internal';

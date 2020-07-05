@@ -1,3 +1,10 @@
+/*
+ * Notifo.io
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
+
 import { Vec2 } from '@app/core';
 import { DiagramItem } from './diagram-item';
 

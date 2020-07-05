@@ -1,3 +1,10 @@
+/*
+ * Notifo.io
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
+
 import { Rect2, Vec2 } from '@app/core';
 import { Configurable, DiagramItem, SelectionConfigurable } from '@app/wireframes/model';
 import { AbstractContext, AbstractControl } from '@app/wireframes/shapes/utils/abstract-control';
@@ -18,8 +25,8 @@ const CONFIGURABLES: Configurable[] = [
     new SelectionConfigurable(STATE_KEY, 'State',
         [
             STATE_NORMAL,
-            STATE_CHECKED
-        ])
+            STATE_CHECKED,
+        ]),
 ];
 
 export class Toggle extends AbstractControl {
@@ -40,6 +47,7 @@ export class Toggle extends AbstractControl {
 
         const radius = Math.min(ctx.shape.transform.size.x, ctx.shape.transform.size.y) * 0.5;
 
+        // tslint:disable-next-line: prefer-const
         let circleY = ctx.bounds.height * 0.5;
         let circleX = radius;
 

@@ -1,3 +1,10 @@
+/*
+ * Notifo.io
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
+
 import { Configurable, DiagramItem, SliderConfigurable } from '@app/wireframes/model';
 import { AbstractContext, AbstractControl } from '@app/wireframes/shapes/utils/abstract-control';
 import { CommonTheme } from './_theme';
@@ -15,7 +22,7 @@ DEFAULT_APPEARANCE[DiagramItem.APPEARANCE_STROKE_THICKNESS] = CommonTheme.CONTRO
 DEFAULT_APPEARANCE[BORDER_RADIUS_KEY] = 0;
 
 const CONFIGURABLES: Configurable[] = [
-    new SliderConfigurable(BORDER_RADIUS_KEY, 'Border Radius', 0, 40)
+    new SliderConfigurable(BORDER_RADIUS_KEY, 'Border Radius', 0, 40),
 ];
 
 export class Rectangle extends AbstractControl {

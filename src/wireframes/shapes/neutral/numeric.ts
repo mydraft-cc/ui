@@ -1,3 +1,9 @@
+/*
+ * Notifo.io
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
 
 import { Rect2 } from '@app/core';
 import { DiagramItem } from '@app/wireframes/model';

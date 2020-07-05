@@ -1,14 +1,20 @@
+/*
+ * Notifo.io
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
+
 import { MathHelper, Vec2 } from '@app/core';
 import { DiagramItem } from '@app/wireframes/model';
 import * as svg from 'svg.js';
-
 
 export class SvgEvent {
     constructor(
         public readonly event: MouseEvent,
         public readonly position: Vec2,
         public readonly element?: Element | null,
-        public readonly shape?: DiagramItem | null
+        public readonly shape?: DiagramItem | null,
     ) {
     }
 }
@@ -32,7 +38,7 @@ const ROTATION_CONFIG = [
     { angle: 180, cursor: 's-resize' },
     { angle: 215, cursor: 'sw-resize' },
     { angle: 270, cursor: 'w-resize' },
-    { angle: 315, cursor: 'nw-resize' }
+    { angle: 315, cursor: 'nw-resize' },
 ];
 
 const NOOP = () => { /* NOOP */ };
@@ -42,7 +48,7 @@ export class InteractionService {
     private isDragging = false;
 
     constructor(
-        private readonly adornerLayers: svg.Element[], renderings: svg.Element, private readonly diagram: svg.Doc
+        private readonly adornerLayers: svg.Element[], renderings: svg.Element, private readonly diagram: svg.Doc,
     ) {
         renderings.click((event: MouseEvent) => {
             this.invokeEvent(event, h => h.onClick ? h.onClick.bind(h) : null);
@@ -132,7 +138,7 @@ export class InteractionService {
 
                 let next = NOOP;
 
-                for (let handler of handlers) {
+                for (const handler of handlers) {
                     const currentNext = next;
 
                     next = () => handler(svgEvent, currentNext);
@@ -144,7 +150,7 @@ export class InteractionService {
     }
 
     private onMouseMove = (event: MouseEvent) => {
-        let element: any = event.target;
+        const element: any = event.target;
 
         if (element && element['cursor']) {
             document.body.style.cursor = element['cursor'];
@@ -155,7 +161,7 @@ export class InteractionService {
 
             const totalRotation = MathHelper.toPositiveDegree((baseRotation || 0) + rotation);
 
-            for (let config of ROTATION_CONFIG) {
+            for (const config of ROTATION_CONFIG) {
                 if (totalRotation > config.angle - 22.5 &&
                     totalRotation < config.angle + 22.5) {
 

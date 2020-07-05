@@ -1,9 +1,15 @@
+/*
+ * Notifo.io
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
+
 import * as svg from 'svg.js';
 import { Color } from './color';
 import { sizeInPx } from './react';
 import { Rect2 } from './rect2';
 import { Vec2 } from './vec2';
-
 
 export interface MatrixTransform {
     rect?: Rect2;
@@ -98,7 +104,7 @@ export module SVGHelper {
                 .rotate(
                     t.rotation || 0,
                     t.rx || (x + 0.5 * w),
-                    t.ry || (y + 0.5 * h)
+                    t.ry || (y + 0.5 * h),
                 );
 
         if (element['children']) {

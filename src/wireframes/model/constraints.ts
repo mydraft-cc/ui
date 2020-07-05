@@ -1,3 +1,10 @@
+/*
+ * Notifo.io
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
+
 import { MathHelper, Vec2 } from '@app/core';
 import { DiagramItem } from './diagram-item';
 
@@ -12,7 +19,7 @@ export interface Constraint {
 export class SizeConstraint implements Constraint {
     constructor(
         private readonly width: number | undefined,
-        private readonly height: number | undefined
+        private readonly height: number | undefined,
     ) {
         Object.freeze(this);
     }
@@ -63,7 +70,7 @@ export class MinSizeConstraint implements Constraint {
 
 export class TextHeightConstraint implements Constraint {
     constructor(
-        private readonly padding: number
+        private readonly padding: number,
     ) {
         Object.freeze(this);
     }

@@ -1,3 +1,10 @@
+/*
+ * Notifo.io
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
+
 import { Color, Rect2 } from '@app/core';
 import { ColorConfigurable, Configurable, DiagramItem } from '@app/wireframes/model';
 import { AbstractContext, AbstractControl } from '@app/wireframes/shapes/utils/abstract-control';
@@ -16,7 +23,7 @@ DEFAULT_APPEARANCE[DiagramItem.APPEARANCE_STROKE_THICKNESS] = CommonTheme.CONTRO
 DEFAULT_APPEARANCE[ACCENT_COLOR] = 0x2171b5;
 
 const CONFIGURABLES: Configurable[] = [
-    new ColorConfigurable(ACCENT_COLOR, 'Accent Color')
+    new ColorConfigurable(ACCENT_COLOR, 'Accent Color'),
 ];
 
 export class ButtonBar extends AbstractControl {

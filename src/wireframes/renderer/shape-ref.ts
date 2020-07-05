@@ -1,6 +1,12 @@
+/*
+ * Notifo.io
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
+
 import { DiagramItem, Renderer } from '@app/wireframes/model';
 import * as svg from 'svg.js';
-
 
 export class ShapeRef {
     private shape: DiagramItem;
@@ -14,7 +20,7 @@ export class ShapeRef {
     constructor(
         public readonly doc: svg.Container,
         public readonly renderer: Renderer,
-        public readonly showDebugMarkers: boolean
+        public readonly showDebugMarkers: boolean,
     ) {
     }
 
@@ -39,4 +45,3 @@ export class ShapeRef {
         this.shape = shape;
     }
 }
-

@@ -1,3 +1,10 @@
+/*
+ * Notifo.io
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
+
 export * from './assets-state';
 export * from './configurables';
 export * from './constraints';
@@ -14,4 +21,3 @@ export * from './snap-manager';
 export * from './transform';
 export * from './ui-state';
 export * from './undoable-state';
-

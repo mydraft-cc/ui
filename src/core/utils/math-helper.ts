@@ -1,4 +1,11 @@
-/* tslint:disable: no-bitwise */
+/*
+ * Notifo.io
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
+
+// tslint:disable: no-bitwise
 
 export module MathHelper {
     const CRC32_TABLE: number[] = [];
@@ -28,6 +35,7 @@ export module MathHelper {
     }
 
     export function guid(): string {
+        // tslint:disable-next-line: prefer-template
         return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
     }
 

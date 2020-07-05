@@ -1,4 +1,12 @@
-/* tslint:disable: no-bitwise */
+/*
+ * Notifo.io
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
+
+// tslint:disable: no-bitwise
+// tslint:disable: prefer-template
 
 import { Types } from './types';
 
@@ -16,7 +24,7 @@ const ColorDefinitions: IColorDefinition[] = [
                 parseInt(bits[1], 10) / 255,
                 parseInt(bits[2], 10) / 255,
                 parseInt(bits[3], 10) / 255);
-        }
+        },
     },
     {
         regex: /^(\w{2})(\w{2})(\w{2})$/,
@@ -25,7 +33,7 @@ const ColorDefinitions: IColorDefinition[] = [
                 parseInt(bits[1], 16) / 255,
                 parseInt(bits[2], 16) / 255,
                 parseInt(bits[3], 16) / 255);
-        }
+        },
     },
     {
         regex: /^(\w{1})(\w{1})(\w{1})$/,
@@ -34,8 +42,8 @@ const ColorDefinitions: IColorDefinition[] = [
                 parseInt(bits[1] + bits[1], 16) / 255,
                 parseInt(bits[2] + bits[2], 16) / 255,
                 parseInt(bits[3] + bits[3], 16) / 255);
-        }
-    }
+        },
+    },
 ];
 
 export class Color {
@@ -130,7 +138,7 @@ export class Color {
 
         value = value.replace(/ /g, '').toLowerCase();
 
-        for (let colorDefinition of ColorDefinitions) {
+        for (const colorDefinition of ColorDefinitions) {
             const bits = colorDefinition.regex.exec(value);
 
             if (bits) {
@@ -169,6 +177,7 @@ export class Color {
     }
 
     public static fromHsl(h: number, s: number, l: number): Color {
+        // tslint:disable-next-line: one-variable-per-declaration
         let r = 0, g = 0, b = 0;
 
         h = h / 360;

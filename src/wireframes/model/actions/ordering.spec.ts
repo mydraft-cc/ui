@@ -1,3 +1,10 @@
+/*
+ * Notifo.io
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
+
 import { BRING_FORWARDS, BRING_TO_FRONT, Diagram, DiagramItem, EditorState, ordering, orderItems, SEND_BACKWARDS, SEND_TO_BACK } from '@app/wireframes/model';
 
 describe('OrderingReducer', () => {

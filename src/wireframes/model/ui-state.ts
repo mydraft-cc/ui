@@ -1,3 +1,10 @@
+/*
+ * Notifo.io
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
+
 export interface UIState {
     // The current zoom level.
     zoom: number;
@@ -31,6 +38,6 @@ export const createInitialUIState: () => UIState = () => {
         selectedTab: 'shapes',
         showLeftSidebar: true,
         showRightSidebar: true,
-        selectedColorTab: 'palette'
+        selectedColorTab: 'palette',
     };
 };

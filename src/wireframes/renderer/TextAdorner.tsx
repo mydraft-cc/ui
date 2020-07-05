@@ -1,3 +1,10 @@
+/*
+ * Notifo.io
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
+
 import { sizeInPx } from '@app/core';
 import { Diagram, DiagramItem } from '@app/wireframes/model';
 import * as React from 'react';
@@ -27,7 +34,7 @@ export interface TextAdornerProps {
 }
 
 export class TextAdorner extends React.Component<TextAdornerProps> implements InteractionHandler {
-    private readonly style = { display: 'none '};
+    private readonly style = { display: 'none ' };
     private selectedShape: DiagramItem | null = null;
     private textareaElement: HTMLTextAreaElement;
 
