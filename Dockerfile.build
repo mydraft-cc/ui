@@ -1,4 +1,4 @@
-FROM squidex/dotnet:2.2-sdk-chromium-phantomjs-node
+FROM buildkite/puppeteer:latest
 
 WORKDIR /src
 
