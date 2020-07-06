@@ -1,5 +1,5 @@
 /*
- * Notifo.io
+ * mydraft.cc
  *
  * @license
  * Copyright (c) Sebastian Stehle. All rights reserved.
@@ -8,9 +8,10 @@
 import { Vec2 } from '@app/core';
 import { Diagram, DiagramItem, DiagramItemSet, RendererService, Serializer } from '@app/wireframes/model';
 import { Checkbox } from '@app/wireframes/shapes/neutral/checkbox';
+import { AbstractControl } from '../shapes/utils/abstract-control';
 
 describe('Serializer', () => {
-    const checkbox = new Checkbox();
+    const checkbox = new AbstractControl(new Checkbox());
 
     const oldShape1 = checkbox.createDefaultShape('1').transformWith(t => t.moveTo(new Vec2(100, 20)));
     const oldShape2 = checkbox.createDefaultShape('2').transformWith(t => t.moveTo(new Vec2(30, 10)));

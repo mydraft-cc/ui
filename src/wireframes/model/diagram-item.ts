@@ -1,11 +1,12 @@
 /*
- * Notifo.io
+ * mydraft.cc
  *
  * @license
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
 import { ImmutableMap, Record, Rotation, Types, Vec2 } from '@app/core';
+import { DefaultAppearance, Shape } from '@app/wireframes/interface';
 import { Configurable } from './configurables';
 import { Constraint } from './constraints';
 import { Diagram } from './diagram';
@@ -55,25 +56,13 @@ type ShapeProps = {
 
 type Props = ItemProps & GroupProps & ShapeProps & VisualProps;
 
-const DEFAULT_APPEARANCE = ImmutableMap.empty();
+const DEFAULT_APPEARANCE = ImmutableMap.empty<any>();
 const DEFAULT_CHILD_IDS = DiagramContainer.default();
 const DEFAULT_CONFIGURABLES: Configurable[] = [];
 
-export class DiagramItem extends Record<Props> {
+export class DiagramItem extends Record<Props> implements Shape {
     private cachedBounds: { [id: string]: Transform } | undefined;
     private cachedDiagram: Diagram;
-
-    public static readonly APPEARANCE_BACKGROUND_COLOR = 'FOREGROUND_COLOR';
-    public static readonly APPEARANCE_FONT_FAMILY = 'FONT_FAMILY';
-    public static readonly APPEARANCE_FONT_SIZE = 'FONT_SIZE';
-    public static readonly APPEARANCE_FOREGROUND_COLOR = 'BACKGROUND_COLOR';
-    public static readonly APPEARANCE_ICON_FONT_FAMILY = 'ICON_FONT_FAMILY';
-    public static readonly APPEARANCE_OPACITY = 'OPACITY';
-    public static readonly APPEARANCE_STROKE_COLOR = 'STROKE_COLOR';
-    public static readonly APPEARANCE_STROKE_THICKNESS = 'STROKE_THICKNESS';
-    public static readonly APPEARANCE_TEXT = 'TEXT';
-    public static readonly APPEARANCE_TEXT_ALIGNMENT = 'TEXT_ALIGNMENT';
-    public static readonly APPEARANCE_TEXT_DISABLED = 'TEXT_DISABLED';
 
     public get appearance() {
         return this.get('appearance') || DEFAULT_APPEARANCE;
@@ -125,6 +114,54 @@ export class DiagramItem extends Record<Props> {
         const appearance = getAppearance(visual);
 
         return new DiagramItem({ id, type: 'Shape', isLocked: false, transform: createTransform(w, h), renderer, appearance, configurables, constraint });
+    }
+
+    public get fontSize(): number {
+        return this.getAppearance(DefaultAppearance.FONT_SIZE) || 10;
+    }
+
+    public get fontFamily(): string {
+        return this.getAppearance(DefaultAppearance.FONT_FAMILY) || 'inherit';
+    }
+
+    public get backgroundColor(): string {
+        return this.getAppearance(DefaultAppearance.BACKGROUND_COLOR);
+    }
+
+    public get foregroundColor(): string {
+        return this.getAppearance(DefaultAppearance.FOREGROUND_COLOR);
+    }
+
+    public get iconFontFamily(): string {
+        return this.getAppearance(DefaultAppearance.ICON_FONT_FAMILY);
+    }
+
+    public get opacity(): number {
+        return this.getAppearance(DefaultAppearance.OPACITY);
+    }
+
+    public get strokeColor(): string {
+        return this.getAppearance(DefaultAppearance.STROKE_COLOR);
+    }
+
+    public get strokeThickness(): number {
+        return this.getAppearance(DefaultAppearance.STROKE_THICKNESS);
+    }
+
+    public get text(): string {
+        return this.getAppearance(DefaultAppearance.TEXT);
+    }
+
+    public get textAlignment(): string {
+        return this.getAppearance(DefaultAppearance.TEXT_ALIGNMENT);
+    }
+
+    public get textDisabled(): boolean {
+        return this.getAppearance(DefaultAppearance.TEXT_DISABLED);
+    }
+
+    public getAppearance(key: string) {
+        return this.appearance.get(key);
     }
 
     public lock() {

@@ -1,5 +1,5 @@
 /*
- * Notifo.io
+ * mydraft.cc
  *
  * @license
  * Copyright (c) Sebastian Stehle. All rights reserved.
@@ -81,6 +81,32 @@ export module SVGHelper {
         const b = rectangle.bottom;
 
         const item = container.path(`M${r},${b} L${l + rad},${b} a${rad},${rad} 0 0 1 -${rad},-${rad} L${l},${t + rad} a${rad},${rad} 0 0 1 ${rad},-${rad} L${r},${t} z`);
+
+        return item;
+    }
+
+    export function createRoundedRectangleTop(container: svg.Container, rectangle: Rect2, radius = 10) {
+        const rad = Math.min(radius, rectangle.width * 0.5, rectangle.height * 0.5);
+
+        const t = rectangle.top;
+        const l = rectangle.left;
+        const r = rectangle.right;
+        const b = rectangle.bottom;
+
+        const item = container.path(`M${l},${b} L${l},${t + rad} a${rad},${rad} 0 0 1 ${rad},-${rad} L${r - rad},${t} a${rad},${rad} 0 0 1 ${rad},${rad} L${r},${b} z`);
+
+        return item;
+    }
+
+    export function createRoundedRectangleBottom(container: svg.Container, rectangle: Rect2, radius = 10) {
+        const rad = Math.min(radius, rectangle.width * 0.5, rectangle.height * 0.5);
+
+        const t = rectangle.top;
+        const l = rectangle.left;
+        const r = rectangle.right;
+        const b = rectangle.bottom;
+
+        const item = container.path(`M${r},${t} L${r},${b - rad} a${rad},${rad} 0 0 1 -${rad},${rad} L${l + rad},${b} a${rad},${rad} 0 0 1 -${rad},-${rad} L${l},${t}z`);
 
         return item;
     }

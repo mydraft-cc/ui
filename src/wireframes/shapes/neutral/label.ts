@@ -1,36 +1,36 @@
 /*
- * Notifo.io
+ * mydraft.cc
  *
  * @license
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
-
-import { DiagramItem } from '@app/wireframes/model';
-import { AbstractContext, AbstractControl, TextSizeConstraint } from '@app/wireframes/shapes/utils/abstract-control';
+import { ConstraintFactory, DefaultAppearance, RenderContext, ShapePlugin } from '@app/wireframes/interface';
 import { CommonTheme } from './_theme';
 
 const DEFAULT_APPEARANCE = {};
-DEFAULT_APPEARANCE[DiagramItem.APPEARANCE_FOREGROUND_COLOR] = CommonTheme.CONTROL_TEXT_COLOR;
-DEFAULT_APPEARANCE[DiagramItem.APPEARANCE_TEXT] = 'Label';
-DEFAULT_APPEARANCE[DiagramItem.APPEARANCE_FONT_SIZE] = CommonTheme.CONTROL_FONT_SIZE;
+DEFAULT_APPEARANCE[DefaultAppearance.FOREGROUND_COLOR] = CommonTheme.CONTROL_TEXT_COLOR;
+DEFAULT_APPEARANCE[DefaultAppearance.TEXT] = 'Label';
+DEFAULT_APPEARANCE[DefaultAppearance.FONT_SIZE] = CommonTheme.CONTROL_FONT_SIZE;
 
-const CONSTRAINT = new TextSizeConstraint(5);
-
-export class Label extends AbstractControl {
-    public defaultAppearance() {
-        return DEFAULT_APPEARANCE;
-    }
-
+export class Label implements ShapePlugin {
     public identifier(): string {
         return 'Label';
     }
 
-    public createDefaultShape(shapeId: string): DiagramItem {
-        return DiagramItem.createShape(shapeId, this.identifier(), 46, 30, undefined, DEFAULT_APPEARANCE, CONSTRAINT);
+    public defaultAppearance() {
+        return DEFAULT_APPEARANCE;
     }
 
-    protected renderInternal(ctx: AbstractContext) {
-        const textItem = ctx.renderer.createSinglelineText(ctx.shape, ctx.bounds);
+    public defaultSize() {
+        return { x: 46, y: 30 };
+    }
+
+    public constraint(factory: ConstraintFactory) {
+        return factory.textSize(5);
+    }
+
+    public render(ctx: RenderContext) {
+        const textItem = ctx.renderer.createSinglelineText(ctx.shape, ctx.rect);
 
         ctx.renderer.setForegroundColor(textItem, ctx.shape);
 

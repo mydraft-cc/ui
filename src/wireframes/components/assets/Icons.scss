@@ -29,14 +29,14 @@
 .asset-icons {
     &-search {
         input {
-            @include border-radius(0);
             border-left: 0;
+            border-radius: 0;
             border-right: 0;
         }
 
         .ant-select-selection {
-            @include border-radius(0);
             border-left: 0;
+            border-radius: 0;
             border-right: 0;
         }
 
@@ -48,7 +48,7 @@
     }
 
     &-list {
-        @include flex-grow(1);
+        flex-grow: 1;
         overflow-x: hidden;
         overflow-y: scroll;
     }

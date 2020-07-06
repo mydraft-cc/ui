@@ -1,52 +1,53 @@
 /*
- * Notifo.io
+ * mydraft.cc
  *
  * @license
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { Configurable, DiagramItem, SliderConfigurable } from '@app/wireframes/model';
-import { AbstractContext, AbstractControl } from '@app/wireframes/shapes/utils/abstract-control';
+import { ConfigurableFactory, DefaultAppearance, RenderContext, ShapePlugin } from '@app/wireframes/interface';
 import { CommonTheme } from './_theme';
 
-const BORDER_RADIUS_KEY = 'BORDER_RADIUS';
+const BORDER_RADIUS = 'BORDER_RADIUS';
 
 const DEFAULT_APPEARANCE = {};
-DEFAULT_APPEARANCE[DiagramItem.APPEARANCE_FOREGROUND_COLOR] = 0;
-DEFAULT_APPEARANCE[DiagramItem.APPEARANCE_BACKGROUND_COLOR] = 0xFFFFFF;
-DEFAULT_APPEARANCE[DiagramItem.APPEARANCE_TEXT] = 'Rectangle';
-DEFAULT_APPEARANCE[DiagramItem.APPEARANCE_TEXT_ALIGNMENT] = 'center';
-DEFAULT_APPEARANCE[DiagramItem.APPEARANCE_FONT_SIZE] = CommonTheme.CONTROL_FONT_SIZE;
-DEFAULT_APPEARANCE[DiagramItem.APPEARANCE_STROKE_COLOR] = CommonTheme.CONTROL_BORDER_COLOR;
-DEFAULT_APPEARANCE[DiagramItem.APPEARANCE_STROKE_THICKNESS] = CommonTheme.CONTROL_BORDER_THICKNESS;
-DEFAULT_APPEARANCE[BORDER_RADIUS_KEY] = 0;
+DEFAULT_APPEARANCE[DefaultAppearance.FOREGROUND_COLOR] = 0;
+DEFAULT_APPEARANCE[DefaultAppearance.BACKGROUND_COLOR] = 0xFFFFFF;
+DEFAULT_APPEARANCE[DefaultAppearance.TEXT] = 'Rectangle';
+DEFAULT_APPEARANCE[DefaultAppearance.TEXT_ALIGNMENT] = 'center';
+DEFAULT_APPEARANCE[DefaultAppearance.FONT_SIZE] = CommonTheme.CONTROL_FONT_SIZE;
+DEFAULT_APPEARANCE[DefaultAppearance.STROKE_COLOR] = CommonTheme.CONTROL_BORDER_COLOR;
+DEFAULT_APPEARANCE[DefaultAppearance.STROKE_THICKNESS] = CommonTheme.CONTROL_BORDER_THICKNESS;
+DEFAULT_APPEARANCE[BORDER_RADIUS] = 0;
 
-const CONFIGURABLES: Configurable[] = [
-    new SliderConfigurable(BORDER_RADIUS_KEY, 'Border Radius', 0, 40),
-];
-
-export class Rectangle extends AbstractControl {
-    public defaultAppearance() {
-        return DEFAULT_APPEARANCE;
-    }
-
+export class Rectangle implements ShapePlugin {
     public identifier(): string {
         return 'Rectangle';
     }
 
-    public createDefaultShape(shapeId: string): DiagramItem {
-        return DiagramItem.createShape(shapeId, this.identifier(), 100, 60, CONFIGURABLES, DEFAULT_APPEARANCE);
+    public defaultAppearance() {
+        return DEFAULT_APPEARANCE;
     }
 
-    protected renderInternal(ctx: AbstractContext) {
+    public defaultSize() {
+        return { x: 100, y: 600 };
+    }
+
+    public configurables(factory: ConfigurableFactory) {
+        return [
+            factory.slider(BORDER_RADIUS, 'Border Radius', 0, 40),
+        ];
+    }
+
+    public render(ctx: RenderContext) {
         this.createShape(ctx);
         this.createText(ctx);
     }
 
-    private createShape(ctx: AbstractContext) {
-        const borderRadius =  ctx.shape.appearance.get(BORDER_RADIUS_KEY);
+    private createShape(ctx: RenderContext) {
+        const borderRadius =  ctx.shape.getAppearance(BORDER_RADIUS);
 
-        const shapeItem = ctx.renderer.createRectangle(ctx.shape, borderRadius, ctx.bounds);
+        const shapeItem = ctx.renderer.createRectangle(ctx.shape, borderRadius, ctx.rect);
 
         ctx.renderer.setStrokeColor(shapeItem, ctx.shape);
         ctx.renderer.setBackgroundColor(shapeItem, ctx.shape);
@@ -54,8 +55,8 @@ export class Rectangle extends AbstractControl {
         ctx.add(shapeItem);
     }
 
-    private createText(ctx: AbstractContext) {
-        const textItem = ctx.renderer.createSinglelineText(ctx.shape, ctx.bounds.deflate(10));
+    private createText(ctx: RenderContext) {
+        const textItem = ctx.renderer.createSinglelineText(ctx.shape, ctx.rect.deflate(10));
 
         ctx.renderer.setForegroundColor(textItem, ctx.shape);
 

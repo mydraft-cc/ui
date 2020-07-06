@@ -11,16 +11,20 @@
     height: 100%;
 }
 
+body {
+    overflow: hidden;
+}
+
 .hidden {
     display: none;
 }
 
 .no-select {
-    @include no-selection;
+    user-select: none;
 }
 
 .no-border-radius {
-    @include border-radius(0);
+    border-radius: 0;
 }
 
 .ant-layout {
@@ -77,10 +81,11 @@ ul {
 
 .sidebar-left {
     & {
-        @include flex;
-        @include flex-flow(column);
         background: $color-dark-foreground;
         border-right: 1px solid $color-border;
+        display: flex;
+        flex-flow: column;
+        flex-grow: 1;
     }
 
     .ant-layout-sider-children,
@@ -88,14 +93,21 @@ ul {
     .ant-tabs-content,
     .ant-tabs-tabpane,
     .tab-panel {
-        @include flex;
-        @include flex-flow(column);
-        @include flex-grow(1);
+        display: flex;
+        flex-flow: column;
+        flex-grow: 1;
+        max-height: 100%;
         min-height: 0;
     }
 
     .ant-tabs-tabpane {
-        @include flex-shrink-important(1);
+        flex-shrink: 1 !important;
+    }
+}
+
+.sidebar-right {
+    .ant-collapse {
+        background: transparent;
     }
 }
 
@@ -166,33 +178,33 @@ $sidebar-size: 320px;
 //
 .menu {
     &-separator {
-        @include opacity(.8);
         background: $color-dark-foreground;
         border: 0;
         display: inline-block;
         height: 1rem;
         margin-left: .5rem;
         margin-right: .5rem;
+        opacity: .8;
         width: 1px;
     }
 
     &-item,
     &-item > button {
         & {
-            @include opacity(.8);
             background: transparent !important;
             border: 0;
             border-radius: 0;
             color: $color-dark-foreground !important;
             height: 60px;
+            opacity: .8;
         }
 
         &:hover {
-            @include opacity(1);
+            opacity: 1;
         }
 
         &:disabled {
-            @include opacity(.4);
+            opacity: .4;
         }
     }
 }

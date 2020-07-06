@@ -1,11 +1,12 @@
 /*
- * Notifo.io
+ * mydraft.cc
  *
  * @license
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
 import { MathHelper, Vec2 } from '@app/core';
+import { DefaultAppearance } from '@app/wireframes/interface';
 import { Action, Middleware, Reducer } from 'redux';
 import { Diagram, DiagramItem, DiagramItemSet, EditorState, RendererService, Serializer } from './../internal';
 import { createDiagramAction, createItemsAction, DiagramRef, ItemsRef } from './utils';
@@ -131,8 +132,8 @@ export function items(rendererService: RendererService, serializer: Serializer):
 
                     const configured =
                         shape.transformWith(t => t.moveTo(position))
-                            .setAppearance(DiagramItem.APPEARANCE_TEXT, action.text)
-                            .setAppearance(DiagramItem.APPEARANCE_ICON_FONT_FAMILY, action.fontFamily);
+                            .setAppearance(DefaultAppearance.TEXT, action.text)
+                            .setAppearance(DefaultAppearance.ICON_FONT_FAMILY, action.fontFamily);
 
                     return diagram.addVisual(configured).selectItems([configured.id]);
                 });

@@ -22,15 +22,15 @@ $size: 24px;
             @include circle($size);
             background: $color-dark-foreground;
             border: 2px solid $color-border;
-            border-radius: 0;
+            border-radius: $size;
             float: left;
             margin: 1px;
         }
 
         &.rect {
-            @include border-radius(0);
             background: transparent;
             border-color: transparent;
+            border-radius: 0;
             float: none;
         }
 
@@ -56,10 +56,10 @@ $size: 24px;
 }
 
 .sketch-picker {
-    @include box-shadow-none;
     background: 'none' !important;
     border: 0 !important;
     border-radius: 0 !important;
+    box-shadow: none;
     padding: 0 !important;
 }
 

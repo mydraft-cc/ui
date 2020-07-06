@@ -1,35 +1,34 @@
 /*
- * Notifo.io
+ * mydraft.cc
  *
  * @license
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { DiagramItem } from '@app/wireframes/model';
-import { AbstractContext, AbstractControl } from '@app/wireframes/shapes/utils/abstract-control';
+import { DefaultAppearance, RenderContext, ShapePlugin } from '@app/wireframes/interface';
 
 const DEFAULT_APPEARANCE = {};
-DEFAULT_APPEARANCE[DiagramItem.APPEARANCE_TEXT_DISABLED] = true;
+DEFAULT_APPEARANCE[DefaultAppearance.TEXT_DISABLED] = true;
 
-export class Raster extends AbstractControl {
+export class Raster implements ShapePlugin {
+    public identifier(): string {
+        return 'Raster';
+    }
+
     public defaultAppearance() {
         return DEFAULT_APPEARANCE;
     }
 
-    public identifier(): string {
-        return 'Raster';
+    public defaultSize() {
+        return { x: 80, y: 30 };
     }
 
     public showInGallery() {
         return false;
     }
 
-    public createDefaultShape(shapeId: string): DiagramItem {
-        return DiagramItem.createShape(shapeId, this.identifier(), 80, 30, undefined, DEFAULT_APPEARANCE);
-    }
-
-    protected renderInternal(ctx: AbstractContext) {
-        const rasterItem = ctx.renderer.createRaster(ctx.shape.appearance.get('SOURCE'), ctx.bounds.deflate(1));
+    public render(ctx: RenderContext) {
+        const rasterItem = ctx.renderer.createRaster(ctx.shape.getAppearance('SOURCE'), ctx.rect.deflate(1));
 
         ctx.add(rasterItem);
     }

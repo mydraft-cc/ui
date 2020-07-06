@@ -1,46 +1,44 @@
 /*
- * Notifo.io
+ * mydraft.cc
  *
  * @license
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { Rect2, Vec2 } from '@app/core';
-import { DiagramItem } from '@app/wireframes/model';
-import { AbstractContext, AbstractControl } from '@app/wireframes/shapes/utils/abstract-control';
+import { DefaultAppearance, Rect2, RenderContext, ShapePlugin, Vec2 } from '@app/wireframes/interface';
 
 const DEFAULT_APPEARANCE = {};
-DEFAULT_APPEARANCE[DiagramItem.APPEARANCE_BACKGROUND_COLOR] = 0xFFFFFF;
-DEFAULT_APPEARANCE[DiagramItem.APPEARANCE_TEXT_DISABLED] = true;
+DEFAULT_APPEARANCE[DefaultAppearance.BACKGROUND_COLOR] = 0xFFFFFF;
+DEFAULT_APPEARANCE[DefaultAppearance.TEXT_DISABLED] = true;
 
-export class Tablet extends AbstractControl {
+export class Tablet implements ShapePlugin {
+    public identifier(): string {
+        return 'Tablet';
+    }
+
     public defaultAppearance() {
         return DEFAULT_APPEARANCE;
     }
 
-    public identifier(): string {
-        return 'Tablet';
+    public defaultSize() {
+        return { x: 640, y: 480 };
     }
 
     public previewOffset() {
         return new Vec2(15, 50);
     }
 
-    public createDefaultShape(shapeId: string): DiagramItem {
-        return DiagramItem.createShape(shapeId, this.identifier(), 640, 480, undefined, DEFAULT_APPEARANCE);
-    }
-
-    protected renderInternal(ctx: AbstractContext) {
+    public render(ctx: RenderContext) {
         this.createHull(ctx);
 
-        if (ctx.bounds.width >= 50 && ctx.bounds.height > 200) {
+        if (ctx.rect.width >= 50 && ctx.rect.height > 200) {
             this.createScreen(ctx);
             this.createSpeaker(ctx);
         }
     }
 
-    private createHull(ctx: AbstractContext) {
-        const hullRect = new Rect2(-15, -50, ctx.bounds.width + 30, ctx.bounds.height + 75);
+    private createHull(ctx: RenderContext) {
+        const hullRect = new Rect2(-15, -50, ctx.rect.width + 30, ctx.rect.height + 75);
         const hullItem = ctx.renderer.createRectangle(0, 20, hullRect);
 
         ctx.renderer.setBackgroundColor(hullItem, 0);
@@ -48,16 +46,16 @@ export class Tablet extends AbstractControl {
         ctx.add(hullItem);
     }
 
-    private createScreen(ctx: AbstractContext) {
-        const screenItem = ctx.renderer.createRectangle(0, 0, ctx.bounds);
+    private createScreen(ctx: RenderContext) {
+        const screenItem = ctx.renderer.createRectangle(0, 0, ctx.rect);
 
         ctx.renderer.setBackgroundColor(screenItem, ctx.shape);
 
         ctx.add(screenItem);
     }
 
-    private createSpeaker(ctx: AbstractContext) {
-        const speakerRect = new Rect2((ctx.bounds.width - 50) * 0.5, -25, 50, 4);
+    private createSpeaker(ctx: RenderContext) {
+        const speakerRect = new Rect2((ctx.rect.width - 50) * 0.5, -25, 50, 4);
         const speakerItem = ctx.renderer.createRectangle(0, 2, speakerRect);
 
         ctx.renderer.setBackgroundColor(speakerItem, 0x333333);

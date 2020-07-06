@@ -1,5 +1,5 @@
 /*
- * Notifo.io
+ * mydraft.cc
  *
  * @license
  * Copyright (c) Sebastian Stehle. All rights reserved.
@@ -45,7 +45,7 @@ export const EditorView = ({ spacing }: EditorViewProps) => {
                 return;
             }
 
-            const offset = monitor.getSourceClientOffset() || monitor.getClientOffset()!;
+            const offset = monitor.getSourceClientOffset();
 
             const componentRect = (findDOMNode(ref.current) as HTMLElement)!.getBoundingClientRect();
 

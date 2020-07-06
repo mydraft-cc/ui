@@ -1,15 +1,15 @@
 /*
- * Notifo.io
+ * mydraft.cc
  *
  * @license
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
 import { MathHelper, Vec2 } from '@app/core';
-import { DiagramItem } from './diagram-item';
+import { Shape } from '@app/wireframes/interface';
 
 export interface Constraint {
-    updateSize(shape: DiagramItem, size: Vec2, prev?: DiagramItem): Vec2;
+    updateSize(shape: Shape, size: Vec2, prev?: Shape): Vec2;
 
     calculateSizeX(): boolean;
 
@@ -24,7 +24,7 @@ export class SizeConstraint implements Constraint {
         Object.freeze(this);
     }
 
-    public updateSize(shape: DiagramItem, size: Vec2): Vec2 {
+    public updateSize(_: Shape, size: Vec2): Vec2 {
         let w = size.x;
         let h = size.y;
 
@@ -53,7 +53,7 @@ export class MinSizeConstraint implements Constraint {
         Object.freeze(this);
     }
 
-    public updateSize(shape: DiagramItem, size: Vec2): Vec2 {
+    public updateSize(_: Shape, size: Vec2): Vec2 {
         const minSize = Math.min(size.x, size.y);
 
         return new Vec2(minSize, minSize);
@@ -75,8 +75,8 @@ export class TextHeightConstraint implements Constraint {
         Object.freeze(this);
     }
 
-    public updateSize(shape: DiagramItem, size: Vec2): Vec2 {
-        const fontSize = shape.appearance.get(DiagramItem.APPEARANCE_FONT_SIZE);
+    public updateSize(shape: Shape, size: Vec2): Vec2 {
+        const fontSize = shape.fontSize;
 
         return new Vec2(size.x, MathHelper.roundToMultipleOfTwo(fontSize * 1.2 + this.padding * 2));
     }

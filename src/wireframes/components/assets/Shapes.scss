@@ -29,15 +29,15 @@
 
 .asset-shapes {
     &-search {
-        input {
-            @include border-radius(0);
+        .ant-input-affix-wrapper {
             border-left: 0;
+            border-radius: 0 !important;
             border-right: 0;
         }
     }
 
     &-list {
-        @include flex-grow(1);
+        flex-grow: 1;
         overflow-x: hidden;
         overflow-y: scroll;
     }
