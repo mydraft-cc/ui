@@ -23,7 +23,7 @@ Just install node.js and run the following commands in your terminal:
     npm rebuild node-sass --force
     npm start
 
-Go to `http://localhost:3000`
+Go to `https://localhost:3002`
 
 ## How to build the application?
 
