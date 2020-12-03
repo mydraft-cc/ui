@@ -3,7 +3,6 @@ import { Rect2 } from '@app/core';
 import {
     Configurable,
     DiagramItem,
-    SizeConstraint,
     SliderConfigurable
 } from '@app/wireframes/model';
 
@@ -28,9 +27,6 @@ const CONFIGURABLES: Configurable[] = [
     new SliderConfigurable(BAR_POSITION, 'Bar Position')
 ];
 
-const WIDTH_TOTAL = 20;
-const WIDTH_CONSTRAINT = new SizeConstraint(WIDTH_TOTAL, undefined);
-
 export class VerticalScrollbar extends AbstractControl {
     public defaultAppearance() {
         return DEFAULT_APPEARANCE;
@@ -41,7 +37,7 @@ export class VerticalScrollbar extends AbstractControl {
     }
 
     public createDefaultShape(shapeId: string): DiagramItem {
-        return DiagramItem.createShape(shapeId, this.identifier(), WIDTH_TOTAL, 300, CONFIGURABLES, DEFAULT_APPEARANCE, WIDTH_CONSTRAINT);
+        return DiagramItem.createShape(shapeId, this.identifier(), 20, 300, CONFIGURABLES, DEFAULT_APPEARANCE);
     }
 
     protected renderInternal(ctx: AbstractContext) {
@@ -59,10 +55,10 @@ export class VerticalScrollbar extends AbstractControl {
 
         const clipMask = ctx.renderer.createRectangle(0, 0, ctx.bounds);
 
-         const barBounds = new Rect2(ctx.bounds.x, ctx.bounds.y + clickSize + barPosition, ctx.bounds.width, (ctx.bounds.height - 2 * clickSize) * barSize);
-         const barItem = ctx.renderer.createRectangle(0, 0, barBounds);
+        const barBounds = new Rect2(ctx.bounds.x, ctx.bounds.y + clickSize + barPosition, ctx.bounds.width, (ctx.bounds.height - 2 * clickSize) * barSize);
+        const barItem = ctx.renderer.createRectangle(0, 0, barBounds);
 
-         ctx.renderer.setBackgroundColor(barItem, 0xbdbdbd);
+        ctx.renderer.setBackgroundColor(barItem, 0xbdbdbd);
 
         const railItem = ctx.renderer.createRectangle(0, 0, ctx.bounds);
 
