@@ -24,6 +24,7 @@ import { TextArea } from './neutral/text-area';
 import { TextInput } from './neutral/text-input';
 import { Toggle } from './neutral/toggle';
 import { VerticalLine } from './neutral/vertical-line';
+import { VerticalScrollbar } from './neutral/vertical-scrollbar';
 
 import { Icon } from './shared/icon';
 import { Raster } from './shared/raster';
@@ -59,5 +60,6 @@ export function registerRenderers(): RendererService {
         .addRenderer(new TextInput())
         .addRenderer(new Tablet())
         .addRenderer(new Toggle())
-        .addRenderer(new VerticalLine());
+        .addRenderer(new VerticalLine())
+        .addRenderer(new VerticalScrollbar());
 }
