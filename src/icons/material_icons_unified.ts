@@ -1,3 +1,13 @@
+/*
+ * mydraft.cc
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
+
+// tslint:disable: object-literal-key-quotes
+// tslint:disable: trailing-comma
+
 import { ICONS } from './material_icons';
 
 export const ICONS_MATERIAL_DESIGN = ICONS.map(icon => {

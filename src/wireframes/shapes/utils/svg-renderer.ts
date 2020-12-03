@@ -1,23 +1,17 @@
-import * as svg from 'svg.js';
-export * from './abstract-renderer';
+/*
+ * mydraft.cc
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
 
-import {
-    Rect2,
-    sizeInPx,
-    SVGHelper
-} from '@app/core';
-
+import { Rect2, sizeInPx, SVGHelper } from '@app/core';
+import { DefaultAppearance, RendererColor, RendererElement, RendererOpacity, RendererText, RendererWidth, Shape } from '@app/wireframes/interface';
 import { DiagramItem, Transform } from '@app/wireframes/model';
+import * as svg from 'svg.js';
+import { AbstractRenderer } from './abstract-renderer';
 
-import {
-    AbstractRenderer,
-    RendererColor,
-    RendererElement,
-    RendererOpacity,
-    RendererText,
-    RendererTransform,
-    RendererWidth
-} from './abstract-renderer';
+export * from './abstract-renderer';
 
 export class SVGRenderer implements AbstractRenderer {
     private measureDiv: HTMLDivElement;
@@ -104,13 +98,47 @@ export class SVGRenderer implements AbstractRenderer {
         return element;
     }
 
+    public createRoundedRectangleTop(strokeWidth: RendererWidth, radius: number, bounds: Rect2): RendererElement {
+        if (radius <= 0) {
+            return this.createRectangle(strokeWidth, 0, bounds);
+        }
+
+        const w = this.getStrokeWidth(strokeWidth);
+        const b = this.getBoundsWithStroke(bounds, w);
+
+        const element = SVGHelper.createRoundedRectangleTop(this.container, b, radius).fill('transparent');
+
+        if (w > 0) {
+            element.stroke({ width: w });
+        }
+
+        return element;
+    }
+
+    public createRoundedRectangleBottom(strokeWidth: RendererWidth, radius: number, bounds: Rect2): RendererElement {
+        if (radius <= 0) {
+            return this.createRectangle(strokeWidth, 0, bounds);
+        }
+
+        const w = this.getStrokeWidth(strokeWidth);
+        const b = this.getBoundsWithStroke(bounds, w);
+
+        const element = SVGHelper.createRoundedRectangleBottom(this.container, b, radius).fill('transparent');
+
+        if (w > 0) {
+            element.stroke({ width: w });
+        }
+
+        return element;
+    }
+
     public createPath(strokeWidth: RendererWidth, path: string, bounds?: Rect2): RendererElement {
         const w = this.getStrokeWidth(strokeWidth);
 
         const pathArray = new svg.PathArray(path);
         const pathSegments: svg.PathArrayPoint[] = <any>pathArray.valueOf();
 
-        for (let segment of pathSegments) {
+        for (const segment of pathSegments) {
             if (segment.length >= 3) {
                 let x = <number>segment[segment.length - 2];
                 let y = <number>segment[segment.length - 1];
@@ -148,11 +176,8 @@ export class SVGRenderer implements AbstractRenderer {
     public createSinglelineText(config?: RendererText, bounds?: Rect2): RendererElement {
         let element: svg.Element;
 
-        if (config instanceof DiagramItem) {
-            element = SVGHelper.createSinglelineText(this.container,
-                config.appearance.get(DiagramItem.APPEARANCE_TEXT),
-                config.appearance.get(DiagramItem.APPEARANCE_FONT_SIZE),
-                config.appearance.get(DiagramItem.APPEARANCE_TEXT_ALIGNMENT));
+        if (isShape(config)) {
+            element = SVGHelper.createSinglelineText(this.container, config.text, config.fontSize, config.textAlignment);
         } else if (config) {
             element = SVGHelper.createSinglelineText(this.container, config.text, config.fontSize, config.alignment);
         } else {
@@ -167,11 +192,8 @@ export class SVGRenderer implements AbstractRenderer {
     public createMultilineText(config?: RendererText, bounds?: Rect2): RendererElement {
         let element: svg.Element;
 
-        if (config instanceof DiagramItem) {
-            element = SVGHelper.createMultilineText(this.container,
-                config.appearance.get(DiagramItem.APPEARANCE_TEXT),
-                config.appearance.get(DiagramItem.APPEARANCE_FONT_SIZE),
-                config.appearance.get(DiagramItem.APPEARANCE_TEXT_ALIGNMENT));
+        if (isShape(config)) {
+            element = SVGHelper.createMultilineText(this.container, config.text, config.fontSize, config.textAlignment);
         } else if (config) {
             element = SVGHelper.createMultilineText(this.container, config.text, config.fontSize, config.alignment);
         } else {
@@ -191,10 +213,10 @@ export class SVGRenderer implements AbstractRenderer {
         return element;
     }
 
-    public createGroup(items: RendererElement[], clipItem: any): RendererElement {
+    public createGroup(items: RendererElement[], clipItem?: any): RendererElement {
         const group = this.container.group();
 
-        for (let item of items) {
+        for (const item of items) {
             group.add(item.groupElement ? item.groupElement : item);
         }
 
@@ -214,7 +236,7 @@ export class SVGRenderer implements AbstractRenderer {
     }
 
     public setForegroundColor(element: RendererElement, color: RendererColor): AbstractRenderer {
-        const c = this.getColor(color, DiagramItem.APPEARANCE_FOREGROUND_COLOR);
+        const c = this.getColor(color, DefaultAppearance.FOREGROUND_COLOR);
         const e = this.getElement(element);
 
         if (c) {
@@ -225,7 +247,7 @@ export class SVGRenderer implements AbstractRenderer {
     }
 
     public setBackgroundColor(element: RendererElement, color: RendererColor): AbstractRenderer {
-        const c = this.getColor(color, DiagramItem.APPEARANCE_BACKGROUND_COLOR);
+        const c = this.getColor(color, DefaultAppearance.BACKGROUND_COLOR);
         const e = this.getElement(element);
 
         if (c) {
@@ -236,7 +258,7 @@ export class SVGRenderer implements AbstractRenderer {
     }
 
     public setStrokeColor(element: RendererElement, color: RendererColor): AbstractRenderer {
-        const c = this.getColor(color, DiagramItem.APPEARANCE_STROKE_COLOR);
+        const c = this.getColor(color, DefaultAppearance.STROKE_COLOR);
         const e = this.getElement(element);
 
         if (c) {
@@ -287,7 +309,7 @@ export class SVGRenderer implements AbstractRenderer {
         return this;
     }
 
-    public setTransform(element: any, to: RendererTransform): AbstractRenderer {
+    public setTransform(element: any, to: any): AbstractRenderer {
         const e = this.getElement(element);
 
         if (to instanceof DiagramItem) {
@@ -300,7 +322,7 @@ export class SVGRenderer implements AbstractRenderer {
                 h:  to.size.y,
                 rx: to.position.x,
                 ry: to.position.y,
-                rotation: to.rotation.degree
+                rotation: to.rotation.degree,
             });
         } else {
             SVGHelper.transform(element, to);
@@ -337,27 +359,27 @@ export class SVGRenderer implements AbstractRenderer {
         }
     }
 
-    private getColor(color: RendererColor, key: string): string {
-        if (color instanceof DiagramItem) {
-            return SVGHelper.toColor(color.appearance.get(key));
+    private getColor(value: RendererColor, key: string): string {
+        if (isShape(value)) {
+            return SVGHelper.toColor(value.getAppearance(key));
         } else {
-            return SVGHelper.toColor(color);
+            return SVGHelper.toColor(value);
         }
     }
 
-    private getOpacity(opacity: RendererWidth): number {
-        if (opacity instanceof DiagramItem) {
-            return opacity.appearance.get(DiagramItem.APPEARANCE_OPACITY);
+    private getOpacity(value: RendererWidth): number {
+        if (isShape(value)) {
+            return value.opacity;
         } else {
-            return opacity;
+            return value;
         }
     }
 
-    private getStrokeWidth(strokeWidth: RendererWidth): number {
-        if (strokeWidth instanceof DiagramItem) {
-            return strokeWidth.appearance.get(DiagramItem.APPEARANCE_STROKE_THICKNESS);
+    private getStrokeWidth(value: RendererWidth): number {
+        if (isShape(value)) {
+            return value.strokeThickness;
         } else {
-            return strokeWidth;
+            return value;
         }
     }
 
@@ -390,4 +412,8 @@ export class SVGRenderer implements AbstractRenderer {
 
         return new Rect2(l, t, r - l, b - t);
     }
+}
+
+function isShape(element: any): element is Shape {
+    return element instanceof DiagramItem;
 }

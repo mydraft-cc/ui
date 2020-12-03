@@ -1,23 +1,19 @@
+/*
+ * mydraft.cc
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
+
+import { RendererContext } from '@app/context';
+import { sizeInPx } from '@app/core';
+import { addIcon, addImage, addVisual, getDiagramId, getEditor, useStore } from '@app/wireframes/model';
+import { EditorContainer } from '@app/wireframes/renderer/Editor';
 import * as React from 'react';
 import { DropTargetMonitor, useDrop } from 'react-dnd';
 import { NativeTypes } from 'react-dnd-html5-backend';
 import { findDOMNode } from 'react-dom';
 import { useDispatch } from 'react-redux';
-
-import { sizeInPx } from '@app/core';
-
-import { RendererContext } from '@app/context';
-
-import {
-    addIcon,
-    addImage,
-    addVisual,
-    getDiagramId,
-    getEditor,
-    useStore
-} from '@app/wireframes/model';
-
-import { EditorContainer } from '@app/wireframes/renderer/Editor';
 
 export interface EditorViewProps {
     // The spacing.
@@ -42,14 +38,14 @@ export const EditorView = ({ spacing }: EditorViewProps) => {
             NativeTypes.FILE,
             NativeTypes.TEXT,
             'DND_ASSET',
-            'DND_ICON'
+            'DND_ICON',
         ],
         drop: (item: any, monitor: DropTargetMonitor) => {
             if (!monitor || !ref.current) {
                 return;
             }
 
-            const offset = monitor.getSourceClientOffset() || monitor.getClientOffset()!;
+            const offset = monitor.getSourceClientOffset();
 
             const componentRect = (findDOMNode(ref.current) as HTMLElement)!.getBoundingClientRect();
 
@@ -76,7 +72,7 @@ export const EditorView = ({ spacing }: EditorViewProps) => {
                 case NativeTypes.FILE: {
                     const files = item.files as File[];
 
-                    for (let file of files) {
+                    for (const file of files) {
                         if (file.type.indexOf('image') === 0) {
                             const reader = new FileReader();
 
@@ -98,14 +94,14 @@ export const EditorView = ({ spacing }: EditorViewProps) => {
                 case NativeTypes.URL: {
                     const urls = item.urls as string[];
 
-                    for (let url of urls) {
+                    for (const url of urls) {
                         dispatch(addVisual(selectedDiagramId, 'Link', x, y, { TEXT: url }));
                         break;
                     }
                     break;
                 }
             }
-        }
+        },
     });
 
     const zoomedOuterWidth  = 2 * spacing + zoomedWidth;

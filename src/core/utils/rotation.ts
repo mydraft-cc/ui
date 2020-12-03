@@ -1,3 +1,10 @@
+/*
+ * mydraft.cc
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
+
 import { MathHelper } from './math-helper';
 
 export class Rotation {
@@ -8,7 +15,7 @@ export class Rotation {
 
     constructor(
         public readonly radian: number,
-        public readonly degree: number
+        public readonly degree: number,
     ) {
         this.cos = Math.cos(radian);
         this.sin = Math.sin(radian);

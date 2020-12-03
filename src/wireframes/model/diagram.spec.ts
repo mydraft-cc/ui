@@ -1,8 +1,11 @@
-import {
-    Diagram,
-    DiagramItem,
-    DiagramItemSet
-} from '@app/wireframes/model';
+/*
+ * mydraft.cc
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
+
+import { Diagram, DiagramItem, DiagramItemSet } from '@app/wireframes/model';
 
 describe('Diagram', () => {
     const shape1 = DiagramItem.createShape('1', 'btn', 100, 20);

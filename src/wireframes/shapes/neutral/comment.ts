@@ -1,41 +1,46 @@
-import { DiagramItem } from '@app/wireframes/model';
+/*
+ * mydraft.cc
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
 
-import { AbstractContext, AbstractControl } from '@app/wireframes/shapes/utils/abstract-control';
+import { DefaultAppearance, RenderContext, ShapePlugin } from '@app/wireframes/interface';
 import { CommonTheme } from './_theme';
 
 const DEFAULT_APPEARANCE = {};
-DEFAULT_APPEARANCE[DiagramItem.APPEARANCE_TEXT] = 'Lorem ipsum dolor sit amet, alii rebum postea eam ex. Et mei laoreet officiis, summo sensibus id mei.';
-DEFAULT_APPEARANCE[DiagramItem.APPEARANCE_TEXT_ALIGNMENT] = 'left';
-DEFAULT_APPEARANCE[DiagramItem.APPEARANCE_FONT_SIZE] = CommonTheme.CONTROL_FONT_SIZE;
-DEFAULT_APPEARANCE[DiagramItem.APPEARANCE_STROKE_THICKNESS] = 1;
+DEFAULT_APPEARANCE[DefaultAppearance.TEXT] = 'Lorem ipsum dolor sit amet, alii rebum postea eam ex. Et mei laoreet officiis, summo sensibus id mei.';
+DEFAULT_APPEARANCE[DefaultAppearance.TEXT_ALIGNMENT] = 'left';
+DEFAULT_APPEARANCE[DefaultAppearance.FONT_SIZE] = CommonTheme.CONTROL_FONT_SIZE;
+DEFAULT_APPEARANCE[DefaultAppearance.STROKE_THICKNESS] = 1;
 
-export class Comment extends AbstractControl {
-    public defaultAppearance() {
-        return DEFAULT_APPEARANCE;
-    }
-
+export class Comment implements ShapePlugin {
     public identifier(): string {
         return 'Comment';
     }
 
-    public createDefaultShape(shapeId: string): DiagramItem {
-        return DiagramItem.createShape(shapeId, this.identifier(), 170, 150, undefined, DEFAULT_APPEARANCE);
+    public defaultAppearance() {
+        return DEFAULT_APPEARANCE;
     }
 
-    protected renderInternal(ctx: AbstractContext) {
-        const corner = Math.min(14.5, ctx.bounds.width, ctx.bounds.height) - .5;
+    public defaultSize() {
+        return { x: 170, y: 150 };
+    }
+
+    public render(ctx: RenderContext) {
+        const corner = Math.min(14.5, ctx.rect.width, ctx.rect.height) - .5;
 
         this.createBorder(ctx, corner);
         this.createText(ctx);
     }
 
-    private createBorder(ctx: AbstractContext, c: number) {
-        const l = ctx.bounds.left;
-        const r = ctx.bounds.right;
-        const t = ctx.bounds.top;
-        const b = ctx.bounds.bottom;
+    private createBorder(ctx: RenderContext, c: number) {
+        const l = ctx.rect.left;
+        const r = ctx.rect.right;
+        const t = ctx.rect.top;
+        const b = ctx.rect.bottom;
 
-        const borderItem = ctx.renderer.createPath(ctx.shape, `M${l + c},${t} L${r},${t} L${r},${b} L${l},${b} L${l},${t + c} L${l + c},${t} L${l + c},${t + c} L${l},${t + c} z`, ctx.bounds);
+        const borderItem = ctx.renderer.createPath(ctx.shape, `M${l + c},${t} L${r},${t} L${r},${b} L${l},${b} L${l},${t + c} L${l + c},${t} L${l + c},${t + c} L${l},${t + c} z`, ctx.rect);
 
         ctx.renderer.setBackgroundColor(borderItem, 0xfff9b7);
         ctx.renderer.setStrokeColor(borderItem, 0);
@@ -44,8 +49,8 @@ export class Comment extends AbstractControl {
         ctx.add(borderItem);
     }
 
-    private createText(ctx: AbstractContext) {
-        const textItem = ctx.renderer.createMultilineText(ctx.shape, ctx.bounds.deflate(10, 20));
+    private createText(ctx: RenderContext) {
+        const textItem = ctx.renderer.createMultilineText(ctx.shape, ctx.rect.deflate(10, 20));
 
         ctx.add(textItem);
     }

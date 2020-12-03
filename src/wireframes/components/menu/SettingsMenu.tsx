@@ -1,10 +1,16 @@
-import { Button, Col, Icon, InputNumber, Modal, Row, Tooltip } from 'antd';
+/*
+ * mydraft.cc
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
+
+import { SettingOutlined } from '@ant-design/icons';
+import { Shortcut } from '@app/core';
+import { changeSize, useStore } from '@app/wireframes/model';
+import { Button, Col, InputNumber, Modal, Row, Tooltip } from 'antd';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
-
-import { Shortcut } from '@app/core';
-
-import { changeSize, useStore } from '@app/wireframes/model';
 
 export const SettingsMenu = React.memo(() => {
     const [isOpen, setIsOpen] = React.useState(false);
@@ -27,39 +33,45 @@ export const SettingsMenu = React.memo(() => {
     }, [sizeWidth, sizeHeight]);
 
     const doToggle = React.useCallback(() => {
-        setIsOpen(!isOpen);
-    }, [isOpen]);
+        setIsOpen(value => !value);
+    }, []);
 
-    return (
-        <>
-            <Shortcut onPressed={doToggle} keys='ctl+o' />
+    const doSetWidth = React.useCallback((value: number) => {
+        setWidth(value);
+    }, []);
 
-            <Tooltip mouseEnterDelay={1} title='Show more options (CTRL + O)'>
-                <Button className='menu-item' size='large'
-                    onClick={doToggle}>
-                    <Icon type='setting' />
-                </Button>
-            </Tooltip>
+    const doSetHeight = React.useCallback((value: number) => {
+        setHeight(value);
+    }, []);
 
-            <Modal title='Diagram Options'
-                visible={isOpen}
-                onCancel={doToggle}
-                onOk={doChangeSize}
-            >
-                <Row className='property'>
-                    <Col span={12} className='property-label'>Width</Col>
-                    <Col span={12} className='property-value'>
-                        <InputNumber value={sizeWidth} min={300} max={3000} onChange={setWidth} />
-                    </Col>
-                </Row>
+    return <>
+        <Shortcut onPressed={doToggle} keys='ctl+o' />
 
-                <Row className='property'>
-                    <Col span={12} className='property-label'>Height</Col>
-                    <Col span={12} className='property-value'>
-                        <InputNumber value={sizeHeight} min={300} max={3000} onChange={setHeight} />
-                    </Col>
-                </Row>
-            </Modal>
-        </>
-    );
+        <Tooltip mouseEnterDelay={1} title='Show more options (CTRL + O)'>
+            <Button className='menu-item' size='large'
+                onClick={doToggle}>
+                <SettingOutlined />
+            </Button>
+        </Tooltip>
+
+        <Modal title='Diagram Options'
+            visible={isOpen}
+            onCancel={doToggle}
+            onOk={doChangeSize}
+        >
+            <Row className='property'>
+                <Col span={12} className='property-label'>Width</Col>
+                <Col span={12} className='property-value'>
+                    <InputNumber value={sizeWidth} min={300} max={3000} onChange={doSetWidth} />
+                </Col>
+            </Row>
+
+            <Row className='property'>
+                <Col span={12} className='property-label'>Height</Col>
+                <Col span={12} className='property-value'>
+                    <InputNumber value={sizeHeight} min={300} max={3000} onChange={doSetHeight} />
+                </Col>
+            </Row>
+        </Modal>
+    </>;
 });

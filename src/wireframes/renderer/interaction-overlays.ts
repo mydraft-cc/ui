@@ -1,14 +1,14 @@
-import * as svg from 'svg.js';
+/*
+ * mydraft.cc
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
 
 import { Color } from '@app/core';
-
-import {
-    SnapMode,
-    SnapResult,
-    Transform
-} from '@app/wireframes/model';
-
+import { SnapMode, SnapResult, Transform } from '@app/wireframes/model';
 import { SVGRenderer } from '@app/wireframes/shapes/utils/svg-renderer';
+import * as svg from 'svg.js';
 
 export class InteractionOverlays {
     private readonly infoRect: any;
@@ -19,7 +19,7 @@ export class InteractionOverlays {
     private readonly renderer: SVGRenderer;
 
     constructor(
-       layer: svg.Container
+       layer: svg.Container,
     ) {
         this.renderer = new SVGRenderer();
         this.renderer.captureContext(layer);
@@ -84,7 +84,7 @@ export class InteractionOverlays {
     }
 
     public reset() {
-        for (let element of this.elements) {
+        for (const element of this.elements) {
             this.renderer.setVisibility(element, false);
         }
     }

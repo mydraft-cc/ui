@@ -1,11 +1,14 @@
+/*
+ * mydraft.cc
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
+
 import * as svg from 'svg.js';
-
 import { Color } from './color';
-
 import { sizeInPx } from './react';
-
 import { Rect2 } from './rect2';
-
 import { Vec2 } from './vec2';
 
 export interface MatrixTransform {
@@ -82,6 +85,32 @@ export module SVGHelper {
         return item;
     }
 
+    export function createRoundedRectangleTop(container: svg.Container, rectangle: Rect2, radius = 10) {
+        const rad = Math.min(radius, rectangle.width * 0.5, rectangle.height * 0.5);
+
+        const t = rectangle.top;
+        const l = rectangle.left;
+        const r = rectangle.right;
+        const b = rectangle.bottom;
+
+        const item = container.path(`M${l},${b} L${l},${t + rad} a${rad},${rad} 0 0 1 ${rad},-${rad} L${r - rad},${t} a${rad},${rad} 0 0 1 ${rad},${rad} L${r},${b} z`);
+
+        return item;
+    }
+
+    export function createRoundedRectangleBottom(container: svg.Container, rectangle: Rect2, radius = 10) {
+        const rad = Math.min(radius, rectangle.width * 0.5, rectangle.height * 0.5);
+
+        const t = rectangle.top;
+        const l = rectangle.left;
+        const r = rectangle.right;
+        const b = rectangle.bottom;
+
+        const item = container.path(`M${r},${t} L${r},${b - rad} a${rad},${rad} 0 0 1 -${rad},${rad} L${l + rad},${b} a${rad},${rad} 0 0 1 -${rad},-${rad} L${l},${t}z`);
+
+        return item;
+    }
+
     export function transform<T extends svg.Element>(element: T, t: MatrixTransform): T {
         let x = Math.round(t.rect ? t.rect.x : t.x || 0);
         let y = Math.round(t.rect ? t.rect.y : t.y || 0);
@@ -101,7 +130,7 @@ export module SVGHelper {
                 .rotate(
                     t.rotation || 0,
                     t.rx || (x + 0.5 * w),
-                    t.ry || (y + 0.5 * h)
+                    t.ry || (y + 0.5 * h),
                 );
 
         if (element['children']) {

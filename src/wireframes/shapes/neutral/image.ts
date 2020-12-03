@@ -1,37 +1,42 @@
-import { DiagramItem } from '@app/wireframes/model';
+/*
+ * mydraft.cc
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
 
-import { AbstractContext, AbstractControl } from '@app/wireframes/shapes/utils/abstract-control';
+import { DefaultAppearance, RenderContext, ShapePlugin } from '@app/wireframes/interface';
 import { CommonTheme } from './_theme';
 
 const DEFAULT_APPEARANCE = {};
-DEFAULT_APPEARANCE[DiagramItem.APPEARANCE_BACKGROUND_COLOR] = 0xFFFFFF;
-DEFAULT_APPEARANCE[DiagramItem.APPEARANCE_TEXT_DISABLED] = true;
-DEFAULT_APPEARANCE[DiagramItem.APPEARANCE_STROKE_COLOR] = CommonTheme.CONTROL_BORDER_COLOR;
-DEFAULT_APPEARANCE[DiagramItem.APPEARANCE_STROKE_THICKNESS] = CommonTheme.CONTROL_BORDER_THICKNESS;
+DEFAULT_APPEARANCE[DefaultAppearance.BACKGROUND_COLOR] = 0xFFFFFF;
+DEFAULT_APPEARANCE[DefaultAppearance.TEXT_DISABLED] = true;
+DEFAULT_APPEARANCE[DefaultAppearance.STROKE_COLOR] = CommonTheme.CONTROL_BORDER_COLOR;
+DEFAULT_APPEARANCE[DefaultAppearance.STROKE_THICKNESS] = CommonTheme.CONTROL_BORDER_THICKNESS;
 
-export class Image extends AbstractControl {
-    public defaultAppearance() {
-        return DEFAULT_APPEARANCE;
-    }
-
+export class Image implements ShapePlugin {
     public identifier(): string {
         return 'Image';
     }
 
-    public createDefaultShape(shapeId: string): DiagramItem {
-        return DiagramItem.createShape(shapeId, this.identifier(), 100, 100, undefined, DEFAULT_APPEARANCE);
+    public defaultAppearance() {
+        return DEFAULT_APPEARANCE;
     }
 
-    protected renderInternal(ctx: AbstractContext) {
+    public defaultSize() {
+        return { x: 100, y: 100 };
+    }
+
+    public render(ctx: RenderContext) {
         this.createBorder(ctx);
         this.createCross(ctx);
     }
 
-    private createCross(ctx: AbstractContext) {
-        const l = ctx.bounds.left + 0.5;
-        const r = ctx.bounds.right - 0.5;
-        const t = ctx.bounds.top + 0.5;
-        const b = ctx.bounds.bottom - 0.5;
+    private createCross(ctx: RenderContext) {
+        const l = ctx.rect.left + 0.5;
+        const r = ctx.rect.right - 0.5;
+        const t = ctx.rect.top + 0.5;
+        const b = ctx.rect.bottom - 0.5;
 
         const crossItem = ctx.renderer.createPath(ctx.shape, `M${l},${t} L${r},${b} M${l},${b} L${r},${t}`);
 
@@ -41,8 +46,8 @@ export class Image extends AbstractControl {
         ctx.add(crossItem);
     }
 
-    private createBorder(ctx: AbstractContext) {
-        const borderItem = ctx.renderer.createRectangle(ctx.shape, 0, ctx.bounds);
+    private createBorder(ctx: RenderContext) {
+        const borderItem = ctx.renderer.createRectangle(ctx.shape, 0, ctx.rect);
 
         ctx.renderer.setBackgroundColor(borderItem, ctx.shape);
         ctx.renderer.setStrokeColor(borderItem, ctx.shape);

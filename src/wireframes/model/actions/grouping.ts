@@ -1,17 +1,14 @@
-import { Reducer } from 'redux';
+/*
+ * mydraft.cc
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
 
 import { MathHelper } from '@app/core';
-
-import {
-    Diagram,
-    EditorState
-} from './../internal';
-
-import {
-    createItemsAction,
-    DiagramRef,
-    ItemsRef
-} from './utils';
+import { Reducer } from 'redux';
+import { Diagram, EditorState } from './../internal';
+import { createItemsAction, DiagramRef, ItemsRef } from './utils';
 
 export const GROUP_ITEMS = 'GROUP_ITEMS';
 export const groupItems = (diagram: DiagramRef, items: ItemsRef, groupId?: string) => {
@@ -36,7 +33,7 @@ export function grouping(): Reducer<EditorState> {
                 return state.updateDiagram(action.diagramId, diagram => {
                     const childIds: string[] = [];
 
-                    for (let groupId of action.itemIds) {
+                    for (const groupId of action.itemIds) {
                         const target = diagram.items.get(groupId);
 
                         if (target) {

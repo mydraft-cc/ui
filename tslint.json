@@ -1,110 +1,35 @@
 {
-  "rules": {
-    "class-name": true,
-    "comment-format": [
-      true,
-      "check-space"
+    "extends": [
+      "tslint-immutable", 
+      "tslint-config-airbnb",
+      "tslint-react-hooks"
     ],
-    "curly": true,
-    "eofline": false,
-    "forin": true,
-    "indent": [
-      true,
-      "spaces"
-    ],
-    "label-position": true,
-    "max-line-length": [
-      true,
-      240
-    ],
-    "member-access": [
-      true,
-      "check-accessor"
-    ],
-    "no-access-missing-member": false,
-    "no-arg": true,
-    "no-bitwise": true,
-    "no-console": [
-      true,
-      "debug",
-      "info",
-      "time",
-      "timeEnd",
-      "trace"
-    ],
-    "no-construct": true,
-    "no-debugger": true,
-    "no-duplicate-variable": true,
-    "no-empty": true,
-    "no-eval": true,
-    "no-forward-ref": false,
-    "no-inferrable-types": [
-      true,
-      "ignore-params"
-    ],
-    "no-input-rename": false,
-    "no-output-rename": false,
-    "no-shadowed-variable": true,
-    "no-string-literal": false,
-    "no-switch-case-fall-through": true,
-    "no-trailing-whitespace": true,
-    "no-unused-expression": true,
-    "no-use-before-declare": false,
-    "no-var-keyword": true,
-    "object-literal-sort-keys": false,
-    "one-line": [
-      true,
-      "check-open-brace",
-      "check-catch",
-      "check-else",
-      "check-whitespace"
-    ],
-    "only-arrow-functions": [
-      true,
-      "allow-declarations"
-    ],
-    "ordered-imports": [
-      true
-    ],
-    "prefer-for-of": true,
-    "quotemark": [
-      true,
-      "single"
-    ],
-    "radix": true,
-    "semicolon": [
-      true,
-      "always"
-    ],
-    "trailing-comma": [
-      true,
-      {
-        "multiline": "never",
-        "singleline": "never"
-      }
-    ],
-    "triple-equals": [
-      true,
-      "allow-null-check"
-    ],
-    "typedef-whitespace": [
-      true,
-      {
-        "call-signature": "nospace",
-        "index-signature": "nospace",
-        "parameter": "nospace",
-        "property-declaration": "nospace",
-        "variable-declaration": "nospace"
-      }
-    ],
-    "variable-name": false,
-    "whitespace": [
-      true,
-      "check-branch",
-      "check-decl",
-      "check-operator",
-      "check-separator",
-      "check-type"
-    ]
+    "rules": {
+      "align": false,
+      "import-name": false,
+      "indent": [
+        true,
+        "spaces"
+      ],
+      "max-line-length": false,
+      "no-parameter-reassignment": false,
+      "no-else-after-return": false,
+      "no-increment-decrement": false,
+      "object-shorthand-properties-first": false,
+      "ordered-imports": [
+        true
+      ],
+      "quotemark": [
+        true,
+        "single"
+      ],
+      "ter-arrow-parens": false,
+      "ter-indent": false,
+      "variable-name": false
+    },
+    "linterOptions": {
+      "exclude": [
+        "src/app/service/*.*"
+      ]
+    }
   }
-}

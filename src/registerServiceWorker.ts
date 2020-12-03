@@ -1,3 +1,10 @@
+/*
+ * mydraft.cc
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
+
 export function registerServiceWorker() {
     if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator) {
         window.addEventListener('load', () => {

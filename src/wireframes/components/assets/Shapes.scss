@@ -3,12 +3,12 @@
 
 .asset-shape {
     & {
-        border-right: 1px solid $color-border;
-        border-bottom: 1px solid $color-border;
         background: transparent;
+        border-bottom: 1px solid $color-border;
+        border-right: 1px solid $color-border;
+        height: 100%;
         text-align: center;
         text-decoration: none;
-        height: 100%;
     }
 
     &-title {
@@ -22,23 +22,23 @@
 
     &-image {
         @include improve-image;
-        max-width: 120px;
         max-height: 70px;
+        max-width: 120px;
     }
 }
 
 .asset-shapes {
     &-search {
-        input {
-            @include border-radius(0);
+        .ant-input-affix-wrapper {
             border-left: 0;
+            border-radius: 0 !important;
             border-right: 0;
         }
     }
 
     &-list {
-        @include flex-grow(1);
-        overflow-y: scroll;
+        flex-grow: 1;
         overflow-x: hidden;
+        overflow-y: scroll;
     }
 }

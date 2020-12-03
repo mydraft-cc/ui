@@ -1,21 +1,23 @@
-import { Vec2 } from '@app/core';
+/*
+ * mydraft.cc
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
 
-import { Constraint, DiagramItem } from '@app/wireframes/model';
-
-import { AbstractContext, AbstractControl } from '@app/wireframes/shapes/utils/abstract-control';
-
+import { Constraint, DefaultAppearance, RenderContext, Shape, ShapePlugin, Vec2 } from '@app/wireframes/interface';
 import { CommonTheme } from './_theme';
 
 const DEFAULT_APPEARANCE = {};
-DEFAULT_APPEARANCE[DiagramItem.APPEARANCE_STROKE_COLOR] = CommonTheme.CONTROL_BORDER_COLOR;
-DEFAULT_APPEARANCE[DiagramItem.APPEARANCE_STROKE_THICKNESS] = 2;
-DEFAULT_APPEARANCE[DiagramItem.APPEARANCE_TEXT_DISABLED] = true;
+DEFAULT_APPEARANCE[DefaultAppearance.STROKE_COLOR] = CommonTheme.CONTROL_BORDER_COLOR;
+DEFAULT_APPEARANCE[DefaultAppearance.STROKE_THICKNESS] = 2;
+DEFAULT_APPEARANCE[DefaultAppearance.TEXT_DISABLED] = true;
 
 class BorderHeightConstraint implements Constraint {
     public static readonly INSTANCE = new BorderHeightConstraint();
 
-    public updateSize(shape: DiagramItem, size: Vec2): Vec2 {
-        const strokeThickness = shape.appearance.get(DiagramItem.APPEARANCE_STROKE_THICKNESS);
+    public updateSize(shape: Shape, size: Vec2): Vec2 {
+        const strokeThickness = shape.strokeThickness;
 
         return new Vec2(size.x, strokeThickness);
     }
@@ -29,27 +31,31 @@ class BorderHeightConstraint implements Constraint {
     }
 }
 
-export class HorizontalLine extends AbstractControl {
+export class HorizontalLine implements ShapePlugin {
+    public identifier(): string {
+        return 'HorizontalLine';
+    }
+
     public defaultAppearance() {
         return DEFAULT_APPEARANCE;
     }
 
-    public identifier(): string {
-        return 'HorizontalLine';
+    public defaultSize() {
+        return { x: 50, y: 2 };
+    }
+
+    public constraint() {
+        return BorderHeightConstraint.INSTANCE;
     }
 
     public previewOffset() {
         return new Vec2(0, 24);
     }
 
-    public createDefaultShape(shapeId: string): DiagramItem {
-        return DiagramItem.createShape(shapeId, this.identifier(), 50, 2, undefined, DEFAULT_APPEARANCE, BorderHeightConstraint.INSTANCE);
-    }
+    public render(ctx: RenderContext) {
+        const textItem = ctx.renderer.createRectangle(ctx.shape, 0, ctx.rect);
 
-    protected renderInternal(ctx: AbstractContext) {
-        const textItem = ctx.renderer.createRectangle(ctx.shape, 0, ctx.bounds);
-
-        ctx.renderer.setBackgroundColor(textItem, ctx.shape.appearance.get(DiagramItem.APPEARANCE_STROKE_COLOR));
+        ctx.renderer.setBackgroundColor(textItem, ctx.shape.strokeColor);
 
         ctx.add(textItem);
     }

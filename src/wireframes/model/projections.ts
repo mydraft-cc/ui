@@ -1,6 +1,12 @@
+/*
+ * mydraft.cc
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
+
 import { useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
-
 import { AssetsStateInStore } from './assets-state';
 import { Configurable } from './configurables';
 import { DiagramItem } from './diagram-item';
@@ -21,25 +27,25 @@ export const getShapes = (state: AssetsStateInStore) => state.assets.shapes;
 
 export const getIconSets = createSelector(
     getIcons,
-    icons => Object.keys(icons)
+    icons => Object.keys(icons),
 );
 
 export const getSelectedIcons = createSelector(
     getIcons,
     getIconSet,
-    (icons, set) => icons[set]
+    (icons, set) => icons[set],
 );
 
 export const getFilteredIcons = createSelector(
     getSelectedIcons,
     getIconsFilter,
-    (icons, filter) => filter && filter.length > 0 ? icons.filter(x => x.displaySearch.indexOf(filter) >= 0) : icons
+    (icons, filter) => filter && filter.length > 0 ? icons.filter(x => x.displaySearch.indexOf(filter) >= 0) : icons,
 );
 
 export const getFilteredShapes = createSelector(
     getShapes,
     getShapesFilter,
-    (shapes, filter) => filter && filter.length > 0 ? shapes.filter(x => x.displaySearch.indexOf(filter) >= 0) : shapes
+    (shapes, filter) => filter && filter.length > 0 ? shapes.filter(x => x.displaySearch.indexOf(filter) >= 0) : shapes,
 );
 
 export const getEditor = (state: EditorStateInStore) => state.editor.present;
@@ -49,47 +55,47 @@ export const getDiagramId = (state: EditorStateInStore) => state.editor.present.
 export const getDiagram = createSelector(
     getDiagrams,
     getDiagramId,
-    (diagrams, id) => diagrams.get(id)
+    (diagrams, id) => diagrams.get(id),
 );
 
 export const getSelectionSet = createSelector(
     getDiagram,
-    diagram => diagram ? DiagramItemSet.createFromDiagram(diagram.selectedIds.values, diagram) : null
+    diagram => diagram ? DiagramItemSet.createFromDiagram(diagram.selectedIds.values, diagram) : null,
 );
 
 export const getSelectedIds = createSelector(
     getDiagram,
-    diagram => diagram ? diagram.selectedIds.values : EMPTY_STRING_ARRAY
+    diagram => diagram ? diagram.selectedIds.values : EMPTY_STRING_ARRAY,
 );
 
 export const getSelectedItemsWithLocked = createSelector(
     getDiagram,
-    diagram => diagram ? diagram.selectedIds.values.map(i => diagram!.items.get(i)) : EMPTY_ITEMS_ARRAY
+    diagram => diagram ? diagram.selectedIds.values.map(i => diagram!.items.get(i)) : EMPTY_ITEMS_ARRAY,
 );
 
 export const getSelectedItems = createSelector(
     getSelectedItemsWithLocked,
-    items => items.filter(x => !x.isLocked)
+    items => items.filter(x => !x.isLocked),
 );
 
 export const getSelectedGroups = createSelector(
     getSelectedItems,
-    items => items.filter(i => i.type === 'Group')
+    items => items.filter(i => i.type === 'Group'),
 );
 
 export const getSelectedItemWithLocked = createSelector(
     getSelectedItemsWithLocked,
-    items => items.length === 1 ? items[0] : null
+    items => items.length === 1 ? items[0] : null,
 );
 
 export const getSelectedShape = createSelector(
     getSelectedItems,
-    items => items.length === 1 && items[0].type === 'Shape' ? items[0] : null
+    items => items.length === 1 && items[0].type === 'Shape' ? items[0] : null,
 );
 
 export const getSelectedConfigurables = createSelector(
     getSelectedShape,
-    shape => shape ? shape.configurables : EMPTY_CONFIGURABLES
+    shape => shape ? shape.configurables : EMPTY_CONFIGURABLES,
 );
 
 export interface UniqueValue<TValue> {
@@ -122,7 +128,7 @@ export function uniqueAppearance<T>(set: DiagramItemSet, key: string, parse?: Pa
 
     let hasValue = false;
 
-    for (let visual of set!.allVisuals) {
+    for (const visual of set!.allVisuals) {
         const appearance = visual.appearance.get(key);
 
         if (appearance) {
@@ -143,6 +149,6 @@ export function uniqueAppearance<T>(set: DiagramItemSet, key: string, parse?: Pa
 
 type State = AssetsStateInStore & EditorStateInStore & UIStateInStore & LoadingStateInStore;
 
-export function useStore<T> (selector: ((state: State) => T)) {
+export function useStore<T>(selector: ((state: State) => T)) {
     return useSelector<State, T>(p => selector(p));
 }

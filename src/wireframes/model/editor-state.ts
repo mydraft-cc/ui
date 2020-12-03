@@ -1,11 +1,12 @@
-import {
-    ImmutableMap,
-    Record,
-    Vec2
-} from '@app/core';
+/*
+ * mydraft.cc
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
 
+import { ImmutableMap, Record, Vec2 } from '@app/core';
 import { Diagram } from './diagram';
-import { EditorStateInStore } from './editor-state';
 import { UndoableState } from './undoable-state';
 
 type DiagramMap = ImmutableMap<Diagram>;

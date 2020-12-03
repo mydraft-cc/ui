@@ -7,8 +7,10 @@ rules:
     - 0
   clean-import-paths:
     - 0
-  property-sort-order:
+  single-line-per-selector:
     - 0
+  property-sort-order:
+    - 1
   indentation:
     - 2
     -

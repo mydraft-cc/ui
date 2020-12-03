@@ -1,24 +1,21 @@
+/*
+ * mydraft.cc
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
+
+import { SerializerContext } from '@app/context';
+import { Shortcut } from '@app/core';
+import { DiagramItemSet, getDiagram, getSelectedItems, pasteItems, removeItems, useStore } from '@app/wireframes/model';
 import { Button, Tooltip } from 'antd';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
 
-import { Shortcut } from '@app/core';
-
-import {
-    DiagramItemSet,
-    getDiagram,
-    getSelectedItems,
-    pasteItems,
-    removeItems,
-    useStore
-} from '@app/wireframes/model';
-
-import { SerializerContext } from '@app/context';
-
 const OFFSET = 50;
 
 export const ClipboardMenu = React.memo(() => {
-    let [offset, setOffset] = React.useState<number>();
+    const [offset, setOffset] = React.useState<number>();
 
     const [clipboard, setClipboard] = React.useState<string>();
 
@@ -52,9 +49,9 @@ export const ClipboardMenu = React.memo(() => {
 
     const doPaste = React.useCallback(() => {
         if (selectedDiagram) {
-            setOffset(offset += OFFSET);
+            setOffset(value => value + OFFSET);
 
-            dispatch(pasteItems(selectedDiagram, clipboard, offset));
+            dispatch(pasteItems(selectedDiagram, clipboard, offset + OFFSET));
         }
     }, [clipboard, offset, selectedDiagram]);
 

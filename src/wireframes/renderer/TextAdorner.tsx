@@ -1,17 +1,15 @@
-import * as React from 'react';
+/*
+ * mydraft.cc
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
 
 import { sizeInPx } from '@app/core';
-
-import {
-    Diagram,
-    DiagramItem
-} from '@app/wireframes/model';
-
-import {
-    InteractionHandler,
-    InteractionService,
-    SvgEvent
-} from './interaction-service';
+import { DefaultAppearance } from '@app/wireframes/interface';
+import { Diagram, DiagramItem } from '@app/wireframes/model';
+import * as React from 'react';
+import { InteractionHandler, InteractionService, SvgEvent } from './interaction-service';
 
 const MIN_WIDTH = 150;
 const MIN_HEIGHT = 30;
@@ -37,7 +35,7 @@ export interface TextAdornerProps {
 }
 
 export class TextAdorner extends React.Component<TextAdornerProps> implements InteractionHandler {
-    private readonly style = { display: 'none '};
+    private readonly style = { display: 'none ' };
     private selectedShape: DiagramItem | null = null;
     private textareaElement: HTMLTextAreaElement;
 
@@ -67,7 +65,7 @@ export class TextAdorner extends React.Component<TextAdornerProps> implements In
 
     public onDoubleClick(event: SvgEvent) {
         if (event.shape && !event.shape.isLocked && this.textareaElement) {
-            if (event.shape.appearance.get(DiagramItem.APPEARANCE_TEXT_DISABLED) === true) {
+            if (event.shape.textDisabled) {
                 return;
             }
 
@@ -81,7 +79,7 @@ export class TextAdorner extends React.Component<TextAdornerProps> implements In
             const w = sizeInPx(zoom * (Math.max(transform.size.x, MIN_WIDTH)) + 4);
             const h = sizeInPx(zoom * (Math.max(transform.size.y, MIN_HEIGHT)) + 4);
 
-            this.textareaElement.value = event.shape.appearance.get(DiagramItem.APPEARANCE_TEXT) || '';
+            this.textareaElement.value = event.shape.text;
             this.textareaElement.style.top = y;
             this.textareaElement.style.left = x;
             this.textareaElement.style.width = w;
@@ -128,10 +126,10 @@ export class TextAdorner extends React.Component<TextAdornerProps> implements In
         }
 
         const newText = this.textareaElement.value;
-        const oldText = this.selectedShape.appearance.get(DiagramItem.APPEARANCE_TEXT);
+        const oldText = this.selectedShape.text;
 
         if (newText !== oldText) {
-            this.props.changeItemsAppearance(this.props.selectedDiagram, [this.selectedShape], DiagramItem.APPEARANCE_TEXT, newText);
+            this.props.changeItemsAppearance(this.props.selectedDiagram, [this.selectedShape], DefaultAppearance.TEXT, newText);
         }
 
         this.hide();

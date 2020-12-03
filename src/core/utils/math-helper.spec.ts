@@ -1,4 +1,11 @@
-﻿import { MathHelper } from '@app/core';
+/*
+ * mydraft.cc
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
+
+import { MathHelper } from '@app/core';
 
 describe('MathHelper', () => {
     it('should calculate same crc32 for same input', () => {

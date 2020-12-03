@@ -1,24 +1,17 @@
-import * as React from 'react';
-import * as svg from 'svg.js';
+/*
+ * mydraft.cc
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
 
 import { Rotation, Vec2 } from '@app/core';
-
-import {
-    Diagram,
-    DiagramItem,
-    SnapManager,
-    Transform
-} from '@app/wireframes/model';
-
-import { InteractionOverlays } from './interaction-overlays';
-
-import {
-    InteractionHandler,
-    InteractionService,
-    SvgEvent
-} from './interaction-service';
-
+import { Diagram, DiagramItem, SnapManager, Transform } from '@app/wireframes/model';
 import { SVGRenderer } from '@app/wireframes/shapes/utils/svg-renderer';
+import * as React from 'react';
+import * as svg from 'svg.js';
+import { InteractionOverlays } from './interaction-overlays';
+import { InteractionHandler, InteractionService, SvgEvent } from './interaction-service';
 
 const MODE_RESIZE = 2;
 const MODE_MOVE = 3;
@@ -126,7 +119,7 @@ export class TransformAdorner extends React.Component<TransformAdornerProps> imp
         this.canResizeX = false;
         this.canResizeY = false;
 
-        for (let item of this.props.selectedItems) {
+        for (const item of this.props.selectedItems) {
             if (item.constraint) {
                 if (!item.constraint.calculateSizeX()) {
                     this.canResizeX = true;
@@ -185,7 +178,7 @@ export class TransformAdorner extends React.Component<TransformAdornerProps> imp
 
         const unrotated = Vec2.rotated(point, this.transform.position, this.transform.rotation.negate());
 
-        for (let element of this.allElements) {
+        for (const element of this.allElements) {
             const box = this.renderer.getBounds(element, true);
 
             if (box.contains(unrotated)) {
@@ -288,7 +281,8 @@ export class TransformAdorner extends React.Component<TransformAdornerProps> imp
     }
 
     private getResizeDeltaPos(angle: Rotation, dSize: Vec2) {
-        let x = 0, y = 0;
+        let x = 0;
+        let y = 0;
 
         if (this.resizeDragOffset.y !== 0) {
             y += this.resizeDragOffset.y * dSize.y * angle.cos;
@@ -336,7 +330,7 @@ export class TransformAdorner extends React.Component<TransformAdornerProps> imp
         const rotation = this.transform.rotation.degree;
         const position = this.transform.position;
 
-        for (let resizeShape of this.resizeShapes) {
+        for (const resizeShape of this.resizeShapes) {
             const offset = resizeShape['offset'];
 
             this.renderer.setTransform(resizeShape, {
@@ -344,7 +338,7 @@ export class TransformAdorner extends React.Component<TransformAdornerProps> imp
                 y: position.y - 7 + offset.y * (size.y + 4),
                 rx: position.x,
                 ry: position.y,
-                rotation
+                rotation,
             });
 
             this.renderer.setVisibility(resizeShape,
@@ -358,7 +352,7 @@ export class TransformAdorner extends React.Component<TransformAdornerProps> imp
             y: position.y - 8 - size.y * 0.5 - 30,
             rx: position.x,
             ry: position.y,
-            rotation
+            rotation,
         });
 
         this.renderer.setVisibility(this.moveShape, true);
@@ -369,7 +363,7 @@ export class TransformAdorner extends React.Component<TransformAdornerProps> imp
             h: size.y + 2,
             rx: position.x,
             ry: position.y,
-            rotation
+            rotation,
         });
     }
 

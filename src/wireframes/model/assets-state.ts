@@ -1,9 +1,14 @@
+/*
+ * mydraft.cc
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
+
 import { Vec2 } from '@app/core';
-
-import { RendererService } from './renderer.service';
-
 import { ICONS_FONT_AWESOME } from './../../icons/font_awesome_unified';
 import { ICONS_MATERIAL_DESIGN } from './../../icons/material_icons_unified';
+import { RendererService } from './renderer.service';
 
 export interface AssetInfo {
     name: string;
@@ -40,7 +45,7 @@ export interface AssetsState {
 export const createInitialAssetsState: (rendererService: RendererService) => AssetsState = (rendererService: RendererService) => {
     const allShapes: ShapeInfo[] = [];
 
-    for (let rendererKey in rendererService.registeredRenderers) {
+    for (const rendererKey in rendererService.registeredRenderers) {
         if (rendererService.registeredRenderers.hasOwnProperty(rendererKey)) {
             const renderer = rendererService.registeredRenderers[rendererKey];
 
@@ -57,7 +62,7 @@ export const createInitialAssetsState: (rendererService: RendererService) => Ass
         shapesFilter: '',
         icons: { 'Font Awesome': ICONS_FONT_AWESOME, 'Material Design': ICONS_MATERIAL_DESIGN },
         iconsFilter: '',
-        iconSet: 'Font Awesome'
+        iconSet: 'Font Awesome',
     };
 };
 

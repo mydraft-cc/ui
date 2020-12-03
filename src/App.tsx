@@ -1,38 +1,23 @@
+/*
+ * mydraft.cc
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
+
+import { LeftOutlined, RightOutlined } from '@ant-design/icons';
+import { ArrangeMenu, ClipboardMenu, CustomPropertiesContainer, EditorView, HistoryMenu, Icons, LayoutProperties, LoadingMenu, LockMenu, SettingsMenu, Shapes, UIMenu, VisualProperties } from '@app/wireframes/components';
+import { loadDiagramAsync, newDiagram, selectTab, toggleLeftSidebar, toggleRightSidebar, useStore } from '@app/wireframes/model';
 import { Button, Collapse, Layout, Tabs } from 'antd';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
-
-import {
-    ArrangeMenu,
-    ClipboardMenu,
-    CustomPropertiesContainer,
-    EditorView,
-    HistoryMenu,
-    Icons,
-    LayoutProperties,
-    LoadingMenu,
-    LockMenu,
-    SettingsMenu,
-    Shapes,
-    UIMenu,
-    VisualProperties
-} from '@app/wireframes/components';
-
-import {
-    loadDiagramAsync,
-    newDiagram,
-    selectTab,
-    toggleLeftSidebar,
-    toggleRightSidebar,
-    useStore
-} from '@app/wireframes/model';
 
 interface AppProps {
     // The read token of the diagram.
     token: string;
 }
 
-const logo = require('./images/logo-square-64.png');
+const logo = require('./images/logo-square-64.png').default;
 
 export const App = ({ token }: AppProps) => {
     const dispatch = useDispatch();
@@ -120,13 +105,13 @@ export const App = ({ token }: AppProps) => {
                     </Collapse>
                 </Layout.Sider>
 
-                <Button icon={toggleIcon(showLeftSidebar)}
+                <Button icon={<ToggleIcon left={showLeftSidebar} />}
                     className={toggleClass(showLeftSidebar, 'left')}
                     size='small'
                     shape='circle'
                     onClick={doToggleLeftSidebar} />
 
-                <Button icon={toggleIcon(!showRightSidebar)}
+                <Button icon={<ToggleIcon left={!showRightSidebar} />}
                     className={toggleClass(showRightSidebar, 'right')}
                     size='small'
                     shape='circle'
@@ -136,10 +121,10 @@ export const App = ({ token }: AppProps) => {
     );
 };
 
-const toggleIcon = (left: boolean) => {
-    return left ? 'left' : 'right';
+const ToggleIcon = ({ left }: { left: boolean }) => {
+    return left ? <LeftOutlined /> : <RightOutlined />;
 };
 
 const toggleClass = (visible: boolean, side: string) => {
-    return `toggle-button-${side}` + (visible ? ' visible' : '');
+    return `toggle-button-${side} ${visible ? 'visible' : ''}`;
 };

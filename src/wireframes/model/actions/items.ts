@@ -1,22 +1,15 @@
-import { Action, Middleware, Reducer } from 'redux';
+/*
+ * mydraft.cc
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
 
 import { MathHelper, Vec2 } from '@app/core';
-
-import {
-    Diagram,
-    DiagramItem,
-    DiagramItemSet,
-    EditorState,
-    RendererService,
-    Serializer
-} from './../internal';
-
-import {
-    createDiagramAction,
-    createItemsAction,
-    DiagramRef,
-    ItemsRef
-} from './utils';
+import { DefaultAppearance } from '@app/wireframes/interface';
+import { Action, Middleware, Reducer } from 'redux';
+import { Diagram, DiagramItem, DiagramItemSet, EditorState, RendererService, Serializer } from './../internal';
+import { createDiagramAction, createItemsAction, DiagramRef, ItemsRef } from './utils';
 
 // tslint:disable:no-shadowed-variable
 
@@ -91,7 +84,7 @@ export function items(rendererService: RendererService, serializer: Serializer):
                 return state.updateDiagram(action.diagramId, diagram => {
                     const set = DiagramItemSet.createFromDiagram(action.itemIds, diagram);
 
-                    for (let item of set!.allItems) {
+                    for (const item of set!.allItems) {
                         diagram = diagram.updateItem(item.id, i => i.lock());
                     }
 
@@ -101,7 +94,7 @@ export function items(rendererService: RendererService, serializer: Serializer):
                 return state.updateDiagram(action.diagramId, diagram => {
                     const set = DiagramItemSet.createFromDiagram(action.itemIds, diagram);
 
-                    for (let item of set!.allItems) {
+                    for (const item of set!.allItems) {
                         diagram = diagram.updateItem(item.id, i => i.unlock());
                     }
 
@@ -113,7 +106,7 @@ export function items(rendererService: RendererService, serializer: Serializer):
 
                     diagram = diagram.addItems(set);
 
-                    for (let item of set.allVisuals) {
+                    for (const item of set.allVisuals) {
                         diagram = diagram.updateItem(item.id, i => {
                             const oldBounds = i.bounds(diagram);
                             const newBounds = oldBounds.moveBy(new Vec2(action.offset, action.offset));
@@ -139,8 +132,8 @@ export function items(rendererService: RendererService, serializer: Serializer):
 
                     const configured =
                         shape.transformWith(t => t.moveTo(position))
-                            .setAppearance(DiagramItem.APPEARANCE_TEXT, action.text)
-                            .setAppearance(DiagramItem.APPEARANCE_ICON_FONT_FAMILY, action.fontFamily);
+                            .setAppearance(DefaultAppearance.TEXT, action.text)
+                            .setAppearance(DefaultAppearance.ICON_FONT_FAMILY, action.fontFamily);
 
                     return diagram.addVisual(configured).selectItems([configured.id]);
                 });
@@ -189,9 +182,10 @@ export function items(rendererService: RendererService, serializer: Serializer):
 
                     let configured = shape.transformWith(t => t.moveTo(position));
 
-                    let properties = action.properties;
+                    const properties = action.properties;
+
                     if (properties) {
-                        for (let key in properties) {
+                        for (const key in properties) {
                             if (properties.hasOwnProperty(key)) {
                                 configured = configured.setAppearance(key, properties[key]);
                             }

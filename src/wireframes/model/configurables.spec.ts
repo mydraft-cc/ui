@@ -1,8 +1,11 @@
-import {
-    ColorConfigurable,
-    SelectionConfigurable,
-    SliderConfigurable
-} from '@app/wireframes/model';
+/*
+ * mydraft.cc
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
+
+import { ColorConfigurable, SelectionConfigurable, SliderConfigurable } from '@app/wireframes/model';
 
 describe('SelectionConfigurable', () => {
     it('should instantiate', () => {

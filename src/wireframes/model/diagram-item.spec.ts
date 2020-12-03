@@ -1,13 +1,14 @@
-import {
-    ImmutableMap,
-    Rotation,
-    Vec2
-} from '@app/core';
+/*
+ * mydraft.cc
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
 
+import { ImmutableMap, Rotation, Vec2 } from '@app/core';
 import { Diagram } from './diagram';
 import { DiagramItem } from './diagram-item';
-
-import {Transform } from './transform';
+import { Transform } from './transform';
 
 describe('DiagramItem', () => {
     const item_1 = DiagramItem.createShape('1', 'btn', 100, 20);
@@ -237,7 +238,7 @@ describe('DiagramItem', () => {
     });
 
     it('should create zero bounds if child id is not in diagram', () => {
-        let diagram = Diagram.empty(groupId);
+        const diagram = Diagram.empty(groupId);
 
         const group = DiagramItem.createGroup(groupId, ['invalid']);
 

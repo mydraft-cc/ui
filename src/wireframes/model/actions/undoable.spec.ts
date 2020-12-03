@@ -1,9 +1,11 @@
-import {
-    redo,
-    undo,
-    undoable,
-    UndoableState
-} from '@app/wireframes/model';
+/*
+ * mydraft.cc
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
+
+import { redo, undo, undoable, UndoableState } from '@app/wireframes/model';
 
 describe('Undoable', () => {
     const state_1: UndoableState<number> =

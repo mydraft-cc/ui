@@ -1,3 +1,10 @@
+/*
+ * mydraft.cc
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
+
 import { ColorPalette } from '@app/core';
 
 describe('ColorPalatte', () => {

@@ -1,9 +1,9 @@
-// sass-lint:disable-all
+// sass-lint:disable no-vendor-prefixes, one-declaration-per-line, no-misspelled-properties, no-color-keywords, no-color-literals, no-duplicate-properties
 
 @mixin build-icon($color) {
     & {
-        @include transition(color .3s ease);
         color: $color;
+        transition: color .3s ease;
     }
 
     &:hover,
@@ -14,150 +14,87 @@
 
 @mixin build-toggle-button($color, $background) {
     & {
-        color: $color;
-        border-color: $color;
         background: $background;
+        border-color: $color;
+        color: $color;
         z-index: 1000;
     }
 }
 
-@mixin build-link-button($color) {
+@mixin build-text-button($color) {
     & {
         color: $color;
-        cursor: pointer;
-        border: 1px solid transparent;
     }
 
-    &:focus {
-        outline-color: transparent;
-    }
-
-    &:disabled {
-        @include opacity(.4);
-    }
-
-    &:disabled,
+    &:disabled
     &.disabled {
-        cursor: not-allowed;
-        border-color: transparent;
+        opacity: .4;
     }
 
     &:focus,
+    &.focus {
+        box-shadow: 0 0 0 $btn-focus-width rgba($color, .5);
+    }
+
     &:active,
     &:hover {
-        color: darken($color, 8%);
-        border-color: transparent;
-        background: transparent;
-        text-decoration: none;
+        color: darken($color, 15%);
     }
 }
 
-@mixin clearfix() {
+@mixin scrollbars($size, $foreground-color, $background-color: mix($foreground-color, white, 50%)) {
+    &::-webkit-scrollbar {
+        height: $size;
+        width:  $size;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background: $foreground-color;
+    }
+
+    &::-webkit-scrollbar-corner,
+    &::-webkit-scrollbar-track {
+        background: $background-color;
+    }
+
+    & {
+        scrollbar-color: $foreground-color $background-color;
+        scrollbar-face-color: $foreground-color;
+        scrollbar-track-color: $background-color;
+        scrollbar-width: thin;
+    }
+}
+
+@mixin clearfix {
     &::after {
+        clear: both;
         content: '';
         display: table;
-        clear: both;
     }
 }
 
-@mixin hidden() {
-    width: 0;
+@mixin hidden {
     opacity: 0;
-    overflow: hidden;
+    overflow-x: hidden;
+    overflow-y: hidden;
     position: absolute;
+    width: 0;
 }
 
-@mixin flex {
-    display: -webkit-box;
-    display: -webkit-flex;
-    display: -moz-flex;
-    display: -ms-flexbox;
-    display: flex;
+@mixin force-width($width) {
+    // Ensure that we use the minimum width in flex scenarios.
+    max-width: $width;
+    min-width: $width;
+    // Normal width definition.
+    width:  $width;
 }
 
-@mixin flex-inline {
-    display: -webkit-inline-box;
-    display: -webkit-inline-flex;
-    display: -moz-inline-flex;
-    display: -ms-inline-flexbox;
-    display: inline-flex;
-}
-
-@mixin flex-direction($direction) {
-    -webkit-flex-direction: $direction;
-       -moz-flex-direction: $direction;
-        -ms-flex-direction: $direction;
-            flex-direction: $direction;
-}
-
-@mixin flex-flow($values: (row nowrap)) {
-    -webkit-flex-flow: $values;
-       -moz-flex-flow: $values;
-        -ms-flex-flow: $values;
-            flex-flow: $values;
-}
-
-@mixin flex-grow($value: 0) {
-     -webkit-box-flex: $value;
-    -webkit-flex-grow: $value;
-       -moz-flex-grow: $value;
-    -ms-flex-positive: $value;
-            flex-grow: $value;
-}
-
-@mixin flex-shrink($value: 1) {
-    -webkit-flex-shrink: $value;
-       -moz-flex-shrink: $value;
-            flex-shrink: $value;
-}
-
-@mixin flex-shrink-important($value: 0) {
-    -webkit-flex-shrink: $value !important;
-       -moz-flex-shrink: $value !important;
-            flex-shrink: $value !important;
-}
-
-@mixin inner-border($color: #999) {
-    -webkit-box-shadow: inset 1px 1px 1px $color;
-       -moz-box-shadow: inset 1px 1px 1px $color;
-            box-shadow: inset 1px 1px 1px $color;
-}
-
-@mixin no-selection() {
-  -webkit-touch-callout: none;
-    -webkit-user-select: none;
-     -khtml-user-select: none;
-       -moz-user-select: none;
-        -ms-user-select: none;
-            user-select: none;
-}
-
-@mixin ellipsis() {
-    -o-text-overflow: ellipsis;
-   -ms-text-overflow: ellipsis;
-       text-overflow: ellipsis;
-}
-
-@mixin box-sizing($sizing: border-box) {
-    -webkit-box-sizing: $sizing;
-	    -ms-box-sizing: $sizing;
-       -moz-box-sizing: $sizing;
-            box-sizing: $sizing;
-}
-
-@mixin border-box() {
-    -webkit-box-sizing: border-box;
-        -ms-box-sizing: border-box;
-       -moz-box-sizing: border-box;
-            box-sizing: border-box;
-}
-
-@mixin improve-image() {
-    image-rendering: -moz-crisp-edges;         /* Firefox */
-    image-rendering:   -o-crisp-edges;         /* Opera */
-    image-rendering: -webkit-optimize-contrast;/* Webkit (non-standard naming) */
-    image-rendering: crisp-edges;
-    -ms-interpolation-mode: nearest-neighbor;  /* IE (non-standard property) */
+@mixin force-height($height) {
+    // Normal height definition.
+    height:  $height;
+    // Ensure that we use the minimum height in flex scenarios.
+    max-height: $height;
+    min-height: $height;
 }
 
 @mixin caret-top($color, $size: .6rem) {
@@ -184,39 +121,46 @@
     border-top-color: $color;
 }
 
-@mixin caret() {
-    display: inline-block;
-      width: 0;
-     height: 0;
+@mixin caret {
+    @include force-height(0);
+    @include force-width(0);
     content: '';
-}
- 
-@mixin circle($size) {
-    @include border-radius($size * .5);
-     width: $size;
-    height: $size;
+    display: inline-block;
 }
 
-@mixin wrap() {
-	-ms-word-break: normal;
-	    word-break: normal;
-	 -ms-word-wrap: break-word;
-	     word-wrap: break-word;
+@mixin circle($size) {
+    @include border-radius($size * .5);
+    @include force-height($size);
+    @include force-width($size);
+    display: inline-block;
+}
+
+@mixin circle-icon($size) {
+    @include circle($size);
+    cursor: none;
+    font-size: .5 * $size;
+    font-weight: normal;
+    line-height: $size + .1rem;
+    text-align: center;
 }
 
 @mixin placeholder-color($color) {
+    ::placeholder {
+        color: $color;
+    }
+
     &::-webkit-input-placeholder {
         color: $color;
     }
 
     &:-moz-placeholder {
         color: $color;
-        @include opacity(1.0);
+        opacity: 1;
     }
 
     &::-moz-placeholder {
         color: $color;
-        @include opacity(1.0);
+        opacity: 1;
     }
 
     &:-ms-input-placeholder {
@@ -224,205 +168,79 @@
     }
 }
 
-@mixin text-shadow($x-axis: 1px, $y-axis: 1px, $blur: 1px, $color: #000) {
-    -webkit-text-shadow: $x-axis $y-axis $blur $color;
-            text-shadow: $x-axis $y-axis $blur $color;
+@mixin hover-visible($selector, $display: block) {
+    #{$selector} {
+        display: none;
+    }
+
+    &:hover {
+        #{$selector} {
+            display: $display;
+        }
+    }
 }
 
-@mixin text-shadow-none() {
-    -webkit-text-shadow: none;
-            text-shadow: none;
+@mixin box-shadow-outer($x-axis: 0, $y-axis: 1px, $blur: 2px, $alpha: .1) {
+    box-shadow: $x-axis $y-axis $blur rgba(0, 0, 0, $alpha);
 }
 
-@mixin box-shadow-none() {
-    -webkit-box-shadow: none !important;
-       -moz-box-shadow: none !important;
-            box-shadow: none !important;
-}
-
-@mixin box-shadow($x-axis: 0, $y-axis: 1px, $blur: 2px, $alpha: 0.1) {
-  -webkit-box-shadow: $x-axis $y-axis $blur rgba(0, 0, 0, $alpha);
-     -moz-box-shadow: $x-axis $y-axis $blur rgba(0, 0, 0, $alpha);
-          box-shadow: $x-axis $y-axis $blur rgba(0, 0, 0, $alpha);
-}
-
-@mixin box-shadow-colored($x-axis: 0, $y-axis: 1px, $blur: 2px, $color: #000) {
-  -webkit-box-shadow: $x-axis $y-axis $blur $color;
-     -moz-box-shadow: $x-axis $y-axis $blur $color;
-          box-shadow: $x-axis $y-axis $blur $color;
-}
-
-@mixin box-shadow-inner($x-axis: 0, $y-axis: 1px, $blur: 2px, $alpha: 0.1) {
-  -webkit-box-shadow: inset $x-axis $y-axis $blur rgba(0, 0, 0, $alpha);
-     -moz-box-shadow: inset $x-axis $y-axis $blur rgba(0, 0, 0, $alpha);
-          box-shadow: inset $x-axis $y-axis $blur rgba(0, 0, 0, $alpha);
-}
-
-@mixin box-shadow-raw($shadows...) {
-  -webkit-box-shadow: $shadows;
-     -moz-box-shadow: $shadows;
-          box-shadow: $shadows;
-}
-
-@mixin border-radius-clip() {
-    -webkit-background-clip: padding-box; 
-       -moz-background-clip: padding; 
-            background-clip: padding-box;
-	
+@mixin box-shadow-inner($x-axis: 0, $y-axis: 1px, $blur: 2px, $alpha: .1) {
+    box-shadow: inset $x-axis $y-axis $blur rgba(0, 0, 0, $alpha);
 }
 
 @mixin border-radius ($radius: 4px) {
-    -webkit-border-radius: $radius;
-       -moz-border-radius: $radius;
-            border-radius: $radius;
-    @include border-radius-clip;
-}
-
-@mixin border-radiusn($topright, $bottomright, $bottomleft, $topleft) {
-    -webkit-border-radius: $topright $bottomright $bottomleft $topleft;
-       -moz-border-radius: $topright $bottomright $bottomleft $topleft;
-            border-radius: $topright $bottomright $bottomleft $topleft;
-    @include border-radius-clip;
+    border-radius: $radius;
 }
 
 @mixin border-radius-left ($radius: 4px) {
-    -webkit-border-radius: $radius 0 0 $radius;
-       -moz-border-radius: $radius 0 0 $radius;
-            border-radius: $radius 0 0 $radius;
+    border-radius: $radius 0 0 $radius;
 }
 
 @mixin border-radius-right ($radius: 4px) {
-    -webkit-border-radius: 0 $radius $radius 0;
-       -moz-border-radius: 0 $radius $radius 0;
-  	        border-radius: 0 $radius $radius 0;
+    border-radius: 0 $radius $radius 0;
 }
 
 @mixin border-radius-bottom ($radius: 4px) {
-    -webkit-border-radius: 0 0 $radius $radius;
-       -moz-border-radius: 0 0 $radius $radius;
-	        border-radius: 0 0 $radius $radius;
+    border-radius: 0 0 $radius $radius;
 }
 
 @mixin border-radius-top ($radius: 4px) {
-    -webkit-border-radius: $radius $radius 0 0;
-       -moz-border-radius: $radius $radius 0 0;
-	        border-radius: $radius $radius 0 0;
+    border-radius: $radius $radius 0 0;
 }
 
-@mixin animation($animation...) {
-    -webkit-animation: $animation;
-       -moz-animation: $animation;
-         -o-animation: $animation;
-            animation: $animation;
+@mixin position($t: null, $r: null, $b: null, $l: null) {
+    bottom: $b; left: $l; right: $r; top: $t;
 }
 
-@mixin transition($transition...) {
-    -webkit-transition: $transition;
-       -moz-transition: $transition;
-         -o-transition: $transition;
-            transition: $transition;
-}
-
-@mixin transition-delay($transition-delay...) {
-    -webkit-transition-delay: $transition-delay;
-       -moz-transition-delay: $transition-delay;
-         -o-transition-delay: $transition-delay;
-            transition-delay: $transition-delay;
-}
-
-@mixin transition-duration($transition-duration...) {
-    -webkit-transition-duration: $transition-duration;
-       -moz-transition-duration: $transition-duration;
-         -o-transition-duration: $transition-duration;
-            transition-duration: $transition-duration;
-}
-
-@mixin rotate($degrees) {
-    -webkit-transform: rotate($degrees);
-       -moz-transform: rotate($degrees);
-        -ms-transform: rotate($degrees);
-         -o-transform: rotate($degrees);
-            transform: rotate($degrees);
-}
-
-@mixin scale($ratio) {
-    -webkit-transform: scale($ratio);
-       -moz-transform: scale($ratio);
-        -ms-transform: scale($ratio);
-         -o-transform: scale($ratio);
-            transform: scale($ratio);
-}
-
-@mixin translate($x, $y) {
-    -webkit-transform: translate($x, $y);
-       -moz-transform: translate($x, $y);
-        -ms-transform: translate($x, $y);
-         -o-transform: translate($x, $y);
-            transform: translate($x, $y);
-}
-
-@mixin skew($x, $y) {
-    -webkit-transform: skew($x, $y);
-       -moz-transform: skew($x, $y);
-        -ms-transform: skewX($x) skewY($y);
-         -o-transform: skew($x, $y);
-            transform: skew($x, $y);
-    -webkit-backface-visibility: hidden;
-       -moz-backface-visibility: hidden;
-            backface-visibility: hidden;
-}
-
-@mixin translate3d($x, $y, $z) {
-    -webkit-transform: translate3d($x, $y, $z);
-       -moz-transform: translate3d($x, $y, $z);
-        -ms-transform: translate3d($x, $y, $z);
-         -o-transform: translate3d($x, $y, $z);
-            transform: translate3d($x, $y, $z);
-}
-
-@mixin absolute($top, $right, $bottom, $left) {
-         top: $top;  
-        left: $left;  
-       right: $right; 
-      bottom: $bottom; 
+@mixin absolute($t: null, $r: null, $b: null, $l: null) {
+    @include position($t, $r, $b, $l);
     position: absolute;
 }
 
-@mixin fixed($top, $right, $bottom, $left) {
-         top: $top;  
-        left: $left;  
-       right: $right; 
-      bottom: $bottom; 
+@mixin fixed($t: null, $r: null, $b: null, $l: null) {
+    @include position($t, $r, $b, $l);
     position: fixed;
 }
- 
-@mixin opacity($value) {
-    $opacityPercentage: $value * 100;
-        -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=$opacityPercentage)";
-      -moz-opacity: $value;
-    -khtml-opacity: $value;
-           opacity: $value;
-            filter: alpha(opacity=$opacityPercentage);
-}
 
-@mixin truncate-nowidth() {
-    @include ellipsis;
-        display: block;
+@mixin truncate-nowidth {
+    display: block;
+    overflow-x: hidden;
+    overflow-y: hidden;
+    text-overflow: ellipsis;
     white-space: nowrap;
-       overflow: hidden;
 }
 
-@mixin truncate() {
+@mixin truncate {
     @include truncate-nowidth;
-        width: auto;
-    min-width: 0;
     max-width: 100%;
+    min-width: 0;
+    width: auto;
 }
 
-@mixin gradient($stop: #EEE, $start: #FFF) {
-    background: $start;
-    background:     -webkit-gradient(linear, left bottom, left top, color-stop(0, $start), color-stop(1, $stop));
-    background:  -ms-linear-gradient(bottom, $start, $stop);
-    background: -moz-linear-gradient(center bottom, $start 0%, $stop 100%);
-    background:   -o-linear-gradient($stop, $start);
+@mixin improve-image {
+    -ms-interpolation-mode: nearest-neighbor;   // IE (non-standard property)
+    image-rendering: -moz-crisp-edges;          // Firefox
+    image-rendering:   -o-crisp-edges;          // Opera
+    image-rendering: -webkit-optimize-contrast; // Webkit (non-standard naming)
+    image-rendering: crisp-edges;
 }

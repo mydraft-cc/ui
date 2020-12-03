@@ -1,14 +1,12 @@
-import { Vec2 } from '@app/core';
+/*
+ * mydraft.cc
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
 
-import {
-    addDiagram,
-    changeSize,
-    Diagram,
-    diagrams,
-    EditorState,
-    removeDiagram,
-    selectDiagram
-} from '@app/wireframes/model';
+import { Vec2 } from '@app/core';
+import { addDiagram, changeSize, Diagram, diagrams, EditorState, removeDiagram, selectDiagram } from '@app/wireframes/model';
 
 describe('DiagramReducer', () => {
     const reducer = diagrams();

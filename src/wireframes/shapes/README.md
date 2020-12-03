@@ -42,13 +42,13 @@ const TEXT_POSITION_X = 2 * CIRCLE_MARGIN + 2 * CIRCLE_RADIUS;
 // Each shape has an appearance object, that defines how the shape is renderer.
 // We can use default values from the AbstractControl, so that all our shapes get the same border color.
 const DEFAULT_APPEARANCE = {};
-DEFAULT_APPEARANCE[DiagramShape.APPEARANCE_FOREGROUND_COLOR] = CommonTheme.CONTROL_TEXT_COLOR;
-DEFAULT_APPEARANCE[DiagramShape.APPEARANCE_BACKGROUND_COLOR] = CommonTheme.CONTROL_BACKGROUND_COLOR;
-DEFAULT_APPEARANCE[DiagramShape.APPEARANCE_TEXT] = 'RadioButton';
-DEFAULT_APPEARANCE[DiagramShape.APPEARANCE_TEXT_ALIGNMENT] = 'left';
-DEFAULT_APPEARANCE[DiagramShape.APPEARANCE_FONT_SIZE] = CommonTheme.CONTROL_FONT_SIZE;
-DEFAULT_APPEARANCE[DiagramShape.APPEARANCE_STROKE_COLOR] = CommonTheme.CONTROL_BORDER_COLOR;
-DEFAULT_APPEARANCE[DiagramShape.APPEARANCE_STROKE_THICKNESS] = CommonTheme.CONTROL_BORDER_THICKNESS;
+DEFAULT_APPEARANCE[DiagramShape.FOREGROUND_COLOR] = CommonTheme.CONTROL_TEXT_COLOR;
+DEFAULT_APPEARANCE[DiagramShape.BACKGROUND_COLOR] = CommonTheme.CONTROL_BACKGROUND_COLOR;
+DEFAULT_APPEARANCE[DiagramShape.TEXT] = 'RadioButton';
+DEFAULT_APPEARANCE[DiagramShape.TEXT_ALIGNMENT] = 'left';
+DEFAULT_APPEARANCE[DiagramShape.FONT_SIZE] = CommonTheme.CONTROL_FONT_SIZE;
+DEFAULT_APPEARANCE[DiagramShape.STROKE_COLOR] = CommonTheme.CONTROL_BORDER_COLOR;
+DEFAULT_APPEARANCE[DiagramShape.STROKE_THICKNESS] = CommonTheme.CONTROL_BORDER_THICKNESS;
 DEFAULT_APPEARANCE[STATE_KEY] = STATE_NORMAL;
 
 // Configurable can be used to make custom properties editable, e.g. we define
@@ -69,7 +69,7 @@ const CONFIGURABLES: Configurable[] = [
 // Define a a size constraint to calculate the size of the shape automatically. 
 const CONSTRAINT = new TextHeightConstraint(8);
 
-export class RadioButton extends AbstractControl {
+export class RadioButton implements ShapePlugin {
     // Return an unique identifier for this shape.
     public identifier(): string {
         return 'RadioButton';
@@ -81,14 +81,14 @@ export class RadioButton extends AbstractControl {
     }
 
     // Render the shape.
-    protected renderInternal(ctx: AbstractContext) {
+    public render(ctx: RenderContext) {
         this.createCircle(ctx);
         this.createText(ctx);
     }
 
-    private createCircle(ctx: AbstractContext) {
+    private createCircle(ctx: RenderContext) {
         // Use the boundds (= dimension) of the shape.
-        const y = 0.5 * ctx.bounds.size.y;
+        const y = 0.5 * ctx.size.size.y;
 
         // Use the renderer to create new primitives, in this case a cicle.
         const circleItem = ctx.renderer.createCircle(new Vec2(CIRCLE_POSITION_X, y), ctx.shape, CIRCLE_RADIUS);
@@ -107,13 +107,13 @@ export class RadioButton extends AbstractControl {
         if (state === STATE_CHECKED) {
             const checkCircleItem = ctx.renderer.createCircle(new Vec2(CIRCLE_POSITION_X, y), 0, CIRCLE_CHECK_RADIUS);
 
-            ctx.renderer.setBackgroundColor(checkCircleItem, ctx.shape.appearance.get(DiagramShape.APPEARANCE_STROKE_COLOR));
+            ctx.renderer.setBackgroundColor(checkCircleItem, ctx.shape.appearance.get(DiagramShape.STROKE_COLOR));
 
             ctx.add(checkCircleItem);
         }
     }
 
-    private createText(ctx: AbstractContext) {
+    private createText(ctx: RenderContext) {
         const w = ctx.shape.transform.size.x - TEXT_POSITION_X;
         const h = ctx.shape.transform.size.y;
 

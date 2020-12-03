@@ -3,9 +3,9 @@
 
 .asset-icon {
     & {
-        border-right: 1px solid $color-border;
-        border-bottom: 1px solid $color-border;
         background: transparent;
+        border-bottom: 1px solid $color-border;
+        border-right: 1px solid $color-border;
         text-align: center;
         text-decoration: none;
     }
@@ -17,10 +17,8 @@
 
     &-preview {
         line-height: 100px;
-    }
-
-    &-preview {
-        height: 70px;
+        max-height: 70px;
+        min-height: 70px;
     }
 
     .fa {
@@ -30,22 +28,28 @@
 
 .asset-icons {
     &-search {
-        input, .ant-select-selection {
-            @include border-radius(0);
+        input {
             border-left: 0;
+            border-radius: 0;
+            border-right: 0;
+        }
+
+        .ant-select-selection {
+            border-left: 0;
+            border-radius: 0;
             border-right: 0;
         }
 
         .ant-select {
+            display: block;
             margin: 0;
             margin-top: 4px;
-            display: block;
         }
     }
 
     &-list {
-        @include flex-grow(1);
-        overflow-y: scroll;
+        flex-grow: 1;
         overflow-x: hidden;
+        overflow-y: scroll;
     }
 }

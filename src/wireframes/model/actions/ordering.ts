@@ -1,14 +1,13 @@
+/*
+ * mydraft.cc
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
+
 import { Reducer } from 'redux';
-
-import {
-    EditorState
-} from './../internal';
-
-import {
-    createItemsAction,
-    DiagramRef,
-    ItemsRef
-} from './utils';
+import { EditorState } from './../internal';
+import { createItemsAction, DiagramRef, ItemsRef } from './utils';
 
 export const BRING_TO_FRONT = 'BRING_TO_FRONT';
 export const BRING_FORWARDS = 'BRING_FORWARDS';

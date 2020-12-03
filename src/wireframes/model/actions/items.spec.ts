@@ -1,27 +1,17 @@
+/*
+ * mydraft.cc
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
+
 import { Rotation, Vec2 } from '@app/core';
-
-import {
-    addIcon,
-    addImage,
-    addVisual,
-    calculateSelection,
-    Diagram,
-    DiagramItem,
-    DiagramItemSet,
-    EditorState,
-    items,
-    pasteItems,
-    removeItems,
-    RendererService,
-    selectItems,
-    Serializer,
-    Transform,
-    unlockItems
-} from '@app/wireframes/model';
-
-import { Button }   from '@app/wireframes/shapes/neutral/button';
-import { Icon }     from '@app/wireframes/shapes/shared/icon';
-import { Raster }   from '@app/wireframes/shapes/shared/raster';
+import { DefaultAppearance } from '@app/wireframes/interface';
+import { addIcon, addImage, addVisual, calculateSelection, Diagram, DiagramItem, DiagramItemSet, EditorState, items, pasteItems, removeItems, RendererService, selectItems, Serializer, Transform, unlockItems } from '@app/wireframes/model';
+import { Button } from '@app/wireframes/shapes/neutral/button';
+import { Icon } from '@app/wireframes/shapes/shared/icon';
+import { Raster } from '@app/wireframes/shapes/shared/raster';
+import { AbstractControl } from '@app/wireframes/shapes/utils/abstract-control';
 import { lockItems } from './items';
 
 describe('ItemsReducer', () => {
@@ -39,9 +29,9 @@ describe('ItemsReducer', () => {
 
     const rendererService
         = new RendererService()
-            .addRenderer(new Icon())
-            .addRenderer(new Button())
-            .addRenderer(new Raster());
+            .addRenderer(new AbstractControl(new Icon()))
+            .addRenderer(new AbstractControl(new Button()))
+            .addRenderer(new AbstractControl(new Raster()));
 
     const reducer = items(rendererService, new Serializer(rendererService));
 
@@ -111,8 +101,8 @@ describe('ItemsReducer', () => {
 
         expect(newIcon.id).toBe(shapeId);
         expect(newIcon.renderer).toBe('Icon');
-        expect(newIcon.appearance.get(DiagramItem.APPEARANCE_TEXT)).toBe('Icon');
-        expect(newIcon.appearance.get(DiagramItem.APPEARANCE_ICON_FONT_FAMILY)).toBe('FontAwesome');
+        expect(newIcon.appearance.get(DefaultAppearance.TEXT)).toBe('Icon');
+        expect(newIcon.appearance.get(DefaultAppearance.ICON_FONT_FAMILY)).toBe('FontAwesome');
         expect(newIcon.transform).toEqual(new Transform(new Vec2(40, 60), new Vec2(40, 40), Rotation.ZERO));
 
         expect(newDiagram.selectedIds.values).toEqual([shapeId]);

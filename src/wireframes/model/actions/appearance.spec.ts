@@ -1,17 +1,14 @@
+/*
+ * mydraft.cc
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
+
 import { Rotation, Vec2 } from '@app/core';
-
-import {
-    appearance,
-    changeItemsAppearance,
-    Diagram,
-    DiagramItem,
-    EditorState,
-    RendererService,
-    Transform,
-    transformItems
-} from '@app/wireframes/model';
-
+import { appearance, changeItemsAppearance, Diagram, DiagramItem, EditorState, RendererService, Transform, transformItems } from '@app/wireframes/model';
 import { Button } from '@app/wireframes/shapes/neutral/button';
+import { AbstractControl } from '@app/wireframes/shapes/utils/abstract-control';
 
 describe('AppearanceReducer', () => {
     const shape1 = DiagramItem.createShape('1', 'Button', 100, 100);
@@ -22,7 +19,9 @@ describe('AppearanceReducer', () => {
             .addVisual(shape1)
             .addVisual(shape2);
 
-    const rendererService = new RendererService().addRenderer(new Button());
+    const rendererService =
+        new RendererService()
+            .addRenderer(new AbstractControl(new Button()));
 
     const reducer = appearance(rendererService);
 

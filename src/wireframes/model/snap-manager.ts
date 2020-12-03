@@ -1,9 +1,11 @@
-import {
-    MathHelper,
-    Rect2,
-    Vec2
-} from '@app/core';
+/*
+ * mydraft.cc
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
 
+import { MathHelper, Rect2, Vec2 } from '@app/core';
 import { Diagram } from './diagram';
 import { Transform } from './transform';
 
@@ -49,11 +51,12 @@ export class SnapManager {
 
             const orderedAabbs = this.calculateOrderedAABBs(transform, diagram, view);
 
+            // tslint:disable-next-line: one-variable-per-declaration
             const left = aabb.left - delta.x, right = aabb.right + delta.x;
 
-            for (let target of orderedAabbs) {
+            for (const target of orderedAabbs) {
                 if (xMode > 0) {
-                    for (let other of [target.left, target.right]) {
+                    for (const other of [target.left, target.right]) {
                         if (Math.abs(right - other) < RESIZE_SNAP_SHAPE) {
                             dw = other - aabb.right;
 
@@ -63,7 +66,7 @@ export class SnapManager {
                         }
                     }
                 } else if (xMode < 0) {
-                    for (let other of [target.left, target.right]) {
+                    for (const other of [target.left, target.right]) {
                         if (Math.abs(left - other) < RESIZE_SNAP_SHAPE) {
                             dw = aabb.left - other;
 
@@ -75,11 +78,12 @@ export class SnapManager {
                 }
             }
 
+            // tslint:disable-next-line: one-variable-per-declaration
             const top = aabb.top - delta.y, bottom = aabb.bottom + delta.y;
 
-            for (let target of orderedAabbs) {
+            for (const target of orderedAabbs) {
                 if (yMode > 0) {
-                    for (let other of [target.top, target.bottom]) {
+                    for (const other of [target.top, target.bottom]) {
                         if (Math.abs(bottom - other) < RESIZE_SNAP_SHAPE) {
                             dh = other - aabb.bottom;
 
@@ -89,7 +93,7 @@ export class SnapManager {
                         }
                     }
                 } else if (yMode < 0) {
-                    for (let other of [target.top, target.bottom]) {
+                    for (const other of [target.top, target.bottom]) {
                         if (Math.abs(top - other) < RESIZE_SNAP_SHAPE) {
                             dh = aabb.top - other;
 
@@ -129,9 +133,10 @@ export class SnapManager {
         if (!snapToGrid) {
             const orderedAabbs = this.calculateOrderedAABBs(transform, diagram, view);
 
+            // tslint:disable-next-line: one-variable-per-declaration
             const left = aabb.left + delta.x, right = aabb.right + delta.x, centerX = aabb.cx + delta.x;
 
-            for (let target of orderedAabbs) {
+            for (const target of orderedAabbs) {
                 if (Math.abs(target.cx - centerX) < MOVE_SNAP_SHAPE) {
                     x = target.cx - aabb.width * 0.5;
 
@@ -165,9 +170,10 @@ export class SnapManager {
                 }
             }
 
+            // tslint:disable-next-line: one-variable-per-declaration
             const top = aabb.top + delta.y, bottom = aabb.bottom + delta.y, centerY = aabb.cy + delta.y;
 
-            for (let target of orderedAabbs) {
+            for (const target of orderedAabbs) {
                 if (Math.abs(target.cy - centerY) < MOVE_SNAP_SHAPE) {
                     y = target.cy - aabb.height * 0.5;
 

@@ -1,5 +1,11 @@
-import { Reducer } from 'redux';
+/*
+ * mydraft.cc
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
 
+import { Reducer } from 'redux';
 import { UndoableState } from './../internal';
 
 export const UNDO = 'UNDO';

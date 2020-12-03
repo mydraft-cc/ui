@@ -1,3 +1,10 @@
+/*
+ * mydraft.cc
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
+
 export function moveItems<T>(source: T[], items: T[], target: number, relative = false): T[] {
     if (source.length === 0 || !items || items.length === 0 || items.filter(x => !x).length > 0) {
         return source;
@@ -24,6 +31,7 @@ export function moveItems<T>(source: T[], items: T[], target: number, relative =
         return source;
     }
 
+    // tslint:disable-next-line: one-variable-per-declaration
     let isBackwards = false, newIndex = 0;
 
     if (relative) {
@@ -34,7 +42,7 @@ export function moveItems<T>(source: T[], items: T[], target: number, relative =
                 Number.MIN_VALUE :
                 Number.MAX_VALUE;
 
-        for (let itemFromIds of itemsToMove) {
+        for (const itemFromIds of itemsToMove) {
             if (target > 0) {
                 currentIndex = Math.max(itemFromIds.index, currentIndex);
             } else {
@@ -53,7 +61,7 @@ export function moveItems<T>(source: T[], items: T[], target: number, relative =
 
     const newItems: T[] = [];
 
-    for (let item of itemsToStay) {
+    for (const item of itemsToStay) {
         if ((isBackwards && item.index >= newIndex) || item.index > newIndex) {
             break;
         }
@@ -61,11 +69,11 @@ export function moveItems<T>(source: T[], items: T[], target: number, relative =
         newItems.push(item.value);
     }
 
-    for (let item of itemsToMove) {
+    for (const item of itemsToMove) {
         newItems.push(item.value);
     }
 
-    for (let item of itemsToStay) {
+    for (const item of itemsToStay) {
         if ((isBackwards && item.index >= newIndex) || item.index > newIndex) {
             newItems.push(item.value);
         }

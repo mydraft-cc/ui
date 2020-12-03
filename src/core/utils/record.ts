@@ -1,5 +1,11 @@
-﻿import { ImmutableMap } from './immutable-map';
+/*
+ * mydraft.cc
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
 
+import { ImmutableMap } from './immutable-map';
 import { equals } from './types';
 
 export abstract class Record<T> {
@@ -22,7 +28,7 @@ export abstract class Record<T> {
 
     public merge(props: Partial<T>) {
         const values = this.values.mutate(m => {
-            for (let key in props) {
+            for (const key in props) {
                 if (props.hasOwnProperty(key)) {
                     m.set(key, props[key]);
                 }

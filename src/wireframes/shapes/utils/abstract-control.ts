@@ -1,120 +1,185 @@
-import { Color, Rect2, Vec2 } from '@app/core';
+/*
+ * mydraft.cc
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
 
-import {
-    Constraint,
-    DiagramItem,
-    Renderer
-} from '@app/wireframes/model';
-
-import { AbstractRenderer, SVGRenderer } from './svg-renderer';
+import { Color, Rect2, Types, Vec2 } from '@app/core';
+import { ConfigurableFactory, Constraint, ConstraintFactory, RenderContext, Shape, ShapePlugin } from '@app/wireframes/interface';
+import { ColorConfigurable, DiagramItem, MinSizeConstraint, NumberConfigurable, Renderer, SelectionConfigurable, SizeConstraint, SliderConfigurable, TextHeightConstraint } from '@app/wireframes/model';
+import { SVGRenderer } from './svg-renderer';
 
 const RENDER_BACKGROUND = 1;
 
-export class AbstractContext {
-    public readonly items: any[] = [];
-
-    constructor(
-        public readonly renderer: AbstractRenderer,
-        public readonly shape: DiagramItem,
-        public readonly bounds: Rect2
-    ) {
+class DefaultConstraintFactory implements ConstraintFactory {
+    public size(width?: number, height?: number): any {
+        return new SizeConstraint(width, height);
     }
 
-    public add(item: any) {
-        this.items.push(item);
+    public minSize(): any {
+        return new MinSizeConstraint();
+    }
+    public textHeight(padding: number): any {
+        return new TextHeightConstraint(padding);
+    }
+
+    public textSize(padding?: number, lineHeight?: number, resizeWidth?: false, minWidth?: number): Constraint {
+        throw new TextSizeConstraint(padding, lineHeight, resizeWidth, minWidth);
+    }
+}
+
+class DefaultConfigurableFactory implements ConfigurableFactory {
+    public selection(name: string, label: string, options: string[]) {
+        return new SelectionConfigurable(name, label, options);
+    }
+
+    public slider(name: string, label: string, min: number, max: number) {
+        return new SliderConfigurable(name, label, min, max);
+    }
+
+    public number(name: string, label: string, min: number, max: number) {
+        return new NumberConfigurable(name, label, min, max);
+    }
+
+    public color(name: string, label: string) {
+        return new ColorConfigurable(name, label);
     }
 }
 
 const RENDERER = new SVGRenderer();
+const CONFIGURABLE_FACTORY = new DefaultConfigurableFactory();
+const CONSTRAINT_FACTORY = new DefaultConstraintFactory();
 
-export abstract class AbstractControl implements Renderer {
-    public abstract createDefaultShape(shapeId: string): DiagramItem;
+export class AbstractControl implements Renderer {
+    constructor(
+        private readonly plugin: ShapePlugin,
+    ) {
+    }
 
-    public abstract identifier(): string;
+    public identifier() {
+        return this.plugin.identifier();
+    }
 
-    public abstract defaultAppearance(): { [key: string]: any };
-
-    public previewOffset() {
-        return Vec2.ZERO;
+    public defaultAppearance() {
+        if (Types.isFunction(this.plugin.defaultAppearance)) {
+            return this.plugin.defaultAppearance();
+        } else {
+            return {};
+        }
     }
 
     public showInGallery() {
-        return true;
+        if (Types.isFunction(this.plugin.showInGallery)) {
+            return this.plugin.showInGallery();
+        } else {
+            return true;
+        }
     }
 
-    public setContext(context: any) {
+    public configurables() {
+        if (Types.isFunction(this.plugin.configurables)) {
+            return this.plugin.configurables(CONFIGURABLE_FACTORY);
+        } else {
+            return [];
+        }
+    }
+
+    public constraint() {
+        if (Types.isFunction(this.plugin.constraint)) {
+            return this.plugin.constraint(CONSTRAINT_FACTORY);
+        } else {
+            return undefined;
+        }
+    }
+
+    public previewOffset() {
+        if (Types.isFunction(this.plugin.previewOffset)) {
+            const offset = this.plugin.previewOffset();
+
+            return new Vec2(offset.x, offset.y);
+        } else {
+            return Vec2.ZERO;
+        }
+    }
+
+    public setContext(context: any): Renderer {
         RENDERER.captureContext(context);
 
         return this;
     }
 
+    public createDefaultShape(id: string) {
+        const size = this.plugin.defaultSize();
+
+        return DiagramItem.createShape(id, this.identifier(), size.x, size.y, this.configurables(), this.defaultAppearance(), this.constraint());
+    }
+
     public render(shape: DiagramItem, options?: { debug?: boolean, noOpacity?: boolean, noTransform?: boolean }): any {
-        const ctx = new AbstractContext(RENDERER, shape, new Rect2(0, 0, shape.transform.size.x, shape.transform.size.y));
+        const ctx = new RenderContext(RENDERER, shape, new Rect2(0, 0, shape.transform.size.x, shape.transform.size.y));
 
         options = options || {};
 
         if (RENDER_BACKGROUND) {
-            const backgroundItem = ctx.renderer.createRectangle(0);
+            const backgroundItem = RENDERER.createRectangle(0);
 
-            ctx.renderer.setBackgroundColor(backgroundItem, Color.WHITE);
-            ctx.renderer.setOpacity(backgroundItem, 0.001);
-            ctx.renderer.setTransform(backgroundItem, { rect: ctx.bounds });
+            RENDERER.setBackgroundColor(backgroundItem, Color.WHITE);
+            RENDERER.setOpacity(backgroundItem, 0.001);
+            RENDERER.setTransform(backgroundItem, { rect: ctx.rect });
 
             ctx.add(backgroundItem);
         }
 
-        this.renderInternal(ctx);
+        this.plugin.render(ctx);
 
         if (options.debug) {
-            const boxItem = ctx.renderer.createRectangle(1);
+            const boxItem = RENDERER.createRectangle(1);
 
-            ctx.renderer.setStrokeColor(boxItem, 0xff0000);
-            ctx.renderer.setTransform(boxItem, { rect: ctx.bounds.inflate(1) });
+            RENDERER.setStrokeColor(boxItem, 0xff0000);
+            RENDERER.setTransform(boxItem, { rect: ctx.rect.inflate(1) });
 
             ctx.add(boxItem);
         }
 
-        const rootItem = ctx.renderer.createGroup(ctx.items);
+        const rootItem = RENDERER.createGroup(ctx.items);
 
         if (!options.noTransform) {
-            ctx.renderer.setTransform(rootItem, shape);
+            RENDERER.setTransform(rootItem, shape);
         }
 
         if (!options.noOpacity) {
-            ctx.renderer.setOpacity(rootItem, shape);
+            RENDERER.setOpacity(rootItem, shape);
         }
 
         return rootItem;
     }
-
-    protected abstract renderInternal(ctx: AbstractContext): void;
 }
 
-export class TextSizeConstraint implements Constraint {
+class TextSizeConstraint implements Constraint {
     constructor(
         private readonly padding = 0,
         private readonly lineHeight = 1.2,
         private readonly resizeWidth = false,
-        private readonly minWidth = 0
+        private readonly minWidth = 0,
     ) { }
 
-    public updateSize(shape: DiagramItem, size: Vec2, prev: DiagramItem): Vec2 {
-        const fontSize = shape.appearance.get(DiagramItem.APPEARANCE_FONT_SIZE) || 10;
-        const fontFamily = shape.appearance.get(DiagramItem.APPEARANCE_FONT_FAMILY) || 'inherit';
+    public updateSize(shape: Shape, size: Vec2, prev: DiagramItem): Vec2 {
+        const fontSize = shape.fontSize;
+        const fontFamily = shape.fontFamily;
 
         let finalWidth = size.x;
 
-        const text = shape.appearance.get(DiagramItem.APPEARANCE_TEXT);
+        const text = shape.text;
 
         let prevText = '';
         let prevFontSize = 0;
         let prevFontFamily = '';
 
         if (prev) {
-            prevText = prev.appearance.get(DiagramItem.APPEARANCE_TEXT);
+            prevText = prev.text;
 
-            prevFontSize = prev.appearance.get(DiagramItem.APPEARANCE_FONT_SIZE) || 10;
-            prevFontFamily = prev.appearance.get(DiagramItem.APPEARANCE_FONT_FAMILY) || 'inherit';
+            prevFontSize = prev.fontSize;
+            prevFontFamily = prev.fontFamily;
         }
 
         if (prevText !== text || prevFontSize !== fontSize || prevFontFamily !== fontFamily) {

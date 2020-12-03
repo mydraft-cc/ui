@@ -1,51 +1,57 @@
-import { DiagramItem } from '@app/wireframes/model';
+/*
+ * mydraft.cc
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
 
-import { AbstractContext, AbstractControl, TextSizeConstraint } from '@app/wireframes/shapes/utils/abstract-control';
+import { ConstraintFactory, DefaultAppearance, RenderContext, ShapePlugin } from '@app/wireframes/interface';
 import { CommonTheme } from './_theme';
 
 const DEFAULT_APPEARANCE = {};
-DEFAULT_APPEARANCE[DiagramItem.APPEARANCE_FOREGROUND_COLOR] = 0x08519c;
-DEFAULT_APPEARANCE[DiagramItem.APPEARANCE_BACKGROUND_COLOR] = CommonTheme.CONTROL_BACKGROUND_COLOR;
-DEFAULT_APPEARANCE[DiagramItem.APPEARANCE_TEXT] = 'Link';
-DEFAULT_APPEARANCE[DiagramItem.APPEARANCE_TEXT_ALIGNMENT] = 'center';
-DEFAULT_APPEARANCE[DiagramItem.APPEARANCE_FONT_SIZE] = CommonTheme.CONTROL_FONT_SIZE;
-DEFAULT_APPEARANCE[DiagramItem.APPEARANCE_STROKE_COLOR] = CommonTheme.CONTROL_BORDER_COLOR;
-DEFAULT_APPEARANCE[DiagramItem.APPEARANCE_STROKE_THICKNESS] = CommonTheme.CONTROL_BORDER_THICKNESS;
+DEFAULT_APPEARANCE[DefaultAppearance.FOREGROUND_COLOR] = 0x08519c;
+DEFAULT_APPEARANCE[DefaultAppearance.BACKGROUND_COLOR] = CommonTheme.CONTROL_BACKGROUND_COLOR;
+DEFAULT_APPEARANCE[DefaultAppearance.TEXT] = 'Link';
+DEFAULT_APPEARANCE[DefaultAppearance.TEXT_ALIGNMENT] = 'center';
+DEFAULT_APPEARANCE[DefaultAppearance.FONT_SIZE] = CommonTheme.CONTROL_FONT_SIZE;
+DEFAULT_APPEARANCE[DefaultAppearance.STROKE_COLOR] = CommonTheme.CONTROL_BORDER_COLOR;
+DEFAULT_APPEARANCE[DefaultAppearance.STROKE_THICKNESS] = CommonTheme.CONTROL_BORDER_THICKNESS;
 
-const CONSTRAINT = new TextSizeConstraint(5);
-
-export class Link extends AbstractControl {
-    public defaultAppearance() {
-        return DEFAULT_APPEARANCE;
-    }
-
+export class Link implements ShapePlugin {
     public identifier(): string {
         return 'Link';
     }
 
-    public createDefaultShape(shapeId: string): DiagramItem {
-        return DiagramItem.createShape(shapeId, this.identifier(), 40, 30, undefined, DEFAULT_APPEARANCE, CONSTRAINT);
+    public defaultAppearance() {
+        return DEFAULT_APPEARANCE;
     }
 
-    protected renderInternal(ctx: AbstractContext) {
-        const textItem = ctx.renderer.createSinglelineText(ctx.shape, ctx.bounds);
+    public defaultSize() {
+        return { x: 40, y: 30 };
+    }
+
+    public constraint(factory: ConstraintFactory) {
+        return factory.textSize(5);
+    }
+
+    public render(ctx: RenderContext) {
+        const textItem = ctx.renderer.createSinglelineText(ctx.shape, ctx.rect);
 
         ctx.renderer.setForegroundColor(textItem, ctx.shape);
 
         ctx.add(textItem);
 
-        const fontSize = ctx.shape.appearance.get(DiagramItem.APPEARANCE_FONT_SIZE) || 12;
+        const fontSize = ctx.shape.fontSize;
 
         const b = ctx.renderer.getBounds(textItem);
 
-        const w = Math.round(Math.min(b.width, ctx.bounds.width));
-        const x = Math.round((ctx.bounds.width - w) * 0.5);
-        const y = Math.round((ctx.bounds.cy + fontSize * 0.5)) +
-                    (ctx.shape.appearance.get(DiagramItem.APPEARANCE_STROKE_THICKNESS) % 2 === 1 ? 0.5 : 0);
+        const w = Math.round(Math.min(b.width, ctx.rect.width));
+        const x = Math.round((ctx.rect.width - w) * 0.5);
+        const y = Math.round((ctx.rect.cy + fontSize * 0.5)) + (ctx.shape.strokeThickness % 2 === 1 ? 0.5 : 0);
 
         const underlineItem = ctx.renderer.createPath(ctx.shape, `M${x},${y} L${x + w},${y}`);
 
-        ctx.renderer.setStrokeColor(underlineItem, ctx.shape.appearance.get(DiagramItem.APPEARANCE_FOREGROUND_COLOR));
+        ctx.renderer.setStrokeColor(underlineItem, ctx.shape.foregroundColor);
 
         ctx.add(underlineItem);
     }

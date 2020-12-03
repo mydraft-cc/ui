@@ -1,3 +1,10 @@
+/*
+ * mydraft.cc
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
+
 import { Record, Vec2 } from '@app/core';
 
 class MockupObject extends Record<{ n: number, vec: Vec2 }> {}

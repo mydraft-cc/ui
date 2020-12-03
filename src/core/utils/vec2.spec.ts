@@ -1,4 +1,11 @@
-﻿import { Rotation, Vec2 } from '@app/core';
+/*
+ * mydraft.cc
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
+
+import { Rotation, Vec2 } from '@app/core';
 
 describe('Vec2', () => {
     it('should instantiate from x and y value', () => {

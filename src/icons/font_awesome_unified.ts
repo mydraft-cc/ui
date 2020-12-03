@@ -1,3 +1,10 @@
+/*
+ * mydraft.cc
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
+
 import { ICONS } from './font-awesome';
 
 export const ICONS_FONT_AWESOME = ICONS.icons.map(icon => {
@@ -6,7 +13,7 @@ export const ICONS_FONT_AWESOME = ICONS.icons.map(icon => {
     let displaySearch = icon.id;
 
     if (icon.filter) {
-        for (let filter of icon.filter) {
+        for (const filter of icon.filter) {
             displaySearch += ' ';
             displaySearch += filter;
         }

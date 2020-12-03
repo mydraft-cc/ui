@@ -1,3 +1,11 @@
+/*
+ * mydraft.cc
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
+
+import { RendererService } from '@app/wireframes/model/renderer.service';
 import { Browser } from './neutral/browser';
 import { Button } from './neutral/button';
 import { ButtonBar } from './neutral/button-bar';
@@ -20,6 +28,7 @@ import { Rectangle } from './neutral/rectangle';
 import { Shape } from './neutral/shape';
 import { Slider } from './neutral/slider';
 import { Tablet } from './neutral/tablet';
+import { Tabs } from './neutral/tabs';
 import { TextArea } from './neutral/text-area';
 import { TextInput } from './neutral/text-input';
 import { Toggle } from './neutral/toggle';
@@ -28,38 +37,38 @@ import { VerticalScrollbar } from './neutral/vertical-scrollbar';
 
 import { Icon } from './shared/icon';
 import { Raster } from './shared/raster';
-
-import { RendererService } from '@app/wireframes/model/renderer.service';
+import { AbstractControl } from './utils/abstract-control';
 
 export function registerRenderers(): RendererService {
     return new RendererService()
-        .addRenderer(new Browser())
-        .addRenderer(new Button())
-        .addRenderer(new ButtonBar())
-        .addRenderer(new Checkbox())
-        .addRenderer(new ComboBox())
-        .addRenderer(new Comment())
-        .addRenderer(new Dropdown())
-        .addRenderer(new Label())
-        .addRenderer(new Icon())
-        .addRenderer(new Image())
-        .addRenderer(new Heading())
-        .addRenderer(new HorizontalLine())
-        .addRenderer(new HorizontalScrollbar())
-        .addRenderer(new Link())
-        .addRenderer(new Numeric())
-        .addRenderer(new Paragraph())
-        .addRenderer(new Phone())
-        .addRenderer(new Progress())
-        .addRenderer(new RadioButton())
-        .addRenderer(new Raster())
-        .addRenderer(new Rectangle())
-        .addRenderer(new Shape())
-        .addRenderer(new Slider())
-        .addRenderer(new TextArea())
-        .addRenderer(new TextInput())
-        .addRenderer(new Tablet())
-        .addRenderer(new Toggle())
-        .addRenderer(new VerticalLine())
-        .addRenderer(new VerticalScrollbar());
+        .addRenderer(new AbstractControl(new Browser()))
+        .addRenderer(new AbstractControl(new Button()))
+        .addRenderer(new AbstractControl(new ButtonBar()))
+        .addRenderer(new AbstractControl(new Checkbox()))
+        .addRenderer(new AbstractControl(new ComboBox()))
+        .addRenderer(new AbstractControl(new Comment()))
+        .addRenderer(new AbstractControl(new Dropdown()))
+        .addRenderer(new AbstractControl(new Label()))
+        .addRenderer(new AbstractControl(new Icon()))
+        .addRenderer(new AbstractControl(new Image()))
+        .addRenderer(new AbstractControl(new Heading()))
+        .addRenderer(new AbstractControl(new HorizontalLine()))
+        .addRenderer(new AbstractControl(new HorizontalScrollbar()))
+        .addRenderer(new AbstractControl(new Link()))
+        .addRenderer(new AbstractControl(new Numeric()))
+        .addRenderer(new AbstractControl(new Paragraph()))
+        .addRenderer(new AbstractControl(new Phone()))
+        .addRenderer(new AbstractControl(new Progress()))
+        .addRenderer(new AbstractControl(new RadioButton()))
+        .addRenderer(new AbstractControl(new Raster()))
+        .addRenderer(new AbstractControl(new Rectangle()))
+        .addRenderer(new AbstractControl(new Shape()))
+        .addRenderer(new AbstractControl(new Slider()))
+        .addRenderer(new AbstractControl(new TextArea()))
+        .addRenderer(new AbstractControl(new TextInput()))
+        .addRenderer(new AbstractControl(new Tablet()))
+        .addRenderer(new AbstractControl(new Tabs()))
+        .addRenderer(new AbstractControl(new Toggle()))
+        .addRenderer(new AbstractControl(new VerticalLine()))
+        .addRenderer(new AbstractControl(new VerticalScrollbar()));
 }

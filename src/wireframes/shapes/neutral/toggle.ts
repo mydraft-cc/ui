@@ -1,72 +1,75 @@
-import { Rect2, Vec2 } from '@app/core';
+/*
+ * mydraft.cc
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
 
-import {
-    Configurable,
-    DiagramItem,
-    SelectionConfigurable
-} from '@app/wireframes/model';
+// tslint:disable: prefer-const
 
-import { AbstractContext, AbstractControl } from '@app/wireframes/shapes/utils/abstract-control';
+import { ConfigurableFactory, DefaultAppearance, Rect2, RenderContext, ShapePlugin, Vec2 } from '@app/wireframes/interface';
 
-const STATE_KEY = 'STATE';
+const STATE = 'STATE';
 const STATE_NORMAL = 'Normal';
 const STATE_CHECKED = 'Checked';
 
 const DEFAULT_APPEARANCE = {};
-DEFAULT_APPEARANCE[DiagramItem.APPEARANCE_FOREGROUND_COLOR] = 0x238b45;
-DEFAULT_APPEARANCE[DiagramItem.APPEARANCE_BACKGROUND_COLOR] = 0xbdbdbd;
-DEFAULT_APPEARANCE[DiagramItem.APPEARANCE_TEXT_DISABLED] = true;
-DEFAULT_APPEARANCE[DiagramItem.APPEARANCE_STROKE_COLOR] = 0xffffff;
-DEFAULT_APPEARANCE[DiagramItem.APPEARANCE_STROKE_THICKNESS] = 4;
-DEFAULT_APPEARANCE[STATE_KEY] = STATE_CHECKED;
+DEFAULT_APPEARANCE[DefaultAppearance.FOREGROUND_COLOR] = 0x238b45;
+DEFAULT_APPEARANCE[DefaultAppearance.BACKGROUND_COLOR] = 0xbdbdbd;
+DEFAULT_APPEARANCE[DefaultAppearance.TEXT_DISABLED] = true;
+DEFAULT_APPEARANCE[DefaultAppearance.STROKE_COLOR] = 0xffffff;
+DEFAULT_APPEARANCE[DefaultAppearance.STROKE_THICKNESS] = 4;
+DEFAULT_APPEARANCE[STATE] = STATE_CHECKED;
 
-const CONFIGURABLES: Configurable[] = [
-    new SelectionConfigurable(STATE_KEY, 'State',
-        [
-            STATE_NORMAL,
-            STATE_CHECKED
-        ])
-];
-
-export class Toggle extends AbstractControl {
-    public defaultAppearance() {
-        return DEFAULT_APPEARANCE;
-    }
-
+export class Toggle implements ShapePlugin {
     public identifier(): string {
         return 'Toggle';
     }
 
-    public createDefaultShape(shapeId: string): DiagramItem {
-        return DiagramItem.createShape(shapeId, this.identifier(), 60, 30, CONFIGURABLES, DEFAULT_APPEARANCE);
+    public defaultAppearance() {
+        return DEFAULT_APPEARANCE;
     }
 
-    protected renderInternal(ctx: AbstractContext) {
-        const border = ctx.shape.appearance.get(DiagramItem.APPEARANCE_STROKE_THICKNESS);
+    public defaultSize() {
+        return { x: 60, y: 30 };
+    }
 
-        const radius = Math.min(ctx.shape.transform.size.x, ctx.shape.transform.size.y) * 0.5;
+    public configurables(factory: ConfigurableFactory) {
+        return [
+            factory.selection(STATE, 'State',
+            [
+                STATE_NORMAL,
+                STATE_CHECKED,
+            ]),
+        ];
+    }
 
-        let circleY = ctx.bounds.height * 0.5;
+    public render(ctx: RenderContext) {
+        const border = ctx.shape.strokeThickness;
+
+        const radius = Math.min(ctx.rect.width, ctx.rect.height) * 0.5;
+
+        let circleY = ctx.rect.height * 0.5;
         let circleX = radius;
 
-        const isUnchecked = ctx.shape.appearance.get(STATE_KEY) === STATE_NORMAL;
+        const isUnchecked = ctx.shape.getAppearance(STATE) === STATE_NORMAL;
 
         if (!isUnchecked) {
-            circleX = ctx.bounds.width - circleX;
+            circleX = ctx.rect.width - circleX;
         }
 
         const circleCenter = new Vec2(circleX, circleY);
         const circleSize = radius - border;
         const circleItem = ctx.renderer.createEllipse(0, Rect2.fromCenter(circleCenter, circleSize));
 
-        ctx.renderer.setBackgroundColor(circleItem, ctx.shape.appearance.get(DiagramItem.APPEARANCE_STROKE_COLOR));
+        ctx.renderer.setBackgroundColor(circleItem, ctx.shape.strokeColor);
 
-        const pillItem = ctx.renderer.createRectangle(0, radius, ctx.bounds);
+        const pillItem = ctx.renderer.createRectangle(0, radius, ctx.rect);
 
         if (isUnchecked) {
             ctx.renderer.setBackgroundColor(pillItem, ctx.shape);
         } else {
-            ctx.renderer.setBackgroundColor(pillItem, ctx.shape.appearance.get(DiagramItem.APPEARANCE_FOREGROUND_COLOR));
+            ctx.renderer.setBackgroundColor(pillItem, ctx.shape.foregroundColor);
         }
 
         ctx.add(pillItem);

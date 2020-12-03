@@ -1,3 +1,10 @@
+/*
+ * mydraft.cc
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
+
 import * as Mousetrap from 'mousetrap';
 import * as React from 'react';
 
@@ -15,7 +22,7 @@ export interface ShortcutProps {
 export class Shortcut extends React.Component<ShortcutProps> {
     public componentDidMount() {
         Mousetrap.bind(this.props.keys, (e) =>  {
-            if (this.props.disabled !== true) {
+            if (!this.props.disabled) {
                 this.props.onPressed();
 
                 e.preventDefault();

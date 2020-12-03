@@ -1,3 +1,10 @@
+/*
+ * mydraft.cc
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
+
 import * as React from 'react';
 import * as svg from 'svg.js';
 
@@ -24,10 +31,10 @@ export const CanvasView = (props: CanvasViewProps) => {
         onInit,
         zoom,
         zoomedHeight,
-        zoomedWidth
+        zoomedWidth,
     } = props;
 
-    let [document, setDocument] = React.useState<svg.Doc>();
+    const [document, setDocument] = React.useState<svg.Doc>();
 
     const ref = React.useRef();
 
@@ -35,12 +42,11 @@ export const CanvasView = (props: CanvasViewProps) => {
         const element = ref.current;
 
         if (element && !document) {
-            document = svg(element);
-            document.style({ position: 'relative', overflow: 'visible' });
+            const newDocument = svg(element).style({ position: 'relative', overflow: 'visible' });
 
-            onInit(document);
+            onInit(newDocument);
 
-            setDocument(document);
+            setDocument(newDocument);
         }
     }, [ref.current, setDocument]);
 

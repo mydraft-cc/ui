@@ -1,8 +1,11 @@
-import {
-    Rect2,
-    Rotation,
-    Vec2
-} from '@app/core';
+/*
+ * mydraft.cc
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
+
+import { Rect2, Rotation, Vec2 } from '@app/core';
 
 describe('Rect2', () => {
     it('should provide values from constructor', () => {

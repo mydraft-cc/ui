@@ -1,10 +1,12 @@
-import { Vec2 } from '@app/core';
+/*
+ * mydraft.cc
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
 
-import {
-    Configurable,
-    Renderer,
-    RendererService
-} from '@app/wireframes/model';
+import { Vec2 } from '@app/core';
+import { Configurable, Renderer, RendererService } from '@app/wireframes/model';
 
 class MockupRenderer implements Renderer {
     public previewOffset() { return Vec2.ZERO; }

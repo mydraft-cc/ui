@@ -1,16 +1,16 @@
-import { Button, Icon, Tooltip } from 'antd';
+/*
+ * mydraft.cc
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
+
+import { LockOutlined, UnlockOutlined } from '@ant-design/icons';
+import { Shortcut } from '@app/core';
+import { getDiagram, getSelectedItemWithLocked, lockItems, unlockItems, useStore } from '@app/wireframes/model';
+import { Button, Tooltip } from 'antd';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
-
-import { Shortcut } from '@app/core';
-
-import {
-    getDiagram,
-    getSelectedItemWithLocked,
-    lockItems,
-    unlockItems,
-    useStore
-} from '@app/wireframes/model';
 
 export const LockMenu = React.memo(() => {
     const dispatch = useDispatch();
@@ -27,19 +27,19 @@ export const LockMenu = React.memo(() => {
         }
     }, [selectedDiagram, selectedItem]);
 
-    const icon = selectedItem && selectedItem.isLocked ? 'lock' : 'unlock';
+    return <>
+        <Shortcut disabled={!selectedItem} onPressed={doToggle} keys='ctl+l' />
 
-    return (
-        <>
-            <Shortcut disabled={!selectedItem} onPressed={doToggle} keys='ctl+l' />
-
-            <Tooltip mouseEnterDelay={1} title='Lock or unlock item (CTRL + L)'>
-                <Button className='menu-item' size='large'
-                    disabled={!selectedItem}
-                    onClick={doToggle}>
-                    <Icon type={icon} />
-                </Button>
-            </Tooltip>
-        </>
-    );
+        <Tooltip mouseEnterDelay={1} title='Lock or unlock item (CTRL + L)'>
+            <Button className='menu-item' size='large'
+                disabled={!selectedItem}
+                onClick={doToggle}>
+                {selectedItem && selectedItem.isLocked ? (
+                    <LockOutlined />
+                ) : (
+                    <UnlockOutlined />
+                )}
+            </Button>
+        </Tooltip>
+    </>;
 });

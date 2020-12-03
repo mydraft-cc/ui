@@ -5,7 +5,8 @@ $size: 24px;
 
 .color-picker {
     &-button {
-        &, & button {
+        &,
+        & button {
             padding: 2px !important;
         }
     }
@@ -19,16 +20,17 @@ $size: 24px;
     &-color {
         & {
             @include circle($size);
-            float: left;
-            border: 2px solid $color-border;
             background: $color-dark-foreground;
+            border: 2px solid $color-border;
+            border-radius: $size;
+            float: left;
             margin: 1px;
         }
 
         &.rect {
-            @include border-radius(0);
             background: transparent;
             border-color: transparent;
+            border-radius: 0;
             float: none;
         }
 
@@ -48,17 +50,17 @@ $size: 24px;
 
     &-tabs {
         margin-top: -10px;
-        min-height: 375px;
         max-height: 375px;
+        min-height: 375px;
     }
 }
 
 .sketch-picker {
-    @include box-shadow-none;
-    padding: 0 !important;
     background: 'none' !important;
     border: 0 !important;
     border-radius: 0 !important;
+    box-shadow: none;
+    padding: 0 !important;
 }
 
 span {

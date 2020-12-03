@@ -1,22 +1,18 @@
+/*
+ * mydraft.cc
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
+
+import { Color, ColorPicker } from '@app/core';
+import { DefaultAppearance } from '@app/wireframes/interface';
+import { changeItemsAppearance, getDiagramId, getSelectedItems, getSelectionSet, selectColorTab, uniqueAppearance, useStore } from '@app/wireframes/model';
 import { Button, Col, Row, Select } from 'antd';
 import { ButtonType } from 'antd/lib/button';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
-
 import './VisualProperties.scss';
-
-import { Color, ColorPicker } from '@app/core';
-
-import {
-    changeItemsAppearance,
-    DiagramItem,
-    getDiagramId,
-    getSelectedItems,
-    getSelectionSet,
-    selectColorTab,
-    uniqueAppearance,
-    useStore
-} from '@app/wireframes/model';
 
 const DEFINED_STROKE_THICKNESSES = [1, 2, 4, 6, 8];
 const DEFINED_FONT_SIZES = [4, 6, 8, 10, 12, 14, 16, 18, 20, 24, 28, 32, 36, 40, 48, 60];
@@ -29,27 +25,27 @@ export const VisualProperties = React.memo(() => {
     const selectedItems = useStore(s => getSelectedItems(s));
 
     const backgroundColor = React.useMemo(() =>
-        uniqueAppearance(selectionSet, DiagramItem.APPEARANCE_BACKGROUND_COLOR, x => Color.fromValue(x), Color.eq)
+        uniqueAppearance(selectionSet, DefaultAppearance.BACKGROUND_COLOR, x => Color.fromValue(x), Color.eq)
     , [selectionSet]);
 
     const fontSize = React.useMemo(() =>
-        uniqueAppearance(selectionSet, DiagramItem.APPEARANCE_FONT_SIZE, x => x)
+        uniqueAppearance(selectionSet, DefaultAppearance.FONT_SIZE, x => x)
     , [selectionSet]);
 
     const foregroundColor = React.useMemo(() =>
-        uniqueAppearance(selectionSet, DiagramItem.APPEARANCE_FOREGROUND_COLOR, x => Color.fromValue(x), Color.eq)
+        uniqueAppearance(selectionSet, DefaultAppearance.FOREGROUND_COLOR, x => Color.fromValue(x), Color.eq)
     , [selectionSet]);
 
     const strokeColor = React.useMemo(() =>
-        uniqueAppearance(selectionSet, DiagramItem.APPEARANCE_STROKE_COLOR, x => Color.fromValue(x), Color.eq)
+        uniqueAppearance(selectionSet, DefaultAppearance.STROKE_COLOR, x => Color.fromValue(x), Color.eq)
     , [selectionSet]);
 
     const strokeThickness = React.useMemo(() =>
-        uniqueAppearance(selectionSet, DiagramItem.APPEARANCE_STROKE_THICKNESS, x => x)
+        uniqueAppearance(selectionSet, DefaultAppearance.STROKE_THICKNESS, x => x)
     , [selectionSet]);
 
     const textAlignment = React.useMemo(() =>
-        uniqueAppearance(selectionSet, DiagramItem.APPEARANCE_TEXT_ALIGNMENT, x => x)
+        uniqueAppearance(selectionSet, DefaultAppearance.TEXT_ALIGNMENT, x => x)
     , [selectionSet]);
 
     const getTextAlignment = React.useCallback((value: string): ButtonType => {
@@ -58,7 +54,7 @@ export const VisualProperties = React.memo(() => {
 
     const doAlignText = React.useCallback((value: string) => {
         if (selectedDiagramId) {
-            dispatch(changeItemsAppearance(selectedDiagramId, selectedItems, DiagramItem.APPEARANCE_TEXT_ALIGNMENT, value));
+            dispatch(changeItemsAppearance(selectedDiagramId, selectedItems, DefaultAppearance.TEXT_ALIGNMENT, value));
         }
     }, [selectedDiagramId, selectedItems]);
 
@@ -76,27 +72,27 @@ export const VisualProperties = React.memo(() => {
     const doAlignTextCenter = React.useCallback(() => doAlignText('center'), [doAlignText]);
     const doAlignTextRight =  React.useCallback(() => doAlignText('right'), [doAlignText]);
 
-    const doChangeFontSize =    	React.useCallback((value: any) => doChangeAppearance(DiagramItem.APPEARANCE_FONT_SIZE, value), [doChangeAppearance]);
-    const doChangeStrokeColor =     React.useCallback((value: any) => doChangeAppearance(DiagramItem.APPEARANCE_STROKE_COLOR, value), [doChangeAppearance]);
-    const doChangeStrokeThickness = React.useCallback((value: any) => doChangeAppearance(DiagramItem.APPEARANCE_STROKE_THICKNESS, value), [doChangeAppearance]);
-    const doChangeForegroundColor = React.useCallback((value: any) => doChangeAppearance(DiagramItem.APPEARANCE_FOREGROUND_COLOR, value), [doChangeAppearance]);
-    const doChangeBackgroundColor = React.useCallback((value: any) => doChangeAppearance(DiagramItem.APPEARANCE_BACKGROUND_COLOR, value), [doChangeAppearance]);
+    const doChangeFontSize =    	React.useCallback((value: any) => doChangeAppearance(DefaultAppearance.FONT_SIZE, value), [doChangeAppearance]);
+    const doChangeStrokeColor =     React.useCallback((value: any) => doChangeAppearance(DefaultAppearance.STROKE_COLOR, value), [doChangeAppearance]);
+    const doChangeStrokeThickness = React.useCallback((value: any) => doChangeAppearance(DefaultAppearance.STROKE_THICKNESS, value), [doChangeAppearance]);
+    const doChangeForegroundColor = React.useCallback((value: any) => doChangeAppearance(DefaultAppearance.FOREGROUND_COLOR, value), [doChangeAppearance]);
+    const doChangeBackgroundColor = React.useCallback((value: any) => doChangeAppearance(DefaultAppearance.BACKGROUND_COLOR, value), [doChangeAppearance]);
 
     if (!selectedDiagramId) {
         return null;
     }
 
     const fontSizes = DEFINED_FONT_SIZES.map(o =>
-        <Select.Option key={o.toString()} value={o}>{o}</Select.Option>
+        <Select.Option key={o.toString()} value={o}>{o}</Select.Option>,
     );
 
     const strokeThicknesses = DEFINED_STROKE_THICKNESSES.map(o =>
-        <Select.Option key={o.toString()} value={o}>{o}</Select.Option>
+        <Select.Option key={o.toString()} value={o}>{o}</Select.Option>,
     );
 
     return (
         <>
-            <div style={{display: (selectedItems.length > 0 ? 'block' : 'none') }}>
+            <div style={{ display: (selectedItems.length > 0 ? 'block' : 'none') }}>
                 <div className='property-subsection visual-properties'>
                     <Row className='property'>
                         <Col span={12} className='property-label'>Font Size</Col>

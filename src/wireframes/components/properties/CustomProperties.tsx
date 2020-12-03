@@ -1,26 +1,16 @@
+/*
+ * mydraft.cc
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
+
+import { Color, ColorPicker } from '@app/core';
+import { changeItemsAppearance, ColorConfigurable, Configurable, EditorStateInStore, getDiagramId, getSelectedConfigurables, getSelectedShape, NumberConfigurable, selectColorTab, SelectionConfigurable, SliderConfigurable, UIStateInStore, useStore } from '@app/wireframes/model';
 import { Col, InputNumber, Row, Select } from 'antd';
 import * as React from 'react';
 import { connect, useDispatch } from 'react-redux';
 import { bindActionCreators, Dispatch } from 'redux';
-
-import { Color, ColorPicker } from '@app/core';
-
-import {
-    changeItemsAppearance,
-    ColorConfigurable,
-    Configurable,
-    EditorStateInStore,
-    getDiagramId,
-    getSelectedConfigurables,
-    getSelectedShape,
-    NumberConfigurable,
-    selectColorTab,
-    SelectionConfigurable,
-    SliderConfigurable,
-    UIStateInStore,
-    useStore
-} from '@app/wireframes/model';
-
 import { CustomSlider } from './CustomSlider';
 
 interface CustomPropertyProps {
@@ -46,7 +36,7 @@ export const CustomProperty = (props: CustomPropertyProps) => {
         onChange,
         onColorTabChange,
         selectedColorTab,
-        value
+        value,
     } = props;
 
     const doChangeValue = React.useCallback((newValue: any) => {
@@ -80,7 +70,7 @@ export const CustomProperty = (props: CustomPropertyProps) => {
                         onChange={doChangeValue}
                     >
                         {configurable.options.map(o =>
-                            <Select.Option key={o} value={o}>{o}</Select.Option>
+                            <Select.Option key={o} value={o}>{o}</Select.Option>,
                         )}
                     </Select>
                 }
@@ -122,7 +112,7 @@ const CustomProperties = () => {
                     onChange={doChange}
                     onColorTabChange={doSelectColorTab}
                     value={selectedShape.appearance.get(c.name)}
-                />
+                />,
             )}
         </>
     );
@@ -133,15 +123,15 @@ const mapStateToProps = (state: EditorStateInStore & UIStateInStore) => {
         selectedDiagramId: getDiagramId(state),
         selectedShape: getSelectedShape(state),
         selectedConfigurables: getSelectedConfigurables(state),
-        selectedColorTab: state.ui.selectedColorTab
+        selectedColorTab: state.ui.selectedColorTab,
     };
 };
 
 const mapDispatchToProps = (dispatch: Dispatch) => bindActionCreators({
-    changeItemsAppearance, selectColorTab
+    changeItemsAppearance, selectColorTab,
 }, dispatch);
 
 export const CustomPropertiesContainer = connect(
     mapStateToProps,
-    mapDispatchToProps
+    mapDispatchToProps,
 )(CustomProperties);

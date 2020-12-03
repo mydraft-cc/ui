@@ -1,6 +1,12 @@
+/*
+ * mydraft.cc
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
+
 import { message } from 'antd';
 import { AnyAction, Dispatch, Middleware, Reducer } from 'redux';
-
 import { UIState } from './../internal';
 
 export const SHOW_INFO_TOAST = 'SHOW_INFO_TOAST';

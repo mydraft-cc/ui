@@ -1,19 +1,14 @@
-import { Reducer } from 'redux';
+/*
+ * mydraft.cc
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
 
 import { Types } from '@app/core';
-
-import {
-    DiagramItemSet,
-    EditorState,
-    RendererService,
-    Transform
-} from './../internal';
-
-import {
-    createItemsAction,
-    DiagramRef,
-    ItemsRef
-} from './utils';
+import { Reducer } from 'redux';
+import { DiagramItemSet, EditorState, RendererService, Transform } from './../internal';
+import { createItemsAction, DiagramRef, ItemsRef } from './utils';
 
 export const CHANGE_ITEMS_APPEARANCE = 'CHANGE_ITEMS_APPEARANCE';
 export const changeItemsAppearance = (diagram: DiagramRef, visuals: ItemsRef, key: string, value: any) => {
@@ -34,7 +29,7 @@ export function appearance(rendererService: RendererService): Reducer<EditorStat
 
                     const set = DiagramItemSet.createFromDiagram(action.itemIds, diagram);
 
-                    for (let visual of set!.allVisuals) {
+                    for (const visual of set!.allVisuals) {
                         diagram = diagram.updateItem(visual.id, item => {
                             if (item.type === 'Shape') {
                                 const renderer = rendererService.registeredRenderers[item.renderer];
@@ -57,7 +52,7 @@ export function appearance(rendererService: RendererService): Reducer<EditorStat
 
                     const set = DiagramItemSet.createFromDiagram(action.itemIds, diagram);
 
-                    for (let item of set!.allItems) {
+                    for (const item of set!.allItems) {
                         diagram = diagram.updateItem(item.id, i => i.transformByBounds(oldBounds, newBounds));
                     }
 

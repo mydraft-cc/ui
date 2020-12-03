@@ -1,37 +1,42 @@
-import { DiagramItem } from '@app/wireframes/model';
+/*
+ * mydraft.cc
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
 
-import { AbstractContext, AbstractControl } from '@app/wireframes/shapes/utils/abstract-control';
+import { DefaultAppearance, RenderContext, ShapePlugin } from '@app/wireframes/interface';
 import { CommonTheme } from './_theme';
 
 const DEFAULT_APPEARANCE = {};
-DEFAULT_APPEARANCE[DiagramItem.APPEARANCE_FOREGROUND_COLOR] = CommonTheme.CONTROL_TEXT_COLOR;
-DEFAULT_APPEARANCE[DiagramItem.APPEARANCE_BACKGROUND_COLOR] = CommonTheme.CONTROL_BACKGROUND_COLOR;
-DEFAULT_APPEARANCE[DiagramItem.APPEARANCE_TEXT] = 'Button';
-DEFAULT_APPEARANCE[DiagramItem.APPEARANCE_TEXT_ALIGNMENT] = 'center';
-DEFAULT_APPEARANCE[DiagramItem.APPEARANCE_FONT_SIZE] = CommonTheme.CONTROL_FONT_SIZE;
-DEFAULT_APPEARANCE[DiagramItem.APPEARANCE_STROKE_COLOR] = CommonTheme.CONTROL_BORDER_COLOR;
-DEFAULT_APPEARANCE[DiagramItem.APPEARANCE_STROKE_THICKNESS] = CommonTheme.CONTROL_BORDER_THICKNESS;
+DEFAULT_APPEARANCE[DefaultAppearance.FOREGROUND_COLOR] = CommonTheme.CONTROL_TEXT_COLOR;
+DEFAULT_APPEARANCE[DefaultAppearance.BACKGROUND_COLOR] = CommonTheme.CONTROL_BACKGROUND_COLOR;
+DEFAULT_APPEARANCE[DefaultAppearance.TEXT] = 'Button';
+DEFAULT_APPEARANCE[DefaultAppearance.TEXT_ALIGNMENT] = 'center';
+DEFAULT_APPEARANCE[DefaultAppearance.FONT_SIZE] = CommonTheme.CONTROL_FONT_SIZE;
+DEFAULT_APPEARANCE[DefaultAppearance.STROKE_COLOR] = CommonTheme.CONTROL_BORDER_COLOR;
+DEFAULT_APPEARANCE[DefaultAppearance.STROKE_THICKNESS] = CommonTheme.CONTROL_BORDER_THICKNESS;
 
-export class Button extends AbstractControl {
-    public defaultAppearance() {
-        return DEFAULT_APPEARANCE;
-    }
-
+export class Button implements ShapePlugin {
     public identifier(): string {
         return 'Button';
     }
 
-    public createDefaultShape(shapeId: string): DiagramItem {
-        return DiagramItem.createShape(shapeId, this.identifier(), 100, 30, undefined, DEFAULT_APPEARANCE);
+    public defaultAppearance() {
+        return DEFAULT_APPEARANCE;
     }
 
-    protected renderInternal(ctx: AbstractContext) {
+    public defaultSize() {
+        return { x: 100, y: 30 };
+    }
+
+    public render(ctx: RenderContext) {
         this.createBorder(ctx);
         this.createText(ctx);
     }
 
-    private createBorder(ctx: AbstractContext) {
-        const borderItem = ctx.renderer.createRectangle(ctx.shape, CommonTheme.CONTROL_BORDER_RADIUS, ctx.bounds);
+    private createBorder(ctx: RenderContext) {
+        const borderItem = ctx.renderer.createRectangle(ctx.shape, CommonTheme.CONTROL_BORDER_RADIUS, ctx.rect);
 
         ctx.renderer.setBackgroundColor(borderItem, ctx.shape);
         ctx.renderer.setStrokeColor(borderItem, ctx.shape);
@@ -39,8 +44,8 @@ export class Button extends AbstractControl {
         ctx.add(borderItem);
     }
 
-    private createText(ctx: AbstractContext) {
-        const textItem = ctx.renderer.createSinglelineText(ctx.shape, ctx.bounds.deflate(14, 4));
+    private createText(ctx: RenderContext) {
+        const textItem = ctx.renderer.createSinglelineText(ctx.shape, ctx.rect.deflate(14, 4));
 
         ctx.renderer.setForegroundColor(textItem, ctx.shape);
 

@@ -1,6 +1,11 @@
-import {
-    ImmutableList
-} from '@app/core';
+/*
+ * mydraft.cc
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
+
+import { ImmutableList } from '@app/core';
 
 export class DiagramContainer extends ImmutableList<string> {
     public static readonly DEFAULT = new DiagramContainer([]);

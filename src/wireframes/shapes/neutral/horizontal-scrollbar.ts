@@ -1,33 +1,26 @@
-import { Rect2 } from '@app/core';
+/*
+ * mydraft.cc
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
 
-import {
-    Configurable,
-    DiagramItem,
-    SliderConfigurable
-} from '@app/wireframes/model';
-
-import { AbstractContext, AbstractControl } from '@app/wireframes/shapes/utils/abstract-control';
-
+import { ConfigurableFactory, DefaultAppearance, Rect2, RenderContext, ShapePlugin } from '@app/wireframes/interface';
 import { CommonTheme } from './_theme';
 
 const BAR_SIZE = 'BAR_SIZE';
 const BAR_POSITION = 'BAR_POSITION';
 
 const DEFAULT_APPEARANCE = {};
-DEFAULT_APPEARANCE[DiagramItem.APPEARANCE_FOREGROUND_COLOR] = CommonTheme.CONTROL_TEXT_COLOR;
-DEFAULT_APPEARANCE[DiagramItem.APPEARANCE_BACKGROUND_COLOR] = CommonTheme.CONTROL_BACKGROUND_COLOR;
-DEFAULT_APPEARANCE[DiagramItem.APPEARANCE_STROKE_COLOR] = CommonTheme.CONTROL_BACKGROUND_COLOR;
-DEFAULT_APPEARANCE[DiagramItem.APPEARANCE_STROKE_THICKNESS] = 2;
-DEFAULT_APPEARANCE[DiagramItem.APPEARANCE_TEXT_DISABLED] = true;
+DEFAULT_APPEARANCE[DefaultAppearance.FOREGROUND_COLOR] = CommonTheme.CONTROL_TEXT_COLOR;
+DEFAULT_APPEARANCE[DefaultAppearance.BACKGROUND_COLOR] = CommonTheme.CONTROL_BACKGROUND_COLOR;
+DEFAULT_APPEARANCE[DefaultAppearance.STROKE_COLOR] = CommonTheme.CONTROL_BACKGROUND_COLOR;
+DEFAULT_APPEARANCE[DefaultAppearance.STROKE_THICKNESS] = 2;
+DEFAULT_APPEARANCE[DefaultAppearance.TEXT_DISABLED] = true;
 DEFAULT_APPEARANCE[BAR_SIZE] = 50;
 DEFAULT_APPEARANCE[BAR_POSITION] = 0;
 
-const CONFIGURABLES: Configurable[] = [
-    new SliderConfigurable(BAR_SIZE, 'Bar Size'),
-    new SliderConfigurable(BAR_POSITION, 'Bar Position')
-];
-
-export class HorizontalScrollbar extends AbstractControl {
+export class HorizontalScrollbar implements ShapePlugin {
     public defaultAppearance() {
         return DEFAULT_APPEARANCE;
     }
@@ -36,12 +29,19 @@ export class HorizontalScrollbar extends AbstractControl {
         return 'HorizontalScrollbar';
     }
 
-    public createDefaultShape(shapeId: string): DiagramItem {
-        return DiagramItem.createShape(shapeId, this.identifier(), 300, 20, CONFIGURABLES, DEFAULT_APPEARANCE);
+    public defaultSize() {
+        return { x: 300, y: 20 };
     }
 
-    protected renderInternal(ctx: AbstractContext) {
-        const clickSize = Math.min(30, Math.min(0.8 * ctx.bounds.width, ctx.bounds.height));
+    public configurables(factory: ConfigurableFactory) {
+        return [
+            factory.slider(BAR_SIZE, 'Bar Size', 0, 100),
+            factory.slider(BAR_SIZE, 'Bar Position', 0, 100),
+        ];
+    }
+
+    public render(ctx: RenderContext) {
+        const clickSize = Math.min(30, Math.min(0.8 * ctx.rect.width, ctx.rect.height));
 
         this.createBackground(ctx, clickSize);
         this.createBorder(ctx);
@@ -49,35 +49,35 @@ export class HorizontalScrollbar extends AbstractControl {
         this.createLeftTriangle(ctx, clickSize);
     }
 
-    private createBackground(ctx: AbstractContext, clickSize: number) {
-        const barSize = ctx.shape.appearance.get(BAR_SIZE) / 100;
-        const barPosition = ctx.shape.appearance.get(BAR_POSITION) / 100 * (ctx.bounds.width - 2 * clickSize) * (1 - barSize);
+    private createBackground(ctx: RenderContext, clickSize: number) {
+        const barSize = ctx.shape.getAppearance(BAR_SIZE) / 100;
+        const barPosition = ctx.shape.getAppearance(BAR_POSITION) / 100 * (ctx.rect.width - 2 * clickSize) * (1 - barSize);
 
-        const clipMask = ctx.renderer.createRectangle(0, 0, ctx.bounds);
+        const clipMask = ctx.renderer.createRectangle(0, 0, ctx.rect);
 
-        const barBounds = new Rect2(ctx.bounds.x + clickSize + barPosition, ctx.bounds.y, (ctx.bounds.width - 2 * clickSize) * barSize, ctx.bounds.height);
-        const barItem = ctx.renderer.createRectangle(0, 0, barBounds);
+        const barrect = new Rect2(ctx.rect.x + clickSize + barPosition, ctx.rect.y, (ctx.rect.width - 2 * clickSize) * barSize, ctx.rect.height);
+        const barItem = ctx.renderer.createRectangle(0, 0, barrect);
 
         ctx.renderer.setBackgroundColor(barItem, 0xbdbdbd);
 
-        const railItem = ctx.renderer.createRectangle(0, 0, ctx.bounds);
+        const railItem = ctx.renderer.createRectangle(0, 0, ctx.rect);
 
         ctx.renderer.setBackgroundColor(railItem, ctx.shape);
 
         ctx.add(ctx.renderer.createGroup([railItem, barItem], clipMask));
     }
 
-    private createBorder(ctx: AbstractContext) {
-        const borderItem = ctx.renderer.createRectangle(ctx.shape, 0, ctx.bounds);
+    private createBorder(ctx: RenderContext) {
+        const borderItem = ctx.renderer.createRectangle(ctx.shape, 0, ctx.rect);
 
         ctx.renderer.setStrokeColor(borderItem, ctx.shape);
 
         ctx.add(borderItem);
     }
 
-    private createRightTriangle(ctx: AbstractContext, clickSize: number) {
-        const y = ctx.bounds.height * 0.5;
-        const x = ctx.bounds.right - 0.5 * clickSize;
+    private createRightTriangle(ctx: RenderContext, clickSize: number) {
+        const y = ctx.rect.height * 0.5;
+        const x = ctx.rect.right - 0.5 * clickSize;
         const w = clickSize * 0.3;
         const h = clickSize * 0.3;
 
@@ -88,9 +88,9 @@ export class HorizontalScrollbar extends AbstractControl {
         ctx.add(rightTriangleItem);
     }
 
-    private createLeftTriangle(ctx: AbstractContext, clickSize: number) {
-        const y = ctx.bounds.height * 0.5;
-        const x = ctx.bounds.left + 0.5 * clickSize;
+    private createLeftTriangle(ctx: RenderContext, clickSize: number) {
+        const y = ctx.rect.height * 0.5;
+        const x = ctx.rect.left + 0.5 * clickSize;
         const w = clickSize * 0.3;
         const h = clickSize * 0.3;
 

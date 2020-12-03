@@ -1,10 +1,11 @@
-import {
-    ImmutableMap,
-    ImmutableSet,
-    Record,
-    Types
-} from '@app/core';
+/*
+ * mydraft.cc
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
 
+import { ImmutableMap, ImmutableSet, Record, Types } from '@app/core';
 import { DiagramContainer } from './diagram-container';
 import { DiagramItem } from './diagram-item';
 import { DiagramItemSet } from './diagram-item-set';
@@ -66,11 +67,11 @@ export class Diagram extends Record<Props> {
         if (!this.parents) {
             this.parents = {};
 
-            for (let key of this.items.keys) {
+            for (const key of this.items.keys) {
                 const item = this.items.get(key);
 
                 if (item.type === 'Group') {
-                    for (let childId of item.childIds.values) {
+                    for (const childId of item.childIds.values) {
                         this.parents[childId] = item;
                     }
                 }
@@ -171,7 +172,7 @@ export class Diagram extends Record<Props> {
 
         return this.mutate([], ({ root, items }) => {
             items = items.mutate(m => {
-                for (let item of set.allItems) {
+                for (const item of set.allItems) {
                     m.set(item.id, item);
                 }
             });
@@ -189,13 +190,13 @@ export class Diagram extends Record<Props> {
 
         return this.mutate([], ({ root, items, selectedIds }) => {
             items = items.mutate(m => {
-                for (let id of set.allIds) {
+                for (const id of set.allIds) {
                     m.remove(id);
                 }
             });
 
             selectedIds = selectedIds.mutate(m => {
-                for (let id of set.allIds) {
+                for (const id of set.allIds) {
                     m.remove(id);
                 }
             });
@@ -239,9 +240,9 @@ export class Diagram extends Record<Props> {
 
         const result: DiagramItem[] = [];
 
-        let firstParent = this.parent(itemIds[0]);
+        const firstParent = this.parent(itemIds[0]);
 
-        for (let itemId of itemIds) {
+        for (const itemId of itemIds) {
             const item = this.items.get(itemId);
 
             if (!item) {

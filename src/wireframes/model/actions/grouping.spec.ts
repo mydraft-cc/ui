@@ -1,11 +1,11 @@
-import {
-    Diagram,
-    DiagramItem,
-    EditorState,
-    grouping,
-    groupItems,
-    ungroupItems
-} from '@app/wireframes/model';
+/*
+ * mydraft.cc
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
+
+import { Diagram, DiagramItem, EditorState, grouping, groupItems, ungroupItems } from '@app/wireframes/model';
 
 describe('GroupingReducer', () => {
     const reducer = grouping();

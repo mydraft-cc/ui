@@ -1,5 +1,11 @@
-import { Vec2 } from '@app/core';
+/*
+ * mydraft.cc
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
 
+import { Vec2 } from '@app/core';
 import { Diagram, EditorState } from '@app/wireframes/model';
 
 describe('EditorState', () => {

@@ -1,9 +1,15 @@
-import { MathHelper, Vec2 } from '@app/core';
+/*
+ * mydraft.cc
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
 
-import { DiagramItem } from './diagram-item';
+import { MathHelper, Vec2 } from '@app/core';
+import { Shape } from '@app/wireframes/interface';
 
 export interface Constraint {
-    updateSize(shape: DiagramItem, size: Vec2, prev?: DiagramItem): Vec2;
+    updateSize(shape: Shape, size: Vec2, prev?: Shape): Vec2;
 
     calculateSizeX(): boolean;
 
@@ -13,12 +19,12 @@ export interface Constraint {
 export class SizeConstraint implements Constraint {
     constructor(
         private readonly width: number | undefined,
-        private readonly height: number | undefined
+        private readonly height: number | undefined,
     ) {
         Object.freeze(this);
     }
 
-    public updateSize(shape: DiagramItem, size: Vec2): Vec2 {
+    public updateSize(_: Shape, size: Vec2): Vec2 {
         let w = size.x;
         let h = size.y;
 
@@ -47,7 +53,7 @@ export class MinSizeConstraint implements Constraint {
         Object.freeze(this);
     }
 
-    public updateSize(shape: DiagramItem, size: Vec2): Vec2 {
+    public updateSize(_: Shape, size: Vec2): Vec2 {
         const minSize = Math.min(size.x, size.y);
 
         return new Vec2(minSize, minSize);
@@ -64,13 +70,13 @@ export class MinSizeConstraint implements Constraint {
 
 export class TextHeightConstraint implements Constraint {
     constructor(
-        private readonly padding: number
+        private readonly padding: number,
     ) {
         Object.freeze(this);
     }
 
-    public updateSize(shape: DiagramItem, size: Vec2): Vec2 {
-        const fontSize = shape.appearance.get(DiagramItem.APPEARANCE_FONT_SIZE);
+    public updateSize(shape: Shape, size: Vec2): Vec2 {
+        const fontSize = shape.fontSize;
 
         return new Vec2(size.x, MathHelper.roundToMultipleOfTwo(fontSize * 1.2 + this.padding * 2));
     }

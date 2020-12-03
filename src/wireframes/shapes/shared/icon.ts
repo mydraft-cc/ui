@@ -1,37 +1,42 @@
-import { DiagramItem } from '@app/wireframes/model';
+/*
+ * mydraft.cc
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
 
-import { AbstractContext, AbstractControl } from '@app/wireframes/shapes/utils/abstract-control';
+import { DefaultAppearance, RenderContext, ShapePlugin } from '@app/wireframes/interface';
 
 const DEFAULT_APPEARANCE = {};
-DEFAULT_APPEARANCE[DiagramItem.APPEARANCE_FOREGROUND_COLOR] = 0;
-DEFAULT_APPEARANCE[DiagramItem.APPEARANCE_TEXT_DISABLED] = true;
+DEFAULT_APPEARANCE[DefaultAppearance.FOREGROUND_COLOR] = 0;
+DEFAULT_APPEARANCE[DefaultAppearance.TEXT_DISABLED] = true;
 
-export class Icon extends AbstractControl {
+export class Icon implements ShapePlugin {
+    public identifier(): string {
+        return 'Icon';
+    }
+
     public defaultAppearance() {
         return DEFAULT_APPEARANCE;
     }
 
-    public identifier(): string {
-        return 'Icon';
+    public defaultSize() {
+        return { x: 40, y: 40 };
     }
 
     public showInGallery() {
         return false;
     }
 
-    public createDefaultShape(shapeId: string): DiagramItem {
-        return DiagramItem.createShape(shapeId, this.identifier(), 40, 40, undefined, DEFAULT_APPEARANCE);
-    }
+    public render(ctx: RenderContext) {
+        const fontSize = Math.min(ctx.rect.w, ctx.rect.h) - 10;
 
-    protected renderInternal(ctx: AbstractContext) {
-        const fontSize = Math.min(ctx.bounds.w, ctx.bounds.h) - 10;
+        const config = { fontSize, text: ctx.shape.text, alignment: 'center' };
 
-        const config = { fontSize, text: ctx.shape.appearance.get(DiagramItem.APPEARANCE_TEXT), alignment: 'center' };
-
-        const textItem = ctx.renderer.createSinglelineText(config, ctx.bounds);
+        const textItem = ctx.renderer.createSinglelineText(config, ctx.rect);
 
         ctx.renderer.setForegroundColor(textItem, ctx.shape);
-        ctx.renderer.setFontFamily(textItem, ctx.shape.appearance.get(DiagramItem.APPEARANCE_ICON_FONT_FAMILY) || 'FontAwesome');
+        ctx.renderer.setFontFamily(textItem, ctx.shape.getAppearance(DefaultAppearance.ICON_FONT_FAMILY) || 'FontAwesome');
 
         ctx.add(textItem);
     }

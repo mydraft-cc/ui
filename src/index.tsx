@@ -1,35 +1,28 @@
-import './index.scss';
+/*
+ * mydraft.cc
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
 
+import { RendererContext, SerializerContext } from '@app/context';
+import { UserReport } from '@app/core';
+import { createInitialAssetsState, createInitialLoadingState, createInitialUIState, EditorState, SELECT_DIAGRAM, SELECT_ITEMS, Serializer } from '@app/wireframes/model';
+import * as Reducers from '@app/wireframes/model/actions';
+import { registerRenderers } from '@app/wireframes/shapes';
 import { createBrowserHistory } from 'history';
 import * as React from 'react';
 import { DndProvider } from 'react-dnd';
-import HTML5Backend from 'react-dnd-html5-backend';
+import { HTML5Backend } from 'react-dnd-html5-backend';
 import * as ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 import { Route, Router } from 'react-router';
 import { routerMiddleware, routerReducer } from 'react-router-redux';
 import { applyMiddleware, combineReducers, compose, createStore, Reducer } from 'redux';
 import thunk from 'redux-thunk';
-
-import { UserReport } from '@app/core';
-
-import * as Reducers from '@app/wireframes/model/actions';
-
-import {
-    createInitialAssetsState,
-    createInitialLoadingState,
-    createInitialUIState,
-    EditorState,
-    SELECT_DIAGRAM,
-    SELECT_ITEMS,
-    Serializer
-} from '@app/wireframes/model';
-
-import { RendererContext, SerializerContext } from '@app/context';
-import { registerRenderers } from '@app/wireframes/shapes';
-import { registerServiceWorker } from './registerServiceWorker';
-
 import { App } from './App';
+import './index.scss';
+import { registerServiceWorker } from './registerServiceWorker';
 
 const rendererService = registerRenderers();
 
@@ -41,7 +34,7 @@ const reducers: Reducer<EditorState>[] = [
     Reducers.items(rendererService, serializer),
     Reducers.diagrams(),
     Reducers.grouping(),
-    Reducers.ordering()
+    Reducers.ordering(),
 ];
 
 const editorReducer: Reducer<EditorState> = (state: EditorState, action: any) => {
@@ -60,8 +53,8 @@ const undoableReducer = Reducers.undoable(editorReducer,
     EditorState.empty(),
     [
         SELECT_DIAGRAM,
-        SELECT_ITEMS
-    ]
+        SELECT_ITEMS,
+    ],
 );
 
 const history = createBrowserHistory();
@@ -75,11 +68,10 @@ const store = createStore(
              editor: undoableReducer,
             loading: Reducers.loading(createInitialLoadingState()),
             routing: routerReducer,
-                 ui: Reducers.ui(createInitialUIState())
+                 ui: Reducers.ui(createInitialUIState()),
     }), undoableReducer, editorReducer),
-    composeEnhancers(applyMiddleware(thunk, Reducers.toastMiddleware(), routerMiddleware(history), Reducers.itemsMiddleware(serializer)))
+    composeEnhancers(applyMiddleware(thunk, Reducers.toastMiddleware(), routerMiddleware(history), Reducers.itemsMiddleware(serializer))),
 );
-
 
 const Root = (
     <DndProvider backend={HTML5Backend}>

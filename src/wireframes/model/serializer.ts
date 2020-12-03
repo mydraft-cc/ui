@@ -1,9 +1,11 @@
-import {
-    ImmutableMap,
-    MathHelper,
-    Rotation
-} from '@app/core';
+/*
+ * mydraft.cc
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
 
+import { ImmutableMap, MathHelper, Rotation } from '@app/core';
 import { DiagramContainer } from './diagram-container';
 import { DiagramItem } from './diagram-item';
 import { DiagramItemSet } from './diagram-item-set';
@@ -14,7 +16,7 @@ type IdMap = { [id: string]: string };
 
 export class Serializer {
     constructor(
-        private readonly rendererService: RendererService
+        private readonly rendererService: RendererService,
     ) {
     }
 
@@ -72,13 +74,13 @@ export class Serializer {
     public serializeSet(set: DiagramItemSet) {
         const output: any = { visuals: [], groups: [] };
 
-        for (let visual of set.allVisuals) {
+        for (const visual of set.allVisuals) {
             const json = Serializer.serializeShape(visual);
 
             output.visuals.push(json);
         }
 
-        for (let group of set.allGroups) {
+        for (const group of set.allGroups) {
             const json = Serializer.serializeGroup(group);
 
             output.groups.push(json);
