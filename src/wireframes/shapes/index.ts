@@ -15,6 +15,7 @@ import { Comment } from './neutral/comment';
 import { Dropdown } from './neutral/dropdown';
 import { Heading } from './neutral/heading';
 import { HorizontalLine } from './neutral/horizontal-line';
+import { HorizontalScrollbar } from './neutral/horizontal-scrollbar';
 import { Image } from './neutral/image';
 import { Label } from './neutral/label';
 import { Link } from './neutral/link';
@@ -32,6 +33,7 @@ import { TextArea } from './neutral/text-area';
 import { TextInput } from './neutral/text-input';
 import { Toggle } from './neutral/toggle';
 import { VerticalLine } from './neutral/vertical-line';
+import { VerticalScrollbar } from './neutral/vertical-scrollbar';
 
 import { Icon } from './shared/icon';
 import { Raster } from './shared/raster';
@@ -51,6 +53,7 @@ export function registerRenderers(): RendererService {
         .addRenderer(new AbstractControl(new Image()))
         .addRenderer(new AbstractControl(new Heading()))
         .addRenderer(new AbstractControl(new HorizontalLine()))
+        .addRenderer(new AbstractControl(new HorizontalScrollbar()))
         .addRenderer(new AbstractControl(new Link()))
         .addRenderer(new AbstractControl(new Numeric()))
         .addRenderer(new AbstractControl(new Paragraph()))
@@ -66,5 +69,6 @@ export function registerRenderers(): RendererService {
         .addRenderer(new AbstractControl(new Tablet()))
         .addRenderer(new AbstractControl(new Tabs()))
         .addRenderer(new AbstractControl(new Toggle()))
-        .addRenderer(new AbstractControl(new VerticalLine()));
+        .addRenderer(new AbstractControl(new VerticalLine()))
+        .addRenderer(new AbstractControl(new VerticalScrollbar()));
 }
