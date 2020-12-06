@@ -215,14 +215,14 @@ module.exports = function (env) {
                  */
                 path: root('/build/'),
 
-                publicPath: './build/',
+                publicPath: './',
 
                 /**
                  * Specifies the name of each output file on disk.
                  *
                  * See: https://webpack.js.org/configuration/output/#output-filename
                  */
-                filename: '[name].js',
+                filename: '[name].[hash].js',
 
                 /**
                  * The filename of non-entry chunks as relative path inside the output.path directory.
@@ -233,7 +233,7 @@ module.exports = function (env) {
             };
         } else {
             config.output = {
-                filename: '[name].js',
+                filename: '[name].[hash].js',
 
                 /**
                  * Set the public path, because we are running the website from another port (5000).
