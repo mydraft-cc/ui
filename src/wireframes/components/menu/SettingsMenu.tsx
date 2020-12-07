@@ -5,20 +5,26 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { SettingOutlined } from '@ant-design/icons';
+import { ExportOutlined, PrinterOutlined, SettingOutlined } from '@ant-design/icons';
 import { Shortcut } from '@app/core';
 import { changeSize, useStore } from '@app/wireframes/model';
-import { Button, Col, InputNumber, Modal, Row, Tooltip } from 'antd';
+import { Button, Col, Dropdown, InputNumber, Menu, Modal, Row, Tooltip } from 'antd';
+import MenuItem from 'antd/lib/menu/MenuItem';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
 
-export const SettingsMenu = React.memo(() => {
+export interface SettingsMenuProps {
+    // The print callback.
+    print: () => void;
+}
+
+export const SettingsMenu = React.memo((props: SettingsMenuProps) => {
+    const { print } = props;
+
+    const dispatch = useDispatch();
     const [isOpen, setIsOpen] = React.useState(false);
     const [sizeWidth, setWidth] = React.useState(0);
     const [sizeHeight, setHeight] = React.useState(0);
-
-    const dispatch = useDispatch();
-
     const size = useStore(x => x.editor.present.size);
 
     React.useEffect(() => {
@@ -44,7 +50,20 @@ export const SettingsMenu = React.memo(() => {
         setHeight(value);
     }, []);
 
+    const exportMenu =
+        <Menu>
+            <MenuItem onClick={print}>
+                <PrinterOutlined /> Print Diagrams
+            </MenuItem>
+        </Menu>;
+
     return <>
+        <Dropdown overlay={exportMenu} placement='bottomRight'>
+            <Button className='menu-item' size='large'>
+                <ExportOutlined />
+            </Button>
+        </Dropdown>
+
         <Shortcut onPressed={doToggle} keys='ctl+o' />
 
         <Tooltip mouseEnterDelay={1} title='Show more options (CTRL + O)'>

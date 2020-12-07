@@ -31,7 +31,7 @@ export interface TextAdornerProps {
     interactionService: InteractionService;
 
     // A function to change the appearance of a visual.
-    changeItemsAppearance: (diagram: Diagram, visuals: DiagramItem[], key: string, val: any) => any;
+    onChangeItemsAppearance: (diagram: Diagram, visuals: DiagramItem[], key: string, val: any) => any;
 }
 
 export class TextAdorner extends React.Component<TextAdornerProps> implements InteractionHandler {
@@ -129,7 +129,7 @@ export class TextAdorner extends React.Component<TextAdornerProps> implements In
         const oldText = this.selectedShape.text;
 
         if (newText !== oldText) {
-            this.props.changeItemsAppearance(this.props.selectedDiagram, [this.selectedShape], DefaultAppearance.TEXT, newText);
+            this.props.onChangeItemsAppearance(this.props.selectedDiagram, [this.selectedShape], DefaultAppearance.TEXT, newText);
         }
 
         this.hide();

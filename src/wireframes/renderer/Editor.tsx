@@ -5,11 +5,9 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { sizeInPx, Vec2 } from '@app/core';
-import { changeItemsAppearance, Diagram, DiagramContainer, DiagramItem, EditorStateInStore, getDiagram, getEditor, getSelectedItems, getSelectedItemsWithLocked, RendererService, selectItems, Transform, transformItems, UIStateInStore } from '@app/wireframes/model';
+import { Rect2, sizeInPx, Vec2 } from '@app/core';
+import { Diagram, DiagramContainer, DiagramItem, RendererService, Transform } from '@app/wireframes/model';
 import * as React from 'react';
-import { connect } from 'react-redux';
-import { bindActionCreators, Dispatch } from 'redux';
 import * as svg from 'svg.js';
 import { CanvasView } from './CanvasView';
 import { InteractionService } from './interaction-service';
@@ -25,7 +23,7 @@ export interface EditorProps {
     rendererService: RendererService;
 
     // The selected diagram.
-    selectedDiagram: Diagram;
+    diagram?: Diagram;
 
     // The selected items.
     selectedItems: DiagramItem[];
@@ -33,31 +31,34 @@ export interface EditorProps {
     // The selected items including locked items.
     selectedItemsWithLocked: DiagramItem[];
 
-    // The width of the canvas.
-    zoomedWidth: number;
+    // The zoomed width of the canvas.
+    zoomedSize: Vec2;
 
-    // The height of the canvas.
-    zoomedHeight: number;
+    // The optional viewbox.
+    viewBox?: Rect2;
+
+    // The view size.
+    viewSize: Vec2;
 
     // The zoom value of the canvas.
     zoom: number;
 
-    // The view size of the editor.
-    viewSize: Vec2;
+    // True when rendered.
+    onRender?: () => void;
 
     // A function to select a set of items.
-    selectItems: (diagram: Diagram, itemIds: string[]) => any;
+    onSelectItems?: (diagram: Diagram, itemIds: string[]) => any;
 
     // A function to change the appearance of a visual.
-    changeItemsAppearance: (diagram: Diagram, visuals: DiagramItem[], key: string, val: any) => any;
+    onChangeItemsAppearance?: (diagram: Diagram, visuals: DiagramItem[], key: string, val: any) => any;
 
     // A function to transform a set of items.
-    transformItems: (diagram: Diagram, items: DiagramItem[], oldBounds: Transform, newBounds: Transform) => any;
+    onTransformItems?: (diagram: Diagram, items: DiagramItem[], oldBounds: Transform, newBounds: Transform) => any;
 }
 
 const showDebugOutlines = process.env.NODE_ENV === 'false';
 
-class Editor extends React.Component<EditorProps> {
+export class Editor extends React.Component<EditorProps> {
     private adornersSelect: svg.Container;
     private adornersTransform: svg.Container;
     private diagramTools: svg.Element;
@@ -116,12 +117,16 @@ class Editor extends React.Component<EditorProps> {
 
             this.shapeRefsById[shape.id] = ref;
         }
+
+        if (this.props.onRender) {
+            this.props.onRender();
+        }
     }
 
     private getOrderedShapes() {
         const flattenShapes: DiagramItem[] = [];
 
-        const diagram = this.props.selectedDiagram;
+        const diagram = this.props.diagram;
 
         if (diagram) {
             let handleContainer: (itemIds: DiagramContainer) => any;
@@ -151,16 +156,16 @@ class Editor extends React.Component<EditorProps> {
     public render() {
         // tslint:disable:no-shadowed-variable
         const {
-            changeItemsAppearance,
-            selectedDiagram,
+            diagram,
+            onChangeItemsAppearance,
+            onSelectItems,
+            onTransformItems,
             selectedItems,
-            selectItems,
             selectedItemsWithLocked,
-            transformItems,
-            zoom,
-            zoomedHeight,
-            zoomedWidth,
+            viewBox,
             viewSize,
+            zoom,
+            zoomedSize,
         } = this.props;
 
         const w = viewSize.x;
@@ -173,39 +178,48 @@ class Editor extends React.Component<EditorProps> {
             this.diagramRendering.size(w, h);
         }
 
+        const style: React.CSSProperties = { position: 'relative', width: sizeInPx(zoomedSize.x), height: sizeInPx(zoomedSize.y) };
+
         return (
             <>
-                {selectedDiagram &&
-                    <div className='editor' style={{ position: 'relative', width: sizeInPx(w), height: sizeInPx(h) }}>
+                {diagram &&
+                    <div className='editor' style={style}>
                         <CanvasView onInit={this.initDiagramScope}
+                            viewBox={viewBox}
+                            viewSize={viewSize}
                             zoom={zoom}
-                            zoomedWidth={zoomedWidth}
-                            zoomedHeight={zoomedHeight} />
+                            zoomedSize={zoomedSize} />
 
-                        {this.interactionService && selectedDiagram && (
+                        {this.interactionService && diagram && (
                             <>
-                                <TransformAdorner
-                                    adorners={this.adornersTransform}
-                                    interactionService={this.interactionService}
-                                    selectedDiagram={selectedDiagram}
-                                    selectedItems={selectedItems}
-                                    transformItems={transformItems}
-                                    viewSize={viewSize}
-                                    zoom={zoom} />
+                                {onTransformItems &&
+                                    <TransformAdorner
+                                        adorners={this.adornersTransform}
+                                        interactionService={this.interactionService}
+                                        onTransformItems={onTransformItems}
+                                        selectedDiagram={diagram}
+                                        selectedItems={selectedItems}
+                                        viewSize={viewSize}
+                                        zoom={zoom} />
+                                }
 
-                                <SelectionAdorner
-                                    adorners={this.adornersSelect}
-                                    interactionService={this.interactionService}
-                                    selectedDiagram={selectedDiagram}
-                                    selectedItems={selectedItemsWithLocked}
-                                    selectItems={selectItems} />
+                                {onSelectItems &&
+                                    <SelectionAdorner
+                                        adorners={this.adornersSelect}
+                                        interactionService={this.interactionService}
+                                        onSelectItems={onSelectItems}
+                                        selectedDiagram={diagram}
+                                        selectedItems={selectedItemsWithLocked} />
+                                }
 
-                                <TextAdorner
-                                    changeItemsAppearance={changeItemsAppearance}
-                                    interactionService={this.interactionService}
-                                    selectedDiagram={selectedDiagram}
-                                    selectedItems={selectedItems}
-                                    zoom={zoom} />
+                                {onChangeItemsAppearance &&
+                                    <TextAdorner
+                                        interactionService={this.interactionService}
+                                        onChangeItemsAppearance={onChangeItemsAppearance}
+                                        selectedDiagram={diagram}
+                                        selectedItems={selectedItems}
+                                        zoom={zoom} />
+                                }
                             </>
                         )}
                     </div>
@@ -214,26 +228,3 @@ class Editor extends React.Component<EditorProps> {
         );
     }
 }
-
-const mapStateToProps = (state: UIStateInStore & EditorStateInStore) => {
-    const editor = getEditor(state);
-
-    return {
-        selectedDiagram: getDiagram(state),
-        selectedItems: getSelectedItems(state),
-        selectedItemsWithLocked: getSelectedItemsWithLocked(state),
-        viewSize: editor.size,
-        zoomedWidth: editor.size.x * state.ui.zoom,
-        zoomedHeight: editor.size.y * state.ui.zoom,
-        zoom: state.ui.zoom,
-    };
-};
-
-const mapDispatchToProps = (dispatch: Dispatch) => bindActionCreators({
-    selectItems, changeItemsAppearance, transformItems,
-}, dispatch);
-
-export const EditorContainer = connect(
-    mapStateToProps,
-    mapDispatchToProps,
-)(Editor);

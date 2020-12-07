@@ -5,15 +5,19 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
+import { Rect2, Vec2 } from '@app/core';
 import * as React from 'react';
 import * as svg from 'svg.js';
 
 export interface CanvasViewProps {
-    // The width of the canvas.
-    zoomedWidth: number;
+    // The zoomed width of the canvas.
+    zoomedSize: Vec2;
 
-    // The height of the canvas.
-    zoomedHeight: number;
+    // The optional viewbox.
+    viewBox?: Rect2;
+
+    // The view size.
+    viewSize: Vec2;
 
     // The zoom value of the canvas.
     zoom: number;
@@ -29,9 +33,10 @@ export const CanvasView = (props: CanvasViewProps) => {
     const {
         className,
         onInit,
+        viewBox,
+        viewSize,
         zoom,
-        zoomedHeight,
-        zoomedWidth,
+        zoomedSize,
     } = props;
 
     const [document, setDocument] = React.useState<svg.Doc>();
@@ -52,12 +57,17 @@ export const CanvasView = (props: CanvasViewProps) => {
 
     React.useLayoutEffect(() => {
         if (document) {
-            const w = zoomedWidth / zoom;
-            const h = zoomedHeight / zoom;
-
-            document.size(zoomedWidth, zoomedHeight).viewbox(0, 0, w, h);
+            document.
+                size(
+                    zoomedSize.x,
+                    zoomedSize.y).
+                viewbox(
+                    viewBox?.x || 0,
+                    viewBox?.y || 0,
+                    viewBox ? viewBox.w : viewSize.x,
+                    viewBox ? viewBox.h : viewSize.y);
         }
-    }, [ref.current, zoom, zoomedHeight, zoomedWidth, document]);
+    }, [ref.current, viewSize, viewBox, zoom, zoomedSize, document]);
 
     return <div className={className} ref={ref} />;
 };

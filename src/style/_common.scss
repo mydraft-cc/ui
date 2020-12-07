@@ -195,7 +195,8 @@ $sidebar-size: 320px;
             border: 0;
             border-radius: 0;
             color: $color-dark-foreground !important;
-            height: 60px;
+            max-height: 60px;
+            min-height: 60px;
             opacity: .8;
         }
 
@@ -206,5 +207,31 @@ $sidebar-size: 320px;
         &:disabled {
             opacity: .4;
         }
+    }
+}
+
+.print-mode {
+    display: none;
+}
+
+@media print {
+    .screen-mode {
+        display: none;
+    }
+
+    .print-mode {
+        display: block;
+    }
+
+    .ant-message {
+        display: none;
+    }
+
+    .ant-dropdown {
+        display: none;
+    }
+
+    #crowd-shortcut {
+        display: none;
     }
 }

@@ -30,7 +30,7 @@ export interface SelectionAdornerProps {
     interactionService: InteractionService;
 
     // A function to select a set of items.
-    selectItems: (diagram: Diagram, itemIds: string[]) => any;
+    onSelectItems: (diagram: Diagram, itemIds: string[]) => any;
 }
 
 export class SelectionAdorner extends React.Component<SelectionAdornerProps> implements InteractionHandler {
@@ -66,7 +66,7 @@ export class SelectionAdorner extends React.Component<SelectionAdornerProps> imp
         if (!event.event.shiftKey) {
             const selection = this.selectSingle(event, this.props.selectedDiagram);
 
-            this.props.selectItems(this.props.selectedDiagram, selection);
+            this.props.onSelectItems(this.props.selectedDiagram, selection);
         }
 
         if (!event.element) {
@@ -100,7 +100,7 @@ export class SelectionAdorner extends React.Component<SelectionAdornerProps> imp
                 const selection = this.selectMultiple(selectedRect, this.props.selectedDiagram);
 
                 if (selection) {
-                    this.props.selectItems(this.props.selectedDiagram, selection!);
+                    this.props.onSelectItems(this.props.selectedDiagram, selection!);
                 }
             }
         } finally {

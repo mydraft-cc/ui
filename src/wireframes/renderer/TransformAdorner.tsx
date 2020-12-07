@@ -40,7 +40,7 @@ export interface TransformAdornerProps {
     interactionService: InteractionService;
 
     // A function to transform a set of items.
-    transformItems: (diagram: Diagram, items: DiagramItem[], oldBounds: Transform, newBounds: Transform) => void;
+    onTransformItems: (diagram: Diagram, items: DiagramItem[], oldBounds: Transform, newBounds: Transform) => void;
 }
 
 export class TransformAdorner extends React.Component<TransformAdornerProps> implements InteractionHandler {
@@ -308,7 +308,7 @@ export class TransformAdorner extends React.Component<TransformAdornerProps> imp
             if (this.manipulationMode !== 0 && this.manipulated) {
                 this.rotation = this.transform.rotation;
 
-                this.props.transformItems(
+                this.props.onTransformItems(
                     this.props.selectedDiagram,
                     this.props.selectedItems,
                     this.startTransform,

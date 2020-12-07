@@ -7,13 +7,14 @@
 
 import { RendererContext } from '@app/context';
 import { sizeInPx } from '@app/core';
-import { addIcon, addImage, addVisual, getDiagramId, getEditor, useStore } from '@app/wireframes/model';
-import { EditorContainer } from '@app/wireframes/renderer/Editor';
+import { addIcon, addImage, addVisual, changeItemsAppearance, getDiagram, getDiagramId, getEditor, getSelectedItems, getSelectedItemsWithLocked, selectItems, Transform, transformItems, useStore } from '@app/wireframes/model';
+import { Editor } from '@app/wireframes/renderer/Editor';
 import * as React from 'react';
 import { DropTargetMonitor, useDrop } from 'react-dnd';
 import { NativeTypes } from 'react-dnd-html5-backend';
 import { findDOMNode } from 'react-dom';
 import { useDispatch } from 'react-redux';
+import { DiagramRef, ItemsRef } from '../model/actions/utils';
 
 export interface EditorViewProps {
     // The spacing.
@@ -22,13 +23,25 @@ export interface EditorViewProps {
 
 export const EditorView = ({ spacing }: EditorViewProps) => {
     const dispatch = useDispatch();
+    const state = useStore(s => s);
     const selectedDiagramId = useStore(s => getDiagramId(s));
     const editor = useStore(s => getEditor(s));
     const editorSize = editor.size;
     const zoom = useStore(s => s.ui.zoom);
-    const zoomedWidth = editorSize.x * zoom;
-    const zoomedHeight = editorSize.y * zoom;
+    const zoomedSize = editorSize.mul(zoom);
     const renderer = React.useContext(RendererContext);
+
+    const doChangeItemsAppearance = React.useCallback((diagram: DiagramRef, visuals: ItemsRef, key: string, value: any) => {
+        dispatch(changeItemsAppearance(diagram, visuals, key, value));
+    }, []);
+
+    const doSelectItems = React.useCallback((diagram: DiagramRef, items: ItemsRef) => {
+        dispatch(selectItems(diagram, items));
+    }, []);
+
+    const doTransformItems = React.useCallback((diagram: DiagramRef, items: ItemsRef, oldBounds: Transform, newBounds: Transform) => {
+        dispatch(transformItems(diagram, items, oldBounds, newBounds));
+    }, []);
 
     const ref = React.useRef();
 
@@ -104,8 +117,8 @@ export const EditorView = ({ spacing }: EditorViewProps) => {
         },
     });
 
-    const zoomedOuterWidth  = 2 * spacing + zoomedWidth;
-    const zoomedOuterHeight = 2 * spacing + zoomedHeight;
+    const zoomedOuterWidth  = 2 * spacing + zoomedSize.x;
+    const zoomedOuterHeight = 2 * spacing + zoomedSize.y;
 
     const w = sizeInPx(zoomedOuterWidth);
     const h = sizeInPx(zoomedOuterHeight);
@@ -118,7 +131,18 @@ export const EditorView = ({ spacing }: EditorViewProps) => {
 
     return (
         <div ref={ref} className='editor-view' style={style}>
-            <EditorContainer rendererService={renderer} />
+            <Editor
+                diagram={getDiagram(state)}
+                rendererService={renderer}
+                onChangeItemsAppearance={doChangeItemsAppearance}
+                onSelectItems={doSelectItems}
+                onTransformItems={doTransformItems}
+                selectedItems={getSelectedItems(state)}
+                selectedItemsWithLocked={getSelectedItemsWithLocked(state)}
+                viewSize={editor.size}
+                zoom={zoom}
+                zoomedSize={zoomedSize}
+            />
         </div>
     );
 };
