@@ -69,7 +69,7 @@ volumes:
   - name: docker2
     host:
       path: /var/lib/docker
-      ---
+---
 kind: secret
 name: GITHUB_USERNAME
 data: alJ6DendRNrSKmszduosnaD0szeNHMigwAuQVibNm3jHpNrH7CUE+cqgpw==
