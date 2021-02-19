@@ -72,8 +72,8 @@ volumes:
 ---
 kind: secret
 name: GITHUB_USERNAME
-data: alJ6DendRNrSKmszduosnaD0szeNHMigwAuQVibNm3jHpNrH7CUE+cqgpw==
+data: K+UUYGnsZSxNtSl81b4iJT0oGLJtfk8hNAxgaGBUHCX8GmF+GTBWykW8xQ==
 ---
 kind: secret
 name: GITHUB_PASSWORD
-data: 1CtyAGYPQBI9vxb8y62fW9fpUZ4A7SB0zWLapQ+5trFt+NQyfEosDV7sOdBBnCwR
+data: 92oAXn7OCNtzuL9hm3yOZLjXsk9gRXq2do+GmV1L/klbNc8coWgJ+JehkSKjEL81
