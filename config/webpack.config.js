@@ -255,6 +255,13 @@ module.exports = function (env) {
                 chunks: ['src'],
                 chunksSortMode: 'manual',
                 template: 'src/index.html'
+            }),
+            new plugins.HtmlWebpackPlugin({
+                hash: true,
+                chunks: ['src'],
+                chunksSortMode: 'manual',
+                template: 'src/index.html',
+                filename: '404.html'
             })
         );
 
