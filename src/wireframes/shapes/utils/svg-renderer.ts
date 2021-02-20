@@ -17,7 +17,9 @@ export class SVGRenderer implements AbstractRenderer {
     private measureDiv: HTMLDivElement;
     private container: svg.Container;
 
-    constructor() {
+    public static readonly INSTANCE = new SVGRenderer();
+
+    public constructor() {
         this.measureDiv = document.createElement('div');
         this.measureDiv.style.height = 'auto';
         this.measureDiv.style.position = 'absolute';
