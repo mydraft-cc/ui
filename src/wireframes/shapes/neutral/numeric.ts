@@ -27,7 +27,7 @@ export class Numeric implements ShapePlugin {
     }
 
     public defaultSize() {
-        return { x: 80, y: 40 };
+        return { x: 80, y: 30 };
     }
 
     public render(ctx: RenderContext) {

@@ -7,7 +7,7 @@
 
 import { ShapeInfo } from '@app/wireframes/model';
 import * as React from 'react';
-import { DragPreviewImage, useDrag } from 'react-dnd';
+import { useDrag } from 'react-dnd';
 
 interface ShapeImageProps {
     // The shape data.
@@ -21,11 +21,20 @@ export const ShapeImage = React.memo((props: ShapeImageProps) => {
         item: { shape: shape.name, offset: shape.offset, type: 'DND_ASSET' },
     });
 
+    React.useEffect(() => {
+        const image = new Image();
+        image.src = dragPath(shape);
+        image.alt = '';
+
+        connectDragPreview(image, {
+            anchorX: 0,
+            anchorY: 0,
+        });
+    }, [connectDragPreview]);
+
     return (
         <>
-            <DragPreviewImage src={dragPath(shape)} connect={connectDragPreview} />
-
-            <img ref={drag} className='asset-shape-image' alt={props.shape.displayName} src={previewPath(props.shape)} />
+            <img ref={drag} className='asset-shape-image' alt={shape.displayName} src={previewPath(shape)} />
         </>
     );
 });

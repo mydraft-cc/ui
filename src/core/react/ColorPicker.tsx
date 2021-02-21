@@ -48,7 +48,7 @@ export const ColorPicker = React.memo((props: ColorPickerProps) => {
         value,
     } = props;
 
-    const valueColor = value ? Color.fromValue(props.value) : Color.BLACK;
+    const valueColor = value ? Color.fromValue(value) : Color.BLACK;
 
     const [color] = React.useState<Color>(valueColor);
     const [colorHex, setColorHex] = React.useState(valueColor.toString());
