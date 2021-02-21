@@ -6,10 +6,11 @@
 */
 
 import { Rect2, sizeInPx, Vec2 } from '@app/core';
-import { Diagram, DiagramContainer, DiagramItem, RendererService, Transform } from '@app/wireframes/model';
+import { Diagram, DiagramContainer, DiagramItem, RendererService, SnapManager, Transform } from '@app/wireframes/model';
 import * as React from 'react';
 import * as svg from 'svg.js';
 import { CanvasView } from './CanvasView';
+import { DragLayer } from './DragLayer';
 import { InteractionService } from './interaction-service';
 import { SelectionAdorner } from './SelectionAdorner';
 import { ShapeRef } from './shape-ref';
@@ -17,6 +18,7 @@ import { TextAdorner } from './TextAdorner';
 import { TransformAdorner } from './TransformAdorner';
 
 import './Editor.scss';
+import { InteractionOverlays } from './interaction-overlays';
 
 export interface EditorProps {
     // The renderer service.
@@ -59,10 +61,12 @@ export interface EditorProps {
 const showDebugOutlines = process.env.NODE_ENV === 'false';
 
 export class Editor extends React.Component<EditorProps> {
+    private readonly snapManager = new SnapManager();
     private adornersSelect: svg.Container;
     private adornersTransform: svg.Container;
     private diagramTools: svg.Element;
     private diagramRendering: svg.Container;
+    private interactionOverlays: InteractionOverlays;
     private interactionService: InteractionService;
     private shapeRefsById: { [id: string]: ShapeRef } = {};
 
@@ -77,6 +81,7 @@ export class Editor extends React.Component<EditorProps> {
         this.adornersTransform = doc.group();
 
         this.interactionService = new InteractionService([this.adornersSelect, this.adornersTransform], this.diagramRendering, doc);
+        this.interactionOverlays = new InteractionOverlays(this.adornersTransform);
 
         this.forceRender();
         this.forceUpdate();
@@ -195,10 +200,12 @@ export class Editor extends React.Component<EditorProps> {
                                 {onTransformItems &&
                                     <TransformAdorner
                                         adorners={this.adornersTransform}
+                                        interactionOverlays={this.interactionOverlays}
                                         interactionService={this.interactionService}
                                         onTransformItems={onTransformItems}
                                         selectedDiagram={diagram}
                                         selectedItems={selectedItems}
+                                        snapManager={this.snapManager}
                                         viewSize={viewSize}
                                         zoom={zoom} />
                                 }
@@ -222,6 +229,13 @@ export class Editor extends React.Component<EditorProps> {
                                 }
                             </>
                         )}
+
+                        <DragLayer
+                            interactionOverlays={this.interactionOverlays}
+                            rendererService={this.props.rendererService}
+                            selectedDiagram={diagram}
+                            selectedItems={selectedItems}
+                            snapManager={this.snapManager} />
                     </div>
                 }
             </>

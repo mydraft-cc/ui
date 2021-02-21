@@ -39,6 +39,12 @@ export interface TransformAdornerProps {
     // The interaction service.
     interactionService: InteractionService;
 
+    // The interaction overlays.
+    interactionOverlays: InteractionOverlays;
+
+    // The snap manager.
+    snapManager: SnapManager;
+
     // A function to transform a set of items.
     onTransformItems: (diagram: Diagram, items: DiagramItem[], oldBounds: Transform, newBounds: Transform) => void;
 }
@@ -59,7 +65,6 @@ export class TransformAdorner extends React.Component<TransformAdornerProps> imp
     private rotateShape: any;
     private resizeDragOffset: Vec2;
     private resizeShapes: any[] = [];
-    private snapManager = new SnapManager();
 
     constructor(props: TransformAdornerProps) {
         super(props);
@@ -74,8 +79,6 @@ export class TransformAdorner extends React.Component<TransformAdornerProps> imp
         this.allElements = [...this.resizeShapes, this.moveShape, this.rotateShape];
 
         this.props.interactionService.addHandler(this);
-
-        this.overlays = new InteractionOverlays(this.props.adorners);
     }
 
     public componentWillUnmount() {
@@ -218,8 +221,7 @@ export class TransformAdorner extends React.Component<TransformAdornerProps> imp
     }
 
     private move(delta: Vec2, shiftKey: boolean) {
-        const snapResult =
-            this.snapManager.snapMoving(this.props.selectedDiagram, this.props.viewSize, this.startTransform, delta, shiftKey);
+        const snapResult = this.props.snapManager.snapMoving(this.props.selectedDiagram, this.props.viewSize, this.startTransform, delta, shiftKey);
 
         this.transform = this.startTransform.moveBy(snapResult.delta);
 
@@ -234,8 +236,7 @@ export class TransformAdorner extends React.Component<TransformAdornerProps> imp
     private rotate(event: SvgEvent, shiftKey: boolean) {
         const delta = this.getCummulativeRotation(event);
 
-        const deltaRotation =
-            this.snapManager.snapRotating(this.startTransform, delta, shiftKey);
+        const deltaRotation = this.props.snapManager.snapRotating(this.startTransform, delta, shiftKey);
 
         this.transform = this.startTransform.rotateBy(Rotation.fromDegree(deltaRotation));
 
@@ -271,7 +272,7 @@ export class TransformAdorner extends React.Component<TransformAdornerProps> imp
         const delta = Vec2.rotated(cummulativeTranslation.mul(2), Vec2.ZERO, angle.negate()).mul(this.resizeDragOffset);
 
         const snapResult =
-            this.snapManager.snapResizing(this.props.selectedDiagram, this.props.viewSize, this.startTransform, delta, shiftKey,
+            this.props.snapManager.snapResizing(this.props.selectedDiagram, this.props.viewSize, this.startTransform, delta, shiftKey,
                 this.resizeDragOffset.x,
                 this.resizeDragOffset.y);
 

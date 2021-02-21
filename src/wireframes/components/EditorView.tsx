@@ -29,7 +29,7 @@ export const EditorView = ({ spacing }: EditorViewProps) => {
     const editorSize = editor.size;
     const zoom = useStore(s => s.ui.zoom);
     const zoomedSize = editorSize.mul(zoom);
-    const renderer = React.useContext(RendererContext);
+    const rendererService = React.useContext(RendererContext);
 
     const doChangeItemsAppearance = React.useCallback((diagram: DiagramRef, visuals: ItemsRef, key: string, value: any) => {
         dispatch(changeItemsAppearance(diagram, visuals, key, value));
@@ -133,7 +133,7 @@ export const EditorView = ({ spacing }: EditorViewProps) => {
         <div ref={ref} className='editor-view' style={style}>
             <Editor
                 diagram={getDiagram(state)}
-                rendererService={renderer}
+                rendererService={rendererService}
                 onChangeItemsAppearance={doChangeItemsAppearance}
                 onSelectItems={doSelectItems}
                 onTransformItems={doTransformItems}

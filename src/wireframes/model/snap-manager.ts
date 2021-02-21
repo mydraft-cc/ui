@@ -5,6 +5,8 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
+// tslint:disable: one-variable-per-declaration
+
 import { MathHelper, Rect2, Vec2 } from '@app/core';
 import { Diagram } from './diagram';
 import { Transform } from './transform';
@@ -51,7 +53,6 @@ export class SnapManager {
 
             const orderedAabbs = this.calculateOrderedAABBs(transform, diagram, view);
 
-            // tslint:disable-next-line: one-variable-per-declaration
             const left = aabb.left - delta.x, right = aabb.right + delta.x;
 
             for (const target of orderedAabbs) {
@@ -78,7 +79,6 @@ export class SnapManager {
                 }
             }
 
-            // tslint:disable-next-line: one-variable-per-declaration
             const top = aabb.top - delta.y, bottom = aabb.bottom + delta.y;
 
             for (const target of orderedAabbs) {
@@ -133,7 +133,6 @@ export class SnapManager {
         if (!snapToGrid) {
             const orderedAabbs = this.calculateOrderedAABBs(transform, diagram, view);
 
-            // tslint:disable-next-line: one-variable-per-declaration
             const left = aabb.left + delta.x, right = aabb.right + delta.x, centerX = aabb.cx + delta.x;
 
             for (const target of orderedAabbs) {
@@ -170,7 +169,6 @@ export class SnapManager {
                 }
             }
 
-            // tslint:disable-next-line: one-variable-per-declaration
             const top = aabb.top + delta.y, bottom = aabb.bottom + delta.y, centerY = aabb.cy + delta.y;
 
             for (const target of orderedAabbs) {

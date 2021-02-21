@@ -8,6 +8,7 @@
 import { ShapeInfo } from '@app/wireframes/model';
 import * as React from 'react';
 import { useDrag } from 'react-dnd';
+import { getEmptyImage } from 'react-dnd-html5-backend';
 
 interface ShapeImageProps {
     // The shape data.
@@ -22,11 +23,7 @@ export const ShapeImage = React.memo((props: ShapeImageProps) => {
     });
 
     React.useEffect(() => {
-        const image = new Image();
-        image.src = dragPath(shape);
-        image.alt = '';
-
-        connectDragPreview(image, {
+        connectDragPreview(getEmptyImage(), {
             anchorX: 0,
             anchorY: 0,
         });
@@ -47,8 +44,4 @@ const previewPath = (shape: ShapeInfo) => {
     } catch {
         return pathToShapes(`./${shape.displaySearch}.png`).default;
     }
-};
-
-const dragPath = (shape: ShapeInfo) => {
-    return pathToShapes(`./${shape.displaySearch}.png`).default;
 };
