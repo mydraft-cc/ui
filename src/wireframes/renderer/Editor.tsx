@@ -62,13 +62,14 @@ const showDebugOutlines = process.env.NODE_ENV === 'false';
 
 export class Editor extends React.Component<EditorProps> {
     private readonly snapManager = new SnapManager();
+    private readonly shapeRefsById: { [id: string]: ShapeRef } = {};
+    private readonly editorRef = React.createRef<HTMLDivElement>();
     private adornersSelect: svg.Container;
     private adornersTransform: svg.Container;
     private diagramTools: svg.Element;
     private diagramRendering: svg.Container;
     private interactionOverlays: InteractionOverlays;
     private interactionService: InteractionService;
-    private shapeRefsById: { [id: string]: ShapeRef } = {};
 
     public componentDidUpdate() {
         this.forceRender();
@@ -159,7 +160,6 @@ export class Editor extends React.Component<EditorProps> {
     }
 
     public render() {
-        // tslint:disable:no-shadowed-variable
         const {
             diagram,
             onChangeItemsAppearance,
@@ -188,7 +188,7 @@ export class Editor extends React.Component<EditorProps> {
         return (
             <>
                 {diagram &&
-                    <div className='editor' style={style}>
+                    <div className='editor' style={style} ref={this.editorRef}>
                         <CanvasView onInit={this.initDiagramScope}
                             viewBox={viewBox}
                             viewSize={viewSize}
@@ -231,11 +231,13 @@ export class Editor extends React.Component<EditorProps> {
                         )}
 
                         <DragLayer
+                            editorRef={this.editorRef}
                             interactionOverlays={this.interactionOverlays}
                             rendererService={this.props.rendererService}
                             selectedDiagram={diagram}
                             selectedItems={selectedItems}
-                            snapManager={this.snapManager} />
+                            snapManager={this.snapManager}
+                            viewSize={viewSize} />
                     </div>
                 }
             </>

@@ -12,7 +12,6 @@ import { Editor } from '@app/wireframes/renderer/Editor';
 import * as React from 'react';
 import { DropTargetMonitor, useDrop } from 'react-dnd';
 import { NativeTypes } from 'react-dnd-html5-backend';
-import { findDOMNode } from 'react-dom';
 import { useDispatch } from 'react-redux';
 import { DiagramRef, ItemsRef } from '../model/actions/utils';
 
@@ -58,12 +57,8 @@ export const EditorView = ({ spacing }: EditorViewProps) => {
                 return;
             }
 
-            const offset = monitor.getSourceClientOffset();
-
-            const componentRect = (findDOMNode(ref.current) as HTMLElement)!.getBoundingClientRect();
-
-            let x = (offset.x - spacing - componentRect.left) / zoom;
-            let y = (offset.y - spacing - componentRect.top) / zoom;
+            let x = item.localX;
+            let y = item.localY;
 
             if (item.offset) {
                 x += item.offset.x;

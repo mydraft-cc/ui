@@ -5,11 +5,12 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { MathHelper, Svg } from '@app/core';
+import { MathHelper, Svg, Vec2 } from '@app/core';
 import * as React from 'react';
 import { useDragLayer, XYCoord } from 'react-dnd';
+import { findDOMNode } from 'react-dom';
 import svg = require('svg.js');
-import { Diagram, DiagramItem, RendererService, SnapManager } from '../model';
+import { Diagram, DiagramItem, RendererService, SnapManager, Transform } from '../model';
 import { InteractionOverlays } from './interaction-overlays';
 
 const layerStyles: React.CSSProperties = {
@@ -20,37 +21,39 @@ const layerStyles: React.CSSProperties = {
     zIndex: 100,
 };
 
-function getItemStyles(
-    initialOffset: XYCoord | null,
-    currentOffset: XYCoord | null,
-) {
-    if (!initialOffset || !currentOffset) {
-        return {
-            display: 'none',
-        };
-    }
-
-    const { x, y } = currentOffset;
-
-    const transform = `translate(${x}px, ${y}px)`;
-
-    return { transform, WebkitTransform: transform };
-}
+type Target = { transform: Transform, element: HTMLDivElement };
 
 export interface PreviewProps {
     rendererService: RendererService;
 
-    name: string;
+    shape: string;
+
+    editorRef: React.RefObject<HTMLDivElement>;
+
+    initialOffset: XYCoord;
+
+    onInit: (target: Target) => void;
 }
 
 export const Preview = React.memo((props: PreviewProps) => {
-    const { name, rendererService } = props;
+    const {
+        editorRef,
+        onInit,
+        rendererService,
+        shape,
+        initialOffset,
+    } = props;
 
     const [doc, setDoc] = React.useState<svg.Doc>();
+    const [element, setElement] = React.useState<HTMLDivElement>();
 
     React.useEffect(() => {
-        if (doc && name && rendererService) {
-            const renderer = rendererService.registeredRenderers[name];
+        console.log('RENDER');
+    });
+
+    React.useEffect(() => {
+        if (doc && shape && rendererService && element) {
+            const renderer = rendererService.registeredRenderers[shape];
 
             if (renderer) {
                 doc.clear();
@@ -62,13 +65,22 @@ export const Preview = React.memo((props: PreviewProps) => {
 
                 doc.size(shape.transform.size.x, shape.transform.size.y).viewbox(shape.transform.aabb);
 
-                console.log('render');
+                const componentRect = (findDOMNode(editorRef.current) as HTMLDivElement)!.getBoundingClientRect();
+
+                const x = Math.round(0.5 * shape.transform.size.x + (initialOffset.x - componentRect.left));
+                const y = Math.round(0.5 * shape.transform.size.y + (initialOffset.y - componentRect.top));
+
+                onInit({ transform: shape.transform.moveTo(new Vec2(x, y)), element });
             }
         }
-    }, [doc, name, rendererService]);
+    }, [doc, shape, onInit, rendererService, element]);
 
     return (
-        <Svg onInit={setDoc} />
+        <div style={layerStyles}>
+            <div ref={setElement}>
+                <Svg onInit={setDoc} />
+            </div>
+        </div>
     );
 });
 
@@ -86,43 +98,74 @@ export interface DragLayerProps {
 
     // The snap manager.
     snapManager: SnapManager;
+
+    // The view size.
+    viewSize: Vec2;
+
+    editorRef: React.RefObject<HTMLDivElement>;
 }
 
 export const DragLayer = (props: DragLayerProps) => {
-    const { rendererService } = props;
+    const { rendererService, selectedDiagram, viewSize, interactionOverlays, snapManager, editorRef } = props;
+
+    const [target, setTarget] = React.useState<Target>();
 
     const {
-        currentOffset,
+        diff,
         initialOffset,
         isDragging,
         item,
         itemType,
     } = useDragLayer((monitor) => ({
-        currentOffset: monitor.getSourceClientOffset(),
+        diff: monitor.getDifferenceFromInitialOffset(),
         initialOffset: monitor.getInitialSourceClientOffset(),
         isDragging: monitor.isDragging(),
         item: monitor.getItem(),
         itemType: monitor.getItemType(),
     }));
 
-    function renderItem() {
-        switch (itemType) {
-            case 'DND_ASSET':
-                return <Preview name={item.shape} rendererService={rendererService} />;
-            default:
-                return null;
+    React.useEffect(() => {
+        interactionOverlays?.reset();
+    }, [isDragging]);
+
+    React.useEffect(() => {
+        if (!target) {
+            return;
         }
-    }
+
+        if (!initialOffset || !item || !diff) {
+            target.element.style.display = 'none';
+            return;
+        }
+
+        interactionOverlays.reset();
+
+        const delta = new Vec2(diff.x, diff.y);
+
+        const snapResult = snapManager.snapMoving(selectedDiagram, viewSize, target.transform, delta, false);
+
+        const x = initialOffset.x + snapResult.delta.x;
+        const y = initialOffset.y + snapResult.delta.y;
+
+        interactionOverlays.showSnapAdorners(snapResult);
+
+        item.localX = target.transform.position.x + snapResult.delta.x;
+        item.localY = target.transform.position.y + snapResult.delta.y;
+
+        const transform = `translate(${x}px, ${y}px)`;
+
+        target.element.style.transform = transform;
+        target.element.style.webkitTransform = transform;
+    }, [target, diff, initialOffset, isDragging, item]);
 
     if (!isDragging) {
         return null;
     }
 
-    return (
-        <div style={layerStyles}>
-            <div style={getItemStyles(initialOffset, currentOffset)}>
-                {renderItem()}
-            </div>
-        </div>
-    );
+    switch (itemType) {
+        case 'DND_ASSET':
+            return <Preview editorRef={editorRef} shape={item.shape} rendererService={rendererService} initialOffset={initialOffset} onInit={setTarget} />;
+        default:
+            return null;
+    }
 };

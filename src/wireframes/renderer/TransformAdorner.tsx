@@ -54,7 +54,6 @@ export class TransformAdorner extends React.Component<TransformAdornerProps> imp
     private transform: Transform;
     private startTransform: Transform;
     private allElements: svg.Element[];
-    private overlays: InteractionOverlays;
     private canResizeX: boolean;
     private canResizeY: boolean;
     private manipulated = false;
@@ -197,7 +196,7 @@ export class TransformAdorner extends React.Component<TransformAdornerProps> imp
             return next();
         }
 
-        this.overlays.reset();
+        this.props.interactionOverlays.reset();
 
         const delta = event.position.sub(this.dragStart);
 
@@ -225,12 +224,12 @@ export class TransformAdorner extends React.Component<TransformAdornerProps> imp
 
         this.transform = this.startTransform.moveBy(snapResult.delta);
 
-        this.overlays.showSnapAdorners(snapResult);
+        this.props.interactionOverlays.showSnapAdorners(snapResult);
 
         const x = Math.round(this.transform.aabb.x);
         const y = Math.round(this.transform.aabb.y);
 
-        this.overlays.showInfo(this.transform, `X: ${x}, Y: ${y}`);
+        this.props.interactionOverlays.showInfo(this.transform, `X: ${x}, Y: ${y}`);
     }
 
     private rotate(event: SvgEvent, shiftKey: boolean) {
@@ -240,7 +239,7 @@ export class TransformAdorner extends React.Component<TransformAdornerProps> imp
 
         this.transform = this.startTransform.rotateBy(Rotation.fromDegree(deltaRotation));
 
-        this.overlays.showInfo(this.transform, `Y: ${this.transform.rotation.degree}°`);
+        this.props.interactionOverlays.showInfo(this.transform, `Y: ${this.transform.rotation.degree}°`);
     }
 
     private getCummulativeRotation(event: SvgEvent): number {
@@ -265,7 +264,7 @@ export class TransformAdorner extends React.Component<TransformAdornerProps> imp
         const w = Math.round(this.transform.size.x);
         const h = Math.round(this.transform.size.y);
 
-        this.overlays.showInfo(this.transform, `Width: ${w}, Height: ${h}`);
+        this.props.interactionOverlays.showInfo(this.transform, `Width: ${w}, Height: ${h}`);
     }
 
     private getResizeDeltaSize(angle: Rotation, cummulativeTranslation: Vec2, shiftKey: boolean) {
@@ -276,7 +275,7 @@ export class TransformAdorner extends React.Component<TransformAdornerProps> imp
                 this.resizeDragOffset.x,
                 this.resizeDragOffset.y);
 
-        this.overlays.showSnapAdorners(snapResult);
+        this.props.interactionOverlays.showSnapAdorners(snapResult);
 
         return snapResult.delta;
     }
@@ -304,7 +303,7 @@ export class TransformAdorner extends React.Component<TransformAdornerProps> imp
         }
 
         try {
-            this.overlays.reset();
+            this.props.interactionOverlays.reset();
 
             if (this.manipulationMode !== 0 && this.manipulated) {
                 this.rotation = this.transform.rotation;

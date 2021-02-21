@@ -175,20 +175,11 @@ export function items(rendererService: RendererService, serializer: Serializer):
 
                     const shape = renderer.createDefaultShape(action.shapeId);
 
-                    const position =
-                        new Vec2(
-                            action.position.x + shape.transform.size.x * 0.5,
-                            action.position.y + shape.transform.size.y * 0.5);
+                    let configured = shape.transformWith(t => t.moveTo(new Vec2(action.position.x, action.position.y)));
 
-                    let configured = shape.transformWith(t => t.moveTo(position));
-
-                    const properties = action.properties;
-
-                    if (properties) {
-                        for (const key in properties) {
-                            if (properties.hasOwnProperty(key)) {
-                                configured = configured.setAppearance(key, properties[key]);
-                            }
+                    if (action.properties) {
+                        for (const key in Object.keys(action.properties)) {
+                            configured = configured.setAppearance(key, action.properties[key]);
                         }
                     }
 
