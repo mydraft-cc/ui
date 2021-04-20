@@ -10,6 +10,8 @@ function root() {
     return path.join.apply(path, [appRoot].concat(newArgs));
 };
 
+const PUBLIC_PATH = 'https://mydraft.cc/';
+
 const plugins = {
     // https://github.com/webpack-contrib/mini-css-extract-plugin
     MiniCssExtractPlugin: require('mini-css-extract-plugin'),
@@ -31,6 +33,8 @@ const plugins = {
     BundleAnalyzerPlugin: require('webpack-bundle-analyzer').BundleAnalyzerPlugin,
     // https://github.com/jantimon/favicons-webpack-plugin
     FaviconsWebpackPlugin: require('favicons-webpack-plugin'),
+    // https://github.com/goldhand/sw-precache-webpack-plugin
+    SWPrecacheWebpackPlugin: require('sw-precache-webpack-plugin'),
 };
 
 module.exports = function (env) {
@@ -335,6 +339,14 @@ module.exports = function (env) {
                 loader: 'ts-loader'
             }]
         })
+    }
+
+    if (isProduction) {
+        config.plugins.push(new plugins.SWPrecacheWebpackPlugin({
+            navigateFallback: `${PUBLIC_PATH}index.html`,
+            // To fix a bug with windows.
+            stripPrefix: root('build/').replace(/\\/g, '/'),
+        }));
     }
 
     if (isAnalyzing) {
