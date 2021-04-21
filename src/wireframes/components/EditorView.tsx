@@ -65,9 +65,9 @@ export const EditorView = ({ spacing }: EditorViewProps) => {
             let x = (offset.x - spacing - componentRect.left) / zoom;
             let y = (offset.y - spacing - componentRect.top) / zoom;
 
-            if (item.offset) {
-                x += item.offset.x;
-                y += item.offset.y;
+            if (item.shapeOffset) {
+                x += item.shapeOffset.x;
+                y += item.shapeOffset.y;
             }
 
             const itemType = monitor.getItemType();

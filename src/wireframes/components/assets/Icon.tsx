@@ -18,11 +18,12 @@ export const Icon = React.memo((props: IconProps) => {
     const { icon } = props;
 
     const [, drag] = useDrag({
-        item: { text: icon.text, fontFamily: icon.fontFamily, type: 'DND_ICON' },
+        item: { text: icon.text, fontFamily: icon.fontFamily  },
         previewOptions: {
             anchorX: 0,
             anchorY: 0,
         },
+        type: 'DND_ICON',
     });
 
     return (

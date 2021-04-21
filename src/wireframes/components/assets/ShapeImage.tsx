@@ -18,7 +18,11 @@ export const ShapeImage = React.memo((props: ShapeImageProps) => {
     const { shape } = props;
 
     const [, drag, connectDragPreview] = useDrag({
-        item: { shape: shape.name, offset: shape.offset, type: 'DND_ASSET' },
+        item: {
+            shape: shape.name,
+            shapeOffset: shape.offset,
+        },
+        type: 'DND_ASSET',
     });
 
     React.useEffect(() => {
