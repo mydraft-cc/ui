@@ -1,4 +1,7 @@
-﻿Error.stackTraceLimit = Infinity;
+﻿/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable vars-on-top */
+/* eslint-disable no-var */
+Error.stackTraceLimit = Infinity;
 
 var testContext = require.context('../src', true, /\.spec\.ts/);
 

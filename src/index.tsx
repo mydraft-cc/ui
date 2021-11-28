@@ -16,7 +16,7 @@ import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import * as ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
-import { Route, Routes } from 'react-router';
+import { Route } from 'react-router';
 import { ConnectedRouter, connectRouter } from 'connected-react-router';
 import { routerMiddleware, routerReducer } from 'react-router-redux';
 import { applyMiddleware, combineReducers, compose, createStore } from 'redux';
@@ -70,9 +70,7 @@ const Root = (
             <RendererContext.Provider value={editorRenderers}>
                 <Provider store={store}>
                     <ConnectedRouter history={history}>
-                        <Routes>
-                            <Route path='/:token?' element={<App />} />
-                        </Routes>
+                        <Route path='/:token?' component={App} />
                     </ConnectedRouter>
                 </Provider>
             </RendererContext.Provider>

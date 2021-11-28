@@ -121,9 +121,6 @@ export function loadingMiddleware(): Middleware {
 
 export function loading(initialState: LoadingState) {
     return createReducer(initialState, builder => builder
-        .addCase(newDiagram, (state) => {
-            state.isLoading = true;
-        })
         .addCase(loadDiagramAsync.pending, (state) => {
             state.isLoading = true;
         })

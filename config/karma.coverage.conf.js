@@ -1,8 +1,9 @@
-﻿const webpackConfig = require('./webpack.config');
+﻿/* eslint-disable global-require */
+const webpackConfig = require('./webpack.config');
 
-module.exports = function (config) {
-    var _config = {
-        /** 
+module.exports = function configure(config) {
+    const newConfig = {
+        /**
          * Base path that will be used to resolve all patterns (e.g. files, exclude).
          */
         basePath: '',
@@ -13,11 +14,11 @@ module.exports = function (config) {
          * Load additional test shim to setup angular for testing.
          */
         files: [
-            { pattern: './config/karma-test-shim.js', watched: false }
+            { pattern: './config/karma-test-shim.js', watched: false },
         ],
 
         preprocessors: {
-            './config/karma-test-shim.js': ['webpack', 'sourcemap']
+            './config/karma-test-shim.js': ['webpack', 'sourcemap'],
         },
 
         /**
@@ -26,11 +27,11 @@ module.exports = function (config) {
         webpack: webpackConfig({ target: 'tests', coverage: true, jit: true }),
 
         webpackMiddleware: {
-            stats: 'errors-only'
+            stats: 'errors-only',
         },
 
         webpackServer: {
-            noInfo: true
+            noInfo: true,
         },
 
         /**
@@ -40,7 +41,7 @@ module.exports = function (config) {
 
         htmlReporter: {
             useCompactStyle: true,
-            /** 
+            /**
              * Use the same folder like the html report for coverage reports.
              */
             outputFile: '_test-output/tests.html',
@@ -48,19 +49,19 @@ module.exports = function (config) {
             /**
              * Group the output by test suite (describe), equivalent to mocha reporter.
              */
-            groupSuites: true
+            groupSuites: true,
         },
 
         coverageIstanbulReporter: {
             dir: require('path').join(__dirname, '../_test-output/coverage'),
 
             reports: [
-              'html',
-              'lcovonly'
+                'html',
+                'lcovonly',
             ],
 
-            fixWebpackSourcePaths: true
-          },
+            fixWebpackSourcePaths: true,
+        },
 
         /**
          * Disable continuous Integration mode, run only one time.
@@ -69,21 +70,21 @@ module.exports = function (config) {
 
         customLaunchers: {
             ChromeCustom: {
-			    base: 'ChromeHeadless',
+                base: 'ChromeHeadless',
                 /**
                  * We must disable the Chrome sandbox (Chrome's sandbox needs more permissions than Docker allows by default).
                  */
-                flags: ['--no-sandbox']
-            }
+                flags: ['--no-sandbox'],
+            },
         },
 
         /**
          * Run with chrome because phantom js does not provide all types.
-         * 
+         *
          * Available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
          */
-        browsers: ['ChromeCustom']
+        browsers: ['ChromeCustom'],
     };
 
-    config.set(_config);
+    config.set(newConfig);
 };

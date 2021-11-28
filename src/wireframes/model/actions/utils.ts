@@ -72,7 +72,7 @@ class Builder<S> {
     }
 
     public addCase(action: any, method: any) {
-        this.reducers[action.name] = method;
+        this.reducers[action.type] = method;
 
         return this;
     }
@@ -88,17 +88,21 @@ class Builder<S> {
     }
 
     public buildReducer(): Reducer<S> {
+        const initialState = this.initialState;
+        const reducers = this.reducers;
+        const reducerDefault = this.defaultReducer;
+
         return (state: any, action: any) => {
             if (!state) {
-                return this.initialState;
+                return initialState;
             }
 
-            const handler = this.reducers[state];
+            const handler = reducers[action.type];
 
             if (handler) {
                 return handler(state, action);
-            } else if (this.defaultReducer) {
-                return this.defaultReducer(state, action);
+            } else if (reducerDefault) {
+                return reducerDefault(state, action);
             } else {
                 return state;
             }

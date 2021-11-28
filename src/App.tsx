@@ -12,13 +12,14 @@ import { loadDiagramAsync, newDiagram, selectTab, showInfoToast, toggleLeftSideb
 import { Button, Collapse, Layout, Tabs } from 'antd';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
-import {  useParams } from 'react-router';
+import { useRouteMatch } from 'react-router';
+
 const logo = require('./images/logo-square-64.png').default;
 
 export const App = () => {
     const dispatch = useDispatch();
-    const route = useParams();
-    const routeToken = route.token;
+    const route = useRouteMatch();
+    const routeToken = route.params['token'];
     const selectedTab = useStore(s => s.ui.selectedTab);
     const showLeftSidebar = useStore(s => s.ui.showLeftSidebar);
     const showRightSidebar = useStore(s => s.ui.showRightSidebar);
@@ -36,13 +37,13 @@ export const App = () => {
         } else {
             dispatch(newDiagram({ navigate: false }));
         }
-    }, [routeToken]);
+    }, [dispatch, routeToken]);
 
     React.useEffect(() => {
         if (isPrinting) {
             dispatch(showInfoToast('Printing started...'));
         }
-    }, [isPrinting]);
+    }, [dispatch, isPrinting]);
 
     const doSelectTab = React.useCallback((key: string) => {
         dispatch(selectTab(key));
