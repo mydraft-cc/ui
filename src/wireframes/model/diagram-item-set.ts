@@ -51,13 +51,14 @@ export class DiagramItemSet {
         Object.freeze(this);
     }
 
-    public static createFromDiagram(items: (string | DiagramItem)[], diagram: Diagram): DiagramItemSet {
+    public static createFromDiagram(items: ReadonlyArray<string | DiagramItem>, diagram: Diagram): DiagramItemSet {
         const allGroups: DiagramItem[] = [];
         const allVisuals: DiagramItem[] = [];
 
-        let flatItemsArray: (itemsOrIds: (string | DiagramItem)[], isTopLevel: boolean) => void;
+        let flatItemsArray: (itemsOrIds: ReadonlyArray<string | DiagramItem>, isTopLevel: boolean) => void;
 
-        flatItemsArray = (itemsOrIds: (string | DiagramItem)[]) => {
+        // eslint-disable-next-line prefer-const
+        flatItemsArray = (itemsOrIds: ReadonlyArray<string | DiagramItem>) => {
             for (const itemOrId of itemsOrIds) {
                 let item: DiagramItem;
 
@@ -68,6 +69,7 @@ export class DiagramItemSet {
                 }
 
                 if (!item) {
+                    // eslint-disable-next-line no-continue
                     continue;
                 }
 

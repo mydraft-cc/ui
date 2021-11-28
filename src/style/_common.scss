@@ -1,13 +1,7 @@
 @import '_mixins';
 @import '_vars';
 
-// sass-lint:disable no-ids
-
 #root {
-    height: 100%;
-}
-
-#root > .ant-layout {
     height: 100%;
 }
 
@@ -46,6 +40,10 @@ body {
     }
 }
 
+#root > .ant-layout {
+    height: 100%;
+}
+
 .logo {
     @include fixed(0, 0, 0, 0);
     color: $color-dark-foreground;
@@ -57,7 +55,6 @@ body {
 //
 // Typography
 //
-
 ul {
     &.blank {
         list-style: none;
@@ -70,7 +67,7 @@ ul {
 
 //
 // Sidebars
-// 
+//
 .sidebar-left,
 .sidebar-right {
     background: $color-dark-foreground;

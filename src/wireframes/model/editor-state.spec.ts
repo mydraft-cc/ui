@@ -8,6 +8,8 @@
 import { Vec2 } from '@app/core';
 import { Diagram, EditorState } from '@app/wireframes/model';
 
+/* eslint-disable @typescript-eslint/naming-convention */
+
 describe('EditorState', () => {
     const state_1 = EditorState.empty();
 
@@ -66,7 +68,7 @@ describe('EditorState', () => {
         const newDiagram = Diagram.empty(diagram.id);
 
         const state_2 = state_1.addDiagram(diagram);
-        const state_3 = state_2.updateDiagram(diagram.id, d => newDiagram);
+        const state_3 = state_2.updateDiagram(diagram.id, () => newDiagram);
 
         expect(state_3.diagrams.size).toBe(1);
         expect(state_3.diagrams.get(diagram.id)).toEqual(newDiagram);

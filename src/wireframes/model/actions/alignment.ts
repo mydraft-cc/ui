@@ -6,72 +6,57 @@
 */
 
 import { Rect2, Vec2 } from '@app/core';
-import { Reducer } from 'redux';
+import { ActionReducerMapBuilder, createAction } from '@reduxjs/toolkit';
 import { Diagram, EditorState, Transform } from './../internal';
 import { createItemsAction, DiagramRef, ItemsRef } from './utils';
 
-export const ALIGN_H_LEFT   = 'ALIGN_H_LEFT';
-export const ALIGN_H_RIGHT  = 'ALIGN_H_RIGHT';
-export const ALIGN_H_CENTER = 'ALIGN_H_CENTER';
-export const ALIGN_V_TOP    = 'ALIGN_V_TOP';
-export const ALIGN_V_BOTTOM = 'ALIGN_V_BOTTOM';
-export const ALIGN_V_CENTER = 'ALIGN_V_CENTER';
-export const DISTRIBUTE_H   = 'DISTRIBUTE_H';
-export const DISTRIBUTE_V   = 'DISTRIBUTE_V';
-
-export const ALIGN_ITEMS = 'ALIGN_ITEMS';
-export const alignItems = (mode: string, diagram: DiagramRef, items: ItemsRef) => {
-    return createItemsAction(ALIGN_ITEMS, diagram, items, { mode });
-};
-
-export function alignment(): Reducer<EditorState> {
-    const reducer: Reducer<EditorState> = (state: EditorState, action: any) => {
-        if (action.type === ALIGN_ITEMS) {
-            switch (action.mode) {
-                case ALIGN_H_LEFT:
-                    return state.updateDiagram(action.diagramId, diagram => {
-                        return alignShapes(action.itemIds, diagram, (b, i) => new Vec2(b.left, i.y));
-                    });
-                case ALIGN_H_RIGHT:
-                    return state.updateDiagram(action.diagramId, diagram => {
-                        return alignShapes(action.itemIds, diagram, (b, i) => new Vec2(b.right - i.width, i.y));
-                    });
-                case ALIGN_H_CENTER:
-                    return state.updateDiagram(action.diagramId, diagram => {
-                        return alignShapes(action.itemIds, diagram, (b, i) => new Vec2(b.left + (b.width - i.width) * 0.5, i.y));
-                    });
-                case ALIGN_V_TOP:
-                    return state.updateDiagram(action.diagramId, diagram => {
-                        return alignShapes(action.itemIds, diagram, (b, i) => new Vec2(i.x, b.top));
-                    });
-                case ALIGN_V_BOTTOM:
-                    return state.updateDiagram(action.diagramId, diagram => {
-                        return alignShapes(action.itemIds, diagram, (b, i) => new Vec2(i.x, b.bottom - i.height));
-                    });
-                case ALIGN_V_CENTER:
-                    return state.updateDiagram(action.diagramId, diagram => {
-                        return alignShapes(action.itemIds, diagram, (b, i) => new Vec2(i.x, b.top + (b.height - i.height) * 0.5));
-                    });
-                case DISTRIBUTE_H:
-                    return state.updateDiagram(action.diagramId, diagram => {
-                        return distributeHorizontally(action.itemIds, diagram);
-                    });
-                case DISTRIBUTE_V:
-                    return state.updateDiagram(action.diagramId, diagram => {
-                        return distributeVertically(action.itemIds, diagram);
-                    });
-                default:
-                    return state;
-            }
-        }
-
-        return state;
-    };
-
-    return reducer;
+export enum AlignmentMode {
+    DistributeHorizontal = 'DISTRIBUTE_H',
+    DistributeVertical = 'DISTRIBUTE_V',
+    HorizontalCenter = 'ALIGN_H_CENTER',
+    HorizontalLeft = 'ALIGN_H_LEFT',
+    HorizontalRight = 'ALIGN_H_RIGHT',
+    VerticalBottom = 'ALIGN_V_BOTTOM',
+    VerticalCenter = 'ALIGN_V_CENTER',
+    VerticalTop = 'ALIGN_V_TOP',
 }
 
-function distributeHorizontally(itemIds: string[], diagram: Diagram) {
+export const alignItems =
+    createAction('items/align', (mode: AlignmentMode, diagram: DiagramRef, items: ItemsRef) => {
+        return { payload: createItemsAction(diagram, items, { mode }) };
+    });
+
+export function buildAlignment(builder: ActionReducerMapBuilder<EditorState>) {
+    builder
+        .addCase(alignItems, (state, action) => {
+            const { diagramId, itemIds, mode } = action.payload;
+
+            return state.updateDiagram(diagramId, diagram => {
+                switch (mode) {
+                    case AlignmentMode.HorizontalLeft:
+                        return alignShapes(itemIds, diagram, (b, i) => new Vec2(b.left, i.y));
+                    case AlignmentMode.HorizontalRight:
+                        return alignShapes(itemIds, diagram, (b, i) => new Vec2(b.right - i.width, i.y));
+                    case AlignmentMode.HorizontalCenter:
+                        return alignShapes(itemIds, diagram, (b, i) => new Vec2(b.left + (b.width - i.width) * 0.5, i.y));
+                    case AlignmentMode.VerticalTop:
+                        return alignShapes(itemIds, diagram, (b, i) => new Vec2(i.x, b.top));
+                    case AlignmentMode.VerticalBottom:
+                        return alignShapes(itemIds, diagram, (b, i) => new Vec2(i.x, b.bottom - i.height));
+                    case AlignmentMode.VerticalCenter:
+                        return alignShapes(itemIds, diagram, (b, i) => new Vec2(i.x, b.top + (b.height - i.height) * 0.5));
+                    case AlignmentMode.DistributeHorizontal:
+                        return distributeHorizontally(itemIds, diagram);
+                    case AlignmentMode.DistributeVertical:
+                        return distributeVertically(itemIds, diagram);
+                    default:
+                        return diagram;
+                }
+            });
+        });
+}
+
+function distributeHorizontally(itemIds: ReadonlyArray<string>, diagram: Diagram) {
     const targets = findTargets(itemIds, diagram);
     const targetBounds = Rect2.fromRects(targets.map(t => t.aabb));
 
@@ -103,7 +88,7 @@ function distributeHorizontally(itemIds: string[], diagram: Diagram) {
     return diagram;
 }
 
-function distributeVertically(itemIds: string[], diagram: Diagram) {
+function distributeVertically(itemIds: ReadonlyArray<string>, diagram: Diagram) {
     const targets = findTargets(itemIds, diagram);
     const targetBounds = Rect2.fromRects(targets.map(t => t.aabb));
 
@@ -135,7 +120,7 @@ function distributeVertically(itemIds: string[], diagram: Diagram) {
     return diagram;
 }
 
-function alignShapes(itemIds: string[], diagram: Diagram, transformer: (bounds: Rect2, item: Rect2) => Vec2): Diagram {
+function alignShapes(itemIds: ReadonlyArray<string>, diagram: Diagram, transformer: (bounds: Rect2, item: Rect2) => Vec2): Diagram {
     const targets = findTargets(itemIds, diagram);
     const targetBounds = Rect2.fromRects(targets.map(t => t.aabb));
 
@@ -155,7 +140,7 @@ function alignShapes(itemIds: string[], diagram: Diagram, transformer: (bounds: 
     return diagram;
 }
 
-function findTargets(itemIds: string[], diagram: Diagram): TransformTarget[] {
+function findTargets(itemIds: ReadonlyArray<string>, diagram: Diagram): TransformTarget[] {
     return itemIds.map(id => {
         const transform = diagram.items.get(id)!.bounds(diagram);
 
@@ -163,4 +148,4 @@ function findTargets(itemIds: string[], diagram: Diagram): TransformTarget[] {
     });
 }
 
-interface TransformTarget { transform: Transform; aabb: Rect2; itemId: string; }
+interface TransformTarget { transform: Transform; aabb: Rect2; itemId: string }

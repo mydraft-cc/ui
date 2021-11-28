@@ -5,37 +5,27 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { Reducer } from 'redux';
+import { createAction, createReducer } from '@reduxjs/toolkit';
 import { AssetsState } from './../internal';
 
-export const FILTER_SHAPES = 'FILTER_SHAPES';
-export const filterShapes = (filter: string) => {
-    return { type: FILTER_SHAPES, filter };
-};
+export const filterShapes =
+    createAction<{ filter: string }>('shapes/filter');
 
-export const FILTER_ICONS = 'FILTER_ICONS';
-export const filterIcons = (filter: string) => {
-    return { type: FILTER_ICONS, filter };
-};
+export const filterIcons =
+    createAction<{ filter: string }>('icons/filter');
 
-export const SELECT_ICONS = 'SELECT_ICONS';
-export const selectIcons = (iconSet: string) => {
-    return { type: SELECT_ICONS, iconSet };
-};
+export const selectIcons =
+    createAction<{ iconSet: string }>('icons/select');
 
-export function assets(initialState: AssetsState): Reducer<AssetsState> {
-    const reducer: Reducer<AssetsState> = (state: AssetsState = initialState, action: any) => {
-        switch (action.type) {
-            case FILTER_ICONS:
-                return { ...state, iconsFilter: action.filter };
-            case FILTER_SHAPES:
-                return { ...state, shapesFilter: action.filter };
-            case SELECT_ICONS:
-                return { ...state, iconSet: action.iconSet };
-            default:
-                return state;
-        }
-    };
-
-    return reducer;
+export function assets(initialState: AssetsState) {
+    return createReducer(initialState, builder => builder
+        .addCase(filterShapes, (state, action) => {
+            state.shapesFilter = action.payload.filter;
+        })
+        .addCase(filterIcons, (state, action) => {
+            state.iconsFilter = action.payload.filter;
+        })
+        .addCase(selectIcons, (state, action) => {
+            state.iconSet = action.payload.iconSet;
+        }));
 }

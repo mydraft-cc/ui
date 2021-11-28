@@ -39,13 +39,13 @@ export const getSelectedIcons = createSelector(
 export const getFilteredIcons = createSelector(
     getSelectedIcons,
     getIconsFilter,
-    (icons, filter) => filter && filter.length > 0 ? icons.filter(x => x.displaySearch.indexOf(filter) >= 0) : icons,
+    (icons, filter) => (filter && filter.length > 0 ? icons.filter(x => x.displaySearch.indexOf(filter) >= 0) : icons),
 );
 
 export const getFilteredShapes = createSelector(
     getShapes,
     getShapesFilter,
-    (shapes, filter) => filter && filter.length > 0 ? shapes.filter(x => x.displaySearch.indexOf(filter) >= 0) : shapes,
+    (shapes, filter) => (filter && filter.length > 0 ? shapes.filter(x => x.displaySearch.indexOf(filter) >= 0) : shapes),
 );
 
 export const getEditor = (state: EditorStateInStore) => state.editor.present;
@@ -60,17 +60,17 @@ export const getDiagram = createSelector(
 
 export const getSelectionSet = createSelector(
     getDiagram,
-    diagram => diagram ? DiagramItemSet.createFromDiagram(diagram.selectedIds.values, diagram) : null,
+    diagram => (diagram ? DiagramItemSet.createFromDiagram(diagram.selectedIds.values, diagram) : null),
 );
 
 export const getSelectedIds = createSelector(
     getDiagram,
-    diagram => diagram ? diagram.selectedIds.values : EMPTY_STRING_ARRAY,
+    diagram => (diagram ? diagram.selectedIds.values : EMPTY_STRING_ARRAY),
 );
 
 export const getSelectedItemsWithLocked = createSelector(
     getDiagram,
-    diagram => diagram ? diagram.selectedIds.values.map(i => diagram!.items.get(i)) : EMPTY_ITEMS_ARRAY,
+    diagram => (diagram ? diagram.selectedIds.values.map(i => diagram!.items.get(i)) : EMPTY_ITEMS_ARRAY),
 );
 
 export const getSelectedItems = createSelector(
@@ -85,17 +85,17 @@ export const getSelectedGroups = createSelector(
 
 export const getSelectedItemWithLocked = createSelector(
     getSelectedItemsWithLocked,
-    items => items.length === 1 ? items[0] : null,
+    items => (items.length === 1 ? items[0] : null),
 );
 
 export const getSelectedShape = createSelector(
     getSelectedItems,
-    items => items.length === 1 && items[0].type === 'Shape' ? items[0] : null,
+    items => (items.length === 1 && items[0].type === 'Shape' ? items[0] : null),
 );
 
 export const getSelectedConfigurables = createSelector(
     getSelectedShape,
-    shape => shape ? shape.configurables : EMPTY_CONFIGURABLES,
+    shape => (shape ? shape.configurables : EMPTY_CONFIGURABLES),
 );
 
 export interface UniqueValue<TValue> {
@@ -124,7 +124,7 @@ export function uniqueAppearance<T>(set: DiagramItemSet, key: string, parse?: Pa
         parse = DEFAULT_PARSER;
     }
 
-    let value: T | undefined = undefined;
+    let value: T | undefined;
 
     let hasValue = false;
 

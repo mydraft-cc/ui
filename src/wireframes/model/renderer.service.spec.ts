@@ -9,21 +9,37 @@ import { Vec2 } from '@app/core';
 import { Configurable, Renderer, RendererService } from '@app/wireframes/model';
 
 class MockupRenderer implements Renderer {
-    public previewOffset() { return Vec2.ZERO; }
+    public previewOffset() {
+        return Vec2.ZERO;
+    }
 
-    public defaultAppearance() { return {}; }
+    public defaultAppearance() {
+        return {};
+    }
 
-    public identifier(): string { return 'identifier'; }
+    public identifier(): string {
+        return 'identifier';
+    }
 
-    public showInGallery(): boolean { return false; }
+    public showInGallery(): boolean {
+        return false;
+    }
 
-    public createDefaultShape(): any { return null; }
+    public createDefaultShape(): any {
+        return null;
+    }
 
-    public createProperties(): Configurable[] { return []; }
+    public createProperties(): Configurable[] {
+        return [];
+    }
 
-    public setContext(context: any) { return this; }
+    public setContext() {
+        return this;
+    }
 
-    public render(shape: any): any { return null; }
+    public render(): any {
+        return null;
+    }
 }
 
 describe('RendererService', () => {

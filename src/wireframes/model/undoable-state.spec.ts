@@ -7,6 +7,8 @@
 
 import { UndoableState } from '@app/wireframes/model';
 
+/* eslint-disable @typescript-eslint/naming-convention */
+
 describe('UndoableState', () => {
     it('should create new state', () => {
         const state_1: UndoableState<number> = UndoableState.create(13);

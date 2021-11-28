@@ -51,7 +51,7 @@ export abstract class Record<T> {
         return record;
     }
 
-    protected afterClone(values: ImmutableMap<any>, prev?: any) {
+    protected afterClone(values: ImmutableMap<any>) {
         return values;
     }
 }

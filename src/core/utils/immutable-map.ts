@@ -8,9 +8,9 @@
 import { equals, equalsObject, without } from './types';
 
 type Mutator<T> = {
-    remove: (key: string) => void,
+    remove: (key: string) => void;
 
-    set: (key: string, value: T) => void,
+    set: (key: string, value: T) => void;
 };
 
 export class ImmutableMap<T> {

@@ -5,10 +5,12 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
+/* eslint-disable no-console */
+
 export function registerServiceWorker() {
     if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator) {
         window.addEventListener('load', () => {
-            const url = `/service-worker.js`;
+            const url = '/service-worker.js';
 
             navigator.serviceWorker.register(url)
                 .then(registration => {
@@ -18,7 +20,7 @@ export function registerServiceWorker() {
                         installingWorker.onstatechange = () => {
                             if (installingWorker.state === 'installed') {
                                 if (navigator.serviceWorker.controller) {
-                                    window.location.reload(true);
+                                    window.location.reload();
 
                                     console.log('New content is available; please refresh.');
                                 } else {

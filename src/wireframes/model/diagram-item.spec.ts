@@ -10,6 +10,8 @@ import { Diagram } from './diagram';
 import { DiagramItem } from './diagram-item';
 import { Transform } from './transform';
 
+/* eslint-disable @typescript-eslint/naming-convention */
+
 describe('DiagramItem', () => {
     const item_1 = DiagramItem.createShape('1', 'btn', 100, 20);
 
@@ -90,7 +92,7 @@ describe('DiagramItem', () => {
     });
 
     it('should return original shape when transformer returns null', () => {
-        const item_2 = item_1.transformWith(t => null!);
+        const item_2 = item_1.transformWith(() => null!);
 
         expect(item_2).toBe(item_1);
     });

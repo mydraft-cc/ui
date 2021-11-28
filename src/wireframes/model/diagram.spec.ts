@@ -7,6 +7,8 @@
 
 import { Diagram, DiagramItem, DiagramItemSet } from '@app/wireframes/model';
 
+/* eslint-disable @typescript-eslint/naming-convention */
+
 describe('Diagram', () => {
     const shape1 = DiagramItem.createShape('1', 'btn', 100, 20);
     const shape2 = DiagramItem.createShape('2', 'btn', 100, 20);
@@ -72,7 +74,7 @@ describe('Diagram', () => {
         const newShape = oldShape.setAppearance('border-width', 10);
 
         const diagram_2 = diagram_1.addVisual(oldShape);
-        const diagram_3 = diagram_2.updateItem(oldShape.id, _ => newShape);
+        const diagram_3 = diagram_2.updateItem(oldShape.id, () => newShape);
 
         expect(diagram_3.items.size).toBe(1);
         expect(diagram_3.items.get(oldShape.id)).toEqual(newShape);

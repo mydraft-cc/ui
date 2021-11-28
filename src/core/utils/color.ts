@@ -5,10 +5,10 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-// tslint:disable: no-bitwise
-// tslint:disable: prefer-template
-
 import { Types } from './types';
+
+/* eslint-disable prefer-template */
+/* eslint-disable no-bitwise */
 
 interface IColorDefinition {
     regex: RegExp;
@@ -154,7 +154,7 @@ export class Color {
 
         const f = (h / 60) - Math.floor(h / 60);
 
-        v = v * 255;
+        v *= 255;
 
         const p = (v * (1 - s));
         const q = (v * (1 - (f * s)));
@@ -177,12 +177,14 @@ export class Color {
     }
 
     public static fromHsl(h: number, s: number, l: number): Color {
-        // tslint:disable-next-line: one-variable-per-declaration
-        let r = 0, g = 0, b = 0;
+        let r = 0;
+        let g = 0;
+        let b = 0;
 
-        h = h / 360;
+        h /= 360;
 
         if (s === 0) {
+            // eslint-disable-next-line no-multi-assign
             r = g = b = l;
         } else {
             const hue2rgb = (pi: number, qi: number, ti: number) => {

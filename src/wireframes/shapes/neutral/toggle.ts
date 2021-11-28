@@ -36,8 +36,7 @@ export class Toggle implements ShapePlugin {
 
     public configurables(factory: ConfigurableFactory) {
         return [
-            factory.selection(STATE, 'State',
-            [
+            factory.selection(STATE, 'State', [
                 STATE_NORMAL,
                 STATE_CHECKED,
             ]),
@@ -49,14 +48,10 @@ export class Toggle implements ShapePlugin {
 
         const radius = Math.min(ctx.rect.width, ctx.rect.height) * 0.5;
 
-        let circleY = ctx.rect.height * 0.5;
-        let circleX = radius;
-
         const isUnchecked = ctx.shape.getAppearance(STATE) === STATE_NORMAL;
 
-        if (!isUnchecked) {
-            circleX = ctx.rect.width - circleX;
-        }
+        const circleY = ctx.rect.height * 0.5;
+        const circleX = isUnchecked ? radius : ctx.rect.width - radius;
 
         const circleCenter = new Vec2(circleX, circleY);
         const circleSize = radius - border;

@@ -25,10 +25,10 @@ const plugins = {
     TerserPlugin: require('terser-webpack-plugin'),
     // https://github.com/NMFR/optimize-css-assets-webpack-plugin
     OptimizeCSSAssetsPlugin: require("optimize-css-assets-webpack-plugin"),
-    // https://github.com/jrparish/tslint-webpack-plugin
-    TsLintPlugin: require('tslint-webpack-plugin'),
-    // https://www.npmjs.com/package/sass-lint-webpack
-    SassLintPlugin: require('sass-lint-webpack'),
+    // https://webpack.js.org/plugins/eslint-webpack-plugin/
+    ESLintPlugin: require('eslint-webpack-plugin'),
+    // https://github.com/webpack-contrib/stylelint-webpack-plugin
+    StylelintPlugin: require('stylelint-webpack-plugin'),
     // https://www.npmjs.com/package/webpack-bundle-analyzer
     BundleAnalyzerPlugin: require('webpack-bundle-analyzer').BundleAnalyzerPlugin,
     // https://github.com/jantimon/favicons-webpack-plugin
@@ -114,10 +114,7 @@ module.exports = function (env) {
             }, {
                 test: /\.css$/,
                 use: [{
-                    loader: plugins.MiniCssExtractPlugin.loader,
-                    options: {
-                        hmr: isDevServer
-                    }
+                    loader: plugins.MiniCssExtractPlugin.loader
                 }, {
                     loader: 'css-loader'
                 }, {
@@ -126,10 +123,7 @@ module.exports = function (env) {
             }, {
                 test: /\.scss$/,
                 use: [{
-                    loader: plugins.MiniCssExtractPlugin.loader,
-                    options: {
-                        hmr: isDevServer
-                    }
+                    loader: plugins.MiniCssExtractPlugin.loader
                 }, {
                     loader: 'css-loader'
                 }, {
@@ -146,7 +140,9 @@ module.exports = function (env) {
              * 
              * See: https://github.com/webpack-contrib/mini-css-extract-plugin
              */
-            new plugins.MiniCssExtractPlugin('[name].css'),
+            new plugins.MiniCssExtractPlugin({
+                filename: '[name].css',
+            }),
 
             new webpack.LoaderOptionsPlugin({
                 options: {
@@ -176,8 +172,8 @@ module.exports = function (env) {
                 }
             }),
 
-            new plugins.SassLintPlugin({
-                files: 'src/**/*.scss'
+            new plugins.StylelintPlugin({
+                files: '**/*.scss',
             }),
 
             /**
@@ -270,19 +266,10 @@ module.exports = function (env) {
         );
 
         config.plugins.push(
-            new plugins.TsLintPlugin({
+            new plugins.ESLintPlugin({
                 files: [
                     './src/**/*.ts',
-                    './src/**/*.tsx'
                 ],
-                /**
-                 * Path to a configuration file.
-                 */
-                config: root('tslint.json'),
-                /**
-                 * Wait for linting and fail the build when linting error occur.
-                 */
-                waitForLinting: isProduction
             })
         );
     }

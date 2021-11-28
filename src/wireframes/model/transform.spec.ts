@@ -8,6 +8,8 @@
 import { Rect2, Rotation, Vec2 } from '@app/core';
 import { Transform } from '@app/wireframes/model';
 
+/* eslint-disable @typescript-eslint/naming-convention */
+
 describe('Transform', () => {
     const transform = new Transform(new Vec2(10, 20), new Vec2(30, 40), Rotation.fromDegree(45));
 
@@ -164,7 +166,7 @@ describe('Transform', () => {
         expect(actual).toEqual(expected);
     });
 
-    it('should return same instance when resizing to same size', () =>  {
+    it('should return same instance when resizing to same size', () => {
         const transform_0 = new Transform(Vec2.ZERO, new Vec2(100, 100), Rotation.ZERO);
         const transform_1 = transform_0.resizeTopLeft(new Vec2(100, 100));
 
@@ -179,7 +181,7 @@ describe('Transform', () => {
         rotation: 180, expectedPosition: new Vec2(50, 100),
     }, {
         rotation: 270, expectedPosition: new Vec2(100, 50),
-    }].forEach(x =>  {
+    }].forEach(x => {
         it(`should resize top left with ${x.rotation} rotation`, () => {
             const oldSize = new Vec2(100, 100);
             const newSize = new Vec2(200, 100);
@@ -189,7 +191,7 @@ describe('Transform', () => {
 
             const rotation = Rotation.fromDegree(x.rotation);
 
-            const actual   = new Transform(oldPos, oldSize, rotation).resizeTopLeft(newSize);
+            const actual = new Transform(oldPos, oldSize, rotation).resizeTopLeft(newSize);
             const expected = new Transform(newPos, newSize, rotation);
 
             expect(actual).toEqual(expected);

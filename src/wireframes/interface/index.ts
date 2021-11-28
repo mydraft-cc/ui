@@ -9,13 +9,13 @@ import { Color, Rect2, Vec2 } from '@app/core';
 
 export { Color, Rect2, Vec2 } from '@app/core';
 
-export interface TextConfig { text: string; fontSize?: number; alignment?: string; }
+export interface TextConfig { text: string; fontSize?: number; alignment?: string }
 
 export type RendererColor = string | number | Color | Shape;
-export type RendererElement =  any;
-export type RendererOpacity =  number | Shape;
-export type RendererText =  TextConfig | Shape;
-export type RendererWidth =  number | Shape;
+export type RendererElement = any;
+export type RendererOpacity = number | Shape;
+export type RendererText = TextConfig | Shape;
+export type RendererWidth = number | Shape;
 export type Configurable = any;
 
 export class RenderContext {
@@ -38,13 +38,13 @@ export interface ShapePlugin {
 
     defaultAppearance(): { [key: string]: any };
 
-    defaultSize(): { x: number, y: number };
+    defaultSize(): { x: number; y: number };
 
     configurables?(factory: ConfigurableFactory): Configurable[];
 
     constraint?(factory: ConstraintFactory): Constraint;
 
-    previewOffset?(): { x: number, y: number };
+    previewOffset?(): { x: number; y: number };
 
     showInGallery?(): boolean;
 

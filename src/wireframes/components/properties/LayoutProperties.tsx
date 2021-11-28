@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { alignItems, ALIGN_H_CENTER, ALIGN_H_LEFT, ALIGN_H_RIGHT, ALIGN_V_BOTTOM, ALIGN_V_CENTER, ALIGN_V_TOP, BRING_FORWARDS, BRING_TO_FRONT, DISTRIBUTE_H, DISTRIBUTE_V, getDiagramId, getSelectedItems, orderItems, SEND_BACKWARDS, SEND_TO_BACK, useStore } from '@app/wireframes/model';
+import { alignItems, AlignmentMode, getDiagramId, getSelectedItems, orderItems, OrderMode, useStore } from '@app/wireframes/model';
 import { Button } from 'antd';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
@@ -20,33 +20,33 @@ export const LayoutProperties = React.memo(() => {
     const canOrder = selectedItems.length > 0;
     const canDistribute = selectedItems.length > 1;
 
-    const doOrder = React.useCallback((mode: string) => {
+    const doOrder = React.useCallback((mode: OrderMode) => {
         if (selectedDiagramId) {
             dispatch(orderItems(mode, selectedDiagramId, selectedItems));
         }
     }, [selectedDiagramId, selectedItems]);
 
-    const doAlign = React.useCallback((mode: string) => {
+    const doAlign = React.useCallback((mode: AlignmentMode) => {
         if (selectedDiagramId) {
             dispatch(alignItems(mode, selectedDiagramId, selectedItems));
         }
     }, [selectedDiagramId, selectedItems]);
 
-    const doAlignHLeft   = React.useCallback(() => doAlign(ALIGN_H_LEFT), [doAlign]);
-    const doAlignHCenter = React.useCallback(() => doAlign(ALIGN_H_CENTER), [doAlign]);
-    const doAlignHRight  = React.useCallback(() => doAlign(ALIGN_H_RIGHT), [doAlign]);
+    const doAlignHLeft   = React.useCallback(() => doAlign(AlignmentMode.HorizontalLeft), [doAlign]);
+    const doAlignHCenter = React.useCallback(() => doAlign(AlignmentMode.HorizontalCenter), [doAlign]);
+    const doAlignHRight  = React.useCallback(() => doAlign(AlignmentMode.HorizontalRight), [doAlign]);
 
-    const doAlignVTop    = React.useCallback(() => doAlign(ALIGN_V_TOP), [doAlign]);
-    const doAlignVCenter = React.useCallback(() => doAlign(ALIGN_V_CENTER), [doAlign]);
-    const doAlignVBottom = React.useCallback(() => doAlign(ALIGN_V_BOTTOM), [doAlign]);
+    const doAlignVTop    = React.useCallback(() => doAlign(AlignmentMode.VerticalTop), [doAlign]);
+    const doAlignVCenter = React.useCallback(() => doAlign(AlignmentMode.VerticalCenter), [doAlign]);
+    const doAlignVBottom = React.useCallback(() => doAlign(AlignmentMode.VerticalBottom), [doAlign]);
 
-    const doDistributeH  = React.useCallback(() => doAlign(DISTRIBUTE_H), [doAlign]);
-    const doDistributeV  = React.useCallback(() => doAlign(DISTRIBUTE_V), [doAlign]);
+    const doDistributeH  = React.useCallback(() => doAlign(AlignmentMode.DistributeHorizontal), [doAlign]);
+    const doDistributeV  = React.useCallback(() => doAlign(AlignmentMode.DistributeVertical), [doAlign]);
 
-    const doBringToFront  = React.useCallback(() => doOrder(BRING_TO_FRONT), [doOrder]);
-    const doBringForwards = React.useCallback(() => doOrder(BRING_FORWARDS), [doOrder]);
-    const doSendBackwards = React.useCallback(() => doOrder(SEND_BACKWARDS), [doOrder]);
-    const doSendToBack    = React.useCallback(() => doOrder(SEND_TO_BACK), [doOrder]);
+    const doBringToFront  = React.useCallback(() => doOrder(OrderMode.BringToFront), [doOrder]);
+    const doBringForwards = React.useCallback(() => doOrder(OrderMode.BringForwards), [doOrder]);
+    const doSendBackwards = React.useCallback(() => doOrder(OrderMode.SendBackwards), [doOrder]);
+    const doSendToBack    = React.useCallback(() => doOrder(OrderMode.SendToBack), [doOrder]);
 
     if (!selectedDiagramId) {
         return null;

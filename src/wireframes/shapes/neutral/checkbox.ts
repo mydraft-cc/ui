@@ -45,8 +45,7 @@ export class Checkbox implements ShapePlugin {
 
     public configurables(factory: ConfigurableFactory) {
         return [
-            factory.selection(STATE_KEY, 'State',
-            [
+            factory.selection(STATE_KEY, 'State', [
                 STATE_NORMAL,
                 STATE_CHECKED,
                 STATE_INTERDEMINATE,

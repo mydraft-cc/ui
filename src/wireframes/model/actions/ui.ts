@@ -5,54 +5,38 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
+import { createAction, createReducer } from '@reduxjs/toolkit';
 import { message } from 'antd';
 import { AnyAction, Dispatch, Middleware, Reducer } from 'redux';
 import { UIState } from './../internal';
 
-export const SHOW_INFO_TOAST = 'SHOW_INFO_TOAST';
-export const showInfoToast = (text: string) => {
-    return { type: SHOW_INFO_TOAST, text };
-};
+export const showInfoToast =
+    createAction<string>('ui/infoToast');
 
-export const SHOW_ERROR_TOAST = 'SHOW_ERROR_TOAST';
-export const showErrorToast = (text: string) => {
-    return { type: SHOW_ERROR_TOAST, text };
-};
+export const showErrorToast =
+    createAction<string>('ui/errorToast');
 
-export const SET_ZOOM = 'SET_ZOOM';
-export const setZoom = (zoomLevel: number) => {
-    return { type: SET_ZOOM, zoomLevel };
-};
+export const setZoom =
+    createAction<number>('ui/zoom');
 
-export const SELECT_COLOR_TAB = 'SELECT_COLOR_TAB';
-export const selectColorTab = (tab: string) => {
-    return { type: SELECT_COLOR_TAB, tab };
-};
+export const selectColorTab =
+    createAction<string>('ui/colorTab');
 
-export const SELECT_TAB = 'SELECT_TAB';
-export const selectTab = (tab: string) => {
-    return { type: SELECT_TAB, tab };
-};
+export const selectTab =
+    createAction<string>('ui/tab');
 
-export const TOGGLE_LEFT_SIDEBAR = 'TOGGLE_LEFT_SIDEBAR';
-export const toggleLeftSidebar = () => {
-    return { type: TOGGLE_LEFT_SIDEBAR };
-};
+export const toggleLeftSidebar =
+    createAction('ui/toggleLeftSidebar');
 
-export const TOGGlE_RIGHT_SIDEBAR = 'TOGGle_RIGHT_SIDEBAR';
-export const toggleRightSidebar = () => {
-    return { type: TOGGlE_RIGHT_SIDEBAR };
-};
+export const toggleRightSidebar =
+    createAction('ui/toggleRightSidebar');
 
 export function toastMiddleware() {
     const middleware: Middleware = () => (next: Dispatch<AnyAction>) => (action: any) => {
-        switch (action.type) {
-            case SHOW_INFO_TOAST:
-                message.info(action.text);
-                break;
-            case SHOW_ERROR_TOAST:
-                message.error(action.text);
-                break;
+        if (showInfoToast.match(action)) {
+            message.info(action.payload);
+        } else if (showErrorToast.match(action)) {
+            message.error(action.payload);
         }
 
         return next(action);
@@ -62,22 +46,20 @@ export function toastMiddleware() {
 }
 
 export function ui(initialState: UIState): Reducer<UIState> {
-    const reducer: Reducer<UIState> = (state = initialState, action: any) => {
-        switch (action.type) {
-            case SET_ZOOM:
-                return { ...state, zoom: action.zoomLevel };
-            case SELECT_TAB:
-                return { ...state, selectedTab: action.tab };
-            case SELECT_COLOR_TAB:
-                return { ...state, selectedColorTab: action.tab };
-            case TOGGLE_LEFT_SIDEBAR:
-                return { ...state, showLeftSidebar: !state.showLeftSidebar };
-            case TOGGlE_RIGHT_SIDEBAR:
-                return { ...state, showRightSidebar: !state.showRightSidebar };
-            default:
-                return state;
-        }
-    };
-
-    return reducer;
+    return createReducer(initialState, builder => builder
+        .addCase(setZoom, (state, action) => {
+            state.zoom = action.payload;
+        })
+        .addCase(selectTab, (state, action) => {
+            state.selectedTab = action.payload;
+        })
+        .addCase(selectColorTab, (state, action) => {
+            state.selectedColorTab = action.payload;
+        })
+        .addCase(toggleLeftSidebar, (state) => {
+            state.showLeftSidebar = !state.showLeftSidebar;
+        })
+        .addCase(toggleRightSidebar, (state) => {
+            state.showRightSidebar = !state.showRightSidebar;
+        }));
 }

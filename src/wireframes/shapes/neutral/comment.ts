@@ -28,7 +28,7 @@ export class Comment implements ShapePlugin {
     }
 
     public render(ctx: RenderContext) {
-        const corner = Math.min(14.5, ctx.rect.width, ctx.rect.height) - .5;
+        const corner = Math.min(14.5, ctx.rect.width, ctx.rect.height) - 0.5;
 
         this.createBorder(ctx, corner);
         this.createText(ctx);

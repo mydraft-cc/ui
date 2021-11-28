@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-// tslint:disable: no-bitwise
+/* eslint-disable no-bitwise */
 
 export module MathHelper {
     const CRC32_TABLE: number[] = [];
@@ -35,8 +35,7 @@ export module MathHelper {
     }
 
     export function guid(): string {
-        // tslint:disable-next-line: prefer-template
-        return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
+        return `${s4() + s4()}-${s4()}-${s4()}-${s4()}-${s4()}${s4()}${s4()}`;
     }
 
     export function s4(): string {

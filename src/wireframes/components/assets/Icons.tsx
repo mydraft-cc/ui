@@ -49,11 +49,11 @@ export const Icons = React.memo(() => {
     }, []);
 
     const doFilterIcons = React.useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
-        dispatch(filterIcons(event.target.value));
+        dispatch(filterIcons({ filter: event.target.value }));
     }, []);
 
-    const doSelectIcons = React.useCallback((set: string) => {
-        dispatch(selectIcons(set));
+    const doSelectIcons = React.useCallback((iconSet: string) => {
+        dispatch(selectIcons({ iconSet }));
     }, []);
 
     return <>

@@ -18,9 +18,7 @@ export class InteractionOverlays {
     private readonly elements: any[] = [];
     private readonly renderer: SVGRenderer;
 
-    constructor(
-       layer: svg.Container,
-    ) {
+    constructor(layer: svg.Container) {
         this.renderer = new SVGRenderer();
         this.renderer.captureContext(layer);
 

@@ -40,8 +40,7 @@ export class Shape implements ShapePlugin {
 
     public configurables(factory: ConfigurableFactory) {
         return [
-            factory.selection(SHAPE, 'Shape',
-            [
+            factory.selection(SHAPE, 'Shape', [
                 SHAPE_RECTANGLE,
                 SHAPE_ROUNDED_RECTANGLE,
                 SHAPE_ELLIPSE,

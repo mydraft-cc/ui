@@ -51,13 +51,13 @@ export class SnapManager {
 
             const orderedAabbs = this.calculateOrderedAABBs(transform, diagram, view);
 
-            // tslint:disable-next-line: one-variable-per-declaration
-            const left = aabb.left - delta.x, right = aabb.right + delta.x;
+            const xLeft = aabb.left - delta.x;
+            const xRight = aabb.right + delta.x;
 
             for (const target of orderedAabbs) {
                 if (xMode > 0) {
                     for (const other of [target.left, target.right]) {
-                        if (Math.abs(right - other) < RESIZE_SNAP_SHAPE) {
+                        if (Math.abs(xRight - other) < RESIZE_SNAP_SHAPE) {
                             dw = other - aabb.right;
 
                             result.snapModeX = SnapMode.RightBottom;
@@ -67,7 +67,7 @@ export class SnapManager {
                     }
                 } else if (xMode < 0) {
                     for (const other of [target.left, target.right]) {
-                        if (Math.abs(left - other) < RESIZE_SNAP_SHAPE) {
+                        if (Math.abs(xLeft - other) < RESIZE_SNAP_SHAPE) {
                             dw = aabb.left - other;
 
                             result.snapModeX = SnapMode.LeftTop;
@@ -78,13 +78,13 @@ export class SnapManager {
                 }
             }
 
-            // tslint:disable-next-line: one-variable-per-declaration
-            const top = aabb.top - delta.y, bottom = aabb.bottom + delta.y;
+            const yTop = aabb.top - delta.y;
+            const yBottom = aabb.bottom + delta.y;
 
             for (const target of orderedAabbs) {
                 if (yMode > 0) {
                     for (const other of [target.top, target.bottom]) {
-                        if (Math.abs(bottom - other) < RESIZE_SNAP_SHAPE) {
+                        if (Math.abs(yBottom - other) < RESIZE_SNAP_SHAPE) {
                             dh = other - aabb.bottom;
 
                             result.snapModeY = SnapMode.RightBottom;
@@ -94,7 +94,7 @@ export class SnapManager {
                     }
                 } else if (yMode < 0) {
                     for (const other of [target.top, target.bottom]) {
-                        if (Math.abs(top - other) < RESIZE_SNAP_SHAPE) {
+                        if (Math.abs(yTop - other) < RESIZE_SNAP_SHAPE) {
                             dh = aabb.top - other;
 
                             result.snapModeY = SnapMode.LeftTop;
@@ -133,35 +133,36 @@ export class SnapManager {
         if (!snapToGrid) {
             const orderedAabbs = this.calculateOrderedAABBs(transform, diagram, view);
 
-            // tslint:disable-next-line: one-variable-per-declaration
-            const left = aabb.left + delta.x, right = aabb.right + delta.x, centerX = aabb.cx + delta.x;
+            const xLeft = aabb.left + delta.x;
+            const xRight = aabb.right + delta.x;
+            const xCenter = aabb.cx + delta.x;
 
             for (const target of orderedAabbs) {
-                if (Math.abs(target.cx - centerX) < MOVE_SNAP_SHAPE) {
+                if (Math.abs(target.cx - xCenter) < MOVE_SNAP_SHAPE) {
                     x = target.cx - aabb.width * 0.5;
 
                     result.snapModeX = SnapMode.Center;
                     result.snapValueX = target.cx;
                     break;
-                } else if (Math.abs(target.left - left) < MOVE_SNAP_SHAPE) {
+                } else if (Math.abs(target.left - xLeft) < MOVE_SNAP_SHAPE) {
                     x = target.left;
 
                     result.snapModeX = SnapMode.LeftTop;
                     result.snapValueX = target.left;
                     break;
-                } else if (Math.abs(target.right - left) < MOVE_SNAP_SHAPE) {
+                } else if (Math.abs(target.right - xLeft) < MOVE_SNAP_SHAPE) {
                     x = target.right;
 
                     result.snapModeX = SnapMode.LeftTop;
                     result.snapValueX = target.right;
                     break;
-                } else if (Math.abs(target.right - right) < MOVE_SNAP_SHAPE) {
+                } else if (Math.abs(target.right - xRight) < MOVE_SNAP_SHAPE) {
                     x = target.right - aabb.width;
 
                     result.snapModeX = SnapMode.RightBottom;
                     result.snapValueX = target.right;
                     break;
-                } else if (Math.abs(target.left - right) < MOVE_SNAP_SHAPE) {
+                } else if (Math.abs(target.left - xRight) < MOVE_SNAP_SHAPE) {
                     x = target.left - aabb.width;
 
                     result.snapModeX = SnapMode.RightBottom;
@@ -170,35 +171,36 @@ export class SnapManager {
                 }
             }
 
-            // tslint:disable-next-line: one-variable-per-declaration
-            const top = aabb.top + delta.y, bottom = aabb.bottom + delta.y, centerY = aabb.cy + delta.y;
+            const yTop = aabb.top + delta.y;
+            const yBottom = aabb.bottom + delta.y;
+            const yCenter = aabb.cy + delta.y;
 
             for (const target of orderedAabbs) {
-                if (Math.abs(target.cy - centerY) < MOVE_SNAP_SHAPE) {
+                if (Math.abs(target.cy - yCenter) < MOVE_SNAP_SHAPE) {
                     y = target.cy - aabb.height * 0.5;
 
                     result.snapModeY = SnapMode.Center;
                     result.snapValueY = target.cy;
                     break;
-                } else if (Math.abs(target.top - top) < MOVE_SNAP_SHAPE) {
+                } else if (Math.abs(target.top - yTop) < MOVE_SNAP_SHAPE) {
                     y = target.top;
 
                     result.snapModeY = SnapMode.LeftTop;
                     result.snapValueY = target.top;
                     break;
-                } else if (Math.abs(target.bottom - top) < MOVE_SNAP_SHAPE) {
+                } else if (Math.abs(target.bottom - yTop) < MOVE_SNAP_SHAPE) {
                     y = target.bottom;
 
                     result.snapModeY = SnapMode.LeftTop;
                     result.snapValueY = target.bottom;
                     break;
-                } else if (Math.abs(target.bottom - bottom) < MOVE_SNAP_SHAPE) {
+                } else if (Math.abs(target.bottom - yBottom) < MOVE_SNAP_SHAPE) {
                     y = target.bottom - aabb.height;
 
                     result.snapModeY = SnapMode.RightBottom;
                     result.snapValueY = target.bottom;
                     break;
-                } else if (Math.abs(target.top - bottom) < MOVE_SNAP_SHAPE) {
+                } else if (Math.abs(target.top - yBottom) < MOVE_SNAP_SHAPE) {
                     y = target.top - aabb.height;
 
                     result.snapModeY = SnapMode.RightBottom;

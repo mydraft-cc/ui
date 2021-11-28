@@ -7,12 +7,15 @@
 
 import { Rotation, Vec2 } from '@app/core';
 import { DefaultAppearance } from '@app/wireframes/interface';
-import { addIcon, addImage, addVisual, calculateSelection, Diagram, DiagramItem, DiagramItemSet, EditorState, items, pasteItems, removeItems, RendererService, selectItems, Serializer, Transform, unlockItems } from '@app/wireframes/model';
+import { addIcon, addImage, addVisual, buildItems, calculateSelection, Diagram, DiagramItem, DiagramItemSet, EditorState, pasteItems, removeItems, RendererService, selectItems, Serializer, Transform, unlockItems } from '@app/wireframes/model';
 import { Button } from '@app/wireframes/shapes/neutral/button';
 import { Icon } from '@app/wireframes/shapes/shared/icon';
 import { Raster } from '@app/wireframes/shapes/shared/raster';
 import { AbstractControl } from '@app/wireframes/shapes/utils/abstract-control';
 import { lockItems } from './items';
+import { createClassReducer } from './utils';
+
+/* eslint-disable @typescript-eslint/naming-convention */
 
 describe('ItemsReducer', () => {
     const groupId = 'group-1';
@@ -33,7 +36,11 @@ describe('ItemsReducer', () => {
             .addRenderer(new AbstractControl(new Button()))
             .addRenderer(new AbstractControl(new Raster()));
 
-    const reducer = items(rendererService, new Serializer(rendererService));
+    const state =
+        EditorState.empty()
+            .addDiagram(diagram);
+
+    const reducer = createClassReducer(state, builder => buildItems(builder, rendererService, new Serializer(rendererService)));
 
     it('should return same state if action is unknown', () => {
         const action = { type: 'UNKNOWN' };

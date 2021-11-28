@@ -54,7 +54,7 @@ export module Types {
         return value instanceof c;
     }
 
-    export function isArray(value: any): value is any[] {
+    export function isArray(value: any): value is ReadonlyArray<any> {
         return Array.isArray(value);
     }
 
@@ -94,6 +94,7 @@ export function without<T>(obj: { [key: string]: T }, key: string) {
 }
 
 export function equals(lhs: any, rhs: any) {
+    // eslint-disable-next-line no-self-compare
     if (lhs === rhs || (lhs !== lhs && rhs !== rhs)) {
         return true;
     }
@@ -125,7 +126,7 @@ export function equalsObject(lhs: { [key: string]: any }, rhs: { [key: string]: 
     return true;
 }
 
-export function equalsArray(lhs: any[], rhs: any[]) {
+export function equalsArray(lhs: ReadonlyArray<any>, rhs: ReadonlyArray<any>) {
     if (equals(lhs, rhs)) {
         return true;
     }

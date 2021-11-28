@@ -5,47 +5,40 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { Reducer } from 'redux';
+import { ActionReducerMapBuilder, createAction } from '@reduxjs/toolkit';
 import { EditorState } from './../internal';
 import { createItemsAction, DiagramRef, ItemsRef } from './utils';
 
-export const BRING_TO_FRONT = 'BRING_TO_FRONT';
-export const BRING_FORWARDS = 'BRING_FORWARDS';
-export const SEND_BACKWARDS = 'SEND_BACKWARDS';
-export const SEND_TO_BACK = 'SEND_TO_BACK';
+export enum OrderMode {
+    BringToFront = 'BRING_TO_FRONT',
+    BringForwards = 'BRING_FORWARDS',
+    SendBackwards = 'SEND_BACKWARDS',
+    SendToBack = 'SEND_TO_BACK',
+}
 
-export const ORDER_ITEMS = 'ORDER_ITEMS';
-export const orderItems = (mode: string, diagram: DiagramRef, items: ItemsRef) => {
-    return createItemsAction(ORDER_ITEMS, diagram, items, { mode });
-};
+export const orderItems =
+    createAction('items/order', (mode: OrderMode, diagram: DiagramRef, items: ItemsRef) => {
+        return { payload: createItemsAction(diagram, items, { mode }) };
+    });
 
-export function ordering(): Reducer<EditorState> {
-    const reducer: Reducer<EditorState> = (state: EditorState, action: any) => {
-        if (action.type === ORDER_ITEMS) {
-            switch (action.mode) {
-                case BRING_TO_FRONT:
-                    return state.updateDiagram(action.diagramId, diagram => {
-                        return diagram.bringToFront(action.itemIds);
-                    });
-                case BRING_FORWARDS:
-                    return state.updateDiagram(action.diagramId, diagram => {
-                        return diagram.bringForwards(action.itemIds);
-                    });
-                case SEND_TO_BACK:
-                    return state.updateDiagram(action.diagramId, diagram => {
-                        return diagram.sendToBack(action.itemIds);
-                    });
-                case SEND_BACKWARDS:
-                    return state.updateDiagram(action.diagramId, diagram => {
-                        return diagram.sendBackwards(action.itemIds);
-                    });
-                default:
-                    return state;
-            }
-        }
+export function buildOrdering(builder: ActionReducerMapBuilder<EditorState>) {
+    return builder
+        .addCase(orderItems, (state, action) => {
+            const { diagramId, itemIds, mode } = action.payload;
 
-        return state;
-    };
-
-    return reducer;
+            return state.updateDiagram(diagramId, diagram => {
+                switch (mode) {
+                    case OrderMode.BringToFront:
+                        return diagram.bringToFront(itemIds);
+                    case OrderMode.BringForwards:
+                        return diagram.bringForwards(itemIds);
+                    case OrderMode.SendToBack:
+                        return diagram.sendToBack(itemIds);
+                    case OrderMode.SendBackwards:
+                        return diagram.sendBackwards(itemIds);
+                    default:
+                        return diagram;
+                }
+            });
+        });
 }
