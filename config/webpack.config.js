@@ -36,8 +36,8 @@ const plugins = {
     BundleAnalyzerPlugin: require('webpack-bundle-analyzer').BundleAnalyzerPlugin,
     // https://github.com/jantimon/favicons-webpack-plugin
     FaviconsWebpackPlugin: require('favicons-webpack-plugin'),
-    // https://github.com/goldhand/sw-precache-webpack-plugin
-    SWPrecacheWebpackPlugin: require('sw-precache-webpack-plugin'),
+    // https://github.com/GoogleChrome/workbox/tree/master/packages/workbox-webpack-plugin
+    GenerateSW: require('workbox-webpack-plugin').GenerateSW,
 };
 
 module.exports = function configure(env) {
@@ -108,7 +108,7 @@ module.exports = function configure(env) {
                 use: [{
                     loader: 'file-loader',
                     options: {
-                        name: '[name].[hash].[ext]',
+                        name: '[name].[contenthash].[ext]',
 
                         // Store the assets in custom path because of fonts need relative urls.
                         outputPath: 'assets',
@@ -212,20 +212,24 @@ module.exports = function configure(env) {
                 /**
                  * Specifies the name of each output file on disk.
                  *
+                 * Do NOT append hash to service worker in development mode, so we can load them directly.
+                 *
                  * See: https://webpack.js.org/configuration/output/#output-filename
                  */
-                filename: '[name].[hash].js',
+                filename: (pathData) => {
+                    return pathData.chunk.name === 'src' ? '[name].[contenthash:8].js' : '[name].js';
+                },
 
                 /**
                  * The filename of non-entry chunks as relative path inside the output.path directory.
                  *
                  * See: https://webpack.js.org/configuration/output/#output-chunkfilename
                  */
-                chunkFilename: '[id].[hash].chunk.js',
+                chunkFilename: '[id].[contenthash].chunk.js',
             };
         } else {
             config.output = {
-                filename: '[name].[hash].js',
+                filename: '[name].[contenthash].js',
 
                 /**
                  * Set the public path, because we are running the website from another port (5000).
@@ -321,10 +325,14 @@ module.exports = function configure(env) {
     }
 
     if (isProduction) {
-        config.plugins.push(new plugins.SWPrecacheWebpackPlugin({
+        config.plugins.push(new plugins.GenerateSW({
             navigateFallback: `${PUBLIC_PATH}index.html`,
-            // To fix a bug with windows.
-            stripPrefix: root('build/').replace(/\\/g, '/'),
+
+            // We need to use a static file for caching.
+            swDest: 'service-worker.js',
+
+            // Cache all files.
+            maximumFileSizeToCacheInBytes: 50000000,
         }));
     }
 

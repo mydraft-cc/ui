@@ -80,6 +80,6 @@ const Root = (
     </DndProvider>
 );
 
-registerServiceWorker();
+registerServiceWorker(store);
 
 ReactDOM.render(Root, document.getElementById('root') as HTMLElement);
