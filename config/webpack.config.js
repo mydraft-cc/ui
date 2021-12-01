@@ -329,7 +329,7 @@ module.exports = function configure(env) {
             navigateFallback: `${PUBLIC_PATH}index.html`,
 
             // We need to use a static file for caching.
-            swDest: 'service-worker.js',
+            swDest: 'service-worker2.js',
 
             // Cache all files.
             maximumFileSizeToCacheInBytes: 50000000,

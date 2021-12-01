@@ -13,7 +13,7 @@ import { showInfoToast } from '@app/wireframes/model';
 export function registerServiceWorker(store: Store) {
     if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator) {
         window.addEventListener('load', () => {
-            const url = '/service-worker.js';
+            const url = '/service-worker2.js';
 
             navigator.serviceWorker.register(url)
                 .then(registration => {
