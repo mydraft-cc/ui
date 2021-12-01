@@ -11,7 +11,7 @@ import { UndoableState } from './undoable-state';
 
 type DiagramMap = ImmutableMap<Diagram>;
 
-type EditorProps = { selectedDiagramId: string | null, diagrams: DiagramMap, size: Vec2 };
+type EditorProps = { selectedDiagramId: string | null; diagrams: DiagramMap; size: Vec2 };
 
 const DEFAULT_SIZE = new Vec2(1000, 1000);
 

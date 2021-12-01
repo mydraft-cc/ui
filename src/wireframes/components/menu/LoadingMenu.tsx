@@ -18,7 +18,7 @@ export const LoadingMenu = React.memo(() => {
     const [isOpen, setIsOpen] = React.useState(false);
 
     const dispatch = useDispatch();
-    const readToken = useStore(s => s.loading.readToken);
+    const readToken = useStore(s => s.loading.tokenToRead);
 
     const title =  readToken && readToken.length > 0 ?
         `mydraft.cc - Diagram ${readToken}` :
@@ -29,7 +29,7 @@ export const LoadingMenu = React.memo(() => {
     }, []);
 
     const doSaveDiagram = React.useCallback(() => {
-        dispatch(saveDiagramAsync());
+        dispatch(saveDiagramAsync({ navigate: true }));
     }, []);
 
     const doToggleInfoDialog = React.useCallback(() => {

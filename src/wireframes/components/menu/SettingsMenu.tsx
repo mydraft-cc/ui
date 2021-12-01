@@ -33,7 +33,7 @@ export const SettingsMenu = React.memo((props: SettingsMenuProps) => {
     }, [size]);
 
     const doChangeSize = React.useCallback(() => {
-        dispatch(changeSize(sizeWidth, sizeHeight));
+        dispatch(changeSize({ width: sizeWidth, height: sizeHeight }));
 
         setIsOpen(false);
     }, [sizeWidth, sizeHeight]);

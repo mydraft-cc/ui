@@ -42,16 +42,16 @@ type GroupProps = {
 
 type ShapeProps = {
     // The transformation..
-    transform: Transform,
+    transform: Transform;
 
     // The configurable properties.
-    configurables: Configurable[],
+    configurables: Configurable[];
 
     // The transform constraints.
     constraint?: Constraint;
 
     // The id of the renderer.
-    renderer: string
+    renderer: string;
 };
 
 type Props = ItemProps & GroupProps & ShapeProps & VisualProps;
@@ -104,7 +104,7 @@ export class DiagramItem extends Record<Props> implements Shape {
         return this.get('type');
     }
 
-    public static createGroup(id: string, ids: DiagramContainer | string[], rotation?: Rotation) {
+    public static createGroup(id: string, ids: DiagramContainer | ReadonlyArray<string>, rotation?: Rotation) {
         const childIds = getChildIds(ids);
 
         return new DiagramItem({ id, type: 'Group', isLocked: false, childIds, rotation });
@@ -272,7 +272,7 @@ export class DiagramItem extends Record<Props> implements Shape {
     }
 }
 
-function getAppearance(visual: ImmutableMap<any> | { [key: string]: any; }) {
+function getAppearance(visual: ImmutableMap<any> | { [key: string]: any }) {
     if (Types.isObject(visual)) {
         return ImmutableMap.of(<any>visual);
     }
@@ -280,7 +280,7 @@ function getAppearance(visual: ImmutableMap<any> | { [key: string]: any; }) {
     return visual || DEFAULT_APPEARANCE;
 }
 
-function getChildIds(childIds: DiagramContainer | string[] | undefined): DiagramContainer {
+function getChildIds(childIds: DiagramContainer | ReadonlyArray<string> | undefined): DiagramContainer {
     if (Types.isArray(childIds)) {
         return DiagramContainer.of(...childIds);
     }

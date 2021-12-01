@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-export function moveItems<T>(source: T[], items: T[], target: number, relative = false): T[] {
+export function moveItems<T>(source: ReadonlyArray<T>, items: ReadonlyArray<T>, target: number, relative = false): ReadonlyArray<T> {
     if (source.length === 0 || !items || items.length === 0 || items.filter(x => !x).length > 0) {
         return source;
     }
@@ -31,8 +31,8 @@ export function moveItems<T>(source: T[], items: T[], target: number, relative =
         return source;
     }
 
-    // tslint:disable-next-line: one-variable-per-declaration
-    let isBackwards = false, newIndex = 0;
+    let isBackwards = false;
+    let newIndex = 0;
 
     if (relative) {
         isBackwards = target <= 0;
@@ -82,4 +82,4 @@ export function moveItems<T>(source: T[], items: T[], target: number, relative =
     return newItems;
 }
 
-type ItemToSort<T> = { isInItems: boolean; index: number; value: T; };
+type ItemToSort<T> = { isInItems: boolean; index: number; value: T };

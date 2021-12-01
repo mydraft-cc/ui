@@ -7,7 +7,7 @@
 
 import { RendererContext, SerializerContext } from '@app/context';
 import { UserReport } from '@app/core';
-import { createInitialAssetsState, createInitialLoadingState, createInitialUIState, EditorState, SELECT_DIAGRAM, SELECT_ITEMS, Serializer } from '@app/wireframes/model';
+import { createInitialAssetsState, createInitialLoadingState, createInitialUIState, EditorState, selectDiagram, selectItems, Serializer } from '@app/wireframes/model';
 import * as Reducers from '@app/wireframes/model/actions';
 import { registerRenderers } from '@app/wireframes/shapes';
 import { createBrowserHistory } from 'history';
@@ -16,44 +16,34 @@ import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import * as ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
-import { Route, Router } from 'react-router';
+import { Route } from 'react-router';
+import { ConnectedRouter, connectRouter } from 'connected-react-router';
 import { routerMiddleware, routerReducer } from 'react-router-redux';
-import { applyMiddleware, combineReducers, compose, createStore, Reducer } from 'redux';
+import { applyMiddleware, combineReducers, compose, createStore } from 'redux';
 import thunk from 'redux-thunk';
 import { App } from './App';
 import './index.scss';
 import { registerServiceWorker } from './registerServiceWorker';
+import { createClassReducer } from './wireframes/model/actions/utils';
 
-const rendererService = registerRenderers();
+const editorRenderers = registerRenderers();
+const editorSerializer = new Serializer(editorRenderers);
+const editorState = EditorState.empty();
 
-const serializer = new Serializer(rendererService);
-
-const reducers: Reducer<EditorState>[] = [
-    Reducers.alignment(),
-    Reducers.appearance(rendererService),
-    Reducers.items(rendererService, serializer),
-    Reducers.diagrams(),
-    Reducers.grouping(),
-    Reducers.ordering(),
-];
-
-const editorReducer: Reducer<EditorState> = (state: EditorState, action: any) => {
-    for (const nested of reducers) {
-        const newState = nested(state, action);
-
-        if (newState !== state) {
-            return newState;
-        }
-    }
-
-    return state;
-};
+const editorReducer = createClassReducer(editorState, builder => {
+    Reducers.buildAlignment(builder);
+    Reducers.buildAppearance(builder, editorRenderers);
+    Reducers.buildItems(builder, editorRenderers, editorSerializer);
+    Reducers.buildDiagrams(builder);
+    Reducers.buildGrouping(builder);
+    Reducers.buildOrdering(builder);
+});
 
 const undoableReducer = Reducers.undoable(editorReducer,
     EditorState.empty(),
     [
-        SELECT_DIAGRAM,
-        SELECT_ITEMS,
+        selectDiagram.name,
+        selectItems.name,
     ],
 );
 
@@ -64,25 +54,24 @@ const composeEnhancers = window['__REDUX_DEVTOOLS_EXTENSION_COMPOSE__'] || compo
 const store = createStore(
     Reducers.rootLoading(
         combineReducers({
-             assets: Reducers.assets(createInitialAssetsState(rendererService)),
-             editor: undoableReducer,
+            assets: Reducers.assets(createInitialAssetsState(editorRenderers)),
+            editor: undoableReducer,
             loading: Reducers.loading(createInitialLoadingState()),
+            router: connectRouter(history),
             routing: routerReducer,
-                 ui: Reducers.ui(createInitialUIState()),
-    }), undoableReducer, editorReducer),
-    composeEnhancers(applyMiddleware(thunk, Reducers.toastMiddleware(), routerMiddleware(history), Reducers.itemsMiddleware(serializer))),
+            ui: Reducers.ui(createInitialUIState()),
+        }), undoableReducer, editorReducer),
+    composeEnhancers(applyMiddleware(thunk, Reducers.toastMiddleware(), routerMiddleware(history), Reducers.itemsMiddleware(editorSerializer))),
 );
 
 const Root = (
     <DndProvider backend={HTML5Backend}>
-        <SerializerContext.Provider value={serializer}>
-            <RendererContext.Provider value={rendererService}>
+        <SerializerContext.Provider value={editorSerializer}>
+            <RendererContext.Provider value={editorRenderers}>
                 <Provider store={store}>
-                    <Router history={history}>
-                        <Route path='/:token?' render={props => (
-                            <App token={props.match.params.token} />
-                        )} />
-                    </Router>
+                    <ConnectedRouter history={history}>
+                        <Route path='/:token?' component={App} />
+                    </ConnectedRouter>
                 </Provider>
             </RendererContext.Provider>
         </SerializerContext.Provider>
@@ -91,6 +80,6 @@ const Root = (
     </DndProvider>
 );
 
-registerServiceWorker();
+registerServiceWorker(store);
 
 ReactDOM.render(Root, document.getElementById('root') as HTMLElement);

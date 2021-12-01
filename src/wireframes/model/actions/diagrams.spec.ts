@@ -6,10 +6,16 @@
 */
 
 import { Vec2 } from '@app/core';
-import { addDiagram, changeSize, Diagram, diagrams, EditorState, removeDiagram, selectDiagram } from '@app/wireframes/model';
+import { addDiagram, changeSize, Diagram, buildDiagrams, EditorState, removeDiagram, selectDiagram } from '@app/wireframes/model';
+import { createClassReducer } from './utils';
+
+/* eslint-disable @typescript-eslint/naming-convention */
 
 describe('DiagramReducer', () => {
-    const reducer = diagrams();
+    const state =
+        EditorState.empty();
+
+    const reducer = createClassReducer(state, builder => buildDiagrams(builder));
 
     it('should return same state if action is unknown', () => {
         const action = { type: 'UNKNOWN' };
@@ -54,7 +60,7 @@ describe('DiagramReducer', () => {
     });
 
     it('should change size', () => {
-        const action = changeSize(1500, 1200);
+        const action = changeSize({ width: 1500, height: 1200 });
 
         const state_1 = EditorState.empty();
         const state_2 = reducer(state_1, action);

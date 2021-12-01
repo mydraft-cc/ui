@@ -8,9 +8,9 @@
 import { equalsObject, without } from './types';
 
 type Mutator = {
-    add: (item: string) => void,
+    add: (item: string) => void;
 
-    remove: (item: string) => void,
+    remove: (item: string) => void;
 };
 
 export class ImmutableSet {

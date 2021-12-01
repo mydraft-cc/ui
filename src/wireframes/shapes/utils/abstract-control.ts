@@ -16,9 +16,6 @@ const RENDER_BACKGROUND = 1;
 class DefaultConstraintFactory implements ConstraintFactory {
     public static readonly INSTANCE = new DefaultConstraintFactory();
 
-    private constructor() {
-    }
-
     public size(width?: number, height?: number): any {
         return new SizeConstraint(width, height);
     }
@@ -37,9 +34,6 @@ class DefaultConstraintFactory implements ConstraintFactory {
 
 class DefaultConfigurableFactory implements ConfigurableFactory {
     public static readonly INSTANCE = new DefaultConfigurableFactory();
-
-    private constructor() {
-    }
 
     public selection(name: string, label: string, options: string[]) {
         return new SelectionConfigurable(name, label, options);
@@ -122,7 +116,7 @@ export class AbstractControl implements Renderer {
         return DiagramItem.createShape(id, this.identifier(), size.x, size.y, this.configurables(), this.defaultAppearance(), this.constraint());
     }
 
-    public render(shape: DiagramItem, options?: { debug?: boolean, noOpacity?: boolean, noTransform?: boolean }): any {
+    public render(shape: DiagramItem, options?: { debug?: boolean; noOpacity?: boolean; noTransform?: boolean }): any {
         const ctx = new RenderContext(SVGRenderer.INSTANCE, shape, new Rect2(0, 0, shape.transform.size.x, shape.transform.size.y));
 
         options = options || {};

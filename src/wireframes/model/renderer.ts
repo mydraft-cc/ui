@@ -21,5 +21,5 @@ export interface Renderer {
 
     setContext(context: any): Renderer;
 
-    render(shape: DiagramItem, options?: { debug?: boolean, noOpacity?: boolean, noTransform?: boolean }): any;
+    render(shape: DiagramItem, options?: { debug?: boolean; noOpacity?: boolean; noTransform?: boolean }): any;
 }

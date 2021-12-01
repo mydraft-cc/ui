@@ -6,51 +6,48 @@
 */
 
 import { MathHelper } from '@app/core';
-import { Reducer } from 'redux';
-import { Diagram, EditorState } from './../internal';
+import { ActionReducerMapBuilder, createAction } from '@reduxjs/toolkit';
+import { EditorState } from './../internal';
 import { createItemsAction, DiagramRef, ItemsRef } from './utils';
 
-export const GROUP_ITEMS = 'GROUP_ITEMS';
-export const groupItems = (diagram: DiagramRef, items: ItemsRef, groupId?: string) => {
-    return createItemsAction(GROUP_ITEMS, diagram, items, { groupId: groupId || MathHelper.guid() });
-};
+export const groupItems =
+    createAction('grouping/group', (diagram: DiagramRef, items: ItemsRef, groupId?: string) => {
+        return { payload: createItemsAction(diagram, items, { groupId: groupId || MathHelper.guid() }) };
+    });
 
-export const UNGROUP_ITEMS = 'UNGROUP_ITEMS';
-export const ungroupItems = (diagram: Diagram, groups: ItemsRef) => {
-    return createItemsAction(UNGROUP_ITEMS, diagram, groups);
-};
+export const ungroupItems =
+    createAction('grouping/ungroup', (diagram: DiagramRef, groups: ItemsRef) => {
+        return { payload: createItemsAction(diagram, groups) };
+    });
 
-export function grouping(): Reducer<EditorState> {
-    const reducer: Reducer<EditorState> = (state: EditorState, action: any) => {
-        switch (action.type) {
-            case GROUP_ITEMS:
-                return state.updateDiagram(action.diagramId, diagram => {
-                    const groupId = action.groupId;
+export function buildGrouping(builder: ActionReducerMapBuilder<EditorState>) {
+    return builder
+        .addCase(groupItems, (state, action) => {
+            const { diagramId, groupId, itemIds } = action.payload;
 
-                    return diagram.group(groupId, action.itemIds).selectItems([groupId]);
-                });
-            case UNGROUP_ITEMS:
-                return state.updateDiagram(action.diagramId, diagram => {
-                    const childIds: string[] = [];
+            return state.updateDiagram(diagramId, diagram => {
+                return diagram.group(groupId, itemIds).selectItems([groupId]);
+            });
+        })
+        .addCase(ungroupItems, (state, action) => {
+            const { diagramId, itemIds } = action.payload;
 
-                    for (const groupId of action.itemIds) {
-                        const target = diagram.items.get(groupId);
+            return state.updateDiagram(diagramId, diagram => {
+                const childIds: string[] = [];
 
-                        if (target) {
-                            childIds.push(...target.childIds.values);
+                for (const groupId of itemIds) {
+                    const target = diagram.items.get(groupId);
 
-                            diagram = diagram.ungroup(groupId);
-                        }
+                    if (target) {
+                        childIds.push(...target.childIds.values);
+
+                        diagram = diagram.ungroup(groupId);
                     }
+                }
 
-                    diagram = diagram.selectItems(childIds);
+                diagram = diagram.selectItems(childIds);
 
-                    return diagram;
-                });
-            default:
-                return state;
-        }
-    };
-
-    return reducer;
+                return diagram;
+            });
+        });
 }

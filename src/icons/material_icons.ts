@@ -5,8 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-// tslint:disable: object-literal-key-quotes
-// tslint:disable: trailing-comma
+/* eslint-disable */
 
 export const ICONS = [
     '3d_rotation e84d',

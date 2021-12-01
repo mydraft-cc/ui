@@ -34,7 +34,7 @@ export class Dropdown implements ShapePlugin {
         const clickArea = Math.min(40, Math.min(0.8 * ctx.rect.width, ctx.rect.height));
 
         this.createBorder(ctx);
-        this.createText(ctx,  clickArea);
+        this.createText(ctx, clickArea);
         this.createClickTriangle(ctx, clickArea);
     }
 

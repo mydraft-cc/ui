@@ -6,45 +6,48 @@
 */
 
 import { MathHelper, Vec2 } from '@app/core';
-import { Reducer } from 'redux';
+import { ActionReducerMapBuilder, createAction } from '@reduxjs/toolkit';
 import { Diagram, EditorState } from './../internal';
 import { createDiagramAction, DiagramRef } from './utils';
 
-export const ADD_DIAGRAM = 'ADD_DIAGRAM';
-export const addDiagram = (diagramId?: string) => {
-    return createDiagramAction(ADD_DIAGRAM, diagramId || MathHelper.guid());
-};
+export const addDiagram =
+    createAction('diagram/add', (diagramId?: string) => {
+        return { payload: createDiagramAction(diagramId || MathHelper.guid()) };
+    });
 
-export const SELECT_DIAGRAM = 'SELECT_DIAGRAM';
-export const selectDiagram = (diagram: DiagramRef) => {
-    return createDiagramAction(SELECT_DIAGRAM, diagram);
-};
+export const selectDiagram =
+    createAction('diagram/select', (diagram: DiagramRef) => {
+        return { payload: createDiagramAction(diagram) };
+    });
 
-export const REMOVE_DIAGRAM = 'REMOVE_DiAGRAM';
-export const removeDiagram = (diagram: DiagramRef) => {
-    return createDiagramAction(REMOVE_DIAGRAM, diagram);
-};
+export const removeDiagram =
+    createAction('diagram/remove', (diagram: DiagramRef) => {
+        return { payload: createDiagramAction(diagram) };
+    });
 
-export const CHANGE_SIZE = 'CHANGE_SIZE';
-export const changeSize = (width: number, height: number) => {
-    return { type: CHANGE_SIZE, width, height };
-};
+export const changeSize =
+    createAction<{ width: number; height: number }>('size/change');
 
-export function diagrams(): Reducer<EditorState> {
-    const reducer: Reducer<EditorState> = (state: EditorState, action: any) => {
-        switch (action.type) {
-            case SELECT_DIAGRAM:
-                return state.selectDiagram(action.diagramId);
-            case ADD_DIAGRAM:
-                return state.addDiagram(Diagram.empty(action.diagramId)).selectDiagram(action.diagramId);
-            case REMOVE_DIAGRAM:
-                return state.removeDiagram(action.diagramId);
-            case CHANGE_SIZE:
-                return state.changeSize(new Vec2(action.width, action.height));
-            default:
-                return state;
-        }
-    };
+export function buildDiagrams(builder: ActionReducerMapBuilder<EditorState>) {
+    return builder
+        .addCase(selectDiagram, (state, action) => {
+            const { diagramId } = action.payload;
 
-    return reducer;
+            return state.selectDiagram(diagramId);
+        })
+        .addCase(addDiagram, (state, action) => {
+            const { diagramId } = action.payload;
+
+            return state.addDiagram(Diagram.empty(diagramId)).selectDiagram(diagramId);
+        })
+        .addCase(removeDiagram, (state, action) => {
+            const { diagramId } = action.payload;
+
+            return state.removeDiagram(diagramId);
+        })
+        .addCase(changeSize, (state, action) => {
+            const { width, height } = action.payload;
+
+            return state.changeSize(new Vec2(width, height));
+        });
 }

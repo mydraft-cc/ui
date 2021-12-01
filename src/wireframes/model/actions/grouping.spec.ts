@@ -5,10 +5,16 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { Diagram, DiagramItem, EditorState, grouping, groupItems, ungroupItems } from '@app/wireframes/model';
+import { buildGrouping, Diagram, DiagramItem, EditorState, groupItems, ungroupItems } from '@app/wireframes/model';
+import { createClassReducer } from './utils';
+
+/* eslint-disable @typescript-eslint/naming-convention */
 
 describe('GroupingReducer', () => {
-    const reducer = grouping();
+    const state =
+        EditorState.empty();
+
+    const reducer = createClassReducer(state, builder => buildGrouping(builder));
 
     it('should return same state if action is unknown', () => {
         const action = { type: 'UNKNOWN' };

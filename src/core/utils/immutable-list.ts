@@ -24,7 +24,7 @@ export class ImmutableList<T> {
     }
 
     constructor(
-        private readonly items: T[],
+        private readonly items: ReadonlyArray<T>,
     ) {
         Object.freeze(this);
         Object.freeze(items);
@@ -42,7 +42,7 @@ export class ImmutableList<T> {
         }
     }
 
-    public add(...items: T[]) {
+    public add(...items: ReadonlyArray<T>) {
         if (!items || items.length === 0) {
             return this;
         }
@@ -52,7 +52,7 @@ export class ImmutableList<T> {
         return this.replace(newItems);
     }
 
-    public remove(...items: T[]) {
+    public remove(...items: ReadonlyArray<T>) {
         if (!items || items.length === 0) {
             return this;
         }
@@ -72,27 +72,27 @@ export class ImmutableList<T> {
         return this.replace(newItems);
     }
 
-    public bringToFront(items: T[]) {
+    public bringToFront(items: ReadonlyArray<T>) {
         return this.moveTo(items, Number.MAX_VALUE);
     }
 
-    public bringForwards(items: T[]) {
+    public bringForwards(items: ReadonlyArray<T>) {
         return this.moveTo(items, 1, true);
     }
 
-    public sendBackwards(items: T[]) {
+    public sendBackwards(items: ReadonlyArray<T>) {
         return this.moveTo(items, -1, true);
     }
 
-    public sendToBack(items: T[]) {
+    public sendToBack(items: ReadonlyArray<T>) {
         return this.moveTo(items, 0);
     }
 
-    public moveTo(items: T[], target: number, relative = false) {
+    public moveTo(items: ReadonlyArray<T>, target: number, relative = false) {
         return this.replace(moveItems(this.items, items, target, relative));
     }
 
-    private replace(items: T[]): this {
+    private replace(items: ReadonlyArray<T>): this {
         if (items === this.items) {
             return this;
         } else {

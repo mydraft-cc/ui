@@ -28,6 +28,7 @@ export function useDetectPrint() {
     }, []);
 
     React.useEffect(() => {
+        // eslint-disable-next-line no-console
         console.log(`PRINTING: ${isPrinting}`);
     }, [isPrinting]);
 
@@ -66,7 +67,7 @@ export function usePrinter(): [() => void, () => void, boolean, React.MutableRef
         return () => {
             clearTimeout(timer);
         };
-    }, [isPrintingReady]);
+    }, [isPrintingReady, printer]);
 
     const doPrint = React.useCallback(() => {
         setIsPrinting(true);

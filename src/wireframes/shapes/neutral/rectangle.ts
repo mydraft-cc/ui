@@ -45,7 +45,7 @@ export class Rectangle implements ShapePlugin {
     }
 
     private createShape(ctx: RenderContext) {
-        const borderRadius =  ctx.shape.getAppearance(BORDER_RADIUS);
+        const borderRadius = ctx.shape.getAppearance(BORDER_RADIUS);
 
         const shapeItem = ctx.renderer.createRectangle(ctx.shape, borderRadius, ctx.rect);
 

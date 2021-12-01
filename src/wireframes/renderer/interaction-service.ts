@@ -32,8 +32,8 @@ export interface InteractionHandler {
 }
 
 const ROTATION_CONFIG = [
-    { angle: 45,  cursor: 'ne-resize' },
-    { angle: 90,  cursor: 'e-resize' },
+    { angle: 45, cursor: 'ne-resize' },
+    { angle: 90, cursor: 'e-resize' },
     { angle: 135, cursor: 'se-resize' },
     { angle: 180, cursor: 's-resize' },
     { angle: 215, cursor: 'sw-resize' },
@@ -51,11 +51,11 @@ export class InteractionService {
         private readonly adornerLayers: svg.Element[], renderings: svg.Element, private readonly diagram: svg.Doc,
     ) {
         renderings.click((event: MouseEvent) => {
-            this.invokeEvent(event, h => h.onClick ? h.onClick.bind(h) : null);
+            this.invokeEvent(event, h => (h.onClick ? h.onClick.bind(h) : null));
         });
 
         renderings.dblclick((event: MouseEvent) => {
-            this.invokeEvent(event, h => h.onDoubleClick ? h.onDoubleClick.bind(h) : null);
+            this.invokeEvent(event, h => (h.onDoubleClick ? h.onDoubleClick.bind(h) : null));
         });
 
         diagram.mousemove((event: MouseEvent) => {
@@ -65,12 +65,12 @@ export class InteractionService {
         diagram.mousedown((event: MouseEvent) => {
             this.isDragging = true;
 
-            this.invokeEvent(event, h => h.onMouseDown ? h.onMouseDown.bind(h) : null);
+            this.invokeEvent(event, h => (h.onMouseDown ? h.onMouseDown.bind(h) : null));
         });
 
         window.document.addEventListener('mousemove', (event: MouseEvent) => {
             if (this.isDragging) {
-                this.invokeEvent(event, h => h.onMouseDrag ? h.onMouseDrag.bind(h) : null);
+                this.invokeEvent(event, h => (h.onMouseDrag ? h.onMouseDrag.bind(h) : null));
             }
         });
 
@@ -78,7 +78,7 @@ export class InteractionService {
             if (this.isDragging) {
                 this.isDragging = false;
 
-                this.invokeEvent(event, h => h.onMouseUp ? h.onMouseUp.bind(h) : null);
+                this.invokeEvent(event, h => (h.onMouseUp ? h.onMouseUp.bind(h) : null));
             }
         });
     }
@@ -164,7 +164,6 @@ export class InteractionService {
             for (const config of ROTATION_CONFIG) {
                 if (totalRotation > config.angle - 22.5 &&
                     totalRotation < config.angle + 22.5) {
-
                     document.body.style.cursor = config.cursor;
                     return;
                 }
@@ -174,5 +173,5 @@ export class InteractionService {
         } else {
             document.body.style.cursor = 'default';
         }
-    }
+    };
 }

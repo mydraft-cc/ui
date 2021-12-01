@@ -5,10 +5,15 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-export function registerServiceWorker() {
+import { Store } from 'redux';
+import { showInfoToast } from '@app/wireframes/model';
+
+/* eslint-disable no-console */
+
+export function registerServiceWorker(store: Store) {
     if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator) {
         window.addEventListener('load', () => {
-            const url = `/service-worker.js`;
+            const url = '/service-worker.js';
 
             navigator.serviceWorker.register(url)
                 .then(registration => {
@@ -18,7 +23,7 @@ export function registerServiceWorker() {
                         installingWorker.onstatechange = () => {
                             if (installingWorker.state === 'installed') {
                                 if (navigator.serviceWorker.controller) {
-                                    window.location.reload(true);
+                                    store.dispatch(showInfoToast('A new version is available. Please press F5 to reload them.'));
 
                                     console.log('New content is available; please refresh.');
                                 } else {

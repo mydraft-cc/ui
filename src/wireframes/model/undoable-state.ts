@@ -46,9 +46,9 @@ export class UndoableState<T> {
         }
 
         const newPresent = this.past[this.past.length - 1];
-        const newPast    = this.past.slice(0, this.past.length - 1);
+        const newPast = this.past.slice(0, this.past.length - 1);
 
-        const newFuture  = [this.presentState, ...this.future];
+        const newFuture = [this.presentState, ...this.future];
 
         return new UndoableState(newPast, this.pastCapacity, newFuture, newPresent);
     }
@@ -59,9 +59,9 @@ export class UndoableState<T> {
         }
 
         const newPresent = this.future[0];
-        const newFuture  = this.future.slice(1);
+        const newFuture = this.future.slice(1);
 
-        const newPast    = [...this.past, this.presentState];
+        const newPast = [...this.past, this.presentState];
 
         return new UndoableState(newPast, this.pastCapacity, newFuture, newPresent);
     }

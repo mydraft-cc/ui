@@ -7,58 +7,58 @@
 
 import { MathHelper, Vec2 } from '@app/core';
 import { DefaultAppearance } from '@app/wireframes/interface';
-import { Action, Middleware, Reducer } from 'redux';
+import { ActionReducerMapBuilder, createAction, Middleware } from '@reduxjs/toolkit';
 import { Diagram, DiagramItem, DiagramItemSet, EditorState, RendererService, Serializer } from './../internal';
 import { createDiagramAction, createItemsAction, DiagramRef, ItemsRef } from './utils';
 
-// tslint:disable:no-shadowed-variable
+/* eslint-disable @typescript-eslint/no-loop-func */
 
-export const ADD_VISUAL = 'ADD_VISUAL';
-export const addVisual = (diagram: DiagramRef, renderer: string, x: number, y: number, properties?: object, shapeId?: string) => {
-    return createDiagramAction(ADD_VISUAL, diagram, { shapeId: shapeId || MathHelper.guid(), renderer, position: { x, y }, properties });
-};
+export const addVisual =
+    createAction('items/addVisual', (diagram: DiagramRef, renderer: string, x: number, y: number, properties?: object, shapeId?: string) => {
+        return { payload: createDiagramAction(diagram, { shapeId: shapeId || MathHelper.guid(), renderer, position: { x, y }, properties }) };
+    });
 
-export const ADD_IMAGE = 'ADD_IMAGE';
-export const addImage = (diagram: DiagramRef, source: string, x: number, y: number, w: number, h: number, shapeId?: string) => {
-    return createDiagramAction(ADD_IMAGE, diagram, { shapeId: shapeId || MathHelper.guid(), source, position: { x, y }, size: { w, h } });
-};
+export const addImage =
+    createAction('items/addImage', (diagram: DiagramRef, source: string, x: number, y: number, w: number, h: number, shapeId?: string) => {
+        return { payload: createDiagramAction(diagram, { shapeId: shapeId || MathHelper.guid(), source, position: { x, y }, size: { w, h } }) };
+    });
 
-export const ADD_ICON = 'ADD_ICON';
-export const addIcon = (diagram: DiagramRef, text: string, fontFamily: string, x: number, y: number, shapeId?: string) => {
-    return createDiagramAction(ADD_ICON, diagram, { shapeId: shapeId || MathHelper.guid(), text, fontFamily, position: { x, y } });
-};
+export const addIcon =
+    createAction('items/addIcon', (diagram: DiagramRef, text: string, fontFamily: string, x: number, y: number, shapeId?: string) => {
+        return { payload: createDiagramAction(diagram, { shapeId: shapeId || MathHelper.guid(), text, fontFamily, position: { x, y } }) };
+    });
 
-export const LOCK_ITEMS = 'LOCK_ITEMS';
-export const lockItems = (diagram: DiagramRef, items: ItemsRef) => {
-    return createItemsAction(LOCK_ITEMS, diagram, items);
-};
+export const lockItems =
+    createAction('items/lock', (diagram: DiagramRef, items: ItemsRef) => {
+        return { payload: createItemsAction(diagram, items) };
+    });
 
-export const UNLOCK_ITEMS = 'UNLOCK_ITEMS';
-export const unlockItems = (diagram: DiagramRef, items: ItemsRef) => {
-    return createItemsAction(UNLOCK_ITEMS, diagram, items);
-};
+export const unlockItems =
+    createAction('items/unlock', (diagram: DiagramRef, items: ItemsRef) => {
+        return { payload: createItemsAction(diagram, items) };
+    });
 
-export const SELECT_ITEMS = 'SELECT_ITEMS';
-export const selectItems = (diagram: DiagramRef, items: ItemsRef) => {
-    return createItemsAction(SELECT_ITEMS, diagram, items);
-};
+export const selectItems =
+    createAction('items/select', (diagram: DiagramRef, items: ItemsRef) => {
+        return { payload: createItemsAction(diagram, items) };
+    });
 
-export const REMOVE_ITEMS = 'REMOVE_ITEMS';
-export const removeItems = (diagram: DiagramRef, items: ItemsRef) => {
-    return createItemsAction(REMOVE_ITEMS, diagram, items);
-};
+export const removeItems =
+    createAction('items/remove', (diagram: DiagramRef, items: ItemsRef) => {
+        return { payload: createItemsAction(diagram, items) };
+    });
 
-export const PASTE_ITEMS = 'PASTE_ITEMS';
-export const pasteItems = (diagram: DiagramRef, json: string, offset = 0) => {
-    return createDiagramAction(PASTE_ITEMS, diagram, { json, offset });
-};
+export const pasteItems =
+    createAction('items/paste', (diagram: DiagramRef, json: string, offset = 0) => {
+        return { payload: createDiagramAction(diagram, { json, offset }) };
+    });
 
 const MAX_IMAGE_SIZE = 300;
 
 export function itemsMiddleware(serializer: Serializer): Middleware {
-    const middleware: Middleware = store => next => (action: Action & any) => {
-        if (action.type === PASTE_ITEMS) {
-            action.json = serializer.generateNewIds(action.json);
+    const middleware: Middleware = () => next => action => {
+        if (pasteItems.match(action)) {
+            action.payload.json = serializer.generateNewIds(action.payload.json);
         }
 
         return next(action);
@@ -67,139 +67,149 @@ export function itemsMiddleware(serializer: Serializer): Middleware {
     return middleware;
 }
 
-export function items(rendererService: RendererService, serializer: Serializer): Reducer<EditorState> {
-    const reducer: Reducer<EditorState> = (state: EditorState, action: any) => {
-        switch (action.type) {
-            case SELECT_ITEMS:
-                return state.updateDiagram(action.diagramId, diagram => {
-                    return diagram.selectItems(action.itemIds);
-                });
-            case REMOVE_ITEMS:
-                return state.updateDiagram(action.diagramId, diagram => {
-                    const set = DiagramItemSet.createFromDiagram(action.itemIds, diagram);
+export function buildItems(builder: ActionReducerMapBuilder<EditorState>, rendererService: RendererService, serializer: Serializer) {
+    return builder
+        .addCase(selectItems, (state, action) => {
+            const { diagramId, itemIds } = action.payload;
 
-                    return diagram.removeItems(set!);
-                });
-            case LOCK_ITEMS:
-                return state.updateDiagram(action.diagramId, diagram => {
-                    const set = DiagramItemSet.createFromDiagram(action.itemIds, diagram);
+            return state.updateDiagram(diagramId, diagram => {
+                return diagram.selectItems(itemIds);
+            });
+        })
+        .addCase(removeItems, (state, action) => {
+            const { diagramId, itemIds } = action.payload;
 
-                    for (const item of set!.allItems) {
-                        diagram = diagram.updateItem(item.id, i => i.lock());
+            return state.updateDiagram(diagramId, diagram => {
+                const set = DiagramItemSet.createFromDiagram(itemIds, diagram);
+
+                return diagram.removeItems(set!);
+            });
+        })
+        .addCase(lockItems, (state, action) => {
+            const { diagramId, itemIds } = action.payload;
+
+            return state.updateDiagram(diagramId, diagram => {
+                const set = DiagramItemSet.createFromDiagram(itemIds, diagram);
+
+                for (const item of set.allItems) {
+                    diagram = diagram.updateItem(item.id, i => i.lock());
+                }
+
+                return diagram;
+            });
+        })
+        .addCase(unlockItems, (state, action) => {
+            const { diagramId, itemIds } = action.payload;
+
+            return state.updateDiagram(diagramId, diagram => {
+                const set = DiagramItemSet.createFromDiagram(itemIds, diagram);
+
+                for (const item of set.allItems) {
+                    diagram = diagram.updateItem(item.id, i => i.unlock());
+                }
+
+                return diagram;
+            });
+        })
+        .addCase(pasteItems, (state, action) => {
+            const { diagramId, json, offset } = action.payload;
+
+            return state.updateDiagram(diagramId, diagram => {
+                const set = serializer.deserializeSet(json);
+
+                diagram = diagram.addItems(set);
+
+                for (const item of set.allVisuals) {
+                    diagram = diagram.updateItem(item.id, i => {
+                        const oldBounds = i.bounds(diagram);
+                        const newBounds = oldBounds.moveBy(new Vec2(offset, offset));
+
+                        return i.transformByBounds(oldBounds, newBounds);
+                    });
+                }
+
+                diagram = diagram.selectItems(set.rootIds);
+
+                return diagram;
+            });
+        })
+        .addCase(addIcon, (state, action) => {
+            const { diagramId, fontFamily, position, shapeId, text } = action.payload;
+
+            return state.updateDiagram(diagramId, diagram => {
+                const renderer = rendererService.registeredRenderers['Icon'];
+
+                const shape = renderer.createDefaultShape(shapeId);
+
+                const finalPosition =
+                    new Vec2(
+                        position.x + shape.transform.size.x * 0.5,
+                        position.y + shape.transform.size.y * 0.5);
+
+                const configured =
+                    shape.transformWith(t => t.moveTo(finalPosition))
+                        .setAppearance(DefaultAppearance.TEXT, text)
+                        .setAppearance(DefaultAppearance.ICON_FONT_FAMILY, fontFamily);
+
+                return diagram.addVisual(configured).selectItems([configured.id]);
+            });
+        })
+        .addCase(addImage, (state, action) => {
+            const { diagramId, position, shapeId, size, source } = action.payload;
+
+            return state.updateDiagram(diagramId, diagram => {
+                let finalSize = new Vec2(size.w, size.h);
+
+                if (finalSize.x > MAX_IMAGE_SIZE || finalSize.y > MAX_IMAGE_SIZE) {
+                    const ratio = finalSize.x / finalSize.y;
+
+                    if (ratio > 1) {
+                        finalSize = new Vec2(MAX_IMAGE_SIZE, MAX_IMAGE_SIZE / ratio);
+                    } else {
+                        finalSize = new Vec2(MAX_IMAGE_SIZE * ratio, MAX_IMAGE_SIZE);
                     }
+                }
 
-                    return diagram;
-                });
-            case UNLOCK_ITEMS:
-                return state.updateDiagram(action.diagramId, diagram => {
-                    const set = DiagramItemSet.createFromDiagram(action.itemIds, diagram);
+                const finalPosition =
+                    new Vec2(
+                        position.x + finalSize.x * 0.5,
+                        position.y + finalSize.y * 0.5);
 
-                    for (const item of set!.allItems) {
-                        diagram = diagram.updateItem(item.id, i => i.unlock());
+                const renderer = rendererService.registeredRenderers['Raster'];
+
+                const shape =
+                    renderer.createDefaultShape(shapeId)
+                        .transformWith(t => t.resizeTo(finalSize))
+                        .transformWith(t => t.moveTo(finalPosition))
+                        .setAppearance('SOURCE', source);
+
+                return diagram.addVisual(shape).selectItems([shape.id]);
+            });
+        })
+        .addCase(addVisual, (state, action) => {
+            const { diagramId, position, properties, renderer, shapeId } = action.payload;
+
+            return state.updateDiagram(diagramId, diagram => {
+                const rendererInstance = rendererService.registeredRenderers[renderer];
+
+                const shape = rendererInstance.createDefaultShape(shapeId);
+
+                const finalPosition =
+                    new Vec2(
+                        position.x + shape.transform.size.x * 0.5,
+                        position.y + shape.transform.size.y * 0.5);
+
+                let configured = shape.transformWith(t => t.moveTo(finalPosition));
+
+                if (properties) {
+                    for (const [key, value] of Object.entries(properties)) {
+                        configured = configured.setAppearance(key, value);
                     }
+                }
 
-                    return diagram;
-                });
-            case PASTE_ITEMS:
-                return state.updateDiagram(action.diagramId, diagram => {
-                    const set = serializer.deserializeSet(action.json);
-
-                    diagram = diagram.addItems(set);
-
-                    for (const item of set.allVisuals) {
-                        diagram = diagram.updateItem(item.id, i => {
-                            const oldBounds = i.bounds(diagram);
-                            const newBounds = oldBounds.moveBy(new Vec2(action.offset, action.offset));
-
-                            return i.transformByBounds(oldBounds, newBounds);
-                        });
-                    }
-
-                    diagram = diagram.selectItems(set.rootIds);
-
-                    return diagram;
-                });
-            case ADD_ICON:
-                return state.updateDiagram(action.diagramId, diagram => {
-                    const renderer = rendererService.registeredRenderers['Icon'];
-
-                    const shape = renderer.createDefaultShape(action.shapeId);
-
-                    const position =
-                        new Vec2(
-                            action.position.x + shape.transform.size.x * 0.5,
-                            action.position.y + shape.transform.size.y * 0.5);
-
-                    const configured =
-                        shape.transformWith(t => t.moveTo(position))
-                            .setAppearance(DefaultAppearance.TEXT, action.text)
-                            .setAppearance(DefaultAppearance.ICON_FONT_FAMILY, action.fontFamily);
-
-                    return diagram.addVisual(configured).selectItems([configured.id]);
-                });
-            case ADD_IMAGE:
-                return state.updateDiagram(action.diagramId, diagram => {
-                    let size =
-                        new Vec2(
-                            action.size.w,
-                            action.size.h);
-
-                    if (size.x > MAX_IMAGE_SIZE || size.y > MAX_IMAGE_SIZE) {
-                        const ratio = size.x / size.y;
-
-                        if (ratio > 1) {
-                            size = new Vec2(MAX_IMAGE_SIZE, MAX_IMAGE_SIZE / ratio);
-                        } else {
-                            size = new Vec2(MAX_IMAGE_SIZE * ratio, MAX_IMAGE_SIZE);
-                        }
-                    }
-
-                    const position =
-                        new Vec2(
-                            action.position.x + size.x * 0.5,
-                            action.position.y + size.y * 0.5);
-
-                    const renderer = rendererService.registeredRenderers['Raster'];
-
-                    const shape =
-                        renderer.createDefaultShape(action.shapeId)
-                            .transformWith(t => t.resizeTo(size))
-                            .transformWith(t => t.moveTo(position))
-                            .setAppearance('SOURCE', action.source);
-
-                    return diagram.addVisual(shape).selectItems([shape.id]);
-                });
-            case ADD_VISUAL:
-                return state.updateDiagram(action.diagramId, diagram => {
-                    const renderer = rendererService.registeredRenderers[action.renderer];
-
-                    const shape = renderer.createDefaultShape(action.shapeId);
-
-                    const position =
-                        new Vec2(
-                            action.position.x + shape.transform.size.x * 0.5,
-                            action.position.y + shape.transform.size.y * 0.5);
-
-                    let configured = shape.transformWith(t => t.moveTo(position));
-
-                    const properties = action.properties;
-
-                    if (properties) {
-                        for (const key in properties) {
-                            if (properties.hasOwnProperty(key)) {
-                                configured = configured.setAppearance(key, properties[key]);
-                            }
-                        }
-                    }
-
-                    return diagram.addVisual(configured).selectItems([configured.id]);
-                });
-            default:
-                return state;
-        }
-    };
-
-    return reducer;
+                return diagram.addVisual(configured).selectItems([configured.id]);
+            });
+        });
 }
 
 export function calculateSelection(items: DiagramItem[], diagram: Diagram, isSingleSelection?: boolean, isCtrl?: boolean): string[] {
@@ -210,6 +220,7 @@ export function calculateSelection(items: DiagramItem[], diagram: Diagram, isSin
     let selectedItems: DiagramItem[] = [];
 
     function resolveGroup(item: DiagramItem, stop?: DiagramItem) {
+        // eslint-disable-next-line no-constant-condition
         while (true) {
             const group = diagram.parent(item.id);
 

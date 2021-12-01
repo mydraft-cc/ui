@@ -13,10 +13,10 @@ export interface LoadingState {
     isSaving: boolean;
 
     // The read token.
-    readToken?: string | null;
+    tokenToRead?: string | null;
 
     // The write token.
-    writeToken?: string | null;
+    tokenToWrite?: string | null;
 }
 
 export interface LoadingStateInStore {

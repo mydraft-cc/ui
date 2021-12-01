@@ -67,7 +67,7 @@ export class Tabs implements ShapePlugin {
 
         const parts = this.parseText(ctx, fontFamily, fontSize, strokeThickness);
 
-        const padding = fontSize * .5;
+        const padding = fontSize * 0.5;
 
         const heightTotal = ctx.rect.height;
         const heightHeader = fontSize + 2 * padding;
@@ -171,4 +171,4 @@ export class Tabs implements ShapePlugin {
 
 const PADDING = 20;
 
-type ParsedDefinition = { text: string, selected?: boolean, x: number, width: number }[];
+type ParsedDefinition = { text: string; selected?: boolean; x: number; width: number }[];

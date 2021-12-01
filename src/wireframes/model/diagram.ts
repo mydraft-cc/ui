@@ -97,7 +97,7 @@ export class Diagram extends Record<Props> {
         });
     }
 
-    public selectItems(ids: string[]) {
+    public selectItems(ids: ReadonlyArray<string>) {
         return this.mutate(ids, () => {
             const selectedIds = ImmutableSet.of(...ids);
 
@@ -105,7 +105,7 @@ export class Diagram extends Record<Props> {
         });
     }
 
-    public bringToFront(ids: string[]) {
+    public bringToFront(ids: ReadonlyArray<string>) {
         return this.mutate(ids, ({ root }) => {
             root = root.bringToFront(ids);
 
@@ -113,7 +113,7 @@ export class Diagram extends Record<Props> {
         });
     }
 
-    public bringForwards(ids: string[]) {
+    public bringForwards(ids: ReadonlyArray<string>) {
         return this.mutate(ids, ({ root }) => {
             root = root.bringForwards(ids);
 
@@ -121,7 +121,7 @@ export class Diagram extends Record<Props> {
         });
     }
 
-    public sendToBack(ids: string[]) {
+    public sendToBack(ids: ReadonlyArray<string>) {
         return this.mutate(ids, ({ root }) => {
             root = root.sendToBack(ids);
 
@@ -129,7 +129,7 @@ export class Diagram extends Record<Props> {
         });
     }
 
-    public sendBackwards(ids: string[]) {
+    public sendBackwards(ids: ReadonlyArray<string>) {
         return this.mutate(ids, ({ root }) => {
             root = root.sendBackwards(ids);
 
@@ -145,7 +145,7 @@ export class Diagram extends Record<Props> {
         });
     }
 
-    public group(groupId: string, ids: string[]) {
+    public group(groupId: string, ids: ReadonlyArray<string>) {
         return this.mutate(ids, ({ root, items }) => {
             root = root.add(groupId).remove(...ids);
 
@@ -207,7 +207,7 @@ export class Diagram extends Record<Props> {
         });
     }
 
-    private mutate(itemIds: string[], updater: (diagram: Props) => Partial<Props>): Diagram {
+    private mutate(itemIds: ReadonlyArray<string>, updater: (diagram: Props) => Partial<Props>): Diagram {
         const items = this.findItems(itemIds);
 
         if (!items) {
@@ -216,10 +216,7 @@ export class Diagram extends Record<Props> {
 
         const parent = this.parent(items[0]);
 
-        const root =
-            parent ?
-            parent.childIds :
-            this.root;
+        const root = parent ? parent.childIds : this.root;
 
         const update = updater({ root, items: this.items, selectedIds: this.selectedIds, id: this.id });
 
@@ -233,7 +230,7 @@ export class Diagram extends Record<Props> {
         return this.merge(update);
     }
 
-    private findItems(itemIds: string[]): DiagramItem[] | null {
+    private findItems(itemIds: ReadonlyArray<string>): DiagramItem[] | null {
         if (!itemIds) {
             return null;
         }
