@@ -7,7 +7,7 @@
 
 import { LeftOutlined, RightOutlined } from '@ant-design/icons';
 import { usePrinter } from '@app/core';
-import { ArrangeMenu, ClipboardMenu, CustomPropertiesContainer, EditorView, HistoryMenu, Icons, LayoutProperties, LoadingMenu, LockMenu, PrintRenderer, SettingsMenu, Shapes, UIMenu, VisualProperties } from '@app/wireframes/components';
+import { ArrangeMenu, ClipboardMenu, CustomProperties, EditorView, HistoryMenu, Icons, LayoutProperties, LoadingMenu, LockMenu, PrintRenderer, SettingsMenu, Shapes, UIMenu, VisualProperties } from '@app/wireframes/components';
 import { loadDiagramAsync, newDiagram, selectTab, showInfoToast, toggleLeftSidebar, toggleRightSidebar, useStore } from '@app/wireframes/model';
 import { Button, Collapse, Layout, Tabs } from 'antd';
 import * as React from 'react';
@@ -19,7 +19,7 @@ const logo = require('./images/logo-square-64.png').default;
 export const App = () => {
     const dispatch = useDispatch();
     const route = useRouteMatch();
-    const routeToken = route.params['token'];
+    const routeToken = route.params['token'] || null;
     const selectedTab = useStore(s => s.ui.selectedTab);
     const showLeftSidebar = useStore(s => s.ui.showLeftSidebar);
     const showRightSidebar = useStore(s => s.ui.showRightSidebar);
@@ -47,15 +47,15 @@ export const App = () => {
 
     const doSelectTab = React.useCallback((key: string) => {
         dispatch(selectTab(key));
-    }, []);
+    }, [dispatch]);
 
     const doToggleLeftSidebar = React.useCallback(() => {
         dispatch(toggleLeftSidebar());
-    }, []);
+    }, [dispatch]);
 
     const doToggleRightSidebar = React.useCallback(() => {
         dispatch(toggleRightSidebar());
-    }, []);
+    }, [dispatch]);
 
     return (
         <>
@@ -113,7 +113,7 @@ export const App = () => {
                                 <VisualProperties />
                             </Collapse.Panel>
                             <Collapse.Panel key='custom' header='Custom'>
-                                <CustomPropertiesContainer />
+                                <CustomProperties />
                             </Collapse.Panel>
                         </Collapse>
                     </Layout.Sider>

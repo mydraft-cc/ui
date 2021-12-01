@@ -18,11 +18,11 @@ export const HistoryMenu = React.memo(() => {
 
     const doRedo = React.useCallback(() => {
         dispatch(redo());
-    }, []);
+    }, [dispatch]);
 
     const doUndo = React.useCallback(() => {
         dispatch(undo());
-    }, []);
+    }, [dispatch]);
 
     return (
         <>

@@ -61,7 +61,15 @@ const store = createStore(
             routing: routerReducer,
             ui: Reducers.ui(createInitialUIState()),
         }), undoableReducer, editorReducer),
-    composeEnhancers(applyMiddleware(thunk, Reducers.toastMiddleware(), routerMiddleware(history), Reducers.itemsMiddleware(editorSerializer))),
+    composeEnhancers(
+        applyMiddleware(
+            thunk,
+            routerMiddleware(history),
+            Reducers.toastMiddleware(),
+            Reducers.loadingMiddleware(),
+            Reducers.itemsMiddleware(editorSerializer),
+        ),
+    ),
 );
 
 const Root = (

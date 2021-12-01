@@ -6,11 +6,10 @@
 */
 
 import { Color, ColorPicker } from '@app/core';
-import { changeItemsAppearance, ColorConfigurable, Configurable, EditorStateInStore, getDiagramId, getSelectedConfigurables, getSelectedShape, NumberConfigurable, selectColorTab, SelectionConfigurable, SliderConfigurable, UIStateInStore, useStore } from '@app/wireframes/model';
+import { changeItemsAppearance, ColorConfigurable, Configurable, getDiagramId, getSelectedConfigurables, getSelectedShape, NumberConfigurable, selectColorTab, SelectionConfigurable, SliderConfigurable, useStore } from '@app/wireframes/model';
 import { Col, InputNumber, Row, Select } from 'antd';
 import * as React from 'react';
-import { connect, useDispatch } from 'react-redux';
-import { bindActionCreators, Dispatch } from 'redux';
+import { useDispatch } from 'react-redux';
 import { CustomSlider } from './CustomSlider';
 
 interface CustomPropertyProps {
@@ -84,7 +83,7 @@ export const CustomProperty = (props: CustomPropertyProps) => {
     );
 };
 
-const CustomProperties = () => {
+export const CustomProperties = () => {
     const dispatch = useDispatch();
     const selectedDiagramId = useStore(s => getDiagramId(s));
     const selectedColorTab = useStore(s => s.ui.selectedColorTab);
@@ -93,11 +92,11 @@ const CustomProperties = () => {
 
     const doSelectColorTab = React.useCallback((key: string) => {
         dispatch(selectColorTab(key));
-    }, []);
+    }, [dispatch]);
 
     const doChange = React.useCallback((key: string, value: any) => {
         dispatch(changeItemsAppearance(selectedDiagramId, [selectedShape], key, value));
-    }, [selectedDiagramId, selectedShape]);
+    }, [dispatch, selectedDiagramId, selectedShape]);
 
     if (!selectedShape || !selectedDiagramId) {
         return null;
@@ -117,21 +116,3 @@ const CustomProperties = () => {
         </>
     );
 };
-
-const mapStateToProps = (state: EditorStateInStore & UIStateInStore) => {
-    return {
-        selectedDiagramId: getDiagramId(state),
-        selectedShape: getSelectedShape(state),
-        selectedConfigurables: getSelectedConfigurables(state),
-        selectedColorTab: state.ui.selectedColorTab,
-    };
-};
-
-const mapDispatchToProps = (dispatch: Dispatch) => bindActionCreators({
-    changeItemsAppearance, selectColorTab,
-}, dispatch);
-
-export const CustomPropertiesContainer = connect(
-    mapStateToProps,
-    mapDispatchToProps,
-)(CustomProperties);

@@ -25,7 +25,7 @@ export const LockMenu = React.memo(() => {
                 dispatch(lockItems(selectedDiagram, [selectedItem.id]));
             }
         }
-    }, [selectedDiagram, selectedItem]);
+    }, [dispatch, selectedDiagram, selectedItem]);
 
     return <>
         <Shortcut disabled={!selectedItem} onPressed={doToggle} keys='ctl+l' />

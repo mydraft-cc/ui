@@ -46,15 +46,15 @@ export const Icons = React.memo(() => {
                 <div className='asset-icon-title'>{icon.displayName}</div>
             </div>
         );
-    }, []);
+    }, [dispatch, storeContext.store]);
 
     const doFilterIcons = React.useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
         dispatch(filterIcons({ filter: event.target.value }));
-    }, []);
+    }, [dispatch]);
 
     const doSelectIcons = React.useCallback((iconSet: string) => {
         dispatch(selectIcons({ iconSet }));
-    }, []);
+    }, [dispatch]);
 
     return <>
         <div className='asset-icons-search'>

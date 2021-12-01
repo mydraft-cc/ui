@@ -34,7 +34,7 @@ export const ShapeImage = React.memo((props: ShapeImageProps) => {
             anchorX: 0,
             anchorY: 0,
         });
-    }, [connectDragPreview]);
+    }, [connectDragPreview, shape]);
 
     return (
         <>

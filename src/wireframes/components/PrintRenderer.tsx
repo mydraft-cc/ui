@@ -28,7 +28,7 @@ export const PrintRenderer = (props: PrintRendererProps) => {
 
     React.useEffect(() => {
         setCurrentDiagrams(diagrams.values);
-    }, []);
+    }, [diagrams.values]);
 
     const doRender = React.useCallback((diagram: Diagram) => {
         rendered.current[diagram.id] = true;
@@ -36,7 +36,7 @@ export const PrintRenderer = (props: PrintRendererProps) => {
         if (Object.keys(rendered.current).length === currentDiagrams.length && onRender) {
             onRender();
         }
-    }, [currentDiagrams]);
+    }, [currentDiagrams.length, onRender]);
 
     return (
         <>

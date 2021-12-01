@@ -18,7 +18,7 @@ export const Icon = React.memo((props: IconProps) => {
     const { icon } = props;
 
     const [, drag] = useDrag({
-        item: { text: icon.text, fontFamily: icon.fontFamily  },
+        item: { text: icon.text, fontFamily: icon.fontFamily },
         previewOptions: {
             anchorX: 0,
             anchorY: 0,

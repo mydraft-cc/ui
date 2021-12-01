@@ -48,17 +48,19 @@ export const ColorPicker = React.memo((props: ColorPickerProps) => {
         value,
     } = props;
 
-    const valueColor = value ? Color.fromValue(value) : Color.BLACK;
-
-    const [color] = React.useState<Color>(valueColor);
-    const [colorHex, setColorHex] = React.useState(valueColor.toString());
+    const [color, setColor] = React.useState(Color.BLACK);
+    const [colorHex, setColorHex] = React.useState(color.toString());
     const [visible, setVisible] = React.useState<boolean>(false);
 
     const selectedPalette = palette || ColorPalette.colors();
 
     React.useEffect(() => {
-        setColorHex(valueColor.toString());
-    }, [valueColor]);
+        setColorHex(color.toString());
+    }, [color]);
+
+    React.useEffect(() => {
+        setColor(value ? Color.fromValue(value) : Color.BLACK);
+    }, [value]);
 
     const doToggle = React.useCallback(() => {
         setVisible(!visible);
@@ -80,7 +82,7 @@ export const ColorPicker = React.memo((props: ColorPickerProps) => {
         }
 
         setVisible(false);
-        setColorHex(color.toString());
+        setColorHex(result.toString());
     }, [onChange]);
 
     const doConfirmColor = React.useCallback(() => {

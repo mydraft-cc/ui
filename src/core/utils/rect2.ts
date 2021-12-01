@@ -6,6 +6,7 @@
 */
 
 import { Rotation } from './rotation';
+import { Types } from './types';
 import { Vec2 } from './vec2';
 
 export class Rect2 {
@@ -163,13 +164,13 @@ export class Rect2 {
     }
 
     public inflate(w: number, h?: number): Rect2 {
-        h = h || w;
+        h = Types.isNumber(h) ? h : w;
 
         return new Rect2(this.x - w, this.y - h, this.w + (2 * w), this.h + (2 * h));
     }
 
     public deflate(w: number, h?: number): Rect2 {
-        h = h || w;
+        h = Types.isNumber(h) ? h : w;
 
         return new Rect2(this.x + w, this.y + h, Math.max(0, this.w - (2 * w)), Math.max(0, this.h - (2 * h)));
     }

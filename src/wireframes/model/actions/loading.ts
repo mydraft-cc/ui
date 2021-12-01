@@ -8,7 +8,7 @@
 import { createAction, createAsyncThunk, createReducer, Middleware } from '@reduxjs/toolkit';
 import { push } from 'react-router-redux';
 import { Reducer } from 'redux';
-import { EditorState, EditorStateInStore, LoadingState, UndoableState } from './../internal';
+import { EditorState, EditorStateInStore, LoadingState, LoadingStateInStore, UndoableState } from './../internal';
 import { addDiagram } from './diagrams';
 import { selectItems } from './items';
 import { showErrorToast, showInfoToast } from './ui';
@@ -24,9 +24,9 @@ export const newDiagram =
 
 export const loadDiagramAsync =
     createAsyncThunk('diagram/load', async (args: { token: string; navigate: boolean }, thunkAPI) => {
-        const state = thunkAPI.getState();
+        const state = thunkAPI.getState() as LoadingStateInStore;
 
-        if (!args.token || args.token === state['loading'].tokenToRead) {
+        if (!args.token || args.token === state.loading.tokenToRead) {
             return null;
         }
 
@@ -43,12 +43,12 @@ export const loadDiagramAsync =
 
 export const saveDiagramAsync =
     createAsyncThunk('diagram/save', async (args: { navigate?: boolean }, thunkAPI) => {
-        const state = thunkAPI.getState();
+        const state = thunkAPI.getState() as LoadingStateInStore & EditorStateInStore;
 
-        const tokenToWrite = state['loading'].tokenToWrite;
-        const tokenToRead = state['loading'].tokenToRead;
+        const tokenToWrite = state.loading.tokenToWrite;
+        const tokenToRead = state.loading.tokenToRead;
 
-        const body = JSON.stringify(state['editor'].actions);
+        const body = JSON.stringify(state.editor.actions);
 
         if (tokenToRead && tokenToWrite) {
             const response = await fetch(`${url}/${tokenToRead}/${tokenToWrite}`, {
@@ -85,8 +85,10 @@ export const saveDiagramAsync =
 
 export function loadingMiddleware(): Middleware {
     const middleware: Middleware = store => next => action => {
+        const result = next(action);
+
         if (newDiagram.match(action)) {
-            if (action.payload.navigate) {
+            if (action.payload?.navigate) {
                 store.dispatch(push(''));
             }
         } else if (loadDiagramAsync.fulfilled.match(action)) {
@@ -110,10 +112,10 @@ export function loadingMiddleware(): Middleware {
                 store.dispatch(showInfoToast('Diagram saved.'));
             }
         } else if (saveDiagramAsync.rejected.match(action)) {
-            store.dispatch(showErrorToast('Failed to load diagram.'));
+            store.dispatch(showErrorToast('Failed to save diagram.'));
         }
 
-        return next(action);
+        return result;
     };
 
     return middleware;
@@ -121,6 +123,11 @@ export function loadingMiddleware(): Middleware {
 
 export function loading(initialState: LoadingState) {
     return createReducer(initialState, builder => builder
+        .addCase(newDiagram, (state) => {
+            state.isLoading = false;
+            state.tokenToRead = null;
+            state.tokenToWrite = null;
+        })
         .addCase(loadDiagramAsync.pending, (state) => {
             state.isLoading = true;
         })

@@ -6,37 +6,7 @@
 */
 
 import { RendererService } from '@app/wireframes/model/renderer.service';
-import { Browser } from './neutral/browser';
-import { Button } from './neutral/button';
-import { ButtonBar } from './neutral/button-bar';
-import { Checkbox } from './neutral/checkbox';
-import { ComboBox } from './neutral/combo-box';
-import { Comment } from './neutral/comment';
-import { Dropdown } from './neutral/dropdown';
-import { Heading } from './neutral/heading';
-import { HorizontalLine } from './neutral/horizontal-line';
-import { HorizontalScrollbar } from './neutral/horizontal-scrollbar';
-import { Image } from './neutral/image';
-import { Label } from './neutral/label';
-import { Link } from './neutral/link';
-import { Numeric } from './neutral/numeric';
-import { Paragraph } from './neutral/paragraph';
-import { Phone } from './neutral/phone';
-import { Progress } from './neutral/progress';
-import { RadioButton } from './neutral/radio-button';
-import { Rectangle } from './neutral/rectangle';
-import { Shape } from './neutral/shape';
-import { Slider } from './neutral/slider';
-import { Tablet } from './neutral/tablet';
-import { Tabs } from './neutral/tabs';
-import { TextArea } from './neutral/text-area';
-import { TextInput } from './neutral/text-input';
-import { Toggle } from './neutral/toggle';
-import { VerticalLine } from './neutral/vertical-line';
-import { VerticalScrollbar } from './neutral/vertical-scrollbar';
-
-import { Icon } from './shared/icon';
-import { Raster } from './shared/raster';
+import { Browser, Button, ButtonBar, Checkbox, Comment, ComboBox, Dropdown, Heading, HorizontalLine, HorizontalScrollbar, Icon, Image, Label, Link, List, Numeric, Paragraph, Phone, Progress, RadioButton, Raster, Rectangle, Shape, Slider, Tablet, Tabs, TextArea, TextInput, Toggle, VerticalLine, VerticalScrollbar } from './dependencies';
 import { AbstractControl } from './utils/abstract-control';
 
 export function registerRenderers(): RendererService {
@@ -55,6 +25,7 @@ export function registerRenderers(): RendererService {
         .addRenderer(new AbstractControl(new HorizontalLine()))
         .addRenderer(new AbstractControl(new HorizontalScrollbar()))
         .addRenderer(new AbstractControl(new Link()))
+        .addRenderer(new AbstractControl(new List()))
         .addRenderer(new AbstractControl(new Numeric()))
         .addRenderer(new AbstractControl(new Paragraph()))
         .addRenderer(new AbstractControl(new Phone()))

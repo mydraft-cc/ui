@@ -23,7 +23,7 @@ $size: 24px;
             background: $color-dark-foreground;
             border: 2px solid $color-border;
             border-radius: $size;
-            float: left;
+            display: inline-block;
             margin: 1px;
         }
 
@@ -50,8 +50,8 @@ $size: 24px;
 
     &-tabs {
         margin-top: -10px;
-        max-height: 375px;
-        min-height: 375px;
+        max-height: 400px;
+        min-height: 400px;
     }
 }
 
@@ -59,7 +59,7 @@ $size: 24px;
     background: 'none' !important;
     border: 0 !important;
     border-radius: 0 !important;
-    box-shadow: none;
+    box-shadow: none !important;
     padding: 0 !important;
 }
 

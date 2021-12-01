@@ -36,7 +36,7 @@ export const SettingsMenu = React.memo((props: SettingsMenuProps) => {
         dispatch(changeSize({ width: sizeWidth, height: sizeHeight }));
 
         setIsOpen(false);
-    }, [sizeWidth, sizeHeight]);
+    }, [dispatch, sizeWidth, sizeHeight]);
 
     const doToggle = React.useCallback(() => {
         setIsOpen(value => !value);

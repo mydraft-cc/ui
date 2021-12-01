@@ -16,15 +16,15 @@ export const UIMenu = React.memo(() => {
     const dispatch = useDispatch();
     const zoom = useStore(x => x.ui.zoom);
     const canZoomIn = zoom < 2;
-    const canZoomOut = zoom > .25;
+    const canZoomOut = zoom > 0.25;
 
     const doZoomOut = React.useCallback(() => {
-        dispatch(setZoom(zoom - .25));
-    }, [zoom]);
+        dispatch(setZoom(zoom - 0.25));
+    }, [dispatch, zoom]);
 
     const doZoomIn = React.useCallback(() => {
-        dispatch(setZoom(zoom + .25));
-    }, [zoom]);
+        dispatch(setZoom(zoom + 0.25));
+    }, [dispatch, zoom]);
 
     return <>
         <Tooltip mouseEnterDelay={1} title='Zoom Out (ALT + [-])'>

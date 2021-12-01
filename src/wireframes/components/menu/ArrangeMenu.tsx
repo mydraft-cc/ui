@@ -24,25 +24,25 @@ export const ArrangeMenu = React.memo(() => {
         if (selectedDiagram) {
             dispatch(groupItems(selectedDiagram, selectedItems, MathHelper.guid()));
         }
-    }, [selectedDiagram, selectedItems]);
+    }, [dispatch, selectedDiagram, selectedItems]);
 
     const doUngroup = React.useCallback(() => {
         if (selectedDiagram) {
             dispatch(ungroupItems(selectedDiagram, selectedGroups));
         }
-    }, [selectedDiagram, selectedGroups]);
+    }, [dispatch, selectedDiagram, selectedGroups]);
 
     const doRemove = React.useCallback(() => {
         if (selectedDiagram) {
             dispatch(removeItems(selectedDiagram, selectedItems));
         }
-    }, [selectedDiagram, selectedItems]);
+    }, [dispatch, selectedDiagram, selectedItems]);
 
     const doSelectAll = React.useCallback(() => {
         if (selectedDiagram) {
             dispatch(selectItems(selectedDiagram, calculateSelection(selectedDiagram.items.values, selectedDiagram)));
         }
-    }, [selectedDiagram]);
+    }, [dispatch, selectedDiagram]);
 
     return (
         <>

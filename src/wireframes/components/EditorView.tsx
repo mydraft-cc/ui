@@ -33,15 +33,15 @@ export const EditorView = ({ spacing }: EditorViewProps) => {
 
     const doChangeItemsAppearance = React.useCallback((diagram: DiagramRef, visuals: ItemsRef, key: string, value: any) => {
         dispatch(changeItemsAppearance(diagram, visuals, key, value));
-    }, []);
+    }, [dispatch]);
 
     const doSelectItems = React.useCallback((diagram: DiagramRef, items: ItemsRef) => {
         dispatch(selectItems(diagram, items));
-    }, []);
+    }, [dispatch]);
 
     const doTransformItems = React.useCallback((diagram: DiagramRef, items: ItemsRef, oldBounds: Transform, newBounds: Transform) => {
         dispatch(transformItems(diagram, items, oldBounds, newBounds));
-    }, []);
+    }, [dispatch]);
 
     const ref = React.useRef();
 
@@ -117,7 +117,7 @@ export const EditorView = ({ spacing }: EditorViewProps) => {
         },
     });
 
-    const zoomedOuterWidth  = 2 * spacing + zoomedSize.x;
+    const zoomedOuterWidth = 2 * spacing + zoomedSize.x;
     const zoomedOuterHeight = 2 * spacing + zoomedSize.y;
 
     const w = sizeInPx(zoomedOuterWidth);

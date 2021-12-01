@@ -24,29 +24,29 @@ export const LayoutProperties = React.memo(() => {
         if (selectedDiagramId) {
             dispatch(orderItems(mode, selectedDiagramId, selectedItems));
         }
-    }, [selectedDiagramId, selectedItems]);
+    }, [dispatch, selectedDiagramId, selectedItems]);
 
     const doAlign = React.useCallback((mode: AlignmentMode) => {
         if (selectedDiagramId) {
             dispatch(alignItems(mode, selectedDiagramId, selectedItems));
         }
-    }, [selectedDiagramId, selectedItems]);
+    }, [dispatch, selectedDiagramId, selectedItems]);
 
-    const doAlignHLeft   = React.useCallback(() => doAlign(AlignmentMode.HorizontalLeft), [doAlign]);
+    const doAlignHLeft = React.useCallback(() => doAlign(AlignmentMode.HorizontalLeft), [doAlign]);
     const doAlignHCenter = React.useCallback(() => doAlign(AlignmentMode.HorizontalCenter), [doAlign]);
-    const doAlignHRight  = React.useCallback(() => doAlign(AlignmentMode.HorizontalRight), [doAlign]);
+    const doAlignHRight = React.useCallback(() => doAlign(AlignmentMode.HorizontalRight), [doAlign]);
 
-    const doAlignVTop    = React.useCallback(() => doAlign(AlignmentMode.VerticalTop), [doAlign]);
+    const doAlignVTop = React.useCallback(() => doAlign(AlignmentMode.VerticalTop), [doAlign]);
     const doAlignVCenter = React.useCallback(() => doAlign(AlignmentMode.VerticalCenter), [doAlign]);
     const doAlignVBottom = React.useCallback(() => doAlign(AlignmentMode.VerticalBottom), [doAlign]);
 
-    const doDistributeH  = React.useCallback(() => doAlign(AlignmentMode.DistributeHorizontal), [doAlign]);
-    const doDistributeV  = React.useCallback(() => doAlign(AlignmentMode.DistributeVertical), [doAlign]);
+    const doDistributeH = React.useCallback(() => doAlign(AlignmentMode.DistributeHorizontal), [doAlign]);
+    const doDistributeV = React.useCallback(() => doAlign(AlignmentMode.DistributeVertical), [doAlign]);
 
-    const doBringToFront  = React.useCallback(() => doOrder(OrderMode.BringToFront), [doOrder]);
+    const doBringToFront = React.useCallback(() => doOrder(OrderMode.BringToFront), [doOrder]);
     const doBringForwards = React.useCallback(() => doOrder(OrderMode.BringForwards), [doOrder]);
     const doSendBackwards = React.useCallback(() => doOrder(OrderMode.SendBackwards), [doOrder]);
-    const doSendToBack    = React.useCallback(() => doOrder(OrderMode.SendToBack), [doOrder]);
+    const doSendToBack = React.useCallback(() => doOrder(OrderMode.SendToBack), [doOrder]);
 
     if (!selectedDiagramId) {
         return null;

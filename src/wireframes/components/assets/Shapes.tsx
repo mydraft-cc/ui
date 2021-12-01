@@ -44,11 +44,11 @@ export const Shapes = () => {
                 <div className='asset-shape-title'>{shape.displayName}</div>
             </div>
         );
-    }, []);
+    }, [dispatch, storeContext.store]);
 
     const doFilterShapes = React.useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
         dispatch(filterShapes({ filter: event.target.value }));
-    }, []);
+    }, [dispatch]);
 
     return <>
         <div className='asset-shapes-search'>

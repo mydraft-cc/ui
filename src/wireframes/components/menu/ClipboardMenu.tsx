@@ -37,7 +37,7 @@ export const ClipboardMenu = React.memo(() => {
             setClipboard(json);
             setOffset(0);
         }
-    }, [offset, selectedDiagram, selectedItems, serializer]);
+    }, [selectedDiagram, selectedItems, serializer]);
 
     const doCut = React.useCallback(() => {
         if (selectedDiagram) {
@@ -45,7 +45,7 @@ export const ClipboardMenu = React.memo(() => {
 
             dispatch(removeItems(selectedDiagram, selectedItems));
         }
-    }, [doCopy]);
+    }, [dispatch, doCopy, selectedDiagram, selectedItems]);
 
     const doPaste = React.useCallback(() => {
         if (selectedDiagram) {
@@ -53,7 +53,7 @@ export const ClipboardMenu = React.memo(() => {
 
             dispatch(pasteItems(selectedDiagram, clipboard, offset + OFFSET));
         }
-    }, [clipboard, offset, selectedDiagram]);
+    }, [clipboard, dispatch, offset, selectedDiagram]);
 
     return (
         <>

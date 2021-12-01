@@ -25,28 +25,28 @@ export const VisualProperties = React.memo(() => {
     const selectedItems = useStore(s => getSelectedItems(s));
 
     const backgroundColor = React.useMemo(() =>
-        uniqueAppearance(selectionSet, DefaultAppearance.BACKGROUND_COLOR, x => Color.fromValue(x), Color.eq)
-    , [selectionSet]);
+        uniqueAppearance(selectionSet, DefaultAppearance.BACKGROUND_COLOR, x => Color.fromValue(x), Color.eq),
+    [selectionSet]);
 
     const fontSize = React.useMemo(() =>
-        uniqueAppearance(selectionSet, DefaultAppearance.FONT_SIZE, x => x)
-    , [selectionSet]);
+        uniqueAppearance(selectionSet, DefaultAppearance.FONT_SIZE, x => x),
+    [selectionSet]);
 
     const foregroundColor = React.useMemo(() =>
-        uniqueAppearance(selectionSet, DefaultAppearance.FOREGROUND_COLOR, x => Color.fromValue(x), Color.eq)
-    , [selectionSet]);
+        uniqueAppearance(selectionSet, DefaultAppearance.FOREGROUND_COLOR, x => Color.fromValue(x), Color.eq),
+    [selectionSet]);
 
     const strokeColor = React.useMemo(() =>
-        uniqueAppearance(selectionSet, DefaultAppearance.STROKE_COLOR, x => Color.fromValue(x), Color.eq)
-    , [selectionSet]);
+        uniqueAppearance(selectionSet, DefaultAppearance.STROKE_COLOR, x => Color.fromValue(x), Color.eq),
+    [selectionSet]);
 
     const strokeThickness = React.useMemo(() =>
-        uniqueAppearance(selectionSet, DefaultAppearance.STROKE_THICKNESS, x => x)
-    , [selectionSet]);
+        uniqueAppearance(selectionSet, DefaultAppearance.STROKE_THICKNESS, x => x),
+    [selectionSet]);
 
     const textAlignment = React.useMemo(() =>
-        uniqueAppearance(selectionSet, DefaultAppearance.TEXT_ALIGNMENT, x => x)
-    , [selectionSet]);
+        uniqueAppearance(selectionSet, DefaultAppearance.TEXT_ALIGNMENT, x => x),
+    [selectionSet]);
 
     const getTextAlignment = React.useCallback((value: string): ButtonType => {
         return value === textAlignment.value ? 'primary' : undefined;
@@ -56,24 +56,24 @@ export const VisualProperties = React.memo(() => {
         if (selectedDiagramId) {
             dispatch(changeItemsAppearance(selectedDiagramId, selectedItems, DefaultAppearance.TEXT_ALIGNMENT, value));
         }
-    }, [selectedDiagramId, selectedItems]);
+    }, [dispatch, selectedDiagramId, selectedItems]);
 
     const doChangeAppearance = React.useCallback((key: string, value: any) => {
         if (selectedDiagramId) {
             dispatch(changeItemsAppearance(selectedDiagramId, selectedItems, key, value));
         }
-    }, [selectedDiagramId, selectedItems]);
+    }, [dispatch, selectedDiagramId, selectedItems]);
 
     const doSelectColorTab = React.useCallback((key: string) => {
         dispatch(selectColorTab(key));
-    }, []);
+    }, [dispatch]);
 
-    const doAlignTextLeft =   React.useCallback(() => doAlignText('left'), [doAlignText]);
+    const doAlignTextLeft = React.useCallback(() => doAlignText('left'), [doAlignText]);
     const doAlignTextCenter = React.useCallback(() => doAlignText('center'), [doAlignText]);
-    const doAlignTextRight =  React.useCallback(() => doAlignText('right'), [doAlignText]);
+    const doAlignTextRight = React.useCallback(() => doAlignText('right'), [doAlignText]);
 
-    const doChangeFontSize =    	React.useCallback((value: any) => doChangeAppearance(DefaultAppearance.FONT_SIZE, value), [doChangeAppearance]);
-    const doChangeStrokeColor =     React.useCallback((value: any) => doChangeAppearance(DefaultAppearance.STROKE_COLOR, value), [doChangeAppearance]);
+    const doChangeFontSize = React.useCallback((value: any) => doChangeAppearance(DefaultAppearance.FONT_SIZE, value), [doChangeAppearance]);
+    const doChangeStrokeColor = React.useCallback((value: any) => doChangeAppearance(DefaultAppearance.STROKE_COLOR, value), [doChangeAppearance]);
     const doChangeStrokeThickness = React.useCallback((value: any) => doChangeAppearance(DefaultAppearance.STROKE_THICKNESS, value), [doChangeAppearance]);
     const doChangeForegroundColor = React.useCallback((value: any) => doChangeAppearance(DefaultAppearance.FOREGROUND_COLOR, value), [doChangeAppearance]);
     const doChangeBackgroundColor = React.useCallback((value: any) => doChangeAppearance(DefaultAppearance.BACKGROUND_COLOR, value), [doChangeAppearance]);
