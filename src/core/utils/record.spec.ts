@@ -7,7 +7,9 @@
 
 import { Record, Vec2 } from '@app/core';
 
-class MockupObject extends Record<{ n: number, vec: Vec2 }> {}
+/* eslint-disable @typescript-eslint/naming-convention */
+
+class MockupObject extends Record<{ n: number; vec: Vec2 }> {}
 
 describe('ImmutableObject', () => {
     it('should create new instance on update', () => {

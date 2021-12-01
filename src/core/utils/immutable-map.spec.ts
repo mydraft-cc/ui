@@ -7,6 +7,8 @@
 
 import { ImmutableMap } from '@app/core';
 
+/* eslint-disable @typescript-eslint/naming-convention */
+
 describe('ImmutableMap', () => {
     it('should instantiate without arguments', () => {
         const list = ImmutableMap.empty<number>();

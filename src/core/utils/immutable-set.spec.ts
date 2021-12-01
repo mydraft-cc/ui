@@ -7,6 +7,8 @@
 
 import { ImmutableSet } from '@app/core';
 
+/* eslint-disable @typescript-eslint/naming-convention */
+
 describe('ImmutableSet', () => {
     it('should instantiate instance from array', () => {
         const set_1 = ImmutableSet.of('1', '1', '2', '3');

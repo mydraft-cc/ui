@@ -7,6 +7,8 @@
 
 import { ImmutableList } from '@app/core';
 
+/* eslint-disable @typescript-eslint/naming-convention */
+
 describe('ImmutableList', () => {
     it('should instantiate without arguments', () => {
         const list = ImmutableList.empty<number>();

@@ -15,7 +15,7 @@ describe('Types', () => {
         expect(Types.hash(new RegExp('.*'))).toEqual('{}');
     });
 
-    it('should return empty string when stringify fails', () =>  {
+    it('should return empty string when stringify fails', () => {
         const value = {};
         value['self'] = value;
 
