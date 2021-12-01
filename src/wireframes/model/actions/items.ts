@@ -202,7 +202,7 @@ export function buildItems(builder: ActionReducerMapBuilder<EditorState>, render
                 let configured = shape.transformWith(t => t.moveTo(finalPosition));
 
                 if (properties) {
-                    for (const [key, value] of Object.entries(position)) {
+                    for (const [key, value] of Object.entries(properties)) {
                         configured = configured.setAppearance(key, value);
                     }
                 }

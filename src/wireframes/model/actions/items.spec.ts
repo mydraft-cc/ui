@@ -182,7 +182,7 @@ describe('ItemsReducer', () => {
     it('should add visual with default properties and select this visual', () => {
         const shapeId = 'shape';
 
-        const action = addVisual(diagram, 'Button', 100, 20, { TEXT: 'hello' }, shapeId);
+        const action = addVisual(diagram, 'Button', 100, 20, { text1: 'text1', text2: 'text2' }, shapeId);
 
         const state_1 = EditorState.empty().addDiagram(diagram);
         const state_2 = reducer(state_1, action);
@@ -191,7 +191,8 @@ describe('ItemsReducer', () => {
         const newShape = newDiagram.items.get(shapeId);
 
         expect(newShape.id).toBe(shapeId);
-        expect(newShape.appearance.get('TEXT')).toEqual('hello');
+        expect(newShape.appearance.get('text1')).toEqual('text1');
+        expect(newShape.appearance.get('text2')).toEqual('text2');
         expect(newShape.transform.position).toEqual(new Vec2(150, 35));
 
         expect(newDiagram.selectedIds.values).toEqual([shapeId]);

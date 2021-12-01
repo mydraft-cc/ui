@@ -20,7 +20,7 @@ describe('Undoable', () => {
         let reducerCalled = false;
 
         const reducer = undoable(s => { reducerCalled = true; return s || {}; }, {}, []);
-        const state_2 = reducer(state_1, { type: 'UNDO' });
+        const state_2 = reducer(state_1, undo());
 
         expect(state_2.present).toBe(13);
         expect(reducerCalled).toBeFalsy();
@@ -30,7 +30,7 @@ describe('Undoable', () => {
         let reducerCalled = false;
 
         const reducer = undoable(s => { reducerCalled = true; return s || {}; }, {}, []);
-        const state_2 = reducer(state_1, { type: 'REDO' });
+        const state_2 = reducer(state_1, redo());
 
         expect(state_2.present).toBe(15);
         expect(reducerCalled).toBeFalsy();
@@ -69,12 +69,12 @@ describe('Undoable', () => {
     it('should create valid undo action', () => {
         const action = undo();
 
-        expect(action.type).toBe('UNDO');
+        expect(action.type).toBe('undo');
     });
 
     it('should create valid redo action', () => {
         const action = redo();
 
-        expect(action.type).toBe('REDO');
+        expect(action.type).toBe('redo');
     });
 });
