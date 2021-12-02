@@ -16,9 +16,6 @@ export interface AssetInfo {
 
     // The display name.
     displayName: string;
-
-    // The name used for the search.
-    displaySearch: string;
 }
 
 export interface ShapeInfo extends AssetInfo {
@@ -59,7 +56,7 @@ export const createInitialAssetsState: (rendererService: RendererService) => Ass
 
     for (const [name, renderer] of Object.entries(rendererService.registeredRenderers)) {
         if (renderer.showInGallery()) {
-            allShapes.push({ displaySearch: name.toLowerCase(), displayName: name, name, offset: renderer.previewOffset() });
+            allShapes.push({ displayName: name, name, offset: renderer.previewOffset() });
         }
     }
 

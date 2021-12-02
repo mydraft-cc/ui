@@ -74,12 +74,12 @@ export class InteractionService {
         });
 
         window.document.addEventListener('keyup', (event: KeyboardEvent) => {
-            if (diagram.native().contains(event.target as any) || event.target === document.body) {
+            const focusedElement = document.activeElement?.tagName?.toLowerCase();
+
+            if (focusedElement !== 'input' && focusedElement !== 'textarea') {
                 this.onKeyUp(event);
 
-                event.stopImmediatePropagation();
-                event.stopPropagation();
-                event.preventDefault();
+                stopEvent(event);
                 return false;
             }
 
@@ -87,12 +87,12 @@ export class InteractionService {
         });
 
         window.document.addEventListener('keydown', (event: KeyboardEvent) => {
-            if (diagram.native().contains(event.target as any) || event.target === document.body) {
+            const focusedElement = document.activeElement?.tagName?.toLowerCase();
+
+            if (focusedElement !== 'input' && focusedElement !== 'textarea') {
                 this.onKeyDown(event);
 
-                event.stopImmediatePropagation();
-                event.stopPropagation();
-                event.preventDefault();
+                stopEvent(event);
                 return false;
             }
 
@@ -130,7 +130,7 @@ export class InteractionService {
 
     private rebuild() {
         this.onClick = this.buildMouseEvent(h => h?.onClick?.bind(h));
-        this.onKeyUp = this.buildEvent(h => h.onKeyDown?.bind(h));
+        this.onKeyUp = this.buildEvent(h => h.onKeyUp?.bind(h));
         this.onKeyDown = this.buildEvent(h => h.onKeyDown?.bind(h));
         this.onDoubleClick = this.buildMouseEvent(h => h?.onDoubleClick?.bind(h));
         this.onMouseDown = this.buildMouseEvent(h => h?.onMouseDown?.bind(h));
@@ -230,4 +230,10 @@ export class InteractionService {
             document.body.style.cursor = 'default';
         }
     };
+}
+
+function stopEvent(event: KeyboardEvent) {
+    event.stopImmediatePropagation();
+    event.stopPropagation();
+    event.preventDefault();
 }

@@ -46,13 +46,17 @@ export const ShapeImage = React.memo((props: ShapeImageProps) => {
 const pathToShapes = require.context('../../../images/shapes', true);
 
 const previewPath = (shape: ShapeInfo) => {
+    const name = shape.name.toLowerCase();
+
     try {
-        return pathToShapes(`./${shape.displaySearch}-preview.png`).default;
+        return pathToShapes(`./${name}}-preview.png`).default;
     } catch {
-        return pathToShapes(`./${shape.displaySearch}.png`).default;
+        return pathToShapes(`./${shape.name.toLowerCase()}.png`).default;
     }
 };
 
 const dragPath = (shape: ShapeInfo) => {
-    return pathToShapes(`./${shape.displaySearch}.png`).default;
+    const name = shape.name.toLowerCase();
+
+    return pathToShapes(`./${name}.png`).default;
 };

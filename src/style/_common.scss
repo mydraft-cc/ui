@@ -52,6 +52,12 @@ body {
     margin-right: 50px;
 }
 
+svg {
+    &:focus {
+        outline: none;
+    }
+}
+
 //
 // Typography
 //

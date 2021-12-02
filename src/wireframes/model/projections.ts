@@ -25,6 +25,16 @@ export const getIcons = (state: AssetsStateInStore) => state.assets.icons;
 export const getShapesFilter = (state: AssetsStateInStore) => state.assets.shapesFilter;
 export const getShapes = (state: AssetsStateInStore) => state.assets.shapes;
 
+export const getIconsFilterRegex = createSelector(
+    getIconsFilter,
+    filter => new RegExp(filter || '.*', 'ig'),
+);
+
+export const getShapesFilterRegex = createSelector(
+    getShapesFilter,
+    filter => new RegExp(filter || '.*', 'ig'),
+);
+
 export const getIconSets = createSelector(
     getIcons,
     icons => Object.keys(icons),
@@ -38,14 +48,14 @@ export const getSelectedIcons = createSelector(
 
 export const getFilteredIcons = createSelector(
     getSelectedIcons,
-    getIconsFilter,
-    (icons, filter) => (filter && filter.length > 0 ? icons.filter(x => x.displaySearch.indexOf(filter) >= 0) : icons),
+    getIconsFilterRegex,
+    (icons, filter) => icons.filter(x => filter.test(x.displayName)),
 );
 
 export const getFilteredShapes = createSelector(
     getShapes,
-    getShapesFilter,
-    (shapes, filter) => (filter && filter.length > 0 ? shapes.filter(x => x.displaySearch.indexOf(filter) >= 0) : shapes),
+    getShapesFilterRegex,
+    (shapes, filter) => shapes.filter(x => filter.test(x.displayName)),
 );
 
 export const getEditor = (state: EditorStateInStore) => state.editor.present;
