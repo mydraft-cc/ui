@@ -44,7 +44,7 @@ export interface AssetsState {
     // The icon set.
     iconSet: string;
 
-    // The icon filter
+    // The icon filter,
     iconsFilter: string;
 
     // The shapes to show.
