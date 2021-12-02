@@ -11,34 +11,46 @@ import { ICONS_MATERIAL_DESIGN } from './../../icons/material_icons_unified';
 import { RendererService } from './renderer.service';
 
 export interface AssetInfo {
+    // The name of the asset.
     name: string;
 
+    // The display name.
     displayName: string;
 
+    // The name used for the search.
     displaySearch: string;
 }
 
 export interface ShapeInfo extends AssetInfo {
+    // The offset when copy / paste.
     offset: Vec2;
 }
 
 export interface IconInfo extends AssetInfo {
+    // The name of the icon.
     text: string;
 
+    // The font family.
     fontFamily: string;
 
+    // The font class.
     fontClass: string;
 }
 
 export interface AssetsState {
+    // The icons by name.
     icons: { [name: string]: IconInfo[] };
 
+    // The icon set.
     iconSet: string;
 
+    // The icon filter
     iconsFilter: string;
 
+    // The shapes to show.
     shapes: ShapeInfo[];
 
+    // The shapes filter.
     shapesFilter: string;
 }
 

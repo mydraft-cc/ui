@@ -59,7 +59,7 @@ export const GridList = React.memo((props: GridProps & GridState) => {
     for (let index = indexFirst; index < indexLast; index++) {
         const item = items[index];
 
-        if (!item) {
+        if (item) {
             const itemKey = keyBuilder(item);
 
             let cell = cache[itemKey];

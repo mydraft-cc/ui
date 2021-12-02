@@ -47,7 +47,7 @@ export const CanvasView = (props: CanvasViewProps) => {
         const element = ref.current;
 
         if (element && !document) {
-            const newDocument = svg(element).style({ position: 'relative', overflow: 'visible' });
+            const newDocument = svg(element).style({ position: 'relative', overflow: 'visible' }).attr('tabindex', 0);
 
             onInit(newDocument);
 

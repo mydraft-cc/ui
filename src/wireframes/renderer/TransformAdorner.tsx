@@ -137,6 +137,48 @@ export class TransformAdorner extends React.Component<TransformAdornerProps> imp
         }
     }
 
+    public onKeyUp(event: KeyboardEvent, next: (event: KeyboardEvent) => void) {
+        let xd = 0;
+        let yd = 0;
+
+        switch (event.key) {
+            case 'ArrowLeft':
+                xd = -1;
+                break;
+            case 'ArrowRight':
+                xd = +1;
+                break;
+            case 'ArrowUp':
+                yd = -1;
+                break;
+            case 'ArrowDown':
+                yd = 1;
+                break;
+        }
+
+        if (xd === 0 && yd === 0) {
+            next(event);
+            return;
+        }
+
+        if (event.shiftKey) {
+            xd *= 10;
+            yd *= 10;
+        }
+
+        const previousTranform = this.transform;
+
+        this.transform = previousTranform.moveBy(new Vec2(xd, yd));
+
+        this.props.onTransformItems(
+            this.props.selectedDiagram,
+            this.props.selectedItems,
+            previousTranform,
+            this.transform);
+
+        this.startTransform = this.transform;
+    }
+
     public onMouseDown(event: SvgEvent, next: (event: SvgEvent) => void) {
         if (event.event.ctrlKey) {
             next(event);
