@@ -20,6 +20,7 @@ export const App = () => {
     const dispatch = useDispatch();
     const route = useRouteMatch();
     const routeToken = route.params['token'] || null;
+    const routeTokenSnapshot = React.useRef(routeToken);
     const selectedTab = useStore(s => s.ui.selectedTab);
     const showLeftSidebar = useStore(s => s.ui.showLeftSidebar);
     const showRightSidebar = useStore(s => s.ui.showRightSidebar);
@@ -32,12 +33,14 @@ export const App = () => {
     ] = usePrinter();
 
     React.useEffect(() => {
-        if (routeToken && routeToken.length > 0) {
-            dispatch(loadDiagramAsync({ token: routeToken, navigate: false }));
+        const token = routeTokenSnapshot.current;
+
+        if (token && token.length > 0) {
+            dispatch(loadDiagramAsync({ token, navigate: false }));
         } else {
             dispatch(newDiagram({ navigate: false }));
         }
-    }, [dispatch, routeToken]);
+    }, [dispatch]);
 
     React.useEffect(() => {
         if (isPrinting) {
