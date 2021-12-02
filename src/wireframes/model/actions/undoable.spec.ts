@@ -16,10 +16,28 @@ describe('Undoable', () => {
             .executed(15)
             .undo();
 
-    it('should call state for undo action', () => {
-        let reducerCalled = false;
+    let reducerCalled = 0;
+    let reducerValue = 0;
 
-        const reducer = undoable(s => { reducerCalled = true; return s || {}; }, {}, []);
+    const inner = (state: number) => {
+        reducerCalled++;
+        reducerValue = state + 1;
+
+        return reducerValue;
+    };
+
+    const noopInner = (state: number) => {
+        reducerCalled++;
+
+        return state;
+    };
+
+    beforeEach(() => {
+        reducerCalled = 0;
+    });
+
+    it('should call state for undo action', () => {
+        const reducer = undoable(inner, 0);
         const state_2 = reducer(state_1, undo());
 
         expect(state_2.present).toBe(13);
@@ -27,9 +45,7 @@ describe('Undoable', () => {
     });
 
     it('should call state for redo action', () => {
-        let reducerCalled = false;
-
-        const reducer = undoable(s => { reducerCalled = true; return s || {}; }, {}, []);
+        const reducer = undoable(inner, 0);
         const state_2 = reducer(state_1, redo());
 
         expect(state_2.present).toBe(15);
@@ -37,33 +53,47 @@ describe('Undoable', () => {
     });
 
     it('should return original state when inner reducer makes no chance', () => {
-        let reducerCalled = false;
-
-        const reducer = undoable(s => { reducerCalled = true; return s || {}; }, {}, []);
+        const reducer = undoable(noopInner, 0);
         const state_2 = reducer(state_1, { type: 'OTHER' });
 
         expect(state_2).toBe(state_1);
-        expect(reducerCalled).toBeTruthy();
+        expect(reducerCalled).toEqual(1);
     });
 
     it('should call inner reducer for other action', () => {
-        let reducerCalled = false;
-
-        const reducer = undoable(() => { reducerCalled = true; return 16; }, 0, []);
+        const reducer = undoable(inner, 0);
         const state_2 = reducer(state_1, { type: 'OTHER' });
 
-        expect(state_2.present).toBe(16);
-        expect(reducerCalled).toBeTruthy();
+        expect(state_2.present).toEqual(reducerValue);
+        expect(reducerCalled).toEqual(1);
     });
 
     it('should call inner reducer for ignored action', () => {
-        let reducerCalled = false;
-
-        const reducer = undoable(() => { reducerCalled = true; return 16; }, 0, ['OTHER']);
+        const reducer = undoable(inner, 0, { actionsToIgnore: ['OTHER'] });
         const state_2 = reducer(state_1, { type: 'OTHER' });
 
-        expect(state_2.present).toBe(16);
-        expect(reducerCalled).toBeTruthy();
+        expect(state_2.present).toEqual(reducerValue);
+        expect(reducerCalled).toEqual(1);
+    });
+
+    it('should not merge actions when merger returns false', () => {
+        const reducer = undoable(inner, 0, { actionMerger: () => false });
+        const state_2 = reducer(state_1, { type: 'OTHER' });
+        const state_3 = reducer(state_2, { type: 'OTHER' });
+
+        expect(state_3.present).toEqual(reducerValue);
+        expect(state_3.actions.length).toEqual(2);
+        expect(reducerCalled).toEqual(2);
+    });
+
+    it('should merge actions when merger returns true', () => {
+        const reducer = undoable(inner, 0, { actionMerger: () => true });
+        const state_2 = reducer(state_1, { type: 'OTHER' });
+        const state_3 = reducer(state_2, { type: 'OTHER' });
+
+        expect(state_3.present).toEqual(reducerValue);
+        expect(state_3.actions.length).toEqual(1);
+        expect(reducerCalled).toEqual(2);
     });
 
     it('should create valid undo action', () => {

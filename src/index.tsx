@@ -24,7 +24,7 @@ import thunk from 'redux-thunk';
 import { App } from './App';
 import './index.scss';
 import { registerServiceWorker } from './registerServiceWorker';
-import { createClassReducer } from './wireframes/model/actions/utils';
+import { createClassReducer, mergeAction } from './wireframes/model/actions/utils';
 
 const editorRenderers = registerRenderers();
 const editorSerializer = new Serializer(editorRenderers);
@@ -39,13 +39,15 @@ const editorReducer = createClassReducer(editorState, builder => {
     Reducers.buildOrdering(builder);
 });
 
-const undoableReducer = Reducers.undoable(editorReducer,
-    EditorState.empty(),
-    [
-        selectDiagram.name,
-        selectItems.name,
-    ],
-);
+const undoableReducer = Reducers.undoable(
+    editorReducer,
+    EditorState.empty(), {
+        actionMerger: mergeAction,
+        actionsToIgnore: [
+            selectDiagram.name,
+            selectItems.name,
+        ],
+    });
 
 const history = createBrowserHistory();
 

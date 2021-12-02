@@ -75,29 +75,56 @@ describe('UndoableState', () => {
     });
 
     it('should provide history of actions', () => {
-        const state_1: UndoableState<number> = UndoableState.create(13, 103);
-        const state_2 = state_1.executed(14, 104);
-        const state_3 = state_2.executed(15, 105);
-        const state_4 = state_3.executed(16, 106);
+        const state_1: UndoableState<number> = UndoableState.create(13, { type: 'Initial' });
+        const state_2 = state_1.executed(14, { type: 'action1' });
+        const state_3 = state_2.executed(15, { type: 'action2' });
+        const state_4 = state_3.executed(16, { type: 'action3' });
 
-        expect(state_4.actions).toEqual([103, 104, 105, 106]);
+        expect(state_4.actions).toEqual([
+            { type: 'Initial' },
+            { type: 'action1' },
+            { type: 'action2' },
+            { type: 'action3' },
+        ]);
     });
 
     it('should skip invalid actions', () => {
         const state_1: UndoableState<number> = UndoableState.create(13);
-        const state_2 = state_1.executed(14, 104);
+        const state_2 = state_1.executed(14, { type: 'action1' });
         const state_3 = state_2.executed(15);
-        const state_4 = state_3.executed(16, 106);
+        const state_4 = state_3.executed(16, { type: 'action3' });
 
-        expect(state_4.actions).toEqual([104, 106]);
+        expect(state_4.actions).toEqual([
+            { type: 'action1' },
+            { type: 'action3' },
+        ]);
     });
 
-    it('should skip action when replaced', () => {
+    it('should replace present without action', () => {
         const state_1: UndoableState<number> = UndoableState.create(13);
-        const state_2 = state_1.executed(14, 104);
-        const state_3 = state_2.executed(15, 105);
+        const state_2 = state_1.executed(14, { type: 'action1' });
+        const state_3 = state_2.executed(15, { type: 'action2' });
         const state_4 = state_3.replacePresent(16);
 
-        expect(state_4.actions).toEqual([104, 105]);
+        expect(state_4.actions).toEqual([
+            { type: 'action1' },
+            { type: 'action2' },
+        ]);
+
+        expect(state_4.present).toEqual(16);
+    });
+
+    it('should replace present with action', () => {
+        const state_1: UndoableState<number> = UndoableState.create(13);
+        const state_2 = state_1.executed(14, { type: 'action1' });
+        const state_3 = state_2.executed(15, { type: 'action2' });
+        const state_4 = state_3.replacePresent(16, { type: 'action3' });
+
+        expect(state_4.actions).toEqual([
+            { type: 'action1' },
+            { type: 'action3' },
+        ]);
+
+        expect(state_4.present).toEqual(16);
     });
 });

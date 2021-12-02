@@ -34,12 +34,12 @@ export class ShapeRef {
         const mustRender = this.shape !== shape || !this.renderedElement;
 
         if (mustRender) {
+            this.remove();
+
             this.renderer.setContext(this.doc);
 
             this.renderedElement = this.renderer.render(shape, { debug: this.showDebugMarkers });
             this.renderedElement.node['shape'] = shape;
-        } else {
-            this.doc.add(this.renderedElement);
         }
 
         this.shape = shape;

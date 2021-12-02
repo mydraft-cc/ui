@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { Rect2, sizeInPx, SVGHelper } from '@app/core';
+import { MatrixTransform, Rect2, sizeInPx, SVGHelper } from '@app/core';
 import { DefaultAppearance, RendererColor, RendererElement, RendererOpacity, RendererText, RendererWidth, Shape } from '@app/wireframes/interface';
 import { DiagramItem, Transform } from '@app/wireframes/model';
 import * as svg from 'svg.js';
@@ -311,7 +311,7 @@ export class SVGRenderer implements AbstractRenderer {
         return this;
     }
 
-    public setTransform(element: any, to: any): AbstractRenderer {
+    public setTransform(element: any, to: Transform | DiagramItem | MatrixTransform): AbstractRenderer {
         const e = this.getElement(element);
 
         if (to instanceof DiagramItem) {

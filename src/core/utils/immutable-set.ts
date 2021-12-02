@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { equalsObject, without } from './types';
+import { Types, without } from './types';
 
 type Mutator = {
     add: (item: string) => void;
@@ -111,6 +111,6 @@ export class ImmutableSet {
             return false;
         }
 
-        return equalsObject(this.items, other.items);
+        return Types.equalsObject(this.items, other.items);
     }
 }

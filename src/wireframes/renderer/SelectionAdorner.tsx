@@ -62,7 +62,7 @@ export class SelectionAdorner extends React.Component<SelectionAdornerProps> imp
         this.markItems();
     }
 
-    public onMouseDown(event: SvgEvent, next: () => void) {
+    public onMouseDown(event: SvgEvent) {
         if (!event.event.shiftKey) {
             const selection = this.selectSingle(event, this.props.selectedDiagram);
 
@@ -74,9 +74,10 @@ export class SelectionAdorner extends React.Component<SelectionAdornerProps> imp
         }
     }
 
-    public onMouseDrag(event: SvgEvent, next: () => void) {
+    public onMouseDrag(event: SvgEvent, next: (event: SvgEvent) => void) {
         if (!this.dragStart) {
-            return next();
+            next(event);
+            return;
         }
 
         const rect = Rect2.fromVecs([this.dragStart, event.position]);
@@ -88,9 +89,10 @@ export class SelectionAdorner extends React.Component<SelectionAdornerProps> imp
         }
     }
 
-    public onMouseUp(event: SvgEvent, next: () => void) {
+    public onMouseUp(event: SvgEvent, next: (event: SvgEvent) => void) {
         if (!this.dragStart) {
-            return next();
+            next(event);
+            return;
         }
 
         try {

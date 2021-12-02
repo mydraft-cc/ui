@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { equals, equalsObject, without } from './types';
+import { Types, without } from './types';
 
 type Mutator<T> = {
     remove: (key: string) => void;
@@ -74,7 +74,7 @@ export class ImmutableMap<T> {
 
         const current = this.items[key];
 
-        if (equals(current, value)) {
+        if (Types.equals(current, value)) {
             return this;
         }
 
@@ -103,7 +103,7 @@ export class ImmutableMap<T> {
                 if (k) {
                     const current = this.items[k];
 
-                    if (!equals(current, v)) {
+                    if (!Types.equals(current, v)) {
                         updated = true;
 
                         items[k] = v;
@@ -133,6 +133,6 @@ export class ImmutableMap<T> {
             return false;
         }
 
-        return equalsObject(this.items, other.items);
+        return Types.equalsObject(this.items, other.items);
     }
 }

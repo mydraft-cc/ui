@@ -45,13 +45,9 @@ export interface AssetsState {
 export const createInitialAssetsState: (rendererService: RendererService) => AssetsState = (rendererService: RendererService) => {
     const allShapes: ShapeInfo[] = [];
 
-    for (const rendererKey in rendererService.registeredRenderers) {
-        if (rendererService.registeredRenderers.hasOwnProperty(rendererKey)) {
-            const renderer = rendererService.registeredRenderers[rendererKey];
-
-            if (renderer.showInGallery()) {
-                allShapes.push({ displaySearch: rendererKey.toLowerCase(), displayName: rendererKey, name: rendererKey, offset: renderer.previewOffset() });
-            }
+    for (const [name, renderer] of Object.entries(rendererService.registeredRenderers)) {
+        if (renderer.showInGallery()) {
+            allShapes.push({ displaySearch: name.toLowerCase(), displayName: name, name, offset: renderer.previewOffset() });
         }
     }
 

@@ -20,15 +20,19 @@ export class SvgEvent {
 }
 
 export interface InteractionHandler {
-    onDoubleClick?(event: SvgEvent, next: () => void): void;
+    onDoubleClick?(event: SvgEvent, next: (event: SvgEvent) => void): void;
 
-    onClick?(event: SvgEvent, next: () => void): boolean;
+    onClick?(event: SvgEvent, next: (event: SvgEvent) => void): boolean;
 
-    onMouseDown?(event: SvgEvent, next: () => void): void;
+    onMouseDown?(event: SvgEvent, next: (event: SvgEvent) => void): void;
 
-    onMouseDrag?(event: SvgEvent, next: () => void): void;
+    onMouseDrag?(event: SvgEvent, next: (event: SvgEvent) => void): void;
 
-    onMouseUp?(event: SvgEvent, next: () => void): void;
+    onMouseUp?(event: SvgEvent, next: (event: SvgEvent) => void): void;
+
+    onKeyDown?(event: KeyboardEvent, next: (event: KeyboardEvent) => void): void;
+
+    onKeyUp?(event: KeyboardEvent, next: (event: KeyboardEvent) => void): void;
 }
 
 const ROTATION_CONFIG = [
@@ -41,8 +45,6 @@ const ROTATION_CONFIG = [
     { angle: 315, cursor: 'nw-resize' },
 ];
 
-const NOOP = () => { /* NOOP */ };
-
 export class InteractionService {
     private readonly interactionHandlers: InteractionHandler[] = [];
     private isDragging = false;
@@ -50,13 +52,19 @@ export class InteractionService {
     constructor(
         private readonly adornerLayers: svg.Element[], renderings: svg.Element, private readonly diagram: svg.Doc,
     ) {
-        renderings.click((event: MouseEvent) => {
-            this.invokeEvent(event, h => (h.onClick ? h.onClick.bind(h) : null));
-        });
+        const onClick = this.buildMouseEvent(h => h?.onClick);
+        const onKeyUp = this.buildKeyboardEvent(h => h.onKeyDown?.bind(h));
+        const onKeyDown = this.buildKeyboardEvent(h => h.onKeyDown?.bind(h));
+        const onDoubleClick = this.buildMouseEvent(h => h?.onDoubleClick);
+        const onMouseDown = this.buildMouseEvent(h => h?.onMouseDown);
+        const onMouseDrag = this.buildMouseEvent(h => h?.onMouseDrag);
+        const onMouseUp = this.buildMouseEvent(h => h?.onMouseUp);
 
-        renderings.dblclick((event: MouseEvent) => {
-            this.invokeEvent(event, h => (h.onDoubleClick ? h.onDoubleClick.bind(h) : null));
-        });
+        renderings.dblclick(onDoubleClick);
+        renderings.click(onClick);
+
+        diagram.on('keyup', onKeyUp);
+        diagram.on('keydown', onKeyDown);
 
         diagram.mousemove((event: MouseEvent) => {
             this.onMouseMove(event);
@@ -65,12 +73,14 @@ export class InteractionService {
         diagram.mousedown((event: MouseEvent) => {
             this.isDragging = true;
 
-            this.invokeEvent(event, h => (h.onMouseDown ? h.onMouseDown.bind(h) : null));
+            onMouseDown(event);
         });
 
         window.document.addEventListener('mousemove', (event: MouseEvent) => {
             if (this.isDragging) {
-                this.invokeEvent(event, h => (h.onMouseDrag ? h.onMouseDrag.bind(h) : null));
+                this.isDragging = true;
+
+                onMouseDrag(event);
             }
         });
 
@@ -78,7 +88,7 @@ export class InteractionService {
             if (this.isDragging) {
                 this.isDragging = false;
 
-                this.invokeEvent(event, h => (h.onMouseUp ? h.onMouseUp.bind(h) : null));
+                onMouseUp(event);
             }
         });
     }
@@ -107,46 +117,82 @@ export class InteractionService {
         this.adornerLayers.forEach(l => l.hide());
     }
 
-    private invokeEvent(event: MouseEvent, actionProvider: (handler: InteractionHandler) => Function) {
+    private buildKeyboardEvent(actionProvider: (handler: InteractionHandler) => Function) {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        let result = (_: KeyboardEvent) => {};
+
         if (this.interactionHandlers.length > 0) {
             const handlers: Function[] = [];
 
             for (let i = this.interactionHandlers.length - 1; i >= 0; i--) {
                 const handler = actionProvider(this.interactionHandlers[i]);
 
-                if (handler) {
-                    handlers.push(handler);
-                }
+                handlers?.push(handler);
             }
 
             if (handlers.length > 0) {
-                let current: any = event.target;
-                let element: any = null;
+                for (const handler of handlers) {
+                    const next = result;
 
-                while (current && current.parentElement) {
-                    current = current.parentElement;
-
-                    if (current.shape) {
-                        element = current;
-                        break;
-                    }
+                    result = event => handler(event, next);
                 }
+            }
+        }
 
-                const { x, y } = this.diagram.point(event.pageX, event.pageY);
+        return result;
+    }
 
-                const svgEvent = new SvgEvent(event, new Vec2(x, y), element, element ? element.shape : null);
+    private buildMouseEvent(actionProvider: (handler: InteractionHandler) => Function) {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        let result = (_: MouseEvent) => {};
 
-                let next = NOOP;
+        if (this.interactionHandlers.length > 0) {
+            const handlers: Function[] = [];
+
+            for (let i = this.interactionHandlers.length - 1; i >= 0; i--) {
+                const handler = actionProvider(this.interactionHandlers[i]);
+
+                handlers?.push(handler);
+            }
+
+            if (handlers.length > 0) {
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                let next = (_: SvgEvent) => {};
 
                 for (const handler of handlers) {
                     const currentNext = next;
 
-                    next = () => handler(svgEvent, currentNext);
+                    next = event => handler(event, currentNext);
                 }
 
-                next();
+                const diagram = this.diagram;
+
+                result = (event: MouseEvent) => {
+                    let currentTarget: any = event.target;
+                    let currentElement: any = null;
+
+                    while (currentTarget && currentTarget.parentElement) {
+                        currentTarget = currentTarget.parentElement;
+
+                        if (currentTarget.shape) {
+                            currentElement = currentTarget;
+                            break;
+                        }
+                    }
+
+                    const { x, y } = diagram.point(event.pageX, event.pageY);
+
+                    const svgEvent =
+                        new SvgEvent(event, new Vec2(x, y),
+                            currentElement,
+                            currentElement?.shape || null);
+
+                    next(svgEvent);
+                };
             }
         }
+
+        return result;
     }
 
     private onMouseMove = (event: MouseEvent) => {

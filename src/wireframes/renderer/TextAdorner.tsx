@@ -61,7 +61,7 @@ export class TextAdorner extends React.Component<TextAdornerProps> implements In
         if (e.target !== this.textareaElement) {
             this.hide();
         }
-    }
+    };
 
     public onDoubleClick(event: SvgEvent) {
         if (event.shape && !event.shape.isLocked && this.textareaElement) {
@@ -97,16 +97,15 @@ export class TextAdorner extends React.Component<TextAdornerProps> implements In
 
     private doInitialize = (textarea: HTMLTextAreaElement) => {
         this.textareaElement = textarea;
-    }
+    };
 
     private doHide = () => {
         this.hide();
-    }
+    };
 
     private doSubmit = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
         if ((event.keyCode === KEY_ENTER && !event.shiftKey) ||
             (event.keyCode === KEY_ESCAPE)) {
-
             if (event.keyCode === KEY_ENTER) {
                 this.updateText();
             } else {
@@ -118,7 +117,7 @@ export class TextAdorner extends React.Component<TextAdornerProps> implements In
             event.preventDefault();
             event.stopPropagation();
         }
-    }
+    };
 
     private updateText() {
         if (!this.selectedShape) {

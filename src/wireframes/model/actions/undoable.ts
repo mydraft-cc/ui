@@ -6,7 +6,7 @@
 */
 
 import { createAction } from '@reduxjs/toolkit';
-import { Reducer } from 'redux';
+import { AnyAction, Reducer } from 'redux';
 import { UndoableState } from './../internal';
 import { createClassReducer } from './utils';
 
@@ -16,7 +16,23 @@ export const undo =
 export const redo =
     createAction('redo');
 
-export function undoable<T>(reducer: Reducer<T>, initialState: T, actionsToIgnore: string[], initialAction?: any) {
+type Options = {
+    actionsToIgnore?: string[];
+    actionMerger?: (action: AnyAction, previous: AnyAction) => boolean;
+    initialAction?: AnyAction;
+};
+
+export function undoable<T>(reducer: Reducer<T>, initialState: T, options?: Options) {
+    const initialAction = options?.initialAction;
+    const actionsToIgnore = {};
+    const actionMerger = options?.actionMerger || (() => false);
+
+    if (options?.actionsToIgnore) {
+        for (const type of options.actionsToIgnore) {
+            actionsToIgnore[type] = true;
+        }
+    }
+
     return createClassReducer(UndoableState.create(initialState, initialAction), builder => builder
         .addCase(undo, state => {
             return state.undo();
@@ -29,8 +45,10 @@ export function undoable<T>(reducer: Reducer<T>, initialState: T, actionsToIgnor
 
             if (newPresent === state.present) {
                 return state;
-            } else if (actionsToIgnore && actionsToIgnore.indexOf(action.type) >= 0) {
+            } else if (actionsToIgnore[action.type]) {
                 return state.replacePresent(newPresent);
+            } else if (state.lastAction && actionMerger(action, state.lastAction)) {
+                return state.replacePresent(newPresent, action);
             } else {
                 return state.executed(newPresent, action);
             }

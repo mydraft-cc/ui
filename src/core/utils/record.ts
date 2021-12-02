@@ -6,7 +6,7 @@
 */
 
 import { ImmutableMap } from './immutable-map';
-import { equals } from './types';
+import { Types } from './types';
 
 export abstract class Record<T> {
     private readonly values: ImmutableMap<any>;
@@ -28,10 +28,8 @@ export abstract class Record<T> {
 
     public merge(props: Partial<T>) {
         const values = this.values.mutate(m => {
-            for (const key in props) {
-                if (props.hasOwnProperty(key)) {
-                    m.set(key, props[key]);
-                }
+            for (const [key, value] of Object.entries(props)) {
+                m.set(key, value);
             }
         });
 
@@ -39,7 +37,7 @@ export abstract class Record<T> {
     }
 
     private makeRecord(values: ImmutableMap<any>) {
-        if (equals(values, this.values)) {
+        if (Types.equals(values, this.values)) {
             return this;
         }
 

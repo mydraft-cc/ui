@@ -7,7 +7,7 @@
 
 import { Types } from '@app/core';
 import { ActionReducerMapBuilder } from '@reduxjs/toolkit';
-import { Action, Reducer } from 'redux';
+import { AnyAction, Reducer } from 'redux';
 import { Diagram, DiagramItem } from './../internal';
 
 export type DiagramRef = string | Diagram;
@@ -16,13 +16,14 @@ export type ItemsRef = ItemRef[];
 
 interface DiagramAction {
     readonly diagramId: string;
+    readonly timestamp: number;
 }
 
 interface ItemsAction extends DiagramAction {
     readonly itemIds: ReadonlyArray<string>;
 }
 
-export function createItemsAction<T extends {}>(diagram: DiagramRef, items: ItemsRef, action?: T): T & Action & ItemsAction {
+export function createItemsAction<T extends {}>(diagram: DiagramRef, items: ItemsRef, action?: T): T & AnyAction & ItemsAction {
     const result: any = createDiagramAction(diagram, action);
 
     result.itemIds = [];
@@ -47,9 +48,37 @@ export function createDiagramAction<T extends {}>(diagram: DiagramRef, action?: 
         result.diagramId = diagram;
     }
 
+    result.timestamp = new Date().getTime();
+
     if (action) {
         Object.assign(result, action);
     }
+
+    return result;
+}
+
+export function mergeAction(action: AnyAction, prevAction: AnyAction) {
+    if (action.type !== prevAction.type) {
+        return false;
+    }
+
+    const { diagramId, itemIds, timestamp } = action.payload;
+
+    if (!Types.isString(diagramId) ||
+        !Types.isArrayOfString(itemIds) ||
+        !Types.isNumber(timestamp)) {
+        return false;
+    }
+
+    const previousTimestamp = prevAction.payload.timestamp;
+
+    if (timestamp - previousTimestamp > 500) {
+        return false;
+    }
+
+    const result =
+        Types.equals(prevAction.payload.diagramId, diagramId) &&
+        Types.equals(prevAction.payload.itemIds, itemIds);
 
     return result;
 }

@@ -109,7 +109,9 @@ export class TransformAdorner extends React.Component<TransformAdornerProps> imp
         if (this.props.selectedItems.length === 1) {
             transform = this.props.selectedItems[0].bounds(this.props.selectedDiagram);
         } else {
-            transform = Transform.createFromTransformationsAndRotations(this.props.selectedItems.map(x => x.bounds(this.props.selectedDiagram)), this.rotation);
+            const bounds = this.props.selectedItems.map(x => x.bounds(this.props.selectedDiagram));
+
+            transform = Transform.createFromTransformationsAndRotations(bounds, this.rotation);
         }
 
         this.transform = transform;
@@ -128,7 +130,6 @@ export class TransformAdorner extends React.Component<TransformAdornerProps> imp
                 if (!item.constraint.calculateSizeY()) {
                     this.canResizeY = true;
                 }
-                continue;
             }
 
             this.canResizeX = true;
@@ -136,15 +137,16 @@ export class TransformAdorner extends React.Component<TransformAdornerProps> imp
         }
     }
 
-    public onMouseDown(event: SvgEvent, next: () => void) {
+    public onMouseDown(event: SvgEvent, next: (event: SvgEvent) => void) {
         if (event.event.ctrlKey) {
-            return next();
+            next(event);
+            return;
         }
 
         let hitItem = this.hitTest(event.position);
 
         if (!hitItem) {
-            next();
+            next(event);
         }
 
         hitItem = this.hitTest(event.position);
@@ -189,9 +191,10 @@ export class TransformAdorner extends React.Component<TransformAdornerProps> imp
         return null;
     }
 
-    public onMouseDrag(event: SvgEvent, next: () => void) {
+    public onMouseDrag(event: SvgEvent, next: (event: SvgEvent) => void) {
         if (this.manipulationMode === 0 || !this.dragStart) {
-            return next();
+            next(event);
+            return;
         }
 
         this.overlays.reset();
@@ -297,9 +300,10 @@ export class TransformAdorner extends React.Component<TransformAdornerProps> imp
         return new Vec2(x, y);
     }
 
-    public onMouseUp(event: SvgEvent, next: () => void) {
+    public onMouseUp(event: SvgEvent, next: (event: SvgEvent) => void) {
         if (this.manipulationMode === 0) {
-            return next();
+            next(event);
+            return;
         }
 
         try {

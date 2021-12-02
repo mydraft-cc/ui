@@ -28,13 +28,9 @@ export class ColorPalette {
     public static colors(): ColorPalette {
         const colors: Color[] = [];
 
-        for (const key in BREWERS) {
-            if (BREWERS.hasOwnProperty(key)) {
-                const brewer = BREWERS[key];
-
-                for (const color of brewer) {
-                    colors.push(Color.fromNumber(color));
-                }
+        for (const [key, brewer] of Object.entries(BREWERS)) {
+            for (const color of brewer) {
+                colors.push(Color.fromNumber(color));
             }
         }
 

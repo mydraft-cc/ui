@@ -80,7 +80,7 @@ export class Editor extends React.Component<EditorProps> {
 
         this.forceRender();
         this.forceUpdate();
-    }
+    };
 
     private forceRender() {
         if (!this.interactionService) {
@@ -90,17 +90,15 @@ export class Editor extends React.Component<EditorProps> {
         const allShapesById: { [id: string]: boolean } = {};
         const allShapes = this.getOrderedShapes();
 
-        allShapes.forEach(item => allShapesById[item.id] = true);
+        allShapes.forEach(item => {
+            allShapesById[item.id] = true;
+        });
 
-        for (const id in this.shapeRefsById) {
-            if (this.shapeRefsById.hasOwnProperty(id)) {
-                const ref = this.shapeRefsById[id];
-
+        for (const [id, ref] of Object.entries(this.shapeRefsById)) {
+            if (!allShapesById[id]) {
                 ref.remove();
 
-                if (!allShapesById[id]) {
-                    delete this.shapeRefsById[id];
-                }
+                delete this.shapeRefsById[id];
             }
         }
 
@@ -131,6 +129,7 @@ export class Editor extends React.Component<EditorProps> {
         if (diagram) {
             let handleContainer: (itemIds: DiagramContainer) => any;
 
+            // eslint-disable-next-line prefer-const
             handleContainer = itemIds => {
                 for (const id of itemIds.values) {
                     const item = diagram.items.get(id);

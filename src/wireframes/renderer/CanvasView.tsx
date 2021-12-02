@@ -53,21 +53,21 @@ export const CanvasView = (props: CanvasViewProps) => {
 
             setDocument(newDocument);
         }
-    }, [ref.current, setDocument]);
+    }, [document, onInit, setDocument]);
 
     React.useLayoutEffect(() => {
         if (document) {
-            document.
-                size(
+            document
+                .size(
                     zoomedSize.x,
-                    zoomedSize.y).
-                viewbox(
+                    zoomedSize.y)
+                .viewbox(
                     viewBox?.x || 0,
                     viewBox?.y || 0,
                     viewBox ? viewBox.w : viewSize.x,
                     viewBox ? viewBox.h : viewSize.y);
         }
-    }, [ref.current, viewSize, viewBox, zoom, zoomedSize, document]);
+    }, [viewSize, viewBox, zoom, zoomedSize, document]);
 
     return <div className={className} ref={ref} />;
 };

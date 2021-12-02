@@ -6,7 +6,7 @@
 */
 
 import { moveItems } from './collections';
-import { equalsArray } from './types';
+import { Types } from './types';
 
 export class ImmutableList<T> {
     private static readonly EMPTY = new ImmutableList<any>([]);
@@ -109,6 +109,6 @@ export class ImmutableList<T> {
             return false;
         }
 
-        return equalsArray(this.items, other.items);
+        return Types.equalsArray(this.items, other.items);
     }
 }

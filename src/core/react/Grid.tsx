@@ -40,7 +40,7 @@ interface GridState {
     cellSize: number;
 }
 
-const cache: { [key: string]:  JSX.Element } = {};
+const cache: { [key: string]: JSX.Element } = {};
 
 export const GridList = React.memo((props: GridProps & GridState) => {
     const {
@@ -60,31 +60,29 @@ export const GridList = React.memo((props: GridProps & GridState) => {
         const item = items[index];
 
         if (!item) {
-            continue;
+            const itemKey = keyBuilder(item);
+
+            let cell = cache[itemKey];
+
+            if (!cell) {
+                cell = renderer(item);
+
+                cache[itemKey] = cell;
+            }
+
+            const col = sizeInPx(cellSize * Math.floor(index % columns));
+            const row = sizeInPx(cellSize * Math.floor(index / columns));
+
+            const cellPx = sizeInPx(cellSize);
+
+            cell = (
+                <div key={index} style={{ position: 'absolute', height: cellPx, width: cellPx, top: row, left: col }}>
+                    {cell}
+                </div>
+            );
+
+            cells.push(cell);
         }
-
-        const itemKey = keyBuilder(item);
-
-        let cell = cache[itemKey];
-
-        if (!cell) {
-            cell = renderer(item);
-
-            cache[itemKey] = cell;
-        }
-
-        const col = sizeInPx(cellSize * Math.floor(index % columns));
-        const row = sizeInPx(cellSize * Math.floor(index / columns));
-
-        const cellPx = sizeInPx(cellSize);
-
-        cell = (
-            <div key={index} style={{ position: 'absolute', height: cellPx, width: cellPx, top: row, left: col }}>
-                {cell}
-            </div>
-        );
-
-        cells.push(cell);
     }
 
     return (
@@ -136,7 +134,7 @@ export class Grid extends React.PureComponent<GridProps, GridState> {
         const scrollBottom = containerHeight + scrollTop;
 
         const indexFirst = Math.floor(scrollTop / cellSize) * columns;
-        const indexLast  = Math.floor(scrollBottom / cellSize) * columns + columns * 2;
+        const indexLast = Math.floor(scrollBottom / cellSize) * columns + columns * 2;
 
         const state = this.state;
 
@@ -146,7 +144,7 @@ export class Grid extends React.PureComponent<GridProps, GridState> {
             state.height !== height) {
             this.setState({ cellSize, indexFirst, indexLast, height });
         }
-    }
+    };
 
     public render() {
         const { className } = this.props;
