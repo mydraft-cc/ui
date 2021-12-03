@@ -74,29 +74,11 @@ export class InteractionService {
         });
 
         window.document.addEventListener('keyup', (event: KeyboardEvent) => {
-            const focusedElement = document.activeElement?.tagName?.toLowerCase();
-
-            if (focusedElement !== 'input' && focusedElement !== 'textarea') {
-                this.onKeyUp(event);
-
-                stopEvent(event);
-                return false;
-            }
-
-            return true;
+            this.onKeyUp(event);
         });
 
         window.document.addEventListener('keydown', (event: KeyboardEvent) => {
-            const focusedElement = document.activeElement?.tagName?.toLowerCase();
-
-            if (focusedElement !== 'input' && focusedElement !== 'textarea') {
-                this.onKeyDown(event);
-
-                stopEvent(event);
-                return false;
-            }
-
-            return true;
+            this.onKeyDown(event);
         });
 
         window.document.addEventListener('mousemove', (event: MouseEvent) => {
@@ -230,10 +212,4 @@ export class InteractionService {
             document.body.style.cursor = 'default';
         }
     };
-}
-
-function stopEvent(event: KeyboardEvent) {
-    event.stopImmediatePropagation();
-    event.stopPropagation();
-    event.preventDefault();
 }

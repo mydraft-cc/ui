@@ -138,6 +138,11 @@ export class TransformAdorner extends React.Component<TransformAdornerProps> imp
     }
 
     public onKeyUp(event: KeyboardEvent, next: (event: KeyboardEvent) => void) {
+        if (!isNoInputFocused()) {
+            next(event);
+            return;
+        }
+
         let xd = 0;
         let yd = 0;
 
@@ -177,6 +182,8 @@ export class TransformAdorner extends React.Component<TransformAdornerProps> imp
             this.transform);
 
         this.startTransform = this.transform;
+
+        stopEvent(event);
     }
 
     public onMouseDown(event: SvgEvent, next: (event: SvgEvent) => void) {
@@ -468,4 +475,16 @@ export class TransformAdorner extends React.Component<TransformAdornerProps> imp
     public render(): any {
         return null;
     }
+}
+
+function isNoInputFocused() {
+    const focusedElement = document.activeElement?.tagName?.toLowerCase();
+
+    return focusedElement !== 'input' && focusedElement !== 'textarea';
+}
+
+function stopEvent(event: KeyboardEvent) {
+    event.stopImmediatePropagation();
+    event.stopPropagation();
+    event.preventDefault();
 }
