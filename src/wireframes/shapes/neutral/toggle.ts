@@ -55,19 +55,17 @@ export class Toggle implements ShapePlugin {
 
         const circleCenter = new Vec2(circleX, circleY);
         const circleSize = radius - border;
-        const circleItem = ctx.renderer.createEllipse(0, Rect2.fromCenter(circleCenter, circleSize));
 
-        ctx.renderer.setBackgroundColor(circleItem, ctx.shape.strokeColor);
+        const barColor = isUnchecked ? ctx.shape : ctx.shape.foregroundColor;
 
-        const pillItem = ctx.renderer.createRectangle(0, radius, ctx.rect);
+        // Circle.
+        ctx.renderer2.ellipse(0, Rect2.fromCenter(circleCenter, circleSize), p => {
+            p.setBackgroundColor(ctx.shape.strokeColor);
+        });
 
-        if (isUnchecked) {
-            ctx.renderer.setBackgroundColor(pillItem, ctx.shape);
-        } else {
-            ctx.renderer.setBackgroundColor(pillItem, ctx.shape.foregroundColor);
-        }
-
-        ctx.add(pillItem);
-        ctx.add(circleItem);
+        // Pill
+        ctx.renderer2.rectangle(0, radius, ctx.rect, p => {
+            p.setBackgroundColor(barColor);
+        });
     }
 }

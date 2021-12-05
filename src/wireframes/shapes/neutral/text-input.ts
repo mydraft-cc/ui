@@ -36,19 +36,15 @@ export class TextInput implements ShapePlugin {
     }
 
     private createBorder(ctx: RenderContext) {
-        const borderItem = ctx.renderer.createRectangle(ctx.shape, CommonTheme.CONTROL_BORDER_RADIUS, ctx.rect);
-
-        ctx.renderer.setBackgroundColor(borderItem, ctx.shape);
-        ctx.renderer.setStrokeColor(borderItem, ctx.shape);
-
-        ctx.add(borderItem);
+        ctx.renderer2.rectangle(ctx.shape, CommonTheme.CONTROL_BORDER_RADIUS, ctx.rect, p => {
+            p.setBackgroundColor(ctx.shape);
+            p.setStrokeColor(ctx.shape);
+        });
     }
 
     private createText(ctx: RenderContext) {
-        const textItem = ctx.renderer.createSinglelineText(ctx.shape, ctx.rect.deflate(14, 4));
-
-        ctx.renderer.setForegroundColor(textItem, ctx.shape);
-
-        ctx.add(textItem);
+        ctx.renderer2.text(ctx.shape, ctx.rect.deflate(14, 4), p => {
+            p.setForegroundColor(ctx.shape);
+        });
     }
 }

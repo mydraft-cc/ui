@@ -6,9 +6,10 @@
 */
 
 import { Color, Rect2, Types, Vec2 } from '@app/core';
-import { ConfigurableFactory, Constraint, ConstraintFactory, RenderContext, ShapePlugin } from '@app/wireframes/interface';
+import { ConfigurableFactory, Constraint, ConstraintFactory, RenderContext, Shape, ShapePlugin } from '@app/wireframes/interface';
 import { ColorConfigurable, DiagramItem, MinSizeConstraint, NumberConfigurable, Renderer, SelectionConfigurable, SizeConstraint, SliderConfigurable, TextHeightConstraint } from '@app/wireframes/model';
 import { SVGRenderer } from './svg-renderer';
+import { SVGRenderer2 } from './svg-renderer2';
 import { TextSizeConstraint } from './text-size-contraint';
 
 const RENDER_BACKGROUND = 1;
@@ -49,6 +50,23 @@ class DefaultConfigurableFactory implements ConfigurableFactory {
 
     public color(name: string, label: string) {
         return new ColorConfigurable(name, label);
+    }
+}
+
+class Context implements RenderContext {
+    public static readonly INSTANCE = new Context();
+
+    public readonly items: any[] = [];
+
+    public readonly renderer = SVGRenderer.INSTANCE;
+    public readonly renderer2 = SVGRenderer2.INSTANCE;
+
+    public shape: Shape;
+
+    public rect: Rect2;
+
+    public add(item: any) {
+        this.items.push(item);
     }
 }
 
@@ -106,6 +124,7 @@ export class AbstractControl implements Renderer {
 
     public setContext(context: any): Renderer {
         SVGRenderer.INSTANCE.captureContext(context);
+        SVGRenderer2.INSTANCE.setContainer(context);
 
         return this;
     }
@@ -117,41 +136,48 @@ export class AbstractControl implements Renderer {
     }
 
     public render(shape: DiagramItem, options?: { debug?: boolean; noOpacity?: boolean; noTransform?: boolean }): any {
-        const ctx = new RenderContext(SVGRenderer.INSTANCE, shape, new Rect2(0, 0, shape.transform.size.x, shape.transform.size.y));
+        const context = Context.INSTANCE;
 
-        options = options || {};
+        context.shape = shape;
+        context.rect = new Rect2(0, 0, shape.transform.size.x, shape.transform.size.y);
+        context.items.splice(0, 10000);
 
-        if (RENDER_BACKGROUND) {
-            const backgroundItem = SVGRenderer.INSTANCE.createRectangle(0);
+        SVGRenderer2.INSTANCE.group(items => {
+            if (RENDER_BACKGROUND) {
+                items.rectangle(0, undefined, undefined, p => {
+                    p.setBackgroundColor(Color.WHITE);
+                    p.setOpacity(0.001);
 
-            SVGRenderer.INSTANCE.setBackgroundColor(backgroundItem, Color.WHITE);
-            SVGRenderer.INSTANCE.setOpacity(backgroundItem, 0.001);
-            SVGRenderer.INSTANCE.setTransform(backgroundItem, { rect: ctx.rect });
+                    SVGRenderer2.INSTANCE.setTransform(p.shape, { rect: context.rect });
+                });
+            }
 
-            ctx.add(backgroundItem);
-        }
+            if (RENDER_BACKGROUND) {
+                items.rectangle(0, undefined, undefined, p => {
+                    p.setBackgroundColor(Color.WHITE);
+                    p.setOpacity(0.001);
 
-        this.plugin.render(ctx);
+                    SVGRenderer2.INSTANCE.setTransform(p.shape, { rect: context.rect });
+                });
+            }
 
-        if (options.debug) {
-            const boxItem = SVGRenderer.INSTANCE.createRectangle(1);
+            this.plugin.render(context);
 
-            SVGRenderer.INSTANCE.setStrokeColor(boxItem, 0xff0000);
-            SVGRenderer.INSTANCE.setTransform(boxItem, { rect: ctx.rect.inflate(1) });
+            if (options?.debug) {
+                items.rectangle(1, undefined, undefined, p => {
+                    p.setStrokeColor(0xff0000);
 
-            ctx.add(boxItem);
-        }
+                    SVGRenderer.INSTANCE.setTransform(p.shape, { rect: context.rect.inflate(1) });
+                });
+            }
+        }, undefined, p => {
+            if (!options?.noTransform) {
+                SVGRenderer.INSTANCE.setTransform(p.shape, shape);
+            }
 
-        const rootItem = SVGRenderer.INSTANCE.createGroup(ctx.items);
-
-        if (!options.noTransform) {
-            SVGRenderer.INSTANCE.setTransform(rootItem, shape);
-        }
-
-        if (!options.noOpacity) {
-            SVGRenderer.INSTANCE.setOpacity(rootItem, shape);
-        }
-
-        return rootItem;
+            if (!options?.noOpacity) {
+                p.setOpacity(shape);
+            }
+        });
     }
 }

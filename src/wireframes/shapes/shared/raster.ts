@@ -28,8 +28,6 @@ export class Raster implements ShapePlugin {
     }
 
     public render(ctx: RenderContext) {
-        const rasterItem = ctx.renderer.createRaster(ctx.shape.getAppearance('SOURCE'), ctx.rect.deflate(1));
-
-        ctx.add(rasterItem);
+        ctx.renderer2.raster(ctx.shape.getAppearance('SOURCE'), ctx.rect.deflate(1));
     }
 }
