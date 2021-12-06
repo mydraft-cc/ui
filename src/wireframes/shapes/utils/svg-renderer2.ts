@@ -15,16 +15,19 @@ export * from './abstract-renderer';
 
 class Factory implements ShapeFactory {
     private container: svg.Container;
+    private containerIndex: number;
     private clipping: boolean;
 
-    public setContainer(container: svg.Container) {
+    public setContainer(container: svg.Container, clipping = false) {
+        this.clipping = clipping;
         this.container = container;
+        this.containerIndex = 0;
     }
 
     public rectangle(strokeWidth: RendererWidth, radius?: number, bounds?: Rect2, properties?: ShapePropertiesFunc) {
         const w = this.getStrokeWidth(strokeWidth);
 
-        const element = this.container.rect().fill('transparent');
+        const element = this.create('RECTANGLE', () => this.container.rect()); // .fill('transparent');
 
         if (w > 0) {
             element.stroke({ width: w });
@@ -201,7 +204,9 @@ class Factory implements ShapeFactory {
     }
 
     public raster(source: string, bounds?: Rect2, properties?: ShapePropertiesFunc) {
-        const element = this.container.image().load(source);
+        const element = this.create('IMAGE', () => this.container.image());
+
+        element.load(source);
 
         SVGHelper.transform(element, { rect: bounds });
 
@@ -209,11 +214,14 @@ class Factory implements ShapeFactory {
     }
 
     public group(items: ShapeFactoryFunc, clip?: ShapeFactoryFunc, properties?: ShapePropertiesFunc) {
+        const clipping = this.clipping;
         const container = this.container;
+        const containerIndex = this.containerIndex;
 
         const group = this.container.group();
 
         this.container = group;
+        this.containerIndex = 0;
 
         if (items) {
             items(this);
@@ -225,18 +233,21 @@ class Factory implements ShapeFactory {
             clip(this);
         }
 
+        this.clipping = clipping;
         this.container = container;
-        this.clipping = false;
+        this.containerIndex = containerIndex;
 
         this.finish(group, properties);
     }
 
     private finish(element: RendererElement, properties: ShapePropertiesFunc | undefined) {
-        if (properties) {
-            Properties.INSTANCE.setElement(element);
+        Properties.INSTANCE.setElement(element);
 
+        if (properties) {
             properties(Properties.INSTANCE);
         }
+
+        Properties.INSTANCE.sync();
 
         if (this.clipping) {
             this.container.clipWith(element);
@@ -273,6 +284,34 @@ class Factory implements ShapeFactory {
         }
 
         return new Rect2(l, t, r - l, b - t);
+    }
+
+    private create<T>(name: string, factory: () => T): T {
+        if (this.clipping) {
+            let element = this.container.clipper as any;
+
+            if (!element || element.node.tagName !== name) {
+                element = factory();
+
+                this.container.clipWith(element);
+            }
+
+            return element;
+        } else {
+            let element = this.container[this.containerIndex];
+
+            if (!element) {
+                element = factory();
+
+                this.container.add(element);
+            } else if (element.node.tagName !== name) {
+                element = factory();
+
+                this.container[this.containerIndex] = element;
+            }
+
+            return element;
+        }
     }
 }
 
@@ -353,8 +392,34 @@ export class SVGRenderer2 extends Factory implements AbstractRenderer2 {
     }
 }
 
+type PropertySet = {
+    color: any;
+    fill: any;
+    fontFamily: any;
+    opacity: any;
+    stroke: any;
+    strokeCap: any;
+    strokeLineJoin: any;
+    text: any;
+    visible: any;
+};
+
+const PROPERTIES: ReadonlyArray<keyof PropertySet> = [
+    'color',
+    'fill',
+    'fontFamily',
+    'opacity',
+    'stroke',
+    'strokeCap',
+    'strokeLineJoin',
+    'text',
+    'visible',
+];
+
 class Properties implements ShapeProperties {
     private element: svg.Element;
+    private properties: PropertySet;
+    private propertiesOld: PropertySet;
 
     public get shape() {
         return this.element;
@@ -362,88 +427,95 @@ class Properties implements ShapeProperties {
 
     public static readonly INSTANCE = new Properties();
 
-    private constructor() {
-        // NOOP
-    }
-
     public setElement(element: RendererElement) {
         if (element.textElement) {
             this.element = element.textElement;
         } else {
             this.element = element;
         }
+
+        this.propertiesOld = this.element.node['properties'] || {};
     }
 
     public setVisibility(visible: boolean): ShapeProperties {
-        if (this.element) {
-            visible ? this.element.show() : this.element.hide();
-        }
+        this.properties.visible = visible;
 
         return this;
     }
 
     public setForegroundColor(color: RendererColor): ShapeProperties {
-        const c = this.getColor(color, DefaultAppearance.FOREGROUND_COLOR);
-
-        if (this.element && c) {
-            this.element.attr('color', c);
-        }
+        this.properties.color = this.getColor(color, DefaultAppearance.FOREGROUND_COLOR);
 
         return this;
     }
 
     public setBackgroundColor(color: RendererColor): ShapeProperties {
-        const c = this.getColor(color, DefaultAppearance.BACKGROUND_COLOR);
-
-        if (this.element && c) {
-            this.element.attr('fill', c);
-        }
+        this.properties.fill = this.getColor(color, DefaultAppearance.BACKGROUND_COLOR);
 
         return this;
     }
 
     public setStrokeColor(color: RendererColor): ShapeProperties {
-        const c = this.getColor(color, DefaultAppearance.STROKE_COLOR);
-
-        if (this.element && c) {
-            this.element.attr('stroke', c);
-        }
-
-        return this;
-    }
-
-    public setOpacity(opacity: RendererOpacity): ShapeProperties {
-        const o = this.getOpacity(opacity);
-
-        if (this.element && Number.isFinite(o)) {
-            this.element.opacity(o);
-        }
+        this.properties.stroke = this.getColor(color, DefaultAppearance.STROKE_COLOR);
 
         return this;
     }
 
     public setText(text: string): ShapeProperties {
-        if (this.element && text) {
-            this.element.node.children[0].textContent = text;
-        }
+        this.properties.text = text;
 
         return this;
     }
 
     public setFontFamily(fontFamily: string): ShapeProperties {
-        if (this.element && fontFamily) {
-            this.element.attr('font-family', fontFamily);
-        }
+        this.properties.fontFamily = fontFamily;
 
         return this;
     }
 
     public setStrokeStyle(cap: string, join: string): ShapeProperties {
-        if (this.element) {
-            this.element.attr('stroke-cap', cap).attr('stroke-linejoin', join);
+        this.properties.strokeCap = cap;
+        this.properties.strokeLineJoin = join;
+
+        return this;
+    }
+
+    public setOpacity(opacity: RendererOpacity): ShapeProperties {
+        const value = this.getOpacity(opacity);
+
+        if (Number.isFinite(value)) {
+            this.properties.opacity = value;
         }
 
         return this;
+    }
+
+    public sync() {
+        const element = this.element;
+
+        const properties = this.properties;
+        const propertiesOld = this.propertiesOld;
+
+        for (const key of PROPERTIES) {
+            const valueNew = properties[key];
+            const valueOld = propertiesOld[key];
+
+            if (valueNew !== valueOld) {
+                if (key === 'text') {
+                    element.node.children[0].textContent = valueNew;
+                } else if (key === 'visible') {
+                    if (valueNew) {
+                        element.show();
+                    } else {
+                        element.hide();
+                    }
+                } else {
+                    element.attr(key, valueNew);
+                }
+            }
+        }
+
+        this.element.node['properties'] = this.properties;
     }
 
     private getColor(value: RendererColor, key: string): string {
