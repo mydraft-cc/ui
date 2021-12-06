@@ -6,7 +6,7 @@
 */
 
 import * as React from 'react';
-import Measurer, { ContentRect } from 'react-measure';
+import { SizeMeProps, withSize } from 'react-sizeme';
 import { sizeInPx } from './../utils/react';
 
 interface GridProps {
@@ -92,71 +92,45 @@ export const GridList = React.memo((props: GridProps & GridState) => {
     );
 });
 
-export class Grid extends React.PureComponent<GridProps, GridState> {
-    private container: HTMLElement;
+const GridComponent = (props: SizeMeProps & GridProps) => {
+    const {
+        className,
+        columns,
+        items,
+        size,
+    } = props;
 
-    constructor(props: GridProps) {
-        super(props);
+    const [scrollTop, setScrollTop] = React.useState(0);
+    const [scrollContainer, setScrollContainer] = React.useState<HTMLDivElement>();
 
-        this.state = { cellSize: 0, indexFirst: 0, indexLast: 0, height: 0 };
-    }
+    const doScroll = React.useCallback((event: React.UIEvent<HTMLDivElement>) => {
+        const div: HTMLDivElement = event.target as any;
 
-    public componentDidUpdate() {
-        this.measure();
-    }
+        setScrollTop(div.scrollTop);
+    }, []);
 
-    private initialize(element: HTMLElement, forward: (element: HTMLElement) => void) {
-        forward(element);
-
-        if (!this.container) {
-            this.container = element;
-
-            this.measure();
-        }
-    }
-
-    private measure = (rect?: ContentRect) => {
-        const { columns, items } = this.props;
-
-        let containerHeight = 0;
-
-        if (rect && rect.entry) {
-            containerHeight = rect.entry.height;
-        } else {
-            containerHeight = this.container.getBoundingClientRect().height;
+    const layout = React.useMemo(() => {
+        if (!scrollContainer) {
+            return { cellSize: 0, indexFirst: 0, indexLast: 0, height: 0 };
         }
 
-        const cellSize = this.container.scrollWidth / columns;
+        const cellSize = scrollContainer.scrollWidth / columns;
 
         const height = cellSize * items.length / columns;
 
-        const scrollTop = this.container.scrollTop;
-        const scrollBottom = containerHeight + scrollTop;
+        const scrollBottom = size.height + scrollTop;
 
         const indexFirst = Math.floor(scrollTop / cellSize) * columns;
         const indexLast = Math.floor(scrollBottom / cellSize) * columns + columns * 2;
 
-        const state = this.state;
+        return { cellSize, indexFirst, indexLast, height };
+    }, [columns, items.length, scrollTop, scrollContainer, size.height]);
 
-        if (state.cellSize !== cellSize ||
-            state.indexFirst !== indexFirst ||
-            state.indexLast !== indexLast ||
-            state.height !== height) {
-            this.setState({ cellSize, indexFirst, indexLast, height });
-        }
-    };
+    return (
+        <div className={className} onScroll={doScroll} ref={setScrollContainer}>
+            <GridList {...props} {...layout} />
+        </div>
+    );
+};
 
-    public render() {
-        const { className } = this.props;
-
-        return (
-            <Measurer onResize={this.measure}>
-                {({ measureRef }) =>
-                    <div className={className} ref={element => this.initialize(element, measureRef)}>
-                        <GridList {...this.props} {...this.state} />
-                    </div>
-                }
-            </Measurer>
-        );
-    }
-}
+export const Grid = withSize({ monitorHeight: true })(GridComponent);

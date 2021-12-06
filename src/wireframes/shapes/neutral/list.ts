@@ -59,9 +59,9 @@ export class List implements ShapePlugin {
 
             if (part.selected) {
                 this.createSelection(ctx, rect);
-                this.createText(ctx, rect.deflate(10, 0), 0xffffff, part.text, part.selected);
+                this.createText(ctx, rect.deflate(10, 0), 0xffffff, part.text);
             } else {
-                this.createText(ctx, rect.deflate(10, 0), ctx.shape, part.text, part.selected);
+                this.createText(ctx, rect.deflate(10, 0), ctx.shape, part.text);
             }
 
             y += itemHeight;
@@ -69,35 +69,24 @@ export class List implements ShapePlugin {
     }
 
     private createSelection(ctx: RenderContext, rect: Rect2) {
-        const selectionItem = ctx.renderer.createRectangle(ctx.shape, 0, rect);
-
-        ctx.renderer.setBackgroundColor(selectionItem, ctx.shape.getAppearance(ACCENT_COLOR));
-        ctx.renderer.setStrokeColor(selectionItem, ctx.shape.getAppearance(ACCENT_COLOR));
-
-        ctx.add(selectionItem);
+        ctx.renderer2.rectangle(ctx.shape, 0, rect, p => {
+            p.setBackgroundColor(ctx.shape.getAppearance(ACCENT_COLOR));
+            p.setStrokeColor(ctx.shape.getAppearance(ACCENT_COLOR));
+        });
     }
 
-    private createText(ctx: RenderContext, rect: Rect2, color: any, text: string, selected: boolean) {
-        const textItem = ctx.renderer.createSinglelineText(ctx.shape, rect);
-
-        if (selected) {
-            ctx.renderer.setForegroundColor(textItem, color);
-        } else {
-            ctx.renderer.setForegroundColor(textItem, color);
-        }
-
-        ctx.renderer.setText(textItem, text);
-
-        ctx.add(textItem);
+    private createText(ctx: RenderContext, rect: Rect2, color: any, text: string) {
+        ctx.renderer2.text(ctx.shape, rect, p => {
+            p.setForegroundColor(color);
+            p.setText(text);
+        });
     }
 
     private createBorder(ctx: RenderContext) {
-        const borderItem = ctx.renderer.createRectangle(ctx.shape, CommonTheme.CONTROL_BORDER_RADIUS, ctx.rect);
-
-        ctx.renderer.setStrokeColor(borderItem, ctx.shape);
-        ctx.renderer.setBackgroundColor(borderItem, ctx.shape);
-
-        ctx.add(borderItem);
+        ctx.renderer2.rectangle(ctx.shape, CommonTheme.CONTROL_BORDER_RADIUS, ctx.rect, p => {
+            p.setStrokeColor(ctx.shape);
+            p.setBackgroundColor(ctx.shape);
+        });
     }
 
     private parseText(shape: Shape) {

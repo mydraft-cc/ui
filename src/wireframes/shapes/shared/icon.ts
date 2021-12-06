@@ -33,11 +33,9 @@ export class Icon implements ShapePlugin {
 
         const config = { fontSize, text: ctx.shape.text, alignment: 'center' };
 
-        const textItem = ctx.renderer.createSinglelineText(config, ctx.rect);
-
-        ctx.renderer.setForegroundColor(textItem, ctx.shape);
-        ctx.renderer.setFontFamily(textItem, ctx.shape.getAppearance(DefaultAppearance.ICON_FONT_FAMILY) || 'FontAwesome');
-
-        ctx.add(textItem);
+        ctx.renderer2.text(config, ctx.rect, p => {
+            p.setForegroundColor(ctx.shape);
+            p.setFontFamily(ctx.shape.getAppearance(DefaultAppearance.ICON_FONT_FAMILY) || 'FontAwesome');
+        });
     }
 }

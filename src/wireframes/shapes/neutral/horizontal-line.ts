@@ -53,10 +53,8 @@ export class HorizontalLine implements ShapePlugin {
     }
 
     public render(ctx: RenderContext) {
-        const textItem = ctx.renderer.createRectangle(ctx.shape, 0, ctx.rect);
-
-        ctx.renderer.setBackgroundColor(textItem, ctx.shape.strokeColor);
-
-        ctx.add(textItem);
+        ctx.renderer2.rectangle(0, 0, ctx.rect, p => {
+            p.setBackgroundColor(ctx.shape.strokeColor);
+        });
     }
 }

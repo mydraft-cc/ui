@@ -102,6 +102,8 @@ export class Editor extends React.Component<EditorProps> {
             }
         }
 
+        let index = 0;
+
         for (const shape of allShapes) {
             let ref = this.shapeRefsById[shape.id];
 
@@ -111,9 +113,10 @@ export class Editor extends React.Component<EditorProps> {
                 ref = new ShapeRef(this.diagramRendering, renderer, showDebugOutlines);
             }
 
-            ref.render(shape);
+            ref.render(shape, index);
 
             this.shapeRefsById[shape.id] = ref;
+            index++;
         }
 
         if (this.props.onRender) {

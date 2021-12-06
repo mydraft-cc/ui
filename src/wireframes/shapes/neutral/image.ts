@@ -38,20 +38,18 @@ export class Image implements ShapePlugin {
         const t = ctx.rect.top + 0.5;
         const b = ctx.rect.bottom - 0.5;
 
-        const crossItem = ctx.renderer.createPath(ctx.shape, `M${l},${t} L${r},${b} M${l},${b} L${r},${t}`);
+        const path = `M${l},${t} L${r},${b} M${l},${b} L${r},${t}`;
 
-        ctx.renderer.setStrokeColor(crossItem, ctx.shape);
-        ctx.renderer.setStrokeStyle(crossItem, 'butt', 'butt');
-
-        ctx.add(crossItem);
+        ctx.renderer2.path(ctx.shape, path, undefined, p => {
+            p.setStrokeColor(ctx.shape);
+            p.setStrokeStyle('butt', 'butt');
+        });
     }
 
     private createBorder(ctx: RenderContext) {
-        const borderItem = ctx.renderer.createRectangle(ctx.shape, 0, ctx.rect);
-
-        ctx.renderer.setBackgroundColor(borderItem, ctx.shape);
-        ctx.renderer.setStrokeColor(borderItem, ctx.shape);
-
-        ctx.add(borderItem);
+        ctx.renderer2.rectangle(ctx.shape, 0, ctx.rect, p => {
+            p.setBackgroundColor(ctx.shape);
+            p.setStrokeColor(ctx.shape);
+        });
     }
 }

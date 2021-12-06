@@ -40,18 +40,16 @@ export class Comment implements ShapePlugin {
         const t = ctx.rect.top;
         const b = ctx.rect.bottom;
 
-        const borderItem = ctx.renderer.createPath(ctx.shape, `M${l + c},${t} L${r},${t} L${r},${b} L${l},${b} L${l},${t + c} L${l + c},${t} L${l + c},${t + c} L${l},${t + c} z`, ctx.rect);
+        const path = `M${l + c},${t} L${r},${t} L${r},${b} L${l},${b} L${l},${t + c} L${l + c},${t} L${l + c},${t + c} L${l},${t + c} z`;
 
-        ctx.renderer.setBackgroundColor(borderItem, 0xfff9b7);
-        ctx.renderer.setStrokeColor(borderItem, 0);
-        ctx.renderer.setStrokeStyle(borderItem, 'round', 'round');
-
-        ctx.add(borderItem);
+        ctx.renderer2.path(ctx.shape, path, undefined, p => {
+            p.setBackgroundColor(0xfff9b7);
+            p.setStrokeColor(0);
+            p.setStrokeStyle('round', 'round');
+        });
     }
 
     private createText(ctx: RenderContext) {
-        const textItem = ctx.renderer.createMultilineText(ctx.shape, ctx.rect.deflate(10, 20));
-
-        ctx.add(textItem);
+        ctx.renderer2.textMultiline(ctx.shape, ctx.rect.deflate(10, 20));
     }
 }

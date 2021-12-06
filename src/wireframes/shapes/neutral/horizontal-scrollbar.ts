@@ -50,29 +50,29 @@ export class HorizontalScrollbar implements ShapePlugin {
     }
 
     private createBackground(ctx: RenderContext, clickSize: number) {
-        const barSize = ctx.shape.getAppearance(BAR_SIZE) / 100;
-        const barPosition = ctx.shape.getAppearance(BAR_POSITION) / 100 * (ctx.rect.width - 2 * clickSize) * (1 - barSize);
+        ctx.renderer2.group(items => {
+            // Rail
+            items.rectangle(0, 0, ctx.rect, p => {
+                p.setBackgroundColor(ctx.shape);
+            });
 
-        const clipMask = ctx.renderer.createRectangle(0, 0, ctx.rect);
+            const barSize = ctx.shape.getAppearance(BAR_SIZE) / 100;
+            const barPosition = ctx.shape.getAppearance(BAR_POSITION) / 100 * (ctx.rect.width - 2 * clickSize) * (1 - barSize);
+            const barRect = new Rect2(ctx.rect.x + clickSize + barPosition, ctx.rect.y, (ctx.rect.width - 2 * clickSize) * barSize, ctx.rect.height);
 
-        const barrect = new Rect2(ctx.rect.x + clickSize + barPosition, ctx.rect.y, (ctx.rect.width - 2 * clickSize) * barSize, ctx.rect.height);
-        const barItem = ctx.renderer.createRectangle(0, 0, barrect);
-
-        ctx.renderer.setBackgroundColor(barItem, 0xbdbdbd);
-
-        const railItem = ctx.renderer.createRectangle(0, 0, ctx.rect);
-
-        ctx.renderer.setBackgroundColor(railItem, ctx.shape);
-
-        ctx.add(ctx.renderer.createGroup([railItem, barItem], clipMask));
+            // Bar
+            items.rectangle(0, 0, barRect, p => {
+                p.setBackgroundColor(0xbdbdbd);
+            });
+        }, clip => {
+            clip.rectangle(0, 0, ctx.rect);
+        });
     }
 
     private createBorder(ctx: RenderContext) {
-        const borderItem = ctx.renderer.createRectangle(ctx.shape, 0, ctx.rect);
-
-        ctx.renderer.setStrokeColor(borderItem, ctx.shape);
-
-        ctx.add(borderItem);
+        ctx.renderer2.rectangle(ctx.shape, 0, ctx.rect, p => {
+            p.setStrokeColor(ctx.shape);
+        });
     }
 
     private createRightTriangle(ctx: RenderContext, clickSize: number) {
@@ -81,11 +81,11 @@ export class HorizontalScrollbar implements ShapePlugin {
         const w = clickSize * 0.3;
         const h = clickSize * 0.3;
 
-        const rightTriangleItem = ctx.renderer.createPath(0, `M${x - 0.4 * w},${y - 0.5 * h} L${x + 0.6 * w},${y},L${x - 0.4 * w},${y + 0.5 * h} z`);
+        const path = `M${x - 0.4 * w},${y - 0.5 * h} L${x + 0.6 * w},${y},L${x - 0.4 * w},${y + 0.5 * h} z`;
 
-        ctx.renderer.setBackgroundColor(rightTriangleItem, 0xbdbdbd);
-
-        ctx.add(rightTriangleItem);
+        ctx.renderer2.path(0, path, undefined, p => {
+            p.setBackgroundColor(0xbdbdbd);
+        });
     }
 
     private createLeftTriangle(ctx: RenderContext, clickSize: number) {
@@ -94,10 +94,10 @@ export class HorizontalScrollbar implements ShapePlugin {
         const w = clickSize * 0.3;
         const h = clickSize * 0.3;
 
-        const leftTriangleItem = ctx.renderer.createPath(0, `M${x + 0.4 * w},${y - 0.5 * h} L${x - 0.6 * w},${y},L${x + 0.4 * w},${y + 0.5 * h} z`);
+        const path = `M${x + 0.4 * w},${y - 0.5 * h} L${x - 0.6 * w},${y},L${x + 0.4 * w},${y + 0.5 * h} z`;
 
-        ctx.renderer.setBackgroundColor(leftTriangleItem, 0xbdbdbd);
-
-        ctx.add(leftTriangleItem);
+        ctx.renderer2.path(0, path, undefined, p => {
+            p.setBackgroundColor(0xbdbdbd);
+        });
     }
 }

@@ -5,8 +5,8 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { ShapeRenderer } from '@app/wireframes/interface';
+import { ShapeRenderer2 } from '@app/wireframes/interface';
 
-export interface AbstractRenderer extends ShapeRenderer {
-    setTransform(element: any, to: any): AbstractRenderer;
+export interface AbstractRenderer2 extends ShapeRenderer2 {
+    setTransform(element: any, to: any): AbstractRenderer2;
 }

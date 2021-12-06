@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { ConfigurableFactory, DefaultAppearance, RenderContext, ShapePlugin } from '@app/wireframes/interface';
+import { ConfigurableFactory, DefaultAppearance, RenderContext, ShapePlugin, ShapeProperties } from '@app/wireframes/interface';
 import { CommonTheme } from './_theme';
 
 const SHAPE = 'SHAPE';
@@ -56,35 +56,45 @@ export class Shape implements ShapePlugin {
     }
 
     private createShape(ctx: RenderContext) {
-        let shapeItem: any;
-
         const b = ctx.rect;
 
         const shapeType = ctx.shape.getAppearance(SHAPE);
 
         if (shapeType === SHAPE_ROUNDED_RECTANGLE) {
-            shapeItem = ctx.renderer.createRectangle(ctx.shape, 10, ctx.rect);
+            ctx.renderer2.rectangle(ctx.shape, 10, ctx.rect, p => {
+                this.styleShape(ctx, p);
+            });
         } else if (shapeType === SHAPE_ELLIPSE) {
-            shapeItem = ctx.renderer.createEllipse(ctx.shape, ctx.rect);
+            ctx.renderer2.ellipse(ctx.shape, ctx.rect, p => {
+                this.styleShape(ctx, p);
+            });
         } else if (shapeType === SHAPE_TRIANGLE) {
-            shapeItem = ctx.renderer.createPath(ctx.shape, `M0 ${b.bottom} L${b.cx} ${b.top} L${b.right} ${b.bottom} z`, ctx.rect);
+            const path = `M0 ${b.bottom} L${b.cx} ${b.top} L${b.right} ${b.bottom} z`;
+
+            ctx.renderer2.path(ctx.shape, path, ctx.rect, p => {
+                this.styleShape(ctx, p);
+            });
         } else if (shapeType === SHAPE_RHOMBUS) {
-            shapeItem = ctx.renderer.createPath(ctx.shape, `M${b.cx} ${b.top} L${b.right} ${b.cy} L${b.cx} ${b.bottom} L${b.left} ${b.cy} z`, ctx.rect);
+            const path = `M${b.cx} ${b.top} L${b.right} ${b.cy} L${b.cx} ${b.bottom} L${b.left} ${b.cy} z`;
+
+            ctx.renderer2.path(ctx.shape, path, ctx.rect, p => {
+                this.styleShape(ctx, p);
+            });
         } else {
-            shapeItem = ctx.renderer.createRectangle(ctx.shape, 0, ctx.rect);
+            ctx.renderer2.rectangle(ctx.shape, 0, ctx.rect, p => {
+                this.styleShape(ctx, p);
+            });
         }
+    }
 
-        ctx.renderer.setStrokeColor(shapeItem, ctx.shape);
-        ctx.renderer.setBackgroundColor(shapeItem, ctx.shape);
-
-        ctx.add(shapeItem);
+    private styleShape(ctx: RenderContext, p: ShapeProperties) {
+        p.setStrokeColor(ctx.shape);
+        p.setBackgroundColor(ctx.shape);
     }
 
     private createText(ctx: RenderContext) {
-        const textItem = ctx.renderer.createSinglelineText(ctx.shape, ctx.rect.deflate(10, 10));
-
-        ctx.renderer.setForegroundColor(textItem, ctx.shape);
-
-        ctx.add(textItem);
+        ctx.renderer2.text(ctx.shape, ctx.rect.deflate(10, 10), p => {
+            p.setForegroundColor(ctx.shape);
+        });
     }
 }

@@ -44,20 +44,18 @@ export class Dropdown implements ShapePlugin {
         const w = clickSize * 0.3;
         const h = clickSize * 0.2;
 
-        const triangleItem = ctx.renderer.createPath(0, `M${x - 0.5 * w},${y - 0.4 * h} L${x},${y + 0.6 * h},L${x + 0.5 * w},${y - 0.4 * h} z`);
+        const path = `M${x - 0.5 * w},${y - 0.4 * h} L${x},${y + 0.6 * h},L${x + 0.5 * w},${y - 0.4 * h} z`;
 
-        ctx.renderer.setBackgroundColor(triangleItem, ctx.shape.strokeColor);
-
-        ctx.add(triangleItem);
+        ctx.renderer2.path(0, path, undefined, p => {
+            p.setBackgroundColor(ctx.shape.strokeColor);
+        });
     }
 
     private createBorder(ctx: RenderContext) {
-        const borderItem = ctx.renderer.createRectangle(ctx.shape, CommonTheme.CONTROL_BORDER_RADIUS, ctx.rect);
-
-        ctx.renderer.setBackgroundColor(borderItem, ctx.shape);
-        ctx.renderer.setStrokeColor(borderItem, ctx.shape);
-
-        ctx.add(borderItem);
+        ctx.renderer2.rectangle(ctx.shape, CommonTheme.CONTROL_BORDER_RADIUS, ctx.rect, p => {
+            p.setBackgroundColor(ctx.shape);
+            p.setStrokeColor(ctx.shape);
+        });
     }
 
     private createText(ctx: RenderContext, clickSize: number) {
@@ -65,10 +63,9 @@ export class Dropdown implements ShapePlugin {
             new Rect2(14, 4,
                 Math.max(0, ctx.rect.width - clickSize - 6),
                 Math.max(0, ctx.rect.height - 8));
-        const textItem = ctx.renderer.createSinglelineText(ctx.shape, textRect);
 
-        ctx.renderer.setForegroundColor(textItem, ctx.shape);
-
-        ctx.add(textItem);
+        ctx.renderer2.text(ctx.shape, textRect, p => {
+            p.setForegroundColor(ctx.shape);
+        });
     }
 }

@@ -44,53 +44,48 @@ export class Browser implements ShapePlugin {
 
     private createWindow(ctx: RenderContext) {
         const windowRect = new Rect2(-4, -70, ctx.rect.width + 8, ctx.rect.height + 85);
-        const windowItem = ctx.renderer.createRectangle(1, 0, windowRect);
 
-        ctx.renderer.setBackgroundColor(windowItem, CommonTheme.CONTROL_BACKGROUND_COLOR);
-        ctx.renderer.setStrokeColor(windowItem, CommonTheme.CONTROL_BORDER_COLOR);
-
-        ctx.add(windowItem);
+        ctx.renderer2.rectangle(1, 0, windowRect, p => {
+            p.setBackgroundColor(CommonTheme.CONTROL_BACKGROUND_COLOR);
+            p.setStrokeColor(CommonTheme.CONTROL_BORDER_COLOR);
+        });
     }
 
     private createInner(ctx: RenderContext) {
-        const screenItem = ctx.renderer.createRectangle(0, 0, ctx.rect);
-
-        ctx.renderer.setBackgroundColor(screenItem, ctx.shape);
-
-        ctx.add(screenItem);
+        ctx.renderer2.rectangle(0, 0, ctx.rect, p => {
+            p.setBackgroundColor(ctx.shape);
+        });
     }
 
     private createSearch(ctx: RenderContext) {
         const searchRect = new Rect2(50, -34, ctx.rect.width - 50, 30);
-        const searchItem = ctx.renderer.createRectangle(1, 15, searchRect);
 
-        ctx.renderer.setBackgroundColor(searchItem, 0xffffff);
-        ctx.renderer.setStrokeColor(searchItem, CommonTheme.CONTROL_BORDER_COLOR);
-
-        ctx.add(searchItem);
+        ctx.renderer2.rectangle(1, 15, searchRect, p => {
+            p.setBackgroundColor(0xffffff);
+            p.setStrokeColor(CommonTheme.CONTROL_BORDER_COLOR);
+        });
     }
 
     private createIcon(ctx: RenderContext) {
         const iconRect = new Rect2(5, -34, 30, 30);
-        const iconItem = ctx.renderer.createSinglelineText({ fontSize: 20, text: refreshCode, alignment: 'center' }, iconRect);
 
-        ctx.renderer.setForegroundColor(iconItem, 0x555555);
-        ctx.renderer.setFontFamily(iconItem, 'FontAwesome');
-
-        ctx.add(iconItem);
+        ctx.renderer2.text({ fontSize: 20, text: refreshCode, alignment: 'center' }, iconRect, p => {
+            p.setForegroundColor(0x555555);
+            p.setFontFamily('FontAwesome');
+        });
     }
 
     private createButtons(ctx: RenderContext) {
-        const button1 = ctx.renderer.createEllipse(0, new Rect2(10, -50, 12, 12));
-        const button2 = ctx.renderer.createEllipse(0, new Rect2(30, -50, 12, 12));
-        const button3 = ctx.renderer.createEllipse(0, new Rect2(50, -50, 12, 12));
+        ctx.renderer2.ellipse(0, new Rect2(10, -50, 12, 12), p => {
+            p.setBackgroundColor(0xff0000);
+        });
 
-        ctx.renderer.setBackgroundColor(button1, 0xff0000);
-        ctx.renderer.setBackgroundColor(button2, 0xffff00);
-        ctx.renderer.setBackgroundColor(button3, 0x00ff00);
+        ctx.renderer2.ellipse(0, new Rect2(30, -50, 12, 12), p => {
+            p.setBackgroundColor(0xffff00);
+        });
 
-        ctx.add(button1);
-        ctx.add(button2);
-        ctx.add(button3);
+        ctx.renderer2.ellipse(0, new Rect2(50, -50, 12, 12), p => {
+            p.setBackgroundColor(0x00ff00);
+        });
     }
 }

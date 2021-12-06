@@ -41,12 +41,11 @@ export class ComboBox implements ShapePlugin {
 
     private createClickArea(ctx: RenderContext, clickSize: number) {
         const clickAreaRect = new Rect2(ctx.rect.right - clickSize, 0, clickSize, ctx.rect.height);
-        const clickAreaItem = ctx.renderer.createRoundedRectangleRight(ctx.shape, CommonTheme.CONTROL_BORDER_RADIUS, clickAreaRect);
 
-        ctx.renderer.setStrokeColor(clickAreaItem, ctx.shape);
-        ctx.renderer.setBackgroundColor(clickAreaItem, ctx.shape);
-
-        ctx.add(clickAreaItem);
+        ctx.renderer2.roundedRectangleRight(ctx.shape, CommonTheme.CONTROL_BORDER_RADIUS, clickAreaRect, p => {
+            p.setStrokeColor(ctx.shape);
+            p.setBackgroundColor(ctx.shape);
+        });
     }
 
     private createClickTriangle(ctx: RenderContext, clickSize: number) {
@@ -55,21 +54,20 @@ export class ComboBox implements ShapePlugin {
         const w = clickSize * 0.3;
         const h = clickSize * 0.2;
 
-        const triangleItem = ctx.renderer.createPath(0, `M${x - 0.5 * w},${y - 0.4 * h} L${x},${y + 0.6 * h},L${x + 0.5 * w},${y - 0.4 * h} z`);
+        const path = `M${x - 0.5 * w},${y - 0.4 * h} L${x},${y + 0.6 * h},L${x + 0.5 * w},${y - 0.4 * h} z`;
 
-        ctx.renderer.setBackgroundColor(triangleItem, ctx.shape.strokeColor);
-
-        ctx.add(triangleItem);
+        ctx.renderer2.path(0, path, undefined, p => {
+            p.setBackgroundColor(ctx.shape.strokeColor);
+        });
     }
 
     private createInputArea(ctx: RenderContext, clickSize: number) {
         const inputAreaRect = new Rect2(0, 0, ctx.rect.width - clickSize + 1, ctx.rect.height);
-        const inputAreaItem = ctx.renderer.createRoundedRectangleLeft(ctx.shape, CommonTheme.CONTROL_BORDER_RADIUS, inputAreaRect);
 
-        ctx.renderer.setStrokeColor(inputAreaItem, ctx.shape);
-        ctx.renderer.setBackgroundColor(inputAreaItem, 0xffffff);
-
-        ctx.add(inputAreaItem);
+        ctx.renderer2.roundedRectangleLeft(ctx.shape, CommonTheme.CONTROL_BORDER_RADIUS, inputAreaRect, p => {
+            p.setStrokeColor(ctx.shape);
+            p.setBackgroundColor(0xffffff);
+        });
     }
 
     private createText(ctx: RenderContext, clickSize: number) {
@@ -77,10 +75,9 @@ export class ComboBox implements ShapePlugin {
             new Rect2(14, 4,
                 Math.max(0, ctx.rect.width - clickSize - 6),
                 Math.max(0, ctx.rect.height - 8));
-        const textItem = ctx.renderer.createSinglelineText(ctx.shape, textRect);
 
-        ctx.renderer.setForegroundColor(textItem, ctx.shape);
-
-        ctx.add(textItem);
+        ctx.renderer2.text(ctx.shape, textRect, p => {
+            p.setForegroundColor(ctx.shape);
+        });
     }
 }

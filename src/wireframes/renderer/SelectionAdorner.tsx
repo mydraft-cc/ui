@@ -5,9 +5,8 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { Rect2, Vec2 } from '@app/core';
+import { Rect2, SVGHelper, Vec2 } from '@app/core';
 import { calculateSelection, Diagram, DiagramItem } from '@app/wireframes/model';
-import { SVGRenderer } from '@app/wireframes/shapes/utils/svg-renderer';
 import * as React from 'react';
 import * as svg from 'svg.js';
 import { InteractionHandler, InteractionService, SvgEvent } from './interaction-service';
@@ -34,7 +33,6 @@ export interface SelectionAdornerProps {
 }
 
 export class SelectionAdorner extends React.Component<SelectionAdornerProps> implements InteractionHandler {
-    private renderer: SVGRenderer;
     private shapesAdorners: any[] = [];
     private selectionShape: any;
     private dragStart: Vec2 | null;
@@ -42,14 +40,9 @@ export class SelectionAdorner extends React.Component<SelectionAdornerProps> imp
     public componentDidMount() {
         this.props.interactionService.addHandler(this);
 
-        this.renderer = new SVGRenderer();
-        this.renderer.captureContext(this.props.adorners);
-
-        this.selectionShape = this.renderer.createRectangle(1);
-
-        this.renderer.setBackgroundColor(this.selectionShape, '#0a0');
-        this.renderer.setStrokeColor(this.selectionShape, '#050');
-        this.renderer.setOpacity(this.selectionShape, 0.3);
+        this.selectionShape =
+            this.props.adorners.rect(1, 1)
+                .stroke({ color: '#0a0', width: 1 }).opacity(0.3);
     }
 
     public componentWillUnmount() {
@@ -85,7 +78,7 @@ export class SelectionAdorner extends React.Component<SelectionAdornerProps> imp
         if (rect.area > 0) {
             this.transformShape(this.selectionShape, new Vec2(rect.x, rect.y), new Vec2(rect.w, rect.h), 0);
         } else {
-            this.renderer.setVisibility(this.selectionShape, false);
+            this.selectionShape.hide();
         }
     }
 
@@ -106,7 +99,7 @@ export class SelectionAdorner extends React.Component<SelectionAdornerProps> imp
                 }
             }
         } finally {
-            this.renderer.setVisibility(this.selectionShape, false);
+            this.selectionShape.hide();
 
             this.dragStart = null;
         }
@@ -137,20 +130,18 @@ export class SelectionAdorner extends React.Component<SelectionAdornerProps> imp
             let shapeAdorner: any;
 
             if (i >= this.shapesAdorners.length) {
-                shapeAdorner = this.renderer.createRectangle(1);
+                shapeAdorner = this.props.adorners.rect(1, 1).fill(SELECTION_FILL_COLOR);
 
                 this.shapesAdorners.push(shapeAdorner);
             } else {
                 shapeAdorner = this.shapesAdorners[i];
             }
 
-            const strokeColor =
+            const color =
                 item.isLocked ?
                     SELECTION_STROKE_LOCK_COLOR :
                     SELECTION_STROKE_COLOR;
-
-            this.renderer.setBackgroundColor(shapeAdorner, SELECTION_FILL_COLOR);
-            this.renderer.setStrokeColor(shapeAdorner, strokeColor);
+            shapeAdorner.stroke({ color, width: 1 });
 
             const bounds = item.bounds(this.props.selectedDiagram);
 
@@ -159,15 +150,16 @@ export class SelectionAdorner extends React.Component<SelectionAdornerProps> imp
         }
     }
 
-    protected transformShape(shape: any, position: Vec2, size: Vec2, offset: number, rotation = 0) {
-        this.renderer.setTransform(shape, {
+    protected transformShape(shape: svg.Element, position: Vec2, size: Vec2, offset: number, rotation = 0) {
+        SVGHelper.transform(shape, {
             x: position.x - offset,
             y: position.y - offset,
             w: size.x + 2 * offset,
             h: size.y + 2 * offset,
             rotation,
         });
-        this.renderer.setVisibility(shape, true);
+
+        shape.show();
     }
 
     public render(): any {

@@ -35,24 +35,22 @@ export class Link implements ShapePlugin {
     }
 
     public render(ctx: RenderContext) {
-        const textItem = ctx.renderer.createSinglelineText(ctx.shape, ctx.rect);
-
-        ctx.renderer.setForegroundColor(textItem, ctx.shape);
-
-        ctx.add(textItem);
+        const textItem = ctx.renderer2.text(ctx.shape, ctx.rect, p => {
+            p.setForegroundColor(ctx.shape);
+        });
 
         const fontSize = ctx.shape.fontSize;
 
-        const b = ctx.renderer.getBounds(textItem);
+        const b = ctx.renderer2.getBounds(textItem);
 
-        const w = Math.round(Math.min(b.width, ctx.rect.width));
-        const x = Math.round((ctx.rect.width - w) * 0.5);
-        const y = Math.round((ctx.rect.cy + fontSize * 0.5)) + (ctx.shape.strokeThickness % 2 === 1 ? 0.5 : 0);
+        const w = Math.floor(Math.min(b.width, ctx.rect.width));
+        const x = Math.floor((ctx.rect.width - w) * 0.5);
+        const y = Math.floor((ctx.rect.cy + fontSize * 0.5)) + (ctx.shape.strokeThickness % 2 === 1 ? 0.5 : 0);
 
-        const underlineItem = ctx.renderer.createPath(ctx.shape, `M${x},${y} L${x + w},${y}`);
+        const path = `M${x},${y} L${x + w},${y}`;
 
-        ctx.renderer.setStrokeColor(underlineItem, ctx.shape.foregroundColor);
-
-        ctx.add(underlineItem);
+        ctx.renderer2.path(ctx.shape, path, undefined, p => {
+            p.setStrokeColor(ctx.shape.foregroundColor);
+        });
     }
 }

@@ -5,37 +5,32 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { Color } from '@app/core';
+import { Color, SVGHelper } from '@app/core';
 import { SnapMode, SnapResult, Transform } from '@app/wireframes/model';
-import { SVGRenderer } from '@app/wireframes/shapes/utils/svg-renderer';
 import * as svg from 'svg.js';
+import { SVGRenderer2 } from '../shapes/utils/svg-renderer2';
 
 export class InteractionOverlays {
-    private readonly infoRect: any;
-    private readonly infoText: any;
-    private readonly lineX: any;
-    private readonly lineY: any;
-    private readonly elements: any[] = [];
-    private readonly renderer: SVGRenderer;
+    private readonly infoRect: svg.Rect;
+    private readonly infoText: svg.Element;
+    private readonly lineX: svg.Rect;
+    private readonly lineY: svg.Rect;
+    private readonly elements: svg.Element[] = [];
 
     constructor(layer: svg.Container) {
-        this.renderer = new SVGRenderer();
-        this.renderer.captureContext(layer);
-
-        this.lineX = this.renderer.createRectangle(0);
-        this.lineY = this.renderer.createRectangle(0);
+        this.lineX = layer.rect();
+        this.lineY = layer.rect();
 
         this.elements.push(this.lineX);
         this.elements.push(this.lineY);
 
-        this.infoRect = this.renderer.createRectangle(0);
-        this.infoText = this.renderer.createSinglelineText({ text: '', fontSize: 14 });
+        this.infoRect = layer.rect().fill('#000');
+        this.infoText = SVGHelper.createText(layer, '', 16, 'center', 'middle').attr('color', '#fff');
 
         this.elements.push(this.infoRect);
         this.elements.push(this.infoText);
 
-        this.renderer.setBackgroundColor(this.infoRect, '#000');
-        this.renderer.setForegroundColor(this.infoText, '#fff');
+        this.reset();
     }
 
     public showSnapAdorners(snapResult: SnapResult) {
@@ -57,33 +52,34 @@ export class InteractionOverlays {
     }
 
     public showXLine(value: number, color: Color) {
-        this.renderer.setBackgroundColor(this.lineX, color);
-        this.renderer.setTransform(this.lineX, { x: value, y: -4000, w: 1, h: 10000 });
-        this.renderer.setVisibility(this.lineX, true);
+        this.lineX.fill(color.toString()).show();
+
+        SVGHelper.transform(this.lineX, { x: value, y: -4000, w: 1, h: 10000 });
     }
 
     public showYLine(value: number, color: Color) {
-        this.renderer.setBackgroundColor(this.lineY, color);
-        this.renderer.setTransform(this.lineY, { x: -4000, y: value, w: 10000, h: 1 });
-        this.renderer.setVisibility(this.lineY, true);
+        this.lineX.fill(color.toString()).show();
+
+        SVGHelper.transform(this.lineY, { x: -4000, y: value, w: 10000, h: 1 });
     }
 
     public showInfo(transform: Transform, text: string) {
         const aabb = transform.aabb;
 
-        this.renderer.setText(this.infoText, text);
-        this.renderer.setTransform(this.infoText, { x: aabb.right + 4, y: aabb.bottom + 24, w: 160, h: 24 });
-        this.renderer.setVisibility(this.infoText, true);
+        this.infoRect.show();
+        this.infoText.node.children[0].textContent = text;
+        this.infoText.show();
 
-        const bounds = this.renderer.getBounds(this.infoText);
+        SVGHelper.transform(this.infoText, { x: aabb.right + 4, y: aabb.bottom + 24, w: 160, h: 24 });
 
-        this.renderer.setTransform(this.infoRect, { rect: bounds.inflate(4) });
-        this.renderer.setVisibility(this.infoRect, true);
+        const bounds = SVGRenderer2.INSTANCE.getBounds(this.infoText);
+
+        SVGHelper.transform(this.infoRect, { rect: bounds.inflate(4) });
     }
 
     public reset() {
         for (const element of this.elements) {
-            this.renderer.setVisibility(element, false);
+            element.hide();
         }
     }
 }

@@ -109,20 +109,28 @@ export class Transform {
     public transformByBounds(oldBounds: Transform, newBounds: Transform): Transform {
         const negatedRotation = oldBounds.rotation.negate();
 
+        // The ratio between new and old size.
         const ratioSize = newBounds.size.div(Vec2.max(Vec2.ONE, oldBounds.size));
 
         const oldSize = Vec2.max(Vec2.ONE, this.size);
+
+        // Compute the relative center to the old bounds.
         const oldCenter = Vec2.rotated(this.position.sub(oldBounds.position), Vec2.ZERO, negatedRotation);
 
         const elementRot = this.rotation.sub(oldBounds.rotation);
+
+        // Simplified cosinus and sinus that choose one side of the shape.
         const elementCos = MathHelper.simpleCos(elementRot.degree);
         const elementSin = MathHelper.simpleSin(elementRot.degree);
 
+        // Compute the size relative to rotation of the delta rotation.
         const rotatedRatio = new Vec2(
             (ratioSize.x * elementCos) + (ratioSize.y * elementSin),
             (ratioSize.x * elementSin) + (ratioSize.y * elementCos));
 
         const newSize = Vec2.max(oldSize.mul(rotatedRatio), Vec2.ZERO);
+
+        // Compute the new relative center to the new bounds.
         const newCenter = Vec2.rotated(oldCenter.mul(ratioSize), Vec2.ZERO, newBounds.rotation);
 
         const newRotation = this.rotation.add(newBounds.rotation).sub(oldBounds.rotation);
