@@ -138,7 +138,7 @@ export class AbstractControl implements Renderer {
             existing.rect().fill('#fff').opacity(0.001);
 
             if (options?.debug) {
-                existing.rect().stroke({ color: '#ff0000' });
+                existing.rect().fill('#fff').stroke({ color: '#ff0000' });
             }
         }
 

@@ -53,7 +53,7 @@ export class VerticalLine implements ShapePlugin {
     }
 
     public render(ctx: RenderContext) {
-        ctx.renderer2.rectangle(ctx.shape, 0, ctx.rect, p => {
+        ctx.renderer2.rectangle(0, 0, ctx.rect, p => {
             p.setBackgroundColor(ctx.shape.strokeColor);
         });
     }

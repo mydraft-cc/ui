@@ -43,9 +43,9 @@ export class Link implements ShapePlugin {
 
         const b = ctx.renderer2.getBounds(textItem);
 
-        const w = Math.round(Math.min(b.width, ctx.rect.width));
-        const x = Math.round((ctx.rect.width - w) * 0.5);
-        const y = Math.round((ctx.rect.cy + fontSize * 0.5)) + (ctx.shape.strokeThickness % 2 === 1 ? 0.5 : 0);
+        const w = Math.floor(Math.min(b.width, ctx.rect.width));
+        const x = Math.floor((ctx.rect.width - w) * 0.5);
+        const y = Math.floor((ctx.rect.cy + fontSize * 0.5)) + (ctx.shape.strokeThickness % 2 === 1 ? 0.5 : 0);
 
         const path = `M${x},${y} L${x + w},${y}`;
 

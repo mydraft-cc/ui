@@ -33,6 +33,7 @@ class Factory implements ShapeFactory {
 
     public rectangle(strokeWidth: RendererWidth, radius?: number, bounds?: Rect2, properties?: ShapePropertiesFunc) {
         return this.new('rect', x => x.rect(), p => {
+            p.setBackgroundColor('transparent');
             p.setStrokeWidth(strokeWidth);
             p.setRadius(radius || 0);
             p.setTransform(bounds);
@@ -41,6 +42,7 @@ class Factory implements ShapeFactory {
 
     public ellipse(strokeWidth: RendererWidth, bounds?: Rect2, properties?: ShapePropertiesFunc) {
         return this.new('ellipse', x => x.ellipse(), p => {
+            p.setBackgroundColor('transparent');
             p.setStrokeWidth(strokeWidth);
             p.setTransform(bounds);
         }, properties);
@@ -48,6 +50,7 @@ class Factory implements ShapeFactory {
 
     public roundedRectangleLeft(strokeWidth: RendererWidth, radius: number, bounds: Rect2, properties?: ShapePropertiesFunc) {
         return this.new('path', x => x.path(), p => {
+            p.setBackgroundColor('transparent');
             p.setStrokeWidth(strokeWidth);
             p.setPath(SVGHelper.roundedRectangleLeft(bounds, radius));
             p.setTransform(bounds);
@@ -56,6 +59,7 @@ class Factory implements ShapeFactory {
 
     public roundedRectangleRight(strokeWidth: RendererWidth, radius: number, bounds: Rect2, properties?: ShapePropertiesFunc) {
         return this.new('path', x => x.path(), p => {
+            p.setBackgroundColor('transparent');
             p.setStrokeWidth(strokeWidth);
             p.setPath(SVGHelper.roundedRectangleRight(bounds, radius));
             p.setTransform(bounds);
@@ -64,6 +68,7 @@ class Factory implements ShapeFactory {
 
     public roundedRectangleTop(strokeWidth: RendererWidth, radius: number, bounds: Rect2, properties?: ShapePropertiesFunc) {
         return this.new('path', x => x.path(), p => {
+            p.setBackgroundColor('transparent');
             p.setStrokeWidth(strokeWidth);
             p.setPath(SVGHelper.roundedRectangleTop(bounds, radius));
             p.setTransform(bounds);
@@ -72,6 +77,7 @@ class Factory implements ShapeFactory {
 
     public roundedRectangleBottom(strokeWidth: RendererWidth, radius: number, bounds: Rect2, properties?: ShapePropertiesFunc) {
         return this.new('path', x => x.path(), p => {
+            p.setBackgroundColor('transparent');
             p.setStrokeWidth(strokeWidth);
             p.setPath(SVGHelper.roundedRectangleBottom(bounds, radius));
             p.setTransform(bounds);
@@ -80,6 +86,7 @@ class Factory implements ShapeFactory {
 
     public path(strokeWidth: RendererWidth, path: string, bounds?: Rect2, properties?: ShapePropertiesFunc) {
         return this.new('path', x => x.path(), p => {
+            p.setBackgroundColor('transparent');
             p.setStrokeWidth(strokeWidth);
             p.setPath(path);
             p.setTransform(bounds);
@@ -88,6 +95,7 @@ class Factory implements ShapeFactory {
 
     public text(config?: RendererText, bounds?: Rect2, properties?: ShapePropertiesFunc) {
         return this.new('foreignObject', x => SVGHelper.createText(x, ''), p => {
+            p.setBackgroundColor('transparent');
             p.setText(config.text);
             p.setFontSize(config);
             p.setFontFamily(config);
@@ -99,6 +107,7 @@ class Factory implements ShapeFactory {
 
     public textMultiline(config?: RendererText, bounds?: Rect2, properties?: ShapePropertiesFunc) {
         return this.new('foreignObject', x => SVGHelper.createText(x, ''), p => {
+            p.setBackgroundColor('transparent');
             p.setText(config.text);
             p.setFontSize(config);
             p.setFontFamily(config);
@@ -110,6 +119,7 @@ class Factory implements ShapeFactory {
 
     public raster(source: string, bounds?: Rect2, properties?: ShapePropertiesFunc) {
         return this.new('image', x => x.image(), p => {
+            p.setBackgroundColor('transparent');
             p.setImage(source);
             p.setTransform(bounds);
         }, properties);
@@ -305,8 +315,9 @@ const PROPERTIES: ReadonlyArray<keyof PropertySet> = [
     'path',
     'text',
     'text-alignment',
-    'transform',
     'vertical-alignment',
+    // Transform must be last.
+    'transform',
 ];
 
 class Properties implements ShapeProperties {
@@ -471,7 +482,7 @@ class Properties implements ShapeProperties {
     }
 
     public setVerticalAlignment(alignment: string): ShapeProperties {
-        this.properties['vertical-align'] = alignment;
+        this.properties['vertical-alignment'] = alignment;
 
         return this;
     }

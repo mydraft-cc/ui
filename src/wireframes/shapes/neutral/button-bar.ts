@@ -45,7 +45,7 @@ export class ButtonBar implements ShapePlugin {
 
         const parts = this.parseText(ctx.shape);
 
-        const itemWidth = Math.round(w / parts.length);
+        const itemWidth = Math.floor(w / parts.length);
         const itemHeight = h;
 
         const accentColor = Color.fromValue(ctx.shape.getAppearance(ACCENT_COLOR));

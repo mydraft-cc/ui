@@ -126,10 +126,10 @@ export class TransformAdorner extends React.Component<TransformAdornerProps> imp
                 if (!item.constraint.calculateSizeY()) {
                     this.canResizeY = true;
                 }
+            } else {
+                this.canResizeX = true;
+                this.canResizeY = true;
             }
-
-            this.canResizeX = true;
-            this.canResizeY = true;
         }
     }
 
@@ -273,8 +273,8 @@ export class TransformAdorner extends React.Component<TransformAdornerProps> imp
 
         this.overlays.showSnapAdorners(snapResult);
 
-        const x = Math.round(this.transform.aabb.x);
-        const y = Math.round(this.transform.aabb.y);
+        const x = Math.floor(this.transform.aabb.x);
+        const y = Math.floor(this.transform.aabb.y);
 
         this.overlays.showInfo(this.transform, `X: ${x}, Y: ${y}`);
     }
@@ -309,8 +309,8 @@ export class TransformAdorner extends React.Component<TransformAdornerProps> imp
 
         this.transform = this.startTransform.resizeAndMoveBy(deltaSize, deltaPos);
 
-        const w = Math.round(this.transform.size.x);
-        const h = Math.round(this.transform.size.y);
+        const w = Math.floor(this.transform.size.x);
+        const h = Math.floor(this.transform.size.y);
 
         this.overlays.showInfo(this.transform, `Width: ${w}, Height: ${h}`);
     }
@@ -416,8 +416,8 @@ export class TransformAdorner extends React.Component<TransformAdornerProps> imp
         SVGHelper.transform(this.moveShape, {
             x: position.x - 0.5 * size.x - 1,
             y: position.y - 0.5 * size.y - 1,
-            w: size.x + 2,
-            h: size.y + 2,
+            w: Math.floor(size.x + 2),
+            h: Math.floor(size.y + 2),
             rx: position.x,
             ry: position.y,
             rotation,

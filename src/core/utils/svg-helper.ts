@@ -96,11 +96,11 @@ export module SVGHelper {
     }
 
     export function transform<T extends svg.Element>(element: T, t: MatrixTransform): T {
-        let x = Math.round(t.rect ? t.rect.x : t.x || 0);
-        let y = Math.round(t.rect ? t.rect.y : t.y || 0);
+        let x = Math.floor(t.rect ? t.rect.x : t.x || 0);
+        let y = Math.floor(t.rect ? t.rect.y : t.y || 0);
 
-        let w = Math.round(t.rect ? t.rect.width : t.w || 0);
-        let h = Math.round(t.rect ? t.rect.height : t.h || 0);
+        let w = Math.floor(t.rect ? t.rect.width : t.w || 0);
+        let h = Math.floor(t.rect ? t.rect.height : t.h || 0);
 
         if (element.attr('stroke-width') % 2 === 1) {
             x += 0.5;

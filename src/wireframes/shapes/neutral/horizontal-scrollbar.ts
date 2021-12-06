@@ -51,6 +51,11 @@ export class HorizontalScrollbar implements ShapePlugin {
 
     private createBackground(ctx: RenderContext, clickSize: number) {
         ctx.renderer2.group(items => {
+            // Rail
+            items.rectangle(0, 0, ctx.rect, p => {
+                p.setBackgroundColor(ctx.shape);
+            });
+
             const barSize = ctx.shape.getAppearance(BAR_SIZE) / 100;
             const barPosition = ctx.shape.getAppearance(BAR_POSITION) / 100 * (ctx.rect.width - 2 * clickSize) * (1 - barSize);
             const barRect = new Rect2(ctx.rect.x + clickSize + barPosition, ctx.rect.y, (ctx.rect.width - 2 * clickSize) * barSize, ctx.rect.height);
@@ -58,11 +63,6 @@ export class HorizontalScrollbar implements ShapePlugin {
             // Bar
             items.rectangle(0, 0, barRect, p => {
                 p.setBackgroundColor(0xbdbdbd);
-            });
-
-            // Rail
-            items.rectangle(0, 0, ctx.rect, p => {
-                p.setBackgroundColor(ctx.shape);
             });
         }, clip => {
             clip.rectangle(0, 0, ctx.rect);

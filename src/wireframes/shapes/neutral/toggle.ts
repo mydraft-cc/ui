@@ -58,14 +58,14 @@ export class Toggle implements ShapePlugin {
 
         const barColor = isUnchecked ? ctx.shape : ctx.shape.foregroundColor;
 
-        // Circle.
-        ctx.renderer2.ellipse(0, Rect2.fromCenter(circleCenter, circleSize), p => {
-            p.setBackgroundColor(ctx.shape.strokeColor);
-        });
-
         // Pill
         ctx.renderer2.rectangle(0, radius, ctx.rect, p => {
             p.setBackgroundColor(barColor);
+        });
+
+        // Circle.
+        ctx.renderer2.ellipse(0, Rect2.fromCenter(circleCenter, circleSize), p => {
+            p.setBackgroundColor(ctx.shape.strokeColor);
         });
     }
 }

@@ -141,8 +141,8 @@ export class Transform {
         const elementSin = Math.sin(this.rotation.radian);
 
         const centerOffset = new Vec2(
-            Math.round(0.5 * ((ratioSize.x * elementCos) + (ratioSize.y * elementSin))),
-            Math.round(0.5 * ((ratioSize.x * elementSin) + (ratioSize.y * elementCos))));
+            Math.floor(0.5 * ((ratioSize.x * elementCos) + (ratioSize.y * elementSin))),
+            Math.floor(0.5 * ((ratioSize.x * elementSin) + (ratioSize.y * elementCos))));
 
         return this.resizeTo(newSize).moveBy(centerOffset);
     }
