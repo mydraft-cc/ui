@@ -8,14 +8,14 @@
 import { Vec2 } from '@app/core';
 import { Constraint, Shape } from '@app/wireframes/interface';
 import { DiagramItem } from '@app/wireframes/model';
-import { SVGRenderer } from './svg-renderer';
+import { SVGRenderer2 } from './svg-renderer2';
 
 export class TextSizeConstraint implements Constraint {
     constructor(
         private readonly padding = 0,
         private readonly lineHeight = 1.2,
         private readonly resizeWidth = false,
-        private readonly renderer: SVGRenderer,
+        private readonly renderer: SVGRenderer2,
         private readonly minWidth = 0,
     ) { }
 

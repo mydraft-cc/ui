@@ -28,8 +28,6 @@ export class Paragraph implements ShapePlugin {
     }
 
     public render(ctx: RenderContext) {
-        const textItem = ctx.renderer.createMultilineText(ctx.shape, ctx.rect);
-
-        ctx.add(textItem);
+        ctx.renderer2.textMultiline(ctx.shape, ctx.rect);
     }
 }

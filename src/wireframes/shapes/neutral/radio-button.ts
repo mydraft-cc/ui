@@ -61,21 +61,19 @@ export class RadioButton implements ShapePlugin {
     private createCircle(ctx: RenderContext) {
         const y = 0.5 * ctx.rect.h;
 
-        const circleItem = ctx.renderer.createEllipse(ctx.shape, Rect2.fromCenter(new Vec2(CIRCLE_POSITION_X, y), CIRCLE_RADIUS));
-
-        ctx.renderer.setStrokeColor(circleItem, ctx.shape);
-        ctx.renderer.setBackgroundColor(circleItem, ctx.shape);
-
-        ctx.add(circleItem);
+        // Circle
+        ctx.renderer2.ellipse(ctx.shape, Rect2.fromCenter(new Vec2(CIRCLE_POSITION_X, y), CIRCLE_RADIUS), p => {
+            p.setStrokeColor(ctx.shape);
+            p.setBackgroundColor(ctx.shape);
+        });
 
         const state = ctx.shape.getAppearance(STATE_KEY);
 
         if (state === STATE_CHECKED) {
-            const checkCircleItem = ctx.renderer.createEllipse(0, Rect2.fromCenter(new Vec2(CIRCLE_POSITION_X, y), CIRCLE_CHECK_RADIUS));
-
-            ctx.renderer.setBackgroundColor(checkCircleItem, ctx.shape.strokeColor);
-
-            ctx.add(checkCircleItem);
+            // Checked circle
+            ctx.renderer2.ellipse(0, Rect2.fromCenter(new Vec2(CIRCLE_POSITION_X, y), CIRCLE_CHECK_RADIUS), p => {
+                p.setBackgroundColor(ctx.shape.strokeColor);
+            });
         }
     }
 
@@ -84,8 +82,7 @@ export class RadioButton implements ShapePlugin {
         const h = ctx.rect.height;
 
         const textRect = new Rect2(TEXT_POSITION_X, 0, w, h);
-        const textItem = ctx.renderer.createSinglelineText(ctx.shape, textRect);
 
-        ctx.add(textItem);
+        ctx.renderer2.text(ctx.shape, textRect);
     }
 }

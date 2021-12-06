@@ -39,27 +39,23 @@ export class Phone implements ShapePlugin {
 
     private createHull(ctx: RenderContext) {
         const hullRect = new Rect2(-15, -60, ctx.rect.width + 30, ctx.rect.height + 80);
-        const hullItem = ctx.renderer.createRectangle(0, 20, hullRect);
 
-        ctx.renderer.setBackgroundColor(hullItem, 0);
-
-        ctx.add(hullItem);
+        ctx.renderer2.rectangle(0, 20, hullRect, p => {
+            p.setBackgroundColor(0);
+        });
     }
 
     private createScreen(ctx: RenderContext) {
-        const screenItem = ctx.renderer.createRectangle(0, 0, ctx.rect);
-
-        ctx.renderer.setBackgroundColor(screenItem, ctx.shape);
-
-        ctx.add(screenItem);
+        ctx.renderer2.rectangle(0, 0, ctx.rect, p => {
+            p.setBackgroundColor(ctx.shape);
+        });
     }
 
     private createSpeaker(ctx: RenderContext) {
         const speakerRect = new Rect2((ctx.rect.width - 50) * 0.5, -35, 50, 4);
-        const speakerItem = ctx.renderer.createRectangle(0, 2, speakerRect);
 
-        ctx.renderer.setBackgroundColor(speakerItem, 0x333333);
-
-        ctx.add(speakerItem);
+        ctx.renderer2.rectangle(0, 2, speakerRect, p => {
+            p.setBackgroundColor(0x333333);
+        });
     }
 }

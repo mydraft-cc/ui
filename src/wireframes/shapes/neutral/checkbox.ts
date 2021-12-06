@@ -65,28 +65,24 @@ export class Checkbox implements ShapePlugin {
 
         const bounds = new Rect2(x, y, s, s);
 
-        const boxItem = ctx.renderer.createRectangle(ctx.shape, 0, bounds);
-
-        ctx.renderer.setStrokeColor(boxItem, ctx.shape);
-        ctx.renderer.setBackgroundColor(boxItem, ctx.shape);
-
-        ctx.add(boxItem);
+        ctx.renderer2.rectangle(ctx.shape, 0, bounds, p => {
+            p.setStrokeColor(ctx.shape);
+            p.setBackgroundColor(ctx.shape);
+        });
 
         const state = ctx.shape.getAppearance(STATE_KEY);
 
         if (state === STATE_INTERDEMINATE) {
-            const interdeminateBoxItem = ctx.renderer.createRectangle(0, 0, bounds.deflate(4));
-
-            ctx.renderer.setBackgroundColor(interdeminateBoxItem, ctx.shape.strokeColor);
-
-            ctx.add(interdeminateBoxItem);
+            ctx.renderer2.rectangle(0, 0, bounds.deflate(4), p => {
+                p.setBackgroundColor(ctx.shape.strokeColor);
+            });
         } else if (state === STATE_CHECKED) {
-            const checkPathItem = ctx.renderer.createPath(2, `M${bounds.left + 3} ${bounds.cy + 2} L${bounds.left + bounds.width * 0.4} ${bounds.bottom - 4} L${bounds.right - 3} ${bounds.top + 3}`);
+            const path = `M${bounds.left + 3} ${bounds.cy + 2} L${bounds.left + bounds.width * 0.4} ${bounds.bottom - 4} L${bounds.right - 3} ${bounds.top + 3}`;
 
-            ctx.renderer.setStrokeStyle(checkPathItem, 'butt', 'butt');
-            ctx.renderer.setStrokeColor(checkPathItem, ctx.shape);
-
-            ctx.add(checkPathItem);
+            ctx.renderer2.path(2, path, undefined, p => {
+                p.setStrokeColor(ctx.shape);
+                p.setStrokeStyle('butt', 'butt');
+            });
         }
     }
 
@@ -94,8 +90,6 @@ export class Checkbox implements ShapePlugin {
         const w = ctx.rect.width - TEXT_POSITION_X;
         const h = ctx.rect.height;
 
-        const textItem = ctx.renderer.createSinglelineText(ctx.shape, new Rect2(TEXT_POSITION_X, 0, w, h));
-
-        ctx.add(textItem);
+        ctx.renderer2.text(ctx.shape, new Rect2(TEXT_POSITION_X, 0, w, h));
     }
 }

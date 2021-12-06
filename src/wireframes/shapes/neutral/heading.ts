@@ -31,10 +31,8 @@ export class Heading implements ShapePlugin {
     }
 
     public render(ctx: RenderContext) {
-        const textItem = ctx.renderer.createSinglelineText(ctx.shape, ctx.rect);
-
-        ctx.renderer.setForegroundColor(textItem, ctx.shape);
-
-        ctx.add(textItem);
+        ctx.renderer2.text(ctx.shape, ctx.rect, p => {
+            p.setForegroundColor(ctx.shape);
+        });
     }
 }

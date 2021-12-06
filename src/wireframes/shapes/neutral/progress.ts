@@ -56,26 +56,28 @@ export class Progress implements ShapePlugin {
     private createBackground(ctx: RenderContext) {
         const relative = ctx.shape.getAppearance(VALUE) / 100;
 
-        const clipMask = ctx.renderer.createRectangle(0, ctx.rect.height * 0.5, ctx.rect);
+        ctx.renderer2.group(items => {
+            const activeBounds = new Rect2(ctx.rect.x, ctx.rect.y, ctx.rect.width * relative, ctx.rect.height);
 
-        const activeBounds = new Rect2(ctx.rect.x, ctx.rect.y, ctx.rect.width * relative, ctx.rect.height);
-        const activeItem = ctx.renderer.createRectangle(0, 0, activeBounds);
+            // Active area
+            ctx.renderer2.rectangle(0, 0, activeBounds, p => {
+                p.setBackgroundColor(ctx.shape.getAppearance(ACCENT_COLOR));
+            });
 
-        ctx.renderer.setBackgroundColor(activeItem, ctx.shape.getAppearance(ACCENT_COLOR));
+            const inactiveBounds = new Rect2(ctx.rect.width * relative, ctx.rect.top, ctx.rect.width * (1 - relative), ctx.rect.height);
 
-        const inactiveBounds = new Rect2(ctx.rect.width * relative, ctx.rect.top, ctx.rect.width * (1 - relative), ctx.rect.height);
-        const inactiveItem = ctx.renderer.createRectangle(0, 0, inactiveBounds);
-
-        ctx.renderer.setBackgroundColor(inactiveItem, ctx.shape);
-
-        ctx.add(ctx.renderer.createGroup([activeItem, inactiveItem], clipMask));
+            // Inactive area.
+            items.rectangle(0, 0, inactiveBounds, p => {
+                p.setBackgroundColor(ctx.shape);
+            });
+        }, clip => {
+            clip.rectangle(0, ctx.rect.height * 0.5, ctx.rect);
+        });
     }
 
     private createBorder(ctx: RenderContext) {
-        const borderItem = ctx.renderer.createRectangle(ctx.shape, ctx.rect.height * 0.5, ctx.rect);
-
-        ctx.renderer.setStrokeColor(borderItem, ctx.shape);
-
-        ctx.add(borderItem);
+        ctx.renderer2.rectangle(ctx.shape, ctx.rect.height * 0.5, ctx.rect, p => {
+            p.setStrokeColor(ctx.shape);
+        });
     }
 }

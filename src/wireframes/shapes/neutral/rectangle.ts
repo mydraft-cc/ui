@@ -47,19 +47,15 @@ export class Rectangle implements ShapePlugin {
     private createShape(ctx: RenderContext) {
         const borderRadius = ctx.shape.getAppearance(BORDER_RADIUS);
 
-        const shapeItem = ctx.renderer.createRectangle(ctx.shape, borderRadius, ctx.rect);
-
-        ctx.renderer.setStrokeColor(shapeItem, ctx.shape);
-        ctx.renderer.setBackgroundColor(shapeItem, ctx.shape);
-
-        ctx.add(shapeItem);
+        ctx.renderer2.rectangle(ctx.shape, borderRadius, ctx.rect, p => {
+            p.setStrokeColor(ctx.shape);
+            p.setBackgroundColor(ctx.shape);
+        });
     }
 
     private createText(ctx: RenderContext) {
-        const textItem = ctx.renderer.createSinglelineText(ctx.shape, ctx.rect.deflate(10));
-
-        ctx.renderer.setForegroundColor(textItem, ctx.shape);
-
-        ctx.add(textItem);
+        ctx.renderer2.text(ctx.shape, ctx.rect.deflate(10), p => {
+            p.setForegroundColor(ctx.shape);
+        });
     }
 }

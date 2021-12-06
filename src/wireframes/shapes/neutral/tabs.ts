@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { Color, ConfigurableFactory, DefaultAppearance, Rect2, RenderContext, ShapePlugin } from '@app/wireframes/interface';
+import { Color, ConfigurableFactory, DefaultAppearance, Rect2, RenderContext, ShapePlugin, ShapeProperties } from '@app/wireframes/interface';
 import { CommonTheme } from './_theme';
 
 const TAB_COLOR = 'TAB_COLOR';
@@ -82,17 +82,14 @@ export class Tabs implements ShapePlugin {
     private createContent(ctx: RenderContext, heightHeader: number, strokeThickness: number, isBottom: boolean) {
         const w = ctx.rect.width;
         const h = ctx.rect.height - heightHeader + strokeThickness;
-
         const y = isBottom ? 0 : heightHeader - strokeThickness;
 
         const bounds = new Rect2(0, y, w, h);
 
-        const contentItem: any = ctx.renderer.createRectangle(ctx.shape, CommonTheme.CONTROL_BORDER_RADIUS, bounds);
-
-        ctx.renderer.setBackgroundColor(contentItem, ctx.shape);
-        ctx.renderer.setStrokeColor(contentItem, ctx.shape);
-
-        ctx.add(contentItem);
+        ctx.renderer2.rectangle(ctx.shape, CommonTheme.CONTROL_BORDER_RADIUS, bounds, p => {
+            p.setBackgroundColor(ctx.shape);
+            p.setStrokeColor(ctx.shape);
+        });
     }
 
     private createHeader(ctx: RenderContext, parts: ParsedDefinition, heightHeader: number, isBottom: boolean) {
@@ -104,26 +101,34 @@ export class Tabs implements ShapePlugin {
         for (const part of parts) {
             const bounds = new Rect2(part.x, y, part.width, h);
 
-            const partItem: any = isBottom ?
-                ctx.renderer.createRoundedRectangleBottom(ctx.shape, CommonTheme.CONTROL_BORDER_RADIUS, bounds) :
-                ctx.renderer.createRoundedRectangleTop(ctx.shape, CommonTheme.CONTROL_BORDER_RADIUS, bounds);
-
-            if (part.selected) {
-                ctx.renderer.setBackgroundColor(partItem, ctx.shape);
+            if (isBottom) {
+                // Bar button
+                ctx.renderer2.roundedRectangleBottom(ctx.shape, CommonTheme.CONTROL_BORDER_RADIUS, bounds, p => {
+                    this.stylePart(part, ctx, tabColor, p);
+                });
             } else {
-                ctx.renderer.setBackgroundColor(partItem, tabColor);
+                // Bar button
+                ctx.renderer2.roundedRectangleTop(ctx.shape, CommonTheme.CONTROL_BORDER_RADIUS, bounds, p => {
+                    this.stylePart(part, ctx, tabColor, p);
+                });
             }
 
-            ctx.renderer.setStrokeColor(partItem, ctx.shape);
-
-            const textItem = ctx.renderer.createSinglelineText(ctx.shape, bounds.deflate(4));
-
-            ctx.renderer.setForegroundColor(textItem, ctx.shape);
-            ctx.renderer.setText(textItem, part.text);
-
-            ctx.add(partItem);
-            ctx.add(textItem);
+            // Bar button text.
+            ctx.renderer2.text(ctx.shape, bounds.deflate(4), p => {
+                p.setForegroundColor(ctx.shape);
+                p.setText(part.text);
+            });
         }
+    }
+
+    private stylePart(part: { text: string; selected?: boolean }, ctx: RenderContext, tabColor: Color, p: ShapeProperties) {
+        if (part.selected) {
+            p.setBackgroundColor(ctx.shape);
+        } else {
+            p.setBackgroundColor(tabColor);
+        }
+
+        p.setStrokeColor(ctx.shape);
     }
 
     private parseText(ctx: RenderContext, fontFamily: string, fontSize: number, strokeThickness: number): ParsedDefinition {
@@ -140,7 +145,7 @@ export class Tabs implements ShapePlugin {
                 text = text.substr(0, text.length - 1).trim();
             }
 
-            const width = ctx.renderer.getTextWidth(text, fontSize, fontFamily) + fontSize;
+            const width = ctx.renderer2.getTextWidth(text, fontSize, fontFamily) + fontSize;
 
             if (x + width > w) {
                 break;

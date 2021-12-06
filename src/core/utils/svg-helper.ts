@@ -32,14 +32,6 @@ export module SVGHelper {
     export const ZERO_POINT = new svg.Point(0, 0);
     export const IDENTITY_MATRIX = new svg.Matrix(1, 0, 0, 1, 0, 0);
 
-    export function createSinglelineText(container: svg.Container, text: string, fontSize?: number, alignment?: string) {
-        return createText(container, text, fontSize, alignment, 'middle');
-    }
-
-    export function createMultilineText(container: svg.Container, text: string, fontSize?: number, alignment?: string) {
-        return createText(container, text, fontSize, alignment, 'top');
-    }
-
     export function createText(container: svg.Container, text: string, fontSize?: number, alignment?: string, verticalAlign?: string) {
         fontSize = fontSize || 10;
 
@@ -59,7 +51,7 @@ export module SVGHelper {
         return element;
     }
 
-    export function createRoundedRectangleRight(container: svg.Container, rectangle: Rect2, radius = 10) {
+    export function roundedRectangleRight(rectangle: Rect2, radius = 10) {
         const rad = Math.min(radius, rectangle.width * 0.5, rectangle.height * 0.5);
 
         const t = rectangle.top;
@@ -67,12 +59,10 @@ export module SVGHelper {
         const r = rectangle.right;
         const b = rectangle.bottom;
 
-        const item = container.path(`M${l},${t} L${r - rad},${t} a${rad},${rad} 0 0 1 ${rad},${rad} L${r},${b - rad} a${rad},${rad} 0 0 1 -${rad},${rad} L${l},${b} z`);
-
-        return item;
+        return `M${l},${t} L${r - rad},${t} a${rad},${rad} 0 0 1 ${rad},${rad} L${r},${b - rad} a${rad},${rad} 0 0 1 -${rad},${rad} L${l},${b} z`;
     }
 
-    export function createRoundedRectangleLeft(container: svg.Container, rectangle: Rect2, radius = 10) {
+    export function roundedRectangleLeft(rectangle: Rect2, radius = 10) {
         const rad = Math.min(radius, rectangle.width * 0.5, rectangle.height * 0.5);
 
         const t = rectangle.top;
@@ -80,12 +70,10 @@ export module SVGHelper {
         const r = rectangle.right;
         const b = rectangle.bottom;
 
-        const item = container.path(`M${r},${b} L${l + rad},${b} a${rad},${rad} 0 0 1 -${rad},-${rad} L${l},${t + rad} a${rad},${rad} 0 0 1 ${rad},-${rad} L${r},${t} z`);
-
-        return item;
+        return `M${r},${b} L${l + rad},${b} a${rad},${rad} 0 0 1 -${rad},-${rad} L${l},${t + rad} a${rad},${rad} 0 0 1 ${rad},-${rad} L${r},${t} z`;
     }
 
-    export function createRoundedRectangleTop(container: svg.Container, rectangle: Rect2, radius = 10) {
+    export function roundedRectangleTop(rectangle: Rect2, radius = 10) {
         const rad = Math.min(radius, rectangle.width * 0.5, rectangle.height * 0.5);
 
         const t = rectangle.top;
@@ -93,12 +81,10 @@ export module SVGHelper {
         const r = rectangle.right;
         const b = rectangle.bottom;
 
-        const item = container.path(`M${l},${b} L${l},${t + rad} a${rad},${rad} 0 0 1 ${rad},-${rad} L${r - rad},${t} a${rad},${rad} 0 0 1 ${rad},${rad} L${r},${b} z`);
-
-        return item;
+        return `M${l},${b} L${l},${t + rad} a${rad},${rad} 0 0 1 ${rad},-${rad} L${r - rad},${t} a${rad},${rad} 0 0 1 ${rad},${rad} L${r},${b} z`;
     }
 
-    export function createRoundedRectangleBottom(container: svg.Container, rectangle: Rect2, radius = 10) {
+    export function roundedRectangleBottom(rectangle: Rect2, radius = 10) {
         const rad = Math.min(radius, rectangle.width * 0.5, rectangle.height * 0.5);
 
         const t = rectangle.top;
@@ -106,9 +92,7 @@ export module SVGHelper {
         const r = rectangle.right;
         const b = rectangle.bottom;
 
-        const item = container.path(`M${r},${t} L${r},${b - rad} a${rad},${rad} 0 0 1 -${rad},${rad} L${l + rad},${b} a${rad},${rad} 0 0 1 -${rad},-${rad} L${l},${t}z`);
-
-        return item;
+        return `M${r},${t} L${r},${b - rad} a${rad},${rad} 0 0 1 -${rad},${rad} L${l + rad},${b} a${rad},${rad} 0 0 1 -${rad},-${rad} L${l},${t}z`;
     }
 
     export function transform<T extends svg.Element>(element: T, t: MatrixTransform): T {

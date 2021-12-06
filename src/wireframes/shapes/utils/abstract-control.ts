@@ -5,14 +5,12 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { Color, Rect2, Types, Vec2 } from '@app/core';
+import { Rect2, SVGHelper, Types, Vec2 } from '@app/core';
 import { ConfigurableFactory, Constraint, ConstraintFactory, RenderContext, Shape, ShapePlugin } from '@app/wireframes/interface';
 import { ColorConfigurable, DiagramItem, MinSizeConstraint, NumberConfigurable, Renderer, SelectionConfigurable, SizeConstraint, SliderConfigurable, TextHeightConstraint } from '@app/wireframes/model';
-import { SVGRenderer } from './svg-renderer';
+import svg = require('svg.js');
 import { SVGRenderer2 } from './svg-renderer2';
 import { TextSizeConstraint } from './text-size-contraint';
-
-const RENDER_BACKGROUND = 1;
 
 class DefaultConstraintFactory implements ConstraintFactory {
     public static readonly INSTANCE = new DefaultConstraintFactory();
@@ -29,7 +27,7 @@ class DefaultConstraintFactory implements ConstraintFactory {
     }
 
     public textSize(padding?: number, lineHeight?: number, resizeWidth?: false, minWidth?: number): Constraint {
-        return new TextSizeConstraint(padding, lineHeight, resizeWidth, SVGRenderer.INSTANCE, minWidth);
+        return new TextSizeConstraint(padding, lineHeight, resizeWidth, SVGRenderer2.INSTANCE, minWidth);
     }
 }
 
@@ -56,18 +54,11 @@ class DefaultConfigurableFactory implements ConfigurableFactory {
 class Context implements RenderContext {
     public static readonly INSTANCE = new Context();
 
-    public readonly items: any[] = [];
-
-    public readonly renderer = SVGRenderer.INSTANCE;
     public readonly renderer2 = SVGRenderer2.INSTANCE;
 
     public shape: Shape;
 
     public rect: Rect2;
-
-    public add(item: any) {
-        this.items.push(item);
-    }
 }
 
 export class AbstractControl implements Renderer {
@@ -123,7 +114,6 @@ export class AbstractControl implements Renderer {
     }
 
     public setContext(context: any): Renderer {
-        SVGRenderer.INSTANCE.captureContext(context);
         SVGRenderer2.INSTANCE.setContainer(context);
 
         return this;
@@ -135,49 +125,58 @@ export class AbstractControl implements Renderer {
         return DiagramItem.createShape(id, this.identifier(), size.x, size.y, this.configurables(), this.defaultAppearance(), this.constraint());
     }
 
-    public render(shape: DiagramItem, options?: { debug?: boolean; noOpacity?: boolean; noTransform?: boolean }): any {
+    public render(shape: DiagramItem, existing: svg.G | undefined, options?: { debug?: boolean; noOpacity?: boolean; noTransform?: boolean }): any {
         const context = Context.INSTANCE;
 
         context.shape = shape;
         context.rect = new Rect2(0, 0, shape.transform.size.x, shape.transform.size.y);
-        context.items.splice(0, 10000);
 
-        SVGRenderer2.INSTANCE.group(items => {
-            if (RENDER_BACKGROUND) {
-                items.rectangle(0, undefined, undefined, p => {
-                    p.setBackgroundColor(Color.WHITE);
-                    p.setOpacity(0.001);
+        const container = SVGRenderer2.INSTANCE.getContainer();
 
-                    SVGRenderer2.INSTANCE.setTransform(p.shape, { rect: context.rect });
-                });
-            }
-
-            if (RENDER_BACKGROUND) {
-                items.rectangle(0, undefined, undefined, p => {
-                    p.setBackgroundColor(Color.WHITE);
-                    p.setOpacity(0.001);
-
-                    SVGRenderer2.INSTANCE.setTransform(p.shape, { rect: context.rect });
-                });
-            }
-
-            this.plugin.render(context);
+        if (!existing) {
+            existing = container.group();
+            existing.rect().fill('#fff').opacity(0.001);
 
             if (options?.debug) {
-                items.rectangle(1, undefined, undefined, p => {
-                    p.setStrokeColor(0xff0000);
+                existing.rect().stroke({ color: '#ff0000' });
+            }
+        }
 
-                    SVGRenderer.INSTANCE.setTransform(p.shape, { rect: context.rect.inflate(1) });
-                });
-            }
-        }, undefined, p => {
-            if (!options?.noTransform) {
-                SVGRenderer.INSTANCE.setTransform(p.shape, shape);
-            }
+        let index = 1;
 
-            if (!options?.noOpacity) {
-                p.setOpacity(shape);
-            }
-        });
+        if (options.debug) {
+            index = 2;
+        }
+
+        for (let i = 0; i < index; i++) {
+            SVGHelper.transform(existing.get(i), { rect: context.rect });
+        }
+
+        SVGRenderer2.INSTANCE.setContainer(existing, index);
+
+        this.plugin.render(context);
+
+        if (!options?.noTransform) {
+            const to = shape.transform;
+
+            SVGHelper.transform(existing, {
+                x: to.position.x - 0.5 * to.size.x,
+                y: to.position.y - 0.5 * to.size.y,
+                w: to.size.x,
+                h: to.size.y,
+                rx: to.position.x,
+                ry: to.position.y,
+                rotation: to.rotation.degree,
+            });
+        }
+
+        if (!options?.noOpacity) {
+            existing.opacity(shape.opacity);
+        }
+
+        SVGRenderer2.INSTANCE.cleanup();
+        SVGRenderer2.INSTANCE.setContainer(container);
+
+        return existing;
     }
 }

@@ -34,11 +34,9 @@ export class ShapeRef {
         const mustRender = this.shape !== shape || !this.renderedElement;
 
         if (mustRender) {
-            this.remove();
-
             this.renderer.setContext(this.doc);
 
-            this.renderedElement = this.renderer.render(shape, { debug: this.showDebugMarkers });
+            this.renderedElement = this.renderer.render(shape, this.renderedElement, { debug: this.showDebugMarkers });
             this.renderedElement.node['shape'] = shape;
         }
 

@@ -50,11 +50,11 @@ export class VerticalScrollbar implements ShapePlugin {
     }
 
     private createBackground(ctx: RenderContext, clickSize: number) {
-        const barSize = ctx.shape.getAppearance(BAR_SIZE) / 100;
-        const barPosition = ctx.shape.getAppearance(BAR_POSITION) / 100 * (ctx.rect.height - 2 * clickSize) * (1 - barSize);
-        const barRect = new Rect2(ctx.rect.x, ctx.rect.y + clickSize + barPosition, ctx.rect.width, (ctx.rect.height - 2 * clickSize) * barSize);
-
         ctx.renderer2.group(items => {
+            const barSize = ctx.shape.getAppearance(BAR_SIZE) / 100;
+            const barPosition = ctx.shape.getAppearance(BAR_POSITION) / 100 * (ctx.rect.height - 2 * clickSize) * (1 - barSize);
+            const barRect = new Rect2(ctx.rect.x, ctx.rect.y + clickSize + barPosition, ctx.rect.width, (ctx.rect.height - 2 * clickSize) * barSize);
+
             // Bar
             items.rectangle(0, 0, barRect, p => {
                 p.setBackgroundColor(0xbdbdbd);

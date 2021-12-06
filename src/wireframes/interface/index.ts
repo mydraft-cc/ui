@@ -19,14 +19,9 @@ export type RendererWidth = number | Shape;
 export type Configurable = any;
 
 export interface RenderContext {
-    readonly items: any[];
-
-    readonly renderer: ShapeRenderer;
-    readonly renderer2: ShapeRenderer2;
     readonly shape: Shape;
+    readonly renderer2: ShapeRenderer2;
     readonly rect: Rect2;
-
-    add(item: any): void;
 }
 
 export interface ShapePlugin {
@@ -62,8 +57,6 @@ export interface ShapeProperties {
 
     setOpacity(opacity: RendererOpacity): ShapeProperties;
 
-    setVisibility(visible: boolean): ShapeProperties;
-
     setText(text: string): ShapeProperties;
 }
 
@@ -71,74 +64,30 @@ export type ShapePropertiesFunc = (properties: ShapeProperties) => void;
 export type ShapeFactoryFunc = (factory: ShapeFactory) => void;
 
 export interface ShapeFactory {
-    roundedRectangleLeft(strokeWidth: RendererWidth, radius: number, bounds: Rect2, properties?: ShapePropertiesFunc): void;
+    ellipse(strokeWidth: RendererWidth, bounds?: Rect2, properties?: ShapePropertiesFunc): RendererElement;
 
-    roundedRectangleRight(strokeWidth: RendererWidth, radius: number, bounds: Rect2, properties?: ShapePropertiesFunc): void;
+    rectangle(strokeWidth: RendererWidth, radius?: number, bounds?: Rect2, properties?: ShapePropertiesFunc): RendererElement;
 
-    roundedRectangleTop(strokeWidth: RendererWidth, radius: number, bounds: Rect2, properties?: ShapePropertiesFunc): void;
+    roundedRectangleLeft(strokeWidth: RendererWidth, radius: number, bounds: Rect2, properties?: ShapePropertiesFunc): RendererElement;
 
-    roundedRectangleBottom(strokeWidth: RendererWidth, radius: number, bounds: Rect2, properties?: ShapePropertiesFunc): void;
+    roundedRectangleRight(strokeWidth: RendererWidth, radius: number, bounds: Rect2, properties?: ShapePropertiesFunc): RendererElement;
 
-    path(strokeWidth: RendererWidth, path: string, bounds?: Rect2, properties?: ShapePropertiesFunc): void;
+    roundedRectangleTop(strokeWidth: RendererWidth, radius: number, bounds: Rect2, properties?: ShapePropertiesFunc): RendererElement;
 
-    raster(source: string, bounds?: Rect2, properties?: ShapePropertiesFunc): void;
+    roundedRectangleBottom(strokeWidth: RendererWidth, radius: number, bounds: Rect2, properties?: ShapePropertiesFunc): RendererElement;
 
-    rectangle(strokeWidth: RendererWidth, radius?: number, bounds?: Rect2, properties?: ShapePropertiesFunc): void;
+    path(strokeWidth: RendererWidth, path: string, bounds?: Rect2, properties?: ShapePropertiesFunc): RendererElement;
 
-    ellipse(strokeWidth: RendererWidth, bounds?: Rect2, properties?: ShapePropertiesFunc): void;
+    raster(source: string, bounds?: Rect2, properties?: ShapePropertiesFunc): RendererElement;
 
-    text(config?: RendererText, bounds?: Rect2, properties?: ShapePropertiesFunc): void;
+    text(config?: RendererText, bounds?: Rect2, properties?: ShapePropertiesFunc): RendererElement;
 
-    textMultiline(config?: RendererText, bounds?: Rect2, properties?: ShapePropertiesFunc): void;
+    textMultiline(config?: RendererText, bounds?: Rect2, properties?: ShapePropertiesFunc): RendererElement;
 
-    group(items: ShapeFactoryFunc, clip?: ShapeFactoryFunc, properties?: ShapePropertiesFunc): void;
+    group(items: ShapeFactoryFunc, clip?: ShapeFactoryFunc, properties?: ShapePropertiesFunc): RendererElement;
 }
 
 export interface ShapeRenderer2 extends ShapeFactory {
-    getBounds(element: RendererElement, untransformed?: boolean): Rect2;
-
-    getTextWidth(text: string, fontSize: number, fontFamily: string): number | undefined;
-}
-
-export interface ShapeRenderer {
-    createRoundedRectangleLeft(strokeWidth: RendererWidth, radius: number, bounds: Rect2): RendererElement;
-
-    createRoundedRectangleRight(strokeWidth: RendererWidth, radius: number, bounds: Rect2): RendererElement;
-
-    createRoundedRectangleTop(strokeWidth: RendererWidth, radius: number, bounds: Rect2): RendererElement;
-
-    createRoundedRectangleBottom(strokeWidth: RendererWidth, radius: number, bounds: Rect2): RendererElement;
-
-    createPath(strokeWidth: RendererWidth, path: string, bounds?: Rect2): RendererElement;
-
-    createRaster(source: string, bounds?: Rect2): RendererElement;
-
-    createRectangle(strokeWidth: RendererWidth, radius?: number, bounds?: Rect2): RendererElement;
-
-    createEllipse(strokeWidth: RendererWidth, bounds?: Rect2): RendererElement;
-
-    createSinglelineText(config?: RendererText, bounds?: Rect2): RendererElement;
-
-    createMultilineText(config?: RendererText, bounds?: Rect2): RendererElement;
-
-    createGroup(items: RendererElement[], clipItem?: RendererElement): RendererElement;
-
-    setForegroundColor(element: RendererElement, color: RendererColor): ShapeRenderer;
-
-    setBackgroundColor(element: RendererElement, color: RendererColor): ShapeRenderer;
-
-    setStrokeColor(element: RendererElement, color: RendererColor): ShapeRenderer;
-
-    setStrokeStyle(element: RendererElement, cap: string, join: string): ShapeRenderer;
-
-    setFontFamily(element: RendererElement, fontFamily: string): ShapeRenderer;
-
-    setOpacity(element: RendererElement, opacity: RendererOpacity): ShapeRenderer;
-
-    setVisibility(element: RendererElement, visible: boolean): ShapeRenderer;
-
-    setText(element: RendererElement, text: string): ShapeRenderer;
-
     getBounds(element: RendererElement, untransformed?: boolean): Rect2;
 
     getTextWidth(text: string, fontSize: number, fontFamily: string): number | undefined;

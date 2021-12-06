@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { Color, ConfigurableFactory, DefaultAppearance, Rect2, RenderContext, Shape, ShapePlugin } from '@app/wireframes/interface';
+import { Color, ConfigurableFactory, DefaultAppearance, Rect2, RenderContext, Shape, ShapePlugin, ShapeProperties } from '@app/wireframes/interface';
 import { CommonTheme } from './_theme';
 
 const ACCENT_COLOR = 'ACCENT_COLOR';
@@ -50,56 +50,69 @@ export class ButtonBar implements ShapePlugin {
 
         const accentColor = Color.fromValue(ctx.shape.getAppearance(ACCENT_COLOR));
 
-        let x = 0;
+        const renderButtons = (selected: boolean) => {
+            let x = 0;
 
-        for (let i = 0; i < parts.length; i++) {
-            const part = parts[i];
+            for (let i = 0; i < parts.length; i++) {
+                const part = parts[i];
 
-            const isLast = i === parts.length - 1;
-            const isFirst = i === 0;
+                if (part.selected === selected) {
+                    const isLast = i === parts.length - 1;
+                    const isFirst = i === 0;
 
-            const width = isLast ? (w - x) : itemWidth;
+                    const width = isLast ? (w - x) : itemWidth;
 
-            const bounds = new Rect2(x, 0, width, itemHeight);
+                    const bounds = new Rect2(x, 0, width, itemHeight);
 
-            let partItem: any;
+                    if (parts.length === 1) {
+                        ctx.renderer2.rectangle(ctx.shape, CommonTheme.CONTROL_BORDER_RADIUS, bounds, p => {
+                            this.stylePart(part, ctx, accentColor, p);
+                        });
+                    } else if (isFirst) {
+                        ctx.renderer2.roundedRectangleLeft(ctx.shape, CommonTheme.CONTROL_BORDER_RADIUS, bounds, p => {
+                            this.stylePart(part, ctx, accentColor, p);
+                        });
+                    } else if (isLast) {
+                        ctx.renderer2.roundedRectangleRight(ctx.shape, CommonTheme.CONTROL_BORDER_RADIUS, bounds, p => {
+                            this.stylePart(part, ctx, accentColor, p);
+                        });
+                    } else {
+                        ctx.renderer2.rectangle(ctx.shape, 0, bounds, p => {
+                            this.stylePart(part, ctx, accentColor, p);
+                        });
+                    }
 
-            if (parts.length === 1) {
-                partItem = ctx.renderer.createRectangle(ctx.shape, CommonTheme.CONTROL_BORDER_RADIUS, bounds);
-            } else if (isFirst) {
-                partItem = ctx.renderer.createRoundedRectangleLeft(ctx.shape, CommonTheme.CONTROL_BORDER_RADIUS, bounds);
-            } else if (isLast) {
-                partItem = ctx.renderer.createRoundedRectangleRight(ctx.shape, CommonTheme.CONTROL_BORDER_RADIUS, bounds);
-            } else {
-                partItem = ctx.renderer.createRectangle(ctx.shape, 0, bounds);
-            }
+                    // Button text.
+                    ctx.renderer2.text(ctx.shape, bounds.deflate(4), p => {
+                        if (part.selected) {
+                            if (accentColor.luminance > 0.4) {
+                                p.setForegroundColor(0);
+                            } else {
+                                p.setForegroundColor(0xffffff);
+                            }
+                        } else {
+                            p.setForegroundColor(ctx.shape);
+                        }
 
-            if (part.selected) {
-                ctx.renderer.setBackgroundColor(partItem, accentColor);
-                ctx.renderer.setStrokeColor(partItem, accentColor);
-            } else {
-                ctx.renderer.setBackgroundColor(partItem, ctx.shape);
-                ctx.renderer.setStrokeColor(partItem, ctx.shape);
-            }
-
-            const textItem = ctx.renderer.createSinglelineText(ctx.shape, bounds.deflate(4));
-
-            if (part.selected) {
-                if (accentColor.luminance > 0.4) {
-                    ctx.renderer.setForegroundColor(textItem, 0);
-                } else {
-                    ctx.renderer.setForegroundColor(textItem, 0xffffff);
+                        p.setText(part.text);
+                    });
                 }
-            } else {
-                ctx.renderer.setForegroundColor(textItem, ctx.shape);
+
+                x += itemWidth;
             }
+        };
 
-            ctx.renderer.setText(textItem, part.text);
+        renderButtons(false);
+        renderButtons(true);
+    }
 
-            ctx.add(partItem);
-            ctx.add(textItem);
-
-            x += itemWidth;
+    private stylePart(part: { text: string; selected: boolean }, ctx: RenderContext, accentColor: Color, p: ShapeProperties) {
+        if (part.selected) {
+            p.setBackgroundColor(accentColor);
+            p.setStrokeColor(accentColor);
+        } else {
+            p.setBackgroundColor(ctx.shape);
+            p.setStrokeColor(ctx.shape);
         }
     }
 
