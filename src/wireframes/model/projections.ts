@@ -27,12 +27,12 @@ export const getShapes = (state: AssetsStateInStore) => state.assets.shapes;
 
 export const getIconsFilterRegex = createSelector(
     getIconsFilter,
-    filter => new RegExp(filter || '.*', 'ig'),
+    filter => new RegExp(filter || '.*', 'i'),
 );
 
 export const getShapesFilterRegex = createSelector(
     getShapesFilter,
-    filter => new RegExp(filter || '.*', 'ig'),
+    filter => new RegExp(filter || '.*', 'i'),
 );
 
 export const getIconSets = createSelector(
