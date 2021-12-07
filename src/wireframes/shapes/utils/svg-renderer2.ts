@@ -362,7 +362,7 @@ class Properties implements ShapeProperties {
             div.style.verticalAlign = value;
         },
         'transform': (value, element) => {
-            SVGHelper.transform(element, value, false);
+            SVGHelper.transform(element, value);
         },
     };
 
