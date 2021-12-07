@@ -49,7 +49,13 @@ export class Transform {
     }
 
     public static fromJS(js: any): Transform {
-        return new Transform(new Vec2(js.position.x, js.position.y), new Vec2(js.size.x, js.size.y));
+        return new Transform(
+            new Vec2(
+                js.position.x - 0.5 * js.size.x,
+                js.position.y - 0.5 * js.size.y),
+            new Vec2(
+                js.size.x,
+                js.size.y));
     }
 
     public static equals(lhs: Transform, rhs: Transform) {
@@ -140,8 +146,8 @@ export class Transform {
     public toJS(): any {
         return {
             position: {
-                x: this.position.x,
-                y: this.position.y,
+                x: this.position.x + 0.5 * this.size.x,
+                y: this.position.y + 0.5 * this.size.y,
             },
             size: {
                 x: this.size.x,

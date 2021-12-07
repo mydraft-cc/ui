@@ -6,7 +6,7 @@
 */
 
 import { DiagramItem, Renderer } from '@app/wireframes/model';
-import * as svg from 'svg.js';
+import * as svg from '@svgdotjs/svg.js';
 
 export class ShapeRef {
     private previewShape: DiagramItem | null = null;
@@ -54,6 +54,10 @@ export class ShapeRef {
 
         if (mustRender) {
             this.renderer.setContext(this.doc);
+
+            if (this.renderedElement && !this.renderedElement.parent()) {
+                this.doc.add(this.renderedElement);
+            }
 
             this.renderedElement = this.renderer.render(shape, this.renderedElement, { debug: this.showDebugMarkers });
             this.renderedElement.node['shape'] = shape;

@@ -7,7 +7,7 @@
 
 import { Color, SVGHelper } from '@app/core';
 import { SnapMode, SnapResult, Transform } from '@app/wireframes/model';
-import * as svg from 'svg.js';
+import * as svg from '@svgdotjs/svg.js';
 import { SVGRenderer2 } from '../shapes/utils/svg-renderer2';
 
 export class InteractionOverlays {

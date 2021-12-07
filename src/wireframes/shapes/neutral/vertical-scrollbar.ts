@@ -36,7 +36,7 @@ export class VerticalScrollbar implements ShapePlugin {
     public configurables(factory: ConfigurableFactory) {
         return [
             factory.slider(BAR_SIZE, 'Bar Size', 0, 100),
-            factory.slider(BAR_SIZE, 'Bar Position', 0, 100),
+            factory.slider(BAR_POSITION, 'Bar Position', 0, 100),
         ];
     }
 

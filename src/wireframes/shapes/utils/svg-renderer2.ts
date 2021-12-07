@@ -9,7 +9,7 @@ import { Rect2, sizeInPx, SVGHelper, Types } from '@app/core';
 import { DefaultAppearance, RendererColor, RendererElement, RendererOpacity, RendererText, RendererWidth, Shape, ShapeFactory, ShapeFactoryFunc, ShapeProperties, ShapePropertiesFunc, TextConfig } from '@app/wireframes/interface';
 import { DiagramItem } from '@app/wireframes/model';
 import { Rect } from 'react-measure';
-import * as svg from 'svg.js';
+import * as svg from '@svgdotjs/svg.js';
 import { AbstractRenderer2 } from './abstract-renderer';
 
 export * from './abstract-renderer';
@@ -126,7 +126,7 @@ class Factory implements ShapeFactory {
     }
 
     public group(items: ShapeFactoryFunc, clip?: ShapeFactoryFunc, properties?: ShapePropertiesFunc) {
-        return this.new('group', x => x.group(), (_, group) => {
+        return this.new('g', x => x.group(), (_, group) => {
             const clipping = this.clipping;
             const container = this.container;
             const containerIndex = this.containerIndex;
@@ -169,11 +169,13 @@ class Factory implements ShapeFactory {
 
     private create<T extends svg.Element>(name: string, factory: (container: svg.Container) => T): T {
         if (this.clipping) {
-            let element = this.container.clipper as any;
+            let element: T = this.container.clipper() as any;
 
             if (!element || element.node.tagName !== name) {
+                element?.remove();
                 element = factory(this.container);
 
+                this.container.unclip();
                 this.container.clipWith(element);
             }
 
@@ -199,7 +201,10 @@ class Factory implements ShapeFactory {
         const size = this.container.children().length;
 
         for (let i = this.containerIndex + 1; i < size; i++) {
-            this.container.last().remove();
+            const last = this.container.last();
+
+            last.clipper()?.remove();
+            last.remove();
         }
     }
 }

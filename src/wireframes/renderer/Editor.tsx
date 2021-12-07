@@ -5,10 +5,10 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { Rect2, sizeInPx, Vec2 } from '@app/core';
+import { Rect2, sizeInPx, SVGHelper, Vec2 } from '@app/core';
 import { Diagram, DiagramContainer, DiagramItem, RendererService, Transform } from '@app/wireframes/model';
 import * as React from 'react';
-import * as svg from 'svg.js';
+import * as svg from '@svgdotjs/svg.js';
 import { CanvasView } from './CanvasView';
 import { InteractionService } from './interaction-service';
 import { SelectionAdorner } from './SelectionAdorner';
@@ -95,7 +95,7 @@ export const Editor = React.memo((props: EditorProps) => {
         setSelectedItemsWithLocked(props.selectedItemsWithLocked);
     }, [props.selectedItemsWithLocked]);
 
-    const initDiagramScope = React.useCallback((doc: svg.Doc) => {
+    const initDiagramScope = React.useCallback((doc: svg.Svg) => {
         diagramTools.current = doc.rect().fill('transparent');
         diagramRendering.current = doc.group();
         adornersSelect.current = doc.group();
@@ -103,6 +103,15 @@ export const Editor = React.memo((props: EditorProps) => {
 
         setInteractionService(new InteractionService([adornersSelect.current, adornersTransform.current], diagramRendering.current, doc));
     }, []);
+
+    React.useEffect(() => {
+        if (interactionService) {
+            SVGHelper.setSize(diagramTools.current, w, h);
+            SVGHelper.setSize(adornersSelect.current, w, h);
+            SVGHelper.setSize(adornersTransform.current, w, h);
+            SVGHelper.setSize(diagramRendering.current, w, h);
+        }
+    }, [w, h, interactionService]);
 
     const orderedShapes = React.useMemo(() => {
         const flattenShapes: DiagramItem[] = [];
@@ -216,15 +225,6 @@ export const Editor = React.memo((props: EditorProps) => {
     React.useEffect(() => {
         doPreviewEnd();
     }, [doPreviewEnd, props.selectedItems]);
-
-    React.useEffect(() => {
-        if (interactionService) {
-            diagramTools.current.size(w, h);
-            adornersSelect.current.size(w, h);
-            adornersTransform.current.size(w, h);
-            diagramRendering.current.size(w, h);
-        }
-    }, [w, h, interactionService]);
 
     const style: React.CSSProperties = { position: 'relative', width: sizeInPx(zoomedSize.x), height: sizeInPx(zoomedSize.y) };
 

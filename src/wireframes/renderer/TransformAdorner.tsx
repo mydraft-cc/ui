@@ -8,7 +8,7 @@
 import { SVGHelper, Vec2 } from '@app/core';
 import { Diagram, DiagramItem, SnapManager, Transform } from '@app/wireframes/model';
 import * as React from 'react';
-import * as svg from 'svg.js';
+import * as svg from '@svgdotjs/svg.js';
 import { SVGRenderer2 } from '../shapes/utils/svg-renderer2';
 import { InteractionOverlays } from './interaction-overlays';
 import { InteractionHandler, InteractionService, SvgEvent } from './interaction-service';
@@ -263,7 +263,7 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
         }
 
         for (const element of this.allElements) {
-            const box = SVGRenderer2.INSTANCE.getBounds(element, true);
+            const box = SVGRenderer2.INSTANCE.getBounds(element);
 
             if (box.contains(point)) {
                 return element;
