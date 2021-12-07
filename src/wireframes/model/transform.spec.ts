@@ -51,7 +51,7 @@ describe('Transform', () => {
     });
 
     it('should adjust position for size', () => {
-        const newTransform = new Transform(new Vec2(10, 20), new Vec2(31, 41), Rotation.fromDegree(45)).round();
+        const newTransform = new Transform(new Vec2(10, 20), new Vec2(31, 41), Rotation.fromDegree(45));
 
         const actual = newTransform.position;
         const expected = new Vec2(10.5, 20.5);

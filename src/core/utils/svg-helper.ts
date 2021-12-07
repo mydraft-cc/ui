@@ -95,18 +95,16 @@ export module SVGHelper {
         return `M${r},${t} L${r},${b - rad} a${rad},${rad} 0 0 1 -${rad},${rad} L${l + rad},${b} a${rad},${rad} 0 0 1 -${rad},-${rad} L${l},${t}z`;
     }
 
-    export function transform<T extends svg.Element>(element: T, t: MatrixTransform): T {
-        let x = Math.floor(t.rect ? t.rect.x : t.x || 0);
-        let y = Math.floor(t.rect ? t.rect.y : t.y || 0);
+    export function transform<T extends svg.Element>(element: T, t: MatrixTransform, adjust = true): T {
+        let x = Math.round(t.rect ? t.rect.x : t.x || 0);
+        let y = Math.round(t.rect ? t.rect.y : t.y || 0);
 
-        let w = Math.floor(t.rect ? t.rect.width : t.w || 0);
-        let h = Math.floor(t.rect ? t.rect.height : t.h || 0);
+        const w = Math.round(t.rect ? t.rect.width : t.w || 0);
+        const h = Math.round(t.rect ? t.rect.height : t.h || 0);
 
-        if (element.attr('stroke-width') % 2 === 1) {
+        if (adjust) {
             x += 0.5;
             y += 0.5;
-            w -= 1;
-            h -= 1;
         }
 
         let matrix =

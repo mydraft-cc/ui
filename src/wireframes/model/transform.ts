@@ -12,6 +12,9 @@ export class Transform {
 
     private readonly lazy: { aabb: Rect2 | null } = { aabb: null };
 
+    public readonly position: Vec2;
+    public readonly size: Vec2;
+
     public get halfSize(): Vec2 {
         return this.size.mul(0.5);
     }
@@ -20,11 +23,24 @@ export class Transform {
         return this.ensureAabb();
     }
 
-    constructor(
-        public readonly position: Vec2,
-        public readonly size: Vec2,
+    constructor(position: Vec2, size: Vec2,
         public readonly rotation: Rotation,
     ) {
+        this.size = size; // .round();
+
+        let x = Math.floor(position.x);
+        let y = Math.floor(position.y);
+
+        if (this.size.x % 2 === 1) {
+            x += 0.5;
+        }
+        if (this.size.y % 2 === 1) {
+            y += 0.5;
+        }
+
+        this.position = new Vec2(x, y);
+        this.position = position;
+
         Object.freeze(this);
     }
 
@@ -107,35 +123,84 @@ export class Transform {
     }
 
     public transformByBounds(oldBounds: Transform, newBounds: Transform): Transform {
-        const negatedRotation = oldBounds.rotation.negate();
-
         // The ratio between new and old size.
         const ratioSize = newBounds.size.div(Vec2.max(Vec2.ONE, oldBounds.size));
 
         const oldSize = Vec2.max(Vec2.ONE, this.size);
 
-        // Compute the relative center to the old bounds.
-        const oldCenter = Vec2.rotated(this.position.sub(oldBounds.position), Vec2.ZERO, negatedRotation);
+        let newSize: Vec2;
+        let newPosition: Vec2;
+        let newRotation = Rotation.ZERO;
 
-        const elementRot = this.rotation.sub(oldBounds.rotation);
+        if (oldBounds.rotation.equals(Rotation.ZERO) && newBounds.rotation.equals(Rotation.ZERO) && this.rotation.equals(Rotation.ZERO)) {
+            newSize = Vec2.max(oldSize.mul(ratioSize), Vec2.ZERO).round();
 
-        // Simplified cosinus and sinus that choose one side of the shape.
-        const elementCos = MathHelper.simpleCos(elementRot.degree);
-        const elementSin = MathHelper.simpleSin(elementRot.degree);
+            // Compute the relative center to the old bounds.
+            const oldCenter = this.position.sub(oldBounds.position);
 
-        // Compute the size relative to rotation of the delta rotation.
-        const rotatedRatio = new Vec2(
-            (ratioSize.x * elementCos) + (ratioSize.y * elementSin),
-            (ratioSize.x * elementSin) + (ratioSize.y * elementCos));
+            // Compute the new relative center to the new bounds.
+            const newCenter = oldCenter.mul(ratioSize);
 
-        const newSize = Vec2.max(oldSize.mul(rotatedRatio), Vec2.ZERO);
+            newPosition = newCenter.add(newBounds.position);
 
-        // Compute the new relative center to the new bounds.
-        const newCenter = Vec2.rotated(oldCenter.mul(ratioSize), Vec2.ZERO, newBounds.rotation);
+            let x = newPosition.x;
+            let y = newPosition.y;
 
-        const newRotation = this.rotation.add(newBounds.rotation).sub(oldBounds.rotation);
+            let w = newSize.x;
+            let h = newSize.y;
 
-        return new Transform(newCenter.add(newBounds.position), newSize, newRotation);
+            if (this.size.x === oldBounds.size.x) {
+                x = newBounds.position.x;
+                w = newBounds.size.x;
+            } else if (this.position.x - 0.5 * this.size.x === oldBounds.position.x - 0.5 * oldBounds.size.x) {
+                // Left aligned
+                x = (newBounds.position.x - 0.5 * newBounds.size.x) + 0.5 * newSize.x;
+            } else if (this.position.x + 0.5 * this.size.x === oldBounds.position.x + 0.5 * oldBounds.size.x) {
+                // Right aligned
+                x = (newBounds.position.x + 0.5 * newBounds.size.x) - 0.5 * newSize.x;
+            }
+
+            if (this.size.y === oldBounds.size.y) {
+                y = newBounds.position.y;
+                h = newBounds.size.y;
+            } else if (this.position.y - 0.5 * this.size.y === oldBounds.position.y - 0.5 * oldBounds.size.y) {
+                // Top aligned
+                y = (newBounds.position.y - 0.5 * newBounds.size.y) + 0.5 * newSize.y;
+            } else if (this.position.y + 0.5 * this.size.y === oldBounds.position.y + 0.5 * oldBounds.size.y) {
+                // Bottom aligned
+                y = (newBounds.position.y + 0.5 * newBounds.size.y) - 0.5 * newSize.y;
+            }
+
+            newSize = new Vec2(w, h);
+
+            newPosition = new Vec2(x, y);
+        } else {
+            const negatedRotation = oldBounds.rotation.negate();
+
+            // Compute the relative center to the old bounds.
+            const oldCenter = Vec2.rotated(this.position.sub(oldBounds.position), Vec2.ZERO, negatedRotation);
+
+            const elementRot = this.rotation.sub(oldBounds.rotation);
+
+            // Simplified cosinus and sinus that choose one side of the shape.
+            const elementCos = MathHelper.simpleCos(elementRot.degree);
+            const elementSin = MathHelper.simpleSin(elementRot.degree);
+
+            // Compute the size relative to rotation of the delta rotation.
+            const rotatedRatio = new Vec2(
+                (ratioSize.x * elementCos) + (ratioSize.y * elementSin),
+                (ratioSize.x * elementSin) + (ratioSize.y * elementCos));
+
+            // Compute the new relative center to the new bounds.
+            const newCenter = Vec2.rotated(oldCenter.mul(ratioSize), Vec2.ZERO, newBounds.rotation);
+
+            newSize = Vec2.max(oldSize.mul(rotatedRatio), Vec2.ZERO);
+
+            newRotation = this.rotation.add(newBounds.rotation).sub(oldBounds.rotation);
+            newPosition = newCenter.add(newBounds.position);
+        }
+
+        return new Transform(newPosition, newSize, newRotation);
     }
 
     public resizeTopLeft(newSize: Vec2): Transform {
@@ -153,26 +218,6 @@ export class Transform {
             Math.round(0.5 * ((ratioSize.x * elementSin) + (ratioSize.y * elementCos))));
 
         return this.resizeTo(newSize).moveBy(centerOffset);
-    }
-
-    public round(): Transform {
-        const size = this.size.round();
-
-        let x = Math.floor(this.position.x);
-        let y = Math.floor(this.position.y);
-
-        if (this.size.x % 2 === 1) {
-            x += 0.5;
-        }
-        if (this.size.y % 2 === 1) {
-            y += 0.5;
-        }
-
-        if (!size.equals(this.size) || this.position.x !== x || this.position.y !== y) {
-            return new Transform(new Vec2(x, y), size, this.rotation);
-        } else {
-            return this;
-        }
     }
 
     private ensureAabb() {

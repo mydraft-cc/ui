@@ -264,7 +264,7 @@ export class DiagramItem extends Record<Props> implements Shape {
             const size = this.constraint.updateSize(this, this.transform.size, prev);
 
             if (size.x > 0 && size.y > 0) {
-                return values.set('transform', this.transform.resizeTopLeft(size).round());
+                return values.set('transform', this.transform.resizeTopLeft(size));
             }
         }
 
