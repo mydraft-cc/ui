@@ -91,7 +91,7 @@ describe('Transform', () => {
 
     it('Should create from rect', () => {
         const actual = Transform.fromRect(new Rect2(100, 60, 30, 40));
-        const expected = new Transform(new Vec2(115, 80), new Vec2(30, 40));
+        const expected = new Transform(new Vec2(100, 60), new Vec2(30, 40));
 
         expect(actual).toEqual(expected);
     });
@@ -110,7 +110,7 @@ describe('Transform', () => {
         ];
 
         const actual = Transform.fromRects(rects);
-        const expected = new Transform(new Vec2(165, 80), new Vec2(130, 40));
+        const expected = new Transform(new Vec2(100, 60), new Vec2(130, 40));
 
         expect(actual).toEqual(expected);
     });

@@ -110,7 +110,7 @@ describe('ItemsReducer', () => {
         expect(newIcon.renderer).toBe('Icon');
         expect(newIcon.appearance.get(DefaultAppearance.TEXT)).toBe('Icon');
         expect(newIcon.appearance.get(DefaultAppearance.ICON_FONT_FAMILY)).toBe('FontAwesome');
-        expect(newIcon.transform).toEqual(new Transform(new Vec2(40, 60), new Vec2(40, 40)));
+        expect(newIcon.transform).toEqual(new Transform(new Vec2(20, 40), new Vec2(40, 40)));
 
         expect(newDiagram.selectedIds.values).toEqual([shapeId]);
     });
@@ -129,7 +129,7 @@ describe('ItemsReducer', () => {
         expect(newImage.id).toBe(shapeId);
         expect(newImage.appearance.get('SOURCE')).toBe('source');
         expect(newImage.renderer).toBe('Raster');
-        expect(newImage.transform).toEqual(new Transform(new Vec2(50, 80), new Vec2(60, 80)));
+        expect(newImage.transform).toEqual(new Transform(new Vec2(20, 40), new Vec2(60, 80)));
 
         expect(newDiagram.selectedIds.values).toEqual([shapeId]);
     });
@@ -174,7 +174,7 @@ describe('ItemsReducer', () => {
         const newShape = newDiagram.items.get(shapeId);
 
         expect(newShape.id).toBe(shapeId);
-        expect(newShape.transform.position).toEqual(new Vec2(150, 35));
+        expect(newShape.transform.position).toEqual(new Vec2(100, 20));
 
         expect(newDiagram.selectedIds.values).toEqual([shapeId]);
     });
@@ -193,7 +193,7 @@ describe('ItemsReducer', () => {
         expect(newShape.id).toBe(shapeId);
         expect(newShape.appearance.get('text1')).toEqual('text1');
         expect(newShape.appearance.get('text2')).toEqual('text2');
-        expect(newShape.transform.position).toEqual(new Vec2(150, 35));
+        expect(newShape.transform.position).toEqual(new Vec2(100,20));
 
         expect(newDiagram.selectedIds.values).toEqual([shapeId]);
     });

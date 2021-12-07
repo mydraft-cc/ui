@@ -248,26 +248,8 @@ describe('DiagramItem', () => {
         const group = diagram.items.get(groupId);
 
         const actual = group.bounds(diagram);
-        const expected = new Transform(new Vec2(150, 100), new Vec2(200, 50));
+        const expected = new Transform(new Vec2(100, 100), new Vec2(200, 50));
 
         expect(actual).toEqual(expected);
-    });
-
-    it('should cache calculate adorner bounds', () => {
-        let diagram =
-            Diagram.empty(groupId)
-                .addVisual(shape1)
-                .addVisual(shape2);
-
-        diagram = diagram.group(groupId, [shape1.id, shape2.id]);
-
-        const group = diagram.items.get(groupId);
-
-        const actual1 = group.bounds(diagram);
-        const actual2 = group.bounds(diagram);
-        const expected = new Transform(new Vec2(150, 100), new Vec2(200, 50));
-
-        expect(actual1).toEqual(expected);
-        expect(actual2).toEqual(expected);
     });
 });

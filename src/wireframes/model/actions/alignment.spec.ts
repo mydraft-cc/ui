@@ -47,35 +47,35 @@ describe('AlignmentReducer', () => {
     });
 
     it('should align to horizontally left', () => {
-        expectPositionsAfterAlignment(AlignmentMode.HorizontalLeft, [new Vec2(100, 100), new Vec2(110, 200), new Vec2(130, 300)]);
+        expectPositionsAfterAlignment(AlignmentMode.HorizontalLeft, [new Vec2(100, 100), new Vec2(100, 200), new Vec2(100, 300)]);
     });
 
     it('should align to horizontally center', () => {
-        expectPositionsAfterAlignment(AlignmentMode.HorizontalCenter, [new Vec2(215, 100), new Vec2(215, 200), new Vec2(215, 300)]);
+        expectPositionsAfterAlignment(AlignmentMode.HorizontalCenter, [new Vec2(230, 100), new Vec2(220, 200), new Vec2(200, 300)]);
     });
 
     it('should align to horizontally right', () => {
-        expectPositionsAfterAlignment(AlignmentMode.HorizontalRight, [new Vec2(330, 100), new Vec2(320, 200), new Vec2(300, 300)]);
+        expectPositionsAfterAlignment(AlignmentMode.HorizontalRight, [new Vec2(360, 100), new Vec2(340, 200), new Vec2(300, 300)]);
     });
 
     it('should align to vertically top', () => {
-        expectPositionsAfterAlignment(AlignmentMode.VerticalTop, [new Vec2(100, 100), new Vec2(200, 110), new Vec2(300, 130)]);
+        expectPositionsAfterAlignment(AlignmentMode.VerticalTop, [new Vec2(100, 100), new Vec2(200, 100), new Vec2(300, 100)]);
     });
 
     it('should align to vertically center', () => {
-        expectPositionsAfterAlignment(AlignmentMode.VerticalCenter, [new Vec2(100, 215), new Vec2(200, 215), new Vec2(300, 215)]);
+        expectPositionsAfterAlignment(AlignmentMode.VerticalCenter, [new Vec2(100, 230), new Vec2(200, 220), new Vec2(300, 200)]);
     });
 
     it('should align to vertically bottom', () => {
-        expectPositionsAfterAlignment(AlignmentMode.VerticalBottom, [new Vec2(100, 330), new Vec2(200, 320), new Vec2(300, 300)]);
+        expectPositionsAfterAlignment(AlignmentMode.VerticalBottom, [new Vec2(100, 360), new Vec2(200, 340), new Vec2(300, 300)]);
     });
 
     it('should distribute vertically', () => {
-        expectPositionsAfterAlignment(AlignmentMode.DistributeVertical, [new Vec2(100, 100), new Vec2(200, 185), new Vec2(300, 300)]);
+        expectPositionsAfterAlignment(AlignmentMode.DistributeVertical, [new Vec2(100, 100), new Vec2(200, 190), new Vec2(300, 300)]);
     });
 
     it('should distribute horizontally', () => {
-        expectPositionsAfterAlignment(AlignmentMode.DistributeHorizontal, [new Vec2(100, 100), new Vec2(185, 200), new Vec2(300, 300)]);
+        expectPositionsAfterAlignment(AlignmentMode.DistributeHorizontal, [new Vec2(100, 100), new Vec2(190, 200), new Vec2(300, 300)]);
     });
 
     function expectPositionsAfterAlignment(type: AlignmentMode, positions: Vec2[]) {
