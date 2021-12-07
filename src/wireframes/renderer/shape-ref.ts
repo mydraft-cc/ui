@@ -9,8 +9,9 @@ import { DiagramItem, Renderer } from '@app/wireframes/model';
 import * as svg from 'svg.js';
 
 export class ShapeRef {
-    private previousShape: DiagramItem;
-    private previousIndex = -1;
+    private previewShape: DiagramItem | null = null;
+    private currentShape: DiagramItem;
+    private currentIndex = -1;
 
     public renderedElement: svg.Element;
 
@@ -30,15 +31,26 @@ export class ShapeRef {
     }
 
     public checkIndex(index: number) {
-        const result = this.previousIndex >= 0 && this.previousIndex !== index;
+        const result = this.currentIndex >= 0 && this.currentIndex !== index;
 
-        this.previousIndex = index;
+        this.currentIndex = index;
 
         return result;
     }
 
+    public setPreview(previewShape: DiagramItem | null) {
+        if (this.previewShape !== previewShape) {
+            const shapeToRender = previewShape || this.currentShape;
+
+            this.renderer.setContext(this.doc);
+            this.renderer.render(shapeToRender, this.renderedElement, { debug: this.showDebugMarkers });
+
+            this.previewShape = previewShape;
+        }
+    }
+
     public render(shape: DiagramItem) {
-        const mustRender = this.previousShape !== shape || !this.renderedElement;
+        const mustRender = this.currentShape !== shape || !this.renderedElement;
 
         if (mustRender) {
             this.renderer.setContext(this.doc);
@@ -51,6 +63,6 @@ export class ShapeRef {
             this.doc.add(this.renderedElement);
         }
 
-        this.previousShape = shape;
+        this.currentShape = shape;
     }
 }

@@ -34,7 +34,7 @@ export interface TextAdornerProps {
     onChangeItemsAppearance: (diagram: Diagram, visuals: DiagramItem[], key: string, val: any) => any;
 }
 
-export class TextAdorner extends React.Component<TextAdornerProps> implements InteractionHandler {
+export class TextAdorner extends React.PureComponent<TextAdornerProps> implements InteractionHandler {
     private readonly style = { display: 'none ' };
     private selectedShape: DiagramItem | null = null;
     private textareaElement: HTMLTextAreaElement;
