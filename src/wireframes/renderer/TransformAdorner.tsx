@@ -49,7 +49,7 @@ export interface TransformAdornerProps {
     onTransformItems: (diagram: Diagram, items: DiagramItem[], oldBounds: Transform, newBounds: Transform) => void;
 }
 
-export class TransformAdorner extends React.Component<TransformAdornerProps> implements InteractionHandler {
+export class TransformAdorner extends React.PureComponent<TransformAdornerProps> implements InteractionHandler {
     private transform: Transform;
     private startTransform: Transform;
     private allElements: svg.Element[];
