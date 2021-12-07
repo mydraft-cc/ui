@@ -94,29 +94,43 @@ export class Editor extends React.Component<EditorProps> {
             allShapesById[item.id] = true;
         });
 
-        for (const [id, ref] of Object.entries(this.shapeRefsById)) {
+        const references = this.shapeRefsById;
+
+        // Delete old shapes.
+        for (const [id, ref] of Object.entries(references)) {
             if (!allShapesById[id]) {
                 ref.remove();
 
-                delete this.shapeRefsById[id];
+                delete references[id];
             }
         }
 
-        let index = 0;
-
+        // Create missing shapes.
         for (const shape of allShapes) {
-            let ref = this.shapeRefsById[shape.id];
-
-            if (!ref) {
+            if (!references[shape.id]) {
                 const renderer = this.props.rendererService.registeredRenderers[shape.renderer];
 
-                ref = new ShapeRef(this.diagramRendering, renderer, showDebugOutlines);
+                references[shape.id] = new ShapeRef(this.diagramRendering, renderer, showDebugOutlines);
             }
+        }
 
-            ref.render(shape, index);
+        let hasIdChanged = false;
 
-            this.shapeRefsById[shape.id] = ref;
-            index++;
+        for (let i = 0; i < allShapes.length; i++) {
+            if (!references[allShapes[i].id].checkIndex(i)) {
+                hasIdChanged = true;
+            }
+        }
+
+        // If the index of at least once shape has changed we have to remove them all to render them in the correct order.
+        if (hasIdChanged) {
+            for (const ref of Object.values(references)) {
+                ref.remove();
+            }
+        }
+
+        for (const shape of allShapes) {
+            references[shape.id].render(shape);
         }
 
         if (this.props.onRender) {

@@ -10,7 +10,7 @@ import * as svg from 'svg.js';
 
 export class ShapeRef {
     private previousShape: DiagramItem;
-    private previousIndex: number;
+    private previousIndex = -1;
 
     public renderedElement: svg.Element;
 
@@ -29,12 +29,16 @@ export class ShapeRef {
         this.renderedElement?.remove();
     }
 
-    public render(shape: DiagramItem, index: number) {
-        const mustRender = this.previousShape !== shape || !this.renderedElement;
+    public checkIndex(index: number) {
+        const result = this.previousIndex >= 0 && this.previousIndex !== index;
 
-        if (index !== this.previousIndex) {
-            this.renderedElement?.remove();
-        }
+        this.previousIndex = index;
+
+        return result;
+    }
+
+    public render(shape: DiagramItem) {
+        const mustRender = this.previousShape !== shape || !this.renderedElement;
 
         if (mustRender) {
             this.renderer.setContext(this.doc);
@@ -48,6 +52,5 @@ export class ShapeRef {
         }
 
         this.previousShape = shape;
-        this.previousIndex = index;
     }
 }
