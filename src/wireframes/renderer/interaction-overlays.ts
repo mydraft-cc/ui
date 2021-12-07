@@ -70,7 +70,7 @@ export class InteractionOverlays {
         this.infoText.node.children[0].textContent = text;
         this.infoText.show();
 
-        SVGHelper.transform(this.infoText, { x: aabb.right + 4, y: aabb.bottom + 24, w: 160, h: 24 });
+        SVGHelper.transform(this.infoText, { x: aabb.right + 4, y: aabb.bottom + 24, w: 200, h: 24 });
 
         const bounds = SVGRenderer2.INSTANCE.getBounds(this.infoText);
 

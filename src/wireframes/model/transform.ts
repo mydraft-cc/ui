@@ -6,6 +6,7 @@
 */
 
 import { Rect2, Vec2 } from '@app/core';
+import { Constraint } from '.';
 
 export class Transform {
     public static readonly ZERO = new Transform(Vec2.ZERO, Vec2.ZERO);
@@ -83,7 +84,7 @@ export class Transform {
         return new Transform(this.position.add(position), this.size.add(size));
     }
 
-    public transformByBounds(oldBounds: Transform, newBounds: Transform): Transform {
+    public transformByBounds(oldBounds: Transform, newBounds: Transform, constraint?: Constraint): Transform {
         let w = 0;
         let h = 0;
 
@@ -93,13 +94,17 @@ export class Transform {
         // The ratio between new and old size.
         const ratioSize = newBounds.size.div(Vec2.max(Vec2.ONE, oldBounds.size));
 
-        if (this.size.x === oldBounds.size.x) {
+        if (constraint?.calculateSizeX()) {
+            w = this.size.x;
+        } else if (this.size.x === oldBounds.size.x) {
             w = newBounds.size.x;
         } else {
             w = Math.max(0, this.size.x * ratioSize.x);
         }
 
-        if (this.size.y === oldBounds.size.y) {
+        if (constraint?.calculateSizeY()) {
+            h = this.size.y;
+        } if (this.size.y === oldBounds.size.y) {
             h = newBounds.size.y;
         } else {
             h = Math.max(0, this.size.y * ratioSize.y);

@@ -244,7 +244,7 @@ export class DiagramItem extends Record<Props> implements Shape {
         if (this.type === 'Group') {
             return this;
         } else {
-            const transform = this.transform.transformByBounds(oldBounds, newBounds);
+            const transform = this.transform.transformByBounds(oldBounds, newBounds, this.constraint);
 
             return this.transformTo(transform);
         }

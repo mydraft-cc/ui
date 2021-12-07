@@ -89,6 +89,13 @@ describe('Transform', () => {
         expect(actual).toEqual(expected);
     });
 
+    it('should add size and position', () => {
+        const actual = transform.resizeAndMoveBy(new Vec2(100, 60), new Vec2(30, 20));
+        const expected = new Transform(new Vec2(40, 40), new Vec2(130, 100));
+
+        expect(actual).toEqual(expected);
+    });
+
     it('Should create from rect', () => {
         const actual = Transform.fromRect(new Rect2(100, 60, 30, 40));
         const expected = new Transform(new Vec2(100, 60), new Vec2(30, 40));

@@ -214,6 +214,10 @@ export const Editor = React.memo((props: EditorProps) => {
     }, [props.selectedItemsWithLocked]);
 
     React.useEffect(() => {
+        doPreviewEnd();
+    }, [doPreviewEnd, props.selectedItems]);
+
+    React.useEffect(() => {
         if (interactionService) {
             diagramTools.current.size(w, h);
             adornersSelect.current.size(w, h);

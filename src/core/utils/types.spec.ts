@@ -37,6 +37,15 @@ describe('Types', () => {
         expect(Types.isArrayOfNumber([0, 1])).toBeTruthy();
 
         expect(Types.isArrayOfNumber(['0', 1])).toBeFalsy();
+        expect(Types.isArrayOfNumber(false)).toBeFalsy();
+    });
+
+    it('should make object array check', () => {
+        expect(Types.isArrayOfObject([])).toBeTruthy();
+        expect(Types.isArrayOfObject([{}, {}])).toBeTruthy();
+
+        expect(Types.isArrayOfObject(['0', {}])).toBeFalsy();
+        expect(Types.isArrayOfObject(false)).toBeFalsy();
     });
 
     it('should make string array check', () => {
@@ -238,6 +247,14 @@ describe('Types', () => {
         expect(result).not.toBe(source);
         expect(result.a).not.toBe(source.a);
         expect(result.b).not.toBe(source.b);
+    });
+
+    it('should not merge if source is undefined', () => {
+        const source = {};
+
+        const result = Types.mergeInto(source, undefined);
+
+        expect(result).toBeUndefined();
     });
 
     it('should merge deeply', () => {

@@ -73,8 +73,8 @@ export class TextAdorner extends React.PureComponent<TextAdornerProps> implement
 
             const transform = event.shape.transform;
 
-            const x = sizeInPx(zoom * (transform.position.x - 0.5 * transform.size.x) - 2);
-            const y = sizeInPx(zoom * (transform.position.y - 0.5 * transform.size.y) - 2);
+            const x = sizeInPx(zoom * transform.position.x - 2);
+            const y = sizeInPx(zoom * transform.position.y - 2);
 
             const w = sizeInPx(zoom * (Math.max(transform.size.x, MIN_WIDTH)) + 4);
             const h = sizeInPx(zoom * (Math.max(transform.size.y, MIN_HEIGHT)) + 4);

@@ -193,7 +193,7 @@ describe('ItemsReducer', () => {
         expect(newShape.id).toBe(shapeId);
         expect(newShape.appearance.get('text1')).toEqual('text1');
         expect(newShape.appearance.get('text2')).toEqual('text2');
-        expect(newShape.transform.position).toEqual(new Vec2(100,20));
+        expect(newShape.transform.position).toEqual(new Vec2(100, 20));
 
         expect(newDiagram.selectedIds.values).toEqual([shapeId]);
     });

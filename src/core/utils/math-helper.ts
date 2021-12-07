@@ -10,8 +10,6 @@
 export module MathHelper {
     const CRC32_TABLE: number[] = [];
 
-    let counter = 0;
-
     function ensureCrc32Table() {
         for (let n = 0; n < 256; n++) {
             let c = n;
@@ -34,10 +32,6 @@ export module MathHelper {
         }
 
         return (crc ^ (-1)) >>> 0;
-    }
-
-    export function nextId() {
-        return ++counter;
     }
 
     export function guid() {
