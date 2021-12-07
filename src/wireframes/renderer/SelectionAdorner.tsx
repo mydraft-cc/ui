@@ -42,7 +42,10 @@ export class SelectionAdorner extends React.PureComponent<SelectionAdornerProps>
 
         this.selectionShape =
             this.props.adorners.rect(1, 1)
-                .stroke({ color: '#0a0', width: 1 }).opacity(0.3);
+                .fill(SELECTION_STROKE_COLOR)
+                .stroke({ color: SELECTION_STROKE_COLOR, width: 1 })
+                .scale(1, 1)
+                .opacity(0.3);
     }
 
     public componentWillUnmount() {
@@ -76,7 +79,7 @@ export class SelectionAdorner extends React.PureComponent<SelectionAdornerProps>
         const rect = Rect2.fromVecs([this.dragStart, event.position]);
 
         if (rect.area > 0) {
-            this.transformShape(this.selectionShape, new Vec2(rect.x, rect.y), new Vec2(rect.w, rect.h), 0);
+            this.transformShape(this.selectionShape, rect.inflate(1));
         } else {
             this.selectionShape.hide();
         }
@@ -91,12 +94,14 @@ export class SelectionAdorner extends React.PureComponent<SelectionAdornerProps>
         try {
             const selectedRect = Rect2.fromVecs([this.dragStart, event.position]);
 
-            if (selectedRect.area > 100) {
-                const selection = this.selectMultiple(selectedRect, this.props.selectedDiagram);
+            if (selectedRect.area < 100) {
+                return;
+            }
 
-                if (selection) {
-                    this.props.onSelectItems(this.props.selectedDiagram, selection!);
-                }
+            const selection = this.selectMultiple(selectedRect, this.props.selectedDiagram);
+
+            if (selection) {
+                this.props.onSelectItems(this.props.selectedDiagram, selection!);
             }
         } finally {
             this.selectionShape.hide();
@@ -107,9 +112,8 @@ export class SelectionAdorner extends React.PureComponent<SelectionAdornerProps>
 
     private selectMultiple(rect: Rect2, diagram: Diagram): string[] {
         const selectedItems = diagram.rootItems.filter(i => rect.contains(i.bounds(diagram).aabb));
-        const selection = calculateSelection(selectedItems, diagram, false);
 
-        return selection;
+        return calculateSelection(selectedItems, diagram, false);
     }
 
     private selectSingle(event: SvgEvent, diagram: Diagram): string[] {
@@ -125,17 +129,15 @@ export class SelectionAdorner extends React.PureComponent<SelectionAdornerProps>
             adorner.hide();
         }
 
-        let i = 0;
-        for (const item of this.props.selectedItems) {
-            let shapeAdorner: any;
+        while (this.shapesAdorners.length < this.props.selectedItems.length) {
+            const shapeAdorner = this.props.adorners.rect(1, 1).fill(SELECTION_FILL_COLOR);
 
-            if (i >= this.shapesAdorners.length) {
-                shapeAdorner = this.props.adorners.rect(1, 1).fill(SELECTION_FILL_COLOR);
+            this.shapesAdorners.push(shapeAdorner);
+        }
 
-                this.shapesAdorners.push(shapeAdorner);
-            } else {
-                shapeAdorner = this.shapesAdorners[i];
-            }
+        this.props.selectedItems.forEach((item, i) => {
+            const shapeAdorner = this.shapesAdorners[i];
+            const shapeBounds = item.bounds(this.props.selectedDiagram);
 
             const color =
                 item.isLocked ?
@@ -143,20 +145,12 @@ export class SelectionAdorner extends React.PureComponent<SelectionAdornerProps>
                     SELECTION_STROKE_COLOR;
             shapeAdorner.stroke({ color, width: 1 });
 
-            const bounds = item.bounds(this.props.selectedDiagram);
-
-            this.transformShape(shapeAdorner, bounds.position, bounds.size, 1);
-            i++;
-        }
+            this.transformShape(shapeAdorner, shapeBounds.aabb.inflate(1));
+        });
     }
 
-    protected transformShape(shape: svg.Element, position: Vec2, size: Vec2, offset: number) {
-        SVGHelper.transform(shape, {
-            x: position.x - offset,
-            y: position.y - offset,
-            w: size.x + 2 * offset,
-            h: size.y + 2 * offset,
-        });
+    protected transformShape(shape: svg.Element, rect: Rect2) {
+        SVGHelper.transform(shape, { rect });
 
         shape.show();
     }

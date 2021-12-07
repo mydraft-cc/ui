@@ -139,6 +139,14 @@ export module SVGHelper {
         return new Rect2(box.x, box.y, box.w, box.h);
     }
 
+    export function visible(element: svg.Element, visible: boolean) {
+        if (visible) {
+            element.show();
+        } else {
+            element.hide();
+        }
+    }
+
     export function setSize(element: svg.Element, width: number, height: number) {
         element.attr('width', width);
         element.attr('height', height);

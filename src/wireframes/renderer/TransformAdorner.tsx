@@ -118,8 +118,8 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
 
         this.createMoveShape();
         this.createResizeShapes();
-
         this.allElements = [...this.resizeShapes, this.moveShape];
+        this.hideShapes();
 
         this.props.interactionService.addHandler(this);
 
@@ -398,11 +398,7 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
                 (config.sx === 0 || this.canResizeX) &&
                 (config.sy === 0 || this.canResizeY);
 
-            if (visible) {
-                resizeShape.show();
-            } else {
-                resizeShape.hide();
-            }
+            SVGHelper.visible(resizeShape, visible);
         }
 
         this.moveShape.show();
@@ -422,7 +418,7 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
     private createMoveShape() {
         const moveShape =
             this.props.adorners.rect(1)
-                .stroke({ color: TRANSFORMER_STROKE_COLOR, width: 1 }).fill('none').hide();
+                .stroke({ color: TRANSFORMER_STROKE_COLOR, width: 1 }).fill('none');
 
         this.props.interactionService.setCursor(moveShape, 'move');
 
@@ -432,8 +428,8 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
     private createResizeShapes() {
         for (const config of CORNERS) {
             const resizeShape =
-                this.props.adorners.rect()
-                    .stroke({ color: TRANSFORMER_STROKE_COLOR, width: 1 }).fill(TRANSFORMER_FILL_COLOR).hide().size(14, 14);
+                this.props.adorners.rect(14, 14)
+                    .stroke({ color: TRANSFORMER_STROKE_COLOR, width: 1 }).fill(TRANSFORMER_FILL_COLOR);
 
             resizeShape['config'] = config;
 
