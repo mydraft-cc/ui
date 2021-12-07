@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { ImmutableMap, Rotation, Vec2 } from '@app/core';
+import { ImmutableMap, Vec2 } from '@app/core';
 import { Diagram } from './diagram';
 import { DiagramItem } from './diagram-item';
 import { Transform } from './transform';
@@ -60,7 +60,7 @@ describe('DiagramItem', () => {
     });
 
     it('should replace transformation when transforming to', () => {
-        const newTransform = new Transform(Vec2.ZERO, Vec2.ZERO, Rotation.ZERO);
+        const newTransform = new Transform(Vec2.ZERO, Vec2.ZERO);
 
         const item_2 = item_1.transformTo(newTransform);
 
@@ -107,7 +107,7 @@ describe('DiagramItem', () => {
         const item_2 = item_1.transformByBounds(item_1.transform, item_1.transform.resizeTo(new Vec2(200, 40)));
 
         const actual = item_2.transform;
-        const expected = new Transform(Vec2.ZERO, new Vec2(200, 40), Rotation.ZERO);
+        const expected = new Transform(Vec2.ZERO, new Vec2(200, 40));
 
         expect(actual).toEqual(expected);
     });
@@ -226,19 +226,6 @@ describe('DiagramItem', () => {
         expect(group_2).toBe(group_1);
     });
 
-    it('should update roration when transforming between bounds', () => {
-        const oldBounds = new Transform(Vec2.ZERO, Vec2.ZERO, Rotation.fromDegree(90));
-        const newBounds = new Transform(Vec2.ZERO, Vec2.ZERO, Rotation.fromDegree(215));
-
-        const group_1 = DiagramItem.createGroup(groupId, []);
-        const group_2 = group_1.transformByBounds(oldBounds, newBounds);
-
-        const actual = group_2.rotation;
-        const expected = Rotation.fromDegree(125);
-
-        expect(actual).toEqual(expected);
-    });
-
     it('should create zero bounds if child id is not in diagram', () => {
         const diagram = Diagram.empty(groupId);
 
@@ -261,7 +248,7 @@ describe('DiagramItem', () => {
         const group = diagram.items.get(groupId);
 
         const actual = group.bounds(diagram);
-        const expected = new Transform(new Vec2(150, 100), new Vec2(200, 50), Rotation.ZERO);
+        const expected = new Transform(new Vec2(150, 100), new Vec2(200, 50));
 
         expect(actual).toEqual(expected);
     });
@@ -278,7 +265,7 @@ describe('DiagramItem', () => {
 
         const actual1 = group.bounds(diagram);
         const actual2 = group.bounds(diagram);
-        const expected = new Transform(new Vec2(150, 100), new Vec2(200, 50), Rotation.ZERO);
+        const expected = new Transform(new Vec2(150, 100), new Vec2(200, 50));
 
         expect(actual1).toEqual(expected);
         expect(actual2).toEqual(expected);

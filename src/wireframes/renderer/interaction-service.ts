@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { MathHelper, Vec2 } from '@app/core';
+import { Vec2 } from '@app/core';
 import { DiagramItem } from '@app/wireframes/model';
 import * as svg from 'svg.js';
 
@@ -195,13 +195,9 @@ export class InteractionService {
         } else if (element && Number.isFinite(element['cursorAngle'])) {
             const rotation = element['cursorAngle'];
 
-            const baseRotation = svg.adopt(element).transform().rotation;
-
-            const totalRotation = MathHelper.toPositiveDegree((baseRotation || 0) + rotation);
-
             for (const config of ROTATION_CONFIG) {
-                if (totalRotation > config.angle - 22.5 &&
-                    totalRotation < config.angle + 22.5) {
+                if (rotation > config.angle - 22.5 &&
+                    rotation < config.angle + 22.5) {
                     document.body.style.cursor = config.cursor;
                     return;
                 }

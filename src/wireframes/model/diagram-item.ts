@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { ImmutableMap, Record, Rotation, Types, Vec2 } from '@app/core';
+import { ImmutableMap, Record, Types, Vec2 } from '@app/core';
 import { DefaultAppearance, Shape } from '@app/wireframes/interface';
 import { Configurable } from './configurables';
 import { Constraint } from './constraints';
@@ -35,9 +35,6 @@ type VisualProps = {
 type GroupProps = {
     // The child ids.
     childIds: DiagramContainer;
-
-    // The rotation.
-    rotation: Rotation;
 };
 
 type ShapeProps = {
@@ -88,10 +85,6 @@ export class DiagramItem extends Record<Props> implements Shape {
         return this.get('id');
     }
 
-    public get rotation() {
-        return this.get('rotation') || Rotation.ZERO;
-    }
-
     public get renderer() {
         return this.get('renderer');
     }
@@ -104,10 +97,10 @@ export class DiagramItem extends Record<Props> implements Shape {
         return this.get('type');
     }
 
-    public static createGroup(id: string, ids: DiagramContainer | ReadonlyArray<string>, rotation?: Rotation) {
+    public static createGroup(id: string, ids: DiagramContainer | ReadonlyArray<string>) {
         const childIds = getChildIds(ids);
 
-        return new DiagramItem({ id, type: 'Group', isLocked: false, childIds, rotation });
+        return new DiagramItem({ id, type: 'Group', isLocked: false, childIds });
     }
 
     public static createShape(id: string, renderer: string, w: number, h: number, configurables?: Configurable[], visual?: Appearance | { [key: string]: any }, constraint?: Constraint) {
@@ -234,7 +227,7 @@ export class DiagramItem extends Record<Props> implements Shape {
 
                 const transforms = set.allVisuals.filter(x => x.type === 'Shape').map(x => x.transform);
 
-                this.cachedBounds[diagram.id] = Transform.createFromTransformationsAndRotations(transforms, this.rotation);
+                this.cachedBounds[diagram.id] = Transform.createFromTransforms(transforms);
             }
 
             return this.cachedBounds[diagram.id];
@@ -249,9 +242,7 @@ export class DiagramItem extends Record<Props> implements Shape {
         }
 
         if (this.type === 'Group') {
-            const rotation = this.rotation.add(newBounds.rotation).sub(oldBounds.rotation);
-
-            return this.set('rotation', rotation);
+            return this;
         } else {
             const transform = this.transform.transformByBounds(oldBounds, newBounds);
 
@@ -264,7 +255,7 @@ export class DiagramItem extends Record<Props> implements Shape {
             const size = this.constraint.updateSize(this, this.transform.size, prev);
 
             if (size.x > 0 && size.y > 0) {
-                return values.set('transform', this.transform.resizeTopLeft(size).round());
+                return values.set('transform', this.transform.resizeTo(size));
             }
         }
 
@@ -289,5 +280,5 @@ function getChildIds(childIds: DiagramContainer | ReadonlyArray<string> | undefi
 }
 
 function createTransform(w: number, h: number): Transform {
-    return new Transform(Vec2.ZERO, new Vec2(w, h), Rotation.ZERO);
+    return new Transform(Vec2.ZERO, new Vec2(w, h));
 }

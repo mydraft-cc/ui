@@ -20,7 +20,6 @@ export interface SnapResult {
 
 export enum SnapMode { LeftTop, Center, RightBottom }
 
-const ROTATE_SNAP = 90 / 4;
 const MOVE_SNAP_GRID = 10;
 const MOVE_SNAP_SHAPE = 5;
 const RESIZE_SNAP_SHAPE = 5;
@@ -28,36 +27,26 @@ const RESIZE_SNAP_GRID = 10;
 const RESIZE_MINIMUM = 1;
 
 export class SnapManager {
-    public snapRotating(transform: Transform, delta: number, disabled = false): number {
-        const oldRotation = transform.rotation.degree;
-
-        const total = oldRotation + delta;
-
-        if (!disabled) {
-            return MathHelper.roundToMultipleOf(total, ROTATE_SNAP) - oldRotation;
-        } else {
-            return MathHelper.roundToMultipleOf(total, 1) - oldRotation;
-        }
-    }
-
     public snapResizing(diagram: Diagram, view: Vec2, transform: Transform, delta: Vec2, snapToGrid: boolean, xMode = 1, yMode = 1): SnapResult {
         const result: SnapResult = { delta };
 
         let dw = delta.x;
         let dh = delta.y;
 
-        if (!snapToGrid && transform.rotation.degree === 0) {
+        if (!snapToGrid) {
             const aabb = transform.aabb;
 
             const orderedAabbs = this.calculateOrderedAABBs(transform, diagram, view);
 
-            const xLeft = aabb.left - delta.x;
-            const xRight = aabb.right + delta.x;
+            const b = aabb.bottom + delta.y;
+            const l = aabb.left - delta.x;
+            const r = aabb.right + delta.x;
+            const t = aabb.top - delta.y;
 
             for (const target of orderedAabbs) {
                 if (xMode > 0) {
                     for (const other of [target.left, target.right]) {
-                        if (Math.abs(xRight - other) < RESIZE_SNAP_SHAPE) {
+                        if (Math.abs(r - other) < RESIZE_SNAP_SHAPE) {
                             dw = other - aabb.right;
 
                             result.snapModeX = SnapMode.RightBottom;
@@ -67,7 +56,7 @@ export class SnapManager {
                     }
                 } else if (xMode < 0) {
                     for (const other of [target.left, target.right]) {
-                        if (Math.abs(xLeft - other) < RESIZE_SNAP_SHAPE) {
+                        if (Math.abs(l - other) < RESIZE_SNAP_SHAPE) {
                             dw = aabb.left - other;
 
                             result.snapModeX = SnapMode.LeftTop;
@@ -78,13 +67,10 @@ export class SnapManager {
                 }
             }
 
-            const yTop = aabb.top - delta.y;
-            const yBottom = aabb.bottom + delta.y;
-
             for (const target of orderedAabbs) {
                 if (yMode > 0) {
                     for (const other of [target.top, target.bottom]) {
-                        if (Math.abs(yBottom - other) < RESIZE_SNAP_SHAPE) {
+                        if (Math.abs(b - other) < RESIZE_SNAP_SHAPE) {
                             dh = other - aabb.bottom;
 
                             result.snapModeY = SnapMode.RightBottom;
@@ -94,7 +80,7 @@ export class SnapManager {
                     }
                 } else if (yMode < 0) {
                     for (const other of [target.top, target.bottom]) {
-                        if (Math.abs(yTop - other) < RESIZE_SNAP_SHAPE) {
+                        if (Math.abs(t - other) < RESIZE_SNAP_SHAPE) {
                             dh = aabb.top - other;
 
                             result.snapModeY = SnapMode.LeftTop;
@@ -133,9 +119,13 @@ export class SnapManager {
         if (!snapToGrid) {
             const orderedAabbs = this.calculateOrderedAABBs(transform, diagram, view);
 
-            const xLeft = aabb.left + delta.x;
-            const xRight = aabb.right + delta.x;
+            const b = aabb.bottom + delta.y;
+            const l = aabb.left + delta.x;
+            const r = aabb.right + delta.x;
+            const t = aabb.top + delta.y;
+
             const xCenter = aabb.cx + delta.x;
+            const yCenter = aabb.cy + delta.y;
 
             for (const target of orderedAabbs) {
                 if (Math.abs(target.cx - xCenter) < MOVE_SNAP_SHAPE) {
@@ -144,25 +134,25 @@ export class SnapManager {
                     result.snapModeX = SnapMode.Center;
                     result.snapValueX = target.cx;
                     break;
-                } else if (Math.abs(target.left - xLeft) < MOVE_SNAP_SHAPE) {
+                } else if (Math.abs(target.left - l) < MOVE_SNAP_SHAPE) {
                     x = target.left;
 
                     result.snapModeX = SnapMode.LeftTop;
                     result.snapValueX = target.left;
                     break;
-                } else if (Math.abs(target.right - xLeft) < MOVE_SNAP_SHAPE) {
+                } else if (Math.abs(target.right - l) < MOVE_SNAP_SHAPE) {
                     x = target.right;
 
                     result.snapModeX = SnapMode.LeftTop;
                     result.snapValueX = target.right;
                     break;
-                } else if (Math.abs(target.right - xRight) < MOVE_SNAP_SHAPE) {
+                } else if (Math.abs(target.right - r) < MOVE_SNAP_SHAPE) {
                     x = target.right - aabb.width;
 
                     result.snapModeX = SnapMode.RightBottom;
                     result.snapValueX = target.right;
                     break;
-                } else if (Math.abs(target.left - xRight) < MOVE_SNAP_SHAPE) {
+                } else if (Math.abs(target.left - r) < MOVE_SNAP_SHAPE) {
                     x = target.left - aabb.width;
 
                     result.snapModeX = SnapMode.RightBottom;
@@ -171,10 +161,6 @@ export class SnapManager {
                 }
             }
 
-            const yTop = aabb.top + delta.y;
-            const yBottom = aabb.bottom + delta.y;
-            const yCenter = aabb.cy + delta.y;
-
             for (const target of orderedAabbs) {
                 if (Math.abs(target.cy - yCenter) < MOVE_SNAP_SHAPE) {
                     y = target.cy - aabb.height * 0.5;
@@ -182,25 +168,25 @@ export class SnapManager {
                     result.snapModeY = SnapMode.Center;
                     result.snapValueY = target.cy;
                     break;
-                } else if (Math.abs(target.top - yTop) < MOVE_SNAP_SHAPE) {
+                } else if (Math.abs(target.top - t) < MOVE_SNAP_SHAPE) {
                     y = target.top;
 
                     result.snapModeY = SnapMode.LeftTop;
                     result.snapValueY = target.top;
                     break;
-                } else if (Math.abs(target.bottom - yTop) < MOVE_SNAP_SHAPE) {
+                } else if (Math.abs(target.bottom - t) < MOVE_SNAP_SHAPE) {
                     y = target.bottom;
 
                     result.snapModeY = SnapMode.LeftTop;
                     result.snapValueY = target.bottom;
                     break;
-                } else if (Math.abs(target.bottom - yBottom) < MOVE_SNAP_SHAPE) {
+                } else if (Math.abs(target.bottom - b) < MOVE_SNAP_SHAPE) {
                     y = target.bottom - aabb.height;
 
                     result.snapModeY = SnapMode.RightBottom;
                     result.snapValueY = target.bottom;
                     break;
-                } else if (Math.abs(target.top - yBottom) < MOVE_SNAP_SHAPE) {
+                } else if (Math.abs(target.top - b) < MOVE_SNAP_SHAPE) {
                     y = target.top - aabb.height;
 
                     result.snapModeY = SnapMode.RightBottom;
@@ -224,7 +210,7 @@ export class SnapManager {
                 .map(t => t)
                 .map(t => t.bounds(diagram)).filter(t => t !== transform)
                 .map(t => t.aabb)
-                .map(t => ({ t, d: t.center.sub(transform.position).lengtSquared }))
+                .map(t => ({ t, d: t.center.sub(transform.position).lengthSquared }))
                 .sort((l, r) => l.d - r.d).map(t => t.t);
 
         orderedAabbs.push(new Rect2(0, 0, view.x, view.y));

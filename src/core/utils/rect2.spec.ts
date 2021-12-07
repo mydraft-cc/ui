@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { Rect2, Rotation, Vec2 } from '@app/core';
+import { Rect2, Vec2 } from '@app/core';
 
 describe('Rect2', () => {
     it('should provide values from constructor', () => {
@@ -214,20 +214,6 @@ describe('Rect2', () => {
                 new Rect2(500, 300, 100, 100),
                 new Rect2(150, 150, 750, 650)]);
         const expected = new Rect2(100, 100, 800, 700);
-
-        expect(actual).toEqual(expected);
-    });
-
-    it('should create rect from rotation', () => {
-        const actual = Rect2.rotated(new Vec2(400, 300), new Vec2(600, 400), Rotation.fromRadian(Math.PI / 2));
-        const expected = new Rect2(500, 200, 400, 600);
-
-        expect(actual).toEqual(expected);
-    });
-
-    it('should create rect from zero rotation', () => {
-        const actual = Rect2.rotated(new Vec2(400, 300), new Vec2(600, 400), Rotation.ZERO);
-        const expected = new Rect2(400, 300, 600, 400);
 
         expect(actual).toEqual(expected);
     });

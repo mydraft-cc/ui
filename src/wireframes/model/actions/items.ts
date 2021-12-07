@@ -143,8 +143,8 @@ export function buildItems(builder: ActionReducerMapBuilder<EditorState>, render
 
                 const finalPosition =
                     new Vec2(
-                        position.x + shape.transform.size.x * 0.5,
-                        position.y + shape.transform.size.y * 0.5);
+                        position.x,
+                        position.y);
 
                 const configured =
                     shape.transformWith(t => t.moveTo(finalPosition))
@@ -172,8 +172,8 @@ export function buildItems(builder: ActionReducerMapBuilder<EditorState>, render
 
                 const finalPosition =
                     new Vec2(
-                        position.x + finalSize.x * 0.5,
-                        position.y + finalSize.y * 0.5);
+                        position.x,
+                        position.y);
 
                 const renderer = rendererService.registeredRenderers['Raster'];
 
@@ -196,8 +196,8 @@ export function buildItems(builder: ActionReducerMapBuilder<EditorState>, render
 
                 const finalPosition =
                     new Vec2(
-                        position.x + shape.transform.size.x * 0.5,
-                        position.y + shape.transform.size.y * 0.5);
+                        position.x,
+                        position.y);
 
                 let configured = shape.transformWith(t => t.moveTo(finalPosition));
 

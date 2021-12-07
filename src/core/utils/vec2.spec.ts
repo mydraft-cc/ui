@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { Rotation, Vec2 } from '@app/core';
+import { Vec2 } from '@app/core';
 
 describe('Vec2', () => {
     it('should instantiate from x and y value', () => {
@@ -121,7 +121,7 @@ describe('Vec2', () => {
     });
 
     it('should calculate length squared', () => {
-        const actual = new Vec2(10, 10).lengtSquared;
+        const actual = new Vec2(10, 10).lengthSquared;
         const expected = 200;
 
         expect(actual).toBe(expected);
@@ -130,18 +130,6 @@ describe('Vec2', () => {
     it('should calculate median', () => {
         const actual = Vec2.median(new Vec2(10, 20), new Vec2(20, 20), new Vec2(60, 20));
         const expected = new Vec2(30, 20);
-
-        expect(actual).toEqual(expected);
-    });
-
-    it('should calculate rotated vector correctly', () => {
-        const source = new Vec2(40, 20);
-        const center = new Vec2(20, 20);
-
-        const rotation = Rotation.fromRadian(Math.PI / 2);
-
-        const actual = Vec2.rotated(source, center, rotation);
-        const expected = new Vec2(20, 40);
 
         expect(actual).toEqual(expected);
     });

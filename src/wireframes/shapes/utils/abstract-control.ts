@@ -157,16 +157,11 @@ export class AbstractControl implements Renderer {
         this.plugin.render(context);
 
         if (!options?.noTransform) {
-            const to = shape.transform;
-
             SVGHelper.transform(existing, {
-                x: to.position.x - 0.5 * to.size.x,
-                y: to.position.y - 0.5 * to.size.y,
-                w: to.size.x,
-                h: to.size.y,
-                rx: to.position.x,
-                ry: to.position.y,
-                rotation: to.rotation.degree,
+                x: shape.transform.position.x,
+                y: shape.transform.position.y,
+                w: shape.transform.size.x,
+                h: shape.transform.size.y,
             });
         }
 

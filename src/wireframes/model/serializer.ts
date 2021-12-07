@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { ImmutableMap, MathHelper, Rotation } from '@app/core';
+import { ImmutableMap, MathHelper } from '@app/core';
 import { DiagramContainer } from './diagram-container';
 import { DiagramItem } from './diagram-item';
 import { DiagramItemSet } from './diagram-item-set';
@@ -90,16 +90,13 @@ export class Serializer {
     }
 
     private static deserializeGroup(input: any) {
-        return DiagramItem.createGroup(input.id,
-            deserializeChildIds(input),
-            deserializeRotation(input));
+        return DiagramItem.createGroup(input.id, deserializeChildIds(input));
     }
 
     private static serializeGroup(group: DiagramItem) {
         const output = { id: group.id };
 
         serializeChildIds(group.childIds, output);
-        serializeRotation(group.rotation, output);
 
         return output;
     }
@@ -139,14 +136,6 @@ function serializeChildIds(childIds: DiagramContainer, output: any) {
 
 function deserializeChildIds(input: any) {
     return DiagramContainer.of(...input.childIds);
-}
-
-function serializeRotation(rotation: Rotation, output: any) {
-    output.rotation = rotation.degree;
-}
-
-function deserializeRotation(input: any) {
-    return Rotation.fromDegree(input.rotation);
 }
 
 function serializeRenderer(renderer: string, output: any) {

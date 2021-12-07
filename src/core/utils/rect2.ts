@@ -5,7 +5,6 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { Rotation } from './rotation';
 import { Types } from './types';
 import { Vec2 } from './vec2';
 
@@ -121,26 +120,6 @@ export class Rect2 {
         }
 
         return new Rect2(minX, minY, Math.max(0, maxX - minX), Math.max(0, maxY - minY));
-    }
-
-    public static rotated(position: Vec2, size: Vec2, rotation: Rotation): Rect2 {
-        const x = position.x;
-        const y = position.y;
-        const w = size.x;
-        const h = size.y;
-
-        if (Math.abs(rotation.sin) < Number.EPSILON) {
-            return new Rect2(x, y, w, h);
-        }
-
-        const center = new Vec2(x + (w * 0.5), y + (h * 0.5));
-
-        const lt = Vec2.rotated(new Vec2(x + 0, y + 0), center, rotation);
-        const rt = Vec2.rotated(new Vec2(x + w, y + 0), center, rotation);
-        const rb = Vec2.rotated(new Vec2(x + w, y + h), center, rotation);
-        const lb = Vec2.rotated(new Vec2(x + 0, y + h), center, rotation);
-
-        return Rect2.fromVecs([lb, lt, rb, rt]);
     }
 
     public equals(r: Rect2): boolean {

@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { Rotation, Vec2 } from '@app/core';
+import { Vec2 } from '@app/core';
 import { DefaultAppearance } from '@app/wireframes/interface';
 import { addIcon, addImage, addVisual, buildItems, calculateSelection, Diagram, DiagramItem, DiagramItemSet, EditorState, pasteItems, removeItems, RendererService, selectItems, Serializer, Transform, unlockItems } from '@app/wireframes/model';
 import { Button } from '@app/wireframes/shapes/neutral/button';
@@ -110,7 +110,7 @@ describe('ItemsReducer', () => {
         expect(newIcon.renderer).toBe('Icon');
         expect(newIcon.appearance.get(DefaultAppearance.TEXT)).toBe('Icon');
         expect(newIcon.appearance.get(DefaultAppearance.ICON_FONT_FAMILY)).toBe('FontAwesome');
-        expect(newIcon.transform).toEqual(new Transform(new Vec2(40, 60), new Vec2(40, 40), Rotation.ZERO));
+        expect(newIcon.transform).toEqual(new Transform(new Vec2(40, 60), new Vec2(40, 40)));
 
         expect(newDiagram.selectedIds.values).toEqual([shapeId]);
     });
@@ -129,7 +129,7 @@ describe('ItemsReducer', () => {
         expect(newImage.id).toBe(shapeId);
         expect(newImage.appearance.get('SOURCE')).toBe('source');
         expect(newImage.renderer).toBe('Raster');
-        expect(newImage.transform).toEqual(new Transform(new Vec2(50, 80), new Vec2(60, 80), Rotation.ZERO));
+        expect(newImage.transform).toEqual(new Transform(new Vec2(50, 80), new Vec2(60, 80)));
 
         expect(newDiagram.selectedIds.values).toEqual([shapeId]);
     });

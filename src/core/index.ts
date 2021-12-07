@@ -21,7 +21,6 @@ export * from './utils/math-helper';
 export * from './utils/react';
 export * from './utils/record';
 export * from './utils/rect2';
-export * from './utils/rotation';
 export * from './utils/svg-helper';
 export * from './utils/types';
 export * from './utils/vec2';

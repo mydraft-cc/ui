@@ -5,9 +5,9 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { MatrixTransform, Rect2, sizeInPx, SVGHelper, Types } from '@app/core';
+import { Rect2, sizeInPx, SVGHelper, Types } from '@app/core';
 import { DefaultAppearance, RendererColor, RendererElement, RendererOpacity, RendererText, RendererWidth, Shape, ShapeFactory, ShapeFactoryFunc, ShapeProperties, ShapePropertiesFunc, TextConfig } from '@app/wireframes/interface';
-import { DiagramItem, Transform } from '@app/wireframes/model';
+import { DiagramItem } from '@app/wireframes/model';
 import { Rect } from 'react-measure';
 import * as svg from 'svg.js';
 import { AbstractRenderer2 } from './abstract-renderer';
@@ -220,28 +220,6 @@ export class SVGRenderer2 extends Factory implements AbstractRenderer2 {
         this.measureDiv.style.whiteSpace = 'nowrap';
 
         document.body.appendChild(this.measureDiv);
-    }
-
-    public setTransform(element: any, to: Transform | DiagramItem | MatrixTransform): AbstractRenderer2 {
-        const e = this.getElement(element);
-
-        if (to instanceof DiagramItem) {
-            this.setTransform(element, to.transform);
-        } else if (to instanceof Transform) {
-            SVGHelper.transform(e, {
-                x: to.position.x - 0.5 * to.size.x,
-                y: to.position.y - 0.5 * to.size.y,
-                w: to.size.x,
-                h: to.size.y,
-                rx: to.position.x,
-                ry: to.position.y,
-                rotation: to.rotation.degree,
-            });
-        } else {
-            SVGHelper.transform(element, to);
-        }
-
-        return this;
     }
 
     public getBounds(element: RendererElement, untransformed?: boolean): Rect2 {

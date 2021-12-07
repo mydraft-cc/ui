@@ -6,7 +6,6 @@
 */
 
 import { MathHelper } from './math-helper';
-import { Rotation } from './rotation';
 
 export class Vec2 {
     public static readonly ZERO = new Vec2(0, 0);
@@ -20,7 +19,7 @@ export class Vec2 {
         return Math.sqrt(this.x * this.x + this.y * this.y);
     }
 
-    public get lengtSquared(): number {
+    public get lengthSquared(): number {
         return this.x * this.x + this.y * this.y;
     }
 
@@ -93,17 +92,6 @@ export class Vec2 {
 
     public roundToMultipleOfTwo(): Vec2 {
         return new Vec2(MathHelper.roundToMultipleOf(this.x, 2), MathHelper.roundToMultipleOf(this.y, 2));
-    }
-
-    public static rotated(vec: Vec2, center: Vec2, rotation: Rotation): Vec2 {
-        const x = vec.x - center.x;
-        const y = vec.y - center.y;
-
-        const result = new Vec2(
-            (x * rotation.cos) - (y * rotation.sin) + center.x,
-            (x * rotation.sin) + (y * rotation.cos) + center.y);
-
-        return result;
     }
 
     public static median(...vecs: Vec2[]) {

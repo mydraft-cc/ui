@@ -145,18 +145,17 @@ export class SelectionAdorner extends React.Component<SelectionAdornerProps> imp
 
             const bounds = item.bounds(this.props.selectedDiagram);
 
-            this.transformShape(shapeAdorner, bounds.position.sub(bounds.halfSize), bounds.size, 1, bounds.rotation.degree);
+            this.transformShape(shapeAdorner, bounds.position, bounds.size, 1);
             i++;
         }
     }
 
-    protected transformShape(shape: svg.Element, position: Vec2, size: Vec2, offset: number, rotation = 0) {
+    protected transformShape(shape: svg.Element, position: Vec2, size: Vec2, offset: number) {
         SVGHelper.transform(shape, {
             x: position.x - offset,
             y: position.y - offset,
             w: size.x + 2 * offset,
             h: size.y + 2 * offset,
-            rotation,
         });
 
         shape.show();

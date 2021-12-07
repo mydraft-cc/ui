@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { Rotation, Vec2 } from '@app/core';
+import { Vec2 } from '@app/core';
 import { buildAppearance, changeItemsAppearance, Diagram, DiagramItem, EditorState, RendererService, Transform, transformItems } from '@app/wireframes/model';
 import { Button } from '@app/wireframes/shapes/neutral/button';
 import { AbstractControl } from '@app/wireframes/shapes/utils/abstract-control';
@@ -59,8 +59,8 @@ describe('AppearanceReducer', () => {
     });
 
     it('should transform all items from new to old bounds', () => {
-        const oldBounds = new Transform(Vec2.ZERO, new Vec2(200, 200), Rotation.ZERO);
-        const newBounds = new Transform(Vec2.ZERO, new Vec2(300, 300), Rotation.ZERO);
+        const oldBounds = new Transform(Vec2.ZERO, new Vec2(200, 200));
+        const newBounds = new Transform(Vec2.ZERO, new Vec2(300, 300));
 
         const action = transformItems(diagram, diagram.items.values, oldBounds, newBounds);
 
