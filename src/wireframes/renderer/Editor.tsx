@@ -138,6 +138,22 @@ export class Editor extends React.Component<EditorProps> {
         }
     }
 
+    private onPreview = (items: DiagramItem[]) => {
+        for (const item of items) {
+            const reference = this.shapeRefsById[item.id];
+
+            if (reference) {
+                reference.setPreview(item);
+            }
+        }
+    };
+
+    private onEndPreview = () => {
+        for (const reference of Object.values(this.shapeRefsById)) {
+            reference.setPreview(null);
+        }
+    };
+
     private getOrderedShapes() {
         const flattenShapes: DiagramItem[] = [];
 
@@ -212,6 +228,8 @@ export class Editor extends React.Component<EditorProps> {
                                     <TransformAdorner
                                         adorners={this.adornersTransform}
                                         interactionService={this.interactionService}
+                                        onPreview={this.onPreview}
+                                        onPreviewEnd={this.onEndPreview}
                                         onTransformItems={onTransformItems}
                                         selectedDiagram={diagram}
                                         selectedItems={selectedItems}

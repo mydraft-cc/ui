@@ -39,6 +39,12 @@ export interface TransformAdornerProps {
     // The interaction service.
     interactionService: InteractionService;
 
+    // The preview of items.
+    onPreview: (items: DiagramItem[]) => void;
+
+    // The preview of items.
+    onPreviewEnd: () => void;
+
     // A function to transform a set of items.
     onTransformItems: (diagram: Diagram, items: DiagramItem[], oldBounds: Transform, newBounds: Transform) => void;
 }
@@ -171,6 +177,7 @@ export class TransformAdorner extends React.Component<TransformAdornerProps> imp
 
         this.transform = previousTranform.moveBy(new Vec2(xd, yd));
 
+        this.props.onPreviewEnd();
         this.props.onTransformItems(
             this.props.selectedDiagram,
             this.props.selectedItems,
@@ -261,13 +268,16 @@ export class TransformAdorner extends React.Component<TransformAdornerProps> imp
                 this.resize(delta, event.event.shiftKey);
             }
 
+            const previews = this.props.selectedItems.map(x => x.transformByBounds(this.startTransform, this.transform));
+
+            this.props.onPreview(previews);
+
             this.layoutShapes();
         }
     }
 
     private move(delta: Vec2, shiftKey: boolean) {
-        const snapResult =
-            this.snapManager.snapMoving(this.props.selectedDiagram, this.props.viewSize, this.startTransform, delta, shiftKey);
+        const snapResult = this.snapManager.snapMoving(this.props.selectedDiagram, this.props.viewSize, this.startTransform, delta, shiftKey);
 
         this.transform = this.startTransform.moveBy(snapResult.delta);
 
