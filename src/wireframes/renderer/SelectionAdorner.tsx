@@ -32,7 +32,7 @@ export interface SelectionAdornerProps {
     onSelectItems: (diagram: Diagram, itemIds: string[]) => any;
 }
 
-export class SelectionAdorner extends React.Component<SelectionAdornerProps> implements InteractionHandler {
+export class SelectionAdorner extends React.PureComponent<SelectionAdornerProps> implements InteractionHandler {
     private shapesAdorners: any[] = [];
     private selectionShape: any;
     private dragStart: Vec2 | null;
