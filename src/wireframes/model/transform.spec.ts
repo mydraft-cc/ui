@@ -50,15 +50,6 @@ describe('Transform', () => {
         expect(transform.equals(transform.moveBy(Vec2.ONE))).toBeFalsy();
     });
 
-    it('should adjust position for size', () => {
-        const newTransform = new Transform(new Vec2(10, 20), new Vec2(31, 41), Rotation.fromDegree(45));
-
-        const actual = newTransform.position;
-        const expected = new Vec2(10.5, 20.5);
-
-        expect(actual).toEqual(expected);
-    });
-
     it('should calculate to string', () => {
         const actual = new Transform(new Vec2(10, 20), new Vec2(30, 40), Rotation.fromDegree(45)).toString();
         const expected = '<position: (10, 20), size: (30, 40), rotation: 45°>';
@@ -163,7 +154,7 @@ describe('Transform', () => {
         const actual = Transform.createFromTransformationsAndRotation([transformation1, transformation2], rotation);
         const expected = new Transform(new Vec2(300, 150), new Vec2(300, 140), Rotation.fromDegree(45));
 
-        expect(actual).toEqual(expected);
+        expect(actual.equals(expected)).toBeTrue();
     });
 
     it('should return same instance when resizing to same size', () => {
