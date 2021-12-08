@@ -8,7 +8,7 @@
 import { Rect2, SVGHelper, Vec2 } from '@app/core';
 import { calculateSelection, Diagram, DiagramItem } from '@app/wireframes/model';
 import * as React from 'react';
-import * as svg from 'svg.js';
+import * as svg from '@svgdotjs/svg.js';
 import { InteractionHandler, InteractionService, SvgEvent } from './interaction-service';
 
 const SELECTION_STROKE_COLOR = '#080';
@@ -42,7 +42,9 @@ export class SelectionAdorner extends React.PureComponent<SelectionAdornerProps>
 
         this.selectionShape =
             this.props.adorners.rect(1, 1)
-                .stroke({ color: '#0a0', width: 1 }).opacity(0.3);
+                .stroke({ color: '#0a0', width: 1 })
+                .scale(1, 1)
+                .fill('#00aa0044');
     }
 
     public componentWillUnmount() {
@@ -91,12 +93,14 @@ export class SelectionAdorner extends React.PureComponent<SelectionAdornerProps>
         try {
             const selectedRect = Rect2.fromVecs([this.dragStart, event.position]);
 
-            if (selectedRect.area > 100) {
-                const selection = this.selectMultiple(selectedRect, this.props.selectedDiagram);
+            if (selectedRect.area < 100) {
+                return;
+            }
 
-                if (selection) {
-                    this.props.onSelectItems(this.props.selectedDiagram, selection!);
-                }
+            const selection = this.selectMultiple(selectedRect, this.props.selectedDiagram);
+
+            if (selection) {
+                this.props.onSelectItems(this.props.selectedDiagram, selection!);
             }
         } finally {
             this.selectionShape.hide();
@@ -107,9 +111,8 @@ export class SelectionAdorner extends React.PureComponent<SelectionAdornerProps>
 
     private selectMultiple(rect: Rect2, diagram: Diagram): string[] {
         const selectedItems = diagram.rootItems.filter(i => rect.contains(i.bounds(diagram).aabb));
-        const selection = calculateSelection(selectedItems, diagram, false);
 
-        return selection;
+        return calculateSelection(selectedItems, diagram, false);
     }
 
     private selectSingle(event: SvgEvent, diagram: Diagram): string[] {
@@ -125,29 +128,27 @@ export class SelectionAdorner extends React.PureComponent<SelectionAdornerProps>
             adorner.hide();
         }
 
-        let i = 0;
-        for (const item of this.props.selectedItems) {
-            let shapeAdorner: any;
+        const selection = this.props.selectedItems;
 
-            if (i >= this.shapesAdorners.length) {
-                shapeAdorner = this.props.adorners.rect(1, 1).fill(SELECTION_FILL_COLOR);
+        while (this.shapesAdorners.length < selection.length) {
+            const shapeAdorner = this.props.adorners.rect(1, 1).fill(SELECTION_FILL_COLOR).stroke({ width: 1 });
 
-                this.shapesAdorners.push(shapeAdorner);
-            } else {
-                shapeAdorner = this.shapesAdorners[i];
-            }
+            this.shapesAdorners.push(shapeAdorner);
+        }
+
+        this.props.selectedItems.forEach((item, i) => {
+            const shapeAdorner = this.shapesAdorners[i];
 
             const color =
                 item.isLocked ?
                     SELECTION_STROKE_LOCK_COLOR :
                     SELECTION_STROKE_COLOR;
-            shapeAdorner.stroke({ color, width: 1 });
+            shapeAdorner.stroke({ color });
 
             const bounds = item.bounds(this.props.selectedDiagram);
 
             this.transformShape(shapeAdorner, bounds.position.sub(bounds.halfSize), bounds.size, 1, bounds.rotation.degree);
-            i++;
-        }
+        });
     }
 
     protected transformShape(shape: svg.Element, position: Vec2, size: Vec2, offset: number, rotation = 0) {
