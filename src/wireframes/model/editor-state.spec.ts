@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { Vec2 } from '@app/core';
+import { Color, Vec2 } from '@app/core';
 import { Diagram, EditorState } from '@app/wireframes/model';
 
 /* eslint-disable @typescript-eslint/naming-convention */
@@ -94,6 +94,14 @@ describe('EditorState', () => {
         const state_2 = state_1.changeSize(newSize);
 
         expect(state_2.size).toEqual(newSize);
+    });
+
+    it('should change color', () => {
+        const newColor = Color.fromString('#f00');
+
+        const state_2 = state_1.changeColor(newColor);
+
+        expect(state_2.color).toEqual(newColor);
     });
 
     it('should return orignal state when size not changed', () => {

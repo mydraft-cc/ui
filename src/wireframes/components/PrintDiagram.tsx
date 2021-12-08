@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { Rect2, Vec2 } from '@app/core';
+import { Color, Rect2, Vec2 } from '@app/core';
 import { Diagram, RendererService } from '@app/wireframes/model';
 import { Editor } from '@app/wireframes/renderer/Editor';
 import * as React from 'react';
@@ -17,6 +17,9 @@ export interface PrintDiagramProps {
     // The diagram size.
     size: Vec2;
 
+    // The color.
+    color: Color;
+
     // True when rendered.
     onRender?: (diagram: Diagram) => void;
 
@@ -26,6 +29,7 @@ export interface PrintDiagramProps {
 
 export const PrintDiagram = (props: PrintDiagramProps) => {
     const {
+        color,
         diagram,
         rendererService,
         onRender,
@@ -45,6 +49,7 @@ export const PrintDiagram = (props: PrintDiagramProps) => {
     return (
         <>
             <Editor
+                color={color}
                 diagram={diagram}
                 onRender={doOnRender}
                 rendererService={rendererService}

@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { MathHelper, Vec2 } from '@app/core';
+import { Color, MathHelper, Vec2 } from '@app/core';
 import { ActionReducerMapBuilder, createAction } from '@reduxjs/toolkit';
 import { Diagram, EditorState } from './../internal';
 import { createDiagramAction, DiagramRef } from './utils';
@@ -26,7 +26,10 @@ export const removeDiagram =
     });
 
 export const changeSize =
-    createAction<{ width: number; height: number }>('size/change');
+    createAction<{ width: number; height: number }>('editor/size');
+
+export const changeColor =
+    createAction<{ color: string }>('editor/color');
 
 export function buildDiagrams(builder: ActionReducerMapBuilder<EditorState>) {
     return builder
@@ -49,5 +52,10 @@ export function buildDiagrams(builder: ActionReducerMapBuilder<EditorState>) {
             const { width, height } = action.payload;
 
             return state.changeSize(new Vec2(width, height));
+        })
+        .addCase(changeColor, (state, action) => {
+            const { color } = action.payload;
+
+            return state.changeColor(Color.fromString(color));
         });
 }

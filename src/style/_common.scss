@@ -58,6 +58,12 @@ svg {
     }
 }
 
+hr {
+    border: 0;
+    border-top: 1px solid #ddd;
+    margin: 30px 0;
+}
+
 //
 // Typography
 //
@@ -178,6 +184,12 @@ $sidebar-size: 320px;
     &:last-child {
         margin: 0;
     }
+}
+
+.editor {
+    position: relative;
+    border-radius: 0;
+    border: 1px solid #ccc;
 }
 
 //
