@@ -160,7 +160,7 @@ describe('Transform', () => {
             new Transform(new Vec2(400, 200), new Vec2(100, 40), Rotation.ZERO)
                 .rotateAroundAnchor(center, rotation);
 
-        const actual = Transform.createFromTransformationsAndRotations([transformation1, transformation2], rotation);
+        const actual = Transform.createFromTransformationsAndRotation([transformation1, transformation2], rotation);
         const expected = new Transform(new Vec2(300, 150), new Vec2(300, 140), Rotation.fromDegree(45));
 
         expect(actual).toEqual(expected);

@@ -96,38 +96,32 @@ export module SVGHelper {
     }
 
     export function transform<T extends svg.Element>(element: T, t: MatrixTransform, adjust = true): T {
-        let x = Math.round(t.rect ? t.rect.x : t.x || 0);
-        let y = Math.round(t.rect ? t.rect.y : t.y || 0);
+        let x = t.rect ? t.rect.x : t.x || 0;
+        let y = t.rect ? t.rect.y : t.y || 0;
 
         const w = Math.round(t.rect ? t.rect.width : t.w || 0);
         const h = Math.round(t.rect ? t.rect.height : t.h || 0);
 
-        if (adjust) {
-            x += 0.5;
-            y += 0.5;
+        if (!t.rotation && adjust) {
+            x = Math.round(x);
+            y = Math.round(y);
         }
 
-        let matrix =
-            new svg.Matrix()
-                .rotate(
-                    t.rotation || 0,
-                    t.rx || (x + 0.5 * w),
-                    t.ry || (y + 0.5 * h),
-                );
+        let matrix = new svg.Matrix()
+            .rotate(
+                t.rotation || 0,
+                t.rx || (x + 0.5 * w),
+                t.ry || (y + 0.5 * h),
+            );
 
         if (element['children']) {
             if (t.rect || t.x || t.y) {
-                matrix = matrix || new svg.Matrix();
                 matrix = matrix.translate(x, y);
             }
 
-            if (matrix) {
-                element.matrix(matrix);
-            }
+            element.matrix(matrix);
         } else {
-            if (matrix) {
-                element.matrix(matrix);
-            }
+            element.matrix(matrix);
 
             if (t.rect || t.x || t.y) {
                 element.move(x, y);

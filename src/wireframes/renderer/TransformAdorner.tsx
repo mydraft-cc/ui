@@ -72,8 +72,8 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
         this.createRotateShape();
         this.createMoveShape();
         this.createResizeShapes();
-
         this.allElements = [...this.resizeShapes, this.moveShape, this.rotateShape];
+        this.hideShapes();
 
         this.props.interactionService.addHandler(this);
 
@@ -113,7 +113,7 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
         } else {
             const bounds = this.props.selectedItems.map(x => x.bounds(this.props.selectedDiagram));
 
-            transform = Transform.createFromTransformationsAndRotations(bounds, this.rotation);
+            transform = Transform.createFromTransformationsAndRotation(bounds, this.rotation);
         }
 
         this.transform = transform;
@@ -233,7 +233,7 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
         const unrotated = Vec2.rotated(point, this.transform.position, this.transform.rotation.negate());
 
         for (const element of this.allElements) {
-            const box = SVGRenderer2.INSTANCE.getBounds(element, true);
+            const box = SVGRenderer2.INSTANCE.getLocalBounds(element);
 
             if (box.contains(unrotated)) {
                 return element;
@@ -441,7 +441,7 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
     private createMoveShape() {
         const moveShape =
             this.props.adorners.rect(1)
-                .stroke({ color: TRANSFORMER_STROKE_COLOR, width: 1 }).fill('none').hide();
+                .stroke({ color: TRANSFORMER_STROKE_COLOR, width: 1 }).fill('none');
 
         this.props.interactionService.setCursor(moveShape, 'move');
 
@@ -450,8 +450,8 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
 
     private createRotateShape() {
         const rotateShape =
-            this.props.adorners.ellipse()
-                .stroke({ color: TRANSFORMER_STROKE_COLOR, width: 1 }).fill(TRANSFORMER_FILL_COLOR).hide().size(16, 16);
+            this.props.adorners.ellipse(16, 16)
+                .stroke({ color: TRANSFORMER_STROKE_COLOR, width: 1 }).fill(TRANSFORMER_FILL_COLOR);
 
         this.props.interactionService.setCursor(rotateShape, 'pointer');
 
@@ -465,8 +465,8 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
 
         for (let i = 0; i < xs.length; i++) {
             const resizeShape =
-                this.props.adorners.rect()
-                    .stroke({ color: TRANSFORMER_STROKE_COLOR, width: 1 }).fill(TRANSFORMER_FILL_COLOR).hide().size(14, 14);
+                this.props.adorners.rect(14, 14)
+                    .stroke({ color: TRANSFORMER_STROKE_COLOR, width: 1 }).fill(TRANSFORMER_FILL_COLOR);
 
             resizeShape['offset'] = new Vec2(xs[i], ys[i]);
 

@@ -97,9 +97,9 @@ export const Editor = React.memo((props: EditorProps) => {
 
     const initDiagramScope = React.useCallback((doc: svg.Doc) => {
         diagramTools.current = doc.rect().fill('transparent');
-        diagramRendering.current = doc.group();
-        adornersSelect.current = doc.group();
-        adornersTransform.current = doc.group();
+        diagramRendering.current = doc.group().move(0.5, 0.5);
+        adornersSelect.current = doc.group().move(0.5, 0.5);
+        adornersTransform.current = doc.group().move(0.5, 0.5);
 
         setInteractionService(new InteractionService([adornersSelect.current, adornersTransform.current], diagramRendering.current, doc));
     }, []);

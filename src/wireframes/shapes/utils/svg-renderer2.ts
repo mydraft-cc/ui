@@ -222,22 +222,26 @@ export class SVGRenderer2 extends Factory implements AbstractRenderer2 {
         document.body.appendChild(this.measureDiv);
     }
 
-    public getBounds(element: RendererElement, untransformed?: boolean): Rect2 {
+    public getLocalBounds(element: RendererElement): Rect2 {
         const e = this.getElement(element);
 
         if (!e.visible()) {
             return Rect2.EMPTY;
         }
 
-        let box: svg.Box = e.bbox();
+        const box: svg.Box = e.bbox();
 
-        if (!untransformed) {
-            const m = e.matrixify();
+        return SVGHelper.box2Rect(box);
+    }
 
-            if (m) {
-                box = box.transform(m);
-            }
+    public getBounds(element: RendererElement): Rect2 {
+        const e = this.getElement(element);
+
+        if (!e.visible()) {
+            return Rect2.EMPTY;
         }
+
+        const box = e.bbox().transform(e.matrixify());
 
         return SVGHelper.box2Rect(box);
     }

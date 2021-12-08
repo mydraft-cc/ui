@@ -122,7 +122,7 @@ export class AbstractControl implements Renderer {
     public createDefaultShape(id: string) {
         const size = this.plugin.defaultSize();
 
-        return DiagramItem.createShape(id, this.identifier(), size.x, size.y, this.configurables(), this.defaultAppearance(), this.constraint());
+        return DiagramItem.createShape(id, this.identifier(), size.x, size.y, this.defaultAppearance(), this.configurables(), this.constraint());
     }
 
     public render(shape: DiagramItem, existing: svg.G | undefined, options?: { debug?: boolean; noOpacity?: boolean; noTransform?: boolean }): any {
