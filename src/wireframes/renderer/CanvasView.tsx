@@ -7,7 +7,7 @@
 
 import { Rect2, Vec2 } from '@app/core';
 import * as React from 'react';
-import * as svg from 'svg.js';
+import * as svg from '@svgdotjs/svg.js';
 
 export interface CanvasViewProps {
     // The zoomed width of the canvas.
@@ -26,7 +26,7 @@ export interface CanvasViewProps {
     className?: string;
 
     // The callback when the canvas has been initialized.
-    onInit: (scope: svg.Doc) => any;
+    onInit: (scope: svg.Svg) => any;
 }
 
 export const CanvasView = (props: CanvasViewProps) => {
@@ -39,7 +39,7 @@ export const CanvasView = (props: CanvasViewProps) => {
         zoomedSize,
     } = props;
 
-    const [document, setDocument] = React.useState<svg.Doc>();
+    const [document, setDocument] = React.useState<svg.Svg>();
 
     const ref = React.useRef();
 
@@ -47,7 +47,7 @@ export const CanvasView = (props: CanvasViewProps) => {
         const element = ref.current;
 
         if (element && !document) {
-            const newDocument = svg(element).style({ position: 'relative', overflow: 'visible' }).attr('tabindex', 0);
+            const newDocument = svg.SVG().addTo(element).css({ position: 'relative', overflow: 'visible' }).attr('tabindex', 0);
 
             onInit(newDocument);
 

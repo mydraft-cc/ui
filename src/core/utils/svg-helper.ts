@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import * as svg from 'svg.js';
+import * as svg from '@svgdotjs/svg.js';
 import { Color } from './color';
 import { sizeInPx } from './react';
 import { Rect2 } from './rect2';
@@ -35,7 +35,7 @@ export module SVGHelper {
     export function createText(container: svg.Container, text: string, fontSize?: number, alignment?: string, verticalAlign?: string) {
         fontSize = fontSize || 10;
 
-        const element = container.element('foreignObject', svg.Parent);
+        const element = container.foreignObject(0, 0);
 
         const div = document.createElement('div');
         div.className = 'no-select';
@@ -165,15 +165,18 @@ export module SVGHelper {
         return new Rect2(box.x, box.y, box.w, box.h);
     }
 
+    export function setSize(element: svg.Element, width: number, height: number) {
+        element.attr('width', width);
+        element.attr('height', height);
+    }
+
     export function toColor(value: string | number | Color): string {
         if (value === 'transparent') {
             return 'transparent';
         } else if (value === 'none') {
             return 'none';
         } else if (value) {
-            const color = Color.fromValue(value);
-
-            return new svg.Color({ r: color.r * 255, g: color.g * 255, b: color.b * 255 }).toHex();
+            return Color.fromValue(value).toString();
         } else {
             return 'black';
         }

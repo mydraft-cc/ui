@@ -8,7 +8,7 @@
 import { Rotation, SVGHelper, Vec2 } from '@app/core';
 import { Diagram, DiagramItem, SnapManager, Transform } from '@app/wireframes/model';
 import * as React from 'react';
-import * as svg from 'svg.js';
+import * as svg from '@svgdotjs/svg.js';
 import { SVGRenderer2 } from '../shapes/utils/svg-renderer2';
 import { InteractionOverlays } from './interaction-overlays';
 import { InteractionHandler, InteractionService, SvgEvent } from './interaction-service';
@@ -66,8 +66,8 @@ export class TransformAdorner extends React.Component<TransformAdornerProps> imp
         this.createRotateShape();
         this.createMoveShape();
         this.createResizeShapes();
-
         this.allElements = [...this.resizeShapes, this.moveShape, this.rotateShape];
+        this.hideShapes();
 
         this.props.interactionService.addHandler(this);
 
@@ -440,8 +440,8 @@ export class TransformAdorner extends React.Component<TransformAdornerProps> imp
 
     private createRotateShape() {
         const rotateShape =
-            this.props.adorners.ellipse()
-                .stroke({ color: TRANSFORMER_STROKE_COLOR, width: 1 }).fill(TRANSFORMER_FILL_COLOR).hide().size(16, 16);
+            this.props.adorners.ellipse(16, 16)
+                .stroke({ color: TRANSFORMER_STROKE_COLOR, width: 1 }).fill(TRANSFORMER_FILL_COLOR);
 
         this.props.interactionService.setCursor(rotateShape, 'pointer');
 
@@ -455,8 +455,8 @@ export class TransformAdorner extends React.Component<TransformAdornerProps> imp
 
         for (let i = 0; i < xs.length; i++) {
             const resizeShape =
-                this.props.adorners.rect()
-                    .stroke({ color: TRANSFORMER_STROKE_COLOR, width: 1 }).fill(TRANSFORMER_FILL_COLOR).hide().size(14, 14);
+                this.props.adorners.rect(14, 14)
+                    .stroke({ color: TRANSFORMER_STROKE_COLOR, width: 1 }).fill(TRANSFORMER_FILL_COLOR);
 
             resizeShape['offset'] = new Vec2(xs[i], ys[i]);
 

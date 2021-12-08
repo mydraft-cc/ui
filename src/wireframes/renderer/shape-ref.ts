@@ -6,7 +6,7 @@
 */
 
 import { DiagramItem, Renderer } from '@app/wireframes/model';
-import * as svg from 'svg.js';
+import * as svg from '@svgdotjs/svg.js';
 
 export class ShapeRef {
     private previousShape: DiagramItem;

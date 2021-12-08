@@ -7,7 +7,7 @@
 
 import { MathHelper, Vec2 } from '@app/core';
 import { DiagramItem } from '@app/wireframes/model';
-import * as svg from 'svg.js';
+import * as svg from '@svgdotjs/svg.js';
 
 export class SvgEvent {
     constructor(
@@ -53,7 +53,7 @@ export class InteractionService {
     private onMouseUp: Function = NOOP;
 
     constructor(
-        private readonly adornerLayers: svg.Element[], renderings: svg.Element, private readonly diagram: svg.Doc,
+        private readonly adornerLayers: svg.Element[], renderings: svg.Element, private readonly diagram: svg.Svg,
     ) {
         renderings.dblclick((event: MouseEvent) => {
             this.onDoubleClick(event);
@@ -195,7 +195,7 @@ export class InteractionService {
         } else if (element && Number.isFinite(element['cursorAngle'])) {
             const rotation = element['cursorAngle'];
 
-            const baseRotation = svg.adopt(element).transform().rotation;
+            const baseRotation = svg.adopt(element).transform().rotate;
 
             const totalRotation = MathHelper.toPositiveDegree((baseRotation || 0) + rotation);
 
