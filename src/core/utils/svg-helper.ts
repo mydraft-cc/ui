@@ -95,7 +95,7 @@ export module SVGHelper {
         return `M${r},${t} L${r},${b - rad} a${rad},${rad} 0 0 1 -${rad},${rad} L${l + rad},${b} a${rad},${rad} 0 0 1 -${rad},-${rad} L${l},${t}z`;
     }
 
-    export function transform<T extends svg.Element>(element: T, t: MatrixTransform): T {
+    export function transform<T extends svg.Element>(element: T, t: MatrixTransform, move = false): T {
         let x = Math.floor(t.rect ? t.rect.x : t.x || 0);
         let y = Math.floor(t.rect ? t.rect.y : t.y || 0);
 
@@ -117,7 +117,7 @@ export module SVGHelper {
                     t.ry || (y + 0.5 * h),
                 );
 
-        if (element['children']) {
+        if (!move) {
             if (t.rect || t.x || t.y) {
                 matrix = matrix || new svg.Matrix();
                 matrix = matrix.translate(x, y);

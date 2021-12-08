@@ -22,6 +22,7 @@ export const PrintRenderer = (props: PrintRendererProps) => {
 
     const [currentDiagrams, setCurrentDiagrams] = React.useState<Diagram[]>([]);
     const diagrams = useStore(x => x.editor.present.diagrams);
+    const color = useStore(x => x.editor.present.color);
     const rendered = React.useRef<PrintState>({});
     const renderer = React.useContext(RendererContext);
     const size = useStore(x => x.editor.present.size);
@@ -42,7 +43,7 @@ export const PrintRenderer = (props: PrintRendererProps) => {
         <>
             {currentDiagrams.map((d, i) =>
                 <div key={i}>
-                    <PrintDiagram size={size} diagram={d} rendererService={renderer} onRender={doRender} />
+                    <PrintDiagram size={size} color={color} diagram={d} rendererService={renderer} onRender={doRender} />
                 </div>,
             )}
         </>

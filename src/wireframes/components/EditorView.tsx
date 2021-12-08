@@ -27,6 +27,7 @@ export const EditorView = ({ spacing }: EditorViewProps) => {
     const selectedDiagramId = useStore(s => getDiagramId(s));
     const editor = useStore(s => getEditor(s));
     const editorSize = editor.size;
+    const editorColor = editor.color;
     const zoom = useStore(s => s.ui.zoom);
     const zoomedSize = editorSize.mul(zoom);
     const renderer = React.useContext(RendererContext);
@@ -134,6 +135,7 @@ export const EditorView = ({ spacing }: EditorViewProps) => {
             <Editor
                 diagram={getDiagram(state)}
                 rendererService={renderer}
+                color={editorColor}
                 onChangeItemsAppearance={doChangeItemsAppearance}
                 onSelectItems={doSelectItems}
                 onTransformItems={doTransformItems}

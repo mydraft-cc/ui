@@ -13,7 +13,6 @@ import { InteractionHandler, InteractionService, SvgEvent } from './interaction-
 
 const SELECTION_STROKE_COLOR = '#080';
 const SELECTION_STROKE_LOCK_COLOR = '#f00';
-const SELECTION_FILL_COLOR = 'none';
 
 export interface SelectionAdornerProps {
     // The adorner scope.
@@ -33,7 +32,7 @@ export interface SelectionAdornerProps {
 }
 
 export class SelectionAdorner extends React.Component<SelectionAdornerProps> implements InteractionHandler {
-    private shapesAdorners: any[] = [];
+    private selectionMarkers: any[] = [];
     private selectionShape: any;
     private dragStart: Vec2 | null;
 
@@ -44,13 +43,14 @@ export class SelectionAdorner extends React.Component<SelectionAdornerProps> imp
             this.props.adorners.rect(1, 1)
                 .stroke({ color: '#0a0', width: 1 })
                 .scale(1, 1)
-                .fill('#00aa0044');
+                .fill('#00aa0044')
+                .hide();
     }
 
     public componentWillUnmount() {
         this.props.interactionService.removeHandler(this);
 
-        this.shapesAdorners = [];
+        this.selectionMarkers = [];
     }
 
     public componentDidUpdate() {
@@ -91,13 +91,13 @@ export class SelectionAdorner extends React.Component<SelectionAdornerProps> imp
         }
 
         try {
-            const selectedRect = Rect2.fromVecs([this.dragStart, event.position]);
+            const rect = Rect2.fromVecs([this.dragStart, event.position]);
 
-            if (selectedRect.area < 100) {
+            if (rect.area < 100) {
                 return;
             }
 
-            const selection = this.selectMultiple(selectedRect, this.props.selectedDiagram);
+            const selection = this.selectMultiple(rect, this.props.selectedDiagram);
 
             if (selection) {
                 this.props.onSelectItems(this.props.selectedDiagram, selection!);
@@ -116,7 +116,9 @@ export class SelectionAdorner extends React.Component<SelectionAdornerProps> imp
     }
 
     private selectSingle(event: SvgEvent, diagram: Diagram): string[] {
-        if (event.shape && event.shape.bounds(diagram).aabb.contains(event.position)) {
+        const aabb = event.shape?.bounds(diagram).aabb;
+
+        if (aabb?.contains(event.position)) {
             return calculateSelection([event.shape], diagram, true, event.event.ctrlKey);
         } else {
             return [];
@@ -124,30 +126,30 @@ export class SelectionAdorner extends React.Component<SelectionAdornerProps> imp
     }
 
     private markItems() {
-        for (const adorner of this.shapesAdorners) {
+        for (const adorner of this.selectionMarkers) {
             adorner.hide();
         }
 
         const selection = this.props.selectedItems;
 
-        while (this.shapesAdorners.length < selection.length) {
-            const shapeAdorner = this.props.adorners.rect(1, 1).fill(SELECTION_FILL_COLOR).stroke({ width: 1 });
+        while (this.selectionMarkers.length < selection.length) {
+            const marker = this.props.adorners.rect(1, 1).fill('none').stroke({ width: 1 });
 
-            this.shapesAdorners.push(shapeAdorner);
+            this.selectionMarkers.push(marker);
         }
 
         this.props.selectedItems.forEach((item, i) => {
-            const shapeAdorner = this.shapesAdorners[i];
+            const marker = this.selectionMarkers[i];
 
             const color =
                 item.isLocked ?
                     SELECTION_STROKE_LOCK_COLOR :
                     SELECTION_STROKE_COLOR;
-            shapeAdorner.stroke({ color });
+            marker.stroke({ color });
 
             const bounds = item.bounds(this.props.selectedDiagram);
 
-            this.transformShape(shapeAdorner, bounds.position.sub(bounds.halfSize), bounds.size, 1, bounds.rotation.degree);
+            this.transformShape(marker, bounds.position.sub(bounds.halfSize), bounds.size, 1, bounds.rotation.degree);
         });
     }
 
@@ -160,7 +162,9 @@ export class SelectionAdorner extends React.Component<SelectionAdornerProps> imp
             rotation,
         });
 
-        shape.show();
+        if (size.x > 2 && size.y > 2) {
+            shape.show();
+        }
     }
 
     public render(): any {

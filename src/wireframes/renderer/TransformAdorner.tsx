@@ -388,7 +388,7 @@ export class TransformAdorner extends React.Component<TransformAdornerProps> imp
                 rx: position.x,
                 ry: position.y,
                 rotation,
-            });
+            }, true);
 
             const visible =
                 (offset.x === 0 || this.canResizeX) &&
@@ -409,7 +409,7 @@ export class TransformAdorner extends React.Component<TransformAdornerProps> imp
             rx: position.x,
             ry: position.y,
             rotation,
-        });
+        }, true);
 
         this.moveShape.show();
 
@@ -421,7 +421,7 @@ export class TransformAdorner extends React.Component<TransformAdornerProps> imp
             rx: position.x,
             ry: position.y,
             rotation,
-        });
+        }, true);
     }
 
     private hideShapes() {

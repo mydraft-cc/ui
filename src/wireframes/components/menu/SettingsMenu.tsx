@@ -6,8 +6,8 @@
 */
 
 import { ExportOutlined, PrinterOutlined, SettingOutlined } from '@ant-design/icons';
-import { Shortcut } from '@app/core';
-import { changeSize, useStore } from '@app/wireframes/model';
+import { Color, ColorPicker, Shortcut } from '@app/core';
+import { changeColor, changeSize, useStore } from '@app/wireframes/model';
 import { Button, Col, Dropdown, InputNumber, Menu, Modal, Row, Tooltip } from 'antd';
 import MenuItem from 'antd/lib/menu/MenuItem';
 import * as React from 'react';
@@ -22,21 +22,28 @@ export const SettingsMenu = React.memo((props: SettingsMenuProps) => {
     const { print } = props;
 
     const dispatch = useDispatch();
+    const editorSize = useStore(x => x.editor.present.size);
+    const editorColor = useStore(x => x.editor.present.color);
     const [isOpen, setIsOpen] = React.useState(false);
     const [sizeWidth, setWidth] = React.useState(0);
     const [sizeHeight, setHeight] = React.useState(0);
-    const size = useStore(x => x.editor.present.size);
+    const [color, setColor] = React.useState(Color.WHITE);
 
     React.useEffect(() => {
-        setWidth(size.x);
-        setHeight(size.y);
-    }, [size]);
+        setWidth(editorSize.x);
+        setHeight(editorSize.y);
+    }, [editorSize]);
+
+    React.useEffect(() => {
+        setColor(editorColor);
+    }, [editorColor]);
 
     const doChangeSize = React.useCallback(() => {
         dispatch(changeSize({ width: sizeWidth, height: sizeHeight }));
+        dispatch(changeColor({ color: color.toString() }));
 
         setIsOpen(false);
-    }, [dispatch, sizeWidth, sizeHeight]);
+    }, [dispatch, sizeWidth, sizeHeight, color]);
 
     const doToggle = React.useCallback(() => {
         setIsOpen(value => !value);
@@ -89,6 +96,15 @@ export const SettingsMenu = React.memo((props: SettingsMenuProps) => {
                 <Col span={12} className='property-label'>Height</Col>
                 <Col span={12} className='property-value'>
                     <InputNumber value={sizeHeight} min={300} max={3000} onChange={doSetHeight} />
+                </Col>
+            </Row>
+
+            <hr />
+
+            <Row className='property'>
+                <Col span={12} className='property-label'>Background Color</Col>
+                <Col span={12} className='property-value'>
+                    <ColorPicker value={color} onChange={setColor} />
                 </Col>
             </Row>
         </Modal>
