@@ -290,10 +290,8 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
     }
 
     private rotate(event: SvgEvent, shiftKey: boolean) {
-        const delta = this.getCummulativeRotation(event);
-
-        const deltaRotation =
-            this.snapManager.snapRotating(this.startTransform, delta, shiftKey);
+        const deltaValue = this.getCummulativeRotation(event);
+        const deltaRotation = this.snapManager.snapRotating(this.startTransform, deltaValue, shiftKey);
 
         this.transform = this.startTransform.rotateBy(Rotation.fromDegree(deltaRotation));
 
@@ -315,9 +313,9 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
         const startRotation = this.startTransform.rotation;
 
         const deltaSize = this.getResizeDeltaSize(startRotation, delta, shiftKey);
-        const deltaPos = this.getResizeDeltaPos(startRotation, deltaSize);
+        const deltaMove = this.getResizeDeltaPos(startRotation, deltaSize);
 
-        this.transform = this.startTransform.resizeAndMoveBy(deltaSize, deltaPos);
+        this.transform = this.startTransform.resizeAndMoveBy(deltaSize, deltaMove);
 
         const w = Math.floor(this.transform.size.x);
         const h = Math.floor(this.transform.size.y);
@@ -398,7 +396,7 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
                 rx: position.x,
                 ry: position.y,
                 rotation,
-            });
+            }, true, true);
 
             const visible =
                 (offset.x === 0 || this.canResizeX) &&
@@ -419,7 +417,7 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
             rx: position.x,
             ry: position.y,
             rotation,
-        });
+        }, true, true);
 
         this.moveShape.show();
 
@@ -431,7 +429,7 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
             rx: position.x,
             ry: position.y,
             rotation,
-        });
+        }, true, true);
     }
 
     private hideShapes() {

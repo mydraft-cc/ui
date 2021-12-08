@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { Rect2, sizeInPx, SVGHelper, Vec2 } from '@app/core';
+import { Color, Rect2, sizeInPx, SVGHelper, Vec2 } from '@app/core';
 import { Diagram, DiagramContainer, DiagramItem, RendererService, Transform } from '@app/wireframes/model';
 import * as React from 'react';
 import * as svg from '@svgdotjs/svg.js';
@@ -42,6 +42,9 @@ export interface EditorProps {
     // The zoomed width of the canvas.
     zoomedSize: Vec2;
 
+    // The color.
+    color: Color;
+
     // The optional viewbox.
     viewBox?: Rect2;
 
@@ -68,6 +71,7 @@ const showDebugOutlines = process.env.NODE_ENV === 'false';
 
 export const Editor = React.memo((props: EditorProps) => {
     const {
+        color,
         diagram,
         onChangeItemsAppearance,
         onSelectItems,
@@ -106,6 +110,10 @@ export const Editor = React.memo((props: EditorProps) => {
 
     React.useEffect(() => {
         if (interactionService) {
+            SVGHelper.setPosition(adornersSelect.current, 0.5, 0.5);
+            SVGHelper.setPosition(adornersTransform.current, 0.5, 0.5);
+            SVGHelper.setPosition(diagramRendering.current, 0.5, 0.5);
+
             SVGHelper.setSize(diagramTools.current, w, h);
             SVGHelper.setSize(adornersSelect.current, w, h);
             SVGHelper.setSize(adornersTransform.current, w, h);
@@ -231,7 +239,7 @@ export const Editor = React.memo((props: EditorProps) => {
         }
     }, [w, h, interactionService]);
 
-    const style: React.CSSProperties = { position: 'relative', width: sizeInPx(zoomedSize.x), height: sizeInPx(zoomedSize.y) };
+    const style = { background: color.toString(), width: sizeInPx(zoomedSize.x), height: sizeInPx(zoomedSize.y) } as any;
 
     return (
         <>

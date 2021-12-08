@@ -5,13 +5,25 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { ImmutableMap, Record, Vec2 } from '@app/core';
+import { Color, ImmutableMap, Record, Vec2 } from '@app/core';
 import { Diagram } from './diagram';
 import { UndoableState } from './undoable-state';
 
 type DiagramMap = ImmutableMap<Diagram>;
 
-type EditorProps = { selectedDiagramId: string | null; diagrams: DiagramMap; size: Vec2 };
+type EditorProps = {
+    // The id of the selected diagram.
+    selectedDiagramId: string | null;
+
+    // The actual diagrams.
+    diagrams: DiagramMap;
+
+    // The size of all diagrams.
+    size: Vec2;
+
+    // The color for all diagrams.
+    color?: Color;
+};
 
 const DEFAULT_SIZE = new Vec2(1000, 1000);
 
@@ -28,12 +40,20 @@ export class EditorState extends Record<EditorProps> {
         return this.get('size') || Vec2.ZERO;
     }
 
+    public get color() {
+        return this.get('color') || Color.WHITE;
+    }
+
     public static empty(): EditorState {
         return new EditorState({ diagrams: ImmutableMap.empty(), size: DEFAULT_SIZE });
     }
 
     public changeSize(size: Vec2) {
         return this.set('size', size);
+    }
+
+    public changeColor(color: Color | undefined) {
+        return this.set('color', color);
     }
 
     public addDiagram(diagram: Diagram) {

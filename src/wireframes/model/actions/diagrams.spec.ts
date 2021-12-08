@@ -5,8 +5,8 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { Vec2 } from '@app/core';
-import { addDiagram, changeSize, Diagram, buildDiagrams, EditorState, removeDiagram, selectDiagram } from '@app/wireframes/model';
+import { Color, Vec2 } from '@app/core';
+import { addDiagram, changeSize, Diagram, buildDiagrams, EditorState, removeDiagram, selectDiagram, changeColor } from '@app/wireframes/model';
 import { createClassReducer } from './utils';
 
 /* eslint-disable @typescript-eslint/naming-convention */
@@ -66,5 +66,14 @@ describe('DiagramReducer', () => {
         const state_2 = reducer(state_1, action);
 
         expect(state_2.size).toEqual(new Vec2(1500, 1200));
+    });
+
+    it('should change color', () => {
+        const action = changeColor({ color: '#f00' });
+
+        const state_1 = EditorState.empty();
+        const state_2 = reducer(state_1, action);
+
+        expect(state_2.color).toEqual(Color.fromString('#f00'));
     });
 });

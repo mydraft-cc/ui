@@ -95,7 +95,7 @@ export module SVGHelper {
         return `M${r},${t} L${r},${b - rad} a${rad},${rad} 0 0 1 -${rad},${rad} L${l + rad},${b} a${rad},${rad} 0 0 1 -${rad},-${rad} L${l},${t}z`;
     }
 
-    export function transform<T extends svg.Element>(element: T, t: MatrixTransform, adjust = true): T {
+    export function transform<T extends svg.Element>(element: T, t: MatrixTransform, adjust = true, move = false): T {
         let x = t.rect ? t.rect.x : t.x || 0;
         let y = t.rect ? t.rect.y : t.y || 0;
 
@@ -114,9 +114,9 @@ export module SVGHelper {
                 t.ry || (y + 0.5 * h),
             );
 
-        if (element['children']) {
+        if (!move) {
             if (t.rect || t.x || t.y) {
-                matrix = matrix.translate(x, y);
+                matrix = matrix.multiply(new svg.Matrix().translate(x, y));
             }
 
             element.matrix(matrix);
@@ -155,6 +155,10 @@ export module SVGHelper {
 
     export function box2Rect(box: svg.Box): Rect2 {
         return new Rect2(box.x, box.y, box.w, box.h);
+    }
+
+    export function setPosition(element: svg.Element, x: number, y: number) {
+        element.matrix(new svg.Matrix().translate(x, y));
     }
 
     export function setSize(element: svg.Element, width: number, height: number) {
