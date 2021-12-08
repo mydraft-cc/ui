@@ -8,20 +8,6 @@
 import { MathHelper } from '@app/core';
 
 describe('MathHelper', () => {
-    it('should calculate same crc32 for same input', () => {
-        const crc1 = MathHelper.crc32('input');
-        const crc2 = MathHelper.crc32('input');
-
-        expect(crc1).toBe(crc2);
-    });
-
-    it('should calculate different crc32 for different input', () => {
-        const crc1 = MathHelper.crc32('input1');
-        const crc2 = MathHelper.crc32('input2');
-
-        expect(crc1).not.toBe(crc2);
-    });
-
     it('should calculate different ids', () => {
         const guid1 = MathHelper.guid();
         const guid2 = MathHelper.guid();
@@ -46,20 +32,6 @@ describe('MathHelper', () => {
         expect(MathHelper.toPositiveDegree(36.5 - (2 * 360))).toBe(36.5);
         expect(MathHelper.toPositiveDegree(36.5 + (1 * 360))).toBe(36.5);
         expect(MathHelper.toPositiveDegree(36.5 + (2 * 360))).toBe(36.5);
-    });
-
-    it('should calculate simple sin', () => {
-        expect(MathHelper.simpleSin(0)).toBe(0);
-        expect(MathHelper.simpleSin(90)).toBe(1);
-        expect(MathHelper.simpleSin(180)).toBe(0);
-        expect(MathHelper.simpleSin(270)).toBe(1);
-    });
-
-    it('should calculate simple cos', () => {
-        expect(MathHelper.simpleCos(0)).toBe(1);
-        expect(MathHelper.simpleCos(90)).toBe(0);
-        expect(MathHelper.simpleCos(180)).toBe(1);
-        expect(MathHelper.simpleCos(270)).toBe(0);
     });
 
     it('should calculate multiple of 10', () => {
