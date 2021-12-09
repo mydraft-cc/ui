@@ -232,10 +232,10 @@ export const Editor = React.memo((props: EditorProps) => {
 
     React.useEffect(() => {
         if (interactionService) {
-            diagramTools.current.size(w, h);
-            adornersSelect.current.size(w, h);
-            adornersTransform.current.size(w, h);
-            diagramRendering.current.size(w, h);
+            SVGHelper.setSize(diagramTools.current, w, h);
+            SVGHelper.setSize(adornersSelect.current, w, h);
+            SVGHelper.setSize(adornersTransform.current, w, h);
+            SVGHelper.setSize(diagramRendering.current, w, h);
         }
     }, [w, h, interactionService]);
 
