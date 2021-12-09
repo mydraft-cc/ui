@@ -174,7 +174,7 @@ export class AbstractControl implements Renderer {
             existing.opacity(shape.opacity);
         }
 
-        SVGRenderer2.INSTANCE.cleanup();
+        SVGRenderer2.INSTANCE.cleanupAll();
         SVGRenderer2.INSTANCE.setContainer(container);
 
         return existing;

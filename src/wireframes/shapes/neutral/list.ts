@@ -90,16 +90,30 @@ export class List implements ShapePlugin {
     }
 
     private parseText(shape: Shape) {
-        const parts = shape.text.split('\n');
+        const key = shape.text;
 
-        return parts.map(t => {
-            const selected = t.endsWith('*');
+        let result = shape.attachments['PARSED'] as { key: string; parsed: Parsed[] };
 
-            if (selected) {
-                return { text: t.substr(0, t.length - 1).trim(), selected };
-            } else {
-                return { text: t, selected: false };
-            }
-        });
+        if (!result || result.key !== key) {
+            const parts = key.split('\n');
+
+            const parsed = parts.map(t => {
+                const selected = t.endsWith('*');
+
+                if (selected) {
+                    return { text: t.substr(0, t.length - 1).trim(), selected };
+                } else {
+                    return { text: t, selected: false };
+                }
+            });
+
+            result = { parsed, key };
+
+            shape.attachments['PARSED'] = result;
+        }
+
+        return result.parsed;
     }
 }
+
+type Parsed = { text: string; selected?: boolean };

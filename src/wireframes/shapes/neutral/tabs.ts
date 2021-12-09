@@ -92,7 +92,7 @@ export class Tabs implements ShapePlugin {
         });
     }
 
-    private createHeader(ctx: RenderContext, parts: ParsedDefinition, heightHeader: number, isBottom: boolean) {
+    private createHeader(ctx: RenderContext, parts: Parsed, heightHeader: number, isBottom: boolean) {
         const h = heightHeader;
         const y = isBottom ? ctx.rect.height - heightHeader : 0;
 
@@ -131,49 +131,59 @@ export class Tabs implements ShapePlugin {
         p.setStrokeColor(ctx.shape);
     }
 
-    private parseText(ctx: RenderContext, fontFamily: string, fontSize: number, strokeThickness: number): ParsedDefinition {
-        const w = ctx.rect.width - 2 * PADDING;
+    private parseText(ctx: RenderContext, fontFamily: string, fontSize: number, strokeThickness: number) {
+        const key = `${ctx.shape.text}_${fontFamily}_${fontSize}_${strokeThickness}`;
 
-        const result: ParsedDefinition = [];
+        let result = ctx.shape.attachments['PARSED'] as { key: string; parsed: Parsed };
 
-        let x = 0;
+        if (!result || result.key !== key) {
+            const w = ctx.rect.width - 2 * PADDING;
 
-        for (let text of ctx.shape.text.split(',')) {
-            const selected = text.endsWith('*');
+            const parsed: Parsed = [];
 
-            if (selected) {
-                text = text.substr(0, text.length - 1).trim();
+            let x = 0;
+
+            for (let text of ctx.shape.text.split(',')) {
+                const selected = text.endsWith('*');
+
+                if (selected) {
+                    text = text.substr(0, text.length - 1).trim();
+                }
+
+                const width = ctx.renderer2.getTextWidth(text, fontSize, fontFamily) + fontSize;
+
+                if (x + width > w) {
+                    break;
+                }
+
+                parsed.push({ text, selected, x, width });
+
+                x += width - strokeThickness;
             }
 
-            const width = ctx.renderer2.getTextWidth(text, fontSize, fontFamily) + fontSize;
+            const isRight = ctx.shape.getAppearance(TAB_ALIGNMENT) === TAB_ALIGNMENT_RIGHT;
 
-            if (x + width > w) {
-                break;
+            let offset = PADDING;
+
+            if (isRight) {
+                const last = parsed[parsed.length - 1];
+
+                offset += (w - (last.x + last.width));
             }
 
-            result.push({ text, selected, x, width });
+            for (const part of parsed) {
+                part.x += offset;
+            }
 
-            x += width - strokeThickness;
+            result = { parsed, key };
+
+            ctx.shape.attachments['PARSED'] = result;
         }
 
-        const isRight = ctx.shape.getAppearance(TAB_ALIGNMENT) === TAB_ALIGNMENT_RIGHT;
-
-        let offset = PADDING;
-
-        if (isRight) {
-            const last = result[result.length - 1];
-
-            offset += (w - (last.x + last.width));
-        }
-
-        for (const part of result) {
-            part.x += offset;
-        }
-
-        return result;
+        return result.parsed;
     }
 }
 
 const PADDING = 20;
 
-type ParsedDefinition = { text: string; selected?: boolean; x: number; width: number }[];
+type Parsed = { text: string; selected?: boolean; x: number; width: number }[];

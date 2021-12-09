@@ -49,9 +49,9 @@ const previewPath = (shape: ShapeInfo) => {
     const name = shape.name.toLowerCase();
 
     try {
-        return pathToShapes(`./${name}}-preview.png`).default;
+        return pathToShapes(`./${name}-preview.png`).default;
     } catch {
-        return pathToShapes(`./${shape.name.toLowerCase()}.png`).default;
+        return pathToShapes(`./${name}.png`).default;
     }
 };
 

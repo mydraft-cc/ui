@@ -106,7 +106,7 @@ export class ButtonBar implements ShapePlugin {
         renderButtons(true);
     }
 
-    private stylePart(part: { text: string; selected: boolean }, ctx: RenderContext, accentColor: Color, p: ShapeProperties) {
+    private stylePart(part: Parsed, ctx: RenderContext, accentColor: Color, p: ShapeProperties) {
         if (part.selected) {
             p.setBackgroundColor(accentColor);
             p.setStrokeColor(accentColor);
@@ -117,16 +117,30 @@ export class ButtonBar implements ShapePlugin {
     }
 
     private parseText(shape: Shape) {
-        const parts = shape.text.split(',');
+        const key = shape.text;
 
-        return parts.map(t => {
-            const selected = t.endsWith('*');
+        let result = shape.attachments['PARSED'] as { key: string; parsed: Parsed[] };
 
-            if (selected) {
-                return { text: t.substr(0, t.length - 1).trim(), selected };
-            } else {
-                return { text: t, selected: false };
-            }
-        });
+        if (!result || result.key !== key) {
+            const parts = key.split(',');
+
+            const parsed = parts.map(text => {
+                const selected = text.endsWith('*');
+
+                if (selected) {
+                    return { text: text.substr(0, text.length - 1).trim(), selected };
+                } else {
+                    return { text };
+                }
+            });
+
+            result = { parsed, key };
+
+            shape.attachments['PARSED'] = result;
+        }
+
+        return result.parsed;
     }
 }
+
+type Parsed = { text: string; selected?: boolean };
