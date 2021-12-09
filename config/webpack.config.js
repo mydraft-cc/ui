@@ -13,8 +13,6 @@ function root() {
     return path.join.apply(path, [appRoot].concat(newArgs));
 }
 
-const PUBLIC_PATH = 'https://mydraft.cc/';
-
 const plugins = {
     // https://github.com/webpack-contrib/mini-css-extract-plugin
     MiniCssExtractPlugin: require('mini-css-extract-plugin'),
@@ -326,13 +324,13 @@ module.exports = function configure(env) {
 
     if (isProduction) {
         config.plugins.push(new plugins.GenerateSW({
-            navigateFallback: `${PUBLIC_PATH}index.html`,
-
-            // We need to use a static file for caching.
             swDest: 'service-worker2.js',
 
-            // Cache all files.
-            maximumFileSizeToCacheInBytes: 50000000,
+            // Do not wait for activation
+            skipWaiting: true,
+
+            // Cache until 5MB
+            maximumFileSizeToCacheInBytes: 50000,
         }));
     }
 
