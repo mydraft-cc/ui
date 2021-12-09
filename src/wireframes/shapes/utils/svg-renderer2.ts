@@ -144,7 +144,7 @@ class Factory implements ShapeFactory {
                 clip(this);
             }
 
-            this.cleanup();
+            this.cleanupAll();
             this.clipping = clipping;
             this.container = container;
             this.containerIndex = containerIndex;
@@ -186,7 +186,7 @@ class Factory implements ShapeFactory {
             if (!element) {
                 element = factory(this.container);
             } else if (element.node.tagName !== name) {
-                this.cleanup();
+                this.cleanup(this.containerIndex);
 
                 element = factory(this.container);
             }
@@ -197,10 +197,14 @@ class Factory implements ShapeFactory {
         }
     }
 
-    public cleanup() {
+    public cleanupAll() {
+        this.cleanup(this.containerIndex + 1);
+    }
+
+    public cleanup(start: number) {
         const size = this.container.children().length;
 
-        for (let i = this.containerIndex + 1; i < size; i++) {
+        for (let i = start; i < size; i++) {
             const last = this.container.last();
 
             last.clipper()?.remove();

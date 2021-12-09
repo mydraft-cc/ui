@@ -52,6 +52,9 @@ type ShapeProps = {
 
     // The id of the renderer.
     renderer: string;
+
+    // Attachments for the rendering process.
+    attachments: object;
 };
 
 type Props = ItemProps & GroupProps & ShapeProps & VisualProps;
@@ -63,6 +66,10 @@ const DEFAULT_CONFIGURABLES: Configurable[] = [];
 export class DiagramItem extends Record<Props> implements Shape {
     private cachedBounds: { [id: string]: Transform } | undefined;
     private cachedDiagram: Diagram;
+
+    public get attachments() {
+        return this.get('attachments');
+    }
 
     public get appearance() {
         return this.get('appearance') || DEFAULT_APPEARANCE;
@@ -119,6 +126,7 @@ export class DiagramItem extends Record<Props> implements Shape {
         return new DiagramItem({
             id,
             appearance,
+            attachments: {},
             configurables,
             constraint,
             isLocked: false,
