@@ -88,11 +88,15 @@ export class Vec2 {
     }
 
     public round(factor = 1): Vec2 {
-        return new Vec2(MathHelper.roundToMultipleOf(this.x, factor), MathHelper.roundToMultipleOf(this.y, factor));
+        return new Vec2(
+            MathHelper.roundToMultipleOf(this.x, factor),
+            MathHelper.roundToMultipleOf(this.y, factor));
     }
 
     public roundToMultipleOfTwo(): Vec2 {
-        return new Vec2(MathHelper.roundToMultipleOf(this.x, 2), MathHelper.roundToMultipleOf(this.y, 2));
+        return new Vec2(
+            MathHelper.roundToMultipleOf(this.x, 2),
+            MathHelper.roundToMultipleOf(this.y, 2));
     }
 
     public static rotated(vec: Vec2, center: Vec2, rotation: Rotation): Vec2 {

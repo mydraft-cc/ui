@@ -110,6 +110,10 @@ export const Editor = React.memo((props: EditorProps) => {
 
     React.useEffect(() => {
         if (interactionService) {
+            SVGHelper.setPosition(adornersSelect.current, 0.5, 0.5);
+            SVGHelper.setPosition(adornersTransform.current, 0.5, 0.5);
+            SVGHelper.setPosition(diagramRendering.current, 0.5, 0.5);
+
             SVGHelper.setSize(diagramTools.current, w, h);
             SVGHelper.setSize(adornersSelect.current, w, h);
             SVGHelper.setSize(adornersTransform.current, w, h);
@@ -206,7 +210,36 @@ export const Editor = React.memo((props: EditorProps) => {
         forceRender();
     });
 
-    const style = { position: 'relative', background: color.toString(), width: sizeInPx(zoomedSize.x), height: sizeInPx(zoomedSize.y) } as any;
+    const doPreview = React.useCallback((items: DiagramItem[]) => {
+        for (const item of items) {
+            const reference = shapeRefsById.current[item.id];
+
+            if (reference) {
+                reference.setPreview(item);
+            }
+        }
+
+        setSelectedItemsWithLocked(withPreview(props.selectedItemsWithLocked, items));
+    }, [props.selectedItemsWithLocked]);
+
+    const doPreviewEnd = React.useCallback(() => {
+        for (const reference of Object.values(shapeRefsById.current)) {
+            reference.setPreview(null);
+        }
+
+        setSelectedItemsWithLocked(props.selectedItemsWithLocked);
+    }, [props.selectedItemsWithLocked]);
+
+    React.useEffect(() => {
+        if (interactionService) {
+            diagramTools.current.size(w, h);
+            adornersSelect.current.size(w, h);
+            adornersTransform.current.size(w, h);
+            diagramRendering.current.size(w, h);
+        }
+    }, [w, h, interactionService]);
+
+    const style = { background: color.toString(), width: sizeInPx(zoomedSize.x), height: sizeInPx(zoomedSize.y) } as any;
 
     return (
         <>
@@ -224,6 +257,8 @@ export const Editor = React.memo((props: EditorProps) => {
                                 <TransformAdorner
                                     adorners={adornersTransform.current}
                                     interactionService={interactionService}
+                                    onPreview={doPreview}
+                                    onPreviewEnd={doPreviewEnd}
                                     onTransformItems={onTransformItems}
                                     selectedDiagram={diagram}
                                     selectedItems={props.selectedItems}
@@ -255,3 +290,11 @@ export const Editor = React.memo((props: EditorProps) => {
         </>
     );
 });
+
+function withPreview(source: DiagramItem[], previews: DiagramItem[]) {
+    return source.map(x => {
+        const preview = previews.find(y => x.id === y.id);
+
+        return preview || x;
+    });
+}

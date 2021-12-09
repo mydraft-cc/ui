@@ -109,7 +109,7 @@ describe('DiagramItem', () => {
         const actual = item_2.transform;
         const expected = new Transform(Vec2.ZERO, new Vec2(200, 40), Rotation.ZERO);
 
-        expect(actual).toEqual(expected);
+        expect(actual.equals(expected)).toBeTrue();
     });
 
     it('should add appearance', () => {

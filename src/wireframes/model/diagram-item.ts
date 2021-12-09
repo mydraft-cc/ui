@@ -110,10 +110,22 @@ export class DiagramItem extends Record<Props> implements Shape {
         return new DiagramItem({ id, type: 'Group', isLocked: false, childIds, rotation });
     }
 
-    public static createShape(id: string, renderer: string, w: number, h: number, configurables?: Configurable[], visual?: Appearance | { [key: string]: any }, constraint?: Constraint) {
+    public static createShape(id: string, renderer: string, w: number, h: number,
+        visual?: Appearance | { [key: string]: any },
+        configurables?: Configurable[],
+        constraint?: Constraint) {
         const appearance = getAppearance(visual);
 
-        return new DiagramItem({ id, type: 'Shape', isLocked: false, transform: createTransform(w, h), renderer, appearance, configurables, constraint });
+        return new DiagramItem({
+            id,
+            appearance,
+            configurables,
+            constraint,
+            isLocked: false,
+            renderer,
+            transform: createTransform(w, h),
+            type: 'Shape',
+        });
     }
 
     public get fontSize(): number {
@@ -234,7 +246,7 @@ export class DiagramItem extends Record<Props> implements Shape {
 
                 const transforms = set.allVisuals.filter(x => x.type === 'Shape').map(x => x.transform);
 
-                this.cachedBounds[diagram.id] = Transform.createFromTransformationsAndRotations(transforms, this.rotation);
+                this.cachedBounds[diagram.id] = Transform.createFromTransformationsAndRotation(transforms, this.rotation);
             }
 
             return this.cachedBounds[diagram.id];
@@ -253,7 +265,7 @@ export class DiagramItem extends Record<Props> implements Shape {
 
             return this.set('rotation', rotation);
         } else {
-            const transform = this.transform.transformByBounds(oldBounds, newBounds);
+            const transform = this.transform.transformByBounds(oldBounds, newBounds, undefined);
 
             return this.transformTo(transform);
         }
@@ -264,7 +276,7 @@ export class DiagramItem extends Record<Props> implements Shape {
             const size = this.constraint.updateSize(this, this.transform.size, prev);
 
             if (size.x > 0 && size.y > 0) {
-                return values.set('transform', this.transform.resizeTopLeft(size).round());
+                return values.set('transform', this.transform.resizeTopLeft(size));
             }
         }
 

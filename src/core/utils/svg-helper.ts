@@ -95,41 +95,33 @@ export module SVGHelper {
         return `M${r},${t} L${r},${b - rad} a${rad},${rad} 0 0 1 -${rad},${rad} L${l + rad},${b} a${rad},${rad} 0 0 1 -${rad},-${rad} L${l},${t}z`;
     }
 
-    export function transform<T extends svg.Element>(element: T, t: MatrixTransform, move = false): T {
-        let x = Math.floor(t.rect ? t.rect.x : t.x || 0);
-        let y = Math.floor(t.rect ? t.rect.y : t.y || 0);
+    export function transform<T extends svg.Element>(element: T, t: MatrixTransform, adjust = true, move = false): T {
+        let x = t.rect ? t.rect.x : t.x || 0;
+        let y = t.rect ? t.rect.y : t.y || 0;
 
-        let w = Math.floor(t.rect ? t.rect.width : t.w || 0);
-        let h = Math.floor(t.rect ? t.rect.height : t.h || 0);
+        const w = Math.round(t.rect ? t.rect.width : t.w || 0);
+        const h = Math.round(t.rect ? t.rect.height : t.h || 0);
 
-        if (element.attr('stroke-width') % 2 === 1) {
-            x += 0.5;
-            y += 0.5;
-            w -= 1;
-            h -= 1;
+        if (!t.rotation && adjust) {
+            x = Math.round(x);
+            y = Math.round(y);
         }
 
-        let matrix =
-            new svg.Matrix()
-                .rotate(
-                    t.rotation || 0,
-                    t.rx || (x + 0.5 * w),
-                    t.ry || (y + 0.5 * h),
-                );
+        let matrix = new svg.Matrix()
+            .rotate(
+                t.rotation || 0,
+                t.rx || (x + 0.5 * w),
+                t.ry || (y + 0.5 * h),
+            );
 
         if (!move) {
             if (t.rect || t.x || t.y) {
-                matrix = matrix || new svg.Matrix();
-                matrix = matrix.translate(x, y);
+                matrix = matrix.multiply(new svg.Matrix().translate(x, y));
             }
 
-            if (matrix) {
-                element.matrix(matrix);
-            }
+            element.matrix(matrix);
         } else {
-            if (matrix) {
-                element.matrix(matrix);
-            }
+            element.matrix(matrix);
 
             if (t.rect || t.x || t.y) {
                 element.move(x, y);
@@ -163,6 +155,10 @@ export module SVGHelper {
 
     export function box2Rect(box: svg.Box): Rect2 {
         return new Rect2(box.x, box.y, box.w, box.h);
+    }
+
+    export function setPosition(element: svg.Element, x: number, y: number) {
+        element.matrix(new svg.Matrix().translate(x, y));
     }
 
     export function setSize(element: svg.Element, width: number, height: number) {

@@ -39,11 +39,17 @@ export interface TransformAdornerProps {
     // The interaction service.
     interactionService: InteractionService;
 
+    // The preview of items.
+    onPreview: (items: DiagramItem[]) => void;
+
+    // The preview of items.
+    onPreviewEnd: () => void;
+
     // A function to transform a set of items.
     onTransformItems: (diagram: Diagram, items: DiagramItem[], oldBounds: Transform, newBounds: Transform) => void;
 }
 
-export class TransformAdorner extends React.Component<TransformAdornerProps> implements InteractionHandler {
+export class TransformAdorner extends React.PureComponent<TransformAdornerProps> implements InteractionHandler {
     private transform: Transform;
     private startTransform: Transform;
     private allElements: svg.Element[];
@@ -107,7 +113,7 @@ export class TransformAdorner extends React.Component<TransformAdornerProps> imp
         } else {
             const bounds = this.props.selectedItems.map(x => x.bounds(this.props.selectedDiagram));
 
-            transform = Transform.createFromTransformationsAndRotations(bounds, this.rotation);
+            transform = Transform.createFromTransformationsAndRotation(bounds, this.rotation);
         }
 
         this.transform = transform;
@@ -171,6 +177,7 @@ export class TransformAdorner extends React.Component<TransformAdornerProps> imp
 
         this.transform = previousTranform.moveBy(new Vec2(xd, yd));
 
+        this.props.onPreviewEnd();
         this.props.onTransformItems(
             this.props.selectedDiagram,
             this.props.selectedItems,
@@ -226,7 +233,7 @@ export class TransformAdorner extends React.Component<TransformAdornerProps> imp
         const unrotated = Vec2.rotated(point, this.transform.position, this.transform.rotation.negate());
 
         for (const element of this.allElements) {
-            const box = SVGRenderer2.INSTANCE.getBounds(element, true);
+            const box = SVGRenderer2.INSTANCE.getLocalBounds(element);
 
             if (box.contains(unrotated)) {
                 return element;
@@ -261,13 +268,16 @@ export class TransformAdorner extends React.Component<TransformAdornerProps> imp
                 this.resize(delta, event.event.shiftKey);
             }
 
+            const previews = this.props.selectedItems.map(x => x.transformByBounds(this.startTransform, this.transform));
+
+            this.props.onPreview(previews);
+
             this.layoutShapes();
         }
     }
 
     private move(delta: Vec2, shiftKey: boolean) {
-        const snapResult =
-            this.snapManager.snapMoving(this.props.selectedDiagram, this.props.viewSize, this.startTransform, delta, shiftKey);
+        const snapResult = this.snapManager.snapMoving(this.props.selectedDiagram, this.props.viewSize, this.startTransform, delta, shiftKey);
 
         this.transform = this.startTransform.moveBy(snapResult.delta);
 
@@ -280,10 +290,8 @@ export class TransformAdorner extends React.Component<TransformAdornerProps> imp
     }
 
     private rotate(event: SvgEvent, shiftKey: boolean) {
-        const delta = this.getCummulativeRotation(event);
-
-        const deltaRotation =
-            this.snapManager.snapRotating(this.startTransform, delta, shiftKey);
+        const deltaValue = this.getCummulativeRotation(event);
+        const deltaRotation = this.snapManager.snapRotating(this.startTransform, deltaValue, shiftKey);
 
         this.transform = this.startTransform.rotateBy(Rotation.fromDegree(deltaRotation));
 
@@ -305,9 +313,9 @@ export class TransformAdorner extends React.Component<TransformAdornerProps> imp
         const startRotation = this.startTransform.rotation;
 
         const deltaSize = this.getResizeDeltaSize(startRotation, delta, shiftKey);
-        const deltaPos = this.getResizeDeltaPos(startRotation, deltaSize);
+        const deltaMove = this.getResizeDeltaPos(startRotation, deltaSize);
 
-        this.transform = this.startTransform.resizeAndMoveBy(deltaSize, deltaPos);
+        this.transform = this.startTransform.resizeAndMoveBy(deltaSize, deltaMove);
 
         const w = Math.floor(this.transform.size.x);
         const h = Math.floor(this.transform.size.y);
@@ -388,7 +396,7 @@ export class TransformAdorner extends React.Component<TransformAdornerProps> imp
                 rx: position.x,
                 ry: position.y,
                 rotation,
-            }, true);
+            }, true, true);
 
             const visible =
                 (offset.x === 0 || this.canResizeX) &&
@@ -409,7 +417,7 @@ export class TransformAdorner extends React.Component<TransformAdornerProps> imp
             rx: position.x,
             ry: position.y,
             rotation,
-        }, true);
+        }, true, true);
 
         this.moveShape.show();
 
@@ -421,7 +429,7 @@ export class TransformAdorner extends React.Component<TransformAdornerProps> imp
             rx: position.x,
             ry: position.y,
             rotation,
-        }, true);
+        }, true, true);
     }
 
     private hideShapes() {
@@ -431,7 +439,7 @@ export class TransformAdorner extends React.Component<TransformAdornerProps> imp
     private createMoveShape() {
         const moveShape =
             this.props.adorners.rect(1)
-                .stroke({ color: TRANSFORMER_STROKE_COLOR, width: 1 }).fill('none').hide();
+                .stroke({ color: TRANSFORMER_STROKE_COLOR, width: 1 }).fill('none');
 
         this.props.interactionService.setCursor(moveShape, 'move');
 

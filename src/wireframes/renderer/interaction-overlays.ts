@@ -58,7 +58,7 @@ export class InteractionOverlays {
     }
 
     public showYLine(value: number, color: Color) {
-        this.lineX.fill(color.toString()).show();
+        this.lineY.fill(color.toString()).show();
 
         SVGHelper.transform(this.lineY, { x: -4000, y: value, w: 10000, h: 1 });
     }

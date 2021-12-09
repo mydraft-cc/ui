@@ -88,7 +88,9 @@ export interface ShapeFactory {
 }
 
 export interface ShapeRenderer2 extends ShapeFactory {
-    getBounds(element: RendererElement, untransformed?: boolean): Rect2;
+    getBounds(element: RendererElement): Rect2;
+
+    getLocalBounds(element: RendererElement): Rect2;
 
     getTextWidth(text: string, fontSize: number, fontFamily: string): number | undefined;
 }

@@ -5,21 +5,39 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
+/* eslint-disable no-multi-assign */
+
 import { MathHelper } from './math-helper';
 
 export class Rotation {
     public static readonly ZERO = Rotation.fromRadian(0);
 
-    public readonly cos: number;
-    public readonly sin: number;
+    private readonly computed: { cos: number | null; sin: number | null } = { cos: null, sin: null };
+
+    public get cos() {
+        let cos = this.computed.cos;
+
+        if (cos === null) {
+            this.computed.cos = cos = Math.cos(this.radian);
+        }
+
+        return cos;
+    }
+
+    public get sin() {
+        let sin = this.computed.sin;
+
+        if (sin === null) {
+            this.computed.sin = sin = Math.sin(this.radian);
+        }
+
+        return sin;
+    }
 
     constructor(
         public readonly radian: number,
         public readonly degree: number,
     ) {
-        this.cos = Math.cos(radian);
-        this.sin = Math.sin(radian);
-
         Object.freeze(this);
     }
 
