@@ -139,7 +139,7 @@ export module SVGHelper {
                 text.style.height = sizeInPx(h);
             }
 
-            element.size(w, h);
+            SVGHelper.setSize(element, w, h);
         }
 
         return element;

@@ -74,6 +74,7 @@ export const Editor = React.memo((props: EditorProps) => {
         color,
         diagram,
         onChangeItemsAppearance,
+        onRender,
         onSelectItems,
         onTransformItems,
         rendererService,
@@ -88,6 +89,7 @@ export const Editor = React.memo((props: EditorProps) => {
 
     // Use a state here to force an update.
     const [interactionService, setInteractionService] = React.useState<InteractionService>();
+    const currentOnRender = React.useRef(onRender);
     const adornersSelect = React.useRef<svg.Container>();
     const adornersTransform = React.useRef<svg.Container>();
     const diagramTools = React.useRef<svg.Element>();
@@ -150,7 +152,7 @@ export const Editor = React.memo((props: EditorProps) => {
         return flattenShapes;
     }, [diagram]);
 
-    const forceRender = React.useCallback(() => {
+    React.useEffect(() => {
         if (!interactionService) {
             return;
         }
@@ -201,14 +203,10 @@ export const Editor = React.memo((props: EditorProps) => {
             references[shape.id].render(shape);
         }
 
-        if (props.onRender) {
-            props.onRender();
+        if (currentOnRender.current) {
+            currentOnRender.current();
         }
-    }, [interactionService, orderedShapes, props, rendererService.registeredRenderers]);
-
-    React.useEffect(() => {
-        forceRender();
-    });
+    }, [interactionService, orderedShapes, rendererService.registeredRenderers]);
 
     const doPreview = React.useCallback((items: DiagramItem[]) => {
         for (const item of items) {

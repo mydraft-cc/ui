@@ -42,8 +42,10 @@ export const PrintDiagram = (props: PrintDiagramProps) => {
         }
     }, [diagram, onRender]);
 
-    const bounds = React.useMemo(() => {
-        return Rect2.fromRects(diagram.items.values.map(x => x.bounds(diagram).aabb)).inflate(20);
+    const { bounds, zoomedSize } = React.useMemo(() => {
+        const bounds = Rect2.fromRects(diagram.items.values.map(x => x.bounds(diagram).aabb)).inflate(20);
+
+        return { bounds, zoomedSize: new Vec2(bounds.w, bounds.h) };
     }, [diagram]);
 
     return (
@@ -58,7 +60,7 @@ export const PrintDiagram = (props: PrintDiagramProps) => {
                 viewBox={bounds}
                 viewSize={size}
                 zoom={1}
-                zoomedSize={new Vec2(bounds.w, bounds.h)}
+                zoomedSize={zoomedSize}
             />
         </>
     );
