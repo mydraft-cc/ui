@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { Color, SVGHelper } from '@app/core';
+import { Color, Rect2, SVGHelper } from '@app/core';
 import { SnapMode, SnapResult, Transform } from '@app/wireframes/model';
 import * as svg from '@svgdotjs/svg.js';
 import { SVGRenderer2 } from '../shapes/utils/svg-renderer2';
@@ -25,7 +25,7 @@ export class InteractionOverlays {
         this.elements.push(this.lineY);
 
         this.infoRect = layer.rect().fill('#000');
-        this.infoText = SVGHelper.createText(layer, '', 16, 'center', 'middle').attr('color', '#fff');
+        this.infoText = SVGHelper.createText(layer, 'text', 16, 'center', 'middle').attr('color', '#fff');
 
         this.elements.push(this.infoRect);
         this.elements.push(this.infoText);
@@ -66,14 +66,15 @@ export class InteractionOverlays {
     public showInfo(transform: Transform, text: string) {
         const aabb = transform.aabb;
 
+        const width = SVGRenderer2.INSTANCE.getTextWidth(text, 16, 'inherit');
+
+        const bounds = new Rect2(aabb.right + 4, aabb.bottom + 24, width + 20, 24);
+
         this.infoRect.show();
         this.infoText.node.children[0].textContent = text;
         this.infoText.show();
 
-        SVGHelper.transform(this.infoText, { x: aabb.right + 4, y: aabb.bottom + 24, w: 160, h: 24 });
-
-        const bounds = SVGRenderer2.INSTANCE.getBounds(this.infoText);
-
+        SVGHelper.transform(this.infoText, { rect: bounds });
         SVGHelper.transform(this.infoRect, { rect: bounds.inflate(4) });
     }
 

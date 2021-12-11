@@ -18,4 +18,5 @@ export * from './menu/SettingsMenu';
 export * from './menu/UIMenu';
 export * from './properties/CustomProperties';
 export * from './properties/LayoutProperties';
+export * from './properties/MoreProperties';
 export * from './properties/VisualProperties';

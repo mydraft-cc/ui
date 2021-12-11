@@ -108,55 +108,6 @@ export const getSelectedConfigurables = createSelector(
     shape => (shape ? shape.configurables : EMPTY_CONFIGURABLES),
 );
 
-export interface UniqueValue<TValue> {
-    value?: TValue;
-
-    empty: boolean;
-}
-
-type Comparer<TComparand> = (lhs: TComparand, rhs: TComparand) => boolean;
-
-type Parser<TInput> = (value: any) => TInput | undefined;
-
-const DEFAULT_COMPARER: Comparer<any> = (lhs, rhs) => lhs === rhs;
-const DEFAULT_PARSER = (value: any) => value;
-
-export function uniqueAppearance<T>(set: DiagramItemSet, key: string, parse?: Parser<T>, compare?: Comparer<T>): UniqueValue<T> {
-    if (!set) {
-        return { empty: true };
-    }
-
-    if (!compare) {
-        compare = DEFAULT_COMPARER;
-    }
-
-    if (!parse) {
-        parse = DEFAULT_PARSER;
-    }
-
-    let value: T | undefined;
-
-    let hasValue = false;
-
-    for (const visual of set!.allVisuals) {
-        const appearance = visual.appearance.get(key);
-
-        if (appearance) {
-            hasValue = true;
-
-            const parsed = parse(appearance);
-
-            if (parsed && value && !compare(value, parsed)) {
-                value = undefined;
-            } else {
-                value = parsed;
-            }
-        }
-    }
-
-    return { value, empty: !hasValue };
-}
-
 type State = AssetsStateInStore & EditorStateInStore & UIStateInStore & LoadingStateInStore;
 
 export function useStore<T>(selector: ((state: State) => T)) {

@@ -21,7 +21,7 @@ type ItemProps = {
     id: string;
 
     // The locking state.
-    isLocked: boolean;
+    isLocked?: boolean;
 
     // The type of the item.
     type: 'Shape' | 'Group';
@@ -67,6 +67,14 @@ export class DiagramItem extends Record<Props> implements Shape {
     private cachedBounds: { [id: string]: Transform } | undefined;
     private cachedDiagram: Diagram;
 
+    public get id() {
+        return this.get('id');
+    }
+
+    public get type() {
+        return this.get('type');
+    }
+
     public get attachments() {
         return this.get('attachments');
     }
@@ -91,10 +99,6 @@ export class DiagramItem extends Record<Props> implements Shape {
         return this.get('isLocked') || false;
     }
 
-    public get id() {
-        return this.get('id');
-    }
-
     public get rotation() {
         return this.get('rotation') || Rotation.ZERO;
     }
@@ -105,35 +109,6 @@ export class DiagramItem extends Record<Props> implements Shape {
 
     public get transform() {
         return this.get('transform');
-    }
-
-    public get type() {
-        return this.get('type');
-    }
-
-    public static createGroup(id: string, ids: DiagramContainer | ReadonlyArray<string>, rotation?: Rotation) {
-        const childIds = getChildIds(ids);
-
-        return new DiagramItem({ id, type: 'Group', isLocked: false, childIds, rotation });
-    }
-
-    public static createShape(id: string, renderer: string, w: number, h: number,
-        visual?: Appearance | { [key: string]: any },
-        configurables?: Configurable[],
-        constraint?: Constraint) {
-        const appearance = getAppearance(visual);
-
-        return new DiagramItem({
-            id,
-            appearance,
-            attachments: {},
-            configurables,
-            constraint,
-            isLocked: false,
-            renderer,
-            transform: createTransform(w, h),
-            type: 'Shape',
-        });
     }
 
     public get fontSize(): number {
@@ -154,6 +129,10 @@ export class DiagramItem extends Record<Props> implements Shape {
 
     public get iconFontFamily(): string {
         return this.getAppearance(DefaultAppearance.ICON_FONT_FAMILY);
+    }
+
+    public get link(): string {
+        return this.getAppearance(DefaultAppearance.LINK);
     }
 
     public get opacity(): number {
@@ -182,6 +161,30 @@ export class DiagramItem extends Record<Props> implements Shape {
 
     public getAppearance(key: string) {
         return this.appearance.get(key);
+    }
+
+    public static createGroup(id: string, ids: DiagramContainer | ReadonlyArray<string>, rotation?: Rotation) {
+        const childIds = getChildIds(ids);
+
+        return new DiagramItem({ id, type: 'Group', childIds, rotation });
+    }
+
+    public static createShape(id: string, renderer: string, w: number, h: number,
+        visual?: Appearance | { [key: string]: any },
+        configurables?: Configurable[],
+        constraint?: Constraint) {
+        const appearance = getAppearance(visual);
+
+        return new DiagramItem({
+            id,
+            appearance,
+            attachments: {},
+            configurables,
+            constraint,
+            renderer,
+            transform: createTransform(w, h),
+            type: 'Shape',
+        });
     }
 
     public lock() {

@@ -7,15 +7,12 @@
 
 import { Color, ColorPicker } from '@app/core';
 import { DefaultAppearance } from '@app/wireframes/interface';
-import { changeItemsAppearance, getDiagramId, getSelectedItems, getSelectionSet, selectColorTab, uniqueAppearance, useStore } from '@app/wireframes/model';
+import { getDiagramId, getSelectedItems, getSelectionSet, selectColorTab, useStore } from '@app/wireframes/model';
 import { Button, Col, Row, Select } from 'antd';
-import { ButtonType } from 'antd/lib/button';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
+import { UniqueValue, useAppearance } from './hooks';
 import './VisualProperties.scss';
-
-const DEFINED_STROKE_THICKNESSES = [1, 2, 4, 6, 8];
-const DEFINED_FONT_SIZES = [4, 6, 8, 10, 12, 14, 16, 18, 20, 24, 28, 32, 36, 40, 48, 60];
 
 export const VisualProperties = React.memo(() => {
     const dispatch = useDispatch();
@@ -24,71 +21,37 @@ export const VisualProperties = React.memo(() => {
     const selectedDiagramId = useStore(getDiagramId);
     const selectedItems = useStore(getSelectedItems);
 
-    const backgroundColor = React.useMemo(() =>
-        uniqueAppearance(selectionSet, DefaultAppearance.BACKGROUND_COLOR, x => Color.fromValue(x), Color.eq),
-    [selectionSet]);
+    const [backgroundColor, setBackgroundColor] =
+        useAppearance(selectedDiagramId, selectionSet,
+            DefaultAppearance.BACKGROUND_COLOR, x => Color.fromValue(x));
 
-    const fontSize = React.useMemo(() =>
-        uniqueAppearance(selectionSet, DefaultAppearance.FONT_SIZE, x => x),
-    [selectionSet]);
+    const [fontSize, setFontSize] =
+        useAppearance(selectedDiagramId, selectionSet,
+            DefaultAppearance.FONT_SIZE);
 
-    const foregroundColor = React.useMemo(() =>
-        uniqueAppearance(selectionSet, DefaultAppearance.FOREGROUND_COLOR, x => Color.fromValue(x), Color.eq),
-    [selectionSet]);
+    const [foregroundColor, setForegroundColor] =
+        useAppearance(selectedDiagramId, selectionSet,
+            DefaultAppearance.FOREGROUND_COLOR, x => Color.fromValue(x));
 
-    const strokeColor = React.useMemo(() =>
-        uniqueAppearance(selectionSet, DefaultAppearance.STROKE_COLOR, x => Color.fromValue(x), Color.eq),
-    [selectionSet]);
+    const [strokeColor, setStrokeColor] =
+        useAppearance(selectedDiagramId, selectionSet,
+            DefaultAppearance.STROKE_COLOR, x => Color.fromValue(x));
 
-    const strokeThickness = React.useMemo(() =>
-        uniqueAppearance(selectionSet, DefaultAppearance.STROKE_THICKNESS, x => x),
-    [selectionSet]);
+    const [strokeThickness, setStrokeThickness] =
+        useAppearance(selectedDiagramId, selectionSet,
+            DefaultAppearance.STROKE_THICKNESS);
 
-    const textAlignment = React.useMemo(() =>
-        uniqueAppearance(selectionSet, DefaultAppearance.TEXT_ALIGNMENT, x => x),
-    [selectionSet]);
-
-    const getTextAlignment = React.useCallback((value: string): ButtonType => {
-        return value === textAlignment.value ? 'primary' : undefined;
-    }, [textAlignment]);
-
-    const doAlignText = React.useCallback((value: string) => {
-        if (selectedDiagramId) {
-            dispatch(changeItemsAppearance(selectedDiagramId, selectedItems, DefaultAppearance.TEXT_ALIGNMENT, value));
-        }
-    }, [dispatch, selectedDiagramId, selectedItems]);
-
-    const doChangeAppearance = React.useCallback((key: string, value: any) => {
-        if (selectedDiagramId) {
-            dispatch(changeItemsAppearance(selectedDiagramId, selectedItems, key, value));
-        }
-    }, [dispatch, selectedDiagramId, selectedItems]);
+    const [textAlignment, setTextAlignment] =
+        useAppearance(selectedDiagramId, selectionSet,
+            DefaultAppearance.STROKE_THICKNESS);
 
     const doSelectColorTab = React.useCallback((key: string) => {
         dispatch(selectColorTab(key));
     }, [dispatch]);
 
-    const doAlignTextLeft = React.useCallback(() => doAlignText('left'), [doAlignText]);
-    const doAlignTextCenter = React.useCallback(() => doAlignText('center'), [doAlignText]);
-    const doAlignTextRight = React.useCallback(() => doAlignText('right'), [doAlignText]);
-
-    const doChangeFontSize = React.useCallback((value: any) => doChangeAppearance(DefaultAppearance.FONT_SIZE, value), [doChangeAppearance]);
-    const doChangeStrokeColor = React.useCallback((value: any) => doChangeAppearance(DefaultAppearance.STROKE_COLOR, value), [doChangeAppearance]);
-    const doChangeStrokeThickness = React.useCallback((value: any) => doChangeAppearance(DefaultAppearance.STROKE_THICKNESS, value), [doChangeAppearance]);
-    const doChangeForegroundColor = React.useCallback((value: any) => doChangeAppearance(DefaultAppearance.FOREGROUND_COLOR, value), [doChangeAppearance]);
-    const doChangeBackgroundColor = React.useCallback((value: any) => doChangeAppearance(DefaultAppearance.BACKGROUND_COLOR, value), [doChangeAppearance]);
-
     if (!selectedDiagramId) {
         return null;
     }
-
-    const fontSizes = DEFINED_FONT_SIZES.map(o =>
-        <Select.Option key={o.toString()} value={o}>{o}</Select.Option>,
-    );
-
-    const strokeThicknesses = DEFINED_STROKE_THICKNESSES.map(o =>
-        <Select.Option key={o.toString()} value={o}>{o}</Select.Option>,
-    );
 
     return (
         <>
@@ -97,16 +60,20 @@ export const VisualProperties = React.memo(() => {
                     <Row className='property'>
                         <Col span={12} className='property-label'>Font Size</Col>
                         <Col span={12} className='property-value'>
-                            <Select disabled={fontSize.empty} value={fontSize.value ? fontSize.value.toString() : undefined} onChange={doChangeFontSize}>
-                                {fontSizes}
+                            <Select disabled={fontSize.empty} value={fontSize.value?.toString()} onChange={setFontSize}>
+                                {DEFINED_FONT_SIZES.map(value =>
+                                    <Select.Option key={value.toString()} value={value}>{value}</Select.Option>,
+                                )}
                             </Select>
                         </Col>
                     </Row>
                     <Row className='property'>
                         <Col span={12} className='property-label'>Stroke Thickness</Col>
                         <Col span={12} className='property-value'>
-                            <Select disabled={strokeThickness.empty} value={strokeThickness.value ? strokeThickness.value.toString() : undefined} onChange={doChangeStrokeThickness}>
-                                {strokeThicknesses}
+                            <Select disabled={strokeThickness.empty} value={strokeThickness.value?.toString()} onChange={setStrokeThickness}>
+                                {DEFINED_STROKE_THICKNESSES.map(value =>
+                                    <Select.Option key={value.toString()} value={value}>{value}</Select.Option>,
+                                )}
                             </Select>
                         </Col>
                     </Row>
@@ -114,7 +81,7 @@ export const VisualProperties = React.memo(() => {
                         <Col span={12} className='property-label'>Stroke Color</Col>
                         <Col span={12} className='property-value'>
                             <ColorPicker activeColorTab={selectedColorTab} disabled={strokeColor.empty} value={strokeColor.value}
-                                onChange={doChangeStrokeColor}
+                                onChange={setStrokeColor}
                                 onActiveColorTabChanged={doSelectColorTab} />
                         </Col>
                     </Row>
@@ -122,7 +89,7 @@ export const VisualProperties = React.memo(() => {
                         <Col span={12} className='property-label'>Foreground Color</Col>
                         <Col span={12} className='property-value'>
                             <ColorPicker activeColorTab={selectedColorTab} disabled={foregroundColor.empty} value={foregroundColor.value}
-                                onChange={doChangeForegroundColor}
+                                onChange={setForegroundColor}
                                 onActiveColorTabChanged={doSelectColorTab} />
                         </Col>
                     </Row>
@@ -130,7 +97,7 @@ export const VisualProperties = React.memo(() => {
                         <Col span={12} className='property-label'>Background Color</Col>
                         <Col span={12} className='property-value'>
                             <ColorPicker activeColorTab={selectedColorTab} disabled={backgroundColor.empty} value={backgroundColor.value}
-                                onChange={doChangeBackgroundColor}
+                                onChange={setBackgroundColor}
                                 onActiveColorTabChanged={doSelectColorTab} />
                         </Col>
                     </Row>
@@ -138,15 +105,14 @@ export const VisualProperties = React.memo(() => {
                         <Col span={12} className='property-label'>Text Alignment</Col>
                         <Col span={12} className='property-value'>
                             <Button.Group className='text-alignment'>
-                                <Button disabled={textAlignment.empty} type={getTextAlignment('left')} onClick={doAlignTextLeft}>
-                                    <i className='icon-align-left' />
-                                </Button>
-                                <Button disabled={textAlignment.empty} type={getTextAlignment('center')} onClick={doAlignTextCenter}>
-                                    <i className='icon-align-center' />
-                                </Button>
-                                <Button disabled={textAlignment.empty} type={getTextAlignment('right')} onClick={doAlignTextRight}>
-                                    <i className='icon-align-right' />
-                                </Button>
+                                <TextButton value={textAlignment} onClick={setTextAlignment}
+                                    mode='left' icon='icon-align-left' />
+
+                                <TextButton value={textAlignment} onClick={setTextAlignment}
+                                    mode='left' icon='icon-align-center' />
+
+                                <TextButton value={textAlignment} onClick={setTextAlignment}
+                                    mode='left' icon='icon-align-right' />
                             </Button.Group>
                         </Col>
                     </Row>
@@ -155,3 +121,18 @@ export const VisualProperties = React.memo(() => {
         </>
     );
 });
+
+type TextButtonProps = { mode: any; value: UniqueValue<any>; icon: string; onClick: (tag: any) => void };
+
+const TextButton = React.memo(({ value, mode, icon, onClick }: TextButtonProps) => {
+    const type = mode === value.value ? 'primary' : undefined;
+
+    return (
+        <Button disabled={value.empty} type={type} onClick={() => onClick(value)}>
+            <i className={icon} />
+        </Button>
+    );
+});
+
+const DEFINED_STROKE_THICKNESSES = [1, 2, 4, 6, 8];
+const DEFINED_FONT_SIZES = [4, 6, 8, 10, 12, 14, 16, 18, 20, 24, 28, 32, 36, 40, 48, 60];

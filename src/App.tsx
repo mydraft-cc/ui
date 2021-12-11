@@ -7,7 +7,7 @@
 
 import { LeftOutlined, RightOutlined } from '@ant-design/icons';
 import { usePrinter } from '@app/core';
-import { ArrangeMenu, ClipboardMenu, CustomProperties, EditorView, HistoryMenu, Icons, LayoutProperties, LoadingMenu, LockMenu, PrintRenderer, SettingsMenu, Shapes, UIMenu, VisualProperties } from '@app/wireframes/components';
+import { ArrangeMenu, ClipboardMenu, CustomProperties, EditorView, HistoryMenu, Icons, LayoutProperties, LoadingMenu, LockMenu, MoreProperties, PrintRenderer, SettingsMenu, Shapes, UIMenu, VisualProperties } from '@app/wireframes/components';
 import { loadDiagramAsync, newDiagram, selectTab, showInfoToast, toggleLeftSidebar, toggleRightSidebar, useStore } from '@app/wireframes/model';
 import { Button, Collapse, Layout, Tabs } from 'antd';
 import * as React from 'react';
@@ -114,6 +114,9 @@ export const App = () => {
                             </Collapse.Panel>
                             <Collapse.Panel key='visual' header='Visual'>
                                 <VisualProperties />
+                            </Collapse.Panel>
+                            <Collapse.Panel key='more' header='More'>
+                                <MoreProperties />
                             </Collapse.Panel>
                             <Collapse.Panel key='custom' header='Custom'>
                                 <CustomProperties />
