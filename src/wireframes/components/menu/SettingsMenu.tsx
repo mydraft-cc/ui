@@ -7,7 +7,7 @@
 
 import { ExportOutlined, PrinterOutlined, SettingOutlined } from '@ant-design/icons';
 import { Color, ColorPicker, Shortcut } from '@app/core';
-import { changeColor, changeSize, useStore } from '@app/wireframes/model';
+import { changeColor, changeSize, getEditor, useStore } from '@app/wireframes/model';
 import { Button, Col, Dropdown, InputNumber, Menu, Modal, Row, Tooltip } from 'antd';
 import MenuItem from 'antd/lib/menu/MenuItem';
 import * as React from 'react';
@@ -22,8 +22,9 @@ export const SettingsMenu = React.memo((props: SettingsMenuProps) => {
     const { print } = props;
 
     const dispatch = useDispatch();
-    const editorSize = useStore(x => x.editor.present.size);
-    const editorColor = useStore(x => x.editor.present.color);
+    const editor = useStore(getEditor);
+    const editorSize = editor.size;
+    const editorColor = editor.color;
     const [isOpen, setIsOpen] = React.useState(false);
     const [sizeWidth, setWidth] = React.useState(0);
     const [sizeHeight, setHeight] = React.useState(0);

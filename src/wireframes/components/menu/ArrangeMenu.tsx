@@ -13,9 +13,9 @@ import { useDispatch } from 'react-redux';
 
 export const ArrangeMenu = React.memo(() => {
     const dispatch = useDispatch();
-    const selectedDiagram = useStore(s => getDiagram(s));
-    const selectedGroups = useStore(s => getSelectedGroups(s));
-    const selectedItems = useStore(s => getSelectedItems(s));
+    const selectedDiagram = useStore(getDiagram);
+    const selectedGroups = useStore(getSelectedGroups);
+    const selectedItems = useStore(getSelectedItems);
     const canGroup = selectedItems.length > 1;
     const canRemove = selectedItems.length > 0;
     const canUngroup = selectedGroups.length > 0;

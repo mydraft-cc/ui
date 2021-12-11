@@ -14,8 +14,8 @@ import { useDispatch } from 'react-redux';
 
 export const LockMenu = React.memo(() => {
     const dispatch = useDispatch();
-    const selectedDiagram = useStore(s => getDiagram(s));
-    const selectedItem = useStore(s => getSelectedItemWithLocked(s));
+    const selectedDiagram = useStore(getDiagram);
+    const selectedItem = useStore(getSelectedItemWithLocked);
 
     const doToggle = React.useCallback(() => {
         if (selectedDiagram && selectedItem) {

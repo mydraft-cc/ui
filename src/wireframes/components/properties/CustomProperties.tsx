@@ -85,10 +85,10 @@ export const CustomProperty = (props: CustomPropertyProps) => {
 
 export const CustomProperties = () => {
     const dispatch = useDispatch();
-    const selectedDiagramId = useStore(s => getDiagramId(s));
+    const selectedDiagramId = useStore(getDiagramId);
     const selectedColorTab = useStore(s => s.ui.selectedColorTab);
-    const selectedConfigurables = useStore(s => getSelectedConfigurables(s));
-    const selectedShape = useStore(s => getSelectedShape(s));
+    const selectedConfigurables = useStore(getSelectedConfigurables);
+    const selectedShape = useStore(getSelectedShape);
 
     const doSelectColorTab = React.useCallback((key: string) => {
         dispatch(selectColorTab(key));

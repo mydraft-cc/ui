@@ -24,8 +24,8 @@ export interface EditorViewProps {
 export const EditorView = ({ spacing }: EditorViewProps) => {
     const dispatch = useDispatch();
     const state = useStore(s => s);
-    const selectedDiagramId = useStore(s => getDiagramId(s));
-    const editor = useStore(s => getEditor(s));
+    const selectedDiagramId = useStore(getDiagramId);
+    const editor = useStore(getEditor);
     const editorSize = editor.size;
     const editorColor = editor.color;
     const zoom = useStore(s => s.ui.zoom);

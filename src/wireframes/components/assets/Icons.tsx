@@ -21,10 +21,10 @@ const keyBuilder = (icon: IconInfo) => {
 
 export const Icons = React.memo(() => {
     const dispatch = useDispatch();
-    const iconsFiltered = useStore(s => getFilteredIcons(s));
-    const iconsFilter = useStore(s => getIconsFilter(s));
-    const iconSets = useStore(s => getIconSets(s));
-    const iconSet = useStore(s => getIconSet(s));
+    const iconsFiltered = useStore(getFilteredIcons);
+    const iconsFilter = useStore(getIconsFilter);
+    const iconSets = useStore(getIconSets);
+    const iconSet = useStore(getIconSet);
 
     const storeContext = React.useContext(ReactReduxContext);
 

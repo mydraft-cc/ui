@@ -20,8 +20,8 @@ export const ClipboardMenu = React.memo(() => {
     const [clipboard, setClipboard] = React.useState<string>();
 
     const dispatch = useDispatch();
-    const selectedDiagram = useStore(s => getDiagram(s));
-    const selectedItems = useStore(s => getSelectedItems(s));
+    const selectedDiagram = useStore(getDiagram);
+    const selectedItems = useStore(getSelectedItems);
     const serializer = React.useContext(SerializerContext);
     const canCopy = selectedItems.length > 0;
 

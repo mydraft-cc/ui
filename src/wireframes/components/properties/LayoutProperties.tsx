@@ -14,8 +14,8 @@ import './LayoutProperties.scss';
 
 export const LayoutProperties = React.memo(() => {
     const dispatch = useDispatch();
-    const selectedDiagramId = useStore(s => getDiagramId(s));
-    const selectedItems = useStore(s => getSelectedItems(s));
+    const selectedDiagramId = useStore(getDiagramId);
+    const selectedItems = useStore(getSelectedItems);
     const canAlign = selectedItems.length > 1;
     const canOrder = selectedItems.length > 0;
     const canDistribute = selectedItems.length > 1;

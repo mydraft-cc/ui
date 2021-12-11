@@ -21,8 +21,8 @@ const keyBuilder = (shape: ShapeInfo) => {
 
 export const Shapes = () => {
     const dispatch = useDispatch();
-    const shapesFiltered = useStore(s => getFilteredShapes(s));
-    const shapesFilter = useStore(s => getShapesFilter(s));
+    const shapesFiltered = useStore(getFilteredShapes);
+    const shapesFilter = useStore(getShapesFilter);
 
     const storeContext = React.useContext(ReactReduxContext);
 

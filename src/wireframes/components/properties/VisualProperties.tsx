@@ -19,10 +19,10 @@ const DEFINED_FONT_SIZES = [4, 6, 8, 10, 12, 14, 16, 18, 20, 24, 28, 32, 36, 40,
 
 export const VisualProperties = React.memo(() => {
     const dispatch = useDispatch();
-    const selectionSet = useStore(s => getSelectionSet(s));
+    const selectionSet = useStore(getSelectionSet);
     const selectedColorTab = useStore(s => s.ui.selectedColorTab);
-    const selectedDiagramId = useStore(s => getDiagramId(s));
-    const selectedItems = useStore(s => getSelectedItems(s));
+    const selectedDiagramId = useStore(getDiagramId);
+    const selectedItems = useStore(getSelectedItems);
 
     const backgroundColor = React.useMemo(() =>
         uniqueAppearance(selectionSet, DefaultAppearance.BACKGROUND_COLOR, x => Color.fromValue(x), Color.eq),
