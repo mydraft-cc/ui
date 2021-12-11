@@ -20,16 +20,16 @@ type PrintState = { [id: string]: Boolean };
 export const PrintRenderer = (props: PrintRendererProps) => {
     const { onRender } = props;
 
-    const currentDiagrams = React.useRef<Diagram[]>([]);
-    const diagrams = useStore(x => x.editor.present.diagrams);
+    const currentDiagrams = React.useRef<ReadonlyArray<Diagram>>([]);
+    const diagrams = useStore(x => x.editor.present.orderedDiagrams);
     const color = useStore(x => x.editor.present.color);
     const rendered = React.useRef<PrintState>({});
     const renderer = React.useContext(RendererContext);
     const size = useStore(x => x.editor.present.size);
 
     React.useEffect(() => {
-        currentDiagrams.current = diagrams.values;
-    }, [diagrams.values]);
+        currentDiagrams.current = diagrams;
+    }, [diagrams]);
 
     const doRender = React.useCallback((diagram: Diagram) => {
         if (rendered.current[diagram.id]) {
@@ -45,7 +45,7 @@ export const PrintRenderer = (props: PrintRendererProps) => {
 
     return (
         <>
-            {diagrams.values.map((d, i) =>
+            {diagrams.map((d, i) =>
                 <div key={i}>
                     <PrintDiagram size={size} color={color} diagram={d} rendererService={renderer} onRender={doRender} />
                 </div>,

@@ -146,7 +146,7 @@ export const Editor = React.memo((props: EditorProps) => {
                 }
             };
 
-            handleContainer(diagram.root);
+            handleContainer(diagram.rootIds);
         }
 
         return flattenShapes;

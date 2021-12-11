@@ -72,6 +72,18 @@ export class ImmutableList<T> {
         return this.replace(newItems);
     }
 
+    public set(index: number, item: T) {
+        if (item || index < 0 || index >= this.items.length || Types.equals(this.items[index], item)) {
+            return this;
+        }
+
+        const newItems: T[] = [...this.items];
+
+        newItems[index] = item;
+
+        return this.replace(newItems);
+    }
+
     public bringToFront(items: ReadonlyArray<T>) {
         return this.moveTo(items, Number.MAX_VALUE);
     }
