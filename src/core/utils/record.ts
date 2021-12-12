@@ -15,7 +15,7 @@ export abstract class Record<T> {
         return this.values.get(key as string);
     }
 
-    constructor(values?: Partial<T>) {
+    constructor(values: T) {
         this.values = ImmutableMap.of(values as any);
         this.values = this.afterClone(this.values);
     }

@@ -330,7 +330,7 @@ module.exports = function configure(env) {
             skipWaiting: true,
 
             // Cache until 5MB
-            maximumFileSizeToCacheInBytes: 50000,
+            maximumFileSizeToCacheInBytes: 5000000000,
         }));
     }
 

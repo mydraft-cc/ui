@@ -116,7 +116,7 @@ export interface Shape {
 
     readonly textDisabled: boolean;
 
-    readonly attachments: object;
+    readonly renderCache: object;
 
     getAppearance(key: string): any;
 }

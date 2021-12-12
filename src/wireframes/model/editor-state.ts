@@ -12,45 +12,42 @@ import { UndoableState } from './undoable-state';
 type Diagrams = ImmutableMap<Diagram>;
 type DiagramIds = ImmutableList<string>;
 
-type EditorProps = {
+type Props = {
     // The id of the selected diagram.
     selectedDiagramId?: string | null;
 
     // The actual diagrams.
-    diagrams?: Diagrams;
+    diagrams: Diagrams;
 
     // The list of ordered items.
-    diagramIds?: DiagramIds;
+    diagramIds: DiagramIds;
 
     // The size of all diagrams.
-    size?: Vec2;
+    size: Vec2;
 
     // The color for all diagrams.
-    color?: Color;
+    color: Color;
 };
 
-const DEFAULT_SIZE = new Vec2(1000, 1000);
-const DEFAULT_COLOR = Color.WHITE;
-
-export class EditorState extends Record<EditorProps> {
+export class EditorState extends Record<Props> {
     public get selectedDiagramId() {
         return this.get('selectedDiagramId');
     }
 
     public get diagrams() {
-        return this.get('diagrams') || ImmutableMap.empty();
+        return this.get('diagrams');
     }
 
     public get diagramIds() {
-        return this.get('diagramIds') || ImmutableList.empty();
+        return this.get('diagramIds');
     }
 
     public get color() {
-        return this.get('color') || DEFAULT_COLOR;
+        return this.get('color');
     }
 
     public get size() {
-        return this.get('size') || DEFAULT_SIZE;
+        return this.get('size');
     }
 
     public get orderedDiagrams(): ReadonlyArray<Diagram> {
@@ -58,7 +55,14 @@ export class EditorState extends Record<EditorProps> {
     }
 
     public static empty(): EditorState {
-        return new EditorState();
+        const props: Props = {
+            color: Color.WHITE,
+            diagrams: ImmutableMap.empty(),
+            diagramIds: ImmutableList.empty(),
+            size: new Vec2(1000, 1000),
+        };
+
+        return new EditorState(props);
     }
 
     public changeSize(size: Vec2) {

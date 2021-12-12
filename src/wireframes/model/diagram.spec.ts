@@ -201,7 +201,7 @@ describe('Diagram', () => {
         const diagram_4 = diagram_3.group(groupId1, [shape1.id, shape2.id]);
         const diagram_5 = diagram_4.group(groupId2, [shape1.id, shape2.id]);
 
-        expect(diagram_5.rootIds.values).toEqual([groupId1]);
+        expect(diagram_5.itemIds.values).toEqual([groupId1]);
 
         const group1 = diagram_5.items.get(groupId1);
         const group2 = diagram_5.items.get(groupId2);
@@ -214,27 +214,27 @@ describe('Diagram', () => {
         const diagram_2 = diagram_1.addVisual(shape1).addVisual(shape2).addVisual(shape3);
         const diagram_3 = diagram_2.bringToFront([shape1.id]);
 
-        expect(diagram_3.rootIds.values).toEqual([shape2.id, shape3.id, shape1.id]);
+        expect(diagram_3.itemIds.values).toEqual([shape2.id, shape3.id, shape1.id]);
     });
 
     it('should bring items forwards', () => {
         const diagram_2 = diagram_1.addVisual(shape1).addVisual(shape2).addVisual(shape3);
         const diagram_3 = diagram_2.bringForwards([shape1.id]);
 
-        expect(diagram_3.rootIds.values).toEqual([shape2.id, shape1.id, shape3.id]);
+        expect(diagram_3.itemIds.values).toEqual([shape2.id, shape1.id, shape3.id]);
     });
 
     it('should send items to back', () => {
         const diagram_2 = diagram_1.addVisual(shape1).addVisual(shape2).addVisual(shape3);
         const diagram_3 = diagram_2.sendToBack([shape3.id]);
 
-        expect(diagram_3.rootIds.values).toEqual([shape3.id, shape1.id, shape2.id]);
+        expect(diagram_3.itemIds.values).toEqual([shape3.id, shape1.id, shape2.id]);
     });
 
     it('should send items backwards', () => {
         const diagram_2 = diagram_1.addVisual(shape1).addVisual(shape2).addVisual(shape3);
         const diagram_3 = diagram_2.sendBackwards([shape3.id]);
 
-        expect(diagram_3.rootIds.values).toEqual([shape1.id, shape3.id, shape2.id]);
+        expect(diagram_3.itemIds.values).toEqual([shape1.id, shape3.id, shape2.id]);
     });
 });

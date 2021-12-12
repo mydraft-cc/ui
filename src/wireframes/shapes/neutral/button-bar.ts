@@ -119,7 +119,7 @@ export class ButtonBar implements ShapePlugin {
     private parseText(shape: Shape) {
         const key = shape.text;
 
-        let result = shape.attachments['PARSED'] as { key: string; parsed: Parsed[] };
+        let result = shape.renderCache['PARSED'] as { key: string; parsed: Parsed[] };
 
         if (!result || result.key !== key) {
             const parts = key.split(',');
@@ -136,7 +136,7 @@ export class ButtonBar implements ShapePlugin {
 
             result = { parsed, key };
 
-            shape.attachments['PARSED'] = result;
+            shape.renderCache['PARSED'] = result;
         }
 
         return result.parsed;

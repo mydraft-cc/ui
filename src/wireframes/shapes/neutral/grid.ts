@@ -132,7 +132,7 @@ export class Grid implements ShapePlugin {
     private parseText(shape: Shape) {
         const key = shape.text;
 
-        let result = shape.attachments['PARSED'] as { key: string; parsed: Parsed };
+        let result = shape.renderCache['PARSED'] as { key: string; parsed: Parsed };
 
         if (!result || result.key !== key) {
             const rows = key.split('\n').map(x => x.split(',').map(c => c.trim()));
@@ -155,7 +155,7 @@ export class Grid implements ShapePlugin {
 
             result = { parsed: { rows, columnCount }, key };
 
-            shape.attachments['PARSED'] = result;
+            shape.renderCache['PARSED'] = result;
         }
 
         return result.parsed;

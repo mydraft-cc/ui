@@ -201,7 +201,7 @@ describe('ItemsReducer', () => {
     it('should paste json and add group and items', () => {
         const serializer = new Serializer(rendererService);
 
-        const json = serializer.serializeSet(DiagramItemSet.createFromDiagram(diagram.rootIds.values, diagram)!);
+        const json = serializer.serializeSet(DiagramItemSet.createFromDiagram(diagram.itemIds.values, diagram)!);
 
         const action = pasteItems(diagram, serializer.generateNewIds(json));
 
@@ -211,7 +211,7 @@ describe('ItemsReducer', () => {
         const newDiagram = state_2.diagrams.get(diagram.id);
 
         expect(newDiagram.items.size).toBe(8);
-        expect(newDiagram.rootIds.size).toBe(4);
+        expect(newDiagram.itemIds.size).toBe(4);
         expect(newDiagram.selectedIds.size).toBe(2);
     });
 

@@ -27,14 +27,12 @@ type ItemProps = {
     type: 'Shape' | 'Group';
 };
 
-type VisualProps = {
-    // The appearance.
-    appearance: Appearance;
-};
-
 type GroupProps = {
     // The child ids.
     childIds: DiagramContainer;
+
+    // The cache for child values.
+    childCache: object;
 
     // The rotation.
     rotation: Rotation;
@@ -45,7 +43,7 @@ type ShapeProps = {
     transform: Transform;
 
     // The configurable properties.
-    configurables: Configurable[];
+    configurables: ReadonlyArray<Configurable>;
 
     // The transform constraints.
     constraint?: Constraint;
@@ -53,15 +51,14 @@ type ShapeProps = {
     // The id of the renderer.
     renderer: string;
 
-    // Attachments for the rendering process.
-    attachments: object;
+    // Cachhe for the rendering process.
+    renderCache: object;
+
+    // The appearance.
+    appearance: Appearance;
 };
 
-type Props = ItemProps & GroupProps & ShapeProps & VisualProps;
-
-const DEFAULT_APPEARANCE = ImmutableMap.empty<any>();
-const DEFAULT_CHILD_IDS = DiagramContainer.default();
-const DEFAULT_CONFIGURABLES: Configurable[] = [];
+type Props = ItemProps & GroupProps & ShapeProps;
 
 export class DiagramItem extends Record<Props> implements Shape {
     private cachedBounds: { [id: string]: Transform } | undefined;
@@ -75,20 +72,16 @@ export class DiagramItem extends Record<Props> implements Shape {
         return this.get('type');
     }
 
-    public get attachments() {
-        return this.get('attachments');
-    }
-
     public get appearance() {
-        return this.get('appearance') || DEFAULT_APPEARANCE;
+        return this.get('appearance');
     }
 
     public get childIds() {
-        return this.get('childIds') || DEFAULT_CHILD_IDS;
+        return this.get('childIds');
     }
 
     public get configurables() {
-        return this.get('configurables') || DEFAULT_CONFIGURABLES;
+        return this.get('configurables');
     }
 
     public get constraint() {
@@ -96,11 +89,15 @@ export class DiagramItem extends Record<Props> implements Shape {
     }
 
     public get isLocked() {
-        return this.get('isLocked') || false;
+        return this.get('isLocked');
     }
 
     public get rotation() {
-        return this.get('rotation') || Rotation.ZERO;
+        return this.get('rotation');
+    }
+
+    public get renderCache() {
+        return this.get('renderCache');
     }
 
     public get renderer() {
@@ -163,28 +160,39 @@ export class DiagramItem extends Record<Props> implements Shape {
         return this.appearance.get(key);
     }
 
-    public static createGroup(id: string, ids: DiagramContainer | ReadonlyArray<string>, rotation?: Rotation) {
+    public static createGroup(id: string, ids: DiagramContainer | ReadonlyArray<string>,
+        rotation?: Rotation | null,
+    ) {
         const childIds = getChildIds(ids);
 
-        return new DiagramItem({ id, type: 'Group', childIds, rotation });
+        const props: GroupProps & ItemProps = {
+            id,
+            childCache: {},
+            childIds,
+            type: 'Group',
+            rotation: rotation || Rotation.ZERO,
+        };
+
+        return new DiagramItem(props as any);
     }
 
     public static createShape(id: string, renderer: string, w: number, h: number,
         visual?: Appearance | { [key: string]: any },
         configurables?: Configurable[],
-        constraint?: Constraint) {
-        const appearance = getAppearance(visual);
-
-        return new DiagramItem({
+        constraint?: Constraint,
+    ) {
+        const props: ShapeProps & ItemProps = {
             id,
-            appearance,
-            attachments: {},
+            appearance: getAppearance(visual),
             configurables,
             constraint,
+            renderCache: {},
             renderer,
             transform: createTransform(w, h),
             type: 'Shape',
-        });
+        };
+
+        return new DiagramItem(props as any);
     }
 
     public lock() {
@@ -192,7 +200,7 @@ export class DiagramItem extends Record<Props> implements Shape {
     }
 
     public unlock() {
-        return this.set('isLocked', false);
+        return this.set('isLocked', undefined);
     }
 
     public replaceAppearance(appearance: Appearance) {
@@ -295,12 +303,12 @@ export class DiagramItem extends Record<Props> implements Shape {
     }
 }
 
-function getAppearance(visual: ImmutableMap<any> | { [key: string]: any }) {
+function getAppearance(visual: Appearance | { [key: string]: any }): Appearance {
     if (Types.isObject(visual)) {
         return ImmutableMap.of(<any>visual);
     }
 
-    return visual || DEFAULT_APPEARANCE;
+    return visual || ImmutableMap.empty();
 }
 
 function getChildIds(childIds: DiagramContainer | ReadonlyArray<string> | undefined): DiagramContainer {

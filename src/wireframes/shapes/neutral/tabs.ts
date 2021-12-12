@@ -134,7 +134,7 @@ export class Tabs implements ShapePlugin {
     private parseText(ctx: RenderContext, fontFamily: string, fontSize: number, strokeThickness: number) {
         const key = `${ctx.shape.text}_${fontFamily}_${fontSize}_${strokeThickness}`;
 
-        let result = ctx.shape.attachments['PARSED'] as { key: string; parsed: Parsed };
+        let result = ctx.shape.renderCache['PARSED'] as { key: string; parsed: Parsed };
 
         if (!result || result.key !== key) {
             const w = ctx.rect.width - 2 * PADDING;
@@ -177,7 +177,7 @@ export class Tabs implements ShapePlugin {
 
             result = { parsed, key };
 
-            ctx.shape.attachments['PARSED'] = result;
+            ctx.shape.renderCache['PARSED'] = result;
         }
 
         return result.parsed;
