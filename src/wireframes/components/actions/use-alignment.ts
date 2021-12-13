@@ -1,0 +1,75 @@
+/*
+ * mydraft.cc
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
+
+import { texts } from '@app/texts';
+import { alignItems, AlignmentMode, getDiagramId, getSelectedItems, orderItems, OrderMode, useStore } from '@app/wireframes/model';
+import * as React from 'react';
+import { useDispatch } from 'react-redux';
+import { UIAction } from './shared';
+
+export function useAlignment() {
+    const dispatch = useDispatch();
+    const selectedDiagramId = useStore(getDiagramId);
+    const selectedItems = useStore(getSelectedItems);
+    const canAlign = selectedItems.length > 1;
+    const canOrder = selectedItems.length > 0;
+
+    const doAlign = React.useCallback((mode: AlignmentMode) => {
+        if (selectedDiagramId) {
+            dispatch(alignItems(mode, selectedDiagramId, selectedItems));
+        }
+    }, [dispatch, selectedDiagramId, selectedItems]);
+
+    const doOrder = React.useCallback((mode: OrderMode) => {
+        if (selectedDiagramId) {
+            dispatch(orderItems(mode, selectedDiagramId, selectedItems));
+        }
+    }, [dispatch, selectedDiagramId, selectedItems]);
+
+    function useAlign(mode: AlignmentMode, label: string, icon: string) {
+        const action: UIAction = React.useMemo(() => ({
+            context: mode,
+            disabled: !canAlign,
+            icon,
+            label,
+            tooltip: label,
+            onAction: doAlign,
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        }), [canAlign, doAlign]);
+
+        return action;
+    }
+
+    function useOrder(mode: OrderMode, label: string, icon: string) {
+        const action: UIAction = React.useMemo(() => ({
+            context: mode,
+            disabled: !canOrder,
+            icon,
+            label,
+            tooltip: label,
+            onAction: doOrder,
+            // eslint-disable-next-line react-hooks/exhaustive-deps
+        }), [canOrder, doOrder]);
+
+        return action;
+    }
+
+    return {
+        alignHorizontalCenter: useAlign(AlignmentMode.HorizontalCenter, texts.common.alignHorizontalCenter, 'icon-align-h-center'),
+        alignHorizontalLeft: useAlign(AlignmentMode.HorizontalLeft, texts.common.alignHorizontalLeft, 'icon-align-h-left'),
+        alignHorizontalRight: useAlign(AlignmentMode.HorizontalRight, texts.common.alignHorizontalRight, 'icon-align-h-right'),
+        alignVerticalBottom: useAlign(AlignmentMode.VerticalBottom, texts.common.alignVerticalBottom, 'icon-align-v-bottom'),
+        alignVerticalCenter: useAlign(AlignmentMode.VerticalCenter, texts.common.alignVerticalCenter, 'icon-align-v-center'),
+        alignVerticalTop: useAlign(AlignmentMode.VerticalTop, texts.common.alignVerticalTop, 'icon-align-v-top'),
+        bringForwards: useOrder(OrderMode.BringForwards, texts.common.bringForwards, 'icon-bring-forwards'),
+        bringToFront: useOrder(OrderMode.BringToFront, texts.common.bringToFront, 'icon-bring-to-front'),
+        distributeHorizontally: useAlign(AlignmentMode.DistributeHorizontal, texts.common.distributeHorizontally, 'icon-distribute-h2'),
+        distributeVertically: useAlign(AlignmentMode.DistributeVertical, texts.common.distributeVertically, 'icon-distribute-v2'),
+        sendBackwards: useOrder(OrderMode.SendBackwards, texts.common.sendBackwards, 'icon-send-backwards'),
+        sendToBack: useOrder(OrderMode.SendToBack, texts.common.sendToBack, 'icon-send-to-back'),
+    };
+}

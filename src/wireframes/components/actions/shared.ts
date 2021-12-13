@@ -10,13 +10,35 @@ import { changeItemsAppearance, DiagramItemSet } from '@app/wireframes/model';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
 
-export type UniqueValue<TValue> = { value?: TValue; empty?: boolean };
+export interface UIAction {
+    // The label.
+    label: string;
 
-type Parser<TInput> = (value: any) => TInput | undefined;
+    // The icon.
+    icon: JSX.Element | string;
+
+    // The tooltip.
+    tooltip: string;
+
+    // The shortcut.
+    shortcut?: string;
+
+    // True when disabled.
+    disabled: boolean;
+
+    // The context value.
+    context?: any;
+
+    // The method to invoke the action.
+    onAction: (context?: any) => void;
+}
+
+export type UniqueValue<TValue> = { value?: TValue; empty?: boolean };
+export type UniqueParser<TInput> = (value: any) => TInput | undefined;
 
 const DEFAULT_PARSER = (value: any) => value;
 
-export function useAppearance<T>(diagramId: string, set: DiagramItemSet, key: string, parse?: Parser<T>): [UniqueValue<T>, (value: T) => void] {
+export function useAppearance<T>(diagramId: string, set: DiagramItemSet, key: string, parse?: UniqueParser<T>): [UniqueValue<T>, (value: T) => void] {
     const dispatch = useDispatch();
 
     const value = React.useMemo(() => {
