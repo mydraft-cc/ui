@@ -73,10 +73,10 @@ export const LayoutProperties = React.memo(() => {
                     mode={OrderMode.BringForwards} icon='icon-bring-forwards' />
 
                 <LayoutButton disabled={!canOrder} onClick={doOrder}
-                    mode={OrderMode.SendBackwards} icon='icon-bring-backwards' />
+                    mode={OrderMode.SendBackwards} icon='icon-send-backwards' />
 
                 <LayoutButton disabled={!canOrder} onClick={doOrder}
-                    mode={OrderMode.SendToBack} icon='icon-bring-to-back' />
+                    mode={OrderMode.SendToBack} icon='icon-send-to-back' />
             </div>
         </>
     );
