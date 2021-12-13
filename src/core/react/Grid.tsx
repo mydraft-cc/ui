@@ -114,7 +114,7 @@ const GridComponent = (props: SizeMeProps & GridProps) => {
             return { cellSize: 0, indexFirst: 0, indexLast: 0, height: 0 };
         }
 
-        const cellSize = scrollContainer.scrollWidth / columns;
+        const cellSize = Math.floor((scrollContainer.scrollWidth - 1) / columns);
 
         const height = cellSize * items.length / columns;
 

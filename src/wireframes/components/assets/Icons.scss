@@ -6,12 +6,15 @@
         background: transparent;
         border-bottom: 1px solid $color-border;
         border-right: 1px solid $color-border;
+        height: 100%;
         text-align: center;
         text-decoration: none;
     }
 
     &-title {
         @include truncate;
+        padding-left: 5px;
+        padding-right: 5px;
         line-height: 30px;
     }
 
@@ -28,16 +31,16 @@
 
 .asset-icons {
     &-search {
-        input {
-            border-left: 0;
-            border-radius: 0;
-            border-right: 0;
+        .ant-input-affix-wrapper {
+            border-left: 0 !important;
+            border-radius: 0 !important;
+            border-right: 0 !important;
         }
 
-        .ant-select-selection {
-            border-left: 0;
-            border-radius: 0;
-            border-right: 0;
+        .ant-select-selector {
+            border-left: 0 !important;
+            border-radius: 0 !important;
+            border-right: 0 !important;
         }
 
         .ant-select {

@@ -13,6 +13,8 @@
 
     &-title {
         @include truncate;
+        padding-left: 5px;
+        padding-right: 5px;
         line-height: 30px;
     }
 
