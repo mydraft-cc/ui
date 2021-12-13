@@ -9,6 +9,10 @@ body {
     overflow: hidden;
 }
 
+* {
+    @include scrollbars(8px, darken($color-border, 15%), transparent);
+}
+
 .hidden {
     display: none;
 }
@@ -21,11 +25,26 @@ body {
     border-radius: 0;
 }
 
+.logo {
+    @include fixed(15px, null, null, 10px);
+    color: $color-dark-foreground;
+    font-size: 1.1rem;
+    font-weight: bold;
+    height: 40px;
+}
+
 .ant-layout {
     &-header {
+        @include box-shadow-outer(0, 2px, 2px, .1);
+        background-color: white;
         padding-left: 100px;
         padding-right: 0;
         text-align: center;
+        z-index: 1000;
+
+        .logo {
+            max-height: 100%;
+        }
 
         @media (max-width: 1000px) {
             text-align: left;
@@ -42,14 +61,6 @@ body {
 
 #root > .ant-layout {
     height: 100%;
-}
-
-.logo {
-    @include fixed(0, 0, 0, 0);
-    color: $color-dark-foreground;
-    font-size: 1.1rem;
-    font-weight: bold;
-    margin-right: 50px;
 }
 
 svg {
@@ -83,6 +94,7 @@ ul {
 .sidebar-left,
 .sidebar-right {
     background: $color-dark-foreground;
+    border: 0;
     border-left: 1px solid $color-border;
     overflow-x: hidden;
     overflow-y: auto;
@@ -91,7 +103,9 @@ ul {
 .sidebar-left {
     & {
         background: $color-dark-foreground;
+        border: 0;
         border-right: 1px solid $color-border;
+        padding-top: 10px;
         display: flex;
         flex-flow: column;
         flex-grow: 1;
@@ -189,7 +203,7 @@ $sidebar-size: 320px;
 .editor {
     position: relative;
     border-radius: 0;
-    border: 1px solid #ccc;
+    border: 1px solid $color-border;
 }
 
 //
@@ -213,7 +227,6 @@ $sidebar-size: 320px;
             background: transparent !important;
             border: 0;
             border-radius: 0;
-            color: $color-dark-foreground !important;
             max-height: 60px;
             min-height: 60px;
             opacity: .8;

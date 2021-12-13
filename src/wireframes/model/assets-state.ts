@@ -59,9 +59,6 @@ export const createInitialAssetsState: (rendererService: RendererService) => Ass
             allShapes.push({ displayName: name, name, offset: renderer.previewOffset() });
         }
     }
-
-    allShapes.sort((l, r) => l.displayName.localeCompare(r.displayName));
-
     return {
         shapes: allShapes,
         shapesFilter: '',

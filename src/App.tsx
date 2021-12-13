@@ -14,7 +14,7 @@ import * as React from 'react';
 import { useDispatch } from 'react-redux';
 import { useRouteMatch } from 'react-router';
 
-const logo = require('./images/logo-square-64.png').default;
+const logo = require('./images/logo.svg').default;
 
 export const App = () => {
     const dispatch = useDispatch();
