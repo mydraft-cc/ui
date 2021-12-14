@@ -16,6 +16,7 @@ export function useAlignment() {
     const selectedDiagramId = useStore(getDiagramId);
     const selectedItems = useStore(getSelectedItems);
     const canAlign = selectedItems.length > 1;
+    const canDistribute = selectedItems.length > 2;
     const canOrder = selectedItems.length > 0;
 
     const doAlign = React.useCallback((mode: AlignmentMode) => {
@@ -33,6 +34,19 @@ export function useAlignment() {
     function useAlign(mode: AlignmentMode, label: string, icon: string) {
         const action: UIAction = React.useMemo(() => ({
             disabled: !canAlign,
+            icon,
+            label,
+            tooltip: label,
+            onAction: () => doAlign(mode),
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        }), [canAlign, doAlign]);
+
+        return action;
+    }
+
+    function useDistribute(mode: AlignmentMode, label: string, icon: string) {
+        const action: UIAction = React.useMemo(() => ({
+            disabled: !canDistribute,
             icon,
             label,
             tooltip: label,
@@ -66,8 +80,8 @@ export function useAlignment() {
         alignVerticalTop: useAlign(AlignmentMode.VerticalTop, texts.common.alignVerticalTop, 'icon-align-v-top'),
         bringForwards: useOrder(OrderMode.BringForwards, texts.common.bringForwards, 'icon-bring-forwards'),
         bringToFront: useOrder(OrderMode.BringToFront, texts.common.bringToFront, 'icon-bring-to-front'),
-        distributeHorizontally: useAlign(AlignmentMode.DistributeHorizontal, texts.common.distributeHorizontally, 'icon-distribute-h2'),
-        distributeVertically: useAlign(AlignmentMode.DistributeVertical, texts.common.distributeVertically, 'icon-distribute-v2'),
+        distributeHorizontally: useDistribute(AlignmentMode.DistributeHorizontal, texts.common.distributeHorizontally, 'icon-distribute-h2'),
+        distributeVertically: useDistribute(AlignmentMode.DistributeVertical, texts.common.distributeVertically, 'icon-distribute-v2'),
         sendBackwards: useOrder(OrderMode.SendBackwards, texts.common.sendBackwards, 'icon-send-backwards'),
         sendToBack: useOrder(OrderMode.SendToBack, texts.common.sendToBack, 'icon-send-to-back'),
     };

@@ -10,7 +10,7 @@ import { Button, Menu, Tooltip } from 'antd';
 import * as React from 'react';
 import { UIAction } from './shared';
 
-export const ActionMenuButton = React.memo((props: { action: UIAction }) => {
+export const ActionMenuButton = React.memo((props: { action: UIAction; hideWhenDisabled?: boolean }) => {
     const {
         disabled,
         onAction,
@@ -18,6 +18,10 @@ export const ActionMenuButton = React.memo((props: { action: UIAction }) => {
         shortcut,
         tooltip,
     } = props.action;
+
+    if (disabled && props.hideWhenDisabled) {
+        return null;
+    }
 
     const title = shortcut ? `${tooltip} (${shortcut})` : tooltip;
 
@@ -38,7 +42,7 @@ export const ActionMenuButton = React.memo((props: { action: UIAction }) => {
     );
 });
 
-export const ActionButton = React.memo((props: { action: UIAction }) => {
+export const ActionButton = React.memo((props: { action: UIAction; hideWhenDisabled?: boolean }) => {
     const {
         disabled,
         onAction,
@@ -46,6 +50,10 @@ export const ActionButton = React.memo((props: { action: UIAction }) => {
         shortcut,
         tooltip,
     } = props.action;
+
+    if (disabled && props.hideWhenDisabled) {
+        return null;
+    }
 
     const title = shortcut ? `${tooltip} (${shortcut})` : tooltip;
 
@@ -62,13 +70,17 @@ export const ActionButton = React.memo((props: { action: UIAction }) => {
     );
 });
 
-export const ActionMenuItem = React.memo((props: { action: UIAction }) => {
+export const ActionMenuItem = React.memo((props: { action: UIAction; hideWhenDisabled?: boolean }) => {
     const {
         disabled,
         label,
         onAction,
         icon,
     } = props.action;
+
+    if (disabled && props.hideWhenDisabled) {
+        return null;
+    }
 
     return (
         <Menu.Item key={label} className='force-color' disabled={disabled} onClick={onAction}
