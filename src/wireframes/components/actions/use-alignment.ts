@@ -32,12 +32,11 @@ export function useAlignment() {
 
     function useAlign(mode: AlignmentMode, label: string, icon: string) {
         const action: UIAction = React.useMemo(() => ({
-            context: mode,
             disabled: !canAlign,
             icon,
             label,
             tooltip: label,
-            onAction: doAlign,
+            onAction: () => doAlign(mode),
         // eslint-disable-next-line react-hooks/exhaustive-deps
         }), [canAlign, doAlign]);
 
@@ -51,7 +50,7 @@ export function useAlignment() {
             icon,
             label,
             tooltip: label,
-            onAction: doOrder,
+            onAction: () => doOrder(mode),
             // eslint-disable-next-line react-hooks/exhaustive-deps
         }), [canOrder, doOrder]);
 

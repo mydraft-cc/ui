@@ -196,7 +196,17 @@ $sidebar-size: 320px;
 }
 
 .context-menu {
-    &.ant-menu {
+    border: 1px solid $color-border;
+}
+
+.ant-menu {
+    box-shadow: none;
+
+    &.ant-menu-root,
+    &.ant-menu-submenu {
+        border: 1px solid $color-border;
+        border-radius: 2px;
+
         .ant-menu-item-selected {
             background: none;
         }

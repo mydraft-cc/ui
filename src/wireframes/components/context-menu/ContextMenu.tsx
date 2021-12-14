@@ -10,14 +10,18 @@ import { Menu } from 'antd';
 import * as React from 'react';
 import { ActionMenuItem, useAlignment, useClipboard, useGrouping, useRemove } from '../actions';
 
-export const ContextMenu = React.memo(() => {
+export interface ContextMenuProps {
+    onClick?: () => void;
+}
+
+export const ContextMenu = React.memo((props: ContextMenuProps) => {
     const forAlignment = useAlignment();
     const forClipboard = useClipboard();
     const forGrouping = useGrouping();
     const forRemove = useRemove();
 
     return (
-        <Menu className='context-menu' selectable={false} activeKey='none'>
+        <Menu onClick={props.onClick} className='context-menu' selectable={false} activeKey='none'>
             <ActionMenuItem action={forClipboard.cut} />
             <ActionMenuItem action={forClipboard.copy} />
             <ActionMenuItem action={forClipboard.paste} />

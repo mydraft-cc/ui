@@ -26,11 +26,8 @@ export interface UIAction {
     // True when disabled.
     disabled: boolean;
 
-    // The context value.
-    context?: any;
-
     // The method to invoke the action.
-    onAction: (context?: any) => void;
+    onAction: () => void;
 }
 
 export type UniqueValue<TValue> = { value?: TValue; empty?: boolean };

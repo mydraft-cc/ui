@@ -33,6 +33,7 @@ export const EditorView = ({ spacing }: EditorViewProps) => {
     const zoom = useStore(s => s.ui.zoom);
     const zoomedSize = editorSize.mul(zoom);
     const renderer = React.useContext(RendererContext);
+    const [menuVisible, setMenuVisible] = React.useState(false);
 
     const doChangeItemsAppearance = React.useCallback((diagram: DiagramRef, visuals: ItemsRef, key: string, value: any) => {
         dispatch(changeItemsAppearance(diagram, visuals, key, value));
@@ -45,6 +46,10 @@ export const EditorView = ({ spacing }: EditorViewProps) => {
     const doTransformItems = React.useCallback((diagram: DiagramRef, items: ItemsRef, oldBounds: Transform, newBounds: Transform) => {
         dispatch(transformItems(diagram, items, oldBounds, newBounds));
     }, [dispatch]);
+
+    const doHide = React.useCallback(() => {
+        setMenuVisible(false);
+    }, []);
 
     const ref = React.useRef();
 
@@ -133,7 +138,7 @@ export const EditorView = ({ spacing }: EditorViewProps) => {
     drop(ref);
 
     return (
-        <Dropdown overlay={<ContextMenu />} trigger={['contextMenu']}>
+        <Dropdown overlay={<ContextMenu onClick={doHide} />} trigger={['contextMenu']} visible={menuVisible} onVisibleChange={setMenuVisible}>
             <div ref={ref} className='editor-view' style={style}>
                 <Editor
                     diagram={getDiagram(state)}

@@ -12,7 +12,6 @@ import { UIAction } from './shared';
 
 export const ActionMenuButton = React.memo((props: { action: UIAction }) => {
     const {
-        context,
         disabled,
         onAction,
         icon,
@@ -25,9 +24,7 @@ export const ActionMenuButton = React.memo((props: { action: UIAction }) => {
     return (
         <>
             <Tooltip mouseEnterDelay={1} title={title}>
-                <Button className='menu-item' size='large'
-                    disabled={disabled}
-                    onClick={() => onAction(context)}>
+                <Button className='menu-item' size='large' disabled={disabled} onClick={onAction}>
                     {Types.isString(icon) ? (
                         <i className={icon} />
                     ) : icon}
@@ -35,7 +32,7 @@ export const ActionMenuButton = React.memo((props: { action: UIAction }) => {
             </Tooltip>
 
             {shortcut &&
-                <Shortcut disabled={disabled} onPressed={() => onAction(context)} keys={shortcut} />
+                <Shortcut disabled={disabled} onPressed={onAction} keys={shortcut} />
             }
         </>
     );
@@ -43,7 +40,6 @@ export const ActionMenuButton = React.memo((props: { action: UIAction }) => {
 
 export const ActionButton = React.memo((props: { action: UIAction }) => {
     const {
-        context,
         disabled,
         onAction,
         icon,
@@ -56,9 +52,7 @@ export const ActionButton = React.memo((props: { action: UIAction }) => {
     return (
         <>
             <Tooltip mouseEnterDelay={1} title={title}>
-                <Button className='menu-item' size='large'
-                    disabled={disabled}
-                    onClick={() => onAction(context)}>
+                <Button disabled={disabled} onClick={onAction}>
                     {Types.isString(icon) ? (
                         <i className={icon} />
                     ) : icon}
@@ -70,7 +64,6 @@ export const ActionButton = React.memo((props: { action: UIAction }) => {
 
 export const ActionMenuItem = React.memo((props: { action: UIAction }) => {
     const {
-        context,
         disabled,
         label,
         onAction,
@@ -78,7 +71,7 @@ export const ActionMenuItem = React.memo((props: { action: UIAction }) => {
     } = props.action;
 
     return (
-        <Menu.Item key={label} className='force-color' disabled={disabled} onClick={() => onAction(context)}
+        <Menu.Item key={label} className='force-color' disabled={disabled} onClick={onAction}
             icon={
                 <>
                     {Types.isString(icon) ? (

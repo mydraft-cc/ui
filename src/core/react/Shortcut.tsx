@@ -24,7 +24,9 @@ export const Shortcut = (props: ShortcutProps) => {
 
     React.useEffect(() => {
         if (!disabled) {
-            Mousetrap.bind(keys, (event) => {
+            const simplifiedKeys = keys.toLocaleLowerCase().replace(/[\s]/g, '');
+
+            Mousetrap.bind(simplifiedKeys, (event) => {
                 onPressed();
 
                 event.preventDefault();
