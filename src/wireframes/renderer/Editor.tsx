@@ -5,17 +5,17 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { Color, Rect2, sizeInPx, SVGHelper, Vec2 } from '@app/core';
 import { Diagram, DiagramContainer, DiagramItem, RendererService, Transform } from '@app/wireframes/model';
+import { Color, Rect2, sizeInPx, SVGHelper, Vec2 } from '@app/core';
 import * as React from 'react';
 import * as svg from '@svgdotjs/svg.js';
 import { CanvasView } from './CanvasView';
 import { InteractionService } from './interaction-service';
+import { QuickbarAdorner } from './QuickbarAdorner';
 import { SelectionAdorner } from './SelectionAdorner';
 import { ShapeRef } from './shape-ref';
 import { TextAdorner } from './TextAdorner';
 import { TransformAdorner } from './TransformAdorner';
-
 import './Editor.scss';
 
 export interface EditorState {
@@ -89,6 +89,7 @@ export const Editor = React.memo((props: EditorProps) => {
 
     // Use a state here to force an update.
     const [interactionService, setInteractionService] = React.useState<InteractionService>();
+    const [interacting, setInteracting] = React.useState(false);
     const currentOnRender = React.useRef(onRender);
     const adornersSelect = React.useRef<svg.Container>();
     const adornersTransform = React.useRef<svg.Container>();
@@ -210,13 +211,10 @@ export const Editor = React.memo((props: EditorProps) => {
 
     const doPreview = React.useCallback((items: DiagramItem[]) => {
         for (const item of items) {
-            const reference = shapeRefsById.current[item.id];
-
-            if (reference) {
-                reference.setPreview(item);
-            }
+            shapeRefsById.current[item.id]?.setPreview(item);
         }
 
+        setInteracting(true);
         setSelectedItemsWithLocked(withPreview(props.selectedItemsWithLocked, items));
     }, [props.selectedItemsWithLocked]);
 
@@ -225,6 +223,7 @@ export const Editor = React.memo((props: EditorProps) => {
             reference.setPreview(null);
         }
 
+        setInteracting(false);
         setSelectedItemsWithLocked(props.selectedItemsWithLocked);
     }, [props.selectedItemsWithLocked]);
 
@@ -279,6 +278,15 @@ export const Editor = React.memo((props: EditorProps) => {
                                     onChangeItemsAppearance={onChangeItemsAppearance}
                                     selectedDiagram={diagram}
                                     selectedItems={props.selectedItems}
+                                    zoom={zoom} />
+                            }
+
+                            {onTransformItems &&
+                                <QuickbarAdorner
+                                    isPreviewing={interacting}
+                                    selectedDiagram={diagram}
+                                    selectedItems={props.selectedItems}
+                                    viewSize={viewSize}
                                     zoom={zoom} />
                             }
                         </>

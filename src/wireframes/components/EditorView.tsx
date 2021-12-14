@@ -9,12 +9,14 @@ import { RendererContext } from '@app/context';
 import { sizeInPx } from '@app/core';
 import { addIcon, addImage, addVisual, changeItemsAppearance, getDiagram, getDiagramId, getEditor, getSelectedItems, getSelectedItemsWithLocked, selectItems, Transform, transformItems, useStore } from '@app/wireframes/model';
 import { Editor } from '@app/wireframes/renderer/Editor';
+import { Dropdown } from 'antd';
 import * as React from 'react';
 import { DropTargetMonitor, useDrop } from 'react-dnd';
 import { NativeTypes } from 'react-dnd-html5-backend';
 import { findDOMNode } from 'react-dom';
 import { useDispatch } from 'react-redux';
 import { DiagramRef, ItemsRef } from '../model/actions/utils';
+import { ContextMenu } from './context-menu/ContextMenu';
 
 export interface EditorViewProps {
     // The spacing.
@@ -31,6 +33,7 @@ export const EditorView = ({ spacing }: EditorViewProps) => {
     const zoom = useStore(s => s.ui.zoom);
     const zoomedSize = editorSize.mul(zoom);
     const renderer = React.useContext(RendererContext);
+    const [menuVisible, setMenuVisible] = React.useState(false);
 
     const doChangeItemsAppearance = React.useCallback((diagram: DiagramRef, visuals: ItemsRef, key: string, value: any) => {
         dispatch(changeItemsAppearance(diagram, visuals, key, value));
@@ -43,6 +46,10 @@ export const EditorView = ({ spacing }: EditorViewProps) => {
     const doTransformItems = React.useCallback((diagram: DiagramRef, items: ItemsRef, oldBounds: Transform, newBounds: Transform) => {
         dispatch(transformItems(diagram, items, oldBounds, newBounds));
     }, [dispatch]);
+
+    const doHide = React.useCallback(() => {
+        setMenuVisible(false);
+    }, []);
 
     const ref = React.useRef();
 
@@ -131,20 +138,22 @@ export const EditorView = ({ spacing }: EditorViewProps) => {
     drop(ref);
 
     return (
-        <div ref={ref} className='editor-view' style={style}>
-            <Editor
-                diagram={getDiagram(state)}
-                rendererService={renderer}
-                color={editorColor}
-                onChangeItemsAppearance={doChangeItemsAppearance}
-                onSelectItems={doSelectItems}
-                onTransformItems={doTransformItems}
-                selectedItems={getSelectedItems(state)}
-                selectedItemsWithLocked={getSelectedItemsWithLocked(state)}
-                viewSize={editor.size}
-                zoom={zoom}
-                zoomedSize={zoomedSize}
-            />
-        </div>
+        <Dropdown overlay={<ContextMenu onClick={doHide} />} trigger={['contextMenu']} visible={menuVisible} onVisibleChange={setMenuVisible}>
+            <div ref={ref} className='editor-view' style={style}>
+                <Editor
+                    diagram={getDiagram(state)}
+                    rendererService={renderer}
+                    color={editorColor}
+                    onChangeItemsAppearance={doChangeItemsAppearance}
+                    onSelectItems={doSelectItems}
+                    onTransformItems={doTransformItems}
+                    selectedItems={getSelectedItems(state)}
+                    selectedItemsWithLocked={getSelectedItemsWithLocked(state)}
+                    viewSize={editor.size}
+                    zoom={zoom}
+                    zoomedSize={zoomedSize}
+                />
+            </div>
+        </Dropdown>
     );
 };

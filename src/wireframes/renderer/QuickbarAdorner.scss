@@ -1,0 +1,28 @@
+@import '_mixins';
+@import '_vars';
+
+.quickbar {
+    background-color: $color-white;
+    border: 1px solid $color-border;
+    border-radius: 4px;
+    padding: 10px;
+
+    & > button {
+        margin-right: 5px;
+        padding-left: 0;
+        padding-right: 0;
+        width: 32px;
+
+        &:last-child {
+            margin-right: 0;
+        }
+    }
+
+    & > span {
+        margin-right: 5px;
+
+        &:last-child {
+            margin-right: 0;
+        }
+    }
+}

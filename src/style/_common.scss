@@ -27,7 +27,7 @@ body {
 
 .logo {
     @include fixed(15px, null, null, 10px);
-    color: $color-dark-foreground;
+    color: $color-white;
     font-size: 1.1rem;
     font-weight: bold;
     height: 40px;
@@ -93,7 +93,7 @@ ul {
 //
 .sidebar-left,
 .sidebar-right {
-    background: $color-dark-foreground;
+    background: $color-white;
     border: 0;
     border-left: 1px solid $color-border;
     overflow-x: hidden;
@@ -102,7 +102,7 @@ ul {
 
 .sidebar-left {
     & {
-        background: $color-dark-foreground;
+        background: $color-white;
         border: 0;
         border-right: 1px solid $color-border;
         padding-top: 10px;
@@ -165,6 +165,54 @@ $sidebar-size: 320px;
     }
 }
 
+.force-color {
+    color: rgba(0, 0, 0, .85) !important;
+
+    &:hover {
+        color: rgba(0, 0, 0, .85) !important;
+    }
+
+    &:hover {
+        background-color: #eee;
+    }
+
+    .ant-menu-title-content {
+        color: rgba(0, 0, 0, .85) !important;
+    }
+
+    &.ant-menu-item-disabled {
+        color: rgba(0, 0, 0, .25) !important;
+
+        .ant-menu-title-content {
+            color: rgba(0, 0, 0, .25) !important;
+        }
+    }
+}
+
+.ant-menu-item-disabled {
+    .force-color {
+        color: rgba(0, 0, 0, .25) rgba(0, 0, 0, .85);
+    }
+}
+
+.context-menu {
+    border: 1px solid $color-border;
+}
+
+.ant-menu {
+    box-shadow: none;
+
+    &.ant-menu-root,
+    &.ant-menu-submenu {
+        border: 1px solid $color-border;
+        border-radius: 2px;
+
+        .ant-menu-item-selected {
+            background: none;
+        }
+    }
+}
+
 //
 // > Properties
 //
@@ -211,7 +259,7 @@ $sidebar-size: 320px;
 //
 .menu {
     &-separator {
-        background: $color-dark-foreground;
+        background: $color-white;
         border: 0;
         display: inline-block;
         height: 1rem;

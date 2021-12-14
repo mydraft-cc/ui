@@ -257,23 +257,25 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
             return;
         }
 
-        if (this.manipulationMode !== 0) {
-            this.manipulated = true;
-
-            if (this.manipulationMode === MODE_MOVE) {
-                this.move(delta, event.event.shiftKey);
-            } else if (this.manipulationMode === MODE_ROTATE) {
-                this.rotate(event, event.event.shiftKey);
-            } else {
-                this.resize(delta, event.event.shiftKey);
-            }
-
-            const previews = this.props.selectedItems.map(x => x.transformByBounds(this.startTransform, this.transform));
-
-            this.props.onPreview(previews);
-
-            this.layoutShapes();
+        if (this.manipulationMode === 0) {
+            return;
         }
+
+        this.manipulated = true;
+
+        if (this.manipulationMode === MODE_MOVE) {
+            this.move(delta, event.event.shiftKey);
+        } else if (this.manipulationMode === MODE_ROTATE) {
+            this.rotate(event, event.event.shiftKey);
+        } else {
+            this.resize(delta, event.event.shiftKey);
+        }
+
+        const previews = this.props.selectedItems.map(x => x.transformByBounds(this.startTransform, this.transform));
+
+        this.props.onPreview(previews);
+
+        this.layoutShapes();
     }
 
     private move(delta: Vec2, shiftKey: boolean) {
@@ -362,16 +364,20 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
         try {
             this.overlays.reset();
 
-            if (this.manipulationMode !== 0 && this.manipulated) {
-                this.rotation = this.transform.rotation;
-
-                this.props.onTransformItems(
-                    this.props.selectedDiagram,
-                    this.props.selectedItems,
-                    this.startTransform,
-                    this.transform);
+            if (this.manipulationMode === 0 || !this.manipulated) {
+                return;
             }
+
+            this.rotation = this.transform.rotation;
+
+            this.props.onTransformItems(
+                this.props.selectedDiagram,
+                this.props.selectedItems,
+                this.startTransform,
+                this.transform);
         } finally {
+            this.props.onPreviewEnd();
+
             this.manipulationMode = 0;
             this.manipulated = false;
         }

@@ -20,7 +20,7 @@ $size: 24px;
     &-color {
         & {
             @include circle($size);
-            background: $color-dark-foreground;
+            background: $color-white;
             border: 2px solid $color-border;
             border-radius: $size;
             display: inline-block;

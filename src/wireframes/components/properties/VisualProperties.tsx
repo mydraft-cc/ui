@@ -6,12 +6,13 @@
 */
 
 import { Color, ColorPicker } from '@app/core';
+import { texts } from '@app/texts';
 import { DefaultAppearance } from '@app/wireframes/interface';
 import { getDiagramId, getSelectedItems, getSelectionSet, selectColorTab, useStore } from '@app/wireframes/model';
 import { Button, Col, Row, Select } from 'antd';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
-import { UniqueValue, useAppearance } from './hooks';
+import { UniqueValue, useAppearance } from './../actions';
 import './VisualProperties.scss';
 
 export const VisualProperties = React.memo(() => {
@@ -58,7 +59,7 @@ export const VisualProperties = React.memo(() => {
             <div style={{ display: (selectedItems.length > 0 ? 'block' : 'none') }}>
                 <div className='property-subsection visual-properties'>
                     <Row className='property'>
-                        <Col span={12} className='property-label'>Font Size</Col>
+                        <Col span={12} className='property-label'>{texts.common.fontSize}</Col>
                         <Col span={12} className='property-value'>
                             <Select disabled={fontSize.empty} value={fontSize.value?.toString()} onChange={setFontSize}>
                                 {DEFINED_FONT_SIZES.map(value =>
@@ -68,7 +69,7 @@ export const VisualProperties = React.memo(() => {
                         </Col>
                     </Row>
                     <Row className='property'>
-                        <Col span={12} className='property-label'>Stroke Thickness</Col>
+                        <Col span={12} className='property-label'>{texts.common.strokeThickness}</Col>
                         <Col span={12} className='property-value'>
                             <Select disabled={strokeThickness.empty} value={strokeThickness.value?.toString()} onChange={setStrokeThickness}>
                                 {DEFINED_STROKE_THICKNESSES.map(value =>
@@ -78,7 +79,7 @@ export const VisualProperties = React.memo(() => {
                         </Col>
                     </Row>
                     <Row className='property'>
-                        <Col span={12} className='property-label'>Stroke Color</Col>
+                        <Col span={12} className='property-label'>{texts.common.strokeColor}</Col>
                         <Col span={12} className='property-value'>
                             <ColorPicker activeColorTab={selectedColorTab} disabled={strokeColor.empty} value={strokeColor.value}
                                 onChange={setStrokeColor}
@@ -86,7 +87,7 @@ export const VisualProperties = React.memo(() => {
                         </Col>
                     </Row>
                     <Row className='property'>
-                        <Col span={12} className='property-label'>Foreground Color</Col>
+                        <Col span={12} className='property-label'>{texts.common.foregroundColor}</Col>
                         <Col span={12} className='property-value'>
                             <ColorPicker activeColorTab={selectedColorTab} disabled={foregroundColor.empty} value={foregroundColor.value}
                                 onChange={setForegroundColor}
@@ -94,7 +95,7 @@ export const VisualProperties = React.memo(() => {
                         </Col>
                     </Row>
                     <Row className='property'>
-                        <Col span={12} className='property-label'>Background Color</Col>
+                        <Col span={12} className='property-label'>{texts.common.backgroundColor}</Col>
                         <Col span={12} className='property-value'>
                             <ColorPicker activeColorTab={selectedColorTab} disabled={backgroundColor.empty} value={backgroundColor.value}
                                 onChange={setBackgroundColor}
@@ -102,7 +103,7 @@ export const VisualProperties = React.memo(() => {
                         </Col>
                     </Row>
                     <Row className='property'>
-                        <Col span={12} className='property-label'>Text Alignment</Col>
+                        <Col span={12} className='property-label'>{texts.common.textAlignment}</Col>
                         <Col span={12} className='property-value'>
                             <Button.Group className='text-alignment'>
                                 <TextButton value={textAlignment} onClick={setTextAlignment}
