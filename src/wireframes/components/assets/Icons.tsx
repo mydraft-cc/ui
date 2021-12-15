@@ -71,6 +71,6 @@ export const Icons = React.memo(() => {
             </Select>
         </div>
 
-        <Grid className='asset-icons-list' renderer={cellRenderer} columns={3} items={iconsFiltered} keyBuilder={keyBuilder} />
+        <Grid className='asset-icons-list' renderer={cellRenderer} columns={4} items={iconsFiltered} keyBuilder={keyBuilder} />
     </>;
 });
