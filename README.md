@@ -4,7 +4,7 @@ Test it out at: https://mydraft.cc/ (Work in Progress)
 
 The goal of this project is to create an open source wireframing tool. As a developer I have to create wireframes from time to time and there are great commercial tool in the market. But most of them cost more than a full Office suite per month. I think there is a need for a good and free solutions.
 
-![Version 01](/screenshots/v1.png?raw=true "V1")
+![Version 01](/screenshots/mydraft-framed.png?raw=true "V1")
 
 ## What is the tech stack?
 
@@ -35,9 +35,9 @@ Copy the files from the `build` folder to your webserver.
 
 ## What are the milestones?
 
-* **0.7**: First working editor.
-* **0.9**: Simple server to save diagrams with random id.
-* **1.0**: Finalize the version and make small improvements and bugfixes.
+* **0.7**: [DONE] First working editor.
+* **0.9**: [DONE] Simple server to save diagrams with random id.
+* **1.0**: [IN_PROGRESS] Finalize the version and make small improvements and bugfixes.
 * **1.1**: Manage pages within a project with background pages.
 * **1.2**: Presentation mode.
 * **1.3**: Dark theme
