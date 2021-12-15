@@ -26,7 +26,7 @@ export function useUI() {
         dispatch(setZoom(zoom + 0.25));
     }, [dispatch, zoom]);
 
-    const zoomIn: UIAction = React.useMemo(() => ({
+    const zoomOut: UIAction = React.useMemo(() => ({
         disabled: !canZoomIn,
         icon: <MinusCircleOutlined />,
         label: texts.common.zoomIn,
@@ -35,7 +35,7 @@ export function useUI() {
         onAction: doZoomIn,
     }), [canZoomIn, doZoomIn]);
 
-    const zoomOut: UIAction = React.useMemo(() => ({
+    const zoomIn: UIAction = React.useMemo(() => ({
         disabled: !canZoomOut,
         icon: <PlusCircleOutlined />,
         label: texts.common.zoomOut,
@@ -44,5 +44,5 @@ export function useUI() {
         onAction: doZoomOut,
     }), [canZoomOut, doZoomOut]);
 
-    return { zoomIn, zoomOut };
+    return { zoomOut, zoomIn };
 }
