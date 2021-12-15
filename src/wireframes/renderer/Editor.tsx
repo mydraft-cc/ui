@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { Diagram, DiagramContainer, DiagramItem, RendererService, Transform } from '@app/wireframes/model';
+import { Diagram, DiagramItem, RendererService, Transform } from '@app/wireframes/model';
 import { Color, Rect2, sizeInPx, SVGHelper, Vec2 } from '@app/core';
 import * as React from 'react';
 import * as svg from '@svgdotjs/svg.js';
@@ -13,18 +13,10 @@ import { CanvasView } from './CanvasView';
 import { InteractionService } from './interaction-service';
 import { QuickbarAdorner } from './QuickbarAdorner';
 import { SelectionAdorner } from './SelectionAdorner';
-import { ShapeRef } from './shape-ref';
 import { TextAdorner } from './TextAdorner';
 import { TransformAdorner } from './TransformAdorner';
 import './Editor.scss';
-
-export interface EditorState {
-    // The selected items.
-    selectedItems: DiagramItem[];
-
-    // The selected items including locked items.
-    selectedItemsWithLocked: DiagramItem[];
-}
+import { RenderLayer } from './RenderLayer';
 
 export interface EditorProps {
     // The renderer service.
@@ -32,6 +24,9 @@ export interface EditorProps {
 
     // The selected diagram.
     diagram?: Diagram;
+
+    // The master diagram.
+    masterDiagram?: Diagram;
 
     // The selected items.
     selectedItems: DiagramItem[];
@@ -67,17 +62,18 @@ export interface EditorProps {
     onTransformItems?: (diagram: Diagram, items: DiagramItem[], oldBounds: Transform, newBounds: Transform) => any;
 }
 
-const showDebugOutlines = process.env.NODE_ENV === 'false';
-
 export const Editor = React.memo((props: EditorProps) => {
     const {
         color,
         diagram,
+        masterDiagram,
         onChangeItemsAppearance,
         onRender,
         onSelectItems,
         onTransformItems,
         rendererService,
+        selectedItems,
+        selectedItemsWithLocked,
         viewBox,
         viewSize,
         zoom,
@@ -87,154 +83,63 @@ export const Editor = React.memo((props: EditorProps) => {
     const w = viewSize.x;
     const h = viewSize.y;
 
-    // Use a state here to force an update.
-    const [interactionService, setInteractionService] = React.useState<InteractionService>();
-    const [interacting, setInteracting] = React.useState(false);
-    const currentOnRender = React.useRef(onRender);
     const adornersSelect = React.useRef<svg.Container>();
     const adornersTransform = React.useRef<svg.Container>();
     const diagramTools = React.useRef<svg.Element>();
-    const diagramRendering = React.useRef<svg.Container>();
-    const shapeRefsById = React.useRef<{ [id: string]: ShapeRef }>({});
-    const [selectedItemsWithLocked, setSelectedItemsWithLocked] = React.useState<DiagramItem[]>([]);
+    const renderMainLayer = React.useRef<svg.Container>();
+    const renderMasterLayer = React.useRef<svg.Container>();
+    const [interactionService, setInteractionService] = React.useState<InteractionService>();
+    const [interactionPreviews, setInteractionPreviews] = React.useState<DiagramItem[]>();
+    const [fullSelection, setFullSelection] = React.useState<DiagramItem[]>([]);
 
     React.useEffect(() => {
-        setSelectedItemsWithLocked(props.selectedItemsWithLocked);
-    }, [props.selectedItemsWithLocked]);
+        setFullSelection(selectedItemsWithLocked);
+    }, [selectedItemsWithLocked]);
 
     const initDiagramScope = React.useCallback((doc: svg.Svg) => {
         diagramTools.current = doc.rect().fill('transparent');
-        diagramRendering.current = doc.group();
+        renderMasterLayer.current = doc.group();
+        renderMainLayer.current = doc.group();
         adornersSelect.current = doc.group();
         adornersTransform.current = doc.group();
 
-        setInteractionService(new InteractionService([adornersSelect.current, adornersTransform.current], diagramRendering.current, doc));
+        setInteractionService(new InteractionService([
+            adornersSelect.current,
+            adornersTransform.current],
+        renderMainLayer.current, doc));
     }, []);
 
     React.useEffect(() => {
         if (interactionService) {
+            SVGHelper.setPosition(diagramTools.current, 0.5, 0.5);
             SVGHelper.setPosition(adornersSelect.current, 0.5, 0.5);
             SVGHelper.setPosition(adornersTransform.current, 0.5, 0.5);
-            SVGHelper.setPosition(diagramRendering.current, 0.5, 0.5);
-
-            SVGHelper.setSize(diagramTools.current, w, h);
-            SVGHelper.setSize(adornersSelect.current, w, h);
-            SVGHelper.setSize(adornersTransform.current, w, h);
-            SVGHelper.setSize(diagramRendering.current, w, h);
+            SVGHelper.setPosition(renderMasterLayer.current, 0.5, 0.5);
+            SVGHelper.setPosition(renderMainLayer.current, 0.5, 0.5);
         }
-    }, [w, h, interactionService]);
-
-    const orderedShapes = React.useMemo(() => {
-        const flattenShapes: DiagramItem[] = [];
-
-        if (diagram) {
-            let handleContainer: (itemIds: DiagramContainer) => any;
-
-            // eslint-disable-next-line prefer-const
-            handleContainer = itemIds => {
-                for (const id of itemIds.values) {
-                    const item = diagram.items.get(id);
-
-                    if (item) {
-                        if (item.type === 'Shape') {
-                            flattenShapes.push(item);
-                        }
-
-                        if (item.type === 'Group') {
-                            handleContainer(item.childIds);
-                        }
-                    }
-                }
-            };
-
-            handleContainer(diagram.itemIds);
-        }
-
-        return flattenShapes;
-    }, [diagram]);
-
-    React.useEffect(() => {
-        if (!interactionService) {
-            return;
-        }
-
-        const allShapesById: { [id: string]: boolean } = {};
-        const allShapes = orderedShapes;
-
-        allShapes.forEach(item => {
-            allShapesById[item.id] = true;
-        });
-
-        const references = shapeRefsById.current;
-
-        // Delete old shapes.
-        for (const [id, ref] of Object.entries(references)) {
-            if (!allShapesById[id]) {
-                ref.remove();
-
-                delete references[id];
-            }
-        }
-
-        // Create missing shapes.
-        for (const shape of allShapes) {
-            if (!references[shape.id]) {
-                const renderer = rendererService.registeredRenderers[shape.renderer];
-
-                references[shape.id] = new ShapeRef(diagramRendering.current, renderer, showDebugOutlines);
-            }
-        }
-
-        let hasIdChanged = false;
-
-        allShapes.forEach((shape, i) => {
-            if (!references[shape.id].checkIndex(i)) {
-                hasIdChanged = true;
-            }
-        });
-
-        // If the index of at least once shape has changed we have to remove them all to render them in the correct order.
-        if (hasIdChanged) {
-            for (const ref of Object.values(references)) {
-                ref.remove();
-            }
-        }
-
-        for (const shape of allShapes) {
-            references[shape.id].render(shape);
-        }
-
-        if (currentOnRender.current) {
-            currentOnRender.current();
-        }
-    }, [interactionService, orderedShapes, rendererService.registeredRenderers]);
-
-    const doPreview = React.useCallback((items: DiagramItem[]) => {
-        for (const item of items) {
-            shapeRefsById.current[item.id]?.setPreview(item);
-        }
-
-        setInteracting(true);
-        setSelectedItemsWithLocked(withPreview(props.selectedItemsWithLocked, items));
-    }, [props.selectedItemsWithLocked]);
-
-    const doPreviewEnd = React.useCallback(() => {
-        for (const reference of Object.values(shapeRefsById.current)) {
-            reference.setPreview(null);
-        }
-
-        setInteracting(false);
-        setSelectedItemsWithLocked(props.selectedItemsWithLocked);
-    }, [props.selectedItemsWithLocked]);
+    }, [interactionService]);
 
     React.useEffect(() => {
         if (interactionService) {
             SVGHelper.setSize(diagramTools.current, w, h);
             SVGHelper.setSize(adornersSelect.current, w, h);
             SVGHelper.setSize(adornersTransform.current, w, h);
-            SVGHelper.setSize(diagramRendering.current, w, h);
+            SVGHelper.setSize(renderMasterLayer.current, w, h);
+            SVGHelper.setSize(renderMainLayer.current, w, h);
         }
     }, [w, h, interactionService]);
+
+    const doPreview = React.useCallback((items: DiagramItem[]) => {
+        const previews = selectedItemsWithLocked.map(x => items.find(y => x.id === y.id) || x);
+
+        setInteractionPreviews(items);
+        setFullSelection(previews);
+    }, [selectedItemsWithLocked]);
+
+    const doPreviewEnd = React.useCallback(() => {
+        setInteractionPreviews(undefined);
+        setFullSelection(selectedItemsWithLocked);
+    }, [selectedItemsWithLocked]);
 
     const style = { background: color.toString(), width: sizeInPx(zoomedSize.x), height: sizeInPx(zoomedSize.y) } as any;
 
@@ -250,6 +155,21 @@ export const Editor = React.memo((props: EditorProps) => {
 
                     {interactionService && diagram && (
                         <>
+                            <RenderLayer
+                                diagram={masterDiagram}
+                                renderContainer={renderMasterLayer.current}
+                                rendererService={rendererService}
+                                onRender={onRender}
+                            />
+
+                            <RenderLayer
+                                diagram={diagram}
+                                renderContainer={renderMainLayer.current}
+                                rendererService={rendererService}
+                                previewItems={interactionPreviews}
+                                onRender={onRender}
+                            />
+
                             {onTransformItems &&
                                 <TransformAdorner
                                     adorners={adornersTransform.current}
@@ -258,7 +178,7 @@ export const Editor = React.memo((props: EditorProps) => {
                                     onPreviewEnd={doPreviewEnd}
                                     onTransformItems={onTransformItems}
                                     selectedDiagram={diagram}
-                                    selectedItems={props.selectedItems}
+                                    selectedItems={selectedItems}
                                     viewSize={viewSize}
                                     zoom={zoom} />
                             }
@@ -269,7 +189,7 @@ export const Editor = React.memo((props: EditorProps) => {
                                     interactionService={interactionService}
                                     onSelectItems={onSelectItems}
                                     selectedDiagram={diagram}
-                                    selectedItems={selectedItemsWithLocked} />
+                                    selectedItems={fullSelection} />
                             }
 
                             {onChangeItemsAppearance &&
@@ -277,15 +197,15 @@ export const Editor = React.memo((props: EditorProps) => {
                                     interactionService={interactionService}
                                     onChangeItemsAppearance={onChangeItemsAppearance}
                                     selectedDiagram={diagram}
-                                    selectedItems={props.selectedItems}
+                                    selectedItems={selectedItems}
                                     zoom={zoom} />
                             }
 
                             {onTransformItems &&
                                 <QuickbarAdorner
-                                    isPreviewing={interacting}
+                                    isPreviewing={!!interactionPreviews}
                                     selectedDiagram={diagram}
-                                    selectedItems={props.selectedItems}
+                                    selectedItems={selectedItems}
                                     viewSize={viewSize}
                                     zoom={zoom} />
                             }
@@ -296,11 +216,3 @@ export const Editor = React.memo((props: EditorProps) => {
         </>
     );
 });
-
-function withPreview(source: DiagramItem[], previews: DiagramItem[]) {
-    return source.map(x => {
-        const preview = previews.find(y => x.id === y.id);
-
-        return preview || x;
-    });
-}
