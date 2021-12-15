@@ -5,13 +5,13 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
+/* eslint-disable @typescript-eslint/no-loop-func */
+
 import { MathHelper, Vec2 } from '@app/core';
 import { DefaultAppearance } from '@app/wireframes/interface';
 import { ActionReducerMapBuilder, createAction, Middleware } from '@reduxjs/toolkit';
 import { Diagram, DiagramItem, DiagramItemSet, EditorState, RendererService, Serializer } from './../internal';
 import { createDiagramAction, createItemsAction, DiagramRef, ItemsRef } from './utils';
-
-/* eslint-disable @typescript-eslint/no-loop-func */
 
 export const addVisual =
     createAction('items/addVisual', (diagram: DiagramRef, renderer: string, x: number, y: number, properties?: object, shapeId?: string) => {

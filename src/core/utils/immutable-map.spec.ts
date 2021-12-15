@@ -5,9 +5,9 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { ImmutableMap } from '@app/core';
-
 /* eslint-disable @typescript-eslint/naming-convention */
+
+import { ImmutableMap } from '@app/core';
 
 describe('ImmutableMap', () => {
     it('should instantiate without arguments', () => {

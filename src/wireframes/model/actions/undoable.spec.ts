@@ -5,9 +5,9 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { redo, undo, undoable, UndoableState } from '@app/wireframes/model';
-
 /* eslint-disable @typescript-eslint/naming-convention */
+
+import { redo, undo, undoable, UndoableState } from '@app/wireframes/model';
 
 describe('Undoable', () => {
     const state_1: UndoableState<number> =

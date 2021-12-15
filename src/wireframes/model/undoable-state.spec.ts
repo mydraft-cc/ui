@@ -5,9 +5,9 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { UndoableState } from '@app/wireframes/model';
-
 /* eslint-disable @typescript-eslint/naming-convention */
+
+import { UndoableState } from '@app/wireframes/model';
 
 describe('UndoableState', () => {
     it('should create new state', () => {

@@ -5,12 +5,12 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
+/* eslint-disable @typescript-eslint/naming-convention */
+
 import { ImmutableMap, Rotation, Vec2 } from '@app/core';
 import { Diagram } from './diagram';
 import { DiagramItem } from './diagram-item';
 import { Transform } from './transform';
-
-/* eslint-disable @typescript-eslint/naming-convention */
 
 describe('DiagramItem', () => {
     const item_1 = DiagramItem.createShape('1', 'btn', 100, 20);

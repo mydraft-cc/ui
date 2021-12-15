@@ -5,9 +5,9 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { Color } from './color';
-
 /* eslint-disable @typescript-eslint/indent */
+
+import { Color } from './color';
 
 const BREWERS = {
       greys: [0xffffff, 0xF0F0F0, 0xbdbdbd, 0x969696, 0x737373, 0x525252, 0x252525, 0x000000],

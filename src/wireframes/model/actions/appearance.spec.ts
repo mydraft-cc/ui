@@ -5,13 +5,13 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
+/* eslint-disable @typescript-eslint/naming-convention */
+
 import { Rotation, Vec2 } from '@app/core';
 import { buildAppearance, changeItemsAppearance, Diagram, DiagramItem, EditorState, RendererService, Transform, transformItems } from '@app/wireframes/model';
 import { Button } from '@app/wireframes/shapes/neutral/button';
 import { AbstractControl } from '@app/wireframes/shapes/utils/abstract-control';
 import { createClassReducer } from './utils';
-
-/* eslint-disable @typescript-eslint/naming-convention */
 
 describe('AppearanceReducer', () => {
     const shape1 = DiagramItem.createShape('1', 'Button', 100, 100);

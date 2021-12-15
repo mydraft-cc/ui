@@ -30,7 +30,7 @@ export class Rectangle implements ShapePlugin {
     }
 
     public defaultSize() {
-        return { x: 100, y: 600 };
+        return { x: 100, y: 60 };
     }
 
     public configurables(factory: ConfigurableFactory) {

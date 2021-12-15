@@ -5,10 +5,10 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
+/* eslint-disable @typescript-eslint/naming-convention */
+
 import { buildOrdering, Diagram, DiagramItem, EditorState, orderItems, OrderMode } from '@app/wireframes/model';
 import { createClassReducer } from './utils';
-
-/* eslint-disable @typescript-eslint/naming-convention */
 
 describe('OrderingReducer', () => {
     const shape1 = DiagramItem.createShape('1', 'btn', 100, 100);

@@ -44,7 +44,7 @@ export const VisualProperties = React.memo(() => {
 
     const [textAlignment, setTextAlignment] =
         useAppearance(selectedDiagramId, selectionSet,
-            DefaultAppearance.STROKE_THICKNESS);
+            DefaultAppearance.TEXT_ALIGNMENT);
 
     const doSelectColorTab = React.useCallback((key: string) => {
         dispatch(selectColorTab(key));
@@ -110,10 +110,10 @@ export const VisualProperties = React.memo(() => {
                                     mode='left' icon='icon-align-left' />
 
                                 <TextButton value={textAlignment} onClick={setTextAlignment}
-                                    mode='left' icon='icon-align-center' />
+                                    mode='center' icon='icon-align-center' />
 
                                 <TextButton value={textAlignment} onClick={setTextAlignment}
-                                    mode='left' icon='icon-align-right' />
+                                    mode='right' icon='icon-align-right' />
                             </Button.Group>
                         </Col>
                     </Row>
@@ -129,11 +129,11 @@ const TextButton = React.memo(({ value, mode, icon, onClick }: TextButtonProps) 
     const type = mode === value.value ? 'primary' : undefined;
 
     return (
-        <Button disabled={value.empty} type={type} onClick={() => onClick(value)}>
+        <Button disabled={value.empty} type={type} onClick={() => onClick(mode)}>
             <i className={icon} />
         </Button>
     );
 });
 
-const DEFINED_STROKE_THICKNESSES = [1, 2, 4, 6, 8];
+const DEFINED_STROKE_THICKNESSES = [0, 1, 2, 4, 6, 8];
 const DEFINED_FONT_SIZES = [4, 6, 8, 10, 12, 14, 16, 18, 20, 24, 28, 32, 36, 40, 48, 60];

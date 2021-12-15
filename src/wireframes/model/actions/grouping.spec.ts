@@ -5,10 +5,10 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
+/* eslint-disable @typescript-eslint/naming-convention */
+
 import { buildGrouping, Diagram, DiagramItem, EditorState, groupItems, ungroupItems } from '@app/wireframes/model';
 import { createClassReducer } from './utils';
-
-/* eslint-disable @typescript-eslint/naming-convention */
 
 describe('GroupingReducer', () => {
     const state =

@@ -5,9 +5,9 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { ImmutableSet } from '@app/core';
-
 /* eslint-disable @typescript-eslint/naming-convention */
+
+import { ImmutableSet } from '@app/core';
 
 describe('ImmutableSet', () => {
     it('should instantiate instance from array', () => {

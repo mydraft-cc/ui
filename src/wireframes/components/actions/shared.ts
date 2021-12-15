@@ -5,6 +5,9 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
+/* eslint-disable one-var */
+/* eslint-disable one-var-declaration-per-line */
+
 import { Types } from '@app/core';
 import { changeItemsAppearance, DiagramItemSet } from '@app/wireframes/model';
 import * as React from 'react';
@@ -45,14 +48,12 @@ export function useAppearance<T>(diagramId: string, set: DiagramItemSet, key: st
 
         const parser = parse || DEFAULT_PARSER;
 
-        let value: T | undefined;
-
-        let empty = true;
+        let value: T | undefined, empty = true;
 
         for (const visual of set!.allVisuals) {
             const appearance = visual.appearance.get(key);
 
-            if (appearance) {
+            if (!Types.isUndefined(appearance)) {
                 empty = false;
 
                 const parsed = parser(appearance);

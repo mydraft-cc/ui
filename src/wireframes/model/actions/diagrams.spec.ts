@@ -5,11 +5,11 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
+/* eslint-disable @typescript-eslint/naming-convention */
+
 import { Color, Vec2 } from '@app/core';
 import { addDiagram, changeSize, Diagram, buildDiagrams, EditorState, removeDiagram, selectDiagram, changeColor } from '@app/wireframes/model';
 import { createClassReducer } from './utils';
-
-/* eslint-disable @typescript-eslint/naming-convention */
 
 describe('DiagramReducer', () => {
     const state =

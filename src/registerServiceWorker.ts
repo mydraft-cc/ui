@@ -5,10 +5,10 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
+/* eslint-disable no-console */
+
 import { Store } from 'redux';
 import { showInfoToast } from '@app/wireframes/model';
-
-/* eslint-disable no-console */
 
 export function registerServiceWorker(store: Store) {
     if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator) {

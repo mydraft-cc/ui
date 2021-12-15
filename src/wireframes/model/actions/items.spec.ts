@@ -5,6 +5,8 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
+/* eslint-disable @typescript-eslint/naming-convention */
+
 import { Rotation, Vec2 } from '@app/core';
 import { DefaultAppearance } from '@app/wireframes/interface';
 import { addIcon, addImage, addVisual, buildItems, calculateSelection, Diagram, DiagramItem, DiagramItemSet, EditorState, pasteItems, removeItems, RendererService, selectItems, Serializer, Transform, unlockItems } from '@app/wireframes/model';
@@ -14,8 +16,6 @@ import { Raster } from '@app/wireframes/shapes/shared/raster';
 import { AbstractControl } from '@app/wireframes/shapes/utils/abstract-control';
 import { lockItems } from './items';
 import { createClassReducer } from './utils';
-
-/* eslint-disable @typescript-eslint/naming-convention */
 
 describe('ItemsReducer', () => {
     const groupId = 'group-1';

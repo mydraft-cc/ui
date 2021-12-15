@@ -5,6 +5,8 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
+/* eslint-disable quote-props */
+
 import { Rect2, sizeInPx, SVGHelper, Types } from '@app/core';
 import { DefaultAppearance, RendererColor, RendererElement, RendererOpacity, RendererText, RendererWidth, Shape, ShapeFactory, ShapeFactoryFunc, ShapeProperties, ShapePropertiesFunc, TextConfig } from '@app/wireframes/interface';
 import { DiagramItem } from '@app/wireframes/model';
@@ -13,8 +15,6 @@ import * as svg from '@svgdotjs/svg.js';
 import { AbstractRenderer2 } from './abstract-renderer';
 
 export * from './abstract-renderer';
-
-/* eslint-disable quote-props */
 
 class Factory implements ShapeFactory {
     private container: svg.G;

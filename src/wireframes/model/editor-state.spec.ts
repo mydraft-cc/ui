@@ -5,10 +5,10 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
+/* eslint-disable @typescript-eslint/naming-convention */
+
 import { Color, Vec2 } from '@app/core';
 import { Diagram, EditorState } from '@app/wireframes/model';
-
-/* eslint-disable @typescript-eslint/naming-convention */
 
 describe('EditorState', () => {
     const state_1 = EditorState.empty();
