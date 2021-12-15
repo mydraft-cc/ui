@@ -47,13 +47,13 @@ export function useAppearance<T>(diagramId: string, set: DiagramItemSet, key: st
 
         let value: T | undefined;
 
-        let empty = false;
+        let empty = true;
 
         for (const visual of set!.allVisuals) {
             const appearance = visual.appearance.get(key);
 
             if (appearance) {
-                empty = true;
+                empty = false;
 
                 const parsed = parser(appearance);
 

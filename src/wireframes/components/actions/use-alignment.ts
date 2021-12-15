@@ -5,6 +5,8 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
+/* eslint-disable react-hooks/exhaustive-deps */
+
 import { texts } from '@app/texts';
 import { alignItems, AlignmentMode, getDiagramId, getSelectedItems, orderItems, OrderMode, useStore } from '@app/wireframes/model';
 import * as React from 'react';
@@ -38,7 +40,6 @@ export function useAlignment() {
             label,
             tooltip: label,
             onAction: () => doAlign(mode),
-        // eslint-disable-next-line react-hooks/exhaustive-deps
         }), [canAlign, doAlign]);
 
         return action;
@@ -51,7 +52,6 @@ export function useAlignment() {
             label,
             tooltip: label,
             onAction: () => doAlign(mode),
-        // eslint-disable-next-line react-hooks/exhaustive-deps
         }), [canAlign, doAlign]);
 
         return action;
@@ -65,7 +65,6 @@ export function useAlignment() {
             label,
             tooltip: label,
             onAction: () => doOrder(mode),
-            // eslint-disable-next-line react-hooks/exhaustive-deps
         }), [canOrder, doOrder]);
 
         return action;
