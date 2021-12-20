@@ -11,7 +11,6 @@ import * as React from 'react';
 import { ColorResult, SketchPicker } from 'react-color';
 import { Color } from './../utils/color';
 import { ColorPalette } from './../utils/color-palette';
-
 import './ColorPicker.scss';
 
 interface ColorPickerProps {

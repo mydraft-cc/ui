@@ -25,6 +25,11 @@ export const removeDiagram =
         return { payload: createDiagramAction(diagram) };
     });
 
+export const renameDiagram =
+    createAction('diagram/rename', (diagram: DiagramRef, title: string) => {
+        return { payload: createDiagramAction(diagram, { title }) };
+    });
+
 export const changeSize =
     createAction<{ width: number; height: number }>('editor/size');
 
@@ -38,10 +43,10 @@ export function buildDiagrams(builder: ActionReducerMapBuilder<EditorState>) {
 
             return state.selectDiagram(diagramId);
         })
-        .addCase(addDiagram, (state, action) => {
-            const { diagramId } = action.payload;
+        .addCase(renameDiagram, (state, action) => {
+            const { diagramId, title } = action.payload;
 
-            return state.addDiagram(Diagram.empty(diagramId)).selectDiagram(diagramId);
+            return state.updateDiagram(diagramId, diagram => diagram.rename(title));
         })
         .addCase(removeDiagram, (state, action) => {
             const { diagramId } = action.payload;
@@ -57,5 +62,16 @@ export function buildDiagrams(builder: ActionReducerMapBuilder<EditorState>) {
             const { color } = action.payload;
 
             return state.changeColor(Color.fromString(color));
+        })
+        .addCase(addDiagram, (state, action) => {
+            const { diagramId } = action.payload;
+
+            let newState = state.addDiagram(Diagram.empty(diagramId));
+
+            if (newState.diagrams.size === 1) {
+                newState = newState.selectDiagram(diagramId);
+            }
+
+            return newState;
         });
 }

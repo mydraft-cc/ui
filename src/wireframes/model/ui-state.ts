@@ -26,6 +26,9 @@ export interface UIState {
 
     // The color tab.
     selectedColorTab: string;
+
+    // The filter for the diagram.
+    diagramsFilter?: string;
 }
 
 export interface UIStateInStore {

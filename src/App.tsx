@@ -7,7 +7,7 @@
 
 import { LeftOutlined, RightOutlined } from '@ant-design/icons';
 import { usePrinter } from '@app/core';
-import { ArrangeMenu, ClipboardMenu, CustomProperties, EditorView, HistoryMenu, Icons, LayoutProperties, LoadingMenu, LockMenu, MoreProperties, PrintRenderer, SettingsMenu, Shapes, UIMenu, VisualProperties } from '@app/wireframes/components';
+import { ArrangeMenu, ClipboardMenu, CustomProperties, EditorView, HistoryMenu, Icons, LayoutProperties, LoadingMenu, LockMenu, MoreProperties, Pages, PrintRenderer, SettingsMenu, Shapes, UIMenu, VisualProperties } from '@app/wireframes/components';
 import { loadDiagramAsync, newDiagram, selectTab, showInfoToast, toggleLeftSidebar, toggleRightSidebar, useStore } from '@app/wireframes/model';
 import { Button, Collapse, Layout, Tabs } from 'antd';
 import * as React from 'react';
@@ -98,6 +98,9 @@ export const App = () => {
                             </Tabs.TabPane>
                             <Tabs.TabPane key='icons' tab='Icons'>
                                 <Icons />
+                            </Tabs.TabPane>
+                            <Tabs.TabPane key='pages' tab='Pages'>
+                                <Pages />
                             </Tabs.TabPane>
                         </Tabs>
                     </Layout.Sider>

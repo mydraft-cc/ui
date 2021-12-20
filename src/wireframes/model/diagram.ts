@@ -14,6 +14,9 @@ type Props = {
     // The unique id of the diagram.
     id: string;
 
+    // The optional title.
+    title?: string;
+
     // The list of items.
     items: ImmutableMap<DiagramItem>;
 
@@ -29,6 +32,10 @@ export class Diagram extends Record<Props> {
 
     public get id() {
         return this.get('id');
+    }
+
+    public get title() {
+        return this.get('title');
     }
 
     public get items() {
@@ -58,6 +65,10 @@ export class Diagram extends Record<Props> {
         return new Diagram(props);
     }
 
+    public rename(title: string | undefined) {
+        return this.set('title', title);
+    }
+
     public parent(id: string | DiagramItem) {
         if (!id) {
             return undefined;
@@ -85,7 +96,7 @@ export class Diagram extends Record<Props> {
     }
 
     public addVisual(visual: DiagramItem) {
-        if (!visual) {
+        if (!visual || this.items.get(visual.id)) {
             return this;
         }
 

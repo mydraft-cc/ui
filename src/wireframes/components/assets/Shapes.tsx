@@ -12,7 +12,6 @@ import { Input } from 'antd';
 import * as React from 'react';
 import { ReactReduxContext, useDispatch } from 'react-redux';
 import { ShapeImage } from './ShapeImage';
-
 import './Shapes.scss';
 
 const keyBuilder = (shape: ShapeInfo) => {
@@ -50,13 +49,15 @@ export const Shapes = () => {
         dispatch(filterShapes({ filter: event.target.value }));
     }, [dispatch]);
 
-    return <>
-        <div className='asset-shapes-search'>
-            <Input value={shapesFilter} onChange={doFilterShapes}
-                placeholder='Find shape'
-                prefix={<SearchOutlined style={{ color: 'rgba(0,0,0,.25)' }} />} />
-        </div>
+    return (
+        <>
+            <div className='asset-shapes-search'>
+                <Input value={shapesFilter} onChange={doFilterShapes}
+                    placeholder='Find shape'
+                    prefix={<SearchOutlined style={{ color: 'rgba(0,0,0,.25)' }} />} />
+            </div>
 
-        <Grid className='asset-shapes-list' renderer={cellRenderer} columns={2} items={shapesFiltered} keyBuilder={keyBuilder} />
-    </>;
+            <Grid className='asset-shapes-list' renderer={cellRenderer} columns={2} items={shapesFiltered} keyBuilder={keyBuilder} />
+        </>
+    );
 };
