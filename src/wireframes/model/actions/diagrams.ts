@@ -25,6 +25,11 @@ export const removeDiagram =
         return { payload: createDiagramAction(diagram) };
     });
 
+export const moveDiagram =
+    createAction('diagram/move', (diagram: DiagramRef, index: number) => {
+        return { payload: createDiagramAction(diagram, { index }) };
+    });
+
 export const renameDiagram =
     createAction('diagram/rename', (diagram: DiagramRef, title: string) => {
         return { payload: createDiagramAction(diagram, { title }) };
@@ -52,6 +57,11 @@ export function buildDiagrams(builder: ActionReducerMapBuilder<EditorState>) {
             const { diagramId } = action.payload;
 
             return state.removeDiagram(diagramId);
+        })
+        .addCase(moveDiagram, (state, action) => {
+            const { diagramId, index } = action.payload;
+
+            return state.moveDiagram(diagramId, index);
         })
         .addCase(changeSize, (state, action) => {
             const { width, height } = action.payload;

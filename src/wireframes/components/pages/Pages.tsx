@@ -6,7 +6,8 @@
 */
 
 import { PlusOutlined, SearchOutlined } from '@ant-design/icons';
-import { addDiagram, Diagram, filterDiagrams, getDiagramId, getDiagramsFilter, getFilteredDiagrams, removeDiagram, renameDiagram, selectDiagram, useStore } from '@app/wireframes/model';
+import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd';
+import { addDiagram, Diagram, filterDiagrams, getDiagramId, getDiagramsFilter, getFilteredDiagrams, moveDiagram, removeDiagram, renameDiagram, selectDiagram, useStore } from '@app/wireframes/model';
 import { Button, Col, Input, Row } from 'antd';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
@@ -39,6 +40,10 @@ export const Pages = () => {
         dispatch(filterDiagrams({ filter: event.target.value }));
     }, [dispatch]);
 
+    const doSort = React.useCallback((result: DropResult) => {
+        dispatch(moveDiagram(result.draggableId, result.destination.index));
+    }, [dispatch]);
+
     return (
         <>
             <Row className='pages-search' wrap={false}>
@@ -54,17 +59,31 @@ export const Pages = () => {
                 </Col>
             </Row>
 
-            <div className='pages-list'>
-                {diagrams.map(x =>
-                    <Page key={x.id}
-                        diagram={x}
-                        onDelete={doRemoveDiagram}
-                        onRename={doRenameDiagram}
-                        onSelect={doSelectDiagram}
-                        selected={x.id === diagramId}
-                    />,
-                )}
-            </div>
+            <DragDropContext onDragEnd={doSort}>
+                <Droppable droppableId='droppable'>
+                    {(provided) => (
+                        <div className='pages-list' {...provided.droppableProps} ref={provided.innerRef}>
+                            {diagrams.map((item, index) =>
+                                <Draggable key={item.id} draggableId={item.id} index={index}>
+                                    {(provided) => (
+                                        <div ref={provided.innerRef}
+                                            {...provided.draggableProps}
+                                            {...provided.dragHandleProps}>
+                                            <Page
+                                                diagram={item}
+                                                onDelete={doRemoveDiagram}
+                                                onRename={doRenameDiagram}
+                                                onSelect={doSelectDiagram}
+                                                selected={item.id === diagramId}
+                                            />
+                                        </div>
+                                    )}
+                                </Draggable>,
+                            )}
+                        </div>
+                    )}
+                </Droppable>
+            </DragDropContext>
         </>
     );
 };

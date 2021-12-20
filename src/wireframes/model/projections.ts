@@ -20,15 +20,16 @@ const EMPTY_STRING_ARRAY: string[] = [];
 const EMPTY_ITEMS_ARRAY: DiagramItem[] = [];
 const EMPTY_CONFIGURABLES: Configurable[] = [];
 
-export const getIconsFilter = (state: AssetsStateInStore) => state.assets.iconsFilter;
-export const getIconSet = (state: AssetsStateInStore) => state.assets.iconSet;
-export const getIcons = (state: AssetsStateInStore) => state.assets.icons;
-export const getShapesFilter = (state: AssetsStateInStore) => state.assets.shapesFilter;
-export const getShapes = (state: AssetsStateInStore) => state.assets.shapes;
+export const getDiagramId = (state: EditorStateInStore) => state.editor.present.selectedDiagramId;
+export const getDiagrams = (state: EditorStateInStore) => state.editor.present.diagrams;
 export const getDiagramsFilter = (state: UIStateInStore) => state.ui.diagramsFilter;
 export const getEditor = (state: EditorStateInStore) => state.editor.present;
-export const getDiagrams = (state: EditorStateInStore) => state.editor.present.diagrams;
-export const getDiagramId = (state: EditorStateInStore) => state.editor.present.selectedDiagramId;
+export const getIcons = (state: AssetsStateInStore) => state.assets.icons;
+export const getIconSet = (state: AssetsStateInStore) => state.assets.iconSet;
+export const getIconsFilter = (state: AssetsStateInStore) => state.assets.iconsFilter;
+export const getOrderedDiagrams = (state: EditorStateInStore) => state.editor.present.orderedDiagrams;
+export const getShapes = (state: AssetsStateInStore) => state.assets.shapes;
+export const getShapesFilter = (state: AssetsStateInStore) => state.assets.shapesFilter;
 
 export const getIconsFilterRegex = createSelector(
     getIconsFilter,
@@ -69,9 +70,9 @@ export const getFilteredShapes = createSelector(
 );
 
 export const getFilteredDiagrams = createSelector(
-    getDiagrams,
+    getOrderedDiagrams,
     getDiagramsFilterRegex,
-    (diagrams, filter) => diagrams.values.filter(x => filter.test(x.title || texts.common.page)),
+    (diagrams, filter) => diagrams.filter(x => filter.test(x.title || texts.common.page)),
 );
 
 export const getDiagram = createSelector(
