@@ -65,49 +65,51 @@ export const SettingsMenu = React.memo((props: SettingsMenuProps) => {
             </MenuItem>
         </Menu>;
 
-    return <>
-        <Dropdown overlay={exportMenu} placement='bottomRight'>
-            <Button className='menu-item' size='large'>
-                <ExportOutlined />
-            </Button>
-        </Dropdown>
+    return (
+        <>
+            <Dropdown overlay={exportMenu} placement='bottomRight'>
+                <Button className='menu-item' size='large'>
+                    <ExportOutlined />
+                </Button>
+            </Dropdown>
 
-        <Shortcut onPressed={doToggle} keys='ctl+o' />
+            <Shortcut onPressed={doToggle} keys='ctl+o' />
 
-        <Tooltip mouseEnterDelay={1} title='Show more options (CTRL + O)'>
-            <Button className='menu-item' size='large'
-                onClick={doToggle}>
-                <SettingOutlined />
-            </Button>
-        </Tooltip>
+            <Tooltip mouseEnterDelay={1} title='Show more options (CTRL + O)'>
+                <Button className='menu-item' size='large'
+                    onClick={doToggle}>
+                    <SettingOutlined />
+                </Button>
+            </Tooltip>
 
-        <Modal title='Diagram Options'
-            visible={isOpen}
-            onCancel={doToggle}
-            onOk={doChangeSize}
-        >
-            <Row className='property'>
-                <Col span={12} className='property-label'>Width</Col>
-                <Col span={12} className='property-value'>
-                    <InputNumber value={sizeWidth} min={300} max={3000} onChange={doSetWidth} />
-                </Col>
-            </Row>
+            <Modal title='Diagram Options'
+                visible={isOpen}
+                onCancel={doToggle}
+                onOk={doChangeSize}
+            >
+                <Row className='property'>
+                    <Col span={12} className='property-label'>Width</Col>
+                    <Col span={12} className='property-value'>
+                        <InputNumber value={sizeWidth} min={300} max={3000} onChange={doSetWidth} />
+                    </Col>
+                </Row>
 
-            <Row className='property'>
-                <Col span={12} className='property-label'>Height</Col>
-                <Col span={12} className='property-value'>
-                    <InputNumber value={sizeHeight} min={300} max={3000} onChange={doSetHeight} />
-                </Col>
-            </Row>
+                <Row className='property'>
+                    <Col span={12} className='property-label'>Height</Col>
+                    <Col span={12} className='property-value'>
+                        <InputNumber value={sizeHeight} min={300} max={3000} onChange={doSetHeight} />
+                    </Col>
+                </Row>
 
-            <hr />
+                <hr />
 
-            <Row className='property'>
-                <Col span={12} className='property-label'>Background Color</Col>
-                <Col span={12} className='property-value'>
-                    <ColorPicker value={color} onChange={setColor} />
-                </Col>
-            </Row>
-        </Modal>
-    </>;
+                <Row className='property'>
+                    <Col span={12} className='property-label'>Background Color</Col>
+                    <Col span={12} className='property-value'>
+                        <ColorPicker value={color} onChange={setColor} />
+                    </Col>
+                </Row>
+            </Modal>
+        </>
+    );
 });

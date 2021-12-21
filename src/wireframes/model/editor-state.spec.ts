@@ -27,6 +27,13 @@ describe('EditorState', () => {
         expect(state_2.diagrams.has(diagram.id)).toBeTruthy();
     });
 
+    it('should return original state when diagram is already added', () => {
+        const state_2 = state_1.addDiagram(diagram);
+        const state_3 = state_2.addDiagram(diagram);
+
+        expect(state_3).toBe(state_2);
+    });
+
     it('should remove diagram', () => {
         const state_2 = state_1.addDiagram(diagram);
         const state_3 = state_2.removeDiagram(diagram.id);
@@ -48,6 +55,16 @@ describe('EditorState', () => {
 
         expect(state_4.diagrams.has(diagram.id)).toBeFalsy();
         expect(state_4.selectedDiagramId).toBeNull();
+    });
+
+    it('should move diagram', () => {
+        const diagram1 = Diagram.empty('1');
+        const diagram2 = Diagram.empty('2');
+
+        const state_2 = state_1.addDiagram(diagram1).addDiagram(diagram2);
+        const state_3 = state_2.moveDiagram(diagram2.id, 0);
+
+        expect(state_3.orderedDiagrams).toEqual([diagram2, diagram1]);
     });
 
     it('should select diagram', () => {

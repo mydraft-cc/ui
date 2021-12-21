@@ -27,6 +27,18 @@ describe('Diagram', () => {
         expect(diagram_2).toBe(diagram_1);
     });
 
+    it('should set titel', () => {
+        const diagram_2 = diagram_1.rename('title');
+
+        expect(diagram_2.title).toBe('title');
+    });
+
+    it('should set master diagram', () => {
+        const diagram_2 = diagram_1.setMaster('master1');
+
+        expect(diagram_2.master).toBe('master1');
+    });
+
     it('should add visual to items', () => {
         const diagram_2 = diagram_1.addVisual(shape1);
 

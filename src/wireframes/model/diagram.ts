@@ -14,6 +14,9 @@ type Props = {
     // The unique id of the diagram.
     id: string;
 
+    // The optional title.
+    title?: string;
+
     // The list of items.
     items: ImmutableMap<DiagramItem>;
 
@@ -22,6 +25,9 @@ type Props = {
 
     // The selected ids.
     selectedIds: ImmutableSet;
+
+    // Set the master diagram.
+    master?: string;
 };
 
 export class Diagram extends Record<Props> {
@@ -29,6 +35,10 @@ export class Diagram extends Record<Props> {
 
     public get id() {
         return this.get('id');
+    }
+
+    public get title() {
+        return this.get('title');
     }
 
     public get items() {
@@ -41,6 +51,10 @@ export class Diagram extends Record<Props> {
 
     public get selectedIds() {
         return this.get('selectedIds');
+    }
+
+    public get master() {
+        return this.get('master');
     }
 
     public get rootItems(): ReadonlyArray<DiagramItem> {
@@ -56,6 +70,14 @@ export class Diagram extends Record<Props> {
         };
 
         return new Diagram(props);
+    }
+
+    public rename(title: string | undefined) {
+        return this.set('title', title);
+    }
+
+    public setMaster(master: string | undefined) {
+        return this.set('master', master);
     }
 
     public parent(id: string | DiagramItem) {
@@ -85,7 +107,7 @@ export class Diagram extends Record<Props> {
     }
 
     public addVisual(visual: DiagramItem) {
-        if (!visual) {
+        if (!visual || this.items.get(visual.id)) {
             return this;
         }
 

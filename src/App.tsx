@@ -7,9 +7,10 @@
 
 import { LeftOutlined, RightOutlined } from '@ant-design/icons';
 import { usePrinter } from '@app/core';
-import { ArrangeMenu, ClipboardMenu, CustomProperties, EditorView, HistoryMenu, Icons, LayoutProperties, LoadingMenu, LockMenu, MoreProperties, PrintRenderer, SettingsMenu, Shapes, UIMenu, VisualProperties } from '@app/wireframes/components';
+import { ArrangeMenu, ClipboardMenu, CustomProperties, EditorView, HistoryMenu, Icons, LayoutProperties, LoadingMenu, LockMenu, MoreProperties, Pages, PrintRenderer, SettingsMenu, Shapes, UIMenu, VisualProperties } from '@app/wireframes/components';
 import { loadDiagramAsync, newDiagram, selectTab, showInfoToast, toggleLeftSidebar, toggleRightSidebar, useStore } from '@app/wireframes/model';
 import { Button, Collapse, Layout, Tabs } from 'antd';
+import classNames from 'classnames';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
 import { useRouteMatch } from 'react-router';
@@ -99,6 +100,9 @@ export const App = () => {
                             <Tabs.TabPane key='icons' tab='Icons'>
                                 <Icons />
                             </Tabs.TabPane>
+                            <Tabs.TabPane key='pages' tab='Pages'>
+                                <Pages />
+                            </Tabs.TabPane>
                         </Tabs>
                     </Layout.Sider>
                     <Layout.Content className='editor-content'>
@@ -124,14 +128,14 @@ export const App = () => {
                         </Collapse>
                     </Layout.Sider>
 
-                    <Button icon={<ToggleIcon left={showLeftSidebar} />}
-                        className={toggleClass(showLeftSidebar, 'left')}
+                    <Button icon={showLeftSidebar ? <LeftOutlined /> : <RightOutlined />}
+                        className={classNames('toggle-button-left', { visible: showLeftSidebar })}
                         size='small'
                         shape='circle'
                         onClick={doToggleLeftSidebar} />
 
-                    <Button icon={<ToggleIcon left={!showRightSidebar} />}
-                        className={toggleClass(showRightSidebar, 'right')}
+                    <Button icon={showRightSidebar ? <RightOutlined /> : <LeftOutlined />}
+                        className={classNames('toggle-button-right', { visible: showRightSidebar })}
                         size='small'
                         shape='circle'
                         onClick={doToggleRightSidebar} />
@@ -145,12 +149,4 @@ export const App = () => {
             }
         </>
     );
-};
-
-const ToggleIcon = ({ left }: { left: boolean }) => {
-    return left ? <LeftOutlined /> : <RightOutlined />;
-};
-
-const toggleClass = (visible: boolean, side: string) => {
-    return `toggle-button-${side} ${visible ? 'visible' : ''}`;
 };

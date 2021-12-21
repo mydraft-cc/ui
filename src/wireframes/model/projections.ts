@@ -5,6 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
+import { texts } from '@app/texts';
 import { useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
 import { AssetsStateInStore } from './assets-state';
@@ -19,11 +20,16 @@ const EMPTY_STRING_ARRAY: string[] = [];
 const EMPTY_ITEMS_ARRAY: DiagramItem[] = [];
 const EMPTY_CONFIGURABLES: Configurable[] = [];
 
-export const getIconsFilter = (state: AssetsStateInStore) => state.assets.iconsFilter;
-export const getIconSet = (state: AssetsStateInStore) => state.assets.iconSet;
+export const getDiagramId = (state: EditorStateInStore) => state.editor.present.selectedDiagramId;
+export const getDiagrams = (state: EditorStateInStore) => state.editor.present.diagrams;
+export const getDiagramsFilter = (state: UIStateInStore) => state.ui.diagramsFilter;
+export const getEditor = (state: EditorStateInStore) => state.editor.present;
 export const getIcons = (state: AssetsStateInStore) => state.assets.icons;
-export const getShapesFilter = (state: AssetsStateInStore) => state.assets.shapesFilter;
+export const getIconSet = (state: AssetsStateInStore) => state.assets.iconSet;
+export const getIconsFilter = (state: AssetsStateInStore) => state.assets.iconsFilter;
+export const getOrderedDiagrams = (state: EditorStateInStore) => state.editor.present.orderedDiagrams;
 export const getShapes = (state: AssetsStateInStore) => state.assets.shapes;
+export const getShapesFilter = (state: AssetsStateInStore) => state.assets.shapesFilter;
 
 export const getIconsFilterRegex = createSelector(
     getIconsFilter,
@@ -32,6 +38,11 @@ export const getIconsFilterRegex = createSelector(
 
 export const getShapesFilterRegex = createSelector(
     getShapesFilter,
+    filter => new RegExp(filter || '.*', 'i'),
+);
+
+export const getDiagramsFilterRegex = createSelector(
+    getDiagramsFilter,
     filter => new RegExp(filter || '.*', 'i'),
 );
 
@@ -58,14 +69,22 @@ export const getFilteredShapes = createSelector(
     (shapes, filter) => shapes.filter(x => filter.test(x.displayName)),
 );
 
-export const getEditor = (state: EditorStateInStore) => state.editor.present;
-export const getDiagrams = (state: EditorStateInStore) => state.editor.present.diagrams;
-export const getDiagramId = (state: EditorStateInStore) => state.editor.present.selectedDiagramId;
+export const getFilteredDiagrams = createSelector(
+    getOrderedDiagrams,
+    getDiagramsFilterRegex,
+    (diagrams, filter) => diagrams.filter(x => filter.test(x.title || texts.common.page)),
+);
 
 export const getDiagram = createSelector(
     getDiagrams,
     getDiagramId,
     (diagrams, id) => diagrams.get(id),
+);
+
+export const getMasterDiagram = createSelector(
+    getDiagrams,
+    getDiagram,
+    (diagrams, diagram) => diagrams.get(diagram?.master),
 );
 
 export const getSelectionSet = createSelector(

@@ -31,6 +31,9 @@ export const toggleLeftSidebar =
 export const toggleRightSidebar =
     createAction('ui/toggleRightSidebar');
 
+export const filterDiagrams =
+    createAction<{ filter: string }>('ui/diagrams/filter');
+
 export function toastMiddleware() {
     const middleware: Middleware = () => (next: Dispatch<AnyAction>) => (action: any) => {
         if (showInfoToast.match(action)) {
@@ -47,6 +50,9 @@ export function toastMiddleware() {
 
 export function ui(initialState: UIState): Reducer<UIState> {
     return createReducer(initialState, builder => builder
+        .addCase(filterDiagrams, (state, action) => {
+            state.diagramsFilter = action.payload.filter;
+        })
         .addCase(setZoom, (state, action) => {
             state.zoom = action.payload;
         })

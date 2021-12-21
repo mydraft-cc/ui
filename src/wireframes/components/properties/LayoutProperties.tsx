@@ -8,7 +8,6 @@
 import { getDiagramId, useStore } from '@app/wireframes/model';
 import * as React from 'react';
 import { ActionButton, useAlignment } from '../actions';
-
 import './LayoutProperties.scss';
 
 export const LayoutProperties = React.memo(() => {

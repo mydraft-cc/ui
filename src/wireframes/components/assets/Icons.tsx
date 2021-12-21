@@ -12,7 +12,6 @@ import { Input, Select } from 'antd';
 import * as React from 'react';
 import { ReactReduxContext, useDispatch } from 'react-redux';
 import { Icon } from './Icon';
-
 import './Icons.scss';
 
 const keyBuilder = (icon: IconInfo) => {
@@ -56,21 +55,23 @@ export const Icons = React.memo(() => {
         dispatch(selectIcons({ iconSet }));
     }, [dispatch]);
 
-    return <>
-        <div className='asset-icons-search'>
-            <Input value={iconsFilter} onChange={doFilterIcons} placeholder='Find icon'
-                prefix={
-                    <SearchOutlined style={{ color: 'rgba(0,0,0,.25)' }} />
-                }
-            />
+    return (
+        <>
+            <div className='asset-icons-search'>
+                <Input value={iconsFilter} onChange={doFilterIcons} placeholder='Find icon'
+                    prefix={
+                        <SearchOutlined style={{ color: 'rgba(0,0,0,.25)' }} />
+                    }
+                />
 
-            <Select value={iconSet} onChange={doSelectIcons}>
-                {iconSets.map(x =>
-                    <Select.Option key={x} value={x}>{x}</Select.Option>,
-                )}
-            </Select>
-        </div>
+                <Select value={iconSet} onChange={doSelectIcons}>
+                    {iconSets.map(x =>
+                        <Select.Option key={x} value={x}>{x}</Select.Option>,
+                    )}
+                </Select>
+            </div>
 
-        <Grid className='asset-icons-list' renderer={cellRenderer} columns={4} items={iconsFiltered} keyBuilder={keyBuilder} />
-    </>;
+            <Grid className='asset-icons-list' renderer={cellRenderer} columns={4} items={iconsFiltered} keyBuilder={keyBuilder} />
+        </>
+    );
 });

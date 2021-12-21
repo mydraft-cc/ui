@@ -7,7 +7,7 @@
 
 import { createAction, createAsyncThunk, createReducer, Middleware } from '@reduxjs/toolkit';
 import { push } from 'react-router-redux';
-import { Reducer } from 'redux';
+import { AnyAction, Reducer } from 'redux';
 import { EditorState, EditorStateInStore, LoadingState, LoadingStateInStore, UndoableState } from './../internal';
 import { addDiagram } from './diagrams';
 import { selectItems } from './items';
@@ -160,7 +160,7 @@ export function rootLoading(innerReducer: Reducer<any>, undoableReducer: Reducer
 
             state = { editor: UndoableState.create(initialState, initialAction) };
         } else if (loadDiagramAsync.fulfilled.match(action)) {
-            const { actions } = action.payload;
+            const { actions } = action.payload as { actions: AnyAction[] };
 
             let firstAction = actions[0];
 
@@ -170,7 +170,7 @@ export function rootLoading(innerReducer: Reducer<any>, undoableReducer: Reducer
 
             let editor = UndoableState.create(editorReducer(EditorState.empty(), firstAction), firstAction);
 
-            for (const loadedAction of actions) {
+            for (const loadedAction of actions.slice(1)) {
                 editor = undoableReducer(editor, loadedAction);
             }
 

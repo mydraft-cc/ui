@@ -16,6 +16,7 @@ export * from './menu/LoadingMenu';
 export * from './menu/LockMenu';
 export * from './menu/SettingsMenu';
 export * from './menu/UIMenu';
+export * from './pages/Pages';
 export * from './properties/CustomProperties';
 export * from './properties/LayoutProperties';
 export * from './properties/MoreProperties';

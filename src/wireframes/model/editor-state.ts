@@ -74,10 +74,14 @@ export class EditorState extends Record<Props> {
     }
 
     public addDiagram(diagram: Diagram) {
+        if (!diagram || this.diagrams.get(diagram.id)) {
+            return this;
+        }
+
         return this.mutate(
             d => d.set(diagram.id, diagram),
             d => d.add(diagram.id),
-            diagram.id);
+            this.selectedDiagramId);
     }
 
     public removeDiagram(diagramId: string) {

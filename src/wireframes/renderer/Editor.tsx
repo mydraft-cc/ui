@@ -12,11 +12,11 @@ import * as svg from '@svgdotjs/svg.js';
 import { CanvasView } from './CanvasView';
 import { InteractionService } from './interaction-service';
 import { QuickbarAdorner } from './QuickbarAdorner';
+import { RenderLayer } from './RenderLayer';
 import { SelectionAdorner } from './SelectionAdorner';
 import { TextAdorner } from './TextAdorner';
 import { TransformAdorner } from './TransformAdorner';
 import './Editor.scss';
-import { RenderLayer } from './RenderLayer';
 
 export interface EditorProps {
     // The renderer service.
