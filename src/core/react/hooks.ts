@@ -5,6 +5,8 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
+/* eslint-disable no-lonely-if */
+
 import * as React from 'react';
 import { useReactToPrint } from 'react-to-print';
 
@@ -27,12 +29,37 @@ export function useDetectPrint() {
         };
     }, []);
 
-    React.useEffect(() => {
-        // eslint-disable-next-line no-console
-        console.log(`PRINTING: ${isPrinting}`);
-    }, [isPrinting]);
-
     return isPrinting;
+}
+
+export function useFullscreen(): [boolean, (value: boolean) => void] {
+    const [fullscreen, setFullscreenValue] = React.useState(!!document.fullscreenElement);
+
+    React.useEffect(() => {
+        const listener = () => {
+            setFullscreenValue(!!document.fullscreenElement);
+        };
+
+        document.addEventListener('fullscreenchange', listener);
+
+        return () => {
+            document.removeEventListener('fullscreenchange', listener);
+        };
+    }, []);
+
+    const setFullScreen = React.useCallback((value: boolean) => {
+        if (value) {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen();
+            }
+        } else {
+            if (document.fullscreenElement && document.exitFullscreen) {
+                document.exitFullscreen();
+            }
+        }
+    }, []);
+
+    return [fullscreen, setFullScreen];
 }
 
 export function usePrinter(): [() => void, () => void, boolean, React.MutableRefObject<undefined>] {

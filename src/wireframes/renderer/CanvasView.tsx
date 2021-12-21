@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { Rect2, Vec2 } from '@app/core';
+import { Rect2, sizeInPx, Vec2 } from '@app/core';
 import * as React from 'react';
 import * as svg from '@svgdotjs/svg.js';
 
@@ -69,5 +69,10 @@ export const CanvasView = (props: CanvasViewProps) => {
         }
     }, [viewSize, viewBox, zoom, zoomedSize, document]);
 
-    return <div className={className} ref={ref} />;
+    const w = sizeInPx(zoomedSize.x);
+    const h = sizeInPx(zoomedSize.x);
+
+    return (
+        <div className={className} style={{ width: w, height: h }} ref={ref} />
+    );
 };

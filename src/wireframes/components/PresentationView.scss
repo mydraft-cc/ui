@@ -1,0 +1,48 @@
+@import '_mixins';
+@import '_vars';
+
+.presentation {
+    &-view {
+        @include fixed(0, 0, 0, 0);
+        align-items: center;
+        background: $color-background;
+        border: 0;
+        border-radius: 0;
+        display: flex;
+        justify-items: center;
+        overflow-x: auto;
+        overflow-y: auto;
+        z-index: 5000;
+    }
+
+    &-diagram {
+        margin: auto;
+    }
+
+    &-tools {
+        @include fixed(null, null, 20px, 20px);
+        background-color: $color-white;
+        border: 1px solid $color-border;
+        border-radius: 4px;
+        padding: 10px;
+
+        & > button {
+            margin-right: 5px;
+            padding-left: 0;
+            padding-right: 0;
+            width: 32px;
+
+            &:last-child {
+                margin-right: 0;
+            }
+        }
+
+        & > span {
+            margin-right: 5px;
+
+            &:last-child {
+                margin-right: 0;
+            }
+        }
+    }
+}

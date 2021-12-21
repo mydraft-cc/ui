@@ -7,13 +7,15 @@
 
 import { LeftOutlined, RightOutlined } from '@ant-design/icons';
 import { usePrinter } from '@app/core';
-import { ArrangeMenu, ClipboardMenu, CustomProperties, EditorView, HistoryMenu, Icons, LayoutProperties, LoadingMenu, LockMenu, MoreProperties, Pages, PrintRenderer, SettingsMenu, Shapes, UIMenu, VisualProperties } from '@app/wireframes/components';
+import { ArrangeMenu, ClipboardMenu, CustomProperties, EditorView, HistoryMenu, Icons, LayoutProperties, LoadingMenu, LockMenu, MoreProperties, Pages, PrintView, SettingsMenu, Shapes, UIMenu, VisualProperties } from '@app/wireframes/components';
 import { loadDiagramAsync, newDiagram, selectTab, showInfoToast, toggleLeftSidebar, toggleRightSidebar, useStore } from '@app/wireframes/model';
 import { Button, Collapse, Layout, Tabs } from 'antd';
 import classNames from 'classnames';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
 import { useRouteMatch } from 'react-router';
+import { texts } from './texts';
+import { PresentationView } from './wireframes/components/PresentationView';
 
 const logo = require('./images/logo.svg').default;
 
@@ -25,6 +27,7 @@ export const App = () => {
     const selectedTab = useStore(s => s.ui.selectedTab);
     const showLeftSidebar = useStore(s => s.ui.showLeftSidebar);
     const showRightSidebar = useStore(s => s.ui.showRightSidebar);
+    const [presenting, setPresenting] = React.useState(true);
 
     const [
         print,
@@ -61,6 +64,14 @@ export const App = () => {
         dispatch(toggleRightSidebar());
     }, [dispatch]);
 
+    const doEdit = React.useCallback(() => {
+        setPresenting(false);
+    }, []);
+
+    const doPresent = React.useCallback(() => {
+        setPresenting(true);
+    }, []);
+
     return (
         <>
             <Layout className='screen-mode'>
@@ -79,10 +90,10 @@ export const App = () => {
                     <ClipboardMenu />
                     <span className='menu-separator' />
 
-                    <UIMenu />
+                    <UIMenu onPlay={doPresent} />
                     <span className='menu-separator' />
 
-                    <SettingsMenu print={print} />
+                    <SettingsMenu onPrint={print} />
 
                     <span style={{ float: 'right' }}>
                         <LoadingMenu />
@@ -94,13 +105,13 @@ export const App = () => {
                         collapsedWidth={0}>
 
                         <Tabs type='card' onTabClick={doSelectTab} activeKey={selectedTab}>
-                            <Tabs.TabPane key='shapes' tab='Shapes'>
+                            <Tabs.TabPane key='shapes' tab={texts.common.shapes}>
                                 <Shapes />
                             </Tabs.TabPane>
-                            <Tabs.TabPane key='icons' tab='Icons'>
+                            <Tabs.TabPane key='icons' tab={texts.common.icons}>
                                 <Icons />
                             </Tabs.TabPane>
-                            <Tabs.TabPane key='pages' tab='Pages'>
+                            <Tabs.TabPane key='pages' tab={texts.common.pages}>
                                 <Pages />
                             </Tabs.TabPane>
                         </Tabs>
@@ -113,16 +124,16 @@ export const App = () => {
                         collapsedWidth={0}>
 
                         <Collapse bordered={false} defaultActiveKey={['layout', 'visual', 'custom']}>
-                            <Collapse.Panel key='layout' header='Layout'>
+                            <Collapse.Panel key='layout' header={texts.common.layout}>
                                 <LayoutProperties />
                             </Collapse.Panel>
-                            <Collapse.Panel key='visual' header='Visual'>
+                            <Collapse.Panel key='visual' header={texts.common.visual}>
                                 <VisualProperties />
                             </Collapse.Panel>
-                            <Collapse.Panel key='more' header='More'>
+                            <Collapse.Panel key='more' header={texts.common.more}>
                                 <MoreProperties />
                             </Collapse.Panel>
-                            <Collapse.Panel key='custom' header='Custom'>
+                            <Collapse.Panel key='custom' header={texts.common.custom}>
                                 <CustomProperties />
                             </Collapse.Panel>
                         </Collapse>
@@ -142,9 +153,13 @@ export const App = () => {
                 </Layout>
             </Layout>
 
+            {presenting &&
+                <PresentationView onClose={doEdit} />
+            }
+
             {isPrinting &&
                 <div className='print-mode' ref={ref}>
-                    <PrintRenderer onRender={printReady} />
+                    <PrintView onRender={printReady} />
                 </div>
             }
         </>

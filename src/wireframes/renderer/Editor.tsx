@@ -6,7 +6,7 @@
 */
 
 import { Diagram, DiagramItem, RendererService, Transform } from '@app/wireframes/model';
-import { Color, Rect2, sizeInPx, SVGHelper, Vec2 } from '@app/core';
+import { Color, Rect2, SVGHelper, Vec2 } from '@app/core';
 import * as React from 'react';
 import * as svg from '@svgdotjs/svg.js';
 import { CanvasView } from './CanvasView';
@@ -141,13 +141,12 @@ export const Editor = React.memo((props: EditorProps) => {
         setFullSelection(selectedItemsWithLocked);
     }, [selectedItemsWithLocked]);
 
-    const style = { background: color.toString(), width: sizeInPx(zoomedSize.x), height: sizeInPx(zoomedSize.y) } as any;
-
     return (
         <>
             {diagram &&
-                <div className='editor' style={style}>
-                    <CanvasView onInit={initDiagramScope}
+                <div className='editor' style={{ background: color.toString() }}>
+                    <CanvasView
+                        onInit={initDiagramScope}
                         viewBox={viewBox}
                         viewSize={viewSize}
                         zoom={zoom}

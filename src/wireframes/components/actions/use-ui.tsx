@@ -27,22 +27,22 @@ export function useUI() {
     }, [dispatch, zoom]);
 
     const zoomOut: UIAction = React.useMemo(() => ({
-        disabled: !canZoomIn,
-        icon: <MinusCircleOutlined />,
-        label: texts.common.zoomIn,
-        shortcut: 'ALT + MINUS',
-        tooltip: texts.common.zoomIn,
-        onAction: doZoomIn,
-    }), [canZoomIn, doZoomIn]);
-
-    const zoomIn: UIAction = React.useMemo(() => ({
         disabled: !canZoomOut,
-        icon: <PlusCircleOutlined />,
+        icon: <MinusCircleOutlined />,
         label: texts.common.zoomOut,
-        shortcut: 'ALT + PLUS',
+        shortcut: 'ALT + MINUS',
         tooltip: texts.common.zoomOut,
         onAction: doZoomOut,
     }), [canZoomOut, doZoomOut]);
+
+    const zoomIn: UIAction = React.useMemo(() => ({
+        disabled: !canZoomIn,
+        icon: <PlusCircleOutlined />,
+        label: texts.common.zoomIn,
+        shortcut: 'ALT + PLUS',
+        tooltip: texts.common.zoomIn,
+        onAction: doZoomIn,
+    }), [canZoomIn, doZoomIn]);
 
     return { zoomOut, zoomIn };
 }

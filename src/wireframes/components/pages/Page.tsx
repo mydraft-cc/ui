@@ -109,7 +109,7 @@ export const Page = (props: PageProps) => {
             ) : (
                 <Dropdown overlay={
                     <Menu selectable={false}>
-                        <Menu.Item icon={<DeleteOutlined />} onClick={doDelete}>
+                        <Menu.Item key='delete' icon={<DeleteOutlined />} onClick={doDelete}>
                             {texts.common.delete}
                         </Menu.Item>
 
@@ -167,7 +167,7 @@ const MasterPage = (props: {
     const selected = id === diagramMaster;
 
     return (
-        <Menu.Item icon={selected ? <CheckOutlined /> : null} onClick={() => onSetMaster(id)}>
+        <Menu.Item key={id} icon={selected ? <CheckOutlined /> : null} onClick={() => onSetMaster(id)}>
             {title}
         </Menu.Item>
     );

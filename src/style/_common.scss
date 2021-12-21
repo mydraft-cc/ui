@@ -52,13 +52,6 @@ body {
             text-align: left;
         }
     }
-
-    &-content {
-        &.editor-content {
-            overflow-x: auto !important;
-            overflow-y: auto !important;
-        }
-    }
 }
 
 #root > .ant-layout {
@@ -250,24 +243,16 @@ $sidebar-size: 320px;
     }
 }
 
-.editor {
-    position: relative;
-    border-radius: 0;
-    border: 1px solid $color-border;
-}
-
 //
 // > Menu Items
 //
 .menu {
     &-separator {
-        background: $color-white;
-        border: 0;
+        background: $color-border-dark;
         display: inline-block;
         height: 1rem;
         margin-left: .5rem;
         margin-right: .5rem;
-        opacity: .8;
         width: 1px;
     }
 
@@ -303,6 +288,10 @@ $sidebar-size: 320px;
 
     .print-mode {
         display: block;
+    }
+
+    .print-diagram {
+        page-break-after: always;
     }
 
     .ant-message {

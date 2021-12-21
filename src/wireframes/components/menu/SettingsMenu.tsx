@@ -7,6 +7,7 @@
 
 import { ExportOutlined, PrinterOutlined, SettingOutlined } from '@ant-design/icons';
 import { Color, ColorPicker, Shortcut } from '@app/core';
+import { texts } from '@app/texts';
 import { changeColor, changeSize, getEditor, useStore } from '@app/wireframes/model';
 import { Button, Col, Dropdown, InputNumber, Menu, Modal, Row, Tooltip } from 'antd';
 import MenuItem from 'antd/lib/menu/MenuItem';
@@ -15,11 +16,11 @@ import { useDispatch } from 'react-redux';
 
 export interface SettingsMenuProps {
     // The print callback.
-    print: () => void;
+    onPrint: () => void;
 }
 
 export const SettingsMenu = React.memo((props: SettingsMenuProps) => {
-    const { print } = props;
+    const { onPrint } = props;
 
     const dispatch = useDispatch();
     const editor = useStore(getEditor);
@@ -60,8 +61,8 @@ export const SettingsMenu = React.memo((props: SettingsMenuProps) => {
 
     const exportMenu =
         <Menu>
-            <MenuItem onClick={print}>
-                <PrinterOutlined /> Print Diagrams
+            <MenuItem onClick={onPrint}>
+                <PrinterOutlined /> {texts.common.printDiagrams}
             </MenuItem>
         </Menu>;
 
@@ -75,9 +76,8 @@ export const SettingsMenu = React.memo((props: SettingsMenuProps) => {
 
             <Shortcut onPressed={doToggle} keys='ctl+o' />
 
-            <Tooltip mouseEnterDelay={1} title='Show more options (CTRL + O)'>
-                <Button className='menu-item' size='large'
-                    onClick={doToggle}>
+            <Tooltip mouseEnterDelay={1} title={texts.common.optionsTooltip}>
+                <Button className='menu-item' size='large' onClick={doToggle}>
                     <SettingOutlined />
                 </Button>
             </Tooltip>
@@ -88,14 +88,14 @@ export const SettingsMenu = React.memo((props: SettingsMenuProps) => {
                 onOk={doChangeSize}
             >
                 <Row className='property'>
-                    <Col span={12} className='property-label'>Width</Col>
+                    <Col span={12} className='property-label'>{texts.common.width}</Col>
                     <Col span={12} className='property-value'>
                         <InputNumber value={sizeWidth} min={300} max={3000} onChange={doSetWidth} />
                     </Col>
                 </Row>
 
                 <Row className='property'>
-                    <Col span={12} className='property-label'>Height</Col>
+                    <Col span={12} className='property-label'>{texts.common.height}</Col>
                     <Col span={12} className='property-value'>
                         <InputNumber value={sizeHeight} min={300} max={3000} onChange={doSetHeight} />
                     </Col>
@@ -104,7 +104,7 @@ export const SettingsMenu = React.memo((props: SettingsMenuProps) => {
                 <hr />
 
                 <Row className='property'>
-                    <Col span={12} className='property-label'>Background Color</Col>
+                    <Col span={12} className='property-label'>{texts.common.backgroundColor}</Col>
                     <Col span={12} className='property-value'>
                         <ColorPicker value={color} onChange={setColor} />
                     </Col>

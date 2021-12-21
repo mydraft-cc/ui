@@ -15,21 +15,20 @@ export interface PrintRendererProps {
     onRender?: () => void;
 }
 
-type PrintState = { [id: string]: Boolean };
-
-export const PrintRenderer = (props: PrintRendererProps) => {
+export const PrintView = (props: PrintRendererProps) => {
     const { onRender } = props;
 
-    const currentDiagrams = React.useRef<ReadonlyArray<Diagram>>([]);
-    const diagrams = useStore(x => x.editor.present.orderedDiagrams);
+    const renderedDiagrams = React.useRef<ReadonlyArray<Diagram>>([]);
     const color = useStore(x => x.editor.present.color);
-    const rendered = React.useRef<PrintState>({});
+    const diagrams = useStore(x => x.editor.present.diagrams);
+    const diagramsOrdered = useStore(x => x.editor.present.orderedDiagrams);
+    const rendered = React.useRef<{ [id: string]: Boolean }>({});
     const renderer = React.useContext(RendererContext);
     const size = useStore(x => x.editor.present.size);
 
     React.useEffect(() => {
-        currentDiagrams.current = diagrams;
-    }, [diagrams]);
+        renderedDiagrams.current = diagramsOrdered;
+    }, [diagramsOrdered]);
 
     const doRender = React.useCallback((diagram: Diagram) => {
         if (rendered.current[diagram.id]) {
@@ -38,16 +37,23 @@ export const PrintRenderer = (props: PrintRendererProps) => {
 
         rendered.current[diagram.id] = true;
 
-        if (Object.keys(rendered.current).length === currentDiagrams.current.length && onRender) {
+        if (Object.keys(rendered.current).length === renderedDiagrams.current.length && onRender) {
             onRender();
         }
     }, [onRender]);
 
     return (
         <>
-            {diagrams.map((d, i) =>
-                <div key={i}>
-                    <PrintDiagram size={size} color={color} diagram={d} rendererService={renderer} onRender={doRender} />
+            {diagramsOrdered.map((d, i) =>
+                <div className='print-diagram' key={i}>
+                    <PrintDiagram
+                        color={color}
+                        diagram={d}
+                        diagrams={diagrams}
+                        onRender={doRender}
+                        rendererService={renderer}
+                        size={size}
+                    />
                 </div>,
             )}
         </>
