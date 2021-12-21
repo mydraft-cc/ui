@@ -7,7 +7,7 @@
 
 import { RendererContext } from '@app/context';
 import { sizeInPx } from '@app/core';
-import { addIcon, addImage, addVisual, changeItemsAppearance, getDiagram, getDiagramId, getEditor, getSelectedItems, getSelectedItemsWithLocked, selectItems, Transform, transformItems, useStore } from '@app/wireframes/model';
+import { addIcon, addImage, addVisual, changeItemsAppearance, getDiagram, getDiagramId, getEditor, getMasterDiagram, getSelectedItems, getSelectedItemsWithLocked, selectItems, Transform, transformItems, useStore } from '@app/wireframes/model';
 import { Editor } from '@app/wireframes/renderer/Editor';
 import { Dropdown } from 'antd';
 import * as React from 'react';
@@ -25,14 +25,16 @@ export interface EditorViewProps {
 
 export const EditorView = ({ spacing }: EditorViewProps) => {
     const dispatch = useDispatch();
-    const state = useStore(s => s);
-    const selectedDiagramId = useStore(getDiagramId);
+    const diagram = useStore(getDiagram);
     const editor = useStore(getEditor);
-    const editorSize = editor.size;
     const editorColor = editor.color;
+    const editorSize = editor.size;
+    const masterDiagram = useStore(getMasterDiagram);
+    const renderer = React.useContext(RendererContext);
+    const selectedDiagramId = useStore(getDiagramId);
+    const state = useStore(s => s);
     const zoom = useStore(s => s.ui.zoom);
     const zoomedSize = editorSize.mul(zoom);
-    const renderer = React.useContext(RendererContext);
     const [menuVisible, setMenuVisible] = React.useState(false);
 
     const doChangeItemsAppearance = React.useCallback((diagram: DiagramRef, visuals: ItemsRef, key: string, value: any) => {
@@ -141,12 +143,13 @@ export const EditorView = ({ spacing }: EditorViewProps) => {
         <Dropdown overlay={<ContextMenu onClick={doHide} />} trigger={['contextMenu']} visible={menuVisible} onVisibleChange={setMenuVisible}>
             <div ref={ref} className='editor-view' style={style}>
                 <Editor
-                    diagram={getDiagram(state)}
-                    rendererService={renderer}
                     color={editorColor}
+                    diagram={diagram}
+                    masterDiagram={masterDiagram}
                     onChangeItemsAppearance={doChangeItemsAppearance}
                     onSelectItems={doSelectItems}
                     onTransformItems={doTransformItems}
+                    rendererService={renderer}
                     selectedItems={getSelectedItems(state)}
                     selectedItemsWithLocked={getSelectedItemsWithLocked(state)}
                     viewSize={editor.size}

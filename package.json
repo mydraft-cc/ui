@@ -7,6 +7,7 @@
     "@reduxjs/toolkit": "^1.6.2",
     "@svgdotjs/svg.js": "^3.1.1",
     "antd": "4.17.2",
+    "classnames": "^2.3.1",
     "connected-react-router": "^6.9.1",
     "mousetrap": "1.6.5",
     "react": "17.0.2",

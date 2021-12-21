@@ -81,6 +81,12 @@ export const getDiagram = createSelector(
     (diagrams, id) => diagrams.get(id),
 );
 
+export const getMasterDiagram = createSelector(
+    getDiagrams,
+    getDiagram,
+    (diagrams, diagram) => diagrams.get(diagram?.master),
+);
+
 export const getSelectionSet = createSelector(
     getDiagram,
     diagram => (diagram ? DiagramItemSet.createFromDiagram(diagram.selectedIds.values, diagram) : null),

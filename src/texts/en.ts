@@ -7,10 +7,10 @@
 
 export const texts = {
     common: {
-        alignment: 'Alignment',
         alignHorizontalCenter: 'Horizontal Center',
         alignHorizontalLeft: 'Horizontal Left',
         alignHorizontalRight: 'Horizontal Right',
+        alignment: 'Alignment',
         alignVerticalBottom: 'Vertical Bottom',
         alignVerticalCenter: 'Vertical Center',
         alignVerticalTop: 'Vertical Top',
@@ -21,6 +21,7 @@ export const texts = {
         copyTooltip: 'Copy Items',
         cut: 'Cut',
         cutTooltip: 'Cut Items',
+        delete: 'Delete',
         deleteDiagramConfirm: 'Do you really want to delete the diagram?',
         distributeHorizontally: 'Distribute Horizontally',
         distributeVertically: 'Distribute Vertically',
@@ -31,6 +32,8 @@ export const texts = {
         link: 'Link',
         lock: 'Lock',
         lockTooltip: 'Lock or unlock item',
+        masterPage: 'Master Page',
+        none: 'None',
         ordering: 'Ordering',
         page: 'Page',
         paste: 'Paste',

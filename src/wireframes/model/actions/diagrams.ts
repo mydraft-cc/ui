@@ -35,6 +35,11 @@ export const renameDiagram =
         return { payload: createDiagramAction(diagram, { title }) };
     });
 
+export const setDiagramMaster =
+    createAction('diagram/master', (diagram: DiagramRef, master: string) => {
+        return { payload: createDiagramAction(diagram, { master }) };
+    });
+
 export const changeSize =
     createAction<{ width: number; height: number }>('editor/size');
 
@@ -52,6 +57,11 @@ export function buildDiagrams(builder: ActionReducerMapBuilder<EditorState>) {
             const { diagramId, title } = action.payload;
 
             return state.updateDiagram(diagramId, diagram => diagram.rename(title));
+        })
+        .addCase(setDiagramMaster, (state, action) => {
+            const { diagramId, master } = action.payload;
+
+            return state.updateDiagram(diagramId, diagram => diagram.setMaster(master));
         })
         .addCase(removeDiagram, (state, action) => {
             const { diagramId } = action.payload;

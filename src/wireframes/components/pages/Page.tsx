@@ -5,34 +5,43 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { DeleteOutlined, FileOutlined } from '@ant-design/icons';
+import { CheckOutlined, DeleteOutlined, FileMarkdownOutlined, FileOutlined } from '@ant-design/icons';
 import { texts } from '@app/texts';
 import { Diagram } from '@app/wireframes/model';
-import { Button, Col, Input, Popconfirm, Row } from 'antd';
+import { Col, Dropdown, Input, Menu, Row } from 'antd';
+import classNames from 'classnames';
 import * as React from 'react';
 
 export interface PageProps {
     // The diagram.
     diagram: Diagram;
 
+    // All diagrams.
+    diagrams: ReadonlyArray<Diagram>;
+
     // True if selected.
     selected?: boolean;
 
     // Invoked when the diagram will be renamed.
-    onRename: (diagram: Diagram, title: string) => void;
+    onRename: (diagramId: string, title: string) => void;
 
     // Invoked when the diagram will be deleted.
-    onDelete: (diagram: Diagram) => void;
+    onDelete: (diagramId: string) => void;
+
+    // Invoked when the diagram master will be selected.
+    onSetMaster: (diagramId: string, master: string | undefined) => void;
 
     // Invoked when the diagram will be selected.
-    onSelect: (diagram: Diagram) => void;
+    onSelect: (diagramId: string) => void;
 }
 
 export const Page = (props: PageProps) => {
     const {
         diagram,
+        diagrams,
         onDelete,
         onRename,
+        onSetMaster,
         onSelect,
         selected,
     } = props;
@@ -66,12 +75,20 @@ export const Page = (props: PageProps) => {
     }, [diagram.title, setTextValue]);
 
     const doDelete = React.useCallback(() => {
-        onDelete(diagram);
-    }, [diagram, onDelete]);
+        onDelete(diagram.id);
+    }, [diagram.id, onDelete]);
 
     const doSelect = React.useCallback(() => {
-        onSelect(diagram);
-    }, [diagram, onSelect]);
+        onSelect(diagram.id);
+    }, [diagram.id, onSelect]);
+
+    const doSetMaster = React.useCallback((master: string | undefined) => {
+        onSetMaster(diagram.id, master);
+    }, [diagram.id, onSetMaster]);
+
+    const master = React.useMemo(() => {
+        return diagrams.find(x => x.id === diagram.master)?.id;
+    }, [diagrams, diagram.master]);
 
     const initInput = React.useCallback((event: Input) => {
         event?.focus();
@@ -81,37 +98,77 @@ export const Page = (props: PageProps) => {
         if (event.key === 'Enter') {
             setEditing(false);
 
-            onRename(diagram, currentText.current);
+            onRename(diagram.id, currentText.current);
         }
-    }, [diagram, onRename]);
-
-    let clazz = 'page';
-
-    if (selected) {
-        clazz += ' selected';
-    }
+    }, [diagram.id, onRename]);
 
     return (
         <>
             {editing ? (
                 <Input value={editText} onChange={setText} onBlur={doEnd} onKeyUp={doEnter} ref={initInput} />
             ) : (
-                <Row className={clazz} wrap={false} onDoubleClick={doStart} onClick={doSelect}>
-                    <Col flex='none'>
-                        <FileOutlined />
-                    </Col>
-                    <Col flex='auto' className='page-title no-select'>
-                        {editText}
-                    </Col>
-                    <Col flex='none'>
-                        <Popconfirm title={texts.common.deleteDiagramConfirm} onConfirm={doDelete}>
-                            <Button size='small' type='text'>
-                                <DeleteOutlined />
-                            </Button>
-                        </Popconfirm>
-                    </Col>
-                </Row>
+                <Dropdown overlay={
+                    <Menu selectable={false}>
+                        <Menu.Item icon={<DeleteOutlined />} onClick={doDelete}>
+                            {texts.common.delete}
+                        </Menu.Item>
+
+                        <Menu.SubMenu title={texts.common.masterPage}>
+                            <MasterPage
+                                id={undefined}
+                                title={texts.common.none}
+                                diagramId={diagram.id}
+                                diagramMaster={master}
+                                onSetMaster={doSetMaster} />
+
+                            {diagrams.filter(x => x.id !== diagram.id).map(d =>
+                                <MasterPage key={d.id}
+                                    id={d.id}
+                                    title={d.title || texts.common.page}
+                                    diagramId={diagram.id}
+                                    diagramMaster={master}
+                                    onSetMaster={doSetMaster} />,
+                            )}
+                        </Menu.SubMenu>
+                    </Menu>
+                } trigger={['contextMenu']}>
+                    <Row className={classNames('page', { selected })} wrap={false} onDoubleClick={doStart} onClick={doSelect}>
+                        <Col flex='none'>
+                            {master ? (
+                                <FileMarkdownOutlined />
+                            ) : (
+                                <FileOutlined />
+                            )}
+                        </Col>
+                        <Col flex='auto' className='page-title no-select'>
+                            {editText}
+                        </Col>
+                    </Row>
+                </Dropdown>
             )}
         </>
+    );
+};
+
+const MasterPage = (props: {
+    title: string;
+    id: string | undefined;
+    diagramId: string;
+    diagramMaster: string | undefined;
+    onSetMaster: (master: string | undefined) => void;
+}) => {
+    const {
+        id,
+        diagramMaster,
+        onSetMaster,
+        title,
+    } = props;
+
+    const selected = id === diagramMaster;
+
+    return (
+        <Menu.Item icon={selected ? <CheckOutlined /> : null} onClick={() => onSetMaster(id)}>
+            {title}
+        </Menu.Item>
     );
 };

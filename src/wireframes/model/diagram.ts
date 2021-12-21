@@ -25,6 +25,9 @@ type Props = {
 
     // The selected ids.
     selectedIds: ImmutableSet;
+
+    // Set the master diagram.
+    master?: string;
 };
 
 export class Diagram extends Record<Props> {
@@ -50,6 +53,10 @@ export class Diagram extends Record<Props> {
         return this.get('selectedIds');
     }
 
+    public get master() {
+        return this.get('master');
+    }
+
     public get rootItems(): ReadonlyArray<DiagramItem> {
         return this.itemIds.values.map(x => this.items.get(x));
     }
@@ -67,6 +74,10 @@ export class Diagram extends Record<Props> {
 
     public rename(title: string | undefined) {
         return this.set('title', title);
+    }
+
+    public setMaster(master: string | undefined) {
+        return this.set('master', master);
     }
 
     public parent(id: string | DiagramItem) {
