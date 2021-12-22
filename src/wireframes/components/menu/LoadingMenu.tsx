@@ -17,7 +17,8 @@ const text = require('@app/legal.html').default;
 
 export const LoadingMenu = React.memo(() => {
     const forLoading = useLoading();
-    const savedToken = useStore(s => s.loading.tokenToRead);
+    const tokenToRead = useStore(s => s.loading.tokenToRead);
+    const tokenToWrite = useStore(s => s.loading.tokenToWrite);
     const saveAction = React.useRef(forLoading.saveDiagram);
     const [isOpen, setIsOpen] = React.useState(false);
 
@@ -30,16 +31,24 @@ export const LoadingMenu = React.memo(() => {
     }, [isOpen]);
 
     React.useEffect(() => {
-        setInterval(() => {
-            if (!saveAction.current.disabled) {
-                saveAction.current.onAction();
-            }
-        }, 30000);
-    }, []);
+        if (tokenToWrite) {
+            const timer = setInterval(() => {
+                if (!saveAction.current.disabled) {
+                    saveAction.current.onAction();
+                }
+            }, 30000);
+
+            return () => {
+                clearInterval(timer);
+            };
+        } else {
+            return null;
+        }
+    }, [tokenToWrite]);
 
     return (
         <>
-            <CustomTitle token={savedToken} />
+            <CustomTitle token={tokenToRead} />
 
             <ActionMenuButton showLabel action={forLoading.newDiagram} />
             <ActionMenuButton showLabel action={forLoading.saveDiagram} type='primary' />

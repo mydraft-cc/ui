@@ -6,31 +6,27 @@
 */
 
 import { createAction, createAsyncThunk, createReducer, Middleware } from '@reduxjs/toolkit';
-import { push } from 'react-router-redux';
+import { push } from 'connected-react-router';
 import { AnyAction, Reducer } from 'redux';
-import { EditorState, EditorStateInStore, LoadingState, LoadingStateInStore, UndoableState } from './../internal';
+import { EditorState, EditorStateInStore, LoadingState, LoadingStateInStore, saveRecentDiagrams, UndoableState } from './../internal';
 import { addDiagram } from './diagrams';
 import { selectItems } from './items';
 import { showErrorToast, showInfoToast } from './ui';
 
-let url = 'https://api.mydraft.cc';
-
-if (process.env.NODE_ENV === 'test_development') {
-    url = 'http://localhost:4000';
-}
+const API_URL = process.env.NODE_ENV === 'test_development' ? 'http://localhost:4000' : 'https://api.mydraft.cc';
 
 export const newDiagram =
     createAction<{ navigate: boolean }>('diagram/new');
 
 export const loadDiagramAsync =
-    createAsyncThunk('diagram/load', async (args: { token: string; navigate: boolean }, thunkAPI) => {
+    createAsyncThunk('diagram/load', async (args: { tokenToRead: string; tokenToWrite?: string; navigate: boolean }, thunkAPI) => {
         const state = thunkAPI.getState() as LoadingStateInStore;
 
-        if (!args.token || args.token === state.loading.tokenToRead) {
+        if (!args.tokenToRead || args.tokenToRead === state.loading.tokenToRead) {
             return null;
         }
 
-        const response = await fetch(`${url}/${args.token}`);
+        const response = await fetch(`${API_URL}/${args.tokenToRead}`);
 
         if (!response.ok) {
             throw Error('Failed to load diagram');
@@ -38,7 +34,7 @@ export const loadDiagramAsync =
 
         const actions = await response.json();
 
-        return { tokenToRead: args.token, actions };
+        return { tokenToRead: args.tokenToRead, tokenToWrite: args.tokenToWrite, actions };
     });
 
 export const saveDiagramAsync =
@@ -51,7 +47,7 @@ export const saveDiagramAsync =
         const body = JSON.stringify(state.editor.actions);
 
         if (tokenToRead && tokenToWrite) {
-            const response = await fetch(`${url}/${tokenToRead}/${tokenToWrite}`, {
+            const response = await fetch(`${API_URL}/${tokenToRead}/${tokenToWrite}`, {
                 method: 'PUT',
                 headers: {
                     ContentType: 'text/json',
@@ -65,7 +61,7 @@ export const saveDiagramAsync =
 
             return { tokenToRead, tokenToWrite, update: true, navigate: args.navigate };
         } else {
-            const response = await fetch(`${url}/`, {
+            const response = await fetch(`${API_URL}/`, {
                 method: 'POST',
                 headers: {
                     ContentType: 'text/json',
@@ -104,6 +100,8 @@ export function loadingMiddleware(): Middleware {
                 store.dispatch(push(action.payload.tokenToRead));
             }
 
+            saveRecentDiagrams((store.getState() as LoadingStateInStore).loading.recentDiagrams);
+
             if (!action.payload.update) {
                 const fullUrl = `${window.location.protocol}//${window.location.host}/${action.payload.tokenToRead}`;
 
@@ -137,7 +135,7 @@ export function loading(initialState: LoadingState) {
         .addCase(loadDiagramAsync.fulfilled, (state, action) => {
             state.isLoading = false;
             state.tokenToRead = action.payload.tokenToRead;
-            state.tokenToWrite = null;
+            state.tokenToWrite = action.payload.tokenToWrite;
         })
         .addCase(saveDiagramAsync.pending, (state) => {
             state.isLoading = true;
@@ -146,19 +144,22 @@ export function loading(initialState: LoadingState) {
             state.isLoading = false;
         })
         .addCase(saveDiagramAsync.fulfilled, (state, action) => {
+            const { tokenToRead, tokenToWrite } = action.payload;
+
             state.isLoading = false;
-            state.tokenToRead = action.payload.tokenToRead;
-            state.tokenToWrite = action.payload.tokenToWrite;
+            state.tokenToRead = tokenToRead;
+            state.tokenToWrite = tokenToWrite;
+            state.recentDiagrams[tokenToRead] = { date: new Date().getTime(), tokenToWrite };
         }));
 }
 
 export function rootLoading(innerReducer: Reducer<any>, undoableReducer: Reducer<UndoableState<EditorState>>, editorReducer: Reducer<EditorState>): Reducer<any> {
-    return (state: EditorStateInStore, action: any) => {
+    return (state: any, action: any) => {
         if (newDiagram.match(action)) {
             const initialAction = addDiagram();
             const initialState = editorReducer(EditorState.empty(), initialAction);
 
-            state = { editor: UndoableState.create(initialState, initialAction) };
+            state = UndoableState.create(initialState, initialAction);
         } else if (loadDiagramAsync.fulfilled.match(action)) {
             const { actions } = action.payload as { actions: AnyAction[] };
 
@@ -179,12 +180,12 @@ export function rootLoading(innerReducer: Reducer<any>, undoableReducer: Reducer
             const diagram = present.diagrams.get(present.selectedDiagramId!);
 
             if (diagram) {
-                state = { editor: undoableReducer(editor, selectItems(diagram, [])) };
+                state = undoableReducer(editor, selectItems(diagram, []));
             } else {
                 const initialAction = addDiagram();
                 const initialState = editorReducer(EditorState.empty(), initialAction);
 
-                state = { editor: UndoableState.create(initialState, initialAction) };
+                state = UndoableState.create(initialState, initialAction);
             }
         }
 

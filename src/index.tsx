@@ -6,7 +6,7 @@
 */
 
 import { applyMiddleware, combineReducers, compose, createStore } from 'redux';
-import { ConnectedRouter, connectRouter } from 'connected-react-router';
+import { ConnectedRouter, connectRouter, routerMiddleware } from 'connected-react-router';
 import { createBrowserHistory } from 'history';
 import { createInitialAssetsState, createInitialLoadingState, createInitialUIState, EditorState, selectDiagram, selectItems, Serializer } from '@app/wireframes/model';
 import { DndProvider } from 'react-dnd';
@@ -15,7 +15,6 @@ import { Provider } from 'react-redux';
 import { registerRenderers } from '@app/wireframes/shapes';
 import { RendererContext, SerializerContext } from '@app/context';
 import { Route } from 'react-router';
-import { routerMiddleware, routerReducer } from 'react-router-redux';
 import { UserReport } from '@app/core';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
@@ -54,15 +53,13 @@ const history = createBrowserHistory();
 const composeEnhancers = window['__REDUX_DEVTOOLS_EXTENSION_COMPOSE__'] || compose;
 
 const store = createStore(
-    Reducers.rootLoading(
-        combineReducers({
-            assets: Reducers.assets(createInitialAssetsState(editorRenderers)),
-            editor: undoableReducer,
-            loading: Reducers.loading(createInitialLoadingState()),
-            router: connectRouter(history),
-            routing: routerReducer,
-            ui: Reducers.ui(createInitialUIState()),
-        }), undoableReducer, editorReducer),
+    combineReducers({
+        assets: Reducers.assets(createInitialAssetsState(editorRenderers)),
+        editor: Reducers.rootLoading(undoableReducer, undoableReducer, editorReducer),
+        loading: Reducers.loading(createInitialLoadingState()),
+        router: connectRouter(history),
+        ui: Reducers.ui(createInitialUIState()),
+    }),
     composeEnhancers(
         applyMiddleware(
             thunk,

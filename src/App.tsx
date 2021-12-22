@@ -7,7 +7,7 @@
 
 import { LeftOutlined, RightOutlined } from '@ant-design/icons';
 import { usePrinter } from '@app/core';
-import { ArrangeMenu, ClipboardMenu, CustomProperties, EditorView, HistoryMenu, Icons, LayoutProperties, LoadingMenu, LockMenu, MoreProperties, Pages, PrintView, SettingsMenu, Shapes, UIMenu, VisualProperties } from '@app/wireframes/components';
+import { ArrangeMenu, ClipboardMenu, CustomProperties, EditorView, HistoryMenu, Icons, LayoutProperties, LoadingMenu, LockMenu, MoreProperties, Pages, PrintView, Recent, SettingsMenu, Shapes, UIMenu, VisualProperties } from '@app/wireframes/components';
 import { loadDiagramAsync, newDiagram, selectTab, showInfoToast, toggleLeftSidebar, toggleRightSidebar, useStore } from '@app/wireframes/model';
 import { Button, Collapse, Layout, Tabs } from 'antd';
 import classNames from 'classnames';
@@ -40,7 +40,7 @@ export const App = () => {
         const token = routeTokenSnapshot.current;
 
         if (token && token.length > 0) {
-            dispatch(loadDiagramAsync({ token, navigate: false }));
+            dispatch(loadDiagramAsync({ tokenToRead: token, navigate: false }));
         } else {
             dispatch(newDiagram({ navigate: false }));
         }
@@ -113,6 +113,9 @@ export const App = () => {
                             </Tabs.TabPane>
                             <Tabs.TabPane key='pages' tab={texts.common.pages}>
                                 <Pages />
+                            </Tabs.TabPane>
+                            <Tabs.TabPane key='recent' tab={texts.common.recent}>
+                                <Recent />
                             </Tabs.TabPane>
                         </Tabs>
                     </Layout.Sider>
