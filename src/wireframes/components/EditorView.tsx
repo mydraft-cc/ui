@@ -17,6 +17,7 @@ import { findDOMNode } from 'react-dom';
 import { useDispatch } from 'react-redux';
 import { DiagramRef, ItemsRef } from '../model/actions/utils';
 import { ContextMenu } from './context-menu/ContextMenu';
+import './EditorView.scss';
 
 export interface EditorViewProps {
     // The spacing.
@@ -135,27 +136,27 @@ export const EditorView = ({ spacing }: EditorViewProps) => {
 
     const padding = sizeInPx(spacing);
 
-    const style = { width: w, height: h, padding, margin: 'auto' };
-
     drop(ref);
 
     return (
         <Dropdown overlay={<ContextMenu onClick={doHide} />} trigger={['contextMenu']} visible={menuVisible} onVisibleChange={setMenuVisible}>
-            <div ref={ref} className='editor-view' style={style}>
-                <Editor
-                    color={editorColor}
-                    diagram={diagram}
-                    masterDiagram={masterDiagram}
-                    onChangeItemsAppearance={doChangeItemsAppearance}
-                    onSelectItems={doSelectItems}
-                    onTransformItems={doTransformItems}
-                    rendererService={renderer}
-                    selectedItems={getSelectedItems(state)}
-                    selectedItemsWithLocked={getSelectedItemsWithLocked(state)}
-                    viewSize={editor.size}
-                    zoom={zoom}
-                    zoomedSize={zoomedSize}
-                />
+            <div ref={ref} className='editor-view'>
+                <div className='editor-diagram' style={{ width: w, height: h, padding }}>
+                    <Editor
+                        color={editorColor}
+                        diagram={diagram}
+                        masterDiagram={masterDiagram}
+                        onChangeItemsAppearance={doChangeItemsAppearance}
+                        onSelectItems={doSelectItems}
+                        onTransformItems={doTransformItems}
+                        rendererService={renderer}
+                        selectedItems={getSelectedItems(state)}
+                        selectedItemsWithLocked={getSelectedItemsWithLocked(state)}
+                        viewSize={editor.size}
+                        zoom={zoom}
+                        zoomedSize={zoomedSize}
+                    />
+                </div>
             </div>
         </Dropdown>
     );

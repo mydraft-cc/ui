@@ -1,0 +1,17 @@
+@import '_mixins';
+@import '_vars';
+
+.editor {
+    &-view {
+        background: $color-background;
+        border: 0;
+        border-radius: 0;
+        height: 100%;
+        overflow-x: auto;
+        overflow-y: auto;
+    }
+
+    &-diagram {
+        margin: auto;
+    }
+}

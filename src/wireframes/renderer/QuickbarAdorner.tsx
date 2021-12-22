@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { Rect2, Vec2 } from '@app/core';
+import { Rect2, sizeInPx, Vec2 } from '@app/core';
 import { Diagram, DiagramItem } from '@app/wireframes/model';
 import * as React from 'react';
 import { ActionButton, useAlignment } from '@app/wireframes/components/actions';
@@ -65,13 +65,11 @@ export const QuickbarAdorner = (props: QuickbarAdornerProps) => {
         return null;
     }
 
-    const x = Math.round(zoom * Math.max(0, selectionRect.x));
-    const y = Math.round(zoom * selectionRect.y - 100);
-
-    const style: React.CSSProperties = { position: 'absolute', left: x, top: y };
+    const x = sizeInPx(Math.round(zoom * Math.max(0, selectionRect.x)));
+    const y = sizeInPx(Math.round(zoom * selectionRect.y - 100));
 
     return (
-        <div className='quickbar' style={style}>
+        <div className='quickbar' style={{ left: x, top: y }}>
             <ActionButton action={forAlignment.alignHorizontalLeft} />
             <ActionButton action={forAlignment.alignHorizontalCenter} />
             <ActionButton action={forAlignment.alignHorizontalRight} />
