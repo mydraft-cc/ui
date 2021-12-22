@@ -5,6 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
+import { texts } from '@app/texts';
 import { Button, Popover, Tabs } from 'antd';
 import { TooltipPlacement } from 'antd/lib/tooltip';
 import classNames from 'classnames';
@@ -96,7 +97,7 @@ export const ColorPicker = React.memo((props: ColorPickerProps) => {
 
     const content = (
         <Tabs size='small' className='color-picker-tabs' animated={false} activeKey={activeColorTab} onChange={doSelectTab}>
-            <Tabs.TabPane key='palette' tab='Palette'>
+            <Tabs.TabPane key='palette' tab={texts.common.palette}>
                 <div className='color-picker-colors'>
                     {selectedPalette.colors.map(c =>
                         <div className={classNames('color-picker-color', { selected: c.eq(color) })} key={c.toString()}>
@@ -105,10 +106,12 @@ export const ColorPicker = React.memo((props: ColorPickerProps) => {
                     )}
                 </div>
             </Tabs.TabPane>
-            <Tabs.TabPane key='advanced' tab='Advanced'>
+            <Tabs.TabPane key='advanced' tab={texts.common.advanced}>
                 <SketchPicker color={colorHex} onChange={doSelectColorResult} disableAlpha={true} width='210px' />
 
-                <Button onClick={doConfirmColor}>Apply</Button>
+                <Button onClick={doConfirmColor}>
+                    {texts.common.apply}
+                </Button>
             </Tabs.TabPane>
         </Tabs>
     );

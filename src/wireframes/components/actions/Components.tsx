@@ -7,12 +7,16 @@
 
 import { Shortcut, Types } from '@app/core';
 import { Button, Menu, Tooltip } from 'antd';
+import { ButtonType } from 'antd/lib/button';
 import * as React from 'react';
 import { UIAction } from './shared';
 
-export const ActionMenuButton = React.memo((props: { action: UIAction; hideWhenDisabled?: boolean }) => {
+type ActionProps = { action: UIAction; showLabel?: boolean; type?: ButtonType; hideWhenDisabled?: boolean };
+
+export const ActionMenuButton = React.memo((props: ActionProps) => {
     const {
         disabled,
+        label,
         onAction,
         icon,
         shortcut,
@@ -28,10 +32,14 @@ export const ActionMenuButton = React.memo((props: { action: UIAction; hideWhenD
     return (
         <>
             <Tooltip mouseEnterDelay={1} title={title}>
-                <Button className='menu-item' size='large' disabled={disabled} onClick={onAction}>
+                <Button type={props.type} className={!props.type ? 'menu-item' : null} size='large' disabled={disabled} onClick={onAction}>
                     {Types.isString(icon) ? (
                         <i className={icon} />
                     ) : icon}
+
+                    {props.showLabel &&
+                        <>&nbsp;{label}</>
+                    }
                 </Button>
             </Tooltip>
 
@@ -42,9 +50,10 @@ export const ActionMenuButton = React.memo((props: { action: UIAction; hideWhenD
     );
 });
 
-export const ActionButton = React.memo((props: { action: UIAction; hideWhenDisabled?: boolean }) => {
+export const ActionButton = React.memo((props: ActionProps) => {
     const {
         disabled,
+        label,
         onAction,
         icon,
         shortcut,
@@ -64,13 +73,17 @@ export const ActionButton = React.memo((props: { action: UIAction; hideWhenDisab
                     {Types.isString(icon) ? (
                         <i className={icon} />
                     ) : icon}
+
+                    {props.showLabel &&
+                        <>&nbsp;{label}</>
+                    }
                 </Button>
             </Tooltip>
         </>
     );
 });
 
-export const ActionMenuItem = React.memo((props: { action: UIAction; hideWhenDisabled?: boolean }) => {
+export const ActionMenuItem = React.memo((props: ActionProps) => {
     const {
         disabled,
         label,

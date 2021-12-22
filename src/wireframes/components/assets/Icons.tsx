@@ -7,6 +7,7 @@
 
 import { SearchOutlined } from '@ant-design/icons';
 import { Grid } from '@app/core';
+import { texts } from '@app/texts';
 import { addIcon, filterIcons, getDiagramId, getFilteredIcons, getIconSet, getIconSets, getIconsFilter, IconInfo, selectIcons, useStore } from '@app/wireframes/model';
 import { Input, Select } from 'antd';
 import * as React from 'react';
@@ -58,7 +59,8 @@ export const Icons = React.memo(() => {
     return (
         <>
             <div className='asset-icons-search'>
-                <Input value={iconsFilter} onChange={doFilterIcons} placeholder='Find icon'
+                <Input value={iconsFilter} onChange={doFilterIcons}
+                    placeholder={texts.common.findIcon}
                     prefix={
                         <SearchOutlined style={{ color: 'rgba(0,0,0,.25)' }} />
                     }

@@ -27,7 +27,7 @@ export const App = () => {
     const selectedTab = useStore(s => s.ui.selectedTab);
     const showLeftSidebar = useStore(s => s.ui.showLeftSidebar);
     const showRightSidebar = useStore(s => s.ui.showRightSidebar);
-    const [presenting, setPresenting] = React.useState(true);
+    const [presenting, setPresenting] = React.useState(false);
 
     const [
         print,

@@ -6,68 +6,61 @@
 */
 
 import { QuestionCircleOutlined } from '@ant-design/icons';
-import { Shortcut, Title } from '@app/core';
-import { newDiagram, saveDiagramAsync, useStore } from '@app/wireframes/model';
-import { Button, Modal, Tooltip } from 'antd';
+import { Title } from '@app/core';
+import { texts } from '@app/texts';
+import { useStore } from '@app/wireframes/model';
+import { Button, Modal } from 'antd';
 import * as React from 'react';
-import { useDispatch } from 'react-redux';
+import { ActionMenuButton, useLoading } from './../actions';
 
 const text = require('@app/legal.html').default;
 
 export const LoadingMenu = React.memo(() => {
+    const forLoading = useLoading();
+    const savedToken = useStore(s => s.loading.tokenToRead);
+    const saveAction = React.useRef(forLoading.saveDiagram);
     const [isOpen, setIsOpen] = React.useState(false);
 
-    const dispatch = useDispatch();
-    const readToken = useStore(s => s.loading.tokenToRead);
-
-    const title = readToken && readToken.length > 0 ?
-        `mydraft.cc - Diagram ${readToken}` :
-        'mydraft.cc - Diagram (unsaved)';
-
-    const doNewDiagram = React.useCallback(() => {
-        dispatch(newDiagram({ navigate: true }));
-    }, [dispatch]);
-
-    const doSaveDiagram = React.useCallback(() => {
-        dispatch(saveDiagramAsync({ navigate: true }));
-    }, [dispatch]);
+    React.useEffect(() => {
+        saveAction.current = forLoading.saveDiagram;
+    }, [forLoading.saveDiagram]);
 
     const doToggleInfoDialog = React.useCallback(() => {
         setIsOpen(!isOpen);
     }, [isOpen]);
 
+    React.useEffect(() => {
+        setInterval(() => {
+            if (!saveAction.current.disabled) {
+                saveAction.current.onAction();
+            }
+        }, 30000);
+    }, []);
+
     return (
         <>
-            <Title text={title} />
+            <CustomTitle token={savedToken} />
 
-            <Tooltip mouseEnterDelay={1} title='New Diagram (CTRL + N)'>
-                <Button className='menu-item' size='large'
-                    onClick={doNewDiagram}>
-                    <i className='icon-new' />&nbsp;New
-                </Button>
-            </Tooltip>
-
-            <Shortcut onPressed={doNewDiagram} keys='ctrl+n' />
-
-            <Tooltip mouseEnterDelay={1} title='New Diagram (CTRL + S)'>
-                <Button type='primary' size='large'
-                    onClick={doSaveDiagram}>
-                    <i className='icon-save' />&nbsp;Save
-                </Button>
-            </Tooltip>
-
-            <Shortcut onPressed={doSaveDiagram} keys='ctrl+s' />
+            <ActionMenuButton showLabel action={forLoading.newDiagram} />
+            <ActionMenuButton showLabel action={forLoading.saveDiagram} type='primary' />
 
             <Button className='menu-item' size='large' onClick={doToggleInfoDialog}>
                 <QuestionCircleOutlined />
             </Button>
 
-            <Modal title='About' visible={isOpen}
-                onCancel={doToggleInfoDialog}
-                onOk={doToggleInfoDialog}
-            >
+            <Modal title={texts.common.about} visible={isOpen} onCancel={doToggleInfoDialog} onOk={doToggleInfoDialog}>
                 <div dangerouslySetInnerHTML={{ __html: text.default }} />
             </Modal>
         </>
+    );
+});
+
+const CustomTitle = React.memo(({ token }: { token?: string }) => {
+    const title = token && token.length > 0 ?
+        `mydraft.cc - Diagram ${token}` :
+        `mydraft.cc - Diagram ${texts.common.unsaved}`;
+
+    return (
+        <Title text={title} />
     );
 });

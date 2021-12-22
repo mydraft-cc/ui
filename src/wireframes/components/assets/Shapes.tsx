@@ -7,6 +7,7 @@
 
 import { SearchOutlined } from '@ant-design/icons';
 import { Grid } from '@app/core';
+import { texts } from '@app/texts';
 import { addVisual, filterShapes, getDiagramId, getFilteredShapes, getShapesFilter, ShapeInfo, useStore } from '@app/wireframes/model';
 import { Input } from 'antd';
 import * as React from 'react';
@@ -53,8 +54,10 @@ export const Shapes = () => {
         <>
             <div className='asset-shapes-search'>
                 <Input value={shapesFilter} onChange={doFilterShapes}
-                    placeholder='Find shape'
-                    prefix={<SearchOutlined style={{ color: 'rgba(0,0,0,.25)' }} />} />
+                    placeholder={texts.common.findShape}
+                    prefix={
+                        <SearchOutlined style={{ color: 'rgba(0,0,0,.25)' }} />
+                    } />
             </div>
 
             <Grid className='asset-shapes-list' renderer={cellRenderer} columns={2} items={shapesFiltered} keyBuilder={keyBuilder} />

@@ -9,6 +9,7 @@ import { PlusOutlined, SearchOutlined } from '@ant-design/icons';
 import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd';
 import { addDiagram, filterDiagrams, getDiagramId, getDiagramsFilter, getFilteredDiagrams, moveDiagram, removeDiagram, renameDiagram, selectDiagram, setDiagramMaster, useStore } from '@app/wireframes/model';
 import { Button, Col, Input, Row } from 'antd';
+import { texts } from '@app/texts';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
 import { Page } from './Page';
@@ -54,8 +55,10 @@ export const Pages = () => {
             <Row className='pages-search' wrap={false}>
                 <Col flex='auto'>
                     <Input value={diagramsFilter} onChange={doFilterShapes}
-                        placeholder='Find shape'
-                        prefix={<SearchOutlined style={{ color: 'rgba(0,0,0,.25)' }} />} />
+                        placeholder={texts.common.findPage}
+                        prefix={
+                            <SearchOutlined style={{ color: 'rgba(0,0,0,.25)' }} />
+                        } />
                 </Col>
                 <Col flex='none'>
                     <Button type='primary' onClick={doAddDiagram}>
