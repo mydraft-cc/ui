@@ -25,7 +25,7 @@ export class InteractionOverlays {
         this.elements.push(this.lineY);
 
         this.infoRect = layer.rect().fill('#000');
-        this.infoText = SVGHelper.createText(layer, 'text', 16, 'center', 'middle').attr('color', '#fff');
+        this.infoText = SVGHelper.createText('text', 16, 'center', 'middle').attr('color', '#fff').addTo(layer);
 
         this.elements.push(this.infoRect);
         this.elements.push(this.infoText);

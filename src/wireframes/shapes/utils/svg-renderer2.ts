@@ -20,6 +20,7 @@ class Factory implements ShapeFactory {
     private container: svg.G;
     private containerIndex: number;
     private clipping: boolean;
+    private wasClipped: boolean;
 
     public getContainer() {
         return this.container;
@@ -29,10 +30,11 @@ class Factory implements ShapeFactory {
         this.clipping = clipping;
         this.container = container;
         this.containerIndex = index;
+        this.wasClipped = false;
     }
 
     public rectangle(strokeWidth: RendererWidth, radius?: number, bounds?: Rect2, properties?: ShapePropertiesFunc) {
-        return this.new('rect', x => x.rect(), p => {
+        return this.new('rect', () => new svg.Rect(), p => {
             p.setBackgroundColor('transparent');
             p.setStrokeWidth(strokeWidth);
             p.setRadius(radius || 0);
@@ -41,7 +43,7 @@ class Factory implements ShapeFactory {
     }
 
     public ellipse(strokeWidth: RendererWidth, bounds?: Rect2, properties?: ShapePropertiesFunc) {
-        return this.new('ellipse', x => x.ellipse(), p => {
+        return this.new('ellipse', () => new svg.Ellipse(), p => {
             p.setBackgroundColor('transparent');
             p.setStrokeWidth(strokeWidth);
             p.setTransform(bounds);
@@ -49,7 +51,7 @@ class Factory implements ShapeFactory {
     }
 
     public roundedRectangleLeft(strokeWidth: RendererWidth, radius: number, bounds: Rect2, properties?: ShapePropertiesFunc) {
-        return this.new('path', x => x.path(), p => {
+        return this.new('path', () => new svg.Path(), p => {
             p.setBackgroundColor('transparent');
             p.setStrokeWidth(strokeWidth);
             p.setPath(SVGHelper.roundedRectangleLeft(bounds, radius));
@@ -58,7 +60,7 @@ class Factory implements ShapeFactory {
     }
 
     public roundedRectangleRight(strokeWidth: RendererWidth, radius: number, bounds: Rect2, properties?: ShapePropertiesFunc) {
-        return this.new('path', x => x.path(), p => {
+        return this.new('path', () => new svg.Path(), p => {
             p.setBackgroundColor('transparent');
             p.setStrokeWidth(strokeWidth);
             p.setPath(SVGHelper.roundedRectangleRight(bounds, radius));
@@ -67,7 +69,7 @@ class Factory implements ShapeFactory {
     }
 
     public roundedRectangleTop(strokeWidth: RendererWidth, radius: number, bounds: Rect2, properties?: ShapePropertiesFunc) {
-        return this.new('path', x => x.path(), p => {
+        return this.new('path', () => new svg.Path(), p => {
             p.setBackgroundColor('transparent');
             p.setStrokeWidth(strokeWidth);
             p.setPath(SVGHelper.roundedRectangleTop(bounds, radius));
@@ -76,7 +78,7 @@ class Factory implements ShapeFactory {
     }
 
     public roundedRectangleBottom(strokeWidth: RendererWidth, radius: number, bounds: Rect2, properties?: ShapePropertiesFunc) {
-        return this.new('path', x => x.path(), p => {
+        return this.new('path', () => new svg.Path(), p => {
             p.setBackgroundColor('transparent');
             p.setStrokeWidth(strokeWidth);
             p.setPath(SVGHelper.roundedRectangleBottom(bounds, radius));
@@ -85,7 +87,7 @@ class Factory implements ShapeFactory {
     }
 
     public path(strokeWidth: RendererWidth, path: string, bounds?: Rect2, properties?: ShapePropertiesFunc) {
-        return this.new('path', x => x.path(), p => {
+        return this.new('path', () => new svg.Path(), p => {
             p.setBackgroundColor('transparent');
             p.setStrokeWidth(strokeWidth);
             p.setPath(path);
@@ -94,7 +96,7 @@ class Factory implements ShapeFactory {
     }
 
     public text(config?: RendererText, bounds?: Rect2, properties?: ShapePropertiesFunc) {
-        return this.new('foreignObject', x => SVGHelper.createText(x, ''), p => {
+        return this.new('foreignObject', () => SVGHelper.createText(), p => {
             p.setBackgroundColor('transparent');
             p.setText(config.text);
             p.setFontSize(config);
@@ -106,7 +108,7 @@ class Factory implements ShapeFactory {
     }
 
     public textMultiline(config?: RendererText, bounds?: Rect2, properties?: ShapePropertiesFunc) {
-        return this.new('foreignObject', x => SVGHelper.createText(x, ''), p => {
+        return this.new('foreignObject', () => SVGHelper.createText(), p => {
             p.setBackgroundColor('transparent');
             p.setText(config.text);
             p.setFontSize(config);
@@ -118,7 +120,7 @@ class Factory implements ShapeFactory {
     }
 
     public raster(source: string, bounds?: Rect2, properties?: ShapePropertiesFunc) {
-        return this.new('image', x => x.image(), p => {
+        return this.new('image', () => new svg.Image(), p => {
             p.setBackgroundColor('transparent');
             p.setImage(source);
             p.setTransform(bounds);
@@ -126,10 +128,11 @@ class Factory implements ShapeFactory {
     }
 
     public group(items: ShapeFactoryFunc, clip?: ShapeFactoryFunc, properties?: ShapePropertiesFunc) {
-        return this.new('g', x => x.group(), (_, group) => {
+        return this.new('g', () => new svg.G(), (_, group) => {
             const clipping = this.clipping;
             const container = this.container;
             const containerIndex = this.containerIndex;
+            const wasClipped = this.wasClipped;
 
             this.container = group;
             this.containerIndex = 0;
@@ -148,11 +151,46 @@ class Factory implements ShapeFactory {
             this.clipping = clipping;
             this.container = container;
             this.containerIndex = containerIndex;
+            this.wasClipped = wasClipped;
         }, properties);
     }
 
-    private new<T extends svg.Element>(name: string, factory: (container: svg.Container) => T, configure: (properties: Properties, element: T) => void, properties: ShapePropertiesFunc | undefined) {
-        const element = this.create(name, factory);
+    private new<T extends svg.Element>(name: string, factory: () => T, configure: (properties: Properties, element: T) => void, properties: ShapePropertiesFunc | undefined) {
+        let element: T;
+
+        if (this.wasClipped) {
+            throw new Error('Only one clipping element is supported.');
+        }
+
+        if (this.clipping) {
+            element = this.container.clipper() as any;
+
+            if (!element || element.node.tagName !== name) {
+                element?.remove();
+                element = factory();
+
+                this.container.unclip();
+                this.container.clipWith(element);
+            }
+
+            this.wasClipped = true;
+        } else {
+            element = this.container.get(this.containerIndex) as any;
+
+            if (!element) {
+                element = factory();
+                element.addTo(this.container);
+            } else if (element.node.tagName !== name) {
+                const previous = element;
+
+                element = factory();
+                element.insertAfter(previous);
+
+                previous.remove();
+            }
+
+            this.containerIndex++;
+        }
 
         Properties.INSTANCE.setElement(element);
 
@@ -167,48 +205,19 @@ class Factory implements ShapeFactory {
         return element;
     }
 
-    private create<T extends svg.Element>(name: string, factory: (container: svg.Container) => T): T {
-        if (this.clipping) {
-            let element: T = this.container.clipper() as any;
-
-            if (!element || element.node.tagName !== name) {
-                element?.remove();
-                element = factory(this.container);
-
-                this.container.unclip();
-                this.container.clipWith(element);
-            }
-
-            return element;
-        } else {
-            let element: T = this.container.get(this.containerIndex) as any;
-
-            if (!element) {
-                element = factory(this.container);
-            } else if (element.node.tagName !== name) {
-                this.cleanup(this.containerIndex);
-
-                element = factory(this.container);
-            }
-
-            this.containerIndex++;
-
-            return element;
-        }
-    }
-
     public cleanupAll() {
-        this.cleanup(this.containerIndex + 1);
-    }
-
-    public cleanup(start: number) {
         const size = this.container.children().length;
 
-        for (let i = start; i < size; i++) {
+        for (let i = this.containerIndex; i < size; i++) {
             const last = this.container.last();
 
             last.clipper()?.remove();
             last.remove();
+        }
+
+        if (!this.wasClipped) {
+            this.container.clipper()?.remove();
+            this.container.unclip();
         }
     }
 }
