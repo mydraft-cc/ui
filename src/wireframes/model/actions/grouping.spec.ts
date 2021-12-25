@@ -41,7 +41,7 @@ describe('GroupingReducer', () => {
         const state_1 = EditorState.empty().addDiagram(diagram);
         const state_2 = reducer(state_1, action);
 
-        const newDiagram = state_2.diagrams.get(diagram.id);
+        const newDiagram = state_2.diagrams.get(diagram.id)!;
 
         expect(newDiagram.selectedIds.values).toEqual([groupId]);
         expect(newDiagram.itemIds.values).toEqual([groupId]);
@@ -68,15 +68,15 @@ describe('GroupingReducer', () => {
         diagram = diagram.group(groupId1, [id1, id2]);
         diagram = diagram.group(groupId2, [id3, id4]);
 
-        const group1 = diagram.items.get(groupId1);
-        const group2 = diagram.items.get(groupId2);
+        const group1 = diagram.items.get(groupId1)!;
+        const group2 = diagram.items.get(groupId2)!;
 
         const action = ungroupItems(diagram, [group1, group2, DiagramItem.createGroup('5', [])]);
 
         const state_1 = EditorState.empty().addDiagram(diagram);
         const state_2 = reducer(state_1, action);
 
-        const newDiagram = state_2.diagrams.get(diagram.id);
+        const newDiagram = state_2.diagrams.get(diagram.id)!;
 
         const ids = shapes.keys;
 

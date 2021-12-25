@@ -258,7 +258,7 @@ describe('DiagramItem', () => {
 
         diagram = diagram.group(groupId, [shape1.id, shape2.id]);
 
-        const group = diagram.items.get(groupId);
+        const group = diagram.items.get(groupId)!;
 
         const actual = group.bounds(diagram);
         const expected = new Transform(new Vec2(150, 100), new Vec2(200, 50), Rotation.ZERO);
@@ -274,7 +274,7 @@ describe('DiagramItem', () => {
 
         diagram = diagram.group(groupId, [shape1.id, shape2.id]);
 
-        const group = diagram.items.get(groupId);
+        const group = diagram.items.get(groupId)!;
 
         const actual1 = group.bounds(diagram);
         const actual2 = group.bounds(diagram);

@@ -42,7 +42,7 @@ export const LoadingMenu = React.memo(() => {
                 clearInterval(timer);
             };
         } else {
-            return null;
+            return undefined;
         }
     }, [tokenToWrite]);
 
@@ -64,7 +64,7 @@ export const LoadingMenu = React.memo(() => {
     );
 });
 
-const CustomTitle = React.memo(({ token }: { token?: string }) => {
+const CustomTitle = React.memo(({ token }: { token?: string | null }) => {
     const title = token && token.length > 0 ?
         `mydraft.cc - Diagram ${token}` :
         `mydraft.cc - Diagram ${texts.common.unsaved}`;

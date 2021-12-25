@@ -31,6 +31,7 @@ export const EditorView = ({ spacing }: EditorViewProps) => {
     const editorColor = editor.color;
     const editorSize = editor.size;
     const masterDiagram = useStore(getMasterDiagram);
+    const ref = React.useRef<any>();
     const renderer = React.useContext(RendererContext);
     const selectedDiagramId = useStore(getDiagramId);
     const state = useStore(s => s);
@@ -54,8 +55,6 @@ export const EditorView = ({ spacing }: EditorViewProps) => {
         setMenuVisible(false);
     }, []);
 
-    const ref = React.useRef();
-
     const [, drop] = useDrop({
         accept: [
             NativeTypes.URL,
@@ -65,11 +64,15 @@ export const EditorView = ({ spacing }: EditorViewProps) => {
             'DND_ICON',
         ],
         drop: (item: any, monitor: DropTargetMonitor) => {
-            if (!monitor || !ref.current) {
+            if (!monitor || !ref.current || !selectedDiagramId) {
                 return;
             }
 
             const offset = monitor.getSourceClientOffset();
+
+            if (!offset) {
+                return;
+            }
 
             const componentRect = (findDOMNode(ref.current) as HTMLElement)!.getBoundingClientRect();
 

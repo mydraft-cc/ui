@@ -98,7 +98,7 @@ class Factory implements ShapeFactory {
     public text(config?: RendererText, bounds?: Rect2, properties?: ShapePropertiesFunc) {
         return this.new('foreignObject', () => SVGHelper.createText(), p => {
             p.setBackgroundColor('transparent');
-            p.setText(config.text);
+            p.setText(config?.text);
             p.setFontSize(config);
             p.setFontFamily(config);
             p.setAlignment(config);
@@ -110,7 +110,7 @@ class Factory implements ShapeFactory {
     public textMultiline(config?: RendererText, bounds?: Rect2, properties?: ShapePropertiesFunc) {
         return this.new('foreignObject', () => SVGHelper.createText(), p => {
             p.setBackgroundColor('transparent');
-            p.setText(config.text);
+            p.setText(config?.text);
             p.setFontSize(config);
             p.setFontFamily(config);
             p.setAlignment(config);
@@ -272,7 +272,7 @@ export class SVGRenderer2 extends Factory implements AbstractRenderer2 {
         }
     }
 
-    public getTextWidth(text: string, fontSize: number, fontFamily: string): number | undefined {
+    public getTextWidth(text: string, fontSize: number, fontFamily: string) {
         this.measureDiv.textContent = text;
         this.measureDiv.style.fontSize = sizeInPx(fontSize);
         this.measureDiv.style.fontFamily = fontFamily;
@@ -445,13 +445,13 @@ class Properties implements ShapeProperties {
         return this;
     }
 
-    public setText(text: string): ShapeProperties {
+    public setText(text: string | undefined): ShapeProperties {
         this.properties['text'] = text;
 
         return this;
     }
 
-    public setTransform(rect: Rect): ShapeProperties {
+    public setTransform(rect: Rect | undefined): ShapeProperties {
         this.properties['transform'] = { rect };
 
         return this;
@@ -469,13 +469,13 @@ class Properties implements ShapeProperties {
         return this;
     }
 
-    public setFontFamily(fontFamily: TextConfig | string): ShapeProperties {
+    public setFontFamily(fontFamily: TextConfig | string | undefined): ShapeProperties {
         this.properties['font-family'] = this.getFontFamily(fontFamily);
 
         return this;
     }
 
-    public setAlignment(alignment: TextConfig): ShapeProperties {
+    public setAlignment(alignment: TextConfig | undefined): ShapeProperties {
         this.properties['text-alignment'] = this.getTextAlignment(alignment);
 
         return this;

@@ -65,6 +65,6 @@ describe('OrderingReducer', () => {
         const state_1 = EditorState.empty().addDiagram(diagram);
         const state_2 = reducer(state_1, action);
 
-        expect(state_2.diagrams.get(diagram.id).itemIds.values).toEqual(expectedIds);
+        expect(state_2.diagrams.get(diagram.id)?.itemIds.values).toEqual(expectedIds);
     }
 });

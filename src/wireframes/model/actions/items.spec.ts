@@ -57,18 +57,18 @@ describe('ItemsReducer', () => {
         const state_1 = EditorState.empty().addDiagram(diagram);
         const state_2 = reducer(state_1, action);
 
-        const newDiagram = state_2.diagrams.get(diagram.id);
+        const newDiagram = state_2.diagrams.get(diagram.id)!;
 
         expect(newDiagram.selectedIds.values).toEqual([groupId]);
     });
 
     it('should remove items and all children', () => {
-        const action = removeItems(diagram, [diagram.items.get(groupId)]);
+        const action = removeItems(diagram, [diagram.items.get(groupId)!]);
 
         const state_1 = EditorState.empty().addDiagram(diagram);
         const state_2 = reducer(state_1, action);
 
-        const newDiagram = state_2.diagrams.get(diagram.id);
+        const newDiagram = state_2.diagrams.get(diagram.id)!;
 
         expect(newDiagram.selectedIds.size).toBe(0);
     });
@@ -79,7 +79,7 @@ describe('ItemsReducer', () => {
         const state_1 = EditorState.empty().addDiagram(diagram);
         const state_2 = reducer(state_1, action);
 
-        const newShape = state_2.diagrams.get(diagram.id).items.get('1');
+        const newShape = state_2.diagrams.get(diagram.id)!.items.get('1')!;
 
         expect(newShape.isLocked).toBeTruthy();
     });
@@ -90,7 +90,7 @@ describe('ItemsReducer', () => {
         const state_1 = EditorState.empty().addDiagram(diagram);
         const state_2 = reducer(state_1, action);
 
-        const newShape = state_2.diagrams.get(diagram.id).items.get('2');
+        const newShape = state_2.diagrams.get(diagram.id)!.items.get('2')!;
 
         expect(newShape.isLocked).toBeFalsy();
     });
@@ -103,8 +103,8 @@ describe('ItemsReducer', () => {
         const state_1 = EditorState.empty().addDiagram(diagram);
         const state_2 = reducer(state_1, action);
 
-        const newDiagram = state_2.diagrams.get(diagram.id);
-        const newIcon = newDiagram.items.get(shapeId);
+        const newDiagram = state_2.diagrams.get(diagram.id)!;
+        const newIcon = newDiagram.items.get(shapeId)!;
 
         expect(newIcon.id).toBe(shapeId);
         expect(newIcon.renderer).toBe('Icon');
@@ -123,8 +123,8 @@ describe('ItemsReducer', () => {
         const state_1 = EditorState.empty().addDiagram(diagram);
         const state_2 = reducer(state_1, action);
 
-        const newDiagram = state_2.diagrams.get(diagram.id);
-        const newImage = newDiagram.items.get(shapeId);
+        const newDiagram = state_2.diagrams.get(diagram.id)!;
+        const newImage = newDiagram.items.get(shapeId)!;
 
         expect(newImage.id).toBe(shapeId);
         expect(newImage.appearance.get('SOURCE')).toBe('source');
@@ -142,8 +142,8 @@ describe('ItemsReducer', () => {
         const state_1 = EditorState.empty().addDiagram(diagram);
         const state_2 = reducer(state_1, action);
 
-        const newDiagram = state_2.diagrams.get(diagram.id);
-        const newImage = newDiagram.items.get(shapeId);
+        const newDiagram = state_2.diagrams.get(diagram.id)!;
+        const newImage = newDiagram.items.get(shapeId)!;
 
         expect(newImage.transform.size).toEqual(new Vec2(225, 300));
     });
@@ -156,8 +156,8 @@ describe('ItemsReducer', () => {
         const state_1 = EditorState.empty().addDiagram(diagram);
         const state_2 = reducer(state_1, action);
 
-        const newDiagram = state_2.diagrams.get(diagram.id);
-        const newImage = newDiagram.items.get(shapeId);
+        const newDiagram = state_2.diagrams.get(diagram.id)!;
+        const newImage = newDiagram.items.get(shapeId)!;
 
         expect(newImage.transform.size).toEqual(new Vec2(300, 150));
     });
@@ -170,8 +170,8 @@ describe('ItemsReducer', () => {
         const state_1 = EditorState.empty().addDiagram(diagram);
         const state_2 = reducer(state_1, action);
 
-        const newDiagram = state_2.diagrams.get(diagram.id);
-        const newShape = newDiagram.items.get(shapeId);
+        const newDiagram = state_2.diagrams.get(diagram.id)!;
+        const newShape = newDiagram.items.get(shapeId)!;
 
         expect(newShape.id).toBe(shapeId);
         expect(newShape.transform.position).toEqual(new Vec2(150, 35));
@@ -184,11 +184,11 @@ describe('ItemsReducer', () => {
 
         const action = addVisual(diagram, 'Button', 100, 20, { text1: 'text1', text2: 'text2' }, shapeId);
 
-        const state_1 = EditorState.empty().addDiagram(diagram);
+        const state_1 = EditorState.empty().addDiagram(diagram)!;
         const state_2 = reducer(state_1, action);
 
-        const newDiagram = state_2.diagrams.get(diagram.id);
-        const newShape = newDiagram.items.get(shapeId);
+        const newDiagram = state_2.diagrams.get(diagram.id)!;
+        const newShape = newDiagram.items.get(shapeId)!;
 
         expect(newShape.id).toBe(shapeId);
         expect(newShape.appearance.get('text1')).toEqual('text1');
@@ -208,7 +208,7 @@ describe('ItemsReducer', () => {
         const state_1 = EditorState.empty().addDiagram(diagram);
         const state_2 = reducer(state_1, action);
 
-        const newDiagram = state_2.diagrams.get(diagram.id);
+        const newDiagram = state_2.diagrams.get(diagram.id)!;
 
         expect(newDiagram.items.size).toBe(8);
         expect(newDiagram.itemIds.size).toBe(4);

@@ -5,6 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
+import { Rect2 } from '@app/core';
 import * as svg from '@svgdotjs/svg.js';
 import { SVGRenderer2 } from './svg-renderer2';
 
@@ -21,17 +22,91 @@ describe('SVGRenderer2', () => {
         renderer.setContainer(container);
     });
 
+    it('should render ellipse', () => {
+        render(r => {
+            r.ellipse(1);
+        });
+
+        expect(container.get(0).node.tagName).toEqual('ellipse');
+    });
+
+    it('should render path', () => {
+        render(r => {
+            r.path(1, 'M0,0 L10,10');
+        });
+
+        expect(container.get(0).node.tagName).toEqual('path');
+    });
+
+    it('should render raster', () => {
+        render(r => {
+            r.raster('source');
+        });
+
+        expect(container.get(0).node.tagName).toEqual('image');
+    });
+
     it('should render rectangle', () => {
-        render();
+        render(r => {
+            r.rectangle(1, 10, undefined);
+        });
 
         expect(container.get(0).node.tagName).toEqual('rect');
     });
 
+    it('should render rounded rectangle bottom', () => {
+        render(r => {
+            r.roundedRectangleBottom(1, 10, new Rect2(0, 0, 10, 10));
+        });
+
+        expect(container.get(0).node.tagName).toEqual('path');
+    });
+
+    it('should render rounded rectangle left', () => {
+        render(r => {
+            r.roundedRectangleLeft(1, 10, new Rect2(0, 0, 10, 10));
+        });
+
+        expect(container.get(0).node.tagName).toEqual('path');
+    });
+
+    it('should render rounded rectangle right', () => {
+        render(r => {
+            r.roundedRectangleRight(1, 10, new Rect2(0, 0, 10, 10));
+        });
+
+        expect(container.get(0).node.tagName).toEqual('path');
+    });
+
+    it('should render rounded rectangle top', () => {
+        render(r => {
+            r.roundedRectangleTop(1, 10, new Rect2(0, 0, 10, 10));
+        });
+
+        expect(container.get(0).node.tagName).toEqual('path');
+    });
+
+    it('should render text', () => {
+        render(r => {
+            r.text();
+        });
+
+        expect(container.get(0).node.tagName).toEqual('foreignElement');
+    });
+
+    it('should render multiline text', () => {
+        render(r => {
+            r.textMultiline();
+        });
+
+        expect(container.get(0).node.tagName).toEqual('foreignElement');
+    });
+
     it('should render same element', () => {
-        render();
+        renderRect();
         const rendered1 = container.get(0);
 
-        render();
+        renderRect();
         const rendered2 = container.get(0);
 
         expect(rendered2).toBe(rendered1);
@@ -101,67 +176,75 @@ describe('SVGRenderer2', () => {
 
     it('should only allow one clip element', () => {
         expect(() => {
-            renderer.group(g => {
-                g.rectangle(1);
-            }, c => {
-                c.rectangle(1);
-                c.rectangle(1);
+            render(r => {
+                r.group(g => {
+                    g.rectangle(1);
+                }, c => {
+                    c.rectangle(1);
+                    c.rectangle(1);
+                });
             });
         }).toThrowError();
     });
 
-    function render() {
-        renderer.setContainer(container);
-        renderer.rectangle(1, 10, undefined);
-        renderer.cleanupAll();
+    function renderRect() {
+        render(r => {
+            r.rectangle(1, 10, undefined);
+        });
     }
 
     function renderWithBackground(color: string) {
-        renderer.setContainer(container);
-        renderer.rectangle(1, 10, undefined, p => {
-            p.setBackgroundColor(color);
+        render(r => {
+            r.rectangle(1, 10, undefined, p => {
+                p.setBackgroundColor(color);
+            });
         });
-        renderer.cleanupAll();
     }
 
     function renderConditional(condition: boolean) {
-        renderer.setContainer(container);
-        renderer.rectangle(1, 10);
+        render(r => {
+            r.rectangle(1, 10);
 
-        if (condition) {
-            renderer.path(1, '');
-        } else {
-            renderer.ellipse(1);
-        }
+            if (condition) {
+                r.path(1, '');
+            } else {
+                r.ellipse(1);
+            }
 
-        renderer.rectangle(1, 10);
-        renderer.cleanupAll();
+            r.rectangle(1, 10);
+        });
     }
 
     function renderAdded(condition: boolean) {
-        renderer.setContainer(container);
-        renderer.rectangle(1, 10);
+        render(r => {
+            r.rectangle(1, 10);
 
-        if (condition) {
-            renderer.ellipse(1);
-            renderer.ellipse(1);
-        } else {
-            renderer.ellipse(1);
-        }
+            if (condition) {
+                r.ellipse(1);
+                r.ellipse(1);
+            } else {
+                r.ellipse(1);
+            }
 
-        renderer.rectangle(1, 10);
-        renderer.cleanupAll();
+            r.rectangle(1, 10);
+        });
     }
 
     function renderWithClip(clip: boolean) {
-        renderer.setContainer(container);
-        renderer.group(g => {
-            g.rectangle(1);
-        }, c => {
-            if (clip) {
-                c.rectangle(1);
-            }
+        render(r => {
+            r.group(g => {
+                g.rectangle(1);
+            }, c => {
+                if (clip) {
+                    c.rectangle(1);
+                }
+            });
         });
+    }
+
+    function render(action: (renderer: SVGRenderer2) => void) {
+        renderer.setContainer(container);
+        action(renderer);
         renderer.cleanupAll();
     }
 });

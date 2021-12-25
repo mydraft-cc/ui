@@ -84,7 +84,7 @@ describe('AlignmentReducer', () => {
         const state_1 = EditorState.empty().addDiagram(diagram);
         const state_2 = reducer(state_1, action);
 
-        const shapes = state_2.diagrams.get(diagram.id).items.values;
+        const shapes = state_2.diagrams.get(diagram.id)!.items.values;
 
         let i = 0;
 

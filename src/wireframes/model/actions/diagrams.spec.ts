@@ -33,7 +33,7 @@ describe('DiagramReducer', () => {
         const state_2 = reducer(state_1, action);
 
         expect(state_2.diagrams.size).toBe(1);
-        expect(state_2.diagrams.get('1').id).toBe('1');
+        expect(state_2.diagrams.get('1')?.id).toBe('1');
         expect(state_2.selectedDiagramId).toBe('1');
     });
 
@@ -97,7 +97,7 @@ describe('DiagramReducer', () => {
         const state_1 = EditorState.empty().addDiagram(diagram);
         const state_2 = reducer(state_1, action);
 
-        expect(state_2.diagrams.get('1').title).toEqual('New Title');
+        expect(state_2.diagrams.get('1')?.title).toEqual('New Title');
     });
 
     it('should set master', () => {
@@ -108,6 +108,6 @@ describe('DiagramReducer', () => {
         const state_1 = EditorState.empty().addDiagram(diagram);
         const state_2 = reducer(state_1, action);
 
-        expect(state_2.diagrams.get('1').master).toEqual('Master');
+        expect(state_2.diagrams.get('1')?.master).toEqual('Master');
     });
 });

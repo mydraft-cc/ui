@@ -144,7 +144,7 @@ export class AbstractControl implements Renderer {
 
         let index = 1;
 
-        if (options.debug) {
+        if (options?.debug) {
             index = 2;
         }
 

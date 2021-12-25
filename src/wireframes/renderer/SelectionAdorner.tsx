@@ -118,7 +118,7 @@ export class SelectionAdorner extends React.Component<SelectionAdornerProps> imp
     private selectSingle(event: SvgEvent, diagram: Diagram): string[] {
         const aabb = event.shape?.bounds(diagram).aabb;
 
-        if (aabb?.contains(event.position)) {
+        if (aabb?.contains(event.position) && event.shape) {
             return calculateSelection([event.shape], diagram, true, event.event.ctrlKey);
         } else {
             return [];

@@ -27,7 +27,7 @@ export const VisualProperties = React.memo(() => {
             DefaultAppearance.BACKGROUND_COLOR, x => Color.fromValue(x));
 
     const [fontSize, setFontSize] =
-        useAppearance(selectedDiagramId, selectionSet,
+        useAppearance<number>(selectedDiagramId, selectionSet,
             DefaultAppearance.FONT_SIZE);
 
     const [foregroundColor, setForegroundColor] =
@@ -39,11 +39,11 @@ export const VisualProperties = React.memo(() => {
             DefaultAppearance.STROKE_COLOR, x => Color.fromValue(x));
 
     const [strokeThickness, setStrokeThickness] =
-        useAppearance(selectedDiagramId, selectionSet,
+        useAppearance<number>(selectedDiagramId, selectionSet,
             DefaultAppearance.STROKE_THICKNESS);
 
     const [textAlignment, setTextAlignment] =
-        useAppearance(selectedDiagramId, selectionSet,
+        useAppearance<string>(selectedDiagramId, selectionSet,
             DefaultAppearance.TEXT_ALIGNMENT);
 
     const doSelectColorTab = React.useCallback((key: string) => {
@@ -61,7 +61,7 @@ export const VisualProperties = React.memo(() => {
                     <Row className='property'>
                         <Col span={12} className='property-label'>{texts.common.fontSize}</Col>
                         <Col span={12} className='property-value'>
-                            <Select disabled={fontSize.empty} value={fontSize.value?.toString()} onChange={setFontSize}>
+                            <Select disabled={fontSize.empty} value={fontSize.value} onChange={setFontSize}>
                                 {DEFINED_FONT_SIZES.map(value =>
                                     <Select.Option key={value.toString()} value={value}>{value}</Select.Option>,
                                 )}
@@ -71,7 +71,7 @@ export const VisualProperties = React.memo(() => {
                     <Row className='property'>
                         <Col span={12} className='property-label'>{texts.common.strokeThickness}</Col>
                         <Col span={12} className='property-value'>
-                            <Select disabled={strokeThickness.empty} value={strokeThickness.value?.toString()} onChange={setStrokeThickness}>
+                            <Select disabled={strokeThickness.empty} value={strokeThickness.value} onChange={setStrokeThickness}>
                                 {DEFINED_STROKE_THICKNESSES.map(value =>
                                     <Select.Option key={value.toString()} value={value}>{value}</Select.Option>,
                                 )}

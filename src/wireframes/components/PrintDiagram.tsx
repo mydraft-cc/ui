@@ -69,7 +69,7 @@ export const PrintDiagram = (props: PrintDiagramProps) => {
             <Editor
                 color={color}
                 diagram={diagram}
-                masterDiagram={diagrams.get(diagram.master)}
+                masterDiagram={diagrams.get(diagram.master!)}
                 onRender={doOnRender}
                 rendererService={rendererService}
                 selectedItems={[]}

@@ -64,7 +64,7 @@ export class ImmutableMap<T> {
             return this;
         }
 
-        return this.set(key, updater(this.get(key)));
+        return this.set(key, updater(this.get(key)!));
     }
 
     public set(key: string, value: T) {

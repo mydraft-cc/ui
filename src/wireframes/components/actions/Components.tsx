@@ -32,7 +32,7 @@ export const ActionMenuButton = React.memo((props: ActionProps) => {
     return (
         <>
             <Tooltip mouseEnterDelay={1} title={title}>
-                <Button type={props.type} className={!props.type ? 'menu-item' : null} size='large' disabled={disabled} onClick={onAction}>
+                <Button type={props.type} className={!props.type ? 'menu-item' : undefined} size='large' disabled={disabled} onClick={onAction}>
                     {Types.isString(icon) ? (
                         <i className={icon} />
                     ) : icon}

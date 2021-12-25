@@ -16,7 +16,7 @@ const OFFSET = 50;
 
 export function useClipboard() {
     const dispatch = useDispatch();
-    const [offset, setOffset] = React.useState<number>();
+    const [offset, setOffset] = React.useState<number>(0);
     const selectedDiagram = useStore(getDiagram);
     const selectedItems = useStore(getSelectedItems);
     const serializer = React.useContext(SerializerContext);
@@ -46,7 +46,7 @@ export function useClipboard() {
     }, [dispatch, doCopy, selectedDiagram, selectedItems]);
 
     const doPaste = React.useCallback(() => {
-        if (selectedDiagram) {
+        if (selectedDiagram && clipboard) {
             setOffset(value => value + OFFSET);
 
             dispatch(pasteItems(selectedDiagram, clipboard, offset + OFFSET));

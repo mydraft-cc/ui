@@ -38,7 +38,7 @@ export type UniqueParser<TInput> = (value: any) => TInput | undefined;
 
 const DEFAULT_PARSER = (value: any) => value;
 
-export function useAppearance<T>(diagramId: string, set: DiagramItemSet, key: string, parse?: UniqueParser<T>): [UniqueValue<T>, (value: T) => void] {
+export function useAppearance<T>(diagramId: string | null | undefined, set: DiagramItemSet | null | undefined, key: string, parse?: UniqueParser<T>): [UniqueValue<T>, (value: T) => void] {
     const dispatch = useDispatch();
 
     const value = React.useMemo(() => {

@@ -95,7 +95,9 @@ export const CustomProperties = () => {
     }, [dispatch]);
 
     const doChange = React.useCallback((key: string, value: any) => {
-        dispatch(changeItemsAppearance(selectedDiagramId, [selectedShape], key, value));
+        if (selectedDiagramId && selectedShape) {
+            dispatch(changeItemsAppearance(selectedDiagramId, [selectedShape], key, value));
+        }
     }, [dispatch, selectedDiagramId, selectedShape]);
 
     if (!selectedShape || !selectedDiagramId) {
@@ -104,7 +106,7 @@ export const CustomProperties = () => {
 
     return (
         <>
-            {selectedDiagramId && selectedConfigurables.map(c =>
+            {selectedDiagramId && selectedConfigurables && selectedConfigurables.map(c =>
                 <CustomProperty key={c.name}
                     selectedColorTab={selectedColorTab}
                     configurable={c}

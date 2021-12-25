@@ -57,7 +57,7 @@ export const Page = (props: PageProps) => {
     }, []);
 
     React.useEffect(() => {
-        setTextValue(diagram.title);
+        setTextValue(diagram.title || '');
     }, [diagram.title, setTextValue]);
 
     const setText = React.useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
@@ -65,12 +65,12 @@ export const Page = (props: PageProps) => {
     }, [setTextValue]);
 
     const doStart = React.useCallback(() => {
-        setTextValue(diagram.title);
+        setTextValue(diagram.title || '');
         setEditing(true);
     }, [diagram.title, setTextValue]);
 
     const doEnd = React.useCallback(() => {
-        setTextValue(diagram.title);
+        setTextValue(diagram.title || '');
         setEditing(false);
     }, [diagram.title, setTextValue]);
 
@@ -98,7 +98,7 @@ export const Page = (props: PageProps) => {
         if (event.key === 'Enter') {
             setEditing(false);
 
-            onRename(diagram.id, currentText.current);
+            onRename(diagram.id, currentText.current || '');
         }
     }, [diagram.id, onRename]);
 

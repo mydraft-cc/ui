@@ -92,7 +92,7 @@ export interface ShapeRenderer2 extends ShapeFactory {
 
     getLocalBounds(element: RendererElement): Rect2;
 
-    getTextWidth(text: string, fontSize: number, fontFamily: string): number | undefined;
+    getTextWidth(text: string, fontSize: number, fontFamily: string): number;
 }
 
 export interface Shape {
