@@ -166,7 +166,7 @@ export module SVGHelper {
         element.attr('height', height);
     }
 
-    export function toColor(value: string | number | Color): string {
+    export function toColor(value: string | number | Color | null | undefined): string {
         if (value === 'transparent') {
             return 'transparent';
         } else if (value === 'none') {
