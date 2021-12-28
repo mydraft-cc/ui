@@ -107,7 +107,7 @@ export class Serializer {
     private deserializeShape(input: any) {
         const rendererId = deserializeRenderer(input);
 
-        const renderer = this.rendererService.registeredRenderers[rendererId];
+        const renderer = this.rendererService.get(rendererId);
 
         if (!renderer) {
             return null;

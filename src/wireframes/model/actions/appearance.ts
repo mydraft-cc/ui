@@ -33,9 +33,9 @@ export function buildAppearance(builder: ActionReducerMapBuilder<EditorState>, r
                 for (const visual of set!.allVisuals) {
                     diagram = diagram.updateItem(visual.id, item => {
                         if (item.type === 'Shape') {
-                            const renderer = rendererService.registeredRenderers[item.renderer];
+                            const rendererInstance = rendererService.get(item.renderer);
 
-                            if (renderer && !Types.isUndefined(renderer.defaultAppearance()[key])) {
+                            if (rendererInstance && !Types.isUndefined(rendererInstance.defaultAppearance()[key])) {
                                 return item.setAppearance(key, value);
                             }
                         }

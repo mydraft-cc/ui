@@ -92,9 +92,9 @@ export const RenderLayer = React.memo((props: RenderLayerProps) => {
         // Create missing shapes.
         for (const shape of allShapes) {
             if (!references[shape.id]) {
-                const renderer = rendererService.registeredRenderers[shape.renderer];
+                const rendererInstance = rendererService.get(shape.renderer);
 
-                references[shape.id] = new ShapeRef(renderContainer, renderer, showDebugOutlines);
+                references[shape.id] = new ShapeRef(renderContainer, rendererInstance, showDebugOutlines);
             }
         }
 
@@ -120,7 +120,7 @@ export const RenderLayer = React.memo((props: RenderLayerProps) => {
         if (shapesRendered.current) {
             shapesRendered.current();
         }
-    }, [renderContainer, orderedShapes, rendererService.registeredRenderers]);
+    }, [renderContainer, orderedShapes, rendererService]);
 
     React.useEffect(() => {
         if (previewItems) {

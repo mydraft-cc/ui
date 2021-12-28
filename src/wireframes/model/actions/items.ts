@@ -137,9 +137,9 @@ export function buildItems(builder: ActionReducerMapBuilder<EditorState>, render
             const { diagramId, fontFamily, position, shapeId, text } = action.payload;
 
             return state.updateDiagram(diagramId, diagram => {
-                const renderer = rendererService.registeredRenderers['Icon'];
+                const rendererInstance = rendererService.get('Icon');
 
-                const shape = renderer.createDefaultShape(shapeId);
+                const shape = rendererInstance.createDefaultShape(shapeId);
 
                 const finalPosition =
                     new Vec2(
@@ -175,10 +175,10 @@ export function buildItems(builder: ActionReducerMapBuilder<EditorState>, render
                         position.x + finalSize.x * 0.5,
                         position.y + finalSize.y * 0.5);
 
-                const renderer = rendererService.registeredRenderers['Raster'];
+                const rendererInstance = rendererService.get('Raster');
 
                 const shape =
-                    renderer.createDefaultShape(shapeId)
+                    rendererInstance.createDefaultShape(shapeId)
                         .transformWith(t => t.resizeTo(finalSize))
                         .transformWith(t => t.moveTo(finalPosition))
                         .setAppearance('SOURCE', source);
@@ -190,7 +190,7 @@ export function buildItems(builder: ActionReducerMapBuilder<EditorState>, render
             const { diagramId, position, properties, renderer, shapeId } = action.payload;
 
             return state.updateDiagram(diagramId, diagram => {
-                const rendererInstance = rendererService.registeredRenderers[renderer];
+                const rendererInstance = rendererService.get(renderer);
 
                 const shape = rendererInstance.createDefaultShape(shapeId);
 

@@ -51,19 +51,19 @@ describe('RendererService', () => {
 
     it('should register renderer', () => {
         const rendererService = new RendererService();
-        const renderer = new MockupRenderer();
+        const rendererInstance = new MockupRenderer();
 
-        rendererService.addRendererById('btn', renderer);
+        rendererService.addRendererById('btn', rendererInstance);
 
-        expect(rendererService.registeredRenderers['btn']).toBe(renderer);
+        expect(rendererService.get('btn')).toBe(rendererInstance);
     });
 
     it('should register renderer with identifier', () => {
         const rendererService = new RendererService();
-        const renderer = new MockupRenderer();
+        const rendererInstance = new MockupRenderer();
 
-        rendererService.addRenderer(renderer);
+        rendererService.addRenderer(rendererInstance);
 
-        expect(rendererService.registeredRenderers['identifier']).toBe(renderer);
+        expect(rendererService.get('identifier')).toBe(rendererInstance);
     });
 });

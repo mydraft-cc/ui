@@ -8,7 +8,15 @@
 import { Renderer } from './renderer';
 
 export class RendererService {
-    public registeredRenderers: { [id: string]: Renderer } = {};
+    private readonly registeredRenderers: { [id: string]: Renderer } = {};
+
+    public get all() {
+        return Object.entries(this.registeredRenderers);
+    }
+
+    public get(id: string) {
+        return this.registeredRenderers[id];
+    }
 
     public addRendererById(id: string, renderer: Renderer): RendererService {
         this.registeredRenderers[id] = renderer;

@@ -52,13 +52,12 @@ export interface AssetsState {
 }
 
 export const createInitialAssetsState: (rendererService: RendererService) => AssetsState = (rendererService: RendererService) => {
-    const allShapes: ShapeInfo[] = [];
+    const allShapes =
+        rendererService.all.filter(x => x[1].showInGallery())
+            .map(([name, renderer]) => {
+                return { displayName: name, name, offset: renderer.previewOffset() };
+            });
 
-    for (const [name, renderer] of Object.entries(rendererService.registeredRenderers)) {
-        if (renderer.showInGallery()) {
-            allShapes.push({ displayName: name, name, offset: renderer.previewOffset() });
-        }
-    }
     return {
         shapes: allShapes,
         shapesFilter: '',
