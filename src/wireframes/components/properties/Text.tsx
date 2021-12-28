@@ -15,7 +15,7 @@ export interface TextProps {
     text?: string;
 
     // Set the text.
-    onTextChange: (text: string) => void;
+    onTextChange: (text: string | undefined) => void;
 }
 
 export const Text = (props: TextProps) => {

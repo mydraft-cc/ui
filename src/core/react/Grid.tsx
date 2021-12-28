@@ -101,7 +101,7 @@ const GridComponent = (props: SizeMeProps & GridProps) => {
     } = props;
 
     const [scrollTop, setScrollTop] = React.useState(0);
-    const [scrollContainer, setScrollContainer] = React.useState<HTMLDivElement>();
+    const [scrollContainer, setScrollContainer] = React.useState<HTMLDivElement | null>();
 
     const doScroll = React.useCallback((event: React.UIEvent<HTMLDivElement>) => {
         const div: HTMLDivElement = event.target as any;
@@ -110,7 +110,7 @@ const GridComponent = (props: SizeMeProps & GridProps) => {
     }, []);
 
     const layout = React.useMemo(() => {
-        if (!scrollContainer) {
+        if (!scrollContainer || !size || size.height === null) {
             return { cellSize: 0, indexFirst: 0, indexLast: 0, height: 0 };
         }
 
@@ -124,7 +124,7 @@ const GridComponent = (props: SizeMeProps & GridProps) => {
         const indexLast = Math.floor(scrollBottom / cellSize) * columns + columns * 2;
 
         return { cellSize, indexFirst, indexLast, height };
-    }, [columns, items.length, scrollTop, scrollContainer, size.height]);
+    }, [columns, items.length, scrollTop, scrollContainer, size]);
 
     return (
         <div className={className} onScroll={doScroll} ref={setScrollContainer}>

@@ -74,9 +74,9 @@ describe('AppearanceReducer', () => {
         const state_1 = EditorState.empty().addDiagram(diagram);
         const state_2 = reducer(state_1, action);
 
-        const newDiagram = state_2.diagrams.get('1');
-        const newShape1 = newDiagram.items.get(shape1.id);
-        const newShape2 = newDiagram.items.get(shape2.id);
+        const newDiagram = state_2.diagrams.get('1')!;
+        const newShape1 = newDiagram.items.get(shape1.id)!;
+        const newShape2 = newDiagram.items.get(shape2.id)!;
 
         expect(newShape1, newShape2);
     }

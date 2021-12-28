@@ -47,7 +47,7 @@ export const Pages = () => {
     }, [dispatch]);
 
     const doSort = React.useCallback((result: DropResult) => {
-        dispatch(moveDiagram(result.draggableId, result.destination.index));
+        dispatch(moveDiagram(result.draggableId, result.destination!.index));
     }, [dispatch]);
 
     return (

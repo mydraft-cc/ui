@@ -40,8 +40,7 @@ export const CanvasView = (props: CanvasViewProps) => {
     } = props;
 
     const [document, setDocument] = React.useState<svg.Svg>();
-
-    const ref = React.useRef();
+    const ref = React.useRef<any>();
 
     React.useLayoutEffect(() => {
         const element = ref.current;

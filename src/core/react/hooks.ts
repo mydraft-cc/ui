@@ -14,7 +14,7 @@ export function useDetectPrint() {
     const [isPrinting, toggleStatus] = React.useState(false);
 
     React.useEffect(() => {
-        const printMq = typeof window !== 'undefined' && window.matchMedia && window.matchMedia('print');
+        const printMq = window.matchMedia && window.matchMedia('print');
 
         toggleStatus(!!printMq.matches);
 
@@ -62,14 +62,14 @@ export function useFullscreen(): [boolean, (value: boolean) => void] {
     return [fullscreen, setFullScreen];
 }
 
-export function usePrinter(): [() => void, () => void, boolean, React.MutableRefObject<undefined>] {
+export function usePrinter(): [() => void, () => void, boolean, React.MutableRefObject<any>] {
     const [isPrinting, setIsPrinting] = React.useState(false);
     const [isPrintingReady, setIsPrintingReady] = React.useState(false);
     const printMode = useDetectPrint();
-    const printRef = React.useRef();
+    const printRef = React.useRef<any>();
 
     const printer = useReactToPrint({
-        content: () => printRef.current,
+        content: () => printRef.current!,
         onAfterPrint: () => {
             setIsPrinting(false);
             setIsPrintingReady(false);
@@ -87,7 +87,7 @@ export function usePrinter(): [() => void, () => void, boolean, React.MutableRef
 
         if (isPrintingReady) {
             timer = setTimeout(() => {
-                printer();
+                printer && printer();
             }, 2000);
         }
 

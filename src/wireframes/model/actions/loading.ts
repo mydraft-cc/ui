@@ -88,7 +88,7 @@ export function loadingMiddleware(): Middleware {
                 store.dispatch(push(''));
             }
         } else if (loadDiagramAsync.fulfilled.match(action)) {
-            if (action.meta.arg.navigate) {
+            if (action.meta.arg.navigate && action.payload) {
                 store.dispatch(push(action.payload.tokenToRead));
             }
 
@@ -134,8 +134,8 @@ export function loading(initialState: LoadingState) {
         })
         .addCase(loadDiagramAsync.fulfilled, (state, action) => {
             state.isLoading = false;
-            state.tokenToRead = action.payload.tokenToRead;
-            state.tokenToWrite = action.payload.tokenToWrite;
+            state.tokenToRead = action.payload?.tokenToRead;
+            state.tokenToWrite = action.payload?.tokenToWrite;
         })
         .addCase(saveDiagramAsync.pending, (state) => {
             state.isLoading = true;

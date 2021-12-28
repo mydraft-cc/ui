@@ -12,12 +12,12 @@ export interface RecentDiagramValue {
     date: number;
 
     // The write token.
-    tokenToWrite?: string | null;
+    tokenToWrite: string;
 }
 
 export interface RecentDiagram extends RecentDiagramValue {
     // The read token.
-    tokenToRead?: string | null;
+    tokenToRead: string;
 }
 
 export interface LoadingState {
@@ -45,7 +45,7 @@ export function loadRecentDiagrams() {
     try {
         const recent = localStorage.getItem('recent');
 
-        return JSON.parse(recent) || {} as RecentDiagrams;
+        return JSON.parse(recent!) || {} as RecentDiagrams;
     } catch {
         return {};
     }

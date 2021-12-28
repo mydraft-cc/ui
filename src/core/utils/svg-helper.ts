@@ -32,10 +32,10 @@ export module SVGHelper {
     export const ZERO_POINT = new svg.Point(0, 0);
     export const IDENTITY_MATRIX = new svg.Matrix(1, 0, 0, 1, 0, 0);
 
-    export function createText(container: svg.Container, text: string, fontSize?: number, alignment?: string, verticalAlign?: string) {
+    export function createText(text?: string, fontSize?: number, alignment?: string, verticalAlign?: string) {
         fontSize = fontSize || 10;
 
-        const element = container.foreignObject(0, 0);
+        const element = new svg.ForeignObject();
 
         const div = document.createElement('div');
         div.className = 'no-select';
@@ -44,7 +44,7 @@ export module SVGHelper {
         div.style.fontFamily = 'inherit';
         div.style.overflow = 'hidden';
         div.style.verticalAlign = verticalAlign || 'middle';
-        div.textContent = text;
+        div.textContent = text || null;
 
         element.node.appendChild(div);
 
@@ -166,7 +166,7 @@ export module SVGHelper {
         element.attr('height', height);
     }
 
-    export function toColor(value: string | number | Color): string {
+    export function toColor(value: string | number | Color | null | undefined): string {
         if (value === 'transparent') {
             return 'transparent';
         } else if (value === 'none') {

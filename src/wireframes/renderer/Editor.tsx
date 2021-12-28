@@ -111,21 +111,21 @@ export const Editor = React.memo((props: EditorProps) => {
 
     React.useEffect(() => {
         if (interactionService) {
-            SVGHelper.setPosition(diagramTools.current, 0.5, 0.5);
-            SVGHelper.setPosition(adornersSelect.current, 0.5, 0.5);
-            SVGHelper.setPosition(adornersTransform.current, 0.5, 0.5);
-            SVGHelper.setPosition(renderMasterLayer.current, 0.5, 0.5);
-            SVGHelper.setPosition(renderMainLayer.current, 0.5, 0.5);
+            SVGHelper.setPosition(diagramTools.current!, 0.5, 0.5);
+            SVGHelper.setPosition(adornersSelect.current!, 0.5, 0.5);
+            SVGHelper.setPosition(adornersTransform.current!, 0.5, 0.5);
+            SVGHelper.setPosition(renderMasterLayer.current!, 0.5, 0.5);
+            SVGHelper.setPosition(renderMainLayer.current!, 0.5, 0.5);
         }
     }, [interactionService]);
 
     React.useEffect(() => {
         if (interactionService) {
-            SVGHelper.setSize(diagramTools.current, w, h);
-            SVGHelper.setSize(adornersSelect.current, w, h);
-            SVGHelper.setSize(adornersTransform.current, w, h);
-            SVGHelper.setSize(renderMasterLayer.current, w, h);
-            SVGHelper.setSize(renderMainLayer.current, w, h);
+            SVGHelper.setSize(diagramTools.current!, w, h);
+            SVGHelper.setSize(adornersSelect.current!, w, h);
+            SVGHelper.setSize(adornersTransform.current!, w, h);
+            SVGHelper.setSize(renderMasterLayer.current!, w, h);
+            SVGHelper.setSize(renderMainLayer.current!, w, h);
         }
     }, [w, h, interactionService]);
 
@@ -156,14 +156,14 @@ export const Editor = React.memo((props: EditorProps) => {
                         <>
                             <RenderLayer
                                 diagram={masterDiagram}
-                                renderContainer={renderMasterLayer.current}
+                                renderContainer={renderMasterLayer.current!}
                                 rendererService={rendererService}
                                 onRender={onRender}
                             />
 
                             <RenderLayer
                                 diagram={diagram}
-                                renderContainer={renderMainLayer.current}
+                                renderContainer={renderMainLayer.current!}
                                 rendererService={rendererService}
                                 previewItems={interactionPreviews}
                                 onRender={onRender}
@@ -171,7 +171,7 @@ export const Editor = React.memo((props: EditorProps) => {
 
                             {onTransformItems &&
                                 <TransformAdorner
-                                    adorners={adornersTransform.current}
+                                    adorners={adornersTransform.current!}
                                     interactionService={interactionService}
                                     onPreview={doPreview}
                                     onPreviewEnd={doPreviewEnd}
@@ -184,7 +184,7 @@ export const Editor = React.memo((props: EditorProps) => {
 
                             {onSelectItems &&
                                 <SelectionAdorner
-                                    adorners={adornersSelect.current}
+                                    adorners={adornersSelect.current!}
                                     interactionService={interactionService}
                                     onSelectItems={onSelectItems}
                                     selectedDiagram={diagram}

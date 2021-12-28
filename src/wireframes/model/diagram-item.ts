@@ -43,7 +43,7 @@ type ShapeProps = {
     transform: Transform;
 
     // The configurable properties.
-    configurables: ReadonlyArray<Configurable>;
+    configurables?: ReadonlyArray<Configurable>;
 
     // The transform constraints.
     constraint?: Constraint;
@@ -303,7 +303,7 @@ export class DiagramItem extends Record<Props> implements Shape {
     }
 }
 
-function getAppearance(visual: Appearance | { [key: string]: any }): Appearance {
+function getAppearance(visual: Appearance | { [key: string]: any } | undefined): Appearance {
     if (Types.isObject(visual)) {
         return ImmutableMap.of(<any>visual);
     }

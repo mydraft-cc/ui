@@ -51,7 +51,7 @@ export class EditorState extends Record<Props> {
     }
 
     public get orderedDiagrams(): ReadonlyArray<Diagram> {
-        return this.diagramIds.values.map(x => this.diagrams.get(x));
+        return this.diagramIds.values.map(x => this.diagrams.get(x)).filter(x => !!x) as Diagram[];
     }
 
     public static empty(): EditorState {
@@ -69,7 +69,7 @@ export class EditorState extends Record<Props> {
         return this.set('size', size);
     }
 
-    public changeColor(color: Color | undefined) {
+    public changeColor(color: Color) {
         return this.set('color', color);
     }
 
@@ -105,15 +105,15 @@ export class EditorState extends Record<Props> {
             this.selectedDiagramId);
     }
 
-    public selectDiagram(diagramId: string | null) {
-        if (!this.diagrams.get(diagramId)) {
+    public selectDiagram(diagramId: string | null | undefined) {
+        if (!this.diagrams.get(diagramId!)) {
             return this;
         }
 
         return this.set('selectedDiagramId', diagramId);
     }
 
-    private mutate(update: (diagrams: Diagrams) => Diagrams, updateIds: (diagrams: DiagramIds) => DiagramIds, selectedDiagramId: string | null): EditorState {
+    private mutate(update: (diagrams: Diagrams) => Diagrams, updateIds: (diagrams: DiagramIds) => DiagramIds, selectedDiagramId: string | null | undefined): EditorState {
         return this.merge({
             diagrams: update(this.diagrams),
             diagramIds: updateIds(this.diagramIds),

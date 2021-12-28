@@ -35,7 +35,7 @@ describe('Serializer', () => {
                 .addVisual(DiagramItem.createShape('3', null!, 100, 100))
                 .group(groupId, [oldShape1.id, oldShape2.id]);
 
-        const oldSet = DiagramItemSet.createFromDiagram([oldDiagram.items.get(groupId)], oldDiagram) !;
+        const oldSet = DiagramItemSet.createFromDiagram([oldDiagram.items.get(groupId)!], oldDiagram) !;
 
         const json = serializer.serializeSet(oldSet);
 
@@ -59,7 +59,7 @@ describe('Serializer', () => {
 
     function compareShapes(newShape: DiagramItem, originalShape: DiagramItem) {
         expect(newShape.appearance.size).toBe(originalShape.appearance.size);
-        expect(newShape.configurables.length).toBe(originalShape.configurables.length);
+        expect(newShape.configurables?.length).toBe(originalShape.configurables?.length);
         expect(newShape.renderer).toBe(originalShape.renderer);
         expect(newShape.transform.position.x).toBe(originalShape.transform.position.x);
         expect(newShape.transform.position.y).toBe(originalShape.transform.position.y);

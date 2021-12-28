@@ -40,7 +40,7 @@ describe('ImmutableList', () => {
     });
 
     it('should original list when values to add is null', () => {
-        const items: number[] = null;
+        const items: number[] = null!;
 
         const list_1 = ImmutableList.empty<number>();
         const list_2 = list_1.add(...items);
@@ -69,7 +69,7 @@ describe('ImmutableList', () => {
     });
 
     it('should return original list when item to remove is null', () => {
-        const items: string[] = null;
+        const items: string[] = null!;
 
         const list_1 = ImmutableList.of(1);
         const list_2 = list_1.remove(...items);

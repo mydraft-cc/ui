@@ -58,7 +58,7 @@ export class Diagram extends Record<Props> {
     }
 
     public get rootItems(): ReadonlyArray<DiagramItem> {
-        return this.itemIds.values.map(x => this.items.get(x));
+        return this.itemIds.values.map(x => this.items.get(x)).filter(x => !!x) as DiagramItem[];
     }
 
     public static empty(id: string) {
@@ -95,7 +95,7 @@ export class Diagram extends Record<Props> {
             for (const key of this.items.keys) {
                 const item = this.items.get(key);
 
-                if (item.type === 'Group') {
+                if (item?.type === 'Group') {
                     for (const childId of item.childIds.values) {
                         this.parents[childId] = item;
                     }
@@ -182,7 +182,7 @@ export class Diagram extends Record<Props> {
 
     public ungroup(groupId: string) {
         return this.mutate([groupId], ({ itemIds: rootIds, items }) => {
-            rootIds = rootIds.add(...items.get(groupId).childIds.values).remove(groupId);
+            rootIds = rootIds.add(...items.get(groupId)?.childIds?.values!).remove(groupId);
 
             items = items.remove(groupId);
 
@@ -247,7 +247,7 @@ export class Diagram extends Record<Props> {
 
         if (update.itemIds && parent) {
             update.items = update.items || this.items;
-            update.items = update.items.update(parent.id, p => p.set('childIds', update.itemIds));
+            update.items = update.items.update(parent.id, p => p.set('childIds', update.itemIds!));
 
             delete update.itemIds;
         }

@@ -76,7 +76,7 @@ describe('Diagram', () => {
         const diagram_2 = diagram_1.addVisual(shape1);
         const diagram_3 = diagram_2.addVisual(shape2);
         const diagram_4 = diagram_3.group(groupId, [shape1.id, shape2.id]);
-        const diagram_5 = diagram_4.removeItems(DiagramItemSet.createFromDiagram([diagram_4.items.get(groupId)], diagram_4)!);
+        const diagram_5 = diagram_4.removeItems(DiagramItemSet.createFromDiagram([diagram_4.items.get(groupId)!], diagram_4)!);
 
         expect(diagram_5.items.size).toBe(0);
     });
@@ -155,7 +155,7 @@ describe('Diagram', () => {
 
         expect(diagram_4.items.size).toBe(3);
 
-        const group = diagram_4.items.get(groupId);
+        const group = diagram_4.items.get(groupId)!;
 
         expect(group.childIds.at(0)).toBe(shape1.id);
         expect(group.childIds.at(1)).toBe(shape2.id);
@@ -215,8 +215,8 @@ describe('Diagram', () => {
 
         expect(diagram_5.itemIds.values).toEqual([groupId1]);
 
-        const group1 = diagram_5.items.get(groupId1);
-        const group2 = diagram_5.items.get(groupId2);
+        const group1 = diagram_5.items.get(groupId1)!;
+        const group2 = diagram_5.items.get(groupId2)!;
 
         expect(group1.childIds.values).toEqual([groupId2]);
         expect(group2.childIds.values).toEqual([shape1.id, shape2.id]);

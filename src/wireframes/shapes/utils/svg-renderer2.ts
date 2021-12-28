@@ -8,8 +8,7 @@
 /* eslint-disable quote-props */
 
 import { Rect2, sizeInPx, SVGHelper, Types } from '@app/core';
-import { DefaultAppearance, RendererColor, RendererElement, RendererOpacity, RendererText, RendererWidth, Shape, ShapeFactory, ShapeFactoryFunc, ShapeProperties, ShapePropertiesFunc, TextConfig } from '@app/wireframes/interface';
-import { DiagramItem } from '@app/wireframes/model';
+import { RendererColor, RendererElement, RendererOpacity, RendererText, RendererWidth, Shape, ShapeFactory, ShapeFactoryFunc, ShapeProperties, ShapePropertiesFunc, TextConfig } from '@app/wireframes/interface';
 import { Rect } from 'react-measure';
 import * as svg from '@svgdotjs/svg.js';
 import { AbstractRenderer2 } from './abstract-renderer';
@@ -20,6 +19,7 @@ class Factory implements ShapeFactory {
     private container: svg.G;
     private containerIndex: number;
     private clipping: boolean;
+    private wasClipped: boolean;
 
     public getContainer() {
         return this.container;
@@ -29,10 +29,11 @@ class Factory implements ShapeFactory {
         this.clipping = clipping;
         this.container = container;
         this.containerIndex = index;
+        this.wasClipped = false;
     }
 
     public rectangle(strokeWidth: RendererWidth, radius?: number, bounds?: Rect2, properties?: ShapePropertiesFunc) {
-        return this.new('rect', x => x.rect(), p => {
+        return this.new('rect', () => new svg.Rect(), p => {
             p.setBackgroundColor('transparent');
             p.setStrokeWidth(strokeWidth);
             p.setRadius(radius || 0);
@@ -41,7 +42,7 @@ class Factory implements ShapeFactory {
     }
 
     public ellipse(strokeWidth: RendererWidth, bounds?: Rect2, properties?: ShapePropertiesFunc) {
-        return this.new('ellipse', x => x.ellipse(), p => {
+        return this.new('ellipse', () => new svg.Ellipse(), p => {
             p.setBackgroundColor('transparent');
             p.setStrokeWidth(strokeWidth);
             p.setTransform(bounds);
@@ -49,7 +50,7 @@ class Factory implements ShapeFactory {
     }
 
     public roundedRectangleLeft(strokeWidth: RendererWidth, radius: number, bounds: Rect2, properties?: ShapePropertiesFunc) {
-        return this.new('path', x => x.path(), p => {
+        return this.new('path', () => new svg.Path(), p => {
             p.setBackgroundColor('transparent');
             p.setStrokeWidth(strokeWidth);
             p.setPath(SVGHelper.roundedRectangleLeft(bounds, radius));
@@ -58,7 +59,7 @@ class Factory implements ShapeFactory {
     }
 
     public roundedRectangleRight(strokeWidth: RendererWidth, radius: number, bounds: Rect2, properties?: ShapePropertiesFunc) {
-        return this.new('path', x => x.path(), p => {
+        return this.new('path', () => new svg.Path(), p => {
             p.setBackgroundColor('transparent');
             p.setStrokeWidth(strokeWidth);
             p.setPath(SVGHelper.roundedRectangleRight(bounds, radius));
@@ -67,7 +68,7 @@ class Factory implements ShapeFactory {
     }
 
     public roundedRectangleTop(strokeWidth: RendererWidth, radius: number, bounds: Rect2, properties?: ShapePropertiesFunc) {
-        return this.new('path', x => x.path(), p => {
+        return this.new('path', () => new svg.Path(), p => {
             p.setBackgroundColor('transparent');
             p.setStrokeWidth(strokeWidth);
             p.setPath(SVGHelper.roundedRectangleTop(bounds, radius));
@@ -76,7 +77,7 @@ class Factory implements ShapeFactory {
     }
 
     public roundedRectangleBottom(strokeWidth: RendererWidth, radius: number, bounds: Rect2, properties?: ShapePropertiesFunc) {
-        return this.new('path', x => x.path(), p => {
+        return this.new('path', () => new svg.Path(), p => {
             p.setBackgroundColor('transparent');
             p.setStrokeWidth(strokeWidth);
             p.setPath(SVGHelper.roundedRectangleBottom(bounds, radius));
@@ -85,7 +86,7 @@ class Factory implements ShapeFactory {
     }
 
     public path(strokeWidth: RendererWidth, path: string, bounds?: Rect2, properties?: ShapePropertiesFunc) {
-        return this.new('path', x => x.path(), p => {
+        return this.new('path', () => new svg.Path(), p => {
             p.setBackgroundColor('transparent');
             p.setStrokeWidth(strokeWidth);
             p.setPath(path);
@@ -94,9 +95,9 @@ class Factory implements ShapeFactory {
     }
 
     public text(config?: RendererText, bounds?: Rect2, properties?: ShapePropertiesFunc) {
-        return this.new('foreignObject', x => SVGHelper.createText(x, ''), p => {
+        return this.new('foreignObject', () => SVGHelper.createText(), p => {
             p.setBackgroundColor('transparent');
-            p.setText(config.text);
+            p.setText(config?.text);
             p.setFontSize(config);
             p.setFontFamily(config);
             p.setAlignment(config);
@@ -106,9 +107,9 @@ class Factory implements ShapeFactory {
     }
 
     public textMultiline(config?: RendererText, bounds?: Rect2, properties?: ShapePropertiesFunc) {
-        return this.new('foreignObject', x => SVGHelper.createText(x, ''), p => {
+        return this.new('foreignObject', () => SVGHelper.createText(), p => {
             p.setBackgroundColor('transparent');
-            p.setText(config.text);
+            p.setText(config?.text);
             p.setFontSize(config);
             p.setFontFamily(config);
             p.setAlignment(config);
@@ -118,7 +119,7 @@ class Factory implements ShapeFactory {
     }
 
     public raster(source: string, bounds?: Rect2, properties?: ShapePropertiesFunc) {
-        return this.new('image', x => x.image(), p => {
+        return this.new('image', () => new svg.Image(), p => {
             p.setBackgroundColor('transparent');
             p.setImage(source);
             p.setTransform(bounds);
@@ -126,10 +127,11 @@ class Factory implements ShapeFactory {
     }
 
     public group(items: ShapeFactoryFunc, clip?: ShapeFactoryFunc, properties?: ShapePropertiesFunc) {
-        return this.new('g', x => x.group(), (_, group) => {
+        return this.new('g', () => new svg.G(), (_, group) => {
             const clipping = this.clipping;
             const container = this.container;
             const containerIndex = this.containerIndex;
+            const wasClipped = this.wasClipped;
 
             this.container = group;
             this.containerIndex = 0;
@@ -148,67 +150,77 @@ class Factory implements ShapeFactory {
             this.clipping = clipping;
             this.container = container;
             this.containerIndex = containerIndex;
+            this.wasClipped = wasClipped;
         }, properties);
     }
 
-    private new<T extends svg.Element>(name: string, factory: (container: svg.Container) => T, configure: (properties: Properties, element: T) => void, properties: ShapePropertiesFunc | undefined) {
-        const element = this.create(name, factory);
+    private new<T extends svg.Element>(name: string, factory: () => T, defaults: (properties: Properties, element: T) => void, customProperties: ShapePropertiesFunc | undefined) {
+        let element: T;
 
-        Properties.INSTANCE.setElement(element);
-
-        configure(Properties.INSTANCE, element);
-
-        if (properties) {
-            properties(Properties.INSTANCE);
+        if (this.wasClipped) {
+            throw new Error('Only one clipping element is supported.');
         }
 
-        Properties.INSTANCE.sync();
+        const properties = Properties.INSTANCE;
 
-        return element;
-    }
-
-    private create<T extends svg.Element>(name: string, factory: (container: svg.Container) => T): T {
         if (this.clipping) {
-            let element: T = this.container.clipper() as any;
+            element = this.container.clipper() as any;
 
             if (!element || element.node.tagName !== name) {
                 element?.remove();
-                element = factory(this.container);
+                element = factory();
 
                 this.container.unclip();
                 this.container.clipWith(element);
             }
 
-            return element;
+            this.wasClipped = true;
         } else {
-            let element: T = this.container.get(this.containerIndex) as any;
+            element = this.container.get(this.containerIndex) as any;
 
             if (!element) {
-                element = factory(this.container);
+                element = factory();
+                element.addTo(this.container);
             } else if (element.node.tagName !== name) {
-                this.cleanup(this.containerIndex);
+                const previous = element;
 
-                element = factory(this.container);
+                element = factory();
+                element.insertAfter(previous);
+
+                previous.remove();
             }
 
             this.containerIndex++;
-
-            return element;
         }
+
+        properties.setElement(element);
+
+        if (defaults) {
+            defaults(properties, element);
+        }
+
+        if (customProperties) {
+            customProperties(properties);
+        }
+
+        properties.sync();
+
+        return element;
     }
 
     public cleanupAll() {
-        this.cleanup(this.containerIndex + 1);
-    }
-
-    public cleanup(start: number) {
         const size = this.container.children().length;
 
-        for (let i = start; i < size; i++) {
+        for (let i = this.containerIndex; i < size; i++) {
             const last = this.container.last();
 
             last.clipper()?.remove();
             last.remove();
+        }
+
+        if (!this.wasClipped) {
+            this.container.clipper()?.remove();
+            this.container.unclip();
         }
     }
 }
@@ -263,7 +275,7 @@ export class SVGRenderer2 extends Factory implements AbstractRenderer2 {
         }
     }
 
-    public getTextWidth(text: string, fontSize: number, fontFamily: string): number | undefined {
+    public getTextWidth(text: string, fontSize: number, fontFamily: string) {
         this.measureDiv.textContent = text;
         this.measureDiv.style.fontSize = sizeInPx(fontSize);
         this.measureDiv.style.fontFamily = fontFamily;
@@ -307,8 +319,7 @@ const PROPERTIES: ReadonlyArray<keyof PropertySet> = [
     'text',
     'text-alignment',
     'vertical-alignment',
-    // Transform must be last.
-    'transform',
+    'transform', // Transform must be last.
 ];
 
 class Properties implements ShapeProperties {
@@ -319,28 +330,8 @@ class Properties implements ShapeProperties {
         'fill': (value, element) => {
             element.attr('fill', value);
         },
-        'font-family': (value, element) => {
-            const div = element.node.children[0] as HTMLDivElement;
-
-            div.style.fontFamily = value;
-        },
-        'font-size': (value, element) => {
-            const div = element.node.children[0] as HTMLDivElement;
-
-            div.style.fontSize = `${value}px`;
-        },
-        'image': (value, element) => {
-            const image = element as svg.Image;
-
-            image.load(value);
-        },
         'opacity': (value, element) => {
             element.opacity(value);
-        },
-        'radius': (value, element) => {
-            const rect = element as svg.Rect;
-
-            rect.radius(value, value);
         },
         'stroke': (value, element) => {
             element.stroke({ color: value });
@@ -354,25 +345,55 @@ class Properties implements ShapeProperties {
         'stroke-width': (value, element) => {
             element.stroke({ width: value });
         },
+        'image': (value, element) => {
+            const image = element as svg.Image;
+
+            image.load(value);
+        },
         'path': (value, element) => {
             const path = element as svg.Path;
 
             path.plot(value);
         },
+        'radius': (value, element) => {
+            const rect = element as svg.Rect;
+
+            rect.radius(value, value);
+        },
+        'font-family': (value, element) => {
+            const div = element.node.children[0] as HTMLDivElement;
+
+            if (div?.nodeName === 'DIV') {
+                div.style.fontFamily = value;
+            }
+        },
+        'font-size': (value, element) => {
+            const div = element.node.children[0] as HTMLDivElement;
+
+            if (div?.nodeName === 'DIV') {
+                div.style.fontSize = `${value}px`;
+            }
+        },
         'text': (value, element) => {
             const div = element.node.children[0] as HTMLDivElement;
 
-            div.textContent = value;
+            if (div?.nodeName === 'DIV') {
+                div.textContent = value;
+            }
         },
         'text-alignment': (value, element) => {
             const div = element.node.children[0] as HTMLDivElement;
 
-            div.style.textAlign = value;
+            if (div?.nodeName === 'DIV') {
+                div.style.textAlign = value;
+            }
         },
         'vertical-alignment': (value, element) => {
             const div = element.node.children[0] as HTMLDivElement;
 
-            div.style.verticalAlign = value;
+            if (div?.nodeName === 'DIV') {
+                div.style.verticalAlign = value;
+            }
         },
         'transform': (value, element) => {
             SVGHelper.transform(element, value, false);
@@ -400,79 +421,79 @@ class Properties implements ShapeProperties {
         this.propertiesOld = this.element.node['properties'] || {};
     }
 
-    public setForegroundColor(color: RendererColor): ShapeProperties {
-        this.properties['color'] = this.getColor(color, DefaultAppearance.FOREGROUND_COLOR);
+    public setBackgroundColor(color: RendererColor | null | undefined): ShapeProperties {
+        this.properties['fill'] = this.getBackgroundColor(color);
 
         return this;
     }
 
-    public setBackgroundColor(color: RendererColor): ShapeProperties {
-        this.properties['fill'] = this.getColor(color, DefaultAppearance.BACKGROUND_COLOR);
+    public setForegroundColor(color: RendererColor | null | undefined): ShapeProperties {
+        this.properties['color'] = this.getForegroundColor(color);
 
         return this;
     }
 
-    public setStrokeColor(color: RendererColor): ShapeProperties {
-        this.properties['stroke'] = this.getColor(color, DefaultAppearance.STROKE_COLOR);
+    public setStrokeColor(color: RendererColor | null | undefined): ShapeProperties {
+        this.properties['stroke'] = this.getStrokeColor(color);
 
         return this;
     }
 
-    public setStrokeWidth(width: RendererWidth): ShapeProperties {
+    public setStrokeWidth(width: RendererWidth | null | undefined): ShapeProperties {
         this.properties['stroke-width'] = this.getStrokeWidth(width);
 
         return this;
     }
 
-    public setPath(path: string): ShapeProperties {
+    public setPath(path: string | null | undefined): ShapeProperties {
         this.properties['path'] = path;
 
         return this;
     }
 
-    public setRadius(radius: number): ShapeProperties {
-        this.properties['radius'] = radius;
+    public setRadius(radius: number | null | undefined): ShapeProperties {
+        this.properties['radius'] = radius || 0;
 
         return this;
     }
 
-    public setText(text: string): ShapeProperties {
-        this.properties['text'] = text;
+    public setText(text: RendererText | string | null | undefined): ShapeProperties {
+        this.properties['text'] = this.getText(text);
 
         return this;
     }
 
-    public setTransform(rect: Rect): ShapeProperties {
+    public setTransform(rect: Rect | null | undefined): ShapeProperties {
         this.properties['transform'] = { rect };
 
         return this;
     }
 
-    public setImage(source: string): ShapeProperties {
+    public setImage(source: string | null | undefined): ShapeProperties {
         this.properties['image'] = source;
 
         return this;
     }
 
-    public setFontSize(fontSize: TextConfig | undefined): ShapeProperties {
+    public setFontSize(fontSize: TextConfig | Shape | number | null | undefined): ShapeProperties {
         this.properties['font-size'] = this.getFontSize(fontSize);
 
         return this;
     }
 
-    public setFontFamily(fontFamily: TextConfig | string): ShapeProperties {
+    public setFontFamily(fontFamily: TextConfig | string | null | undefined): ShapeProperties {
         this.properties['font-family'] = this.getFontFamily(fontFamily);
 
         return this;
     }
 
-    public setAlignment(alignment: TextConfig): ShapeProperties {
+    public setAlignment(alignment: TextConfig | null | undefined): ShapeProperties {
         this.properties['text-alignment'] = this.getTextAlignment(alignment);
 
         return this;
     }
 
-    public setVerticalAlignment(alignment: string): ShapeProperties {
+    public setVerticalAlignment(alignment: string | null | undefined): ShapeProperties {
         this.properties['vertical-alignment'] = alignment;
 
         return this;
@@ -485,7 +506,7 @@ class Properties implements ShapeProperties {
         return this;
     }
 
-    public setOpacity(opacity: RendererOpacity): ShapeProperties {
+    public setOpacity(opacity: RendererOpacity | null | undefined): ShapeProperties {
         const value = this.getOpacity(opacity);
 
         if (Number.isFinite(value)) {
@@ -496,66 +517,82 @@ class Properties implements ShapeProperties {
     }
 
     public sync() {
-        const element = this.element;
-
-        const properties = this.properties;
-        const propertiesOld = this.propertiesOld;
-
         for (const key of PROPERTIES) {
-            const value = properties[key];
-            const valueOld = propertiesOld[key];
+            const value = this.properties[key];
 
-            if (!Types.equals(value, valueOld)) {
-                Properties.SETTERS[key](value, element);
+            if (!Types.equals(value, this.propertiesOld[key])) {
+                Properties.SETTERS[key](value, this.element);
             }
         }
 
-        element.node['properties'] = properties;
+        this.element.node['properties'] = this.properties;
     }
 
-    private getStrokeWidth(value: RendererWidth) {
+    private getBackgroundColor(value: RendererColor | null | undefined) {
         if (isShape(value)) {
-            return value.strokeThickness;
-        } else {
-            return value;
-        }
-    }
-
-    private getColor(value: RendererColor, key: string) {
-        if (isShape(value)) {
-            return SVGHelper.toColor(value.getAppearance(key));
+            return SVGHelper.toColor(value.backgroundColor);
         } else {
             return SVGHelper.toColor(value);
         }
     }
 
-    private getTextAlignment(value?: TextConfig) {
+    private getForegroundColor(value: RendererColor | null | undefined) {
+        if (isShape(value)) {
+            return SVGHelper.toColor(value.foregroundColor);
+        } else {
+            return SVGHelper.toColor(value);
+        }
+    }
+
+    private getStrokeColor(value: RendererColor | null | undefined) {
+        if (isShape(value)) {
+            return SVGHelper.toColor(value.strokeColor);
+        } else {
+            return SVGHelper.toColor(value);
+        }
+    }
+
+    private getStrokeWidth(value: RendererWidth | null | null | undefined) {
+        if (isShape(value)) {
+            return value.strokeThickness;
+        } else {
+            return value || 0;
+        }
+    }
+
+    private getText(value: TextConfig | Shape | string | null | undefined) {
+        if (isShape(value)) {
+            return value.text || '';
+        } else {
+            return value?.['text'] || value || '';
+        }
+    }
+
+    private getTextAlignment(value: TextConfig | Shape | string | null | undefined) {
         if (isShape(value)) {
             return value.textAlignment || 'center';
         } else {
-            return value?.alignment || 'center';
+            return value?.['alignment'] || value || 'center';
         }
     }
 
-    private getFontSize(value?: TextConfig) {
+    private getFontSize(value: TextConfig | Shape | number | null | undefined) {
         if (isShape(value)) {
             return value.fontSize || 10;
         } else {
-            return value?.fontSize || 10;
+            return value?.['fontSize'] || value || 10;
         }
     }
 
-    private getFontFamily(value?: TextConfig | string) {
+    private getFontFamily(value: TextConfig | Shape | string | null | undefined) {
         if (isShape(value)) {
             return value.fontFamily || 'inherit';
-        } else if (Types.isObject(value)) {
-            return 'inherit';
         } else {
-            return value || 'inherit';
+            return value?.['fontFamily'] || value || 10;
         }
     }
 
-    private getOpacity(value: RendererWidth) {
+    private getOpacity(value: RendererWidth | null | undefined) {
         if (isShape(value)) {
             return value.opacity;
         } else {
@@ -565,5 +602,5 @@ class Properties implements ShapeProperties {
 }
 
 function isShape(element: any): element is Shape {
-    return element instanceof DiagramItem;
+    return Types.isFunction(element?.getAppearance);
 }

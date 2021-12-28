@@ -78,13 +78,13 @@ export const getFilteredDiagrams = createSelector(
 export const getDiagram = createSelector(
     getDiagrams,
     getDiagramId,
-    (diagrams, id) => diagrams.get(id),
+    (diagrams, id) => diagrams.get(id!),
 );
 
 export const getMasterDiagram = createSelector(
     getDiagrams,
     getDiagram,
-    (diagrams, diagram) => diagrams.get(diagram?.master),
+    (diagrams, diagram) => diagrams.get(diagram?.master!),
 );
 
 export const getSelectionSet = createSelector(
@@ -94,12 +94,12 @@ export const getSelectionSet = createSelector(
 
 export const getSelectedIds = createSelector(
     getDiagram,
-    diagram => (diagram ? diagram.selectedIds.values : EMPTY_STRING_ARRAY),
+    diagram => diagram?.selectedIds.values || EMPTY_STRING_ARRAY,
 );
 
 export const getSelectedItemsWithLocked = createSelector(
     getDiagram,
-    diagram => (diagram ? diagram.selectedIds.values.map(i => diagram!.items.get(i)) : EMPTY_ITEMS_ARRAY),
+    diagram => diagram?.selectedIds.values.map(i => diagram!.items.get(i)).filter(x => !!x) as DiagramItem[] || EMPTY_ITEMS_ARRAY,
 );
 
 export const getSelectedItems = createSelector(

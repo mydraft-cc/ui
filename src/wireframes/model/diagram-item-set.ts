@@ -63,7 +63,7 @@ export class DiagramItemSet {
                 let item: DiagramItem;
 
                 if (Types.isString(itemOrId)) {
-                    item = diagram.items.get(itemOrId);
+                    item = diagram.items.get(itemOrId)!;
                 } else {
                     item = itemOrId;
                 }
