@@ -15,7 +15,14 @@ import { AbstractControl } from './utils/abstract-control';
 interface ShapeRendererProps {
     plugin: ShapePlugin;
 
+    // The optional appearance.
     appearance?: { [key: string]: any };
+
+    // The optional height.
+    h?: number;
+
+    // The optional width.
+    w?: number;
 }
 
 export const ShapeRenderer = (props: ShapeRendererProps) => {
@@ -26,13 +33,16 @@ export const ShapeRenderer = (props: ShapeRendererProps) => {
     const size = React.useMemo(() => {
         const size = plugin.defaultSize();
 
+        const w = props.w || size.x;
+        const h = props.h || size.y;
+
         return {
-            w: size.x,
-            h: size.y,
-            wp: sizeInPx(size.x),
-            hp: sizeInPx(size.y),
+            w,
+            h,
+            wp: sizeInPx(w),
+            hp: sizeInPx(h),
         };
-    }, [plugin]);
+    }, [plugin, props.h, props.w]);
 
     const doInit = React.useCallback((ref: HTMLDivElement) => {
         const doc = svg.SVG().addTo(ref).css({ overflow: 'visible' });

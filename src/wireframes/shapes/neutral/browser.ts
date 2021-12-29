@@ -12,7 +12,7 @@ const DEFAULT_APPEARANCE = {};
 DEFAULT_APPEARANCE[DefaultAppearance.BACKGROUND_COLOR] = 0xFFFFFF;
 DEFAULT_APPEARANCE[DefaultAppearance.TEXT_DISABLED] = true;
 
-const refreshCode = String.fromCharCode(0xf021);
+const REFRESH_CODE = String.fromCharCode(0xf021);
 
 export class Browser implements ShapePlugin {
     public identifier(): string {
@@ -69,7 +69,7 @@ export class Browser implements ShapePlugin {
     private createIcon(ctx: RenderContext) {
         const iconRect = new Rect2(5, -34, 30, 30);
 
-        ctx.renderer2.text({ fontSize: 20, text: refreshCode, alignment: 'center' }, iconRect, p => {
+        ctx.renderer2.text({ fontSize: 20, text: REFRESH_CODE, alignment: 'center' }, iconRect, p => {
             p.setForegroundColor(0x555555);
             p.setFontFamily('FontAwesome');
         });
