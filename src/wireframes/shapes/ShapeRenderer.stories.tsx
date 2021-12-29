@@ -137,7 +137,13 @@ export const RadioButton = () => {
 
 export const Shape = () => {
     return (
-        <ShapeRenderer plugin={new Shapes.Shape()} />
+        <>
+            <ShapeRenderer plugin={new Shapes.Shape()} appearance={{ SHAPE: 'Ellipse' }} />
+            <ShapeRenderer plugin={new Shapes.Shape()} appearance={{ SHAPE: 'Rectangle' }} />
+            <ShapeRenderer plugin={new Shapes.Shape()} appearance={{ SHAPE: 'Rhombus' }} />
+            <ShapeRenderer plugin={new Shapes.Shape()} appearance={{ SHAPE: 'Rounded Rectangle' }} />
+            <ShapeRenderer plugin={new Shapes.Shape()} appearance={{ SHAPE: 'Triangle' }} />
+        </>
     );
 };
 

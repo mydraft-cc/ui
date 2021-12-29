@@ -139,7 +139,15 @@ export module SVGHelper {
                 text.style.height = sizeInPx(h);
             }
 
-            element.size(w, h);
+            if (element.node.nodeName === 'ellipse') {
+                const ellipse = <svg.Ellipse>(element as any);
+
+                ellipse.cx(w * 0.5);
+                ellipse.cy(h * 0.5);
+                ellipse.radius(w * 0.5, h * 0.5);
+            } else {
+                setSize(element, w, h);
+            }
         }
 
         return element;

@@ -1,12 +1,20 @@
 @import '_mixins';
 @import '_vars';
 
-#root {
+#root-layout {
+    height: 100%;
+}
+
+#root-layout > .ant-layout {
     height: 100%;
 }
 
 body {
     overflow: hidden;
+
+    &.sb-main-padded {
+        overflow: inherit;
+    }
 }
 
 * {
@@ -52,10 +60,6 @@ body {
             text-align: left;
         }
     }
-}
-
-#root > .ant-layout {
-    height: 100%;
 }
 
 svg {

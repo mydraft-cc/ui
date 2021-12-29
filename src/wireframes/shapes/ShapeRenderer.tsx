@@ -35,7 +35,7 @@ export const ShapeRenderer = (props: ShapeRendererProps) => {
     }, [plugin]);
 
     const doInit = React.useCallback((ref: HTMLDivElement) => {
-        const doc = svg.SVG().addTo(ref).css({ position: 'relative', overflow: 'visible' });
+        const doc = svg.SVG().addTo(ref).css({ overflow: 'visible' });
 
         setDocument(doc);
     }, []);
@@ -65,6 +65,8 @@ export const ShapeRenderer = (props: ShapeRendererProps) => {
     }, [appearance, document, plugin, size]);
 
     return (
-        <div style={{ margin: 100, width: size.w, height: size.h }} ref={doInit} />
+        <div style={{ padding: 100 }}>
+            <div style={{ width: size.w, height: size.h }} ref={doInit} />
+        </div>
     );
 };
