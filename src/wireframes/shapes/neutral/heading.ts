@@ -23,7 +23,7 @@ export class Heading implements ShapePlugin {
     }
 
     public defaultSize() {
-        return { x: 90, y: 30 };
+        return { x: 90, y: 35 };
     }
 
     public constraint(factory: ConstraintFactory) {

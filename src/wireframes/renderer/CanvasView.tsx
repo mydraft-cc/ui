@@ -40,31 +40,27 @@ export const CanvasView = (props: CanvasViewProps) => {
     } = props;
 
     const [document, setDocument] = React.useState<svg.Svg>();
-    const ref = React.useRef<any>();
 
-    React.useLayoutEffect(() => {
-        const element = ref.current;
+    const doInit = React.useCallback((ref: HTMLDivElement) => {
+        const doc = svg.SVG().addTo(ref).css({ position: 'relative', overflow: 'visible' }).attr('tabindex', 0);
 
-        if (element && !document) {
-            const newDocument = svg.SVG().addTo(element).css({ position: 'relative', overflow: 'visible' }).attr('tabindex', 0);
+        setDocument(doc);
+    }, []);
 
-            onInit(newDocument);
-
-            setDocument(newDocument);
+    React.useEffect(() => {
+        if (document && onInit) {
+            onInit(document);
         }
-    }, [document, onInit, setDocument]);
+    }, [document, onInit]);
 
-    React.useLayoutEffect(() => {
+    React.useEffect(() => {
         if (document) {
-            document
-                .size(
-                    zoomedSize.x,
-                    zoomedSize.y)
-                .viewbox(
-                    viewBox?.x || 0,
-                    viewBox?.y || 0,
-                    viewBox ? viewBox.w : viewSize.x,
-                    viewBox ? viewBox.h : viewSize.y);
+            const x = viewBox?.x || 0;
+            const y = viewBox?.y || 0;
+            const w = viewBox ? viewBox.w : viewSize.x;
+            const h = viewBox ? viewBox.h : viewSize.y;
+
+            document.size(zoomedSize.x, zoomedSize.y).viewbox(x, y, w, h);
         }
     }, [viewSize, viewBox, zoom, zoomedSize, document]);
 
@@ -72,6 +68,6 @@ export const CanvasView = (props: CanvasViewProps) => {
     const h = sizeInPx(zoomedSize.x);
 
     return (
-        <div className={className} style={{ width: w, height: h }} ref={ref} />
+        <div className={className} style={{ width: w, height: h }} ref={doInit} />
     );
 };

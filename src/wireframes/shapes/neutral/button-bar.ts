@@ -130,7 +130,7 @@ export class ButtonBar implements ShapePlugin {
                 if (selected) {
                     return { text: text.substr(0, text.length - 1).trim(), selected };
                 } else {
-                    return { text };
+                    return { text, selected };
                 }
             });
 

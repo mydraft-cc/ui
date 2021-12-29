@@ -74,7 +74,7 @@ export const CustomProperty = (props: CustomPropertyProps) => {
                     </Select>
                 }
                 {configurable instanceof ColorConfigurable &&
-                    <ColorPicker activeColorTab={selectedColorTab} value={value}
+                    <ColorPicker activeColorTab={selectedColorTab as any} value={value}
                         onChange={doChangeColor}
                         onActiveColorTabChanged={onColorTabChange} />
                 }

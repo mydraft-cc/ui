@@ -18,7 +18,7 @@ import './VisualProperties.scss';
 export const VisualProperties = React.memo(() => {
     const dispatch = useDispatch();
     const selectionSet = useStore(getSelectionSet);
-    const selectedColorTab = useStore(s => s.ui.selectedColorTab);
+    const selectedColorTab = useStore(s => s.ui.selectedColorTab as any);
     const selectedDiagramId = useStore(getDiagramId);
     const selectedItems = useStore(getSelectedItems);
 

@@ -20,7 +20,7 @@ const BREWERS = {
 
 export class ColorPalette {
     constructor(
-        public readonly colors: Color[],
+        public readonly colors: ReadonlyArray<Color>,
         public readonly defaultColor: Color,
     ) {
     }

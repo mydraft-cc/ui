@@ -56,38 +56,40 @@ export const GridList = React.memo((props: GridProps & GridState) => {
 
     const cells = [];
 
-    for (let index = indexFirst; index < indexLast; index++) {
-        const item = items[index];
+    if (renderer) {
+        for (let index = indexFirst; index < indexLast; index++) {
+            const item = items[index];
 
-        if (item) {
-            const itemKey = keyBuilder(item);
+            if (item) {
+                const itemKey = keyBuilder(item);
 
-            let cell = cache[itemKey];
+                let cell = cache[itemKey];
 
-            if (!cell) {
-                cell = renderer(item);
+                if (!cell) {
+                    cell = renderer(item);
 
-                cache[itemKey] = cell;
+                    cache[itemKey] = cell;
+                }
+
+                const col = sizeInPx(cellSize * Math.floor(index % columns));
+                const row = sizeInPx(cellSize * Math.floor(index / columns));
+
+                const cellPx = sizeInPx(cellSize);
+
+                cell = (
+                    <div key={index} style={{ position: 'absolute', height: cellPx, width: cellPx, top: row, left: col }}>
+                        {cell}
+                    </div>
+                );
+
+                cells.push(cell);
             }
-
-            const col = sizeInPx(cellSize * Math.floor(index % columns));
-            const row = sizeInPx(cellSize * Math.floor(index / columns));
-
-            const cellPx = sizeInPx(cellSize);
-
-            cell = (
-                <div key={index} style={{ position: 'absolute', height: cellPx, width: cellPx, top: row, left: col }}>
-                    {cell}
-                </div>
-            );
-
-            cells.push(cell);
         }
     }
 
     return (
         <div style={{ height: sizeInPx(height), position: 'relative' }}>
-            {...cells}
+            {cells}
         </div>
     );
 });

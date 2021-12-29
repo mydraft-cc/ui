@@ -15,6 +15,8 @@ import { Color } from './../utils/color';
 import { ColorPalette } from './../utils/color-palette';
 import './ColorPicker.scss';
 
+type ColorTab = 'palette' | 'advanced';
+
 interface ColorPickerProps {
     // The selected color.
     value?: Color | string | null;
@@ -23,7 +25,7 @@ interface ColorPickerProps {
     palette?: ColorPalette;
 
     // The active color tab.
-    activeColorTab?: string;
+    activeColorTab?: ColorTab;
 
     // Where to place the popover
     popoverPlacement?: TooltipPlacement;
@@ -35,7 +37,7 @@ interface ColorPickerProps {
     onChange?: (color: Color) => void;
 
     // Triggered when the active color tab has changed.
-    onActiveColorTabChanged?: (key: string) => void;
+    onActiveColorTabChanged?: (key: ColorTab) => void;
 }
 
 export const ColorPicker = React.memo((props: ColorPickerProps) => {
@@ -53,7 +55,9 @@ export const ColorPicker = React.memo((props: ColorPickerProps) => {
     const [colorHex, setColorHex] = React.useState(color.toString());
     const [visible, setVisible] = React.useState<boolean>(false);
 
-    const selectedPalette = palette || ColorPalette.colors();
+    const selectedPalette = React.useMemo(() => {
+        return palette || ColorPalette.colors();
+    }, [palette]);
 
     React.useEffect(() => {
         setColorHex(color.toString());
@@ -71,7 +75,7 @@ export const ColorPicker = React.memo((props: ColorPickerProps) => {
         setColorHex(result.hex);
     }, []);
 
-    const doSelectTab = React.useCallback((key: string) => {
+    const doSelectTab = React.useCallback((key: ColorTab) => {
         if (onActiveColorTabChanged) {
             onActiveColorTabChanged(key);
         }
@@ -119,7 +123,7 @@ export const ColorPicker = React.memo((props: ColorPickerProps) => {
     const placement = popoverPlacement || 'left';
 
     return (
-        <Popover content={content} visible={visible} placement={placement} trigger='click' onVisibleChange={setVisible}>
+        <Popover content={content} visible={visible && !disabled} placement={placement} trigger='click' onVisibleChange={setVisible}>
             <Button disabled={disabled} className='color-picker-button' onClick={doToggle}>
                 <div className='color-picker-color'>
                     <div className='color-picker-color-inner' style={{ background: colorHex }}></div>

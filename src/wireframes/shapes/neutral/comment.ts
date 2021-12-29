@@ -40,7 +40,7 @@ export class Comment implements ShapePlugin {
         const t = ctx.rect.top;
         const b = ctx.rect.bottom;
 
-        const path = `M${l + c},${t} L${r},${t} L${r},${b} L${l},${b} L${l},${t + c} L${l + c},${t} L${l + c},${t + c} L${l},${t + c} z`;
+        const path = `M${l + c},${t} L${r},${t} L${r},${b} L${l},${b} L${l},${t + c} L${l + c},${t} z M${l + c},${t} L${l + c},${t + c} L${l},${t + c}`;
 
         ctx.renderer2.path(ctx.shape, path, undefined, p => {
             p.setBackgroundColor(0xfff9b7);

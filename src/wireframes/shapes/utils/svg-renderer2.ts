@@ -54,7 +54,6 @@ class Factory implements ShapeFactory {
             p.setBackgroundColor('transparent');
             p.setStrokeWidth(strokeWidth);
             p.setPath(SVGHelper.roundedRectangleLeft(bounds, radius));
-            p.setTransform(bounds);
         }, properties);
     }
 
@@ -63,7 +62,6 @@ class Factory implements ShapeFactory {
             p.setBackgroundColor('transparent');
             p.setStrokeWidth(strokeWidth);
             p.setPath(SVGHelper.roundedRectangleRight(bounds, radius));
-            p.setTransform(bounds);
         }, properties);
     }
 
@@ -72,7 +70,6 @@ class Factory implements ShapeFactory {
             p.setBackgroundColor('transparent');
             p.setStrokeWidth(strokeWidth);
             p.setPath(SVGHelper.roundedRectangleTop(bounds, radius));
-            p.setTransform(bounds);
         }, properties);
     }
 
@@ -81,7 +78,6 @@ class Factory implements ShapeFactory {
             p.setBackgroundColor('transparent');
             p.setStrokeWidth(strokeWidth);
             p.setPath(SVGHelper.roundedRectangleBottom(bounds, radius));
-            p.setTransform(bounds);
         }, properties);
     }
 

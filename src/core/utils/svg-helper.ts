@@ -139,7 +139,7 @@ export module SVGHelper {
                 text.style.height = sizeInPx(h);
             }
 
-            SVGHelper.setSize(element, w, h);
+            element.size(w, h);
         }
 
         return element;
@@ -162,8 +162,7 @@ export module SVGHelper {
     }
 
     export function setSize(element: svg.Element, width: number, height: number) {
-        element.attr('width', width);
-        element.attr('height', height);
+        element.attr('width', width).attr('height', height);
     }
 
     export function toColor(value: string | number | Color | null | undefined): string {
