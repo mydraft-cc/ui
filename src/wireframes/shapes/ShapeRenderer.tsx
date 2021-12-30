@@ -23,10 +23,13 @@ interface ShapeRendererProps {
 
     // The optional width.
     w?: number;
+
+    // The optional padding.
+    padding?: number;
 }
 
 export const ShapeRenderer = (props: ShapeRendererProps) => {
-    const { appearance, plugin } = props;
+    const { appearance, padding, plugin } = props;
 
     const [document, setDocument] = React.useState<svg.Svg>();
 
@@ -75,7 +78,7 @@ export const ShapeRenderer = (props: ShapeRendererProps) => {
     }, [appearance, document, plugin, size]);
 
     return (
-        <div style={{ padding: 100 }}>
+        <div style={{ padding: padding || 10 }}>
             <div style={{ width: size.w, height: size.h }} ref={doInit} />
         </div>
     );

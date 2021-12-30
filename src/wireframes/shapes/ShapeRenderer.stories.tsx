@@ -12,11 +12,38 @@ import * as Shapes from './dependencies';
 
 export default {
     component: ShapeRenderer,
+    argTypes: {
+        appearance: {
+            table: {
+                disable: true,
+            },
+        },
+        padding: {
+            table: {
+                disable: true,
+            },
+        },
+        plugin: {
+            table: {
+                disable: true,
+            },
+        },
+        w: {
+            table: {
+                disable: true,
+            },
+        },
+        h: {
+            table: {
+                disable: true,
+            },
+        },
+    },
 } as ComponentMeta<typeof ShapeRenderer>;
 
 export const Browser = () => {
     return (
-        <ShapeRenderer plugin={new Shapes.Browser()} />
+        <ShapeRenderer plugin={new Shapes.Browser()} padding={100} />
     );
 };
 
