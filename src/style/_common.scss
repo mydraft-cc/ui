@@ -5,10 +5,6 @@
     height: 100%;
 }
 
-#root-layout > .ant-layout {
-    height: 100%;
-}
-
 body {
     overflow: hidden;
 
@@ -60,6 +56,10 @@ body {
             text-align: left;
         }
     }
+}
+
+#root-layout > .ant-layout {
+    height: 100%;
 }
 
 svg {
