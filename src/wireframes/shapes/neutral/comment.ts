@@ -24,7 +24,7 @@ export class Comment implements ShapePlugin {
     }
 
     public defaultSize() {
-        return { x: 170, y: 150 };
+        return { x: 180, y: 170 };
     }
 
     public render(ctx: RenderContext) {
