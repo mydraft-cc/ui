@@ -22,27 +22,31 @@ export interface ShortcutProps {
 export const Shortcut = (props: ShortcutProps) => {
     const { disabled, keys, onPressed } = props;
 
+    const currentDisabled = React.useRef(disabled);
+    const currentOnPressed = React.useRef(onPressed);
+
+    currentDisabled.current = disabled;
+    currentOnPressed.current = onPressed;
+
     React.useEffect(() => {
-        if (!disabled) {
-            const simplifiedKeys = keys.toLocaleLowerCase().replace(/[\s]/g, '');
+        const simplifiedKeys = keys.toLocaleLowerCase().replace(/[\s]/g, '');
 
-            Mousetrap.bind(simplifiedKeys, (event) => {
-                onPressed();
+        Mousetrap.bind(simplifiedKeys, (event) => {
+            if (!currentDisabled.current) {
+                currentOnPressed.current();
+            }
 
-                event.preventDefault();
-                event.stopPropagation();
-                event.stopImmediatePropagation();
+            event.preventDefault();
+            event.stopPropagation();
+            event.stopImmediatePropagation();
 
-                return false;
-            });
+            return false;
+        });
 
-            return () => {
-                Mousetrap.unbind(keys);
-            };
-        }
-
-        return undefined;
-    }, [disabled, keys, onPressed]);
+        return () => {
+            Mousetrap.unbind(simplifiedKeys);
+        };
+    }, [keys]);
 
     return <></>;
 };
