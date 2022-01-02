@@ -31,7 +31,7 @@ type Props = {
 };
 
 export class Diagram extends Record<Props> {
-    private parents: { [id: string]: DiagramItem };
+    private parents: { [id: string]: DiagramItem } = {};
 
     public get id() {
         return this.get('id');

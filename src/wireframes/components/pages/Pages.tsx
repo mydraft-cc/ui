@@ -38,7 +38,7 @@ export const Pages = () => {
         dispatch(selectDiagram(diagramId));
     }, [dispatch]);
 
-    const doSetMaster = React.useCallback((diagramId: string, master: string) => {
+    const doSetMaster = React.useCallback((diagramId: string, master: string | undefined) => {
         dispatch(setDiagramMaster(diagramId, master));
     }, [dispatch]);
 

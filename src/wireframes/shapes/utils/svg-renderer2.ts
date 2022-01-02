@@ -16,10 +16,10 @@ import { AbstractRenderer2 } from './abstract-renderer';
 export * from './abstract-renderer';
 
 class Factory implements ShapeFactory {
-    private container: svg.G;
-    private containerIndex: number;
-    private clipping: boolean;
-    private wasClipped: boolean;
+    private container: svg.G = null!;
+    private containerIndex = 0;
+    private clipping = false;
+    private wasClipped = false;
 
     public getContainer() {
         return this.container;
@@ -396,9 +396,9 @@ class Properties implements ShapeProperties {
         },
     };
 
-    private element: svg.Element;
-    private properties: PropertySet;
-    private propertiesOld: PropertySet;
+    private element: svg.Element = null!;
+    private properties: PropertySet = {};
+    private propertiesOld: PropertySet = {};
 
     public get shape() {
         return this.element;

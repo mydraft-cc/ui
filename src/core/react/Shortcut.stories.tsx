@@ -25,12 +25,12 @@ const Template = (args: any) => {
 
 export const Default = Template.bind({});
 
-Default.args = {
+Default['args'] = {
     keys: 'ctrl+s',
 };
 
 export const ReadableKeys = Template.bind({});
 
-ReadableKeys.args = {
+ReadableKeys['args'] = {
     keys: 'CTRL + S',
 };

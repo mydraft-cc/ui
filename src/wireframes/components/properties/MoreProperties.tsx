@@ -19,7 +19,7 @@ export const MoreProperties = React.memo(() => {
     const selectedItems = useStore(getSelectedItems);
 
     const [link, setLink] =
-        useAppearance<string>(selectedDiagramId, selectionSet,
+        useAppearance<string | undefined>(selectedDiagramId, selectionSet,
             DefaultAppearance.LINK);
 
     if (!selectedDiagramId) {

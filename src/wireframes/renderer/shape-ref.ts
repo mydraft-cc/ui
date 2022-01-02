@@ -10,13 +10,13 @@ import * as svg from '@svgdotjs/svg.js';
 
 export class ShapeRef {
     private previewShape: DiagramItem | null = null;
-    private currentShape: DiagramItem;
+    private currentShape: DiagramItem | null = null;
     private currentIndex = -1;
 
-    public renderedElement: svg.Element;
+    public renderedElement: svg.Element | null = null;
 
     public get renderId() {
-        return this.renderedElement.id();
+        return this.renderedElement?.id();
     }
 
     constructor(
@@ -42,6 +42,10 @@ export class ShapeRef {
         if (this.previewShape !== previewShape) {
             const shapeToRender = previewShape || this.currentShape;
 
+            if (!shapeToRender) {
+                return;
+            }
+
             this.renderer.setContext(this.doc);
             this.renderer.render(shapeToRender, this.renderedElement, { debug: this.showDebugMarkers });
 
@@ -56,11 +60,11 @@ export class ShapeRef {
             this.renderer.setContext(this.doc);
 
             this.renderedElement = this.renderer.render(shape, this.renderedElement, { debug: this.showDebugMarkers });
-            this.renderedElement.node['shape'] = shape;
+            this.renderedElement!.node['shape'] = shape;
         }
 
-        if (!this.renderedElement.parent()) {
-            this.doc.add(this.renderedElement);
+        if (!this.renderedElement!.parent()) {
+            this.doc.add(this.renderedElement!);
         }
 
         this.currentShape = shape;

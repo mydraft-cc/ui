@@ -62,7 +62,7 @@ type Props = ItemProps & GroupProps & ShapeProps;
 
 export class DiagramItem extends Record<Props> implements Shape {
     private cachedBounds: { [id: string]: Transform } | undefined;
-    private cachedDiagram: Diagram;
+    private cachedDiagram: Diagram | undefined = undefined;
 
     public get id() {
         return this.get('id');

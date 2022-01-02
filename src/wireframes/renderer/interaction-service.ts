@@ -136,7 +136,7 @@ export class InteractionService {
         this.adornerLayers.forEach(l => l.hide());
     }
 
-    private buildEvent(actionProvider: (handler: InteractionHandler) => Function) {
+    private buildEvent(actionProvider: (handler: InteractionHandler) => Function | undefined) {
         let result = NOOP;
 
         for (let i = this.interactionHandlers.length - 1; i >= 0; i--) {
@@ -152,7 +152,7 @@ export class InteractionService {
         return result;
     }
 
-    private buildMouseEvent(actionProvider: (handler: InteractionHandler) => Function) {
+    private buildMouseEvent(actionProvider: (handler: InteractionHandler) => Function | undefined) {
         let result = NOOP;
 
         const inner = this.buildEvent(actionProvider);

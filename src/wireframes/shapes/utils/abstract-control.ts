@@ -56,9 +56,9 @@ class Context implements RenderContext {
 
     public readonly renderer2 = SVGRenderer2.INSTANCE;
 
-    public shape: Shape;
+    public shape!: Shape;
 
-    public rect: Rect2;
+    public rect!: Rect2;
 }
 
 export class AbstractControl implements Renderer {

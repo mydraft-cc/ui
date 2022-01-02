@@ -75,9 +75,9 @@ export const ColorPicker = React.memo((props: ColorPickerProps) => {
         setColorHex(result.hex);
     }, []);
 
-    const doSelectTab = React.useCallback((key: ColorTab) => {
+    const doSelectTab = React.useCallback((key: string) => {
         if (onActiveColorTabChanged) {
-            onActiveColorTabChanged(key);
+            onActiveColorTabChanged(key as ColorTab);
         }
     }, [onActiveColorTabChanged]);
 

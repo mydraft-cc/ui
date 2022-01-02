@@ -36,7 +36,7 @@ export const renameDiagram =
     });
 
 export const setDiagramMaster =
-    createAction('diagram/master', (diagram: DiagramRef, master: string) => {
+    createAction('diagram/master', (diagram: DiagramRef, master: string | undefined) => {
         return { payload: createDiagramAction(diagram, { master }) };
     });
 

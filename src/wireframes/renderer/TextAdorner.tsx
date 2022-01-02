@@ -37,7 +37,7 @@ export interface TextAdornerProps {
 export class TextAdorner extends React.PureComponent<TextAdornerProps> implements InteractionHandler {
     private readonly style = { display: 'none ' };
     private selectedShape: DiagramItem | null = null;
-    private textareaElement: HTMLTextAreaElement;
+    private textareaElement: HTMLTextAreaElement = null!;
 
     public componentDidMount() {
         this.props.interactionService.addHandler(this);

@@ -129,7 +129,7 @@ describe('ImmutableMap', () => {
     it('should mutate set', () => {
         const set_1 = ImmutableMap.of<number>({ 1: 10, 2: 20, 3: 30 });
         const set_2 = set_1.mutate(m => {
-            m.set('4', '4');
+            m.set('4', 4);
             m.remove('2');
             m.remove('3');
         });

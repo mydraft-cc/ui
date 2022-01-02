@@ -19,17 +19,17 @@ describe('Undoable', () => {
     let reducerCalled = 0;
     let reducerValue = 0;
 
-    const inner = (state: number) => {
+    const inner = (state: number | undefined) => {
         reducerCalled++;
-        reducerValue = state + 1;
+        reducerValue = (state || 0) + 1;
 
         return reducerValue;
     };
 
-    const noopInner = (state: number) => {
+    const noopInner = (state: number | undefined) => {
         reducerCalled++;
 
-        return state;
+        return state || 0;
     };
 
     beforeEach(() => {

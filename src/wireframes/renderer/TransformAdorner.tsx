@@ -50,19 +50,19 @@ export interface TransformAdornerProps {
 }
 
 export class TransformAdorner extends React.PureComponent<TransformAdornerProps> implements InteractionHandler {
-    private transform: Transform;
-    private startTransform: Transform;
+    private transform = Transform.ZERO;
+    private startTransform = Transform.ZERO;
     private allElements: svg.Element[];
     private overlays: InteractionOverlays;
-    private canResizeX: boolean;
-    private canResizeY: boolean;
+    private canResizeX = false;
+    private canResizeY = false;
     private manipulated = false;
     private manipulationMode = 0;
-    private moveShape: svg.Element;
-    private dragStart: Vec2;
-    private rotation: Rotation;
-    private rotateShape: svg.Element;
-    private resizeDragOffset: Vec2;
+    private moveShape: svg.Element = null!;
+    private dragStart = Vec2.ZERO;
+    private rotation = Rotation.ZERO;
+    private rotateShape: svg.Element = null!;
+    private resizeDragOffset = Vec2.ZERO;
     private resizeShapes: svg.Element[] = [];
     private snapManager = new SnapManager();
 

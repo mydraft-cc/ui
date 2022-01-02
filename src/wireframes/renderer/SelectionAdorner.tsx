@@ -34,7 +34,7 @@ export interface SelectionAdornerProps {
 export class SelectionAdorner extends React.Component<SelectionAdornerProps> implements InteractionHandler {
     private selectionMarkers: any[] = [];
     private selectionShape: any;
-    private dragStart: Vec2 | null;
+    private dragStart: Vec2 | null = null;
 
     public componentDidMount() {
         this.props.interactionService.addHandler(this);

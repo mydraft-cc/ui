@@ -24,7 +24,7 @@ const Template = ({ palette: _, ...rest }: any) => {
 
 export const Default = Template.bind({});
 
-Default.argTypes = {
+Default['argTypes'] = {
     palette: {
         table: {
             disable: true,
