@@ -27,7 +27,7 @@ class DefaultConstraintFactory implements ConstraintFactory {
     }
 
     public textSize(padding?: number, lineHeight?: number, resizeWidth?: false, minWidth?: number): Constraint {
-        return new TextSizeConstraint(padding, lineHeight, resizeWidth, SVGRenderer2.INSTANCE, minWidth);
+        return new TextSizeConstraint(SVGRenderer2.INSTANCE, padding, lineHeight, resizeWidth, minWidth);
     }
 }
 

@@ -12,10 +12,10 @@ import { SVGRenderer2 } from './svg-renderer2';
 
 export class TextSizeConstraint implements Constraint {
     constructor(
+        private readonly renderer: SVGRenderer2,
         private readonly padding = 0,
         private readonly lineHeight = 1.2,
         private readonly resizeWidth = false,
-        private readonly renderer: SVGRenderer2,
         private readonly minWidth = 0,
     ) { }
 

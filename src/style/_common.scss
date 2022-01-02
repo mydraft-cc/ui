@@ -1,5 +1,5 @@
-@import '_mixins';
-@import '_vars';
+@import 'mixins';
+@import 'vars';
 
 #root-layout {
     height: 100%;
@@ -165,10 +165,10 @@ $sidebar-size: 320px;
 }
 
 .force-color {
-    color: rgba(0, 0, 0, .85) !important;
+    color: rgba(0, 0, 0, 85%) !important;
 
     &:hover {
-        color: rgba(0, 0, 0, .85) !important;
+        color: rgba(0, 0, 0, 85%) !important;
     }
 
     &:hover {
@@ -176,21 +176,21 @@ $sidebar-size: 320px;
     }
 
     .ant-menu-title-content {
-        color: rgba(0, 0, 0, .85) !important;
+        color: rgba(0, 0, 0, 85%) !important;
     }
 
     &.ant-menu-item-disabled {
-        color: rgba(0, 0, 0, .25) !important;
+        color: rgba(0, 0, 0, 25%) !important;
 
         .ant-menu-title-content {
-            color: rgba(0, 0, 0, .25) !important;
+            color: rgba(0, 0, 0, 25%) !important;
         }
     }
 }
 
 .ant-menu-item-disabled {
     .force-color {
-        color: rgba(0, 0, 0, .25) rgba(0, 0, 0, .85);
+        color: rgba(0, 0, 0, 25%) rgba(0, 0, 0, 85%);
     }
 }
 

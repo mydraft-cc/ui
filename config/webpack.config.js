@@ -307,7 +307,7 @@ module.exports = function configure(env) {
         config.module.rules.push({
             test: /\.ts[x]?$/,
             use: [{
-                loader: 'istanbul-instrumenter-loader?esModules=true',
+                loader: '@jsdevtools/coverage-istanbul-loader?esModules=true',
             }, {
                 loader: 'ts-loader',
             }],
