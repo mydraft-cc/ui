@@ -89,4 +89,4 @@ const Root = (
 
 registerServiceWorker(store);
 
-ReactDOM.render(Root, document.getElementById('root') as HTMLElement);
+ReactDOM.render(Root, document.getElementById('root-layout') as HTMLElement);
