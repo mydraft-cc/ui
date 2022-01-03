@@ -139,7 +139,7 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
         }
     }
 
-    public onKeyUp(event: KeyboardEvent, next: (event: KeyboardEvent) => void) {
+    public onKeyDown(event: KeyboardEvent, next: (event: KeyboardEvent) => void) {
         if (!isNoInputFocused()) {
             next(event);
             return;
