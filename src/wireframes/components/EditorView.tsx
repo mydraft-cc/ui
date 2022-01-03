@@ -143,8 +143,8 @@ export const EditorView = ({ spacing }: EditorViewProps) => {
 
     return (
         <Dropdown overlay={<ContextMenu onClick={doHide} />} trigger={['contextMenu']} visible={menuVisible} onVisibleChange={setMenuVisible}>
-            <div ref={ref} className='editor-view'>
-                <div className='editor-diagram' style={{ width: w, height: h, padding }}>
+            <div className='editor-view'>
+                <div className='editor-diagram' style={{ width: w, height: h, padding }} ref={ref} >
                     <Editor
                         color={editorColor}
                         diagram={diagram}

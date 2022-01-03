@@ -5,14 +5,14 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { Color, ColorPicker } from '@app/core';
+import { ColorPicker } from '@app/core';
 import { texts } from '@app/texts';
 import { DefaultAppearance } from '@app/wireframes/interface';
 import { getDiagramId, getSelectedItems, getSelectionSet, selectColorTab, useStore } from '@app/wireframes/model';
 import { Button, Col, Row, Select } from 'antd';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
-import { UniqueValue, useAppearance } from './../actions';
+import { UniqueValue, useAppearance, useColorAppearance } from './../actions';
 import './VisualProperties.scss';
 
 export const VisualProperties = React.memo(() => {
@@ -23,20 +23,20 @@ export const VisualProperties = React.memo(() => {
     const selectedItems = useStore(getSelectedItems);
 
     const [backgroundColor, setBackgroundColor] =
-        useAppearance(selectedDiagramId, selectionSet,
-            DefaultAppearance.BACKGROUND_COLOR, x => Color.fromValue(x));
+        useColorAppearance(selectedDiagramId, selectionSet,
+            DefaultAppearance.BACKGROUND_COLOR);
 
     const [fontSize, setFontSize] =
         useAppearance<number>(selectedDiagramId, selectionSet,
             DefaultAppearance.FONT_SIZE);
 
     const [foregroundColor, setForegroundColor] =
-        useAppearance(selectedDiagramId, selectionSet,
-            DefaultAppearance.FOREGROUND_COLOR, x => Color.fromValue(x));
+        useColorAppearance(selectedDiagramId, selectionSet,
+            DefaultAppearance.FOREGROUND_COLOR);
 
     const [strokeColor, setStrokeColor] =
-        useAppearance(selectedDiagramId, selectionSet,
-            DefaultAppearance.STROKE_COLOR, x => Color.fromValue(x));
+        useColorAppearance(selectedDiagramId, selectionSet,
+            DefaultAppearance.STROKE_COLOR);
 
     const [strokeThickness, setStrokeThickness] =
         useAppearance<number>(selectedDiagramId, selectionSet,

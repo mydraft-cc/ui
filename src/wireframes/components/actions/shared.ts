@@ -8,7 +8,7 @@
 /* eslint-disable one-var */
 /* eslint-disable one-var-declaration-per-line */
 
-import { Types } from '@app/core';
+import { Color, Types } from '@app/core';
 import { changeItemsAppearance, DiagramItemSet } from '@app/wireframes/model';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
@@ -34,19 +34,41 @@ export interface UIAction {
 }
 
 export type UniqueValue<TValue> = { value?: TValue; empty?: boolean };
-export type UniqueParser<TInput> = (value: any) => TInput | undefined;
+export type UniqueConverter<TInput> = { parse: (value: any) => TInput; write: (value: TInput) => any };
 
-const DEFAULT_PARSER = (value: any) => value;
+const DEFAULT_CONVERTER = {
+    parse: (value: any) => {
+        return value;
+    },
+    write: (value: any) => {
+        return value;
+    },
+};
 
-export function useAppearance<T>(diagramId: string | null | undefined, set: DiagramItemSet | null | undefined, key: string, parse?: UniqueParser<T>): [UniqueValue<T>, (value: T) => void] {
+const COLOR_CONVERTER: UniqueConverter<Color> = {
+    parse: (value: any) => {
+        return Color.fromValue(value);
+    },
+    write: (value: Color) => {
+        return value.toString();
+    },
+};
+
+export function useColorAppearance(diagramId: string | null | undefined, set: DiagramItemSet | null | undefined, key: string): [UniqueValue<Color>, (value: Color) => void] {
+    return useAppearanceCore(diagramId, set, key, COLOR_CONVERTER);
+}
+
+export function useAppearance<T>(diagramId: string | null | undefined, set: DiagramItemSet | null | undefined, key: string): [UniqueValue<T>, (value: T) => void] {
+    return useAppearanceCore(diagramId, set, key, DEFAULT_CONVERTER);
+}
+
+export function useAppearanceCore<T>(diagramId: string | null | undefined, set: DiagramItemSet | null | undefined, key: string, converter: UniqueConverter<T>): [UniqueValue<T>, (value: T) => void] {
     const dispatch = useDispatch();
 
     const value = React.useMemo(() => {
         if (!set) {
             return { empty: true };
         }
-
-        const parser = parse || DEFAULT_PARSER;
 
         let value: T | undefined, empty = true;
 
@@ -56,7 +78,7 @@ export function useAppearance<T>(diagramId: string | null | undefined, set: Diag
             if (!Types.isUndefined(appearance)) {
                 empty = false;
 
-                const parsed = parser(appearance);
+                const parsed = converter.parse(appearance);
 
                 if (parsed && value && !Types.equals(value, parsed)) {
                     value = undefined;
@@ -67,13 +89,13 @@ export function useAppearance<T>(diagramId: string | null | undefined, set: Diag
         }
 
         return { value, empty };
-    }, [parse, set, key]);
+    }, [converter, set, key]);
 
     const doChangeAppearance = React.useCallback((value: T) => {
         if (diagramId && set) {
-            dispatch(changeItemsAppearance(diagramId, set.allVisuals, key, value));
+            dispatch(changeItemsAppearance(diagramId, set.allVisuals, key, converter.write(value)));
         }
-    }, [diagramId, dispatch, set, key]);
+    }, [converter, diagramId, dispatch, set, key]);
 
     return [value, doChangeAppearance];
 }
