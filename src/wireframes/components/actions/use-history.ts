@@ -28,7 +28,7 @@ export function useHistory() {
         disabled: !canRedo,
         icon: 'icon-redo',
         label: texts.common.redo,
-        shortcut: 'CTRL + Y',
+        shortcut: 'MOD + Y',
         tooltip: texts.common.redo,
         onAction: doRedo,
     }), [canRedo, doRedo]);
@@ -37,7 +37,7 @@ export function useHistory() {
         disabled: !canUndo,
         icon: 'icon-undo',
         label: texts.common.undo,
-        shortcut: 'CTRL + Z',
+        shortcut: 'MOD + Z',
         tooltip: texts.common.undo,
         onAction: doUndo,
     }), [canUndo, doUndo]);

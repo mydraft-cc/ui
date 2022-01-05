@@ -36,7 +36,7 @@ export function useGrouping() {
         disabled: !canGroup,
         icon: 'icon-group',
         label: texts.common.group,
-        shortcut: 'CTRL + G',
+        shortcut: 'MOD + G',
         tooltip: texts.common.groupTooltip,
         onAction: doGroup,
     }), [canGroup, doGroup]);
@@ -45,7 +45,7 @@ export function useGrouping() {
         disabled: !canUngroup,
         icon: 'icon-ungroup',
         label: texts.common.ungroup,
-        shortcut: 'CTRL + SHIFT + G',
+        shortcut: 'MOD + SHIFT + G',
         tooltip: texts.common.ungroupTooltip,
         onAction: doUngroup,
     }), [canUngroup, doUngroup]);

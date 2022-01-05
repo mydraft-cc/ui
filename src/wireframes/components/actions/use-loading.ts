@@ -37,7 +37,7 @@ export function useLoading() {
         disabled: false,
         icon: 'icon-new',
         label: texts.common.newDiagram,
-        shortcut: 'CTRL + N',
+        shortcut: 'MOD + N',
         tooltip: texts.common.newDiagramTooltip,
         onAction: doNew,
     }), [doNew]);
@@ -46,7 +46,7 @@ export function useLoading() {
         disabled: !canSave,
         icon: 'icon-save',
         label: texts.common.saveDiagramTooltip,
-        shortcut: 'CTRL + S',
+        shortcut: 'MOD + S',
         tooltip: texts.common.saveDiagramTooltip,
         onAction: doSave,
     }), [doSave, canSave]);
