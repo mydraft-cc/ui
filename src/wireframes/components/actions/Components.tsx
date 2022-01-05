@@ -27,7 +27,11 @@ export const ActionMenuButton = React.memo((props: ActionProps) => {
         return null;
     }
 
-    const title = shortcut ? `${tooltip} (${shortcut})` : tooltip;
+    // Mac users expect to use the command key for shortcuts rather than the control key
+    const isMac = window.navigator.userAgent.indexOf('Mac') != -1;
+    const modKey = isMac ? 'COMMAND' : 'CTRL';
+
+    const title = shortcut ? `${tooltip} (${shortcut.replace('MOD', modKey)})` : tooltip;
 
     return (
         <>
