@@ -92,7 +92,7 @@ export function loadingMiddleware(): Middleware {
                 store.dispatch(push(action.payload.tokenToRead));
             }
 
-            store.dispatch(showInfoToast('Succeeded to load diagram.'));
+            store.dispatch(showInfoToast('Successfully loaded diagram.'));
         } else if (loadDiagramAsync.rejected.match(action)) {
             store.dispatch(showErrorToast('Failed to load diagram.'));
         } else if (saveDiagramAsync.fulfilled.match(action)) {
