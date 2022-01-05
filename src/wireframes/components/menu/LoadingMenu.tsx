@@ -13,7 +13,7 @@ import { Button, Modal } from 'antd';
 import * as React from 'react';
 import { ActionMenuButton, useLoading } from './../actions';
 
-const text = require('@app/legal.html').default;
+const text = require('@app/legal.html');
 
 export const LoadingMenu = React.memo(() => {
     const forLoading = useLoading();
