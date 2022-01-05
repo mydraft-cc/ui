@@ -57,7 +57,7 @@ export function useClipboard() {
         disabled: !canCopy,
         icon: 'icon-copy',
         label: texts.common.copy,
-        shortcut: 'CTRL + C',
+        shortcut: 'MOD + C',
         tooltip: texts.common.copyTooltip,
         onAction: doCopy,
     }), [canCopy, doCopy]);
@@ -66,7 +66,7 @@ export function useClipboard() {
         disabled: !canCopy,
         icon: 'icon-cut',
         label: texts.common.cut,
-        shortcut: 'CTRL + X',
+        shortcut: 'MOD + X',
         tooltip: texts.common.cutTooltip,
         onAction: doCut,
     }), [canCopy, doCut]);
@@ -75,7 +75,7 @@ export function useClipboard() {
         disabled: !clipboard,
         icon: 'icon-paste',
         label: texts.common.paste,
-        shortcut: 'CTRL + V',
+        shortcut: 'MOD + V',
         tooltip: texts.common.pasteTooltip,
         onAction: doPaste,
     }), [clipboard, doPaste]);
