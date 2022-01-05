@@ -39,7 +39,7 @@ export function useLocking() {
             icon,
             label: texts.common.lock,
             shortcut: 'CTRL + L',
-            tooltip: texts.common.removeTooltip,
+            tooltip: texts.common.lockTooltip,
             onAction: doToggle,
         };
     }, [selectedItem, doToggle]);

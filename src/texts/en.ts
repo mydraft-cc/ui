@@ -75,7 +75,7 @@ export const texts = {
         unsaved: '(unsaved)',
         visual: 'Visual',
         width: 'Width',
-        zoomIn: 'Zoom IN',
+        zoomIn: 'Zoom In',
         zoomOut: 'Zoom Out',
     },
 };
