@@ -38,7 +38,7 @@ export function useLocking() {
             disabled: !selectedItem,
             icon,
             label: texts.common.lock,
-            shortcut: 'CTRL + L',
+            shortcut: 'MOD + L',
             tooltip: texts.common.lockTooltip,
             onAction: doToggle,
         };
