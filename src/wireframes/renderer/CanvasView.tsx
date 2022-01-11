@@ -42,6 +42,10 @@ export const CanvasView = (props: CanvasViewProps) => {
     const [document, setDocument] = React.useState<svg.Svg>();
 
     const doInit = React.useCallback((ref: HTMLDivElement) => {
+        if (!ref) {
+            return;
+        }
+
         const doc = svg.SVG().addTo(ref).css({ position: 'relative', overflow: 'visible' }).attr('tabindex', 0);
 
         setDocument(doc);
