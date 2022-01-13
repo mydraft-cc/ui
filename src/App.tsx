@@ -126,7 +126,7 @@ export const App = () => {
                         collapsed={!showRightSidebar}
                         collapsedWidth={0}>
 
-                        <Collapse bordered={false} defaultActiveKey={['layout', 'visual', 'custom']}>
+                        <Collapse bordered={false} defaultActiveKey={['layout', 'visual', 'more', 'custom']}>
                             <Collapse.Panel key='layout' header={texts.common.layout}>
                                 <LayoutProperties />
                             </Collapse.Panel>

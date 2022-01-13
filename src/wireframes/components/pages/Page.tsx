@@ -7,12 +7,15 @@
 
 import { CheckOutlined, DeleteOutlined, FileMarkdownOutlined, FileOutlined } from '@ant-design/icons';
 import { texts } from '@app/texts';
-import { Diagram } from '@app/wireframes/model';
+import { Diagram, getPageName } from '@app/wireframes/model';
 import { Col, Dropdown, Input, Menu, Row } from 'antd';
 import classNames from 'classnames';
 import * as React from 'react';
 
 export interface PageProps {
+    // The page index.
+    index: number;
+
     // The diagram.
     diagram: Diagram;
 
@@ -39,6 +42,7 @@ export const Page = (props: PageProps) => {
     const {
         diagram,
         diagrams,
+        index,
         onDelete,
         onRename,
         onSetMaster,
@@ -51,28 +55,28 @@ export const Page = (props: PageProps) => {
     const [editing, setEditing] = React.useState(false);
 
     const setTextValue = React.useCallback((text: string) => {
-        currentText.current = text || texts.common.page;
+        currentText.current = getPageName(text, index);
 
         setEditText(currentText.current);
-    }, []);
+    }, [index]);
 
     React.useEffect(() => {
-        setTextValue(diagram.title || '');
-    }, [diagram.title, setTextValue]);
+        setTextValue(getPageName(diagram, index));
+    }, [diagram, index, setTextValue]);
 
     const setText = React.useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
         setTextValue(event.target.value);
     }, [setTextValue]);
 
     const doStart = React.useCallback(() => {
-        setTextValue(diagram.title || '');
+        setTextValue(getPageName(diagram, index));
         setEditing(true);
-    }, [diagram.title, setTextValue]);
+    }, [diagram, index, setTextValue]);
 
     const doEnd = React.useCallback(() => {
-        setTextValue(diagram.title || '');
+        setTextValue(getPageName(diagram, index));
         setEditing(false);
-    }, [diagram.title, setTextValue]);
+    }, [diagram, index, setTextValue]);
 
     const doDelete = React.useCallback(() => {
         onDelete(diagram.id);

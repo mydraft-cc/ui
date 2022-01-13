@@ -11,8 +11,8 @@ import { DiagramItemSet, EditorState, RendererService, Transform } from './../in
 import { createItemsAction, DiagramRef, ItemsRef } from './utils';
 
 export const changeItemsAppearance =
-    createAction('items/appearance', (diagram: DiagramRef, visuals: ItemsRef, key: string, value: any) => {
-        return { payload: createItemsAction(diagram, visuals, { appearance: { key, value } }) };
+    createAction('items/appearance', (diagram: DiagramRef, visuals: ItemsRef, key: string, value: any, force = false) => {
+        return { payload: createItemsAction(diagram, visuals, { appearance: { key, value }, force }) };
     });
 
 export const transformItems =
@@ -23,7 +23,7 @@ export const transformItems =
 export function buildAppearance(builder: ActionReducerMapBuilder<EditorState>, rendererService: RendererService) {
     return builder
         .addCase(changeItemsAppearance, (state, action) => {
-            const { diagramId, appearance, itemIds } = action.payload;
+            const { diagramId, appearance, itemIds, force } = action.payload;
 
             return state.updateDiagram(diagramId, diagram => {
                 const { key, value } = appearance;
@@ -35,7 +35,7 @@ export function buildAppearance(builder: ActionReducerMapBuilder<EditorState>, r
                         if (item.type === 'Shape') {
                             const rendererInstance = rendererService.get(item.renderer);
 
-                            if (rendererInstance && !Types.isUndefined(rendererInstance.defaultAppearance()[key])) {
+                            if (rendererInstance && (force || !Types.isUndefined(rendererInstance.defaultAppearance()[key]))) {
                                 return item.setAppearance(key, value);
                             }
                         }

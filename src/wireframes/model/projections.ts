@@ -5,11 +5,13 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
+import { Types } from '@app/core';
 import { texts } from '@app/texts';
 import { useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
 import { AssetsStateInStore } from './assets-state';
 import { Configurable } from './configurables';
+import { Diagram } from './diagram';
 import { DiagramItem } from './diagram-item';
 import { DiagramItemSet } from './diagram-item-set';
 import { EditorStateInStore } from './editor-state';
@@ -72,7 +74,7 @@ export const getFilteredShapes = createSelector(
 export const getFilteredDiagrams = createSelector(
     getOrderedDiagrams,
     getDiagramsFilterRegex,
-    (diagrams, filter) => diagrams.filter(x => filter.test(x.title || texts.common.page)),
+    (diagrams, filter) => diagrams.filter((x, index) => filter.test(getPageName(x, index))),
 );
 
 export const getDiagram = createSelector(
@@ -126,6 +128,18 @@ export const getSelectedConfigurables = createSelector(
     getSelectedShape,
     shape => (shape ? shape.configurables : EMPTY_CONFIGURABLES),
 );
+
+export function getPageName(diagram: Diagram | string, index: number): string {
+    let title: string | undefined;
+
+    if (Types.isString(diagram)) {
+        title = diagram;
+    } else {
+        title = diagram.title;
+    }
+
+    return title || `${texts.common.page} ${index + 1}`;
+}
 
 type State = AssetsStateInStore & EditorStateInStore & UIStateInStore & LoadingStateInStore;
 

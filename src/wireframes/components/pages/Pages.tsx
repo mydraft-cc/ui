@@ -80,6 +80,7 @@ export const Pages = () => {
                                             <Page
                                                 diagram={item}
                                                 diagrams={diagramsOrdered}
+                                                index={index}
                                                 onDelete={doRemoveDiagram}
                                                 onRename={doRenameDiagram}
                                                 onSetMaster={doSetMaster}

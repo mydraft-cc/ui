@@ -54,15 +54,21 @@ const COLOR_CONVERTER: UniqueConverter<Color> = {
     },
 };
 
-export function useColorAppearance(diagramId: string | null | undefined, set: DiagramItemSet | null | undefined, key: string): [UniqueValue<Color>, (value: Color) => void] {
+type Result<T> = [UniqueValue<T>, (value: T) => void];
+
+export function useColorAppearance(diagramId: string | null | undefined, set: DiagramItemSet | null | undefined, key: string): Result<Color> {
     return useAppearanceCore(diagramId, set, key, COLOR_CONVERTER);
 }
 
-export function useAppearance<T>(diagramId: string | null | undefined, set: DiagramItemSet | null | undefined, key: string): [UniqueValue<T>, (value: T) => void] {
-    return useAppearanceCore(diagramId, set, key, DEFAULT_CONVERTER);
+export function useAppearance<T>(diagramId: string | null | undefined, set: DiagramItemSet | null | undefined, key: string,
+    allowUndefined = false, force = false,
+): Result<T> {
+    return useAppearanceCore(diagramId, set, key, DEFAULT_CONVERTER, allowUndefined, force);
 }
 
-export function useAppearanceCore<T>(diagramId: string | null | undefined, set: DiagramItemSet | null | undefined, key: string, converter: UniqueConverter<T>): [UniqueValue<T>, (value: T) => void] {
+export function useAppearanceCore<T>(diagramId: string | null | undefined, set: DiagramItemSet | null | undefined, key: string, converter: UniqueConverter<T>,
+    allowUndefined = false, force = false,
+): Result<T> {
     const dispatch = useDispatch();
 
     const value = React.useMemo(() => {
@@ -75,7 +81,7 @@ export function useAppearanceCore<T>(diagramId: string | null | undefined, set: 
         for (const visual of set!.allVisuals) {
             const appearance = visual.appearance.get(key);
 
-            if (!Types.isUndefined(appearance)) {
+            if (!Types.isUndefined(appearance) || allowUndefined) {
                 empty = false;
 
                 const parsed = converter.parse(appearance);
@@ -89,13 +95,13 @@ export function useAppearanceCore<T>(diagramId: string | null | undefined, set: 
         }
 
         return { value, empty };
-    }, [converter, set, key]);
+    }, [set, key, allowUndefined, converter]);
 
     const doChangeAppearance = React.useCallback((value: T) => {
         if (diagramId && set) {
-            dispatch(changeItemsAppearance(diagramId, set.allVisuals, key, converter.write(value)));
+            dispatch(changeItemsAppearance(diagramId, set.allVisuals, key, converter.write(value), force));
         }
-    }, [converter, diagramId, dispatch, set, key]);
+    }, [diagramId, set, dispatch, key, converter, force]);
 
     return [value, doChangeAppearance];
 }

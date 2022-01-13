@@ -58,6 +58,15 @@ describe('AppearanceReducer', () => {
         });
     });
 
+    it('should change appearance when renderer does not support it but it is forced', () => {
+        const action = changeItemsAppearance(diagram, diagram.items.values, '?', 'MyValue', true);
+
+        expectShapesAfterAction(action, (newShape1, newShape2) => {
+            expect(newShape1.appearance.get('?')).toEqual('MyValue');
+            expect(newShape2.appearance.get('?')).toEqual('MyValue');
+        });
+    });
+
     it('should transform all items from new to old bounds', () => {
         const oldBounds = new Transform(Vec2.ZERO, new Vec2(200, 200), Rotation.ZERO);
         const newBounds = new Transform(Vec2.ZERO, new Vec2(300, 300), Rotation.ZERO);
