@@ -125,7 +125,7 @@ export const DefaultAppearance = {
     FONT_FAMILY: 'FONT_FAMILY',
     FONT_SIZE: 'FONT_SIZE',
     FOREGROUND_COLOR: 'BACKGROUND_COLOR',
-    ICON_FONT_FAMILY: 'ICON_FONT_FAMILY',
+    ICON_FONT_FAMILY: 'ICON_FONT_FAMILY', 
     LINK: 'LINK',
     OPACITY: 'OPACITY',
     STROKE_COLOR: 'STROKE_COLOR',
@@ -134,6 +134,14 @@ export const DefaultAppearance = {
     TEXT_DISABLED: 'TEXT_DISABLED',
     TEXT: 'TEXT',
 };
+
+export function getPageLink(id: string) {
+    return `page://${id}`;
+}
+
+export function isPageLink(link: string | null | undefined) {
+    return link?.indexOf('page://') === 0;
+}
 
 export interface Constraint {
     updateSize(shape: Shape, size: Vec2, prev?: Shape): Vec2;
