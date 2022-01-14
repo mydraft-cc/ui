@@ -5,8 +5,8 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { Types } from '@app/core';
 import { ActionReducerMapBuilder, createAction } from '@reduxjs/toolkit';
+import { Types } from '@app/core';
 import { DiagramItemSet, EditorState, RendererService, Transform } from './../internal';
 import { createItemsAction, DiagramRef, ItemsRef } from './utils';
 

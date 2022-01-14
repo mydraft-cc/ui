@@ -5,9 +5,9 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { ShapeInfo } from '@app/wireframes/model';
 import * as React from 'react';
 import { useDrag } from 'react-dnd';
+import { ShapeInfo } from '@app/wireframes/model';
 
 interface ShapeImageProps {
     // The shape data.

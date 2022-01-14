@@ -5,16 +5,16 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { RendererContext } from '@app/context';
-import { sizeInPx } from '@app/core';
-import { addIcon, addImage, addVisual, changeItemsAppearance, getDiagram, getDiagramId, getEditor, getMasterDiagram, getSelectedItems, getSelectedItemsWithLocked, selectItems, Transform, transformItems, useStore } from '@app/wireframes/model';
-import { Editor } from '@app/wireframes/renderer/Editor';
 import { Dropdown } from 'antd';
 import * as React from 'react';
 import { DropTargetMonitor, useDrop } from 'react-dnd';
 import { NativeTypes } from 'react-dnd-html5-backend';
 import { findDOMNode } from 'react-dom';
 import { useDispatch } from 'react-redux';
+import { RendererContext } from '@app/context';
+import { sizeInPx } from '@app/core';
+import { addIcon, addImage, addVisual, changeItemsAppearance, getDiagram, getDiagramId, getEditor, getMasterDiagram, getSelectedItems, getSelectedItemsWithLocked, selectItems, Transform, transformItems, useStore } from '@app/wireframes/model';
+import { Editor } from '@app/wireframes/renderer/Editor';
 import { DiagramRef, ItemsRef } from '../model/actions/utils';
 import { ContextMenu } from './context-menu/ContextMenu';
 import './EditorView.scss';

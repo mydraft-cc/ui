@@ -7,10 +7,10 @@
 
 /* eslint-disable react-hooks/exhaustive-deps */
 
-import { texts } from '@app/texts';
-import { alignItems, AlignmentMode, getDiagramId, getSelectedItems, orderItems, OrderMode, useStore } from '@app/wireframes/model';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
+import { texts } from '@app/texts';
+import { alignItems, AlignmentMode, getDiagramId, getSelectedItems, orderItems, OrderMode, useStore } from '@app/wireframes/model';
 import { UIAction } from './shared';
 
 export function useAlignment() {

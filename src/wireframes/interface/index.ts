@@ -139,6 +139,10 @@ export function getPageLink(id: string) {
     return `page://${id}`;
 }
 
+export function getPageLinkId(link: string) {
+    return link.substring(7);
+}
+
 export function isPageLink(link: string | null | undefined) {
     return link?.indexOf('page://') === 0;
 }

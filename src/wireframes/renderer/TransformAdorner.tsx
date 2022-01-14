@@ -5,10 +5,10 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
+import * as svg from '@svgdotjs/svg.js';
+import * as React from 'react';
 import { Rotation, SVGHelper, Vec2 } from '@app/core';
 import { Diagram, DiagramItem, SnapManager, Transform } from '@app/wireframes/model';
-import * as React from 'react';
-import * as svg from '@svgdotjs/svg.js';
 import { SVGRenderer2 } from '../shapes/utils/svg-renderer2';
 import { InteractionOverlays } from './interaction-overlays';
 import { InteractionHandler, InteractionService, SvgEvent } from './interaction-service';

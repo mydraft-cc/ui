@@ -5,9 +5,9 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { Types } from '@app/core';
 import { ActionReducerMapBuilder } from '@reduxjs/toolkit';
 import { AnyAction, Reducer } from 'redux';
+import { Types } from '@app/core';
 import { Diagram, DiagramItem } from './../internal';
 
 export type DiagramRef = string | Diagram;

@@ -5,12 +5,12 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { texts } from '@app/texts';
 import { Button, Popover, Tabs } from 'antd';
 import { TooltipPlacement } from 'antd/lib/tooltip';
 import classNames from 'classnames';
 import * as React from 'react';
 import { ColorResult, SketchPicker } from 'react-color';
+import { texts } from '@app/texts';
 import { Color } from './../utils/color';
 import { ColorPalette } from './../utils/color-palette';
 import './ColorPicker.scss';

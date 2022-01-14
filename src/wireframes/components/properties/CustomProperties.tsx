@@ -5,11 +5,11 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { Color, ColorPicker } from '@app/core';
-import { changeItemsAppearance, ColorConfigurable, Configurable, getDiagramId, getSelectedConfigurables, getSelectedShape, NumberConfigurable, selectColorTab, SelectionConfigurable, SliderConfigurable, useStore } from '@app/wireframes/model';
 import { Col, InputNumber, Row, Select } from 'antd';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
+import { Color, ColorPicker } from '@app/core';
+import { changeItemsAppearance, ColorConfigurable, Configurable, getDiagramId, getSelectedConfigurables, getSelectedShape, NumberConfigurable, selectColorTab, SelectionConfigurable, SliderConfigurable, useStore } from '@app/wireframes/model';
 import { CustomSlider } from './CustomSlider';
 
 interface CustomPropertyProps {

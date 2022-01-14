@@ -5,9 +5,9 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { texts } from '@app/texts';
 import { Menu } from 'antd';
 import * as React from 'react';
+import { texts } from '@app/texts';
 import { ActionMenuItem, useAlignment, useClipboard, useGrouping, useRemove } from '../actions';
 
 export interface ContextMenuProps {

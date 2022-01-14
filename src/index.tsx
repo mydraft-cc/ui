@@ -5,24 +5,24 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { applyMiddleware, combineReducers, compose, createStore } from 'redux';
 import { ConnectedRouter, connectRouter, routerMiddleware } from 'connected-react-router';
 import { createBrowserHistory } from 'history';
-import { createInitialAssetsState, createInitialLoadingState, createInitialUIState, EditorState, selectDiagram, selectItems, Serializer } from '@app/wireframes/model';
+import * as React from 'react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
-import { Provider } from 'react-redux';
-import { registerRenderers } from '@app/wireframes/shapes';
-import { RendererContext, SerializerContext } from '@app/context';
-import { Route } from 'react-router';
-import { UserReport } from '@app/core';
-import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import * as Reducers from '@app/wireframes/model/actions';
+import { Provider } from 'react-redux';
+import { Route } from 'react-router';
+import { applyMiddleware, combineReducers, compose, createStore } from 'redux';
 import thunk from 'redux-thunk';
+import { RendererContext, SerializerContext } from '@app/context';
+import { UserReport } from '@app/core';
+import { createInitialAssetsState, createInitialLoadingState, createInitialUIState, EditorState, selectDiagram, selectItems, Serializer } from '@app/wireframes/model';
+import * as Reducers from '@app/wireframes/model/actions';
+import { registerRenderers } from '@app/wireframes/shapes';
+import { App } from './App';
 import { registerServiceWorker } from './registerServiceWorker';
 import { createClassReducer, mergeAction } from './wireframes/model/actions/utils';
-import { App } from './App';
 import './index.scss';
 
 const editorRenderers = registerRenderers();

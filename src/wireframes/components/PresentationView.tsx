@@ -6,11 +6,12 @@
 */
 
 import { ArrowLeftOutlined, ArrowRightOutlined, CloseOutlined, FullscreenExitOutlined, FullscreenOutlined } from '@ant-design/icons';
-import { RendererContext } from '@app/context';
-import { sizeInPx, useFullscreen } from '@app/core';
-import { useStore } from '@app/wireframes/model';
 import { Button } from 'antd';
 import * as React from 'react';
+import { RendererContext } from '@app/context';
+import { sizeInPx, useFullscreen } from '@app/core';
+import { getPageLinkId, isPageLink } from '@app/wireframes/interface';
+import { useStore } from '@app/wireframes/model';
 import { PrintDiagram } from './PrintDiagram';
 import './PresentationView.scss';
 
@@ -40,11 +41,24 @@ export const PresentationView = (props: PresentationViewProps) => {
 
     const doFullscreenEnter = React.useCallback(() => {
         setFullscreen(true);
-    }, []);
+    }, [setFullscreen]);
 
     const doFullscreenExit = React.useCallback(() => {
         setFullscreen(false);
-    }, []);
+    }, [setFullscreen]);
+
+    const doNavigate = React.useCallback((_, link: string) => {
+        if (isPageLink(link)) {
+            const linkId = getPageLinkId(link);
+            const linkIndex = diagramsOrdered.findIndex(x => x.id === linkId);
+
+            if (linkIndex >= 0) {
+                setPageIndex(linkIndex);
+            }
+        } else {
+            window.open(link, '_blank');
+        }
+    }, [diagramsOrdered]);
 
     const currentDiagram = React.useMemo(() => {
         return diagramsOrdered[pageIndex];
@@ -62,6 +76,7 @@ export const PresentationView = (props: PresentationViewProps) => {
                             color={color}
                             diagram={currentDiagram}
                             diagrams={diagrams}
+                            onNavigate={doNavigate}
                             rendererService={renderer}
                             size={size}
                         />

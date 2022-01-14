@@ -6,14 +6,14 @@
 */
 
 import { LeftOutlined, RightOutlined } from '@ant-design/icons';
-import { usePrinter } from '@app/core';
-import { ArrangeMenu, ClipboardMenu, CustomProperties, EditorView, HistoryMenu, Icons, LayoutProperties, LoadingMenu, LockMenu, MoreProperties, Pages, PrintView, Recent, SettingsMenu, Shapes, UIMenu, VisualProperties } from '@app/wireframes/components';
-import { loadDiagramAsync, newDiagram, selectTab, showInfoToast, toggleLeftSidebar, toggleRightSidebar, useStore } from '@app/wireframes/model';
 import { Button, Collapse, Layout, Tabs } from 'antd';
 import classNames from 'classnames';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
 import { useRouteMatch } from 'react-router';
+import { usePrinter } from '@app/core';
+import { ArrangeMenu, ClipboardMenu, CustomProperties, EditorView, HistoryMenu, Icons, LayoutProperties, LoadingMenu, LockMenu, MoreProperties, Pages, PrintView, Recent, SettingsMenu, Shapes, UIMenu, VisualProperties } from '@app/wireframes/components';
+import { loadDiagramAsync, newDiagram, selectTab, showInfoToast, toggleLeftSidebar, toggleRightSidebar, useStore } from '@app/wireframes/model';
 import { texts } from './texts';
 import { PresentationView } from './wireframes/components/PresentationView';
 

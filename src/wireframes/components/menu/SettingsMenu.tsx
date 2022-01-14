@@ -6,13 +6,13 @@
 */
 
 import { ExportOutlined, PrinterOutlined, SettingOutlined } from '@ant-design/icons';
-import { Color, ColorPicker, Shortcut } from '@app/core';
-import { texts } from '@app/texts';
-import { changeColor, changeSize, getEditor, useStore } from '@app/wireframes/model';
 import { Button, Col, Dropdown, InputNumber, Menu, Modal, Row, Tooltip } from 'antd';
 import MenuItem from 'antd/lib/menu/MenuItem';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
+import { Color, ColorPicker, Shortcut } from '@app/core';
+import { texts } from '@app/texts';
+import { changeColor, changeSize, getEditor, useStore } from '@app/wireframes/model';
 
 export interface SettingsMenuProps {
     // The print callback.

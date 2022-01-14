@@ -5,9 +5,9 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
+import * as svg from '@svgdotjs/svg.js';
 import { MathHelper, Vec2 } from '@app/core';
 import { DiagramItem } from '@app/wireframes/model';
-import * as svg from '@svgdotjs/svg.js';
 
 export class SvgEvent {
     constructor(
@@ -24,6 +24,7 @@ export interface InteractionHandler {
     onClick?(event: SvgEvent, next: (event: SvgEvent) => void): boolean;
     onMouseDown?(event: SvgEvent, next: (event: SvgEvent) => void): void;
     onMouseDrag?(event: SvgEvent, next: (event: SvgEvent) => void): void;
+    onMouseMove?(event: SvgEvent, next: (event: SvgEvent) => void): void;
     onMouseUp?(event: SvgEvent, next: (event: SvgEvent) => void): void;
     onKeyDown?(event: KeyboardEvent, next: (event: KeyboardEvent) => void): void;
     onKeyUp?(event: KeyboardEvent, next: (event: KeyboardEvent) => void): void;
@@ -50,6 +51,7 @@ export class InteractionService {
     private onDoubleClick: Function = NOOP;
     private onMouseDown: Function = NOOP;
     private onMouseDrag: Function = NOOP;
+    private onMouseMove: Function = NOOP;
     private onMouseUp: Function = NOOP;
 
     constructor(
@@ -64,6 +66,8 @@ export class InteractionService {
         });
 
         diagram.mousemove((event: MouseEvent) => {
+            this.handleMouseMove(event);
+
             this.onMouseMove(event);
         });
 
@@ -115,6 +119,7 @@ export class InteractionService {
         this.onKeyUp = this.buildEvent(h => h.onKeyUp?.bind(h));
         this.onKeyDown = this.buildEvent(h => h.onKeyDown?.bind(h));
         this.onDoubleClick = this.buildMouseEvent(h => h?.onDoubleClick?.bind(h));
+        this.onMouseMove = this.buildMouseEvent(h => h?.onMouseMove?.bind(h));
         this.onMouseDown = this.buildMouseEvent(h => h?.onMouseDown?.bind(h));
         this.onMouseDrag = this.buildMouseEvent(h => h?.onMouseDrag?.bind(h));
         this.onMouseUp = this.buildMouseEvent(h => h?.onMouseUp?.bind(h));
@@ -187,7 +192,7 @@ export class InteractionService {
         return result;
     }
 
-    private onMouseMove = (event: MouseEvent) => {
+    private handleMouseMove = (event: MouseEvent) => {
         const element: any = event.target;
 
         if (element && element['cursor']) {

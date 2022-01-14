@@ -6,12 +6,12 @@
 */
 
 import { PlusOutlined, SearchOutlined } from '@ant-design/icons';
-import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd';
-import { addDiagram, filterDiagrams, getDiagramId, getDiagramsFilter, getFilteredDiagrams, moveDiagram, removeDiagram, renameDiagram, selectDiagram, setDiagramMaster, useStore } from '@app/wireframes/model';
 import { Button, Col, Input, Row } from 'antd';
-import { texts } from '@app/texts';
 import * as React from 'react';
+import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd';
 import { useDispatch } from 'react-redux';
+import { texts } from '@app/texts';
+import { addDiagram, filterDiagrams, getDiagramId, getDiagramsFilter, getFilteredDiagrams, moveDiagram, removeDiagram, renameDiagram, selectDiagram, setDiagramMaster, useStore } from '@app/wireframes/model';
 import { Page } from './Page';
 import './Pages.scss';
 

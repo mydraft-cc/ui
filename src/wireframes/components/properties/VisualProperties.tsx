@@ -5,13 +5,13 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
+import { Button, Col, Row, Select } from 'antd';
+import * as React from 'react';
+import { useDispatch } from 'react-redux';
 import { ColorPicker } from '@app/core';
 import { texts } from '@app/texts';
 import { DefaultAppearance } from '@app/wireframes/interface';
 import { getDiagramId, getSelectedItems, getSelectionSet, selectColorTab, useStore } from '@app/wireframes/model';
-import { Button, Col, Row, Select } from 'antd';
-import * as React from 'react';
-import { useDispatch } from 'react-redux';
 import { UniqueValue, useAppearance, useColorAppearance } from './../actions';
 import './VisualProperties.scss';
 

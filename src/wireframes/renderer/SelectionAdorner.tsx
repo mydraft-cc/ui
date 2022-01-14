@@ -5,10 +5,10 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
+import * as svg from '@svgdotjs/svg.js';
+import * as React from 'react';
 import { Rect2, SVGHelper, Vec2 } from '@app/core';
 import { calculateSelection, Diagram, DiagramItem } from '@app/wireframes/model';
-import * as React from 'react';
-import * as svg from '@svgdotjs/svg.js';
 import { InteractionHandler, InteractionService, SvgEvent } from './interaction-service';
 
 const SELECTION_STROKE_COLOR = '#080';

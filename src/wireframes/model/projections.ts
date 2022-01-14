@@ -5,10 +5,10 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { Types } from '@app/core';
-import { texts } from '@app/texts';
 import { useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
+import { Types } from '@app/core';
+import { texts } from '@app/texts';
 import { AssetsStateInStore } from './assets-state';
 import { Configurable } from './configurables';
 import { Diagram } from './diagram';

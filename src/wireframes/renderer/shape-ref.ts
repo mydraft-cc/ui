@@ -5,8 +5,8 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { DiagramItem, Renderer } from '@app/wireframes/model';
 import * as svg from '@svgdotjs/svg.js';
+import { DiagramItem, Renderer } from '@app/wireframes/model';
 
 export class ShapeRef {
     private previewShape: DiagramItem | null = null;

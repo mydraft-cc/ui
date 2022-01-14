@@ -5,9 +5,9 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { Rect2, sizeInPx, Vec2 } from '@app/core';
-import * as React from 'react';
 import * as svg from '@svgdotjs/svg.js';
+import * as React from 'react';
+import { Rect2, sizeInPx, Vec2 } from '@app/core';
 
 export interface CanvasViewProps {
     // The zoomed width of the canvas.

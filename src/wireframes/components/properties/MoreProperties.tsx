@@ -5,11 +5,11 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
+import { Col, Row, Select } from 'antd';
+import * as React from 'react';
 import { texts } from '@app/texts';
 import { DefaultAppearance, getPageLink, isPageLink } from '@app/wireframes/interface';
 import { getDiagramId, getPageName, getSelectedItems, getSelectionSet, useStore } from '@app/wireframes/model';
-import { Col, Row, Select } from 'antd';
-import * as React from 'react';
 import { useAppearance } from './../actions';
 import { Text } from './Text';
 

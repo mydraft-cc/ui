@@ -5,8 +5,8 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { getDiagramId, useStore } from '@app/wireframes/model';
 import * as React from 'react';
+import { getDiagramId, useStore } from '@app/wireframes/model';
 import { ActionButton, useAlignment } from '../actions';
 import './LayoutProperties.scss';
 

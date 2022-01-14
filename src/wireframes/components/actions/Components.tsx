@@ -5,10 +5,10 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { Shortcut, Types } from '@app/core';
 import { Button, Menu, Tooltip } from 'antd';
 import { ButtonType } from 'antd/lib/button';
 import * as React from 'react';
+import { Shortcut, Types } from '@app/core';
 import { UIAction } from './shared';
 
 type ActionProps = { action: UIAction; showLabel?: boolean; type?: ButtonType; hideWhenDisabled?: boolean };

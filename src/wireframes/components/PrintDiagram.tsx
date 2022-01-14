@@ -5,10 +5,10 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { Color, ImmutableMap, Rect2, Vec2 } from '@app/core';
-import { Diagram, RendererService } from '@app/wireframes/model';
-import { Editor } from '@app/wireframes/renderer/Editor';
 import * as React from 'react';
+import { Color, ImmutableMap, Rect2, Vec2 } from '@app/core';
+import { Diagram, DiagramItem, RendererService } from '@app/wireframes/model';
+import { Editor } from '@app/wireframes/renderer/Editor';
 
 export interface PrintDiagramProps {
     // The diagram.
@@ -31,6 +31,9 @@ export interface PrintDiagramProps {
 
     // True when rendered.
     onRender?: (diagram: Diagram) => void;
+    
+    // A function that is invoked when the user clicked a link.
+    onNavigate?: (item: DiagramItem, link: string) => void;
 }
 
 export const PrintDiagram = (props: PrintDiagramProps) => {
@@ -40,6 +43,7 @@ export const PrintDiagram = (props: PrintDiagramProps) => {
         diagrams,
         rendererService,
         onRender,
+        onNavigate,
         size,
         useBounds,
     } = props;
@@ -71,6 +75,7 @@ export const PrintDiagram = (props: PrintDiagramProps) => {
                 diagram={diagram}
                 masterDiagram={diagrams.get(diagram.master!)}
                 onRender={doOnRender}
+                onNavigate={onNavigate}
                 rendererService={rendererService}
                 selectedItems={[]}
                 selectedItemsWithLocked={[]}

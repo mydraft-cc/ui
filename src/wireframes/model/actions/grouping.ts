@@ -5,8 +5,8 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { MathHelper } from '@app/core';
 import { ActionReducerMapBuilder, createAction } from '@reduxjs/toolkit';
+import { MathHelper } from '@app/core';
 import { EditorState } from './../internal';
 import { createItemsAction, DiagramRef, ItemsRef } from './utils';
 

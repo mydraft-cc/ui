@@ -6,10 +6,10 @@
 */
 
 import { DownloadOutlined } from '@ant-design/icons';
-import { RecentDiagram } from '@app/wireframes/model';
 import { Button, Col, Row, Typography } from 'antd';
 import { formatDistanceToNow } from 'date-fns';
 import * as React from 'react';
+import { RecentDiagram } from '@app/wireframes/model';
 
 export interface RecentItemProps {
     // The diagram.
