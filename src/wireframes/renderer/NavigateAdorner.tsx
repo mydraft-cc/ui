@@ -27,12 +27,10 @@ export class NavigateAdorner extends React.PureComponent<NavigateAdornerProps> i
     }
 
     public onClick(event: SvgEvent, next: (event: SvgEvent) => void) {
-        if (event.shape) {
-            const link = event.shape.link;
+        const target = getShapeWithLink(event);
 
-            if (link) {
-                this.props.onNavigate(event.shape, link);
-            }
+        if (target) {
+            this.props.onNavigate(target.shape, target.link);
         }
 
         next(event);
@@ -40,7 +38,27 @@ export class NavigateAdorner extends React.PureComponent<NavigateAdornerProps> i
         return false;
     }
 
+    public onMouseMove(event: SvgEvent, next: (event: SvgEvent) => void) {
+        if (getShapeWithLink(event)) {
+            document.body.style.cursor = 'pointer';
+        } else {
+            document.body.style.cursor = 'inherit';
+        }
+
+        next(event);
+    }
+
     public render() {
+        return null;
+    }
+}
+
+function getShapeWithLink(event: SvgEvent) {
+    const link = event.shape?.link;
+
+    if (link) {
+        return { shape: event.shape, link };
+    } else {
         return null;
     }
 }

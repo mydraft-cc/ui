@@ -26,7 +26,7 @@ export const Recent = () => {
             return { ...value, tokenToRead };
         });
 
-        result.sort((lhs, rhs) => lhs.date - rhs.date);
+        result.sort((lhs, rhs) => rhs.date - lhs.date);
 
         return result;
     }, [recent]);
