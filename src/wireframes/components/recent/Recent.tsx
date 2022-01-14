@@ -5,11 +5,11 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { texts } from '@app/texts';
-import { loadDiagramAsync, RecentDiagram, useStore } from '@app/wireframes/model';
 import { Empty } from 'antd';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
+import { texts } from '@app/texts';
+import { loadDiagramAsync, RecentDiagram, useStore } from '@app/wireframes/model';
 import './Recent.scss';
 import { RecentItem } from './RecentItem';
 
@@ -19,7 +19,7 @@ export const Recent = () => {
 
     const doLoad = React.useCallback((item: RecentDiagram) => {
         dispatch(loadDiagramAsync({ tokenToRead: item.tokenToRead, tokenToWrite: item.tokenToWrite, navigate: true }));
-    }, []);
+    }, [dispatch]);
 
     const orderedRecent = React.useMemo(() => {
         const result = Object.entries(recent).map(([tokenToRead, value]) => {

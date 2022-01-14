@@ -5,9 +5,9 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
+import * as svg from '@svgdotjs/svg.js';
 import { MathHelper, Vec2 } from '@app/core';
 import { DiagramItem } from '@app/wireframes/model';
-import * as svg from '@svgdotjs/svg.js';
 
 export class SvgEvent {
     constructor(

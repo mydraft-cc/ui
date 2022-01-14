@@ -5,8 +5,8 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { Rect2, Vec2 } from '@app/core';
 import { ActionReducerMapBuilder, createAction } from '@reduxjs/toolkit';
+import { Rect2, Vec2 } from '@app/core';
 import { Diagram, EditorState, Transform } from './../internal';
 import { createItemsAction, DiagramRef, ItemsRef } from './utils';
 

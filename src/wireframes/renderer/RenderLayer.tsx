@@ -5,9 +5,9 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { Diagram, DiagramContainer, DiagramItem, RendererService } from '@app/wireframes/model';
-import * as React from 'react';
 import * as svg from '@svgdotjs/svg.js';
+import * as React from 'react';
+import { Diagram, DiagramContainer, DiagramItem, RendererService } from '@app/wireframes/model';
 import { ShapeRef } from './shape-ref';
 
 export interface RenderLayerProps {

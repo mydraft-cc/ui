@@ -5,9 +5,9 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
+import * as React from 'react';
 import { RendererContext } from '@app/context';
 import { Diagram, useStore } from '@app/wireframes/model';
-import * as React from 'react';
 import { PrintDiagram } from './PrintDiagram';
 
 export interface PrintRendererProps {

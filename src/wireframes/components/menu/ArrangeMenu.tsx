@@ -5,10 +5,10 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { Shortcut } from '@app/core';
-import { calculateSelection, getDiagram, selectItems, useStore } from '@app/wireframes/model';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
+import { Shortcut } from '@app/core';
+import { calculateSelection, getDiagram, selectItems, useStore } from '@app/wireframes/model';
 import { ActionMenuButton, useGrouping, useRemove } from './../actions';
 
 export const ArrangeMenu = React.memo(() => {

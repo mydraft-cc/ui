@@ -6,11 +6,11 @@
 */
 
 import { CheckOutlined, DeleteOutlined, FileMarkdownOutlined, FileOutlined } from '@ant-design/icons';
-import { texts } from '@app/texts';
-import { Diagram, getPageName } from '@app/wireframes/model';
 import { Col, Dropdown, Input, Menu, Row } from 'antd';
 import classNames from 'classnames';
 import * as React from 'react';
+import { texts } from '@app/texts';
+import { Diagram, getPageName } from '@app/wireframes/model';
 
 export interface PageProps {
     // The page index.

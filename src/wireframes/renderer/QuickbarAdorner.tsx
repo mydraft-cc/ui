@@ -5,10 +5,10 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { Rect2, sizeInPx, Vec2 } from '@app/core';
-import { Diagram, DiagramItem } from '@app/wireframes/model';
 import * as React from 'react';
+import { Rect2, sizeInPx, Vec2 } from '@app/core';
 import { ActionButton, useAlignment } from '@app/wireframes/components/actions';
+import { Diagram, DiagramItem } from '@app/wireframes/model';
 import './QuickbarAdorner.scss';
 
 export interface QuickbarAdornerProps {

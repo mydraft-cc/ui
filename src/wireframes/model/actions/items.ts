@@ -7,9 +7,9 @@
 
 /* eslint-disable @typescript-eslint/no-loop-func */
 
+import { ActionReducerMapBuilder, createAction, Middleware } from '@reduxjs/toolkit';
 import { MathHelper, Vec2 } from '@app/core';
 import { DefaultAppearance } from '@app/wireframes/interface';
-import { ActionReducerMapBuilder, createAction, Middleware } from '@reduxjs/toolkit';
 import { Diagram, DiagramItem, DiagramItemSet, EditorState, RendererService, Serializer } from './../internal';
 import { createDiagramAction, createItemsAction, DiagramRef, ItemsRef } from './utils';
 

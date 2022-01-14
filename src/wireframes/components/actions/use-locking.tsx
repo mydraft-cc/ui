@@ -6,10 +6,10 @@
 */
 
 import { LockOutlined, UnlockOutlined } from '@ant-design/icons';
-import { texts } from '@app/texts';
-import { getDiagram, getSelectedItemWithLocked, lockItems, unlockItems, useStore } from '@app/wireframes/model';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
+import { texts } from '@app/texts';
+import { getDiagram, getSelectedItemWithLocked, lockItems, unlockItems, useStore } from '@app/wireframes/model';
 import { UIAction } from './shared';
 
 export function useLocking() {

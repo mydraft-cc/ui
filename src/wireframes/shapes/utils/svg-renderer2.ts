@@ -7,10 +7,10 @@
 
 /* eslint-disable quote-props */
 
+import * as svg from '@svgdotjs/svg.js';
+import { Rect } from 'react-measure';
 import { Rect2, sizeInPx, SVGHelper, Types } from '@app/core';
 import { RendererColor, RendererElement, RendererOpacity, RendererText, RendererWidth, Shape, ShapeFactory, ShapeFactoryFunc, ShapeProperties, ShapePropertiesFunc, TextConfig } from '@app/wireframes/interface';
-import { Rect } from 'react-measure';
-import * as svg from '@svgdotjs/svg.js';
 import { AbstractRenderer2 } from './abstract-renderer';
 
 export * from './abstract-renderer';

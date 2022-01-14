@@ -5,9 +5,9 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { IconInfo } from '@app/wireframes/model';
 import * as React from 'react';
 import { useDrag } from 'react-dnd';
+import { IconInfo } from '@app/wireframes/model';
 
 interface IconProps {
     // The icon data.

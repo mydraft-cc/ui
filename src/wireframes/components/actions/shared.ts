@@ -8,10 +8,10 @@
 /* eslint-disable one-var */
 /* eslint-disable one-var-declaration-per-line */
 
-import { Color, Types } from '@app/core';
-import { changeItemsAppearance, DiagramItemSet } from '@app/wireframes/model';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
+import { Color, Types } from '@app/core';
+import { changeItemsAppearance, DiagramItemSet } from '@app/wireframes/model';
 
 export interface UIAction {
     // The label.

@@ -78,6 +78,17 @@ module.exports = {
         "import/no-cycle": "off",
         "import/no-extraneous-dependencies": "off",
         "import/no-useless-path-segments": "off",
+        "import/order": ["error", {
+            "pathGroupsExcludedImportTypes": ["builtin"],
+            "pathGroups": [{
+                "pattern": "@app/**",
+                "group": "external",
+                "position": "after"
+            }],
+            "alphabetize": {
+                "order": "asc"
+            }
+        }],
         "import/prefer-default-export": "off",
         "arrow-body-style": "off",
         "arrow-parens": "off",

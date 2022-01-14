@@ -5,10 +5,10 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { texts } from '@app/texts';
-import { getDiagram, getSelectedItems, removeItems, useStore } from '@app/wireframes/model';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
+import { texts } from '@app/texts';
+import { getDiagram, getSelectedItems, removeItems, useStore } from '@app/wireframes/model';
 import { UIAction } from './shared';
 
 export function useRemove() {

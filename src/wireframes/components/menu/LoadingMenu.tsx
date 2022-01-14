@@ -6,11 +6,11 @@
 */
 
 import { QuestionCircleOutlined } from '@ant-design/icons';
+import { Button, Modal } from 'antd';
+import * as React from 'react';
 import { Title } from '@app/core';
 import { texts } from '@app/texts';
 import { useStore } from '@app/wireframes/model';
-import { Button, Modal } from 'antd';
-import * as React from 'react';
 import { ActionMenuButton, useLoading } from './../actions';
 
 const text = require('@app/legal.html');

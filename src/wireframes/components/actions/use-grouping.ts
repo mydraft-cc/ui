@@ -5,11 +5,11 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
+import * as React from 'react';
+import { useDispatch } from 'react-redux';
 import { MathHelper } from '@app/core';
 import { texts } from '@app/texts';
 import { getDiagram, getSelectedGroups, getSelectedItems, groupItems, ungroupItems, useStore } from '@app/wireframes/model';
-import * as React from 'react';
-import { useDispatch } from 'react-redux';
 import { UIAction } from './shared';
 
 export function useGrouping() {

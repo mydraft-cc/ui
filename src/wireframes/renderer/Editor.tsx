@@ -5,17 +5,18 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { Diagram, DiagramItem, RendererService, Transform } from '@app/wireframes/model';
-import { Color, Rect2, SVGHelper, Vec2 } from '@app/core';
-import * as React from 'react';
 import * as svg from '@svgdotjs/svg.js';
+import * as React from 'react';
+import { Color, Rect2, SVGHelper, Vec2 } from '@app/core';
+import { Diagram, DiagramItem, RendererService, Transform } from '@app/wireframes/model';
 import { CanvasView } from './CanvasView';
-import { InteractionService } from './interaction-service';
+import { NavigateAdorner } from './NavigateAdorner';
 import { QuickbarAdorner } from './QuickbarAdorner';
 import { RenderLayer } from './RenderLayer';
 import { SelectionAdorner } from './SelectionAdorner';
 import { TextAdorner } from './TextAdorner';
 import { TransformAdorner } from './TransformAdorner';
+import { InteractionService } from './interaction-service';
 import './Editor.scss';
 
 export interface EditorProps {
@@ -58,6 +59,9 @@ export interface EditorProps {
     // A function to change the appearance of a visual.
     onChangeItemsAppearance?: (diagram: Diagram, visuals: DiagramItem[], key: string, val: any) => any;
 
+    // A function that is invoked when the user clicked a link.
+    onNavigate?: (item: DiagramItem, link: string) => void;
+
     // A function to transform a set of items.
     onTransformItems?: (diagram: Diagram, items: DiagramItem[], oldBounds: Transform, newBounds: Transform) => any;
 }
@@ -68,6 +72,7 @@ export const Editor = React.memo((props: EditorProps) => {
         diagram,
         masterDiagram,
         onChangeItemsAppearance,
+        onNavigate,
         onRender,
         onSelectItems,
         onTransformItems,
@@ -179,7 +184,8 @@ export const Editor = React.memo((props: EditorProps) => {
                                     selectedDiagram={diagram}
                                     selectedItems={selectedItems}
                                     viewSize={viewSize}
-                                    zoom={zoom} />
+                                    zoom={zoom}
+                                />
                             }
 
                             {onSelectItems &&
@@ -188,7 +194,8 @@ export const Editor = React.memo((props: EditorProps) => {
                                     interactionService={interactionService}
                                     onSelectItems={onSelectItems}
                                     selectedDiagram={diagram}
-                                    selectedItems={fullSelection} />
+                                    selectedItems={fullSelection}
+                                />
                             }
 
                             {onChangeItemsAppearance &&
@@ -197,7 +204,8 @@ export const Editor = React.memo((props: EditorProps) => {
                                     onChangeItemsAppearance={onChangeItemsAppearance}
                                     selectedDiagram={diagram}
                                     selectedItems={selectedItems}
-                                    zoom={zoom} />
+                                    zoom={zoom}
+                                />
                             }
 
                             {onTransformItems &&
@@ -206,7 +214,15 @@ export const Editor = React.memo((props: EditorProps) => {
                                     selectedDiagram={diagram}
                                     selectedItems={selectedItems}
                                     viewSize={viewSize}
-                                    zoom={zoom} />
+                                    zoom={zoom}
+                                />
+                            }
+
+                            {onNavigate &&
+                                <NavigateAdorner
+                                    interactionService={interactionService}
+                                    onNavigate={onNavigate}
+                                />
                             }
                         </>
                     )}

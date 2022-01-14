@@ -5,10 +5,10 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import * as React from 'react';
 import * as svg from '@svgdotjs/svg.js';
-import { ShapePlugin } from '@app/wireframes/interface';
+import * as React from 'react';
 import { sizeInPx, SVGHelper, Vec2 } from '@app/core';
+import { ShapePlugin } from '@app/wireframes/interface';
 import { DiagramItem } from '@app/wireframes/model';
 import { AbstractControl } from './utils/abstract-control';
 

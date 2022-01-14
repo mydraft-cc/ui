@@ -6,10 +6,10 @@
 */
 
 import { MinusCircleOutlined, PlusCircleOutlined } from '@ant-design/icons';
-import { texts } from '@app/texts';
-import { setZoom, useStore } from '@app/wireframes/model';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
+import { texts } from '@app/texts';
+import { setZoom, useStore } from '@app/wireframes/model';
 import { UIAction } from './shared';
 
 export function useUI() {

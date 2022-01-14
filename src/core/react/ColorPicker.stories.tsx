@@ -5,10 +5,10 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import * as React from 'react';
 import { ComponentMeta } from '@storybook/react';
-import { ColorPicker } from './ColorPicker';
+import * as React from 'react';
 import { ColorPalette } from './../utils/color-palette';
+import { ColorPicker } from './ColorPicker';
 
 export default {
     component: ColorPicker,

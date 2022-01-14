@@ -6,12 +6,12 @@
 */
 
 import { SearchOutlined } from '@ant-design/icons';
-import { Grid } from '@app/core';
-import { texts } from '@app/texts';
-import { addVisual, filterShapes, getDiagramId, getFilteredShapes, getShapesFilter, ShapeInfo, useStore } from '@app/wireframes/model';
 import { Input } from 'antd';
 import * as React from 'react';
 import { ReactReduxContext, useDispatch } from 'react-redux';
+import { Grid } from '@app/core';
+import { texts } from '@app/texts';
+import { addVisual, filterShapes, getDiagramId, getFilteredShapes, getShapesFilter, ShapeInfo, useStore } from '@app/wireframes/model';
 import { ShapeImage } from './ShapeImage';
 import './Shapes.scss';
 
