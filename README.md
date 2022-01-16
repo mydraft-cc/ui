@@ -20,7 +20,6 @@ The goal of this project is to create an open source wireframing tool. As a deve
 Just install node.js and run the following commands in your terminal:
 
     npm i
-    npm rebuild node-sass --force
     npm start
 
 Go to `https://localhost:3002`
@@ -28,7 +27,6 @@ Go to `https://localhost:3002`
 ## How to build the application?
 
     npm i
-    npm rebuild node-sass --force
     npm run build
 
 Copy the files from the `build` folder to your webserver.
