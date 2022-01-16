@@ -4,7 +4,7 @@ Test it out at: https://mydraft.cc/ (Work in Progress)
 
 The goal of this project is to create an open source wireframing tool. As a developer I have to create wireframes from time to time and there are great commercial tool in the market. But most of them cost more than a full Office suite per month. I think there is a need for a good and free solutions.
 
-![Version 01](/screenshots/mydraft-framed.png?raw=true "V1")
+![Version 01](/screenshots/Mydraft.gif?raw=true "V1")
 
 ## What is the tech stack?
 
