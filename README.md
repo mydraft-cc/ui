@@ -37,11 +37,10 @@ Copy the files from the `build` folder to your webserver.
 
 * **0.7**: [DONE] First working editor.
 * **0.9**: [DONE] Simple server to save diagrams with random id.
-* **1.0**: [IN_PROGRESS] Finalize the version and make small improvements and bugfixes.
-* **1.1**: Manage pages within a project with background pages.
-* **1.2**: Presentation mode.
-* **1.3**: Dark theme
-* **1.4**: Link UI elements to external sources or other pages.
+* **1.0**: [DONE] Finalize the version and make small improvements and bugfixes.
+* **1.0.1**: [DONE] Manage pages within a project with background pages.
+* **1.0.2**: [DONE] Presentation mode.
+* **1.0.3**: [DONE] Link UI elements to external sources or other pages.
 
 ## How can I contribute?
 
