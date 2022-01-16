@@ -107,7 +107,7 @@ export const Page = (props: PageProps) => {
     }, [diagram.id, onRename]);
 
     return (
-        <>
+        <div className='page-container'>
             {editing ? (
                 <Input value={editText} onChange={setText} onBlur={doEnd} onKeyUp={doEnter} ref={initInput} />
             ) : (
@@ -154,7 +154,7 @@ export const Page = (props: PageProps) => {
                     </Row>
                 </Dropdown>
             )}
-        </>
+        </div>
     );
 };
 

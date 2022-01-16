@@ -25,11 +25,15 @@
 .page {
     align-items: center;
     cursor: pointer;
+    direction: ltr;
     display: flex;
-    height: 32px;
-    margin-top: 1px;
-    margin-bottom: 1px;
     padding: 5px;
+
+    &-container {
+        margin-top: 1px;
+        margin-bottom: 1px;
+        height: 34px;
+    }
 
     &-title {
         @include truncate;
