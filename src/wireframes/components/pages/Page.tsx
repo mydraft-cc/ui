@@ -123,15 +123,19 @@ export const Page = (props: PageProps) => {
                                 title={texts.common.none}
                                 diagramId={diagram.id}
                                 diagramMaster={master}
-                                onSetMaster={doSetMaster} />
+                                hide={false}
+                                onSetMaster={doSetMaster}
+                            />
 
-                            {diagrams.filter(x => x.id !== diagram.id).map(d =>
-                                <MasterPage key={d.id}
-                                    id={d.id}
-                                    title={d.title || texts.common.page}
+                            {diagrams.map((item, index) =>
+                                <MasterPage key={item.id}
+                                    id={item.id}
+                                    title={getPageName(item, index)}
                                     diagramId={diagram.id}
                                     diagramMaster={master}
-                                    onSetMaster={doSetMaster} />,
+                                    hide={item.id === diagram.id}
+                                    onSetMaster={doSetMaster}
+                                />,
                             )}
                         </Menu.SubMenu>
                     </Menu>
@@ -159,14 +163,20 @@ const MasterPage = (props: {
     id: string | undefined;
     diagramId: string;
     diagramMaster: string | undefined;
+    hide: boolean;
     onSetMaster: (master: string | undefined) => void;
 }) => {
     const {
         id,
         diagramMaster,
+        hide,
         onSetMaster,
         title,
     } = props;
+
+    if (hide) {
+        return null;
+    }
 
     const selected = id === diagramMaster;
 
