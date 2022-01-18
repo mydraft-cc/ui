@@ -147,7 +147,7 @@ export class Tabs implements ShapePlugin {
                 const selected = text.endsWith('*');
 
                 if (selected) {
-                    text = text.substr(0, text.length - 1).trim();
+                    text = text.substring(0, text.length - 1).trim();
                 }
 
                 const width = ctx.renderer2.getTextWidth(text, fontSize, fontFamily) + fontSize;

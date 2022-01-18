@@ -101,7 +101,7 @@ export class List implements ShapePlugin {
                 const selected = t.endsWith('*');
 
                 if (selected) {
-                    return { text: t.substr(0, t.length - 1).trim(), selected };
+                    return { text: t.substring(0, t.length - 1).trim(), selected };
                 } else {
                     return { text: t, selected: false };
                 }

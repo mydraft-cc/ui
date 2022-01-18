@@ -133,7 +133,7 @@ export class Color {
 
     public static fromString(value: string) {
         if (value.charAt(0) === '#') {
-            value = value.substr(1, 6);
+            value = value.substring(1, 7);
         }
 
         value = value.replace(/ /g, '').toLowerCase();

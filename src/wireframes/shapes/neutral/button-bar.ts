@@ -128,7 +128,7 @@ export class ButtonBar implements ShapePlugin {
                 const selected = text.endsWith('*');
 
                 if (selected) {
-                    return { text: text.substr(0, text.length - 1).trim(), selected };
+                    return { text: text.substring(0, text.length - 1).trim(), selected };
                 } else {
                     return { text, selected };
                 }
