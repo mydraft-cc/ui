@@ -1,6 +1,6 @@
 # mydraft.cc: Open Source Wireframing Tools
 
-Test it out at: https://mydraft.cc/ (Work in Progress)
+Test it out at: https://mydraft.cc/
 
 The goal of this project is to create an open source wireframing tool. As a developer I have to create wireframes from time to time and there are great commercial tool in the market. But most of them cost more than a full Office suite per month. I think there is a need for a good and free solutions.
 
@@ -20,7 +20,6 @@ The goal of this project is to create an open source wireframing tool. As a deve
 Just install node.js and run the following commands in your terminal:
 
     npm i
-    npm rebuild node-sass --force
     npm start
 
 Go to `https://localhost:3002`
@@ -28,7 +27,6 @@ Go to `https://localhost:3002`
 ## How to build the application?
 
     npm i
-    npm rebuild node-sass --force
     npm run build
 
 Copy the files from the `build` folder to your webserver.
@@ -37,11 +35,10 @@ Copy the files from the `build` folder to your webserver.
 
 * **0.7**: [DONE] First working editor.
 * **0.9**: [DONE] Simple server to save diagrams with random id.
-* **1.0**: [IN_PROGRESS] Finalize the version and make small improvements and bugfixes.
-* **1.1**: Manage pages within a project with background pages.
-* **1.2**: Presentation mode.
-* **1.3**: Dark theme
-* **1.4**: Link UI elements to external sources or other pages.
+* **1.0**: [DONE] Finalize the version and make small improvements and bugfixes.
+* **1.0.1**: [DONE] Manage pages within a project with background pages.
+* **1.0.2**: [DONE] Presentation mode.
+* **1.0.3**: [DONE] Link UI elements to external sources or other pages.
 
 ## How can I contribute?
 
