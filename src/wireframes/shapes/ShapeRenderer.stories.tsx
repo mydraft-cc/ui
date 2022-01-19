@@ -152,7 +152,7 @@ export const Paragraph = () => {
 
 export const Phone = () => {
     return (
-        <ShapeRenderer plugin={new Shapes.Phone()} />
+        <ShapeRenderer plugin={new Shapes.Phone()} padding={100} />
     );
 };
 
