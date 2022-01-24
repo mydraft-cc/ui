@@ -14,6 +14,7 @@ export * from './react/UserReport';
 export * from './utils/collections';
 export * from './utils/color';
 export * from './utils/color-palette';
+export * from './utils/helpers';
 export * from './utils/immutable-list';
 export * from './utils/immutable-map';
 export * from './utils/immutable-set';

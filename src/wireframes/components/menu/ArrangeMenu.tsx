@@ -31,7 +31,7 @@ export const ArrangeMenu = React.memo(() => {
             <Shortcut disabled={forRemvoe.remove.disabled} onPressed={forRemvoe.remove.onAction} keys='del' />
             <Shortcut disabled={forRemvoe.remove.disabled} onPressed={forRemvoe.remove.onAction} keys='backspace' />
 
-            <Shortcut disabled={!selectedDiagram} onPressed={doSelectAll} keys='ctrl+a' />
+            <Shortcut disabled={!selectedDiagram} onPressed={doSelectAll} keys='MOD + A' />
         </>
     );
 });

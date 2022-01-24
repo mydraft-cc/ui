@@ -7,7 +7,7 @@
 
 import * as svg from '@svgdotjs/svg.js';
 import * as React from 'react';
-import { Rect2, SVGHelper, Vec2 } from '@app/core';
+import { isModKey, Rect2, SVGHelper, Vec2 } from '@app/core';
 import { calculateSelection, Diagram, DiagramItem } from '@app/wireframes/model';
 import { InteractionHandler, InteractionService, SvgEvent } from './interaction-service';
 
@@ -118,8 +118,14 @@ export class SelectionAdorner extends React.Component<SelectionAdornerProps> imp
     private selectSingle(event: SvgEvent, diagram: Diagram): string[] {
         const aabb = event.shape?.bounds(diagram).aabb;
 
+        const isMod = isModKey(event.event);
+
+        if (isMod) {
+            event.event.preventDefault();
+        }
+
         if (aabb?.contains(event.position) && event.shape) {
-            return calculateSelection([event.shape], diagram, true, event.event.ctrlKey);
+            return calculateSelection([event.shape], diagram, true, isMod);
         } else {
             return [];
         }

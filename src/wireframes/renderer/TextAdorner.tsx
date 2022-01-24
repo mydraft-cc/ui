@@ -6,16 +6,13 @@
 */
 
 import * as React from 'react';
-import { sizeInPx } from '@app/core';
+import { Keys, sizeInPx } from '@app/core';
 import { DefaultAppearance } from '@app/wireframes/interface';
 import { Diagram, DiagramItem } from '@app/wireframes/model';
 import { InteractionHandler, InteractionService, SvgEvent } from './interaction-service';
 
 const MIN_WIDTH = 150;
 const MIN_HEIGHT = 30;
-
-const KEY_ENTER = 13;
-const KEY_ESCAPE = 27;
 
 export interface TextAdornerProps {
     // The current zoom value.
@@ -104,9 +101,8 @@ export class TextAdorner extends React.PureComponent<TextAdornerProps> implement
     };
 
     private doSubmit = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
-        if ((event.keyCode === KEY_ENTER && !event.shiftKey) ||
-            (event.keyCode === KEY_ESCAPE)) {
-            if (event.keyCode === KEY_ENTER) {
+        if ((Keys.isEnter(event) && !event.shiftKey) || Keys.isEscape(event)) {
+            if (Keys.isEnter(event)) {
                 this.updateText();
             } else {
                 this.hide();

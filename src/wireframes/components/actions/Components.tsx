@@ -8,7 +8,7 @@
 import { Button, Menu, Tooltip } from 'antd';
 import { ButtonType } from 'antd/lib/button';
 import * as React from 'react';
-import { Shortcut, Types } from '@app/core';
+import { isMac, Shortcut, Types } from '@app/core';
 import { UIAction } from './shared';
 
 type ActionProps = { action: UIAction; showLabel?: boolean; type?: ButtonType; hideWhenDisabled?: boolean };
@@ -27,7 +27,7 @@ export const ActionMenuButton = React.memo((props: ActionProps) => {
         return null;
     }
 
-    const title = shortcut ? `${tooltip} (${shortcut.replace('MOD', modKeyFromUserAgent())})` : tooltip;
+    const title = buildTitle(shortcut, tooltip);
 
     return (
         <>
@@ -64,7 +64,7 @@ export const ActionButton = React.memo((props: ActionProps) => {
         return null;
     }
 
-    const title = shortcut ? `${tooltip} (${shortcut})` : tooltip;
+    const title = buildTitle(shortcut, tooltip);
 
     return (
         <>
@@ -112,8 +112,11 @@ export const ActionMenuItem = React.memo((props: ActionProps) => {
 
 });
 
-function modKeyFromUserAgent(): string {
-    // Mac users expect to use the command key for shortcuts rather than the control key
-    const isMac = window.navigator.userAgent.indexOf('Mac') != -1;
-    return isMac ? 'COMMAND' : 'CTRL';
+function buildTitle(shortcut: string | undefined, tooltip: string) {
+    function getModKey(): string {
+        // Mac users expect to use the command key for shortcuts rather than the control key
+        return isMac() ? 'COMMAND' : 'CTRL';
+    }
+
+    return shortcut ? `${tooltip} (${shortcut.replace('MOD', getModKey())})` : tooltip;
 }
