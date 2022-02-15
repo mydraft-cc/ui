@@ -160,7 +160,7 @@ class Factory implements ShapeFactory {
         const properties = Properties.INSTANCE;
 
         if (this.clipping) {
-            element = this.container.clipper() as any;
+            element = this.container.clipper()?.get(0) as T;
 
             if (!element || element.node.tagName !== name) {
                 element?.remove();
@@ -172,7 +172,7 @@ class Factory implements ShapeFactory {
 
             this.wasClipped = true;
         } else {
-            element = this.container.get(this.containerIndex) as any;
+            element = this.container.get(this.containerIndex) as T;
 
             if (!element) {
                 element = factory();
