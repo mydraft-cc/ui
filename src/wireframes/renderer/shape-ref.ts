@@ -27,6 +27,7 @@ export class ShapeRef {
     }
 
     public remove() {
+        // Always remove them so we can add the shapes back in the right order.
         this.renderedElement?.remove();
     }
 
@@ -56,15 +57,28 @@ export class ShapeRef {
     public render(shape: DiagramItem) {
         const mustRender = this.currentShape !== shape || !this.renderedElement;
 
+        const previousElement = this.renderedElement;
+
+        // Try to add them first, because we cannot handle clip paths that are not added.
+        if (previousElement && !previousElement.parent()) {
+            this.doc.add(previousElement);
+        }
+
         if (mustRender) {
             this.renderer.setContext(this.doc);
 
-            this.renderedElement = this.renderer.render(shape, this.renderedElement, { debug: this.showDebugMarkers });
-            this.renderedElement!.node['shape'] = shape;
-        }
+            const newElement = this.renderer.render(shape, this.renderedElement, { debug: this.showDebugMarkers });
 
-        if (!this.renderedElement!.parent()) {
-            this.doc.add(this.renderedElement!);
+            if (newElement !== previousElement) {
+                newElement.node['shape'] = shape;
+
+                // For new elements we might have to add them.
+                if (!newElement.parent()) {
+                    this.doc.add(newElement);
+                }
+
+                this.renderedElement = newElement;
+            }
         }
 
         this.currentShape = shape;
