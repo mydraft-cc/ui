@@ -20,6 +20,7 @@ export class SvgEvent {
 }
 
 export interface InteractionHandler {
+    onBlur?(event: FocusEvent, next: (event: FocusEvent) => void): void;
     onDoubleClick?(event: SvgEvent, next: (event: SvgEvent) => void): void;
     onClick?(event: SvgEvent, next: (event: SvgEvent) => void): boolean;
     onMouseDown?(event: SvgEvent, next: (event: SvgEvent) => void): void;
@@ -53,6 +54,7 @@ export class InteractionService {
     private onMouseDrag: Function = NOOP;
     private onMouseMove: Function = NOOP;
     private onMouseUp: Function = NOOP;
+    private onBlur: Function = NOOP;
 
     constructor(
         private readonly adornerLayers: svg.Element[], renderings: svg.Element, private readonly diagram: svg.Svg,
@@ -75,6 +77,10 @@ export class InteractionService {
             this.isDragging = true;
 
             this.onMouseDown(event);
+        });
+
+        window.addEventListener('blur', (event: FocusEvent) => {
+            this.onBlur(event);
         });
 
         window.document.addEventListener('keyup', (event: KeyboardEvent) => {
@@ -115,6 +121,7 @@ export class InteractionService {
     }
 
     private rebuild() {
+        this.onBlur = this.buildEvent(h => h?.onBlur?.bind(h));
         this.onClick = this.buildMouseEvent(h => h?.onClick?.bind(h));
         this.onKeyUp = this.buildEvent(h => h.onKeyUp?.bind(h));
         this.onKeyDown = this.buildEvent(h => h.onKeyDown?.bind(h));

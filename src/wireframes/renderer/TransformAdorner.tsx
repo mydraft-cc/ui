@@ -376,11 +376,24 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
                 this.startTransform,
                 this.transform);
         } finally {
-            this.props.onPreviewEnd();
-
-            this.manipulationMode = 0;
-            this.manipulated = false;
+            this.stopDrag();
         }
+    }
+
+    public onBlur(event: FocusEvent, next: (event: FocusEvent) => void) {
+        if (this.manipulationMode === 0) {
+            next(event);
+            return;
+        }
+
+        this.stopDrag();
+    }
+
+    private stopDrag() {
+        this.props.onPreviewEnd();
+
+        this.manipulationMode = 0;
+        this.manipulated = false;
     }
 
     private layoutShapes() {

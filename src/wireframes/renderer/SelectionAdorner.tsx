@@ -103,10 +103,23 @@ export class SelectionAdorner extends React.Component<SelectionAdornerProps> imp
                 this.props.onSelectItems(this.props.selectedDiagram, selection!);
             }
         } finally {
-            this.selectionShape.hide();
-
-            this.dragStart = null;
+            this.stopDrag();
         }
+    }
+
+    public onBlur(event: FocusEvent, next: (event: FocusEvent) => void) {
+        if (!this.dragStart) {
+            next(event);
+            return;
+        }
+
+        this.stopDrag();
+    }
+
+    private stopDrag() {
+        this.selectionShape.hide();
+
+        this.dragStart = null;
     }
 
     private selectMultiple(rect: Rect2, diagram: Diagram): string[] {
@@ -116,13 +129,13 @@ export class SelectionAdorner extends React.Component<SelectionAdornerProps> imp
     }
 
     private selectSingle(event: SvgEvent, diagram: Diagram): string[] {
-        const aabb = event.shape?.bounds(diagram).aabb;
-
         const isMod = isModKey(event.event);
 
         if (isMod) {
             event.event.preventDefault();
         }
+
+        const aabb = event.shape?.bounds(diagram).aabb;
 
         if (aabb?.contains(event.position) && event.shape) {
             return calculateSelection([event.shape], diagram, true, isMod);

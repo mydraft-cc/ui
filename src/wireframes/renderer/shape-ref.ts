@@ -69,9 +69,10 @@ export class ShapeRef {
 
             const newElement = this.renderer.render(shape, this.renderedElement, { debug: this.showDebugMarkers });
 
-            if (newElement !== previousElement) {
-                newElement.node['shape'] = shape;
+            // Always update shape to keep a reference to the actual object, not the old object.
+            newElement.node['shape'] = shape;
 
+            if (newElement !== previousElement) {
                 // For new elements we might have to add them.
                 if (!newElement.parent()) {
                     this.doc.add(newElement);
