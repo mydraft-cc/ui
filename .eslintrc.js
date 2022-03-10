@@ -122,6 +122,13 @@ module.exports = {
             }
         ],
         "operator-linebreak": "off",
-        "prefer-destructuring": "off"
+        "prefer-destructuring": "off",
+        "sort-imports": [
+            "error",
+            {
+                "ignoreCase": true,
+                "ignoreDeclarationSort": true
+            }
+        ],
     }
 };
