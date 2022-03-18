@@ -68,7 +68,11 @@ export const EditorView = ({ spacing }: EditorViewProps) => {
                 return;
             }
 
-            const offset = monitor.getSourceClientOffset();
+            let offset = monitor.getSourceClientOffset();
+
+            if (!offset) {
+                offset = monitor.getClientOffset();
+            }
 
             if (!offset) {
                 return;
@@ -76,8 +80,8 @@ export const EditorView = ({ spacing }: EditorViewProps) => {
 
             const componentRect = (findDOMNode(ref.current) as HTMLElement)!.getBoundingClientRect();
 
-            let x = (offset.x - spacing - componentRect.left) / zoom;
-            let y = (offset.y - spacing - componentRect.top) / zoom;
+            let x = ((offset?.x || 0) - spacing - componentRect.left) / zoom;
+            let y = ((offset?.y || 0) - spacing - componentRect.top) / zoom;
 
             if (item.shapeOffset) {
                 x += item.shapeOffset.x;
