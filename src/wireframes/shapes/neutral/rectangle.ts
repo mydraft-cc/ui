@@ -54,7 +54,7 @@ export class Rectangle implements ShapePlugin {
     }
 
     private createText(ctx: RenderContext) {
-        ctx.renderer2.text(ctx.shape, ctx.rect.deflate(10), p => {
+        ctx.renderer2.text(ctx.shape, ctx.rect.deflate(10, 0), p => {
             p.setForegroundColor(ctx.shape);
         });
     }
