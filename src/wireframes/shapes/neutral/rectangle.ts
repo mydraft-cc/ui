@@ -9,6 +9,8 @@ import { ConfigurableFactory, DefaultAppearance, RenderContext, ShapePlugin } fr
 import { CommonTheme } from './_theme';
 
 const BORDER_RADIUS = 'BORDER_RADIUS';
+const HORIZONTAL_PADDING = 'HORIZONTAL_PADDING';
+const VERTICAL_PADDING = 'VERTICAL_PADDING';
 
 const DEFAULT_APPEARANCE = {};
 DEFAULT_APPEARANCE[DefaultAppearance.FOREGROUND_COLOR] = 0;
@@ -19,6 +21,8 @@ DEFAULT_APPEARANCE[DefaultAppearance.FONT_SIZE] = CommonTheme.CONTROL_FONT_SIZE;
 DEFAULT_APPEARANCE[DefaultAppearance.STROKE_COLOR] = CommonTheme.CONTROL_BORDER_COLOR;
 DEFAULT_APPEARANCE[DefaultAppearance.STROKE_THICKNESS] = CommonTheme.CONTROL_BORDER_THICKNESS;
 DEFAULT_APPEARANCE[BORDER_RADIUS] = 0;
+DEFAULT_APPEARANCE[HORIZONTAL_PADDING] = 10;
+DEFAULT_APPEARANCE[VERTICAL_PADDING] = 10;
 
 export class Rectangle implements ShapePlugin {
     public identifier(): string {
@@ -36,6 +40,8 @@ export class Rectangle implements ShapePlugin {
     public configurables(factory: ConfigurableFactory) {
         return [
             factory.slider(BORDER_RADIUS, 'Border Radius', 0, 40),
+            factory.number(HORIZONTAL_PADDING, 'Horizontal Padding', 0, 40),
+            factory.number(VERTICAL_PADDING, 'Vertical Padding', 0, 40),
         ];
     }
 
@@ -54,7 +60,9 @@ export class Rectangle implements ShapePlugin {
     }
 
     private createText(ctx: RenderContext) {
-        ctx.renderer2.text(ctx.shape, ctx.rect.deflate(10), p => {
+        const verticalPadding = ctx.shape.getAppearance(VERTICAL_PADDING);
+        const horizontalPadding = ctx.shape.getAppearance(HORIZONTAL_PADDING);
+        ctx.renderer2.text(ctx.shape, ctx.rect.deflate(horizontalPadding, verticalPadding), p => {
             p.setForegroundColor(ctx.shape);
         });
     }
