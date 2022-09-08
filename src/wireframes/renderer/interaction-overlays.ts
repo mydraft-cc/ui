@@ -6,7 +6,7 @@
 */
 
 import * as svg from '@svgdotjs/svg.js';
-import { Color, Rect2, SVGHelper, Vec2 } from '@app/core';
+import { Color, Rect2, SVGHelper } from '@app/core';
 import { SnapLine, SnapResult, Transform } from '@app/wireframes/model';
 import { SVGRenderer2 } from '../shapes/utils/svg-renderer2';
 
@@ -33,12 +33,12 @@ export class InteractionOverlays {
     }
 
     public showSnapAdorners2(snapResult: SnapResult) {
-        if (snapResult.snapLineX) {
-            this.renderXLine(snapResult.snapLineX);
+        if (snapResult.snapX) {
+            this.renderXLine(snapResult.snapX);
         }
 
-        if (snapResult.snapLineY) {
-            this.renderYLine(snapResult.snapLineY);
+        if (snapResult.snapY) {
+            this.renderYLine(snapResult.snapY);
         }
     }
 
@@ -58,14 +58,12 @@ export class InteractionOverlays {
         }
     }
 
-    private renderDeltas(positions: Vec2[], diff: Vec2) {
+    private renderDeltas(positions: { x: number; y: number }[], diff: { x: number; y: number }) {
         const dx = diff.x;
         const dy = diff.y;
 
         for (const position of positions) {
-            const { x, y } = position;
-
-            this.renderLine(x, y, dx, dy, COLOR_PURPLE);
+            this.renderLine(position.x, position.y, dx, dy, COLOR_PURPLE);
         }
     }
 

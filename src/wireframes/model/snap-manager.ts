@@ -9,14 +9,6 @@ import { MathHelper, Rect2, Vec2 } from '@app/core';
 import { Diagram } from './diagram';
 import { Transform } from './transform';
 
-export interface SnapResult {
-    snapLineX?: SnapLine;
-    snapLineY?: SnapLine;
-
-    delta: Vec2;
-}
-
-export enum SnapMode { LeftTop, Center, RightBottom }
 
 const ROTATE_SNAP = 90 / 4;
 const MOVE_SNAP_GRID = 10;
@@ -25,15 +17,21 @@ const RESIZE_SNAP_SHAPE = 5;
 const RESIZE_SNAP_GRID = 10;
 const RESIZE_MINIMUM = 1;
 
+export type SnapResult = { 
+    snapX?: SnapLine;
+    snapY?: SnapLine;
+    delta: Vec2; 
+};
+
 export type SnapLine = Readonly<{
     // The actual position of the line.
     value: number;
     
     // The difference to a side.
-    diff?: Vec2;
+    diff?: { x: number; y: number };
     
     // The positions for space snap lines.
-    positions?: Vec2[]; 
+    positions?: { x: number; y: number }[]; 
     
     // True, if the snap line is for a center.
     isCenter?: boolean;
@@ -100,13 +98,13 @@ export class SnapManager {
                     if (isXCandidate(r, line)) {
                         dw = line.value - aabb.right;
 
-                        result.snapLineX = line;
+                        result.snapX = line;
                     }
                 } else if (xMode < 0) {
                     if (isXCandidate(l, line)) {
                         dw = line.value - aabb.right;
 
-                        result.snapLineX = line;
+                        result.snapX = line;
                     }
                 }
             }
@@ -134,13 +132,13 @@ export class SnapManager {
                     if (isYCandidate(b, line)) {
                         dh = line.value - aabb.bottom;
 
-                        result.snapLineY = line;
+                        result.snapY = line;
                     }
                 } else if (yMode < 0) {
                     if (isYCandidate(t, line)) {
                         dh = aabb.top - line.value;
 
-                        result.snapLineY = line;
+                        result.snapY = line;
                     }
                 }
             }
@@ -205,17 +203,17 @@ export class SnapManager {
                 if (line.isCenter && isXCandidate(cx, line)) {
                     x = line.value - aabb.width * 0.5;
 
-                    result.snapLineX = line;
+                    result.snapX = line;
                     break;
                 } else if (isXCandidate(l, line)) {
                     x = line.value;
 
-                    result.snapLineX = line;
+                    result.snapX = line;
                     break;
                 } else if (isXCandidate(r, line)) {
                     x = line.value - aabb.width;
 
-                    result.snapLineX = line;
+                    result.snapX = line;
                     break;
                 }
             }
@@ -242,17 +240,17 @@ export class SnapManager {
                 if (line.isCenter && isYCandidate(cy, line)) {
                     y = line.value - aabb.height * 0.5;
 
-                    result.snapLineY = line;
+                    result.snapY = line;
                     break;
                 } else if (isYCandidate(t, line)) {
                     y = line.value;
 
-                    result.snapLineY = line;
+                    result.snapY = line;
                     break;
                 } else if (isYCandidate(b, line)) {
                     y = line.value - aabb.height;
 
-                    result.snapLineY = line;
+                    result.snapY = line;
                     break;
                 }
             }
@@ -336,15 +334,20 @@ export class SnapManager {
                 }
             }
 
+            let x = 0;
+            let y = 0;
+
             if (minDistanceToLeft != Number.MAX_VALUE) {
                 const value = bound.right + minDistanceToLeft;
+                
+                y ||= bound.cy;
 
                 xLines.push({ 
                     value, 
-                    diff: new Vec2(minDistanceToLeft, 1), 
+                    diff: { x: minDistanceToLeft, y: 1 },
                     positions: [
-                        new Vec2(bound.left - minDistanceToLeft, bound.cy),
-                        new Vec2(bound.right, bound.cy),
+                        { y, x: bound.left - minDistanceToLeft },
+                        { y, x: bound.right },
                     ],
                     bound,
                 });
@@ -352,13 +355,15 @@ export class SnapManager {
 
             if (minDistanceToRight != Number.MAX_VALUE) {
                 const value = bound.left - minDistanceToRight;
+                
+                y ||= bound.cy;
 
                 xLines.push({ 
                     value, 
-                    diff: new Vec2(minDistanceToRight, 1), 
+                    diff: { x: minDistanceToRight, y: 1 },
                     positions: [
-                        new Vec2(bound.right, bound.cy),
-                        new Vec2(value, bound.cy),
+                        { y, x: bound.right },
+                        { y, x: value },
                     ],
                     bound,
                 });
@@ -366,13 +371,15 @@ export class SnapManager {
 
             if (minDistanceToTop != Number.MAX_VALUE) {
                 const value = bound.bottom + minDistanceToTop;
+                
+                x ||= bound.cx;
 
                 yLines.push({ 
                     value, 
-                    diff: new Vec2(1, minDistanceToTop), 
+                    diff: { x: 1, y: minDistanceToTop },
                     positions: [
-                        new Vec2(bound.cx, bound.top - minDistanceToTop),
-                        new Vec2(bound.cx, bound.bottom),
+                        { x, y: bound.top - minDistanceToTop },
+                        { x, y: bound.bottom },
                     ],
                     bound,
                 });
@@ -380,13 +387,15 @@ export class SnapManager {
 
             if (minDistanceToBottom != Number.MAX_VALUE) {
                 const value = bound.top - minDistanceToBottom;
+                
+                x ||= bound.cx;
 
                 yLines.push({ 
                     value, 
-                    diff: new Vec2(1, minDistanceToBottom), 
+                    diff: { x: 1, y: minDistanceToBottom }, 
                     positions: [
-                        new Vec2(bound.cx, bound.bottom),
-                        new Vec2(bound.cx, value),
+                        { x, y: bound.bottom },
+                        { x, y: value },
                     ],
                     bound,
                 });
