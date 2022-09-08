@@ -6,24 +6,23 @@
 */
 
 import * as svg from '@svgdotjs/svg.js';
-import { Color, Rect2, SVGHelper } from '@app/core';
-import { SnapMode, SnapResult, Transform } from '@app/wireframes/model';
+import { Color, Rect2, SVGHelper, Vec2 } from '@app/core';
+import { SnapLine, SnapMode, SnapMoveResult, SnapResult, Transform } from '@app/wireframes/model';
 import { SVGRenderer2 } from '../shapes/utils/svg-renderer2';
+
+const COLOR_RED = Color.RED.toString();
+const COLOR_BLUE = Color.RED.toString();
+const COLOR_PURPLE = '#a020f0';
 
 export class InteractionOverlays {
     private readonly infoRect: svg.Rect;
     private readonly infoText: svg.Element;
-    private readonly lineX: svg.Rect;
-    private readonly lineY: svg.Rect;
     private readonly elements: svg.Element[] = [];
+    private index = 0;
 
-    constructor(layer: svg.Container) {
-        this.lineX = layer.rect();
-        this.lineY = layer.rect();
-
-        this.elements.push(this.lineX);
-        this.elements.push(this.lineY);
-
+    constructor(
+        private readonly layer: svg.Container,
+    ) {
         this.infoRect = layer.rect().fill('#000');
         this.infoText = SVGHelper.createText('text', 16, 'center', 'middle').attr('color', '#fff').addTo(layer);
 
@@ -35,32 +34,83 @@ export class InteractionOverlays {
 
     public showSnapAdorners(snapResult: SnapResult) {
         if (snapResult.snapModeX === SnapMode.LeftTop) {
-            this.showXLine(snapResult.snapValueX! - 1, Color.RED);
+            this.showXLine(snapResult.snapValueX! - 1, COLOR_RED);
         } else if (snapResult.snapValueX && snapResult.snapModeX === SnapMode.RightBottom) {
-            this.showXLine(snapResult.snapValueX, Color.RED);
+            this.showXLine(snapResult.snapValueX, COLOR_RED);
         } else if (snapResult.snapValueX && snapResult.snapModeX === SnapMode.Center) {
-            this.showXLine(snapResult.snapValueX, Color.BLUE);
+            this.showXLine(snapResult.snapValueX, COLOR_BLUE);
         }
 
         if (snapResult.snapModeY === SnapMode.LeftTop) {
-            this.showYLine(snapResult.snapValueY! - 1, Color.RED);
+            this.showYLine(snapResult.snapValueY! - 1, COLOR_RED);
         } else if (snapResult.snapValueY && snapResult.snapModeY === SnapMode.RightBottom) {
-            this.showYLine(snapResult.snapValueY, Color.RED);
+            this.showYLine(snapResult.snapValueY, COLOR_BLUE);
         } else if (snapResult.snapValueY && snapResult.snapModeY === SnapMode.Center) {
-            this.showYLine(snapResult.snapValueY, Color.BLUE);
+            this.showYLine(snapResult.snapValueY, COLOR_BLUE);
         }
     }
 
-    public showXLine(value: number, color: Color) {
-        this.lineX.fill(color.toString()).show();
+    public showSnapAdorners2(snapResult: SnapMoveResult) {
+        if (snapResult.snapLineX) {
+            this.renderXLine(snapResult.snapLineX);
+        }
 
-        SVGHelper.transform(this.lineX, { x: value, y: -4000, w: 1, h: 10000 });
+        if (snapResult.snapLineY) {
+            this.renderYLine(snapResult.snapLineY);
+        }
     }
 
-    public showYLine(value: number, color: Color) {
-        this.lineY.fill(color.toString()).show();
+    public renderXLine(line: SnapLine) {
+        if (!line.positions) {
+            this.showXLine(line.value - 1, line.isCenter ? COLOR_BLUE : COLOR_RED);
+        } else if (line.diff) {
+            this.renderDeltas(line.positions, line.diff);
+        }
+    }
 
-        SVGHelper.transform(this.lineY, { x: -4000, y: value, w: 10000, h: 1 });
+    public renderYLine(line: SnapLine) {
+        if (!line.positions) {
+            this.showYLine(line.value - 1, line.isCenter ? COLOR_BLUE : COLOR_RED);
+        } else if (line.diff) {
+            this.renderDeltas(line.positions, line.diff);
+        }
+    }
+
+    private renderDeltas(positions: Vec2[], diff: Vec2) {
+        const dx = diff.x;
+        const dy = diff.y;
+
+        for (const position of positions) {
+            const { x, y } = position;
+
+            this.renderLine(x, y, dx, dy, COLOR_PURPLE);
+        }
+
+    }
+
+    public showXLine(value: number, color: string) {
+        this.renderLine(value, -4000, 1, 10000, color);
+    }
+
+    public showYLine(value: number, color: string) {
+        this.renderLine(-4000, value, 10000, 1, color);
+    }
+
+    private renderLine(x: number, y: number, w: number, h: number, color: string) {
+        let line = this.elements[this.index];
+
+        if (!line) {
+            line = this.layer.rect();
+            this.elements.push(line);
+        } else {
+            line.show();
+        }
+
+        line.fill(color);
+
+        SVGHelper.transform(line, { x, y, w, h });
+
+        this.index++;
     }
 
     public showInfo(transform: Transform, text: string) {
@@ -79,6 +129,8 @@ export class InteractionOverlays {
     }
 
     public reset() {
+        this.index = 2;
+
         for (const element of this.elements) {
             element.hide();
         }
