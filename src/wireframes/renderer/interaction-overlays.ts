@@ -85,7 +85,6 @@ export class InteractionOverlays {
 
             this.renderLine(x, y, dx, dy, COLOR_PURPLE);
         }
-
     }
 
     public showXLine(value: number, color: string) {

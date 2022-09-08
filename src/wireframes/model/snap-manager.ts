@@ -49,14 +49,8 @@ export type SnapLine = Readonly<{
     // True, if the snap line is for a center.
     isCenter?: boolean;
 
-    // The source.
-    sourceTransform?: Transform;
-
-    // The reference.
-    referenceTransform?: Transform;
-
     // The bounds.
-    sourceBound?: Rect2;
+    bound?: Rect2;
 }>;
 
 export class SnapManager {
@@ -167,12 +161,17 @@ export class SnapManager {
         let y = aabb.y + delta.y;
 
         if (!snapToGrid) {
-            const { xLines, yLines } = this.getSnapLines(diagram, view);
+            const { xLines, yLines } = this.getSnapLines(diagram, view, transform);
 
-            // Compute the new y-positions once.
-            const xl = delta.x + aabb.left;
-            const xr = delta.x + aabb.right;
-            const xc = delta.x + aabb.cx;
+            // Compute the new x and y-positions once.
+            const l = x;
+            const r = delta.x + aabb.right;
+
+            const t = y;
+            const b = delta.y + aabb.bottom;
+            
+            const cx = delta.x + aabb.cx;
+            const cy = delta.y + aabb.cy;
 
             let snapX = Number.MAX_VALUE;
 
@@ -188,28 +187,23 @@ export class SnapManager {
             };
 
             for (const line of xLines) {
-                // Do not snap with self
-                if (line.sourceTransform === transform || line.referenceTransform === transform) {
+                if (line.bound && !isOverlapY2(cy, aabb, line.bound)) {
                     continue;
                 }
 
-                if (line.sourceBound && !isOverlapY(aabb, line.sourceBound)) {
-                    continue;
-                }
-
-                if (line.isCenter && isXCandidate(xc, line)) {
+                if (line.isCenter && isXCandidate(cx, line)) {
                     x = line.value - aabb.width * 0.5;
 
                     result.snapLineX = line;
                     result.snapValueX = line.value;
                     break;
-                } else if (isXCandidate(xl, line)) {
+                } else if (isXCandidate(l, line)) {
                     x = line.value;
 
                     result.snapLineX = line;
                     result.snapValueX = line.value;
                     break;
-                } else if (isXCandidate(xr, line)) {
+                } else if (isXCandidate(r, line)) {
                     x = line.value - aabb.width;
 
                     result.snapLineX = line;
@@ -217,11 +211,6 @@ export class SnapManager {
                     break;
                 }
             }
-
-            // Compute the new y-positions once.
-            const yt = delta.y + aabb.top;
-            const yb = delta.y + aabb.bottom;
-            const cy = delta.y + aabb.cy;
 
             let snapY = Number.MAX_VALUE;
 
@@ -237,12 +226,7 @@ export class SnapManager {
             };
 
             for (const line of yLines) {
-                // Do not snap with self
-                if (line.sourceTransform === transform || line.referenceTransform === transform) {
-                    continue;
-                }
-
-                if (line.sourceBound && !isOverlapX(aabb, line.sourceBound)) {
+                if (line.bound && !isOverlapX2(cx, aabb, line.bound)) {
                     continue;
                 }
 
@@ -252,13 +236,13 @@ export class SnapManager {
                     result.snapLineY = line;
                     result.snapValueY = line.value;
                     break;
-                } else if (isYCandidate(yt, line)) {
+                } else if (isYCandidate(t, line)) {
                     y = line.value;
 
                     result.snapLineY = line;
                     result.snapValueY = line.value;
                     break;
-                } else if (isYCandidate(yb, line)) {
+                } else if (isYCandidate(b, line)) {
                     y = line.value - aabb.height;
 
                     result.snapLineY = line;
@@ -276,18 +260,15 @@ export class SnapManager {
         return result;
     }
 
-    public getSnapLines(diagram: Diagram, view: Vec2) {
+    public getSnapLines(diagram: Diagram, view: Vec2, sourceTransform: Transform) {
         if (this.lastDiagram === diagram && this.xLines && this.yLines) {
             return { xLines: this.xLines, yLines: this.yLines };
         }
 
         this.lastDiagram = diagram;
 
-        // The values need to be computed.
-        const items = diagram.items.values;
-
         // Compute the bounding boxes once.
-        const bounds = items.map(x => x.bounds(diagram).aabb);
+        const bounds = diagram.items.values.filter(x => x.transform !== sourceTransform).map(x => x.bounds(diagram).aabb);
 
         const xLines: SnapLine[] = [];
         const yLines: SnapLine[] = [];
@@ -298,54 +279,39 @@ export class SnapManager {
         yLines.push({ value: 0 });
         yLines.push({ value: view.y });
 
-        let i = 0;
-
         for (const bound of bounds) {
-            const sourceTransform = items[i].transform;
+            xLines.push({ value: bound.left });
+            xLines.push({ value: bound.right });
+            xLines.push({ value: bound.cx, isCenter: true });
 
-            xLines.push({ sourceTransform, value: bound.left });
-            xLines.push({ sourceTransform, value: bound.right });
-            xLines.push({ sourceTransform, value: bound.cx, isCenter: true });
-
-            yLines.push({ sourceTransform, value: bound.top });
-            yLines.push({ sourceTransform, value: bound.bottom });
-            yLines.push({ sourceTransform, value: bound.cy, isCenter: true });
+            yLines.push({ value: bound.top });
+            yLines.push({ value: bound.bottom });
+            yLines.push({ value: bound.cy, isCenter: true });
 
             // Search for the minimum distance to the left or right.
             let minDistanceToLeft = Number.MAX_VALUE;
             let minDistanceToRight = Number.MAX_VALUE;
 
-            let minDistanceToLeftTransform: Transform | undefined = undefined;
-            let minDistanceToRightTransform: Transform | undefined = undefined;
-
             let minDistanceToTop = Number.MAX_VALUE;
             let minDistanceToBottom = Number.MAX_VALUE;
-
-            let minDistanceToTopTransform: Transform | undefined = undefined;
-            let minDistanceToBottomTransform: Transform | undefined = undefined;
-
-            let j = 0;
 
             for (const other of bounds) {
                 if (other === bound) {
                     continue;
 
                 }
-                const referenceTransform = items[j].transform;
 
                 if (isOverlapY(other, bound)) {
                     const dl = bound.left - other.right;
 
                     if (dl > 0 && dl < minDistanceToLeft) {
                         minDistanceToLeft = dl;
-                        minDistanceToLeftTransform = referenceTransform;
                     }
 
                     const dr = other.left - bound.right;
 
                     if (dr > 0 && dr < minDistanceToRight) {
                         minDistanceToRight = dr;
-                        minDistanceToRightTransform = referenceTransform;
                     }
                 }
 
@@ -354,14 +320,12 @@ export class SnapManager {
 
                     if (dt > 0 && dt < minDistanceToTop) {
                         minDistanceToTop = dt;
-                        minDistanceToTopTransform = referenceTransform;
                     }
 
                     const db = other.top - bound.bottom;
 
                     if (db > 0 && db < minDistanceToBottom) {
                         minDistanceToBottom = db;
-                        minDistanceToBottomTransform = referenceTransform;
                     }
                 }
             }
@@ -376,9 +340,7 @@ export class SnapManager {
                         new Vec2(bound.left - minDistanceToLeft, bound.cy),
                         new Vec2(bound.right, bound.cy),
                     ],
-                    sourceTransform,
-                    sourceBound: bound,
-                    referenceTransform: minDistanceToLeftTransform,
+                    bound,
                 });
             }
 
@@ -392,9 +354,7 @@ export class SnapManager {
                         new Vec2(bound.right, bound.cy),
                         new Vec2(value, bound.cy),
                     ],
-                    sourceTransform,
-                    sourceBound: bound,
-                    referenceTransform: minDistanceToRightTransform,
+                    bound,
                 });
             }
 
@@ -408,9 +368,7 @@ export class SnapManager {
                         new Vec2(bound.cx, bound.top - minDistanceToTop),
                         new Vec2(bound.cx, bound.bottom),
                     ],
-                    sourceTransform,
-                    sourceBound: bound,
-                    referenceTransform: minDistanceToTopTransform,
+                    bound,
                 });
             }
 
@@ -424,13 +382,9 @@ export class SnapManager {
                         new Vec2(bound.cx, bound.bottom),
                         new Vec2(bound.cx, value),
                     ],
-                    sourceTransform,
-                    sourceBound: bound,
-                    referenceTransform: minDistanceToBottomTransform,
+                    bound,
                 });
             }
-
-            i++;
         }
 
         this.xLines = xLines;
@@ -452,6 +406,20 @@ export class SnapManager {
 
         return orderedAabbs;
     }
+}
+
+function isOverlapX2(cx: number, lhs: Rect2, rhs: Rect2) {
+    const minWidth = Math.min(lhs.width, rhs.width);
+
+    return Math.abs(cx - rhs.cx) < minWidth * 0.5;
+    // return !(rhs.right < lhs.left || rhs.left > lhs.right);
+}
+
+function isOverlapY2(cy: number, lhs: Rect2, rhs: Rect2) {
+    const minHeight = Math.min(lhs.height, rhs.height);
+
+    return Math.abs(cy - rhs.cy) < minHeight * 0.5;
+    // return !(rhs.bottom < lhs.top || rhs.top > lhs.bottom);
 }
 
 function isOverlapX(lhs: Rect2, rhs: Rect2) {

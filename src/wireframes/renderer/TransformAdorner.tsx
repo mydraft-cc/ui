@@ -289,21 +289,6 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
         const y = Math.floor(this.transform.aabb.y);
 
         this.overlays.showInfo(this.transform, `X: ${x}, Y: ${y}`);
-
-        const lines = this.snapManager.getSnapLines(this.props.selectedDiagram, this.props.viewSize);
-
-        for (const line of lines.xLines) {
-            if (line.positions) {
-                this.overlays.renderXLine(line);
-
-            }
-        }
-
-        for (const line of lines.yLines) {
-            if (line.positions) {
-                this.overlays.renderYLine(line);
-            }
-        }
     }
 
     private rotate(event: SvgEvent, shiftKey: boolean) {
