@@ -10,19 +10,8 @@ import { Diagram } from './diagram';
 import { Transform } from './transform';
 
 export interface SnapResult {
-    snapModeX?: SnapMode;
-    snapModeY?: SnapMode;
-    snapValueX?: number;
-    snapValueY?: number;
-
-    delta: Vec2;
-}
-
-export interface SnapMoveResult {
     snapLineX?: SnapLine;
     snapLineY?: SnapLine;
-    snapValueX?: number;
-    snapValueY?: number;
 
     delta: Vec2;
 }
@@ -79,58 +68,79 @@ export class SnapManager {
         if (!snapToGrid && transform.rotation.degree === 0) {
             const aabb = transform.aabb;
 
-            const orderedAabbs = this.calculateOrderedAABBs(transform, diagram, view);
+            const { xLines, yLines } = this.getSnapLines(diagram, view, transform);
 
-            const xLeft = aabb.left - delta.x;
-            const xRight = aabb.right + delta.x;
+            // Compute the new x and y-positions once.
+            const l = -delta.x + aabb.left;
+            const r = +delta.x + aabb.right;
 
-            for (const target of orderedAabbs) {
+            const t = -delta.y + aabb.top;
+            const b =  delta.y + aabb.bottom;
+
+            let snapX = Number.MAX_VALUE;
+
+            const isXCandidate = (value: number, line: SnapLine) => {
+                const delta = Math.abs(value - line.value);
+                
+                if (delta > 0 && delta < RESIZE_SNAP_SHAPE && delta < snapX) {
+                    snapX = delta;
+                    return true;
+                }
+
+                return false;
+            };
+
+            for (const line of xLines) {
+                // Do not snap with center lines or distribution lines on resize.
+                if (line.isCenter || line.positions) {
+                    continue;
+                }
+                
                 if (xMode > 0) {
-                    for (const other of [target.left, target.right]) {
-                        if (Math.abs(xRight - other) < RESIZE_SNAP_SHAPE) {
-                            dw = other - aabb.right;
+                    if (isXCandidate(r, line)) {
+                        dw = line.value - aabb.right;
 
-                            result.snapModeX = SnapMode.RightBottom;
-                            result.snapValueX = other;
-                            break;
-                        }
+                        result.snapLineX = line;
                     }
                 } else if (xMode < 0) {
-                    for (const other of [target.left, target.right]) {
-                        if (Math.abs(xLeft - other) < RESIZE_SNAP_SHAPE) {
-                            dw = aabb.left - other;
+                    if (isXCandidate(l, line)) {
+                        dw = line.value - aabb.right;
 
-                            result.snapModeX = SnapMode.LeftTop;
-                            result.snapValueX = other;
-                            break;
-                        }
+                        result.snapLineX = line;
                     }
                 }
             }
 
-            const yTop = aabb.top - delta.y;
-            const yBottom = aabb.bottom + delta.y;
+            let snapY = Number.MAX_VALUE;
 
-            for (const target of orderedAabbs) {
+            const isYCandidate = (value: number, line: SnapLine) => {
+                const delta = Math.abs(value - line.value);
+                
+                if (delta > 0 && delta < RESIZE_SNAP_SHAPE && delta < snapY) {
+                    snapY = delta;
+                    return true;
+                }
+
+                return false;
+            };
+
+            for (const line of yLines) {
+                // Do not snap with center lines or distribution lines on resize.
+                if (line.isCenter || line.positions) {
+                    continue;
+                }
+                
                 if (yMode > 0) {
-                    for (const other of [target.top, target.bottom]) {
-                        if (Math.abs(yBottom - other) < RESIZE_SNAP_SHAPE) {
-                            dh = other - aabb.bottom;
+                    if (isYCandidate(b, line)) {
+                        dh = line.value - aabb.bottom;
 
-                            result.snapModeY = SnapMode.RightBottom;
-                            result.snapValueY = other;
-                            break;
-                        }
+                        result.snapLineY = line;
                     }
                 } else if (yMode < 0) {
-                    for (const other of [target.top, target.bottom]) {
-                        if (Math.abs(yTop - other) < RESIZE_SNAP_SHAPE) {
-                            dh = aabb.top - other;
+                    if (isYCandidate(t, line)) {
+                        dh = aabb.top - line.value;
 
-                            result.snapModeY = SnapMode.LeftTop;
-                            result.snapValueY = other;
-                            break;
-                        }
+                        result.snapLineY = line;
                     }
                 }
             }
@@ -153,7 +163,7 @@ export class SnapManager {
     }
 
     public snapMoving(diagram: Diagram, view: Vec2, transform: Transform, delta: Vec2, snapToGrid: boolean): SnapResult {
-        const result: SnapMoveResult = { delta };
+        const result: SnapResult = { delta };
 
         const aabb = transform.aabb;
 
@@ -187,6 +197,7 @@ export class SnapManager {
             };
 
             for (const line of xLines) {
+                // Distribution lines have a bounds that must be close.
                 if (line.bound && !isOverlapY2(cy, aabb, line.bound)) {
                     continue;
                 }
@@ -195,19 +206,16 @@ export class SnapManager {
                     x = line.value - aabb.width * 0.5;
 
                     result.snapLineX = line;
-                    result.snapValueX = line.value;
                     break;
                 } else if (isXCandidate(l, line)) {
                     x = line.value;
 
                     result.snapLineX = line;
-                    result.snapValueX = line.value;
                     break;
                 } else if (isXCandidate(r, line)) {
                     x = line.value - aabb.width;
 
                     result.snapLineX = line;
-                    result.snapValueX = line.value;
                     break;
                 }
             }
@@ -226,6 +234,7 @@ export class SnapManager {
             };
 
             for (const line of yLines) {
+                // Distribution lines have a bounds that must be close.
                 if (line.bound && !isOverlapX2(cx, aabb, line.bound)) {
                     continue;
                 }
@@ -234,19 +243,16 @@ export class SnapManager {
                     y = line.value - aabb.height * 0.5;
 
                     result.snapLineY = line;
-                    result.snapValueY = line.value;
                     break;
                 } else if (isYCandidate(t, line)) {
                     y = line.value;
 
                     result.snapLineY = line;
-                    result.snapValueY = line.value;
                     break;
                 } else if (isYCandidate(b, line)) {
                     y = line.value - aabb.height;
 
                     result.snapLineY = line;
-                    result.snapValueY = line.value;
                     break;
                 }
             }
@@ -392,46 +398,28 @@ export class SnapManager {
 
         return { xLines, yLines };
     }
-
-    private calculateOrderedAABBs(transform: Transform, diagram: Diagram, view: Vec2): Rect2[] {
-        const orderedAabbs =
-            diagram.items.values
-                .map(t => t)
-                .map(t => t.bounds(diagram)).filter(t => t !== transform)
-                .map(t => t.aabb)
-                .map(t => ({ t, d: t.center.sub(transform.position).lengtSquared }))
-                .sort((l, r) => l.d - r.d).map(t => t.t);
-
-        orderedAabbs.push(new Rect2(0, 0, view.x, view.y));
-
-        return orderedAabbs;
-    }
 }
 
 function isOverlapX2(cx: number, lhs: Rect2, rhs: Rect2) {
     const minWidth = Math.min(lhs.width, rhs.width);
 
     return Math.abs(cx - rhs.cx) < minWidth * 0.5;
-    // return !(rhs.right < lhs.left || rhs.left > lhs.right);
 }
 
 function isOverlapY2(cy: number, lhs: Rect2, rhs: Rect2) {
     const minHeight = Math.min(lhs.height, rhs.height);
 
     return Math.abs(cy - rhs.cy) < minHeight * 0.5;
-    // return !(rhs.bottom < lhs.top || rhs.top > lhs.bottom);
 }
 
 function isOverlapX(lhs: Rect2, rhs: Rect2) {
     const minWidth = Math.min(lhs.width, rhs.width);
 
     return Math.abs(lhs.cx - rhs.cx) < minWidth * 0.5;
-    // return !(rhs.right < lhs.left || rhs.left > lhs.right);
 }
 
 function isOverlapY(lhs: Rect2, rhs: Rect2) {
     const minHeight = Math.min(lhs.height, rhs.height);
 
     return Math.abs(lhs.cy - rhs.cy) < minHeight * 0.5;
-    // return !(rhs.bottom < lhs.top || rhs.top > lhs.bottom);
 }

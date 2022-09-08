@@ -7,7 +7,7 @@
 
 import * as svg from '@svgdotjs/svg.js';
 import { Color, Rect2, SVGHelper, Vec2 } from '@app/core';
-import { SnapLine, SnapMode, SnapMoveResult, SnapResult, Transform } from '@app/wireframes/model';
+import { SnapLine, SnapResult, Transform } from '@app/wireframes/model';
 import { SVGRenderer2 } from '../shapes/utils/svg-renderer2';
 
 const COLOR_RED = Color.RED.toString();
@@ -32,25 +32,7 @@ export class InteractionOverlays {
         this.reset();
     }
 
-    public showSnapAdorners(snapResult: SnapResult) {
-        if (snapResult.snapModeX === SnapMode.LeftTop) {
-            this.showXLine(snapResult.snapValueX! - 1, COLOR_RED);
-        } else if (snapResult.snapValueX && snapResult.snapModeX === SnapMode.RightBottom) {
-            this.showXLine(snapResult.snapValueX, COLOR_RED);
-        } else if (snapResult.snapValueX && snapResult.snapModeX === SnapMode.Center) {
-            this.showXLine(snapResult.snapValueX, COLOR_BLUE);
-        }
-
-        if (snapResult.snapModeY === SnapMode.LeftTop) {
-            this.showYLine(snapResult.snapValueY! - 1, COLOR_RED);
-        } else if (snapResult.snapValueY && snapResult.snapModeY === SnapMode.RightBottom) {
-            this.showYLine(snapResult.snapValueY, COLOR_BLUE);
-        } else if (snapResult.snapValueY && snapResult.snapModeY === SnapMode.Center) {
-            this.showYLine(snapResult.snapValueY, COLOR_BLUE);
-        }
-    }
-
-    public showSnapAdorners2(snapResult: SnapMoveResult) {
+    public showSnapAdorners2(snapResult: SnapResult) {
         if (snapResult.snapLineX) {
             this.renderXLine(snapResult.snapLineX);
         }

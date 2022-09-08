@@ -333,7 +333,7 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
                 this.resizeDragOffset.x,
                 this.resizeDragOffset.y);
 
-        this.overlays.showSnapAdorners(snapResult);
+        this.overlays.showSnapAdorners2(snapResult);
 
         return snapResult.delta;
     }
