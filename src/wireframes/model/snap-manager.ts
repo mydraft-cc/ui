@@ -9,7 +9,6 @@ import { MathHelper, Rect2, Vec2 } from '@app/core';
 import { Diagram } from './diagram';
 import { Transform } from './transform';
 
-
 const ROTATE_SNAP = 90 / 4;
 const MOVE_SNAP_GRID = 10;
 const MOVE_SNAP_SHAPE = 5;
@@ -23,8 +22,8 @@ export type SnapResult = {
     delta: Vec2; 
 };
 
-export type SnapLine = Readonly<{
-    // The actual position of the line.
+export type SnapLine = {
+    // The actual position  ofthe line.
     value: number;
     
     // The difference to a side.
@@ -36,17 +35,14 @@ export type SnapLine = Readonly<{
     // True, if the snap line is for a center.
     isCenter?: boolean;
 
-    // The bounds.
-    bound?: Rect2;
-
-    // The index of the bound.
-    boundIndex?: number;
+    // The distances it refers to.
+    gridItem?: GridItem;
 
     // The side.
-    distanceSide?: 'Left' | 'Right' | 'Top' | 'Bottom';
-}>;
+    gridSide?: 'Left' | 'Right' | 'Top' | 'Bottom';
+};
 
-type Distances = {
+type GridItem = {
     // The distance to the next element at the left side and the index.
     leftDistance: number;
     leftIndex: number;
@@ -68,10 +64,11 @@ type Distances = {
 };
 
 export class SnapManager {
+    private referenceTransform?: Transform;
     private lastDiagram?: Diagram;
     private xLines?: SnapLine[];
     private yLines?: SnapLine[];
-    private distances: Distances[] = [];
+    private grid?: GridItem[];
 
     public snapRotating(transform: Transform, delta: number, disabled = false): number {
         const oldRotation = transform.rotation.degree;
@@ -197,7 +194,7 @@ export class SnapManager {
         let y = aabb.y + delta.y;
 
         if (!snapToGrid) {
-            const { xLines, yLines } = this.getSnapLines(diagram, view, transform);
+            const { xLines, yLines, grid } = this.getSnapLines(diagram, view, transform);
 
             // Compute the new x and y-positions once.
             const l = x;
@@ -214,7 +211,7 @@ export class SnapManager {
             const isXCandidate = (value: number, line: SnapLine) => {
                 const delta = Math.abs(value - line.value);
                 
-                if (delta > 0 && delta < MOVE_SNAP_SHAPE && delta < snapX) {
+                if (delta < MOVE_SNAP_SHAPE && delta < snapX) {
                     snapX = delta;
                     return true;
                 }
@@ -223,8 +220,8 @@ export class SnapManager {
             };
 
             for (const line of xLines) {
-                // Distribution lines have a bounds that must be close.
-                if (line.bound && !isOverlapY(cy, aabb.height, line.bound)) {
+                // Distance lines have a bounds that must be close.
+                if (line.gridItem?.bound && !isOverlapY(cy, aabb.height, line.gridItem?.bound)) {
                     continue;
                 }
 
@@ -251,7 +248,7 @@ export class SnapManager {
             const isYCandidate = (value: number, line: SnapLine) => {
                 const delta = Math.abs(value - line.value);
                 
-                if (delta > 0 && delta < MOVE_SNAP_SHAPE && delta < snapY) {
+                if (delta < MOVE_SNAP_SHAPE && delta < snapY) {
                     snapY = delta;
                     return true;
                 }
@@ -260,8 +257,8 @@ export class SnapManager {
             };
 
             for (const line of yLines) {
-                // Distribution lines have a bounds that must be close.
-                if (line.bound && !isOverlapX(cx, aabb.width, line.bound)) {
+                // Distance lines have a bounds that must be close.
+                if (line.gridItem?.bound && !isOverlapX(cx, aabb.width, line.gridItem?.bound)) {
                     continue;
                 }
 
@@ -282,6 +279,9 @@ export class SnapManager {
                     break;
                 }
             }
+
+            result.snapX = enrichLine(result.snapX, grid);
+            result.snapY = enrichLine(result.snapY, grid);
         } else {
             x = MathHelper.roundToMultipleOf(x, MOVE_SNAP_GRID);
             y = MathHelper.roundToMultipleOf(y, MOVE_SNAP_GRID);
@@ -292,20 +292,23 @@ export class SnapManager {
         return result;
     }
 
-    public getSnapLines(diagram: Diagram, view: Vec2, sourceTransform: Transform) {
-        if (this.lastDiagram === diagram && this.xLines && this.yLines) {
-            return { xLines: this.xLines, yLines: this.yLines };
+    public getSnapLines(diagram: Diagram, view: Vec2, referenceTransform: Transform) {
+        if (this.lastDiagram === diagram && this.xLines && this.yLines && this.grid && this.referenceTransform === referenceTransform) {
+            return { xLines: this.xLines, yLines: this.yLines, grid: this.grid };
         }
 
         this.lastDiagram = diagram;
 
+        // The currently moved transform is not part of the snap lines, therefore we have to recalculate if it changes.
+        this.referenceTransform = referenceTransform;
+
         // Compute the bounding boxes once.
-        const bounds = diagram.items.values.filter(x => x.transform !== sourceTransform).map(x => x.bounds(diagram).aabb);
+        const bounds = diagram.items.values.filter(x => x.transform !== referenceTransform).map(x => x.bounds(diagram).aabb);
 
-        const distances = computeDistances(bounds);
+        const grid = this.grid = computeGrid(bounds);
 
-        const xLines: SnapLine[] = [];
-        const yLines: SnapLine[] = [];
+        const xLines: SnapLine[] = this.xLines = [];
+        const yLines: SnapLine[] = this.yLines = [];
 
         xLines.push({ value: 0 });
         xLines.push({ value: view.x });
@@ -323,124 +326,200 @@ export class SnapManager {
             yLines.push({ value: bound.cy, isCenter: true });
         }
 
-        for (const distance of distances) {
-            const bound = distance.bound;
-
-            let x = 0;
-            let y = 0;
-
-            if (distance.leftDistance != Number.MAX_VALUE) {
-                const value = bound.right + distance.leftDistance;
-                
-                y ||= bound.cy;
-
+        for (const gridItem of grid) {
+            const bound = gridItem.bound;
+    
+            if (gridItem.leftDistance != Number.MAX_VALUE) {
                 xLines.push({ 
-                    value, 
-                    diff: { x: distance.leftDistance, y: 1 },
-                    positions: [
-                        { y, x: bound.left - distance.leftDistance },
-                        { y, x: bound.right },
-                    ],
-                    bound,
+                    value: bound.right + gridItem.leftDistance, 
+                    gridSide: 'Right',
+                    gridItem,
                 });
             }
 
-            if (distance.rightDistance != Number.MAX_VALUE) {
-                const value = bound.left - distance.rightDistance;
-                
-                y ||= bound.cy;
-
+            if (gridItem.rightDistance != Number.MAX_VALUE) {
                 xLines.push({ 
-                    value, 
-                    diff: { x: distance.rightDistance, y: 1 },
-                    positions: [
-                        { y, x: bound.right },
-                        { y, x: value },
-                    ],
-                    bound,
+                    value: bound.left - gridItem.rightDistance, 
+                    gridSide: 'Left',
+                    gridItem,
                 });
             }
 
-            if (distance.topDistance != Number.MAX_VALUE) {
-                const value = bound.bottom + distance.topDistance;
-                
-                x ||= bound.cx;
-
+            if (gridItem.topDistance != Number.MAX_VALUE) {
                 yLines.push({ 
-                    value, 
-                    diff: { x: 1, y: distance.topDistance },
-                    positions: [
-                        { x, y: bound.top - distance.topDistance },
-                        { x, y: bound.bottom },
-                    ],
-                    bound,
+                    value: bound.bottom + gridItem.topDistance,
+                    gridSide: 'Bottom',
+                    gridItem,
                 });
             }
 
-            if (distance.bottomDistance != Number.MAX_VALUE) {
-                const value = bound.top - distance.bottomDistance;
-                
-                x ||= bound.cx;
-
+            if (gridItem.bottomDistance != Number.MAX_VALUE) {
                 yLines.push({ 
-                    value, 
-                    diff: { x: 1, y: distance.bottomDistance }, 
-                    positions: [
-                        { x, y: bound.bottom },
-                        { x, y: value },
-                    ],
-                    bound,
+                    value: bound.top - gridItem.bottomDistance,
+                    gridSide: 'Top',
+                    gridItem,
                 });
             }
         }
 
-        this.xLines = xLines;
-        this.yLines = yLines;
+        return { xLines, yLines, grid };
+    }
+
+    public getDebugLines(diagram: Diagram, view: Vec2, transform: Transform) {
+        const { xLines, yLines } = this.getSnapLines(diagram, view, transform);
+
+        if (this.grid) {
+            for (const line of xLines) {
+                enrichLine(line, this.grid);
+            }
+            for (const line of yLines) {
+                enrichLine(line, this.grid);
+            }
+        }
 
         return { xLines, yLines };
     }
 }
 
-function computeDistances(bounds: Rect2[]) {
-    const distances: Distances[] = [];
+function enrichLine(line: SnapLine | undefined, grid: GridItem[]) {
+    if (!line || !line.gridSide || !line.gridItem || line.positions) {
+        return line;
+    }
+
+    const positions: { x: number; y: number }[] = [];
+
+    // The initial bound to check.
+    let current = line.gridItem;
+
+    // Compute the vertical offsets once to save some compute time.
+    const x = current.bound.cx;
+    const y = current.bound.cy;
+
+    switch (line.gridSide) {
+        case 'Left': {
+            const distance = current.rightDistance;
+
+            // Compute the vertical offset only once to save some compute time.
+            line.diff = { x: distance, y: 1 };
+
+            // Travel to the left while the right are the same.
+            while (current) {
+                positions.push({ x: current.bound.left - distance, y });
+
+                if (!areSimilar(current.rightDistance, distance)) {
+                    break;
+                }
+
+                current = grid[current.rightIndex];
+            }
+
+            break;
+        }
+
+        case 'Right': {
+            const distance = current.leftDistance;
+
+            line.diff = { x: distance, y: 1 };
+
+            // Travel to the left while the distances are the same.
+            while (current) {
+                positions.push({ x: current.bound.right, y });
+
+                if (!areSimilar(current.leftDistance, distance)) {
+                    break;
+                }
+
+                current = grid[current.leftIndex];
+            }
+
+            break;
+        }
+
+        case 'Top': {
+            const distance = current.bottomDistance;
+
+            // Compute the vertical offset only once to save some compute time.
+            line.diff = { y: distance, x: 1 };
+
+            // Travel to the bottom while the distances are the same.
+            while (current) {
+                positions.push({ y: current.bound.top - distance, x });
+
+                if (!areSimilar(current.bottomDistance, distance)) {
+                    break;
+                }
+
+                current = grid[current.bottomIndex];
+            }
+
+            break;
+        }
+
+        case 'Bottom': {
+            const distance = current.topDistance;
+
+            line.diff = { y: distance, x: 1 };
+
+            // Travel to the top while the distances are the same.
+            while (current) {
+                positions.push({ y: current.bound.bottom, x });
+
+                if (!areSimilar(current.topDistance, distance)) {
+                    break;
+                }
+
+                current = grid[current.topIndex];
+            }
+
+            break;
+        }
+    }
+
+    line.positions = positions;
+
+    return line;
+}
+
+function computeGrid(bounds: Rect2[]) {
+    const grid: GridItem[] = [];
 
     for (const bound of bounds) {
         // Search for the minimum distance to the left or right.
-        const distances: Distances = {
+        const gridItem: GridItem = {
             bound,
-            topDistance: Number.MAX_VALUE,
-            topIndex: -1,
             bottomDistance: Number.MAX_VALUE,
             bottomIndex: -1,
-            rightDistance: Number.MAX_VALUE,
-            rightIndex: -1,
             leftDistance: Number.MAX_VALUE,
             leftIndex: -1,
+            rightDistance: Number.MAX_VALUE,
+            rightIndex: -1,
+            topDistance: Number.MAX_VALUE,
+            topIndex: -1,
         };
 
-        let j = 0;
-
+        let j = -1;
         for (const other of bounds) {
+            j++;
+
             if (other === bound) {
                 continue;
-
             }
 
             if (isOverlapY(other.cy, other.height, bound)) {
                 const dl = bound.left - other.right;
 
                 // If the distance to the left is positive, the other element is on the left side.
-                if (dl > 0 && dl < distances.leftDistance) {
-                    distances.leftDistance = dl;
-                    distances.leftIndex = j;
+                if (dl > 0 && dl < gridItem.leftDistance) {
+                    gridItem.leftDistance = dl;
+                    gridItem.leftIndex = j;
                 }
 
                 const dr = other.left - bound.right;
 
                 // If the distance to the right is positive, the other element is on the right side.
-                if (dr > 0 && dr < distances.rightDistance) {
-                    distances.rightDistance = dl;
-                    distances.rightIndex = j;
+                if (dr > 0 && dr < gridItem.rightDistance) {
+                    gridItem.rightDistance = dr;
+                    gridItem.rightIndex = j;
                 }
             }
 
@@ -448,23 +527,25 @@ function computeDistances(bounds: Rect2[]) {
                 const dt = bound.top - other.bottom;
 
                 // If the distance to the right is top, the other element is on the top side.
-                if (dt > 0 && dt < distances.topDistance) {
-                    distances.topDistance = dt;
-                    distances.topIndex = j;
+                if (dt > 0 && dt < gridItem.topDistance) {
+                    gridItem.topDistance = dt;
+                    gridItem.topIndex = j;
                 }
 
                 const db = other.top - bound.bottom;
 
                 // If the distance to the right is bottom, the other element is on the bottom side.
-                if (db > 0 && db < distances.bottomDistance) {
-                    distances.bottomDistance = dt;
-                    distances.bottomIndex = j;
+                if (db > 0 && db < gridItem.bottomDistance) {
+                    gridItem.bottomDistance = db;
+                    gridItem.bottomIndex = j;
                 }
             }
         }
+        
+        grid.push(gridItem);
     }
 
-    return distances;
+    return grid;
 }
 
 function isOverlapX(cx: number, width: number, rhs: Rect2) {
@@ -477,4 +558,10 @@ function isOverlapY(cy: number, height: number, rhs: Rect2) {
     const minHeight = Math.min(height, rhs.height);
 
     return Math.abs(cy - rhs.cy) < minHeight * 0.5;
+}
+
+function areSimilar(lhs: number, rhs: number) {
+    const d = Math.abs(lhs - rhs);
+
+    return d < 1;
 }

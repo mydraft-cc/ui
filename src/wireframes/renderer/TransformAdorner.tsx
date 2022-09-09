@@ -17,6 +17,9 @@ const MODE_RESIZE = 2;
 const MODE_MOVE = 3;
 const MODE_ROTATE = 1;
 
+const DEBUG_SIDES = false;
+const DEBUG_DISTANCES = false;
+
 const TRANSFORMER_STROKE_COLOR = '#080';
 const TRANSFORMER_FILL_COLOR = '#0f0';
 
@@ -289,6 +292,8 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
         const y = Math.floor(this.transform.aabb.y);
 
         this.overlays.showInfo(this.transform, `X: ${x}, Y: ${y}`);
+
+        this.debug();
     }
 
     private rotate(event: SvgEvent, shiftKey: boolean) {
@@ -323,6 +328,8 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
         const h = Math.floor(this.transform.size.y);
 
         this.overlays.showInfo(this.transform, `Width: ${w}, Height: ${h}`);
+
+        this.debug();
     }
 
     private getResizeDeltaSize(angle: Rotation, cummulativeTranslation: Vec2, shiftKey: boolean) {
@@ -336,6 +343,24 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
         this.overlays.showSnapAdorners2(snapResult);
 
         return snapResult.delta;
+    }
+
+    private debug() {
+        if (DEBUG_SIDES || DEBUG_DISTANCES) {
+            const { xLines, yLines } = this.snapManager.getDebugLines(this.props.selectedDiagram, this.props.viewSize, this.startTransform);
+    
+            for (const line of xLines) {
+                if ((line.positions && DEBUG_DISTANCES) || DEBUG_SIDES) {
+                    this.overlays.renderXLine(line);
+                }
+            }
+
+            for (const line of yLines) {
+                if ((line.positions && DEBUG_DISTANCES) || DEBUG_SIDES) {
+                    this.overlays.renderYLine(line);
+                }
+            }
+        }
     }
 
     private getResizeDeltaPos(angle: Rotation, dSize: Vec2) {
