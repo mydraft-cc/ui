@@ -38,12 +38,40 @@ export type SnapLine = Readonly<{
 
     // The bounds.
     bound?: Rect2;
+
+    // The index of the bound.
+    boundIndex?: number;
+
+    // The side.
+    distanceSide?: 'Left' | 'Right' | 'Top' | 'Bottom';
 }>;
+
+type Distances = {
+    // The distance to the next element at the left side and the index.
+    leftDistance: number;
+    leftIndex: number;
+
+    // The distance to the next element at the right side and the index.
+    rightDistance: number;
+    rightIndex: number;
+
+    // The distance to the next element at the top side and the index.
+    topDistance: number;
+    topIndex: number;
+
+    // The distance to the next element at the bottom side and the index.
+    bottomDistance: number;
+    bottomIndex: number;
+
+    // The bounds.
+    bound: Rect2;
+};
 
 export class SnapManager {
     private lastDiagram?: Diagram;
     private xLines?: SnapLine[];
     private yLines?: SnapLine[];
+    private distances: Distances[] = [];
 
     public snapRotating(transform: Transform, delta: number, disabled = false): number {
         const oldRotation = transform.rotation.degree;
@@ -196,7 +224,7 @@ export class SnapManager {
 
             for (const line of xLines) {
                 // Distribution lines have a bounds that must be close.
-                if (line.bound && !isOverlapY2(cy, aabb, line.bound)) {
+                if (line.bound && !isOverlapY(cy, aabb.height, line.bound)) {
                     continue;
                 }
 
@@ -233,7 +261,7 @@ export class SnapManager {
 
             for (const line of yLines) {
                 // Distribution lines have a bounds that must be close.
-                if (line.bound && !isOverlapX2(cx, aabb, line.bound)) {
+                if (line.bound && !isOverlapX(cx, aabb.width, line.bound)) {
                     continue;
                 }
 
@@ -274,6 +302,8 @@ export class SnapManager {
         // Compute the bounding boxes once.
         const bounds = diagram.items.values.filter(x => x.transform !== sourceTransform).map(x => x.bounds(diagram).aabb);
 
+        const distances = computeDistances(bounds);
+
         const xLines: SnapLine[] = [];
         const yLines: SnapLine[] = [];
 
@@ -291,76 +321,38 @@ export class SnapManager {
             yLines.push({ value: bound.top });
             yLines.push({ value: bound.bottom });
             yLines.push({ value: bound.cy, isCenter: true });
+        }
 
-            // Search for the minimum distance to the left or right.
-            let minDistanceToLeft = Number.MAX_VALUE;
-            let minDistanceToRight = Number.MAX_VALUE;
-
-            let minDistanceToTop = Number.MAX_VALUE;
-            let minDistanceToBottom = Number.MAX_VALUE;
-
-            for (const other of bounds) {
-                if (other === bound) {
-                    continue;
-
-                }
-
-                if (isOverlapY(other, bound)) {
-                    const dl = bound.left - other.right;
-
-                    if (dl > 0 && dl < minDistanceToLeft) {
-                        minDistanceToLeft = dl;
-                    }
-
-                    const dr = other.left - bound.right;
-
-                    if (dr > 0 && dr < minDistanceToRight) {
-                        minDistanceToRight = dr;
-                    }
-                }
-
-                if (isOverlapX(other, bound)) {
-                    const dt = bound.top - other.bottom;
-
-                    if (dt > 0 && dt < minDistanceToTop) {
-                        minDistanceToTop = dt;
-                    }
-
-                    const db = other.top - bound.bottom;
-
-                    if (db > 0 && db < minDistanceToBottom) {
-                        minDistanceToBottom = db;
-                    }
-                }
-            }
+        for (const distance of distances) {
+            const bound = distance.bound;
 
             let x = 0;
             let y = 0;
 
-            if (minDistanceToLeft != Number.MAX_VALUE) {
-                const value = bound.right + minDistanceToLeft;
+            if (distance.leftDistance != Number.MAX_VALUE) {
+                const value = bound.right + distance.leftDistance;
                 
                 y ||= bound.cy;
 
                 xLines.push({ 
                     value, 
-                    diff: { x: minDistanceToLeft, y: 1 },
+                    diff: { x: distance.leftDistance, y: 1 },
                     positions: [
-                        { y, x: bound.left - minDistanceToLeft },
+                        { y, x: bound.left - distance.leftDistance },
                         { y, x: bound.right },
                     ],
                     bound,
                 });
             }
 
-            if (minDistanceToRight != Number.MAX_VALUE) {
-                const value = bound.left - minDistanceToRight;
+            if (distance.rightDistance != Number.MAX_VALUE) {
+                const value = bound.left - distance.rightDistance;
                 
                 y ||= bound.cy;
 
                 xLines.push({ 
                     value, 
-                    diff: { x: minDistanceToRight, y: 1 },
+                    diff: { x: distance.rightDistance, y: 1 },
                     positions: [
                         { y, x: bound.right },
                         { y, x: value },
@@ -369,30 +361,30 @@ export class SnapManager {
                 });
             }
 
-            if (minDistanceToTop != Number.MAX_VALUE) {
-                const value = bound.bottom + minDistanceToTop;
+            if (distance.topDistance != Number.MAX_VALUE) {
+                const value = bound.bottom + distance.topDistance;
                 
                 x ||= bound.cx;
 
                 yLines.push({ 
                     value, 
-                    diff: { x: 1, y: minDistanceToTop },
+                    diff: { x: 1, y: distance.topDistance },
                     positions: [
-                        { x, y: bound.top - minDistanceToTop },
+                        { x, y: bound.top - distance.topDistance },
                         { x, y: bound.bottom },
                     ],
                     bound,
                 });
             }
 
-            if (minDistanceToBottom != Number.MAX_VALUE) {
-                const value = bound.top - minDistanceToBottom;
+            if (distance.bottomDistance != Number.MAX_VALUE) {
+                const value = bound.top - distance.bottomDistance;
                 
                 x ||= bound.cx;
 
                 yLines.push({ 
                     value, 
-                    diff: { x: 1, y: minDistanceToBottom }, 
+                    diff: { x: 1, y: distance.bottomDistance }, 
                     positions: [
                         { x, y: bound.bottom },
                         { x, y: value },
@@ -409,26 +401,80 @@ export class SnapManager {
     }
 }
 
-function isOverlapX2(cx: number, lhs: Rect2, rhs: Rect2) {
-    const minWidth = Math.min(lhs.width, rhs.width);
+function computeDistances(bounds: Rect2[]) {
+    const distances: Distances[] = [];
+
+    for (const bound of bounds) {
+        // Search for the minimum distance to the left or right.
+        const distances: Distances = {
+            bound,
+            topDistance: Number.MAX_VALUE,
+            topIndex: -1,
+            bottomDistance: Number.MAX_VALUE,
+            bottomIndex: -1,
+            rightDistance: Number.MAX_VALUE,
+            rightIndex: -1,
+            leftDistance: Number.MAX_VALUE,
+            leftIndex: -1,
+        };
+
+        let j = 0;
+
+        for (const other of bounds) {
+            if (other === bound) {
+                continue;
+
+            }
+
+            if (isOverlapY(other.cy, other.height, bound)) {
+                const dl = bound.left - other.right;
+
+                // If the distance to the left is positive, the other element is on the left side.
+                if (dl > 0 && dl < distances.leftDistance) {
+                    distances.leftDistance = dl;
+                    distances.leftIndex = j;
+                }
+
+                const dr = other.left - bound.right;
+
+                // If the distance to the right is positive, the other element is on the right side.
+                if (dr > 0 && dr < distances.rightDistance) {
+                    distances.rightDistance = dl;
+                    distances.rightIndex = j;
+                }
+            }
+
+            if (isOverlapX(other.cx, other.width, bound)) {
+                const dt = bound.top - other.bottom;
+
+                // If the distance to the right is top, the other element is on the top side.
+                if (dt > 0 && dt < distances.topDistance) {
+                    distances.topDistance = dt;
+                    distances.topIndex = j;
+                }
+
+                const db = other.top - bound.bottom;
+
+                // If the distance to the right is bottom, the other element is on the bottom side.
+                if (db > 0 && db < distances.bottomDistance) {
+                    distances.bottomDistance = dt;
+                    distances.bottomIndex = j;
+                }
+            }
+        }
+    }
+
+    return distances;
+}
+
+function isOverlapX(cx: number, width: number, rhs: Rect2) {
+    const minWidth = Math.min(width, rhs.width);
 
     return Math.abs(cx - rhs.cx) < minWidth * 0.5;
 }
 
-function isOverlapY2(cy: number, lhs: Rect2, rhs: Rect2) {
-    const minHeight = Math.min(lhs.height, rhs.height);
+function isOverlapY(cy: number, height: number, rhs: Rect2) {
+    const minHeight = Math.min(height, rhs.height);
 
     return Math.abs(cy - rhs.cy) < minHeight * 0.5;
-}
-
-function isOverlapX(lhs: Rect2, rhs: Rect2) {
-    const minWidth = Math.min(lhs.width, rhs.width);
-
-    return Math.abs(lhs.cx - rhs.cx) < minWidth * 0.5;
-}
-
-function isOverlapY(lhs: Rect2, rhs: Rect2) {
-    const minHeight = Math.min(lhs.height, rhs.height);
-
-    return Math.abs(lhs.cy - rhs.cy) < minHeight * 0.5;
 }
