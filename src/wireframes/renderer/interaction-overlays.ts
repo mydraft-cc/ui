@@ -7,23 +7,22 @@
 
 import * as svg from '@svgdotjs/svg.js';
 import { Color, Rect2, SVGHelper } from '@app/core';
-import { SnapMode, SnapResult, Transform } from '@app/wireframes/model';
+import { SnapLine, SnapResult, Transform } from '@app/wireframes/model';
 import { SVGRenderer2 } from '../shapes/utils/svg-renderer2';
+
+const COLOR_RED = Color.RED.toString();
+const COLOR_BLUE = Color.RED.toString();
+const COLOR_PURPLE = '#a020f0';
 
 export class InteractionOverlays {
     private readonly infoRect: svg.Rect;
     private readonly infoText: svg.Element;
-    private readonly lineX: svg.Rect;
-    private readonly lineY: svg.Rect;
     private readonly elements: svg.Element[] = [];
+    private index = 0;
 
-    constructor(layer: svg.Container) {
-        this.lineX = layer.rect();
-        this.lineY = layer.rect();
-
-        this.elements.push(this.lineX);
-        this.elements.push(this.lineY);
-
+    constructor(
+        private readonly layer: svg.Container,
+    ) {
         this.infoRect = layer.rect().fill('#000');
         this.infoText = SVGHelper.createText('text', 16, 'center', 'middle').attr('color', '#fff').addTo(layer);
 
@@ -33,34 +32,64 @@ export class InteractionOverlays {
         this.reset();
     }
 
-    public showSnapAdorners(snapResult: SnapResult) {
-        if (snapResult.snapModeX === SnapMode.LeftTop) {
-            this.showXLine(snapResult.snapValueX! - 1, Color.RED);
-        } else if (snapResult.snapValueX && snapResult.snapModeX === SnapMode.RightBottom) {
-            this.showXLine(snapResult.snapValueX, Color.RED);
-        } else if (snapResult.snapValueX && snapResult.snapModeX === SnapMode.Center) {
-            this.showXLine(snapResult.snapValueX, Color.BLUE);
+    public showSnapAdorners2(snapResult: SnapResult) {
+        if (snapResult.snapX) {
+            this.renderXLine(snapResult.snapX);
         }
 
-        if (snapResult.snapModeY === SnapMode.LeftTop) {
-            this.showYLine(snapResult.snapValueY! - 1, Color.RED);
-        } else if (snapResult.snapValueY && snapResult.snapModeY === SnapMode.RightBottom) {
-            this.showYLine(snapResult.snapValueY, Color.RED);
-        } else if (snapResult.snapValueY && snapResult.snapModeY === SnapMode.Center) {
-            this.showYLine(snapResult.snapValueY, Color.BLUE);
+        if (snapResult.snapY) {
+            this.renderYLine(snapResult.snapY);
         }
     }
 
-    public showXLine(value: number, color: Color) {
-        this.lineX.fill(color.toString()).show();
-
-        SVGHelper.transform(this.lineX, { x: value, y: -4000, w: 1, h: 10000 });
+    public renderXLine(line: SnapLine) {
+        if (!line.positions) {
+            this.showXLine(line.value - 1, line.isCenter ? COLOR_BLUE : COLOR_RED);
+        } else if (line.diff) {
+            this.renderDeltas(line.positions, line.diff);
+        }
     }
 
-    public showYLine(value: number, color: Color) {
-        this.lineY.fill(color.toString()).show();
+    public renderYLine(line: SnapLine) {
+        if (!line.positions) {
+            this.showYLine(line.value - 1, line.isCenter ? COLOR_BLUE : COLOR_RED);
+        } else if (line.diff) {
+            this.renderDeltas(line.positions, line.diff);
+        }
+    }
 
-        SVGHelper.transform(this.lineY, { x: -4000, y: value, w: 10000, h: 1 });
+    private renderDeltas(positions: { x: number; y: number }[], diff: { x: number; y: number }) {
+        const dx = diff.x;
+        const dy = diff.y;
+
+        for (const position of positions) {
+            this.renderLine(position.x, position.y, dx, dy, COLOR_PURPLE);
+        }
+    }
+
+    public showXLine(value: number, color: string) {
+        this.renderLine(value, -4000, 1, 10000, color);
+    }
+
+    public showYLine(value: number, color: string) {
+        this.renderLine(-4000, value, 10000, 1, color);
+    }
+
+    private renderLine(x: number, y: number, w: number, h: number, color: string) {
+        let line = this.elements[this.index];
+
+        if (!line) {
+            line = this.layer.rect();
+            this.elements.push(line);
+        } else {
+            line.show();
+        }
+
+        line.fill(color);
+
+        SVGHelper.transform(line, { x, y, w, h });
+
+        this.index++;
     }
 
     public showInfo(transform: Transform, text: string) {
@@ -79,6 +108,8 @@ export class InteractionOverlays {
     }
 
     public reset() {
+        this.index = 2;
+
         for (const element of this.elements) {
             element.hide();
         }
