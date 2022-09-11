@@ -211,19 +211,22 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
             return;
         }
 
-        this.manipulated = false;
+        this.dragStart = event.position;
 
         if (hitItem === this.moveShape) {
+            this.manipulated = false;
             this.manipulationMode = MODE_MOVE;
         } else if (hitItem === this.rotateShape) {
+            this.manipulated = false;
             this.manipulationMode = MODE_ROTATE;
         } else {
+            this.manipulated = false;
             this.manipulationMode = MODE_RESIZE;
 
             this.resizeDragOffset = hitItem['offset'];
         }
 
-        this.dragStart = event.position;
+        this.snapManager.prepare(this.props.selectedDiagram, this.props.viewSize, this.transform);
 
         this.startTransform = this.transform;
     }
@@ -282,7 +285,7 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
     }
 
     private move(delta: Vec2, shiftKey: boolean) {
-        const snapResult = this.snapManager.snapMoving(this.props.selectedDiagram, this.props.viewSize, this.startTransform, delta, shiftKey);
+        const snapResult = this.snapManager.snapMoving(this.startTransform, delta, shiftKey);
 
         this.transform = this.startTransform.moveBy(snapResult.delta);
 
@@ -336,7 +339,7 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
         const delta = Vec2.rotated(cummulativeTranslation.mul(2), Vec2.ZERO, angle.negate()).mul(this.resizeDragOffset);
 
         const snapResult =
-            this.snapManager.snapResizing(this.props.selectedDiagram, this.props.viewSize, this.startTransform, delta, shiftKey,
+            this.snapManager.snapResizing(this.startTransform, delta, shiftKey,
                 this.resizeDragOffset.x,
                 this.resizeDragOffset.y);
 
@@ -347,7 +350,7 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
 
     private debug() {
         if (DEBUG_SIDES || DEBUG_DISTANCES) {
-            const { xLines, yLines } = this.snapManager.getDebugLines(this.props.selectedDiagram, this.props.viewSize, this.startTransform);
+            const { xLines, yLines } = this.snapManager.getDebugLines();
     
             for (const line of xLines) {
                 if ((line.positions && DEBUG_DISTANCES) || DEBUG_SIDES) {

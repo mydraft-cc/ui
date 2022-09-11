@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { ImmutableList, ImmutableMap, ImmutableSet, Record, Types } from '@app/core';
+import { ImmutableList, ImmutableMap, ImmutableSet, MathHelper, Record, Types } from '@app/core';
 import { DiagramContainer } from './diagram-container';
 import { DiagramItem } from './diagram-item';
 import { DiagramItemSet } from './diagram-item-set';
@@ -13,6 +13,9 @@ import { DiagramItemSet } from './diagram-item-set';
 type Props = {
     // The unique id of the diagram.
     id: string;
+
+    // The id which identifies the instance.
+    instanceId: string;
 
     // The optional title.
     title?: string;
@@ -35,6 +38,10 @@ export class Diagram extends Record<Props> {
 
     public get id() {
         return this.get('id');
+    }
+
+    public get instanceId() {
+        return this.get('instanceId');
     }
 
     public get title() {
@@ -64,6 +71,7 @@ export class Diagram extends Record<Props> {
     public static empty(id: string) {
         const props: Props = {
             id,
+            instanceId: id,
             items: ImmutableMap.empty(),
             itemIds: ImmutableList.empty(),
             selectedIds: ImmutableSet.empty(),
@@ -241,9 +249,17 @@ export class Diagram extends Record<Props> {
 
         const parent = this.parent(items[0]);
 
-        const rootIds = parent ? parent.childIds : this.itemIds;
+        const rootIds = parent?.childIds || this.itemIds;
 
-        const update = updater({ itemIds: rootIds, items: this.items, selectedIds: this.selectedIds, id: this.id });
+        // Compute a new instance ID with every change, so we can identity the instance without saving the reference.
+        const update = updater({
+            id: this.id,
+            instanceId: MathHelper.guid(),
+            itemIds: rootIds,
+            items: this.items,
+            selectedIds: 
+            this.selectedIds, 
+        });
 
         if (update.itemIds && parent) {
             update.items = update.items || this.items;

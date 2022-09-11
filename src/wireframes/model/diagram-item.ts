@@ -61,8 +61,7 @@ type ShapeProps = {
 type Props = ItemProps & GroupProps & ShapeProps;
 
 export class DiagramItem extends Record<Props> implements Shape {
-    private cachedBounds: { [id: string]: Transform } | undefined;
-    private cachedDiagram: Diagram | undefined = undefined;
+    private cachedBounds: { [id: string]: Transform } | undefined = {};
 
     public get id() {
         return this.get('id');
@@ -251,12 +250,12 @@ export class DiagramItem extends Record<Props> implements Shape {
 
     public bounds(diagram: Diagram): Transform {
         if (this.type === 'Group') {
-            if (!this.cachedBounds || this.cachedDiagram !== diagram) {
-                this.cachedBounds = {};
-                this.cachedDiagram = diagram;
-            }
+            this.cachedBounds ||= {};
+        
+            let cacheId = diagram.instanceId;
+            let cached = this.cachedBounds[cacheId];
 
-            if (!this.cachedBounds[diagram.id]) {
+            if (!cached) {
                 const set = DiagramItemSet.createFromDiagram([this.id], diagram);
 
                 if (!set || set.allItems.length === 0) {
@@ -265,10 +264,10 @@ export class DiagramItem extends Record<Props> implements Shape {
 
                 const transforms = set.allVisuals.filter(x => x.type === 'Shape').map(x => x.transform);
 
-                this.cachedBounds[diagram.id] = Transform.createFromTransformationsAndRotation(transforms, this.rotation);
+                this.cachedBounds[cacheId] = cached = Transform.createFromTransformationsAndRotation(transforms, this.rotation);
             }
 
-            return this.cachedBounds[diagram.id];
+            return cached;
         } else {
             return this.transform;
         }
