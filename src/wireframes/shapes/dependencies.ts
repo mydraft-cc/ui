@@ -35,5 +35,6 @@ export * from './neutral/text-input';
 export * from './neutral/toggle';
 export * from './neutral/vertical-line';
 export * from './neutral/vertical-scrollbar';
+export * from './neutral/window';
 export * from './shared/icon';
 export * from './shared/raster';
