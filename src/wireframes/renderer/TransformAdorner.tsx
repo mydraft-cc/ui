@@ -13,9 +13,7 @@ import { SVGRenderer2 } from '../shapes/utils/svg-renderer2';
 import { InteractionOverlays } from './interaction-overlays';
 import { InteractionHandler, InteractionService, SvgEvent } from './interaction-service';
 
-const MODE_RESIZE = 2;
-const MODE_MOVE = 3;
-const MODE_ROTATE = 1;
+enum Mode { None, Resize, Move, Rotate }
 
 const DEBUG_SIDES = false;
 const DEBUG_DISTANCES = false;
@@ -53,21 +51,22 @@ export interface TransformAdornerProps {
 }
 
 export class TransformAdorner extends React.PureComponent<TransformAdornerProps> implements InteractionHandler {
-    private transform = Transform.ZERO;
-    private startTransform = Transform.ZERO;
     private allElements: svg.Element[];
-    private overlays: InteractionOverlays;
     private canResizeX = false;
     private canResizeY = false;
     private manipulated = false;
-    private manipulationMode = 0;
+    private manipulationMode = Mode.None;
+    private manipulationOffset = Vec2.ZERO;
     private moveShape: svg.Element = null!;
-    private dragStart = Vec2.ZERO;
-    private rotation = Rotation.ZERO;
-    private rotateShape: svg.Element = null!;
-    private resizeDragOffset = Vec2.ZERO;
+    private moveTimer?: any;
+    private overlays: InteractionOverlays;
     private resizeShapes: svg.Element[] = [];
+    private rotateShape: svg.Element = null!;
+    private rotation = Rotation.ZERO;
     private snapManager = new SnapManager();
+    private startPosition = Vec2.ZERO;
+    private startTransform = Transform.ZERO;
+    private transform = Transform.ZERO;
 
     constructor(props: TransformAdornerProps) {
         super(props);
@@ -92,13 +91,13 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
             this.rotation = Rotation.ZERO;
         }
 
-        this.manipulationMode = 0;
+        this.manipulationMode = Mode.None;
         this.manipulated = false;
 
         if (this.hasSelection()) {
             this.calculateInitializeTransform();
             this.calculateResizeRestrictions();
-            this.layoutShapes();
+            this.renderShapes();
         } else {
             this.hideShapes();
         }
@@ -143,7 +142,8 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
     }
 
     public onKeyDown(event: KeyboardEvent, next: (event: KeyboardEvent) => void) {
-        if (!isNoInputFocused()) {
+        // If the manipulation with the mouse is still in progress we do not handle the event.
+        if (isInputFocused() || !this.hasSelection() || this.manipulationMode != Mode.None) {
             next(event);
             return;
         }
@@ -166,34 +166,81 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
                 break;
         }
 
+        // If the wrong keys are pressed, we just stop here.
         if (xd === 0 && yd === 0) {
             next(event);
             return;
         }
 
-        if (event.shiftKey) {
-            xd *= 10;
-            yd *= 10;
+        stopEvent(event);
+
+        // If the manipulation with the mouse is still in progress we do not handle the event.
+        if (this.moveTimer) {
+            next(event);
+            return;
         }
 
-        const previousTranform = this.transform;
-
-        this.transform = previousTranform.moveBy(new Vec2(xd, yd));
-
-        this.props.onPreviewEnd();
-        this.props.onTransformItems(
-            this.props.selectedDiagram,
-            this.props.selectedItems,
-            previousTranform,
-            this.transform);
+        let counter = 1;
 
         this.startTransform = this.transform;
+        this.startPosition = null!;
 
-        stopEvent(event);
+        // The other shapes will not changes, so we can calculate the snap points now.
+        this.snapManager.prepare(this.props.selectedDiagram, this.props.viewSize, this.transform);
+
+        const run = () => {
+            const delta = new Vec2(xd * counter, yd * counter);
+
+            // Reset the overlay to show all markers.
+            this.overlays.reset();
+
+            this.move(delta, event.shiftKey);
+
+            this.renderPreview();
+            this.renderShapes();
+
+            // We have kept the keyboard pressed and therefore also updated at least one shape.
+            this.manipulated = true;
+    
+            counter++;
+        };
+
+        run();
+
+        this.moveTimer = setInterval(() => {
+            run();
+        }, 50);
+    }
+
+    public onKeyUp(event: KeyboardEvent, next: (event: KeyboardEvent) => void) {
+        if (!this.moveTimer) {
+            next(event);
+            return;
+        }
+
+        try {
+            this.overlays.reset();
+
+            // If none the timer has never been triggered we have not moved the shape and we can just stop here.
+            if (!this.manipulated) {
+                return;
+            }
+
+            this.rotation = this.transform.rotation;
+
+            this.props.onTransformItems(
+                this.props.selectedDiagram,
+                this.props.selectedItems,
+                this.startTransform,
+                this.transform);
+        } finally {
+            this.stopEverything();
+        }
     }
 
     public onMouseDown(event: SvgEvent, next: (event: SvgEvent) => void) {
-        if (event.event.ctrlKey) {
+        // If the manipulation with the keyboard is still in progress we do not handle the event.
+        if (event.event.ctrlKey || this.moveTimer || this.manipulationMode != Mode.None) {
             next(event);
             return;
         }
@@ -207,28 +254,27 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
         hitItem = this.hitTest(event.position);
 
         if (!hitItem) {
-            this.manipulationMode = 0;
+            this.manipulationMode = Mode.None;
             return;
         }
 
-        this.dragStart = event.position;
+        // Reset the flag to indicate whether something has been manipulated.
+        this.manipulated = false;
 
-        if (hitItem === this.moveShape) {
-            this.manipulated = false;
-            this.manipulationMode = MODE_MOVE;
-        } else if (hitItem === this.rotateShape) {
-            this.manipulated = false;
-            this.manipulationMode = MODE_ROTATE;
-        } else {
-            this.manipulated = false;
-            this.manipulationMode = MODE_RESIZE;
+        this.startPosition = event.position;
+        this.startTransform = this.transform;
 
-            this.resizeDragOffset = hitItem['offset'];
-        }
-
+        // The other shapes will not changes, so we can calculate the snap points now.
         this.snapManager.prepare(this.props.selectedDiagram, this.props.viewSize, this.transform);
 
-        this.startTransform = this.transform;
+        if (hitItem === this.moveShape) {
+            this.manipulationMode = Mode.Move;
+        } else if (hitItem === this.rotateShape) {
+            this.manipulationMode = Mode.Rotate;
+        } else {
+            this.manipulationMode = Mode.Resize;
+            this.manipulationOffset = hitItem['offset'];
+        }
     }
 
     private hitTest(point: Vec2) {
@@ -250,38 +296,40 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
     }
 
     public onMouseDrag(event: SvgEvent, next: (event: SvgEvent) => void) {
-        if (this.manipulationMode === 0 || !this.dragStart) {
+        if (this.manipulationMode === Mode.None || !this.startPosition) {
             next(event);
             return;
         }
 
+        // Reset the overlay to show all markers.
         this.overlays.reset();
 
-        const delta = event.position.sub(this.dragStart);
+        const delta = event.position.sub(this.startPosition);
 
+        // If the mouse has not been moved we can just stop here.
         if (delta.lengtSquared === 0) {
             return;
         }
 
-        if (this.manipulationMode === 0) {
-            return;
-        }
-
+        // We have moved the mouse and therefore also updated at least one shape.
         this.manipulated = true;
 
-        if (this.manipulationMode === MODE_MOVE) {
+        if (this.manipulationMode === Mode.Move) {
             this.move(delta, event.event.shiftKey);
-        } else if (this.manipulationMode === MODE_ROTATE) {
+        } else if (this.manipulationMode === Mode.Rotate) {
             this.rotate(event, event.event.shiftKey);
         } else {
             this.resize(delta, event.event.shiftKey);
         }
 
+        this.renderPreview();
+        this.renderShapes();
+    }
+
+    private renderPreview() {
         const previews = this.props.selectedItems.map(x => x.transformByBounds(this.startTransform, this.transform));
 
         this.props.onPreview(previews);
-
-        this.layoutShapes();
     }
 
     private move(delta: Vec2, shiftKey: boolean) {
@@ -312,7 +360,7 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
         const center = this.startTransform.position;
 
         const eventPoint = event.position;
-        const eventStart = this.dragStart;
+        const eventStart = this.startPosition;
 
         const cummulativeRotation = Vec2.angleBetween(eventStart.sub(center), eventPoint.sub(center));
 
@@ -336,12 +384,12 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
     }
 
     private getResizeDeltaSize(angle: Rotation, cummulativeTranslation: Vec2, shiftKey: boolean) {
-        const delta = Vec2.rotated(cummulativeTranslation.mul(2), Vec2.ZERO, angle.negate()).mul(this.resizeDragOffset);
+        const delta = Vec2.rotated(cummulativeTranslation.mul(2), Vec2.ZERO, angle.negate()).mul(this.manipulationOffset);
 
         const snapResult =
             this.snapManager.snapResizing(this.startTransform, delta, shiftKey,
-                this.resizeDragOffset.x,
-                this.resizeDragOffset.y);
+                this.manipulationOffset.x,
+                this.manipulationOffset.y);
 
         this.overlays.showSnapAdorners2(snapResult);
 
@@ -370,21 +418,21 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
         let x = 0;
         let y = 0;
 
-        if (this.resizeDragOffset.y !== 0) {
-            y += this.resizeDragOffset.y * dSize.y * angle.cos;
-            x -= this.resizeDragOffset.y * dSize.y * angle.sin;
+        if (this.manipulationOffset.y !== 0) {
+            y += this.manipulationOffset.y * dSize.y * angle.cos;
+            x -= this.manipulationOffset.y * dSize.y * angle.sin;
         }
 
-        if (this.resizeDragOffset.x !== 0) {
-            y += this.resizeDragOffset.x * dSize.x * angle.sin;
-            x += this.resizeDragOffset.x * dSize.x * angle.cos;
+        if (this.manipulationOffset.x !== 0) {
+            y += this.manipulationOffset.x * dSize.x * angle.sin;
+            x += this.manipulationOffset.x * dSize.x * angle.cos;
         }
 
         return new Vec2(x, y);
     }
 
     public onMouseUp(event: SvgEvent, next: (event: SvgEvent) => void) {
-        if (this.manipulationMode === 0) {
+        if (this.manipulationMode === Mode.None) {
             next(event);
             return;
         }
@@ -392,7 +440,7 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
         try {
             this.overlays.reset();
 
-            if (this.manipulationMode === 0 || !this.manipulated) {
+            if (!this.manipulated) {
                 return;
             }
 
@@ -404,27 +452,34 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
                 this.startTransform,
                 this.transform);
         } finally {
-            this.stopDrag();
+            this.stopEverything();
         }
     }
 
     public onBlur(event: FocusEvent, next: (event: FocusEvent) => void) {
-        if (this.manipulationMode === 0) {
+        if (this.manipulationMode === Mode.None && !this.moveTimer) {
             next(event);
             return;
         }
 
-        this.stopDrag();
+        this.stopEverything();
     }
 
-    private stopDrag() {
+    private stopEverything() {
         this.props.onPreviewEnd();
 
-        this.manipulationMode = 0;
+        if (this.moveTimer) {
+            console.log('Destroy Timer');
+            clearInterval(this.moveTimer);
+    
+            this.moveTimer = null;
+        }
+
+        this.manipulationMode = Mode.None;
         this.manipulated = false;
     }
 
-    private layoutShapes() {
+    private renderShapes() {
         if (this.resizeShapes === null) {
             return;
         }
@@ -526,10 +581,10 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
     }
 }
 
-function isNoInputFocused() {
+function isInputFocused() {
     const focusedElement = document.activeElement?.tagName?.toLowerCase();
 
-    return focusedElement !== 'input' && focusedElement !== 'textarea';
+    return focusedElement === 'input' || focusedElement === 'textarea';
 }
 
 function stopEvent(event: KeyboardEvent) {

@@ -45,7 +45,7 @@ export const MoreProperties = React.memo(() => {
                         <Col span={12} className='property-value'>
                             <Select disabled={link.empty} value={isPageLinkCurrent ? link.value : ''} onChange={setLink}>
                                 {diagramsOrdered.map((x, index) => 
-                                    <Select.Option value={getPageLink(x.id)}>{getPageName(x, index)}</Select.Option>,
+                                    <Select.Option key={x.id} value={getPageLink(x.id)}>{getPageName(x, index)}</Select.Option>,
                                 )}
                             </Select>
                         </Col>
