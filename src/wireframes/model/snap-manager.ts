@@ -25,6 +25,9 @@ export type SnapResult = {
 export type SnapLine = {
     // The actual position  ofthe line.
     value: number;
+
+    // The side.
+    side?: 'Left' | 'Right' | 'Top' | 'Bottom';
     
     // The difference to a side.
     diff?: { x: number; y: number };
@@ -38,7 +41,7 @@ export type SnapLine = {
     // The distances it refers to.
     gridItem?: GridItem;
 
-    // The side.
+    // The side of the grid to the next shape.
     gridSide?: 'Left' | 'Right' | 'Top' | 'Bottom';
 };
 
@@ -64,11 +67,22 @@ type GridItem = {
 };
 
 export class SnapManager {
+    private currentDiagram?: Diagram;
+    private currentView?: Vec2;
+    private grid?: GridItem[];
     private referenceTransform?: Transform;
-    private lastDiagram?: Diagram;
     private xLines?: SnapLine[];
     private yLines?: SnapLine[];
-    private grid?: GridItem[];
+
+    public prepare(diagram: Diagram, view: Vec2, transform: Transform) {
+        this.referenceTransform = transform;
+        this.currentDiagram = diagram;
+        this.currentView = view;
+
+        this.xLines = undefined;
+        this.yLines = undefined;
+        this.grid = undefined;
+    }
 
     public snapRotating(transform: Transform, delta: number, disabled = false): number {
         const oldRotation = transform.rotation.degree;
@@ -82,7 +96,7 @@ export class SnapManager {
         }
     }
 
-    public snapResizing(diagram: Diagram, view: Vec2, transform: Transform, delta: Vec2, snapToGrid: boolean, xMode = 1, yMode = 1): SnapResult {
+    public snapResizing(transform: Transform, delta: Vec2, snapToGrid: boolean, xMode = 1, yMode = 1): SnapResult {
         const result: SnapResult = { delta };
 
         let dw = delta.x;
@@ -91,7 +105,7 @@ export class SnapManager {
         if (!snapToGrid && transform.rotation.degree === 0) {
             const aabb = transform.aabb;
 
-            const { xLines, yLines } = this.getSnapLines(diagram, view, transform);
+            const { xLines, yLines } = this.getSnapLines();
 
             // Compute the new x and y-positions once.
             const l = -delta.x + aabb.left;
@@ -185,7 +199,7 @@ export class SnapManager {
         return result;
     }
 
-    public snapMoving(diagram: Diagram, view: Vec2, transform: Transform, delta: Vec2, snapToGrid: boolean): SnapResult {
+    public snapMoving(transform: Transform, delta: Vec2, snapToGrid: boolean): SnapResult {
         const result: SnapResult = { delta };
 
         const aabb = transform.aabb;
@@ -194,7 +208,7 @@ export class SnapManager {
         let y = aabb.y + delta.y;
 
         if (!snapToGrid) {
-            const { xLines, yLines, grid } = this.getSnapLines(diagram, view, transform);
+            const { xLines, yLines, grid } = this.getSnapLines();
 
             // Compute the new x and y-positions once.
             const l = x;
@@ -292,37 +306,41 @@ export class SnapManager {
         return result;
     }
 
-    public getSnapLines(diagram: Diagram, view: Vec2, referenceTransform: Transform) {
-        if (this.lastDiagram === diagram && this.xLines && this.yLines && this.grid && this.referenceTransform === referenceTransform) {
+    public getSnapLines() {
+        if (this.xLines && this.yLines && this.grid) {
             return { xLines: this.xLines, yLines: this.yLines, grid: this.grid };
         }
 
-        this.lastDiagram = diagram;
-
-        // The currently moved transform is not part of the snap lines, therefore we have to recalculate if it changes.
-        this.referenceTransform = referenceTransform;
-
-        // Compute the bounding boxes once.
-        const bounds = diagram.items.values.filter(x => x.transform !== referenceTransform).map(x => x.bounds(diagram).aabb);
-
-        const grid = this.grid = computeGrid(bounds);
+        const { referenceTransform, currentDiagram, currentView } = this;
 
         const xLines: SnapLine[] = this.xLines = [];
         const yLines: SnapLine[] = this.yLines = [];
 
+        if (!currentDiagram || !currentView || !referenceTransform) {
+            // This should actually never happen, because we call prepare first.
+            const grid = this.grid = [];
+
+            return { xLines, yLines, grid: grid };
+        }
+
+        // Compute the bounding boxes once.
+        const bounds = currentDiagram!.items.values.filter(x => x.transform !== referenceTransform).map(x => x.bounds(currentDiagram).aabb);
+
+        const grid = this.grid = computeGrid(bounds);
+
         xLines.push({ value: 0 });
-        xLines.push({ value: view.x });
+        xLines.push({ value: currentView.x });
 
         yLines.push({ value: 0 });
-        yLines.push({ value: view.y });
+        yLines.push({ value: currentView.y });
 
         for (const bound of bounds) {
-            xLines.push({ value: bound.left });
-            xLines.push({ value: bound.right });
+            xLines.push({ value: bound.left, side: 'Left' });
+            xLines.push({ value: bound.right, side: 'Right' });
             xLines.push({ value: bound.cx, isCenter: true });
 
-            yLines.push({ value: bound.top });
-            yLines.push({ value: bound.bottom });
+            yLines.push({ value: bound.top, side: 'Top' });
+            yLines.push({ value: bound.bottom, side: 'Bottom' });
             yLines.push({ value: bound.cy, isCenter: true });
         }
 
@@ -362,11 +380,15 @@ export class SnapManager {
             }
         }
 
+        // Unset the values to reduce memory usage, when the diagram is not needed otherwise.
+        this.currentDiagram = undefined;
+        this.currentView = undefined;
+
         return { xLines, yLines, grid };
     }
 
-    public getDebugLines(diagram: Diagram, view: Vec2, transform: Transform) {
-        const { xLines, yLines } = this.getSnapLines(diagram, view, transform);
+    public getDebugLines() {
+        const { xLines, yLines } = this.getSnapLines();
 
         if (this.grid) {
             for (const line of xLines) {
