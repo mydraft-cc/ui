@@ -8,6 +8,7 @@
 /* eslint-disable no-console */
 
 import { Store } from 'redux';
+import { texts } from '@app/texts';
 import { showInfoToast } from '@app/wireframes/model';
 
 export function registerServiceWorker(store: Store) {
@@ -27,7 +28,7 @@ export function registerServiceWorker(store: Store) {
                         installingWorker.onstatechange = () => {
                             if (installingWorker.state === 'installed') {
                                 if (navigator.serviceWorker.controller) {
-                                    store.dispatch(showInfoToast('A new version is available. Please press F5 to reload them.'));
+                                    store.dispatch(showInfoToast(texts.common.newVersion));
 
                                     console.log('New content is available; please refresh.');
                                 } else {

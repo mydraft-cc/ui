@@ -212,6 +212,12 @@ $sidebar-size: 320px;
     }
 }
 
+.ant-btn-group {
+    .ant-tooltip-disabled-compatible-wrapper {
+        display: flex !important;
+    }
+}
+
 //
 // > Properties
 //

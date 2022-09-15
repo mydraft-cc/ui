@@ -13,7 +13,7 @@ import { findDOMNode } from 'react-dom';
 import { useDispatch } from 'react-redux';
 import { RendererContext } from '@app/context';
 import { sizeInPx } from '@app/core';
-import { addIcon, addImage, addVisual, changeItemsAppearance, getDiagram, getDiagramId, getEditor, getMasterDiagram, getSelectedItems, getSelectedItemsWithLocked, selectItems, Transform, transformItems, useStore } from '@app/wireframes/model';
+import { addIcon, addImage, addVisual, changeItemsAppearance, Diagram, getDiagram, getDiagramId, getEditor, getMasterDiagram, getSelectedItems, getSelectedItemsWithLocked, selectItems, Transform, transformItems, useStore } from '@app/wireframes/model';
 import { Editor } from '@app/wireframes/renderer/Editor';
 import { DiagramRef, ItemsRef } from '../model/actions/utils';
 import { ContextMenu } from './context-menu/ContextMenu';
@@ -24,9 +24,20 @@ export interface EditorViewProps {
     spacing: number;
 }
 
-export const EditorView = ({ spacing }: EditorViewProps) => {
-    const dispatch = useDispatch();
+export const EditorView = (props: EditorViewProps) => {
     const diagram = useStore(getDiagram);
+
+    if (!diagram) {
+        return null;
+    }
+
+    return (
+        <EditorViewInner {...props} diagram={diagram} />
+    );
+};
+
+export const EditorViewInner = ({ diagram, spacing }: EditorViewProps & { diagram: Diagram }) => {
+    const dispatch = useDispatch();
     const editor = useStore(getEditor);
     const editorColor = editor.color;
     const editorSize = editor.size;
@@ -135,6 +146,8 @@ export const EditorView = ({ spacing }: EditorViewProps) => {
         },
     });
 
+    drop(ref);
+
     const zoomedOuterWidth = 2 * spacing + zoomedSize.x;
     const zoomedOuterHeight = 2 * spacing + zoomedSize.y;
 
@@ -142,8 +155,6 @@ export const EditorView = ({ spacing }: EditorViewProps) => {
     const h = sizeInPx(zoomedOuterHeight);
 
     const padding = sizeInPx(spacing);
-
-    drop(ref);
 
     return (
         <Dropdown overlay={<ContextMenu onClick={doHide} />} trigger={['contextMenu']} visible={menuVisible} onVisibleChange={setMenuVisible}>

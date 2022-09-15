@@ -8,7 +8,7 @@
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
 import { texts } from '@app/texts';
-import { getDiagrams, newDiagram, saveDiagramAsync, useStore } from '@app/wireframes/model';
+import { getDiagrams, newDiagram, saveDiagramToFile, saveDiagramToServer, useStore } from '@app/wireframes/model';
 import { UIAction } from './shared';
 
 export function useLoading() {
@@ -30,7 +30,11 @@ export function useLoading() {
     }, [dispatch]);
 
     const doSave = React.useCallback(() => {
-        dispatch(saveDiagramAsync({ navigate: true }));
+        dispatch(saveDiagramToServer({ navigate: true }));
+    }, [dispatch]);
+
+    const doSaveToFile = React.useCallback(() => {
+        dispatch(saveDiagramToFile());
     }, [dispatch]);
 
     const newDiagramAction: UIAction = React.useMemo(() => ({
@@ -51,5 +55,13 @@ export function useLoading() {
         onAction: doSave,
     }), [doSave, canSave]);
 
-    return { newDiagram: newDiagramAction, saveDiagram };
+    const saveDiagramToFileAction: UIAction = React.useMemo(() => ({
+        disabled: !canSave,
+        icon: 'icon-save',
+        label: texts.common.saveDiagramToFileTooltip,
+        tooltip: texts.common.saveDiagramToFileTooltip,
+        onAction: doSaveToFile,
+    }), [doSaveToFile, canSave]);
+
+    return { newDiagram: newDiagramAction, saveDiagram, saveDiagramToFile: saveDiagramToFileAction };
 }

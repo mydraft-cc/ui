@@ -24,7 +24,7 @@ export interface EditorProps {
     rendererService: RendererService;
 
     // The selected diagram.
-    diagram?: Diagram;
+    diagram: Diagram;
 
     // The master diagram.
     masterDiagram?: Diagram;
@@ -147,87 +147,83 @@ export const Editor = React.memo((props: EditorProps) => {
     }, [selectedItemsWithLocked]);
 
     return (
-        <>
-            {diagram &&
-                <div className='editor' style={{ background: color.toString() }}>
-                    <CanvasView
-                        onInit={initDiagramScope}
-                        viewBox={viewBox}
-                        viewSize={viewSize}
-                        zoom={zoom}
-                        zoomedSize={zoomedSize} />
+        <div className='editor' style={{ background: color.toString() }}>
+            <CanvasView
+                onInit={initDiagramScope}
+                viewBox={viewBox}
+                viewSize={viewSize}
+                zoom={zoom}
+                zoomedSize={zoomedSize} />
 
-                    {interactionService && diagram && (
-                        <>
-                            <RenderLayer
-                                diagram={masterDiagram}
-                                renderContainer={renderMasterLayer.current!}
-                                rendererService={rendererService}
-                                onRender={onRender}
-                            />
+            {interactionService && diagram && (
+                <>
+                    <RenderLayer
+                        diagram={masterDiagram}
+                        renderContainer={renderMasterLayer.current!}
+                        rendererService={rendererService}
+                        onRender={onRender}
+                    />
 
-                            <RenderLayer
-                                diagram={diagram}
-                                renderContainer={renderMainLayer.current!}
-                                rendererService={rendererService}
-                                previewItems={interactionPreviews}
-                                onRender={onRender}
-                            />
+                    <RenderLayer
+                        diagram={diagram}
+                        renderContainer={renderMainLayer.current!}
+                        rendererService={rendererService}
+                        previewItems={interactionPreviews}
+                        onRender={onRender}
+                    />
 
-                            {onTransformItems &&
-                                <TransformAdorner
-                                    adorners={adornersTransform.current!}
-                                    interactionService={interactionService}
-                                    onPreview={doPreview}
-                                    onPreviewEnd={doPreviewEnd}
-                                    onTransformItems={onTransformItems}
-                                    selectedDiagram={diagram}
-                                    selectedItems={selectedItems}
-                                    viewSize={viewSize}
-                                    zoom={zoom}
-                                />
-                            }
+                    {onTransformItems &&
+                        <TransformAdorner
+                            adorners={adornersTransform.current!}
+                            interactionService={interactionService}
+                            onPreview={doPreview}
+                            onPreviewEnd={doPreviewEnd}
+                            onTransformItems={onTransformItems}
+                            selectedDiagram={diagram}
+                            selectedItems={selectedItems}
+                            viewSize={viewSize}
+                            zoom={zoom}
+                        />
+                    }
 
-                            {onSelectItems &&
-                                <SelectionAdorner
-                                    adorners={adornersSelect.current!}
-                                    interactionService={interactionService}
-                                    onSelectItems={onSelectItems}
-                                    selectedDiagram={diagram}
-                                    selectedItems={fullSelection}
-                                />
-                            }
+                    {onSelectItems &&
+                        <SelectionAdorner
+                            adorners={adornersSelect.current!}
+                            interactionService={interactionService}
+                            onSelectItems={onSelectItems}
+                            selectedDiagram={diagram}
+                            selectedItems={fullSelection}
+                        />
+                    }
 
-                            {onChangeItemsAppearance &&
-                                <TextAdorner
-                                    interactionService={interactionService}
-                                    onChangeItemsAppearance={onChangeItemsAppearance}
-                                    selectedDiagram={diagram}
-                                    selectedItems={selectedItems}
-                                    zoom={zoom}
-                                />
-                            }
+                    {onChangeItemsAppearance &&
+                        <TextAdorner
+                            interactionService={interactionService}
+                            onChangeItemsAppearance={onChangeItemsAppearance}
+                            selectedDiagram={diagram}
+                            selectedItems={selectedItems}
+                            zoom={zoom}
+                        />
+                    }
 
-                            {onTransformItems &&
-                                <QuickbarAdorner
-                                    isPreviewing={!!interactionPreviews}
-                                    selectedDiagram={diagram}
-                                    selectedItems={selectedItems}
-                                    viewSize={viewSize}
-                                    zoom={zoom}
-                                />
-                            }
+                    {onTransformItems &&
+                        <QuickbarAdorner
+                            isPreviewing={!!interactionPreviews}
+                            selectedDiagram={diagram}
+                            selectedItems={selectedItems}
+                            viewSize={viewSize}
+                            zoom={zoom}
+                        />
+                    }
 
-                            {onNavigate &&
-                                <NavigateAdorner
-                                    interactionService={interactionService}
-                                    onNavigate={onNavigate}
-                                />
-                            }
-                        </>
-                    )}
-                </div>
-            }
-        </>
+                    {onNavigate &&
+                        <NavigateAdorner
+                            interactionService={interactionService}
+                            onNavigate={onNavigate}
+                        />
+                    }
+                </>
+            )}
+        </div>
     );
 });

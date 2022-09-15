@@ -69,7 +69,7 @@ export const CanvasView = (props: CanvasViewProps) => {
     }, [viewSize, viewBox, zoom, zoomedSize, document]);
 
     const w = sizeInPx(zoomedSize.x);
-    const h = sizeInPx(zoomedSize.x);
+    const h = sizeInPx(zoomedSize.y);
 
     return (
         <div className={className} style={{ width: w, height: h }} ref={doInit} />

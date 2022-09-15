@@ -7,7 +7,9 @@
 
 import { createAction, createAsyncThunk, createReducer, Middleware } from '@reduxjs/toolkit';
 import { push } from 'connected-react-router';
+import { saveAs } from 'file-saver';
 import { AnyAction, Reducer } from 'redux';
+import { texts } from '@app/texts';
 import { EditorState, EditorStateInStore, LoadingState, LoadingStateInStore, saveRecentDiagrams, UndoableState } from './../internal';
 import { addDiagram } from './diagrams';
 import { selectItems } from './items';
@@ -18,7 +20,7 @@ const API_URL = process.env.NODE_ENV === 'test_development' ? 'http://localhost:
 export const newDiagram =
     createAction<{ navigate: boolean }>('diagram/new');
 
-export const loadDiagramAsync =
+export const loadDiagram =
     createAsyncThunk('diagram/load', async (args: { tokenToRead: string; tokenToWrite?: string; navigate: boolean }, thunkAPI) => {
         const state = thunkAPI.getState() as LoadingStateInStore;
 
@@ -37,8 +39,18 @@ export const loadDiagramAsync =
         return { tokenToRead: args.tokenToRead, tokenToWrite: args.tokenToWrite, actions };
     });
 
-export const saveDiagramAsync =
-    createAsyncThunk('diagram/save', async (args: { navigate?: boolean }, thunkAPI) => {
+export const saveDiagramToFile = 
+    createAsyncThunk('diagram/save/file', async (_, thunkAPI) => {
+        const state = thunkAPI.getState() as LoadingStateInStore & EditorStateInStore;
+
+        const bodyText = JSON.stringify(state.editor.actions, undefined, 2);
+        const bodyBlob = new Blob([bodyText], { type: 'application/json' });
+
+        saveAs(bodyBlob, 'diagram.json');
+    });
+
+export const saveDiagramToServer =
+    createAsyncThunk('diagram/save/server', async (args: { navigate?: boolean }, thunkAPI) => {
         const state = thunkAPI.getState() as LoadingStateInStore & EditorStateInStore;
 
         const tokenToWrite = state.loading.tokenToWrite;
@@ -87,15 +99,17 @@ export function loadingMiddleware(): Middleware {
             if (action.payload?.navigate) {
                 store.dispatch(push(''));
             }
-        } else if (loadDiagramAsync.fulfilled.match(action)) {
+        } else if (loadDiagram.fulfilled.match(action)) {
             if (action.meta.arg.navigate && action.payload) {
                 store.dispatch(push(action.payload.tokenToRead));
             }
 
-            store.dispatch(showInfoToast('Successfully loaded diagram.'));
-        } else if (loadDiagramAsync.rejected.match(action)) {
-            store.dispatch(showErrorToast('Failed to load diagram.'));
-        } else if (saveDiagramAsync.fulfilled.match(action)) {
+            store.dispatch(showInfoToast(texts.common.loadingDiagramDone));
+        } else if (loadDiagram.rejected.match(action)) {
+            store.dispatch(showErrorToast(texts.common.loadingDiagramFailed));
+        } else if (saveDiagramToFile.fulfilled.match(action)) {
+            store.dispatch(showErrorToast(texts.common.savingDiagramDone));
+        } else if (saveDiagramToServer.fulfilled.match(action)) {
             if (action.meta.arg.navigate) {
                 store.dispatch(push(action.payload.tokenToRead));
             }
@@ -105,12 +119,12 @@ export function loadingMiddleware(): Middleware {
             if (!action.payload.update) {
                 const fullUrl = `${window.location.protocol}//${window.location.host}/${action.payload.tokenToRead}`;
 
-                store.dispatch(showInfoToast(`Diagram saved under ${fullUrl}.`));
+                store.dispatch(showInfoToast(texts.common.savingDiagramDoneUrl(fullUrl)));
             } else {
-                store.dispatch(showInfoToast('Diagram saved.'));
+                store.dispatch(showInfoToast(texts.common.savingDiagramDone));
             }
-        } else if (saveDiagramAsync.rejected.match(action)) {
-            store.dispatch(showErrorToast('Failed to save diagram.'));
+        } else if (saveDiagramToServer.rejected.match(action)) {
+            store.dispatch(showErrorToast(texts.common.savingDiagramFailed));
         }
 
         return result;
@@ -126,24 +140,24 @@ export function loading(initialState: LoadingState) {
             state.tokenToRead = null;
             state.tokenToWrite = null;
         })
-        .addCase(loadDiagramAsync.pending, (state) => {
+        .addCase(loadDiagram.pending, (state) => {
             state.isLoading = true;
         })
-        .addCase(loadDiagramAsync.rejected, (state) => {
+        .addCase(loadDiagram.rejected, (state) => {
             state.isLoading = false;
         })
-        .addCase(loadDiagramAsync.fulfilled, (state, action) => {
+        .addCase(loadDiagram.fulfilled, (state, action) => {
             state.isLoading = false;
             state.tokenToRead = action.payload?.tokenToRead;
             state.tokenToWrite = action.payload?.tokenToWrite;
         })
-        .addCase(saveDiagramAsync.pending, (state) => {
+        .addCase(saveDiagramToServer.pending, (state) => {
             state.isLoading = true;
         })
-        .addCase(saveDiagramAsync.rejected, (state) => {
+        .addCase(saveDiagramToServer.rejected, (state) => {
             state.isLoading = false;
         })
-        .addCase(saveDiagramAsync.fulfilled, (state, action) => {
+        .addCase(saveDiagramToServer.fulfilled, (state, action) => {
             const { tokenToRead, tokenToWrite } = action.payload;
 
             state.isLoading = false;
@@ -160,7 +174,7 @@ export function rootLoading(innerReducer: Reducer<any>, undoableReducer: Reducer
             const initialState = editorReducer(EditorState.empty(), initialAction);
 
             state = UndoableState.create(initialState, initialAction);
-        } else if (loadDiagramAsync.fulfilled.match(action)) {
+        } else if (loadDiagram.fulfilled.match(action)) {
             const { actions } = action.payload as { actions: AnyAction[] };
 
             let firstAction = actions[0];

@@ -6,14 +6,14 @@
 */
 
 import { LeftOutlined, RightOutlined } from '@ant-design/icons';
-import { Button, Collapse, Layout, Tabs } from 'antd';
+import { Button, Layout, Tabs } from 'antd';
 import classNames from 'classnames';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
 import { useRouteMatch } from 'react-router';
 import { usePrinter } from '@app/core';
-import { ArrangeMenu, ClipboardMenu, CustomProperties, EditorView, HistoryMenu, Icons, LayoutProperties, LoadingMenu, LockMenu, MoreProperties, Pages, PrintView, Recent, SettingsMenu, Shapes, UIMenu, VisualProperties } from '@app/wireframes/components';
-import { loadDiagramAsync, newDiagram, selectTab, showInfoToast, toggleLeftSidebar, toggleRightSidebar, useStore } from '@app/wireframes/model';
+import { ArrangeMenu, ClipboardMenu, EditorView, HistoryMenu, Icons, LoadingMenu, LockMenu, Pages, PrintView, Properties, Recent, SettingsMenu, Shapes, UIMenu } from '@app/wireframes/components';
+import { loadDiagram, newDiagram, selectTab, showInfoToast, toggleLeftSidebar, toggleRightSidebar, useStore } from '@app/wireframes/model';
 import { texts } from './texts';
 import { PresentationView } from './wireframes/components/PresentationView';
 
@@ -40,7 +40,7 @@ export const App = () => {
         const token = routeTokenSnapshot.current;
 
         if (token && token.length > 0) {
-            dispatch(loadDiagramAsync({ tokenToRead: token, navigate: false }));
+            dispatch(loadDiagram({ tokenToRead: token, navigate: false }));
         } else {
             dispatch(newDiagram({ navigate: false }));
         }
@@ -48,7 +48,7 @@ export const App = () => {
 
     React.useEffect(() => {
         if (isPrinting) {
-            dispatch(showInfoToast('Printing started...'));
+            dispatch(showInfoToast(texts.common.printingStarted));
         }
     }, [dispatch, isPrinting]);
 
@@ -126,20 +126,7 @@ export const App = () => {
                         collapsed={!showRightSidebar}
                         collapsedWidth={0}>
 
-                        <Collapse bordered={false} defaultActiveKey={['layout', 'visual', 'more', 'custom']}>
-                            <Collapse.Panel key='layout' header={texts.common.layout}>
-                                <LayoutProperties />
-                            </Collapse.Panel>
-                            <Collapse.Panel key='visual' header={texts.common.visual}>
-                                <VisualProperties />
-                            </Collapse.Panel>
-                            <Collapse.Panel key='more' header={texts.common.more}>
-                                <MoreProperties />
-                            </Collapse.Panel>
-                            <Collapse.Panel key='custom' header={texts.common.custom}>
-                                <CustomProperties />
-                            </Collapse.Panel>
-                        </Collapse>
+                        <Properties />
                     </Layout.Sider>
 
                     <Button icon={showLeftSidebar ? <LeftOutlined /> : <RightOutlined />}

@@ -9,7 +9,7 @@ import { Empty } from 'antd';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
 import { texts } from '@app/texts';
-import { loadDiagramAsync, RecentDiagram, useStore } from '@app/wireframes/model';
+import { loadDiagram, RecentDiagram, useStore } from '@app/wireframes/model';
 import './Recent.scss';
 import { RecentItem } from './RecentItem';
 
@@ -18,7 +18,7 @@ export const Recent = () => {
     const recent = useStore(x => x.loading.recentDiagrams);
 
     const doLoad = React.useCallback((item: RecentDiagram) => {
-        dispatch(loadDiagramAsync({ tokenToRead: item.tokenToRead, tokenToWrite: item.tokenToWrite, navigate: true }));
+        dispatch(loadDiagram({ tokenToRead: item.tokenToRead, tokenToWrite: item.tokenToWrite, navigate: true }));
     }, [dispatch]);
 
     const orderedRecent = React.useMemo(() => {

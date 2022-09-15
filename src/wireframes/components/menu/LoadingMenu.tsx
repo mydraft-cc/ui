@@ -6,12 +6,12 @@
 */
 
 import { QuestionCircleOutlined } from '@ant-design/icons';
-import { Button, Modal } from 'antd';
+import { Button, Menu, Modal } from 'antd';
 import * as React from 'react';
 import { Title } from '@app/core';
 import { texts } from '@app/texts';
 import { useStore } from '@app/wireframes/model';
-import { ActionMenuButton, useLoading } from './../actions';
+import { ActionDropdownButton, ActionMenuButton, ActionMenuItem, useLoading } from './../actions';
 
 const text = require('@app/legal.html');
 
@@ -46,12 +46,18 @@ export const LoadingMenu = React.memo(() => {
         }
     }, [tokenToWrite]);
 
+    const menu = (
+        <Menu >
+            <ActionMenuItem displayMode='Label' action={forLoading.saveDiagramToFile} />
+        </Menu>
+    );
+
     return (
         <>
             <CustomTitle token={tokenToRead} />
 
-            <ActionMenuButton showLabel action={forLoading.newDiagram} />
-            <ActionMenuButton showLabel action={forLoading.saveDiagram} type='primary' />
+            <ActionMenuButton displayMode='IconLabel' action={forLoading.newDiagram} />
+            <ActionDropdownButton displayMode='IconLabel' action={forLoading.saveDiagram} type='primary' overlay={menu} />
 
             <Button className='menu-item' size='large' onClick={doToggleInfoDialog}>
                 <QuestionCircleOutlined />
