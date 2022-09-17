@@ -5,8 +5,8 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { Rect2 } from '@app/core';
 import * as svg from '@svgdotjs/svg.js';
+import { Rect2 } from '@app/core';
 import { SVGRenderer2 } from './svg-renderer2';
 
 describe('SVGRenderer2', () => {

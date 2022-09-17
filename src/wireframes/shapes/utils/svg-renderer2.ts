@@ -8,6 +8,7 @@
 /* eslint-disable quote-props */
 
 import * as svg from '@svgdotjs/svg.js';
+import { marked } from 'marked';
 import { Rect } from 'react-measure';
 import { Rect2, sizeInPx, SVGHelper, Types } from '@app/core';
 import { RendererColor, RendererElement, RendererOpacity, RendererText, RendererWidth, Shape, ShapeFactory, ShapeFactoryFunc, ShapeProperties, ShapePropertiesFunc, TextConfig } from '@app/wireframes/interface';
@@ -374,7 +375,7 @@ class Properties implements ShapeProperties {
             const div = element.node.children[0] as HTMLDivElement;
 
             if (div?.nodeName === 'DIV') {
-                div.textContent = value;
+                div.innerHTML = marked.parseInline(value);
             }
         },
         'text-alignment': (value, element) => {
