@@ -270,7 +270,6 @@ export class Transform {
 
         // Absolute position.
         const newPosition = newBounds.position.add(newCenter);
-
         const newRotation = this.rotation.add(newBounds.rotation).sub(oldBounds.rotation);
 
         return new Transform(newPosition, newSize, newRotation);
