@@ -16,22 +16,27 @@ import { UIAction } from './shared';
 export function useAlignment() {
     const dispatch = useDispatch();
     const selectedDiagramId = useStore(getDiagramId);
+    const selectedDiagramIdRef = React.useRef(selectedDiagramId);
     const selectedItems = useStore(getSelectedItems);
+    const selectedItemsRef = React.useRef(selectedItems);
     const canAlign = selectedItems.length > 1;
     const canDistribute = selectedItems.length > 2;
     const canOrder = selectedItems.length > 0;
 
+    selectedDiagramIdRef.current = selectedDiagramId;
+    selectedItemsRef.current = selectedItems;
+
     const doAlign = React.useCallback((mode: AlignmentMode) => {
-        if (selectedDiagramId) {
-            dispatch(alignItems(mode, selectedDiagramId, selectedItems));
+        if (selectedDiagramIdRef.current) {
+            dispatch(alignItems(mode, selectedDiagramIdRef.current, selectedItemsRef.current));
         }
-    }, [dispatch, selectedDiagramId, selectedItems]);
+    }, [dispatch]);
 
     const doOrder = React.useCallback((mode: OrderMode) => {
-        if (selectedDiagramId) {
-            dispatch(orderItems(mode, selectedDiagramId, selectedItems));
+        if (selectedDiagramIdRef.current) {
+            dispatch(orderItems(mode, selectedDiagramIdRef.current, selectedItemsRef.current));
         }
-    }, [dispatch, selectedDiagramId, selectedItems]);
+    }, [dispatch]);
 
     function useAlign(mode: AlignmentMode, label: string, icon: string) {
         const action: UIAction = React.useMemo(() => ({

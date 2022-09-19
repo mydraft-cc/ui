@@ -86,19 +86,24 @@ export const CustomProperty = (props: CustomPropertyProps) => {
 export const CustomProperties = () => {
     const dispatch = useDispatch();
     const selectedDiagramId = useStore(getDiagramId);
+    const selectedDiagramIdRef = React.useRef(selectedDiagramId);
     const selectedColorTab = useStore(s => s.ui.selectedColorTab);
     const selectedConfigurables = useStore(getSelectedConfigurables);
     const selectedShape = useStore(getSelectedShape);
+    const selectedShapeRef = React.useRef(selectedShape);
+
+    selectedDiagramIdRef.current = selectedDiagramId;
+    selectedShapeRef.current = selectedShape;
 
     const doSelectColorTab = React.useCallback((key: string) => {
         dispatch(selectColorTab(key));
     }, [dispatch]);
 
     const doChange = React.useCallback((key: string, value: any) => {
-        if (selectedDiagramId && selectedShape) {
-            dispatch(changeItemsAppearance(selectedDiagramId, [selectedShape], key, value));
+        if (selectedDiagramIdRef.current && selectedShapeRef.current) {
+            dispatch(changeItemsAppearance(selectedDiagramIdRef.current, [selectedShapeRef.current], key, value));
         }
-    }, [dispatch, selectedDiagramId, selectedShape]);
+    }, [dispatch]);
 
     if (!selectedShape || !selectedDiagramId) {
         return null;

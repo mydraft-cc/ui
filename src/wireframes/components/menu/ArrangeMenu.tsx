@@ -16,12 +16,20 @@ export const ArrangeMenu = React.memo(() => {
     const forRemvoe = useRemove();
     const forGrouping = useGrouping();
     const selectedDiagram = useStore(getDiagram);
+    const selectedDiagramRef = React.useRef(selectedDiagram);
+
+    selectedDiagramRef.current = selectedDiagram;
 
     const doSelectAll = React.useCallback(() => {
-        if (selectedDiagram) {
-            dispatch(selectItems(selectedDiagram, calculateSelection(selectedDiagram.items.values, selectedDiagram)));
+        if (selectedDiagramRef.current) {
+            const selection =
+                calculateSelection(
+                    selectedDiagramRef.current.items.values,
+                    selectedDiagramRef.current);
+
+            dispatch(selectItems(selectedDiagramRef.current, selection));
         }
-    }, [dispatch, selectedDiagram]);
+    }, [dispatch]);
 
     return (
         <>

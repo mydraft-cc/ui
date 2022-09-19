@@ -14,6 +14,7 @@ import { CustomProperties } from './CustomProperties';
 import { DiagramProperties } from './DiagramProperties';
 import { LayoutProperties } from './LayoutProperties';
 import { MoreProperties } from './MoreProperties';
+import { TransformProperties } from './TransformProperties';
 import { VisualProperties } from './VisualProperties';
 
 export const Properties = () => {
@@ -25,6 +26,8 @@ export const Properties = () => {
             <Collapse className={(classNames({ hidden: !hasSelection }))} bordered={false} defaultActiveKey={['layout', 'visual', 'more', 'custom']}>
                 <Collapse.Panel key='layout' header={texts.common.layout}>
                     <LayoutProperties />
+
+                    <TransformProperties />
                 </Collapse.Panel>
                 <Collapse.Panel key='visual' header={texts.common.visual}>
                     <VisualProperties />

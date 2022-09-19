@@ -16,42 +16,48 @@ const OFFSET = 50;
 
 export function useClipboard() {
     const dispatch = useDispatch();
-    const [offset, setOffset] = React.useState<number>(0);
+    const offset = React.useRef(0);
     const selectedDiagram = useStore(getDiagram);
+    const selectedDiagramRef = React.useRef(selectedDiagram);
     const selectedItems = useStore(getSelectedItems);
+    const selectedItemsRef = React.useRef(selectedItems);
     const serializer = React.useContext(SerializerContext);
     const canCopy = selectedItems.length > 0;
     const [clipboard, setClipboard] = React.useState<string>();
 
+    selectedDiagramRef.current = selectedDiagram;
+    selectedItemsRef.current = selectedItems;
+
     const doCopy = React.useCallback(() => {
-        if (selectedDiagram) {
+        if (selectedDiagramRef.current) {
             const set =
                 DiagramItemSet.createFromDiagram(
-                    selectedItems,
-                    selectedDiagram);
+                    selectedItemsRef.current,
+                    selectedDiagramRef.current);
 
             const json = serializer.serializeSet(set);
 
             setClipboard(json);
-            setOffset(0);
+            
+            offset.current = 0;
         }
-    }, [selectedDiagram, selectedItems, serializer]);
+    }, [serializer]);
 
     const doCut = React.useCallback(() => {
-        if (selectedDiagram) {
+        if (selectedDiagramRef.current) {
             doCopy();
 
-            dispatch(removeItems(selectedDiagram, selectedItems));
+            dispatch(removeItems(selectedDiagramRef.current, selectedItemsRef.current));
         }
-    }, [dispatch, doCopy, selectedDiagram, selectedItems]);
+    }, [dispatch, doCopy]);
 
     const doPaste = React.useCallback(() => {
-        if (selectedDiagram && clipboard) {
-            setOffset(value => value + OFFSET);
+        if (selectedDiagramRef.current && clipboard) {
+            offset.current += OFFSET;
 
-            dispatch(pasteItems(selectedDiagram, clipboard, offset + OFFSET));
+            dispatch(pasteItems(selectedDiagramRef.current, clipboard, offset.current));
         }
-    }, [clipboard, dispatch, offset, selectedDiagram]);
+    }, [dispatch, clipboard]);
 
     const copy: UIAction = React.useMemo(() => ({
         disabled: !canCopy,

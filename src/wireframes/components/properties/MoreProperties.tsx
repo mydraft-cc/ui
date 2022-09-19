@@ -14,18 +14,14 @@ import { useAppearance } from './../actions';
 import { Text } from './Text';
 
 export const MoreProperties = React.memo(() => {
-    const selectionSet = useStore(getSelectionSet);
+    const diagramsOrdered = useStore(x => x.editor.present.orderedDiagrams);
     const selectedDiagramId = useStore(getDiagramId);
     const selectedItems = useStore(getSelectedItems);
-    const diagramsOrdered = useStore(x => x.editor.present.orderedDiagrams);
+    const selectedSet = useStore(getSelectionSet);
 
     const [link, setLink] =
-        useAppearance<string | undefined>(selectedDiagramId, selectionSet,
+        useAppearance<string | undefined>(selectedDiagramId, selectedSet,
             DefaultAppearance.LINK, true, true);
-
-    if (!selectedDiagramId) {
-        return null;
-    }
 
     const isPageLinkCurrent = isPageLink(link.value);
 
