@@ -8,7 +8,7 @@
 import { Button, Col, Row, Select } from 'antd';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
-import { ColorPicker } from '@app/core';
+import { ColorPicker, useEventCallback } from '@app/core';
 import { texts } from '@app/texts';
 import { DefaultAppearance } from '@app/wireframes/interface';
 import { getDiagramId, getSelectedItems, getSelectionSet, selectColorTab, useStore } from '@app/wireframes/model';
@@ -46,9 +46,9 @@ export const VisualProperties = React.memo(() => {
         useAppearance<string>(selectedDiagramId, selectedSet,
             DefaultAppearance.TEXT_ALIGNMENT);
 
-    const doSelectColorTab = React.useCallback((key: string) => {
+    const doSelectColorTab = useEventCallback((key: string) => {
         dispatch(selectColorTab(key));
-    }, [dispatch]);
+    });
 
     if (!selectedDiagramId) {
         return null;

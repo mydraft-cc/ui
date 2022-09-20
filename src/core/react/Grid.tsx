@@ -7,7 +7,7 @@
 
 import * as React from 'react';
 import { SizeMeProps, withSize } from 'react-sizeme';
-import { sizeInPx } from './../utils/react';
+import { sizeInPx, useEventCallback } from './../utils/react';
 
 interface GridProps {
     // The items to render.
@@ -105,11 +105,11 @@ const GridComponent = (props: SizeMeProps & GridProps) => {
     const [scrollTop, setScrollTop] = React.useState(0);
     const [scrollContainer, setScrollContainer] = React.useState<HTMLDivElement | null>();
 
-    const doScroll = React.useCallback((event: React.UIEvent<HTMLDivElement>) => {
+    const doScroll = useEventCallback((event: React.UIEvent<HTMLDivElement>) => {
         const div: HTMLDivElement = event.target as any;
 
         setScrollTop(div.scrollTop);
-    }, []);
+    });
 
     const layout = React.useMemo(() => {
         if (!scrollContainer || !size || size.height === null) {

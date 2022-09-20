@@ -12,7 +12,7 @@ import { NativeTypes } from 'react-dnd-html5-backend';
 import { findDOMNode } from 'react-dom';
 import { useDispatch } from 'react-redux';
 import { RendererContext } from '@app/context';
-import { sizeInPx } from '@app/core';
+import { sizeInPx, useEventCallback } from '@app/core';
 import { addIcon, addImage, addVisual, changeItemsAppearance, Diagram, getDiagram, getDiagramId, getEditor, getMasterDiagram, getSelectedItems, getSelectedItemsWithLocked, selectItems, Transform, transformItems, useStore } from '@app/wireframes/model';
 import { Editor } from '@app/wireframes/renderer/Editor';
 import { DiagramRef, ItemsRef } from '../model/actions/utils';
@@ -50,21 +50,21 @@ export const EditorViewInner = ({ diagram, spacing }: EditorViewProps & { diagra
     const zoomedSize = editorSize.mul(zoom);
     const [menuVisible, setMenuVisible] = React.useState(false);
 
-    const doChangeItemsAppearance = React.useCallback((diagram: DiagramRef, visuals: ItemsRef, key: string, value: any) => {
+    const doChangeItemsAppearance = useEventCallback((diagram: DiagramRef, visuals: ItemsRef, key: string, value: any) => {
         dispatch(changeItemsAppearance(diagram, visuals, key, value));
-    }, [dispatch]);
+    });
 
-    const doSelectItems = React.useCallback((diagram: DiagramRef, items: ItemsRef) => {
+    const doSelectItems = useEventCallback((diagram: DiagramRef, items: ItemsRef) => {
         dispatch(selectItems(diagram, items));
-    }, [dispatch]);
+    });
 
-    const doTransformItems = React.useCallback((diagram: DiagramRef, items: ItemsRef, oldBounds: Transform, newBounds: Transform) => {
+    const doTransformItems = useEventCallback((diagram: DiagramRef, items: ItemsRef, oldBounds: Transform, newBounds: Transform) => {
         dispatch(transformItems(diagram, items, oldBounds, newBounds));
-    }, [dispatch]);
+    });
 
-    const doHide = React.useCallback(() => {
+    const doHide = useEventCallback(() => {
         setMenuVisible(false);
-    }, []);
+    });
 
     const [, drop] = useDrop({
         accept: [

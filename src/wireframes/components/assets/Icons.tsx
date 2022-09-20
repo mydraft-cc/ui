@@ -9,7 +9,7 @@ import { SearchOutlined } from '@ant-design/icons';
 import { Input, Select } from 'antd';
 import * as React from 'react';
 import { ReactReduxContext, useDispatch } from 'react-redux';
-import { Grid } from '@app/core';
+import { Grid, useEventCallback } from '@app/core';
 import { texts } from '@app/texts';
 import { addIcon, filterIcons, getDiagramId, getFilteredIcons, getIconSet, getIconSets, getIconsFilter, IconInfo, selectIcons, useStore } from '@app/wireframes/model';
 import { Icon } from './Icon';
@@ -48,13 +48,13 @@ export const Icons = React.memo(() => {
         );
     }, [dispatch, storeContext.store]);
 
-    const doFilterIcons = React.useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+    const doFilterIcons = useEventCallback((event: React.ChangeEvent<HTMLInputElement>) => {
         dispatch(filterIcons({ filter: event.target.value }));
-    }, [dispatch]);
+    });
 
-    const doSelectIcons = React.useCallback((iconSet: string) => {
+    const doSelectIcons = useEventCallback((iconSet: string) => {
         dispatch(selectIcons({ iconSet }));
-    }, [dispatch]);
+    });
 
     return (
         <>

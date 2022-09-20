@@ -10,7 +10,7 @@
 
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
-import { Color, Types } from '@app/core';
+import { Color, Types, useEventCallback } from '@app/core';
 import { changeItemsAppearance, DiagramItemSet } from '@app/wireframes/model';
 
 export interface UIAction {
@@ -69,12 +69,6 @@ export function useAppearance<T>(selectedDiagramId: RefDiagramId, selectedSet: R
 
 export function useAppearanceCore<T>(selectedDiagramId: RefDiagramId, selectedSet: RefDiagramItemSet, key: string, converter: UniqueConverter<T>, allowUndefined = false, force = false): Result<T> {
     const dispatch = useDispatch();
-    
-    const selectedDiagramIdRef = React.useRef(selectedDiagramId);
-    const selectedSetRef = React.useRef(selectedSet);
-
-    selectedDiagramIdRef.current = selectedDiagramId;
-    selectedSetRef.current = selectedSet;
 
     const value = React.useMemo(() => {
         if (!selectedSet) {
@@ -102,11 +96,11 @@ export function useAppearanceCore<T>(selectedDiagramId: RefDiagramId, selectedSe
         return { value, empty };
     }, [allowUndefined, converter, key, selectedSet]);
 
-    const doChangeAppearance = React.useCallback((value: T) => {
-        if (selectedDiagramIdRef.current && selectedSetRef.current) {
-            dispatch(changeItemsAppearance(selectedDiagramIdRef.current, selectedSetRef.current.allVisuals, key, converter.write(value), force));
+    const doChangeAppearance = useEventCallback((value: T) => {
+        if (selectedDiagramId && selectedSet) {
+            dispatch(changeItemsAppearance(selectedDiagramId, selectedSet.allVisuals, key, converter.write(value), force));
         }
-    }, [dispatch, converter, force, key]);
+    });
 
     return [value, doChangeAppearance];
 }

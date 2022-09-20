@@ -9,7 +9,7 @@ import { ArrowLeftOutlined, ArrowRightOutlined, CloseOutlined, FullscreenExitOut
 import { Button } from 'antd';
 import * as React from 'react';
 import { RendererContext } from '@app/context';
-import { sizeInPx, useFullscreen } from '@app/core';
+import { sizeInPx, useEventCallback, useFullscreen } from '@app/core';
 import { getPageLinkId, isPageLink } from '@app/wireframes/interface';
 import { useStore } from '@app/wireframes/model';
 import { PrintDiagram } from './PrintDiagram';
@@ -31,23 +31,23 @@ export const PresentationView = (props: PresentationViewProps) => {
     const size = useStore(x => x.editor.present.size);
     const [pageIndex, setPageIndex] = React.useState(0);
 
-    const doGoPrev = React.useCallback(() => {
-        setPageIndex(pageIndex - 1);
-    }, [pageIndex]);
+    const doGoPrev = useEventCallback(() => {
+        setPageIndex(x => x - 1);
+    });
 
-    const doGoNext = React.useCallback(() => {
-        setPageIndex(pageIndex + 1);
-    }, [pageIndex]);
+    const doGoNext = useEventCallback(() => {
+        setPageIndex(x => x + 1);
+    });
 
-    const doFullscreenEnter = React.useCallback(() => {
+    const doFullscreenEnter = useEventCallback(() => {
         setFullscreen(true);
-    }, [setFullscreen]);
+    });
 
-    const doFullscreenExit = React.useCallback(() => {
+    const doFullscreenExit = useEventCallback(() => {
         setFullscreen(false);
-    }, [setFullscreen]);
+    });
 
-    const doNavigate = React.useCallback((_, link: string) => {
+    const doNavigate = useEventCallback((_, link: string) => {
         if (isPageLink(link)) {
             const linkId = getPageLinkId(link);
             const linkIndex = diagramsOrdered.findIndex(x => x.id === linkId);
@@ -58,7 +58,7 @@ export const PresentationView = (props: PresentationViewProps) => {
         } else {
             window.open(link, '_blank');
         }
-    }, [diagramsOrdered]);
+    });
 
     const currentDiagram = React.useMemo(() => {
         return diagramsOrdered[pageIndex];

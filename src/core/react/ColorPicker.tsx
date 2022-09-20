@@ -13,6 +13,7 @@ import { ColorResult, SketchPicker } from 'react-color';
 import { texts } from '@app/texts';
 import { Color } from './../utils/color';
 import { ColorPalette } from './../utils/color-palette';
+import { useEventCallback } from './../utils/react';
 import './ColorPicker.scss';
 
 type ColorTab = 'palette' | 'advanced';
@@ -67,37 +68,29 @@ export const ColorPicker = React.memo((props: ColorPickerProps) => {
         setColor(value ? Color.fromValue(value) : Color.BLACK);
     }, [value]);
 
-    const doToggle = React.useCallback(() => {
-        setVisible(!visible);
-    }, [visible]);
+    const doToggle = useEventCallback(() => {
+        setVisible(x => !x);
+    });
 
-    const doSelectColorResult = React.useCallback((result: ColorResult) => {
+    const doSelectColorResult = useEventCallback((result: ColorResult) => {
         setColorHex(result.hex);
-    }, []);
+    });
 
-    const doSelectTab = React.useCallback((key: string) => {
-        if (onActiveColorTabChanged) {
-            onActiveColorTabChanged(key as ColorTab);
-        }
-    }, [onActiveColorTabChanged]);
+    const doSelectTab = useEventCallback((key: string) => {
+        onActiveColorTabChanged && onActiveColorTabChanged(key as ColorTab);
+    });
 
-    const doSelectColor = React.useCallback((result: Color) => {
-        if (onChange) {
-            onChange(result);
-        }
-
+    const doSelectColor = useEventCallback((result: Color) => {
+        onChange && onChange(result);
         setVisible(false);
         setColorHex(result.toString());
-    }, [onChange]);
+    });
 
-    const doConfirmColor = React.useCallback(() => {
-        if (onChange && colorHex) {
-            onChange(Color.fromValue(colorHex));
-        }
-
+    const doConfirmColor = useEventCallback(() => {
+        onChange && onChange(Color.fromValue(colorHex));
         setVisible(false);
         setColorHex(colorHex);
-    }, [colorHex, onChange]);
+    });
 
     const content = (
         <Tabs size='small' className='color-picker-tabs' animated={false} activeKey={activeColorTab} onChange={doSelectTab}>

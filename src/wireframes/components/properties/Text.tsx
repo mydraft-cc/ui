@@ -7,6 +7,7 @@
 
 import { Input } from 'antd';
 import * as React from 'react';
+import { useEventCallback } from '@app/core';
 
 export interface TextProps {
     disabled?: boolean;
@@ -21,24 +22,19 @@ export interface TextProps {
 export const Text = (props: TextProps) => {
     const { disabled, onTextChange, text } = props;
 
-    const currentText = React.useRef(text);
     const [value, setValue] = React.useState(text);
 
     React.useEffect(() => {
-        currentText.current = text;
-
         setValue(text);
     }, [text]);
 
-    const doSetText = React.useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
-        currentText.current = event.target.value;
-
+    const doSetText = useEventCallback((event: React.ChangeEvent<HTMLInputElement>) => {
         setValue(event.target.value);
-    }, []);
+    });
 
-    const doApply = React.useCallback(() => {
-        onTextChange(currentText.current);
-    }, [onTextChange]);
+    const doApply = useEventCallback(() => {
+        onTextChange(value);
+    });
 
     return (
         <Input disabled={disabled} value={value} onChange={doSetText} onBlur={doApply} />

@@ -8,7 +8,7 @@
 import { Col, InputNumber, Row, Select } from 'antd';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
-import { Color, ColorPicker } from '@app/core';
+import { Color, ColorPicker, useEventCallback } from '@app/core';
 import { changeItemsAppearance, ColorConfigurable, Configurable, getDiagramId, getSelectedConfigurables, getSelectedShape, NumberConfigurable, selectColorTab, SelectionConfigurable, SliderConfigurable, useStore } from '@app/wireframes/model';
 import { CustomSlider } from './CustomSlider';
 
@@ -38,13 +38,13 @@ export const CustomProperty = (props: CustomPropertyProps) => {
         value,
     } = props;
 
-    const doChangeValue = React.useCallback((newValue: any) => {
+    const doChangeValue = useEventCallback((newValue: any) => {
         onChange(configurable.name, newValue);
-    }, [configurable, onChange]);
+    });
 
-    const doChangeColor = React.useCallback((color: Color) => {
+    const doChangeColor = useEventCallback((color: Color) => {
         onChange(configurable.name, color.toNumber());
-    }, [configurable, onChange]);
+    });
 
     return (
         <Row className='property'>
@@ -86,24 +86,19 @@ export const CustomProperty = (props: CustomPropertyProps) => {
 export const CustomProperties = () => {
     const dispatch = useDispatch();
     const selectedDiagramId = useStore(getDiagramId);
-    const selectedDiagramIdRef = React.useRef(selectedDiagramId);
     const selectedColorTab = useStore(s => s.ui.selectedColorTab);
     const selectedConfigurables = useStore(getSelectedConfigurables);
     const selectedShape = useStore(getSelectedShape);
-    const selectedShapeRef = React.useRef(selectedShape);
 
-    selectedDiagramIdRef.current = selectedDiagramId;
-    selectedShapeRef.current = selectedShape;
-
-    const doSelectColorTab = React.useCallback((key: string) => {
+    const doSelectColorTab = useEventCallback((key: string) => {
         dispatch(selectColorTab(key));
-    }, [dispatch]);
+    });
 
-    const doChange = React.useCallback((key: string, value: any) => {
-        if (selectedDiagramIdRef.current && selectedShapeRef.current) {
-            dispatch(changeItemsAppearance(selectedDiagramIdRef.current, [selectedShapeRef.current], key, value));
+    const doChange = useEventCallback((key: string, value: any) => {
+        if (selectedDiagramId && selectedShape) {
+            dispatch(changeItemsAppearance(selectedDiagramId, [selectedShape], key, value));
         }
-    }, [dispatch]);
+    });
 
     if (!selectedShape || !selectedDiagramId) {
         return null;

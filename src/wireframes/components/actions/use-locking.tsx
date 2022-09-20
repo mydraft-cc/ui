@@ -8,6 +8,7 @@
 import { LockOutlined, UnlockOutlined } from '@ant-design/icons';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
+import { useEventCallback } from '@app/core';
 import { texts } from '@app/texts';
 import { getDiagramId, getSelectedItemWithLocked, lockItems, unlockItems, useStore } from '@app/wireframes/model';
 import { UIAction } from './shared';
@@ -15,22 +16,17 @@ import { UIAction } from './shared';
 export function useLocking() {
     const dispatch = useDispatch();
     const selectedDiagramId = useStore(getDiagramId);
-    const selectedDiagramIdRef = React.useRef(selectedDiagramId);
     const selectedItem = useStore(getSelectedItemWithLocked);
-    const selectedItemRef = React.useRef(selectedItem);
 
-    selectedDiagramIdRef.current = selectedDiagramId;
-    selectedItemRef.current = selectedItem;
-
-    const doToggle = React.useCallback(() => {
-        if (selectedDiagramIdRef.current && selectedItemRef.current) {
-            if (selectedItemRef.current.isLocked) {
-                dispatch(unlockItems(selectedDiagramIdRef.current, [selectedItemRef.current.id]));
+    const doToggle = useEventCallback(() => {
+        if (selectedDiagramId && selectedItem) {
+            if (selectedItem.isLocked) {
+                dispatch(unlockItems(selectedDiagramId, [selectedItem.id]));
             } else {
-                dispatch(lockItems(selectedDiagramIdRef.current, [selectedItemRef.current.id]));
+                dispatch(lockItems(selectedDiagramId, [selectedItem.id]));
             }
         }
-    }, [dispatch]);
+    });
 
     const lock: UIAction = React.useMemo(() => {
         const icon = selectedItem && selectedItem.isLocked ? (

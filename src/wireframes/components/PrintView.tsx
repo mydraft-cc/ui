@@ -7,6 +7,7 @@
 
 import * as React from 'react';
 import { RendererContext } from '@app/context';
+import { useEventCallback } from '@app/core';
 import { Diagram, useStore } from '@app/wireframes/model';
 import { PrintDiagram } from './PrintDiagram';
 
@@ -30,7 +31,7 @@ export const PrintView = (props: PrintRendererProps) => {
         renderedDiagrams.current = diagramsOrdered;
     }, [diagramsOrdered]);
 
-    const doRender = React.useCallback((diagram: Diagram) => {
+    const doRender = useEventCallback((diagram: Diagram) => {
         if (rendered.current[diagram.id]) {
             return;
         }
@@ -40,7 +41,7 @@ export const PrintView = (props: PrintRendererProps) => {
         if (Object.keys(rendered.current).length === renderedDiagrams.current.length && onRender) {
             onRender();
         }
-    }, [onRender]);
+    });
 
     return (
         <>

@@ -8,23 +8,20 @@
 import { Col, InputNumber, Row } from 'antd';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
-import { Rotation, Vec2 } from '@app/core';
+import { Rotation, useEventCallback, Vec2 } from '@app/core';
 import { getDiagram, getDiagramId, getSelectionSet, Transform, transformItems, useStore } from '@app/wireframes/model';
 
 export const TransformProperties = () => {
     const dispatch = useDispatch();
     const selectedDiagram = useStore(getDiagram)!;
     const selectedDiagramId = useStore(getDiagramId);
-    const selectedDiagramRef = React.useRef(selectedDiagram);
     const selectedIds = selectedDiagram?.selectedIds;
     const selectedSet = useStore(getSelectionSet)!;
     const selectedSetItems = selectedSet?.allItems;
-    const selectedSetItemsRef = React.useRef(selectedSetItems);
-    const transformRef = React.useRef<Transform | null>();
     const [rotation, setRotation] = React.useState(Rotation.ZERO);
 
     const [x, setX] = useDebounceCallback(value => {
-        const oldBounds = transformRef.current!;
+        const oldBounds = transform!;
 
         if (!oldBounds) {
             return;
@@ -35,11 +32,11 @@ export const TransformProperties = () => {
         // Move by the delta between new and old position, because we move relative to the bounding box.
         const newBounds = oldBounds.moveBy(new Vec2(dx, 0));
 
-        dispatch(transformItems(selectedDiagramRef.current, selectedSetItemsRef.current, oldBounds, newBounds));
-    }, 0, [dispatch]);
+        dispatch(transformItems(selectedDiagram, selectedSetItems, oldBounds, newBounds));
+    }, 0);
 
     const [y, setY] = useDebounceCallback(value => {
-        const oldBounds = transformRef.current!;
+        const oldBounds = transform!;
 
         if (!oldBounds) {
             return;
@@ -50,11 +47,11 @@ export const TransformProperties = () => {
         // Move by the delta between new and old position, because we move relative to the bounding box.
         const newBounds = oldBounds.moveBy(new Vec2(0, dy));
 
-        dispatch(transformItems(selectedDiagramRef.current, selectedSetItemsRef.current, oldBounds, newBounds));
-    }, 0, [dispatch]);
+        dispatch(transformItems(selectedDiagram, selectedSetItems, oldBounds, newBounds));
+    }, 0);
 
     const [w, setW] = useDebounceCallback(value => {
-        const oldBounds = transformRef.current!;
+        const oldBounds = transform!;
 
         if (!oldBounds) {
             return;
@@ -65,11 +62,11 @@ export const TransformProperties = () => {
         // Move by the delta between new and old position, because we move relative to the bounding box.
         const newBounds = oldBounds.resizeTopLeft(size);
 
-        dispatch(transformItems(selectedDiagramRef.current, selectedSetItemsRef.current, oldBounds, newBounds));
-    }, 0, [dispatch]);
+        dispatch(transformItems(selectedDiagram, selectedSetItems, oldBounds, newBounds));
+    }, 0);
 
     const [h, setH] = useDebounceCallback(value => {
-        const oldBounds = transformRef.current!;
+        const oldBounds = transform!;
 
         if (!oldBounds) {
             return;
@@ -80,11 +77,11 @@ export const TransformProperties = () => {
         // Move by the delta between new and old position, because we move relative to the bounding box.
         const newBounds = oldBounds.resizeTopLeft(size);
 
-        dispatch(transformItems(selectedDiagramRef.current, selectedSetItemsRef.current, oldBounds, newBounds));
-    }, 0, [dispatch]);
+        dispatch(transformItems(selectedDiagram, selectedSetItems, oldBounds, newBounds));
+    }, 0);
 
     const [r, setR] = useDebounceCallback(value => {
-        const oldBounds = transformRef.current!;
+        const oldBounds = transform!;
 
         if (!oldBounds) {
             return;
@@ -95,8 +92,8 @@ export const TransformProperties = () => {
         // Rotate to the value.
         const newBounds = oldBounds.rotateTo(rotation);
 
-        dispatch(transformItems(selectedDiagramRef.current, selectedSetItemsRef.current, oldBounds, newBounds));
-    }, 0, [dispatch]);
+        dispatch(transformItems(selectedDiagram, selectedSetItems, oldBounds, newBounds));
+    }, 0);
 
     React.useEffect(() => {
         setRotation(Rotation.ZERO);
@@ -116,10 +113,6 @@ export const TransformProperties = () => {
             return Transform.createFromTransformationsAndRotation(bounds, rotation);
         }
     }, [rotation, selectedDiagram, selectedSetItems]);
-
-    selectedDiagramRef.current = selectedDiagram;
-    selectedSetItemsRef.current = selectedSetItems;
-    transformRef.current = transform;
     
     React.useEffect(() => {
         if (!transform) {
@@ -167,13 +160,10 @@ export const TransformProperties = () => {
     );
 };
 
-function useDebounceCallback<T>(callback: ((value: T) => void), initial: T, deps: any[]): [T, (value: T) => void] {
+function useDebounceCallback<T>(callback: ((value: T) => void), initial: T): [T, (value: T) => void] {
     const [state, setState] = React.useState<T>(initial);
 
-    const callbackHook = React.useCallback((value: T) => {
-        callback(value);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, deps);
+    const callbackHook = useEventCallback(callback);
 
     React.useEffect(() => {
         const currentState = state;
