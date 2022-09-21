@@ -8,7 +8,7 @@
 import { Button, Col, Row, Select } from 'antd';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
-import { ColorPicker } from '@app/core';
+import { ColorPicker, useEventCallback } from '@app/core';
 import { texts } from '@app/texts';
 import { DefaultAppearance } from '@app/wireframes/interface';
 import { getDiagramId, getSelectedItems, getSelectionSet, selectColorTab, useStore } from '@app/wireframes/model';
@@ -17,38 +17,38 @@ import './VisualProperties.scss';
 
 export const VisualProperties = React.memo(() => {
     const dispatch = useDispatch();
-    const selectionSet = useStore(getSelectionSet);
     const selectedColorTab = useStore(s => s.ui.selectedColorTab as any);
     const selectedDiagramId = useStore(getDiagramId);
     const selectedItems = useStore(getSelectedItems);
+    const selectedSet = useStore(getSelectionSet);
 
     const [backgroundColor, setBackgroundColor] =
-        useColorAppearance(selectedDiagramId, selectionSet,
+        useColorAppearance(selectedDiagramId, selectedSet,
             DefaultAppearance.BACKGROUND_COLOR);
 
     const [fontSize, setFontSize] =
-        useAppearance<number>(selectedDiagramId, selectionSet,
+        useAppearance<number>(selectedDiagramId, selectedSet,
             DefaultAppearance.FONT_SIZE);
 
     const [foregroundColor, setForegroundColor] =
-        useColorAppearance(selectedDiagramId, selectionSet,
+        useColorAppearance(selectedDiagramId, selectedSet,
             DefaultAppearance.FOREGROUND_COLOR);
 
     const [strokeColor, setStrokeColor] =
-        useColorAppearance(selectedDiagramId, selectionSet,
+        useColorAppearance(selectedDiagramId, selectedSet,
             DefaultAppearance.STROKE_COLOR);
 
     const [strokeThickness, setStrokeThickness] =
-        useAppearance<number>(selectedDiagramId, selectionSet,
+        useAppearance<number>(selectedDiagramId, selectedSet,
             DefaultAppearance.STROKE_THICKNESS);
 
     const [textAlignment, setTextAlignment] =
-        useAppearance<string>(selectedDiagramId, selectionSet,
+        useAppearance<string>(selectedDiagramId, selectedSet,
             DefaultAppearance.TEXT_ALIGNMENT);
 
-    const doSelectColorTab = React.useCallback((key: string) => {
+    const doSelectColorTab = useEventCallback((key: string) => {
         dispatch(selectColorTab(key));
-    }, [dispatch]);
+    });
 
     if (!selectedDiagramId) {
         return null;

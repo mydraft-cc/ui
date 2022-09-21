@@ -9,6 +9,7 @@
 
 import * as React from 'react';
 import { useReactToPrint } from 'react-to-print';
+import { useEventCallback } from '../utils/react';
 
 export function useDetectPrint() {
     const [isPrinting, toggleStatus] = React.useState(false);
@@ -47,7 +48,7 @@ export function useFullscreen(): [boolean, (value: boolean) => void] {
         };
     }, []);
 
-    const setFullScreen = React.useCallback((value: boolean) => {
+    const setFullScreen = useEventCallback((value: boolean) => {
         if (value) {
             if (!document.fullscreenElement) {
                 document.documentElement.requestFullscreen();
@@ -57,7 +58,7 @@ export function useFullscreen(): [boolean, (value: boolean) => void] {
                 document.exitFullscreen();
             }
         }
-    }, []);
+    });
 
     return [fullscreen, setFullScreen];
 }
@@ -96,13 +97,13 @@ export function usePrinter(): [() => void, () => void, boolean, React.MutableRef
         };
     }, [isPrintingReady, printer]);
 
-    const doPrint = React.useCallback(() => {
+    const doPrint = useEventCallback(() => {
         setIsPrinting(true);
-    }, []);
+    });
 
-    const doMakeReady = React.useCallback(() => {
+    const doMakeReady = useEventCallback(() => {
         setIsPrintingReady(true);
-    }, []);
+    });
 
     return [doPrint, doMakeReady, isPrinting, printRef];
 }

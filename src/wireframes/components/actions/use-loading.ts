@@ -7,6 +7,7 @@
 
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
+import { useEventCallback } from '@app/core';
 import { texts } from '@app/texts';
 import { getDiagrams, newDiagram, saveDiagramToFile, saveDiagramToServer, useStore } from '@app/wireframes/model';
 import { UIAction } from './shared';
@@ -25,17 +26,17 @@ export function useLoading() {
         return false;
     }, [diagrams]);
 
-    const doNew = React.useCallback(() => {
+    const doNew = useEventCallback(() => {
         dispatch(newDiagram({ navigate: true }));
-    }, [dispatch]);
+    });
 
-    const doSave = React.useCallback(() => {
+    const doSave = useEventCallback(() => {
         dispatch(saveDiagramToServer({ navigate: true }));
-    }, [dispatch]);
+    });
 
-    const doSaveToFile = React.useCallback(() => {
+    const doSaveToFile = useEventCallback(() => {
         dispatch(saveDiagramToFile());
-    }, [dispatch]);
+    });
 
     const newDiagramAction: UIAction = React.useMemo(() => ({
         disabled: false,

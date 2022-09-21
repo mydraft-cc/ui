@@ -6,7 +6,7 @@
 */
 
 import * as React from 'react';
-import { Color, ImmutableMap, Rect2, Vec2 } from '@app/core';
+import { Color, ImmutableMap, Rect2, useEventCallback, Vec2 } from '@app/core';
 import { Diagram, DiagramItem, RendererService } from '@app/wireframes/model';
 import { Editor } from '@app/wireframes/renderer/Editor';
 
@@ -48,11 +48,9 @@ export const PrintDiagram = (props: PrintDiagramProps) => {
         useBounds,
     } = props;
 
-    const doOnRender = React.useCallback(() => {
-        if (onRender) {
-            onRender(diagram);
-        }
-    }, [diagram, onRender]);
+    const doOnRender = useEventCallback(() => {
+        onRender && onRender(diagram);
+    });
 
     const { bounds, zoomedSize } = React.useMemo(() => {
         let bounds: Rect2;

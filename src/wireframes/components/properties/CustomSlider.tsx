@@ -29,16 +29,12 @@ export const CustomSlider = React.memo(({ max, min, onChange, value }: CustomSli
         setSliderValue(value);
     }, [value]);
 
-    const doChangeValue = React.useCallback((v: number) => {
-        setSliderValue(v);
-    }, []);
-
     return (
         <Slider
             value={sliderValue}
             min={min}
             max={max}
-            onChange={doChangeValue}
+            onChange={setSliderValue}
             onAfterChange={onChange} />
     );
 });

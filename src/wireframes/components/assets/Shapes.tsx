@@ -9,7 +9,7 @@ import { SearchOutlined } from '@ant-design/icons';
 import { Input } from 'antd';
 import * as React from 'react';
 import { ReactReduxContext, useDispatch } from 'react-redux';
-import { Grid } from '@app/core';
+import { Grid, useEventCallback } from '@app/core';
 import { texts } from '@app/texts';
 import { addVisual, filterShapes, getDiagramId, getFilteredShapes, getShapesFilter, ShapeInfo, useStore } from '@app/wireframes/model';
 import { ShapeImage } from './ShapeImage';
@@ -46,9 +46,9 @@ export const Shapes = () => {
         );
     }, [dispatch, storeContext.store]);
 
-    const doFilterShapes = React.useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+    const doFilterShapes = useEventCallback((event: React.ChangeEvent<HTMLInputElement>) => {
         dispatch(filterShapes({ filter: event.target.value }));
-    }, [dispatch]);
+    });
 
     return (
         <>

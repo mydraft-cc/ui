@@ -7,7 +7,7 @@
 
 import * as svg from '@svgdotjs/svg.js';
 import * as React from 'react';
-import { Color, Rect2, SVGHelper, Vec2 } from '@app/core';
+import { Color, Rect2, SVGHelper, useEventCallback, Vec2 } from '@app/core';
 import { Diagram, DiagramItem, RendererService, Transform } from '@app/wireframes/model';
 import { CanvasView } from './CanvasView';
 import { NavigateAdorner } from './NavigateAdorner';
@@ -101,7 +101,7 @@ export const Editor = React.memo((props: EditorProps) => {
         setFullSelection(selectedItemsWithLocked);
     }, [selectedItemsWithLocked]);
 
-    const initDiagramScope = React.useCallback((doc: svg.Svg) => {
+    const doInit = React.useCallback((doc: svg.Svg) => {
         diagramTools.current = doc.rect().fill('transparent');
         renderMasterLayer.current = doc.group();
         renderMainLayer.current = doc.group();
@@ -134,22 +134,20 @@ export const Editor = React.memo((props: EditorProps) => {
         }
     }, [w, h, interactionService]);
 
-    const doPreview = React.useCallback((items: DiagramItem[]) => {
-        const previews = selectedItemsWithLocked.map(x => items.find(y => x.id === y.id) || x);
-
+    const doPreview = useEventCallback((items: DiagramItem[]) => {
         setInteractionPreviews(items);
-        setFullSelection(previews);
-    }, [selectedItemsWithLocked]);
+        setFullSelection(selectedItemsWithLocked.map(x => items.find(y => x.id === y.id) || x));
+    });
 
-    const doPreviewEnd = React.useCallback(() => {
+    const doPreviewEnd = useEventCallback(() => {
         setInteractionPreviews(undefined);
         setFullSelection(selectedItemsWithLocked);
-    }, [selectedItemsWithLocked]);
+    });
 
     return (
         <div className='editor' style={{ background: color.toString() }}>
             <CanvasView
-                onInit={initDiagramScope}
+                onInit={doInit}
                 viewBox={viewBox}
                 viewSize={viewSize}
                 zoom={zoom}

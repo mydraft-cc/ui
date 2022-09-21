@@ -10,6 +10,7 @@ import { Button, Col, Input, Row } from 'antd';
 import * as React from 'react';
 import { DragDropContext, Draggable, Droppable, DropResult } from 'react-beautiful-dnd';
 import { useDispatch } from 'react-redux';
+import { useEventCallback } from '@app/core';
 import { texts } from '@app/texts';
 import { addDiagram, filterDiagrams, getDiagramId, getDiagramsFilter, getFilteredDiagrams, moveDiagram, removeDiagram, renameDiagram, selectDiagram, setDiagramMaster, useStore } from '@app/wireframes/model';
 import { Page } from './Page';
@@ -22,33 +23,33 @@ export const Pages = () => {
     const diagramsFilter = useStore(getDiagramsFilter);
     const diagramsOrdered = useStore(x => x.editor.present.orderedDiagrams);
 
-    const doAddDiagram = React.useCallback(() => {
+    const doAddDiagram = useEventCallback(() => {
         dispatch(addDiagram());
-    }, [dispatch]);
+    });
 
-    const doRemoveDiagram = React.useCallback((diagramId: string) => {
+    const doRemoveDiagram = useEventCallback((diagramId: string) => {
         dispatch(removeDiagram(diagramId));
-    }, [dispatch]);
+    });
 
-    const doRenameDiagram = React.useCallback((diagramId: string, title: string) => {
+    const doRenameDiagram = useEventCallback((diagramId: string, title: string) => {
         dispatch(renameDiagram(diagramId, title));
-    }, [dispatch]);
+    });
 
-    const doSelectDiagram = React.useCallback((diagramId: string) => {
+    const doSelectDiagram = useEventCallback((diagramId: string) => {
         dispatch(selectDiagram(diagramId));
-    }, [dispatch]);
+    });
 
-    const doSetMaster = React.useCallback((diagramId: string, master: string | undefined) => {
+    const doSetMaster = useEventCallback((diagramId: string, master: string | undefined) => {
         dispatch(setDiagramMaster(diagramId, master));
-    }, [dispatch]);
+    });
 
-    const doFilterShapes = React.useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+    const doFilterShapes = useEventCallback((event: React.ChangeEvent<HTMLInputElement>) => {
         dispatch(filterDiagrams({ filter: event.target.value }));
-    }, [dispatch]);
+    });
 
-    const doSort = React.useCallback((result: DropResult) => {
+    const doSort = useEventCallback((result: DropResult) => {
         dispatch(moveDiagram(result.draggableId, result.destination!.index));
-    }, [dispatch]);
+    });
 
     return (
         <>

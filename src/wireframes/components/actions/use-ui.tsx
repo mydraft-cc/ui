@@ -8,6 +8,7 @@
 import { MinusCircleOutlined, PlusCircleOutlined } from '@ant-design/icons';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
+import { useEventCallback } from '@app/core';
 import { texts } from '@app/texts';
 import { setZoom, useStore } from '@app/wireframes/model';
 import { UIAction } from './shared';
@@ -18,13 +19,13 @@ export function useUI() {
     const canZoomIn = zoom < 2;
     const canZoomOut = zoom > 0.25;
 
-    const doZoomOut = React.useCallback(() => {
+    const doZoomOut = useEventCallback(() => {
         dispatch(setZoom(zoom - 0.25));
-    }, [dispatch, zoom]);
+    });
 
-    const doZoomIn = React.useCallback(() => {
+    const doZoomIn = useEventCallback(() => {
         dispatch(setZoom(zoom + 0.25));
-    }, [dispatch, zoom]);
+    });
 
     const zoomOut: UIAction = React.useMemo(() => ({
         disabled: !canZoomOut,

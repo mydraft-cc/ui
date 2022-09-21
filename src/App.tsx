@@ -11,7 +11,7 @@ import classNames from 'classnames';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
 import { useRouteMatch } from 'react-router';
-import { usePrinter } from '@app/core';
+import { useEventCallback, usePrinter } from '@app/core';
 import { ArrangeMenu, ClipboardMenu, EditorView, HistoryMenu, Icons, LoadingMenu, LockMenu, Pages, PrintView, Properties, Recent, SettingsMenu, Shapes, UIMenu } from '@app/wireframes/components';
 import { loadDiagram, newDiagram, selectTab, showInfoToast, toggleLeftSidebar, toggleRightSidebar, useStore } from '@app/wireframes/model';
 import { texts } from './texts';
@@ -52,25 +52,25 @@ export const App = () => {
         }
     }, [dispatch, isPrinting]);
 
-    const doSelectTab = React.useCallback((key: string) => {
+    const doSelectTab = useEventCallback((key: string) => {
         dispatch(selectTab(key));
-    }, [dispatch]);
+    });
 
-    const doToggleLeftSidebar = React.useCallback(() => {
+    const doToggleLeftSidebar = useEventCallback(() => {
         dispatch(toggleLeftSidebar());
-    }, [dispatch]);
+    });
 
-    const doToggleRightSidebar = React.useCallback(() => {
+    const doToggleRightSidebar = useEventCallback(() => {
         dispatch(toggleRightSidebar());
-    }, [dispatch]);
+    });
 
-    const doEdit = React.useCallback(() => {
+    const doEdit = useEventCallback(() => {
         setPresenting(false);
-    }, []);
+    });
 
-    const doPresent = React.useCallback(() => {
+    const doPresent = useEventCallback(() => {
         setPresenting(true);
-    }, []);
+    });
 
     return (
         <>

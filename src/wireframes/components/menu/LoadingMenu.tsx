@@ -8,7 +8,7 @@
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import { Button, Menu, Modal } from 'antd';
 import * as React from 'react';
-import { Title } from '@app/core';
+import { Title, useEventCallback } from '@app/core';
 import { texts } from '@app/texts';
 import { useStore } from '@app/wireframes/model';
 import { ActionDropdownButton, ActionMenuButton, ActionMenuItem, useLoading } from './../actions';
@@ -26,9 +26,9 @@ export const LoadingMenu = React.memo(() => {
         saveAction.current = forLoading.saveDiagram;
     }, [forLoading.saveDiagram]);
 
-    const doToggleInfoDialog = React.useCallback(() => {
-        setIsOpen(!isOpen);
-    }, [isOpen]);
+    const doToggleInfoDialog = useEventCallback(() => {
+        setIsOpen(x => !x);
+    });
 
     React.useEffect(() => {
         if (tokenToWrite) {

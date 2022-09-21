@@ -110,7 +110,9 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
     private calculateInitializeTransform() {
         let transform: Transform;
 
-        if (this.props.selectedItems.length === 1) {
+        if (this.props.selectedItems.length === 0) {
+            transform = Transform.ZERO;
+        } else if (this.props.selectedItems.length === 1) {
             transform = this.props.selectedItems[0].bounds(this.props.selectedDiagram);
         } else {
             const bounds = this.props.selectedItems.map(x => x.bounds(this.props.selectedDiagram));

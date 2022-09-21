@@ -7,7 +7,7 @@
 
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
-import { Shortcut } from '@app/core';
+import { Shortcut, useEventCallback } from '@app/core';
 import { calculateSelection, getDiagram, selectItems, useStore } from '@app/wireframes/model';
 import { ActionMenuButton, useGrouping, useRemove } from './../actions';
 
@@ -17,11 +17,16 @@ export const ArrangeMenu = React.memo(() => {
     const forGrouping = useGrouping();
     const selectedDiagram = useStore(getDiagram);
 
-    const doSelectAll = React.useCallback(() => {
+    const doSelectAll = useEventCallback(() => {
         if (selectedDiagram) {
-            dispatch(selectItems(selectedDiagram, calculateSelection(selectedDiagram.items.values, selectedDiagram)));
+            const selection =
+                calculateSelection(
+                    selectedDiagram.items.values,
+                    selectedDiagram);
+
+            dispatch(selectItems(selectedDiagram, selection));
         }
-    }, [dispatch, selectedDiagram]);
+    });
 
     return (
         <>

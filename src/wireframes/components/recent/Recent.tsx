@@ -8,18 +8,19 @@
 import { Empty } from 'antd';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
+import { useEventCallback } from '@app/core';
 import { texts } from '@app/texts';
 import { loadDiagram, RecentDiagram, useStore } from '@app/wireframes/model';
-import './Recent.scss';
 import { RecentItem } from './RecentItem';
+import './Recent.scss';
 
 export const Recent = () => {
     const dispatch = useDispatch();
     const recent = useStore(x => x.loading.recentDiagrams);
 
-    const doLoad = React.useCallback((item: RecentDiagram) => {
+    const doLoad = useEventCallback((item: RecentDiagram) => {
         dispatch(loadDiagram({ tokenToRead: item.tokenToRead, tokenToWrite: item.tokenToWrite, navigate: true }));
-    }, [dispatch]);
+    });
 
     const orderedRecent = React.useMemo(() => {
         const result = Object.entries(recent).map(([tokenToRead, value]) => {

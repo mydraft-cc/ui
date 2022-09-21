@@ -7,21 +7,22 @@
 
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
+import { useEventCallback } from '@app/core';
 import { texts } from '@app/texts';
-import { getDiagram, getSelectedItems, removeItems, useStore } from '@app/wireframes/model';
+import { getDiagramId, getSelectedItems, removeItems, useStore } from '@app/wireframes/model';
 import { UIAction } from './shared';
 
 export function useRemove() {
     const dispatch = useDispatch();
-    const selectedDiagram = useStore(getDiagram);
+    const selectedDiagramId = useStore(getDiagramId);
     const selectedItems = useStore(getSelectedItems);
     const canRemove = selectedItems.length > 0;
 
-    const doRemove = React.useCallback(() => {
-        if (selectedDiagram) {
-            dispatch(removeItems(selectedDiagram, selectedItems));
+    const doRemove = useEventCallback(() => {
+        if (selectedDiagramId) {
+            dispatch(removeItems(selectedDiagramId, selectedItems));
         }
-    }, [dispatch, selectedDiagram, selectedItems]);
+    });
 
     const remove: UIAction = React.useMemo(() => ({
         disabled: !canRemove,

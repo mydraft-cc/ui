@@ -218,6 +218,17 @@ $sidebar-size: 320px;
     }
 }
 
+.ant-input-number-affix-wrapper {
+    width: 100%;
+}
+
+.ant-input-number-prefix {
+    color: $color-text;
+    font-family: monospace;
+    font-weight: bolder;
+    margin-right: .5rem;
+}
+
 //
 // > Properties
 //

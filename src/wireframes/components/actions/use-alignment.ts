@@ -9,6 +9,7 @@
 
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
+import { useEventCallback } from '@app/core';
 import { texts } from '@app/texts';
 import { alignItems, AlignmentMode, getDiagramId, getSelectedItems, orderItems, OrderMode, useStore } from '@app/wireframes/model';
 import { UIAction } from './shared';
@@ -21,17 +22,17 @@ export function useAlignment() {
     const canDistribute = selectedItems.length > 2;
     const canOrder = selectedItems.length > 0;
 
-    const doAlign = React.useCallback((mode: AlignmentMode) => {
+    const doAlign = useEventCallback((mode: AlignmentMode) => {
         if (selectedDiagramId) {
             dispatch(alignItems(mode, selectedDiagramId, selectedItems));
         }
-    }, [dispatch, selectedDiagramId, selectedItems]);
+    });
 
-    const doOrder = React.useCallback((mode: OrderMode) => {
+    const doOrder = useEventCallback((mode: OrderMode) => {
         if (selectedDiagramId) {
             dispatch(orderItems(mode, selectedDiagramId, selectedItems));
         }
-    }, [dispatch, selectedDiagramId, selectedItems]);
+    });
 
     function useAlign(mode: AlignmentMode, label: string, icon: string) {
         const action: UIAction = React.useMemo(() => ({

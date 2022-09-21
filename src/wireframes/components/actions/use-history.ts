@@ -7,6 +7,7 @@
 
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
+import { useEventCallback } from '@app/core';
 import { texts } from '@app/texts';
 import { redo, undo, useStore } from '@app/wireframes/model';
 import { UIAction } from './shared';
@@ -16,13 +17,13 @@ export function useHistory() {
     const canRedo = useStore(s => s.editor.canRedo);
     const canUndo = useStore(s => s.editor.canUndo);
 
-    const doRedo = React.useCallback(() => {
+    const doRedo = useEventCallback(() => {
         dispatch(redo());
-    }, [dispatch]);
+    });
 
-    const doUndo = React.useCallback(() => {
+    const doUndo = useEventCallback(() => {
         dispatch(undo());
-    }, [dispatch]);
+    });
 
     const redoAction: UIAction = React.useMemo(() => ({
         disabled: !canRedo,

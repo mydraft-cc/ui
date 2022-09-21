@@ -8,6 +8,7 @@
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
 import { SerializerContext } from '@app/context';
+import { useEventCallback } from '@app/core';
 import { texts } from '@app/texts';
 import { DiagramItemSet, getDiagram, getSelectedItems, pasteItems, removeItems, useStore } from '@app/wireframes/model';
 import { UIAction } from './shared';
@@ -16,14 +17,14 @@ const OFFSET = 50;
 
 export function useClipboard() {
     const dispatch = useDispatch();
-    const [offset, setOffset] = React.useState<number>(0);
+    const offset = React.useRef(0);
     const selectedDiagram = useStore(getDiagram);
     const selectedItems = useStore(getSelectedItems);
     const serializer = React.useContext(SerializerContext);
     const canCopy = selectedItems.length > 0;
     const [clipboard, setClipboard] = React.useState<string>();
 
-    const doCopy = React.useCallback(() => {
+    const doCopy = useEventCallback(() => {
         if (selectedDiagram) {
             const set =
                 DiagramItemSet.createFromDiagram(
@@ -33,25 +34,26 @@ export function useClipboard() {
             const json = serializer.serializeSet(set);
 
             setClipboard(json);
-            setOffset(0);
+            
+            offset.current = 0;
         }
-    }, [selectedDiagram, selectedItems, serializer]);
+    });
 
-    const doCut = React.useCallback(() => {
+    const doCut = useEventCallback(() => {
         if (selectedDiagram) {
             doCopy();
 
             dispatch(removeItems(selectedDiagram, selectedItems));
         }
-    }, [dispatch, doCopy, selectedDiagram, selectedItems]);
+    });
 
-    const doPaste = React.useCallback(() => {
+    const doPaste = useEventCallback(() => {
         if (selectedDiagram && clipboard) {
-            setOffset(value => value + OFFSET);
+            offset.current += OFFSET;
 
-            dispatch(pasteItems(selectedDiagram, clipboard, offset + OFFSET));
+            dispatch(pasteItems(selectedDiagram, clipboard, offset.current));
         }
-    }, [clipboard, dispatch, offset, selectedDiagram]);
+    });
 
     const copy: UIAction = React.useMemo(() => ({
         disabled: !canCopy,

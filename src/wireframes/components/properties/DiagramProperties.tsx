@@ -8,7 +8,7 @@
 import { Col, InputNumber, Row } from 'antd';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
-import { Color, ColorPicker } from '@app/core';
+import { Color, ColorPicker, useEventCallback } from '@app/core';
 import { texts } from '@app/texts';
 import { changeColor, changeSize, getEditor, useStore } from '@app/wireframes/model';
 
@@ -30,13 +30,13 @@ export const DiagramProperties = React.memo(() => {
         setColor(editorColor);
     }, [editorColor]);
 
-    const doChangeSize = React.useCallback(() => {
+    const doChangeSize = useEventCallback(() => {
         dispatch(changeSize({ width: sizeWidth, height: sizeHeight }));
-    }, [dispatch, sizeWidth, sizeHeight]);
+    });
 
-    const doChangeColor = React.useCallback((color: Color) => {
+    const doChangeColor = useEventCallback((color: Color) => {
         dispatch(changeColor({ color: color.toString() }));
-    }, [dispatch]);
+    });
 
     return (
         <>
