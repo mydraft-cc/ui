@@ -8,7 +8,7 @@
 import * as svg from '@svgdotjs/svg.js';
 import * as React from 'react';
 import { Rotation, SVGHelper, Vec2 } from '@app/core';
-import { Diagram, DiagramItem, SnapManager, Transform } from '@app/wireframes/model';
+import { Diagram, DiagramItem, SnapManager, SnapMode, Transform } from '@app/wireframes/model';
 import { SVGRenderer2 } from '../shapes/utils/svg-renderer2';
 import { InteractionOverlays } from './interaction-overlays';
 import { InteractionHandler, InteractionService, SvgEvent } from './interaction-service';
@@ -196,7 +196,7 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
             // Reset the overlay to show all markers.
             this.overlays.reset();
 
-            this.move(delta, event.shiftKey);
+            this.move(delta, getSnapMode(event));
 
             this.renderPreview();
             this.renderShapes();
@@ -317,25 +317,24 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
         this.manipulated = true;
 
         if (this.manipulationMode === Mode.Move) {
-            this.move(delta, event.event.shiftKey);
+            this.move(delta, getSnapMode(event.event));
         } else if (this.manipulationMode === Mode.Rotate) {
-            this.rotate(event, event.event.shiftKey);
+            this.rotate(event, getSnapMode(event.event));
         } else {
-            this.resize(delta, event.event.shiftKey);
+            this.resize(delta, getSnapMode(event.event));
         }
 
         this.renderPreview();
         this.renderShapes();
     }
-
     private renderPreview() {
         const previews = this.props.selectedItems.map(x => x.transformByBounds(this.startTransform, this.transform));
 
         this.props.onPreview(previews);
     }
 
-    private move(delta: Vec2, shiftKey: boolean) {
-        const snapResult = this.snapManager.snapMoving(this.startTransform, delta, shiftKey);
+    private move(delta: Vec2, snapMode: SnapMode) {
+        const snapResult = this.snapManager.snapMoving(this.startTransform, delta, snapMode);
 
         this.transform = this.startTransform.moveBy(snapResult.delta);
 
@@ -349,9 +348,9 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
         this.debug();
     }
 
-    private rotate(event: SvgEvent, shiftKey: boolean) {
+    private rotate(event: SvgEvent, snapMode: SnapMode) {
         const deltaValue = this.getCummulativeRotation(event);
-        const deltaRotation = this.snapManager.snapRotating(this.startTransform, deltaValue, shiftKey);
+        const deltaRotation = this.snapManager.snapRotating(this.startTransform, deltaValue, snapMode);
 
         this.transform = this.startTransform.rotateBy(Rotation.fromDegree(deltaRotation));
 
@@ -369,10 +368,10 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
         return cummulativeRotation;
     }
 
-    private resize(delta: Vec2, shiftKey: boolean) {
+    private resize(delta: Vec2, snapMode: SnapMode) {
         const startRotation = this.startTransform.rotation;
 
-        const deltaSize = this.getResizeDeltaSize(startRotation, delta, shiftKey);
+        const deltaSize = this.getResizeDeltaSize(startRotation, delta, snapMode);
         const deltaMove = this.getResizeDeltaPos(startRotation, deltaSize);
 
         this.transform = this.startTransform.resizeAndMoveBy(deltaSize, deltaMove);
@@ -385,11 +384,11 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
         this.debug();
     }
 
-    private getResizeDeltaSize(angle: Rotation, cummulativeTranslation: Vec2, shiftKey: boolean) {
+    private getResizeDeltaSize(angle: Rotation, cummulativeTranslation: Vec2, snapMode: SnapMode) {
         const delta = Vec2.rotated(cummulativeTranslation.mul(2), Vec2.ZERO, angle.negate()).mul(this.manipulationOffset);
 
         const snapResult =
-            this.snapManager.snapResizing(this.startTransform, delta, shiftKey,
+            this.snapManager.snapResizing(this.startTransform, delta, snapMode,
                 this.manipulationOffset.x,
                 this.manipulationOffset.y);
 
@@ -589,8 +588,19 @@ function isInputFocused() {
     return focusedElement === 'input' || focusedElement === 'textarea';
 }
 
-function stopEvent(event: KeyboardEvent) {
+function stopEvent(event: Event) {
     event.stopImmediatePropagation();
     event.stopPropagation();
     event.preventDefault();
 }
+
+function getSnapMode(event: KeyboardEvent | MouseEvent) {
+    if (event.shiftKey) {
+        return 'Grid';
+    } else if (event.ctrlKey) {
+        return 'None';
+    } else {
+        return 'Shapes';
+    }
+}
+

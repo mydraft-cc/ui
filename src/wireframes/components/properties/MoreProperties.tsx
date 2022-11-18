@@ -32,7 +32,7 @@ export const MoreProperties = React.memo(() => {
                     <Row className='property'>
                         <Col span={12} className='property-label'>{texts.common.link}</Col>
                         <Col span={12} className='property-value'>
-                            <Text disabled={link.empty} text={!isPageLinkCurrent ? link.value : ''} onTextChange={setLink} />
+                            <Text disabled={link.empty} text={!isPageLinkCurrent ? link.value : ''} selection={selectedSet} onTextChange={setLink} />
                         </Col>
                     </Row>
 

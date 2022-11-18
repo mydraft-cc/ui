@@ -16,6 +16,8 @@ const RESIZE_SNAP_SHAPE = 5;
 const RESIZE_SNAP_GRID = 10;
 const RESIZE_MINIMUM = 1;
 
+export type SnapMode = 'None' | 'Grid' | 'Shapes';
+
 export type SnapResult = { 
     snapX?: SnapLine;
     snapY?: SnapLine;
@@ -84,25 +86,25 @@ export class SnapManager {
         this.grid = undefined;
     }
 
-    public snapRotating(transform: Transform, delta: number, disabled = false): number {
+    public snapRotating(transform: Transform, delta: number, snapMode: SnapMode): number {
         const oldRotation = transform.rotation.degree;
 
         const total = oldRotation + delta;
 
-        if (!disabled) {
+        if (snapMode !== 'None') {
             return MathHelper.roundToMultipleOf(total, ROTATE_SNAP) - oldRotation;
         } else {
             return MathHelper.roundToMultipleOf(total, 1) - oldRotation;
         }
     }
 
-    public snapResizing(transform: Transform, delta: Vec2, snapToGrid: boolean, xMode = 1, yMode = 1): SnapResult {
+    public snapResizing(transform: Transform, delta: Vec2, snapMode: SnapMode, xMode = 1, yMode = 1): SnapResult {
         const result: SnapResult = { delta };
 
         let dw = delta.x;
         let dh = delta.y;
 
-        if (!snapToGrid && transform.rotation.degree === 0) {
+        if (snapMode === 'Shapes' && transform.rotation.degree === 0) {
             const aabb = transform.aabb;
 
             const { xLines, yLines } = this.getSnapLines();
@@ -181,7 +183,7 @@ export class SnapManager {
                     }
                 }
             }
-        } else if (snapToGrid) {
+        } else if (snapMode === 'Grid') {
             dw = MathHelper.roundToMultipleOf(transform.size.x + dw, RESIZE_SNAP_GRID) - transform.size.x;
             dh = MathHelper.roundToMultipleOf(transform.size.y + dh, RESIZE_SNAP_GRID) - transform.size.y;
         }
@@ -199,7 +201,7 @@ export class SnapManager {
         return result;
     }
 
-    public snapMoving(transform: Transform, delta: Vec2, snapToGrid: boolean): SnapResult {
+    public snapMoving(transform: Transform, delta: Vec2, snapMode: SnapMode): SnapResult {
         const result: SnapResult = { delta };
 
         const aabb = transform.aabb;
@@ -207,7 +209,7 @@ export class SnapManager {
         let x = aabb.x + delta.x;
         let y = aabb.y + delta.y;
 
-        if (!snapToGrid) {
+        if (snapMode === 'Shapes') {
             const { xLines, yLines, grid } = this.getSnapLines();
 
             // Compute the new x and y-positions once.
@@ -296,7 +298,7 @@ export class SnapManager {
 
             result.snapX = enrichLine(result.snapX, grid);
             result.snapY = enrichLine(result.snapY, grid);
-        } else {
+        } else if (snapMode === 'Grid') {
             x = MathHelper.roundToMultipleOf(x, MOVE_SNAP_GRID);
             y = MathHelper.roundToMultipleOf(y, MOVE_SNAP_GRID);
         }

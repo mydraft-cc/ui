@@ -20,79 +20,66 @@ export const TransformProperties = () => {
     const selectedSetItems = selectedSet?.allItems;
     const [rotation, setRotation] = React.useState(Rotation.ZERO);
 
-    const [x, setX] = useDebounceCallback(value => {
-        const oldBounds = transform!;
+    const doTransform = useEventCallback((update: (oldBounds: Transform) => Transform) => {
+        const oldBounds = transform;
 
         if (!oldBounds) {
             return;
         }
 
-        const dx = value - (oldBounds.position.x - 0.5 * oldBounds.size.x);
+        const newBounds = update(oldBounds);
         
-        // Move by the delta between new and old position, because we move relative to the bounding box.
-        const newBounds = oldBounds.moveBy(new Vec2(dx, 0));
+        if (newBounds.equals(oldBounds)) {
+            return;
+        }
 
         dispatch(transformItems(selectedDiagram, selectedSetItems, oldBounds, newBounds));
+
+    });
+
+    const [x, setX] = useDebounceCallback(value => {
+        doTransform(oldBounds => {
+            const dx = value - (oldBounds.position.x - 0.5 * oldBounds.size.x);
+
+            // Move by the delta between new and old position, because we move relative to the bounding box.
+            return oldBounds.moveBy(new Vec2(dx, 0));
+        });
     }, 0);
 
     const [y, setY] = useDebounceCallback(value => {
-        const oldBounds = transform!;
-
-        if (!oldBounds) {
-            return;
-        }
-
-        const dy = value - (oldBounds.position.y - 0.5 * oldBounds.size.y);
-        
-        // Move by the delta between new and old position, because we move relative to the bounding box.
-        const newBounds = oldBounds.moveBy(new Vec2(0, dy));
-
-        dispatch(transformItems(selectedDiagram, selectedSetItems, oldBounds, newBounds));
+        doTransform(oldBounds => {
+            const dy = value - (oldBounds.position.y - 0.5 * oldBounds.size.y);
+            
+            // Move by the delta between new and old position, because we move relative to the bounding box.
+            return oldBounds.moveBy(new Vec2(0, dy));
+        });
     }, 0);
 
     const [w, setW] = useDebounceCallback(value => {
-        const oldBounds = transform!;
-
-        if (!oldBounds) {
-            return;
-        }
-
-        const size = new Vec2(value, oldBounds.size.y);
-        
-        // Move by the delta between new and old position, because we move relative to the bounding box.
-        const newBounds = oldBounds.resizeTopLeft(size);
-
-        dispatch(transformItems(selectedDiagram, selectedSetItems, oldBounds, newBounds));
+        doTransform(oldBounds => {
+            const size = new Vec2(value, oldBounds.size.y);
+            
+            // Size by keeping the left top corner sticky.
+            return oldBounds.resizeTopLeft(size);
+        });
     }, 0);
 
     const [h, setH] = useDebounceCallback(value => {
-        const oldBounds = transform!;
-
-        if (!oldBounds) {
-            return;
-        }
-
-        const size = new Vec2(oldBounds.size.x, value);
-        
-        // Move by the delta between new and old position, because we move relative to the bounding box.
-        const newBounds = oldBounds.resizeTopLeft(size);
-
-        dispatch(transformItems(selectedDiagram, selectedSetItems, oldBounds, newBounds));
+        doTransform(oldBounds => {
+            const size = new Vec2(oldBounds.size.x, value);
+            
+            // Size by keeping the left top corner sticky.
+            return oldBounds.resizeTopLeft(size);
+        });
     }, 0);
 
     const [r, setR] = useDebounceCallback(value => {
-        const oldBounds = transform!;
-
-        if (!oldBounds) {
-            return;
-        }
-
-        const rotation = Rotation.fromDegree(value);
+        doTransform(oldBounds => {
+            const rotation = Rotation.fromDegree(value);
         
-        // Rotate to the value.
-        const newBounds = oldBounds.rotateTo(rotation);
-
-        dispatch(transformItems(selectedDiagram, selectedSetItems, oldBounds, newBounds));
+            // Rotate to the value.
+            return oldBounds.rotateTo(rotation);
+        });
     }, 0);
 
     React.useEffect(() => {
