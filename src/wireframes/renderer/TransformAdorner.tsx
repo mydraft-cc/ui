@@ -153,6 +153,7 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
         let xd = 0;
         let yd = 0;
 
+        // Calculate the movement direction from the keys.
         switch (event.key) {
             case 'ArrowLeft':
                 xd = -1;
@@ -196,7 +197,8 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
             // Reset the overlay to show all markers.
             this.overlays.reset();
 
-            this.move(delta, getSnapMode(event));
+            // Show the overlay after a few movements, not the first click.
+            this.move(delta, getSnapMode(event), counter > 5);
 
             this.renderPreview();
             this.renderShapes();
@@ -327,34 +329,39 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
         this.renderPreview();
         this.renderShapes();
     }
+
     private renderPreview() {
         const previews = this.props.selectedItems.map(x => x.transformByBounds(this.startTransform, this.transform));
 
         this.props.onPreview(previews);
     }
 
-    private move(delta: Vec2, snapMode: SnapMode) {
+    private move(delta: Vec2, snapMode: SnapMode, showOverlay = true) {
         const snapResult = this.snapManager.snapMoving(this.startTransform, delta, snapMode);
 
         this.transform = this.startTransform.moveBy(snapResult.delta);
 
-        this.overlays.showSnapAdorners2(snapResult);
+        if (showOverlay) {
+            this.overlays.showSnapAdorners2(snapResult);
 
-        const x = Math.floor(this.transform.aabb.x);
-        const y = Math.floor(this.transform.aabb.y);
+            const x = Math.floor(this.transform.aabb.x);
+            const y = Math.floor(this.transform.aabb.y);
 
-        this.overlays.showInfo(this.transform, `X: ${x}, Y: ${y}`);
+            this.overlays.showInfo(this.transform, `X: ${x}, Y: ${y}`);
+        }
 
         this.debug();
     }
 
-    private rotate(event: SvgEvent, snapMode: SnapMode) {
+    private rotate(event: SvgEvent, snapMode: SnapMode, showOverlay = true) {
         const deltaValue = this.getCummulativeRotation(event);
         const deltaRotation = this.snapManager.snapRotating(this.startTransform, deltaValue, snapMode);
 
         this.transform = this.startTransform.rotateBy(Rotation.fromDegree(deltaRotation));
 
-        this.overlays.showInfo(this.transform, `Y: ${this.transform.rotation.degree}°`);
+        if (showOverlay) {
+            this.overlays.showInfo(this.transform, `Y: ${this.transform.rotation.degree}°`);
+        }
     }
 
     private getCummulativeRotation(event: SvgEvent): number {
@@ -368,18 +375,23 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
         return cummulativeRotation;
     }
 
-    private resize(delta: Vec2, snapMode: SnapMode) {
+    private resize(delta: Vec2, snapMode: SnapMode, showOverlay = true) {
         const startRotation = this.startTransform.rotation;
 
         const deltaSize = this.getResizeDeltaSize(startRotation, delta, snapMode);
-        const deltaMove = this.getResizeDeltaPos(startRotation, deltaSize);
+        const deltaMove = this.getResizeDeltaPosition(startRotation, deltaSize.delta);
 
-        this.transform = this.startTransform.resizeAndMoveBy(deltaSize, deltaMove);
+        // A resize is very often also a movement, because the center is in the middle.
+        this.transform = this.startTransform.resizeAndMoveBy(deltaSize.delta, deltaMove);
 
-        const w = Math.floor(this.transform.size.x);
-        const h = Math.floor(this.transform.size.y);
+        if (showOverlay) {
+            this.overlays.showSnapAdorners2(deltaSize);
 
-        this.overlays.showInfo(this.transform, `Width: ${w}, Height: ${h}`);
+            const w = Math.floor(this.transform.size.x);
+            const h = Math.floor(this.transform.size.y);
+
+            this.overlays.showInfo(this.transform, `Width: ${w}, Height: ${h}`);
+        }
 
         this.debug();
     }
@@ -392,9 +404,7 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
                 this.manipulationOffset.x,
                 this.manipulationOffset.y);
 
-        this.overlays.showSnapAdorners2(snapResult);
-
-        return snapResult.delta;
+        return snapResult;
     }
 
     private debug() {
@@ -415,7 +425,7 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
         }
     }
 
-    private getResizeDeltaPos(angle: Rotation, dSize: Vec2) {
+    private getResizeDeltaPosition(angle: Rotation, dSize: Vec2) {
         let x = 0;
         let y = 0;
 
