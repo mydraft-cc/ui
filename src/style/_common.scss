@@ -267,6 +267,13 @@ $sidebar-size: 320px;
 //
 // > Menu Items
 //
+header {
+    .ant-btn-group {
+        margin-left: 15px !important;
+        margin-right: 15px !important;
+    }
+}
+
 .menu {
     &-separator {
         background: $color-border-dark;

@@ -20,6 +20,9 @@ const API_URL = process.env.NODE_ENV === 'test_development' ? 'http://localhost:
 export const newDiagram =
     createAction<{ navigate: boolean }>('diagram/new');
 
+export const loadDiagramFromActions =
+    createAction<{ actions: AnyAction[] }>('diagram/load/actions');
+
 export const loadDiagram =
     createAsyncThunk('diagram/load', async (args: { tokenToRead: string; tokenToWrite?: string; navigate: boolean }, thunkAPI) => {
         const state = thunkAPI.getState() as LoadingStateInStore;
@@ -102,13 +105,15 @@ export function loadingMiddleware(): Middleware {
         } else if (loadDiagram.fulfilled.match(action)) {
             if (action.meta.arg.navigate && action.payload) {
                 store.dispatch(push(action.payload.tokenToRead));
+                store.dispatch(loadDiagramFromActions({ actions: action.payload!.actions }));
             }
 
+        } else if (loadDiagramFromActions.match(action)) {
             store.dispatch(showInfoToast(texts.common.loadingDiagramDone));
         } else if (loadDiagram.rejected.match(action)) {
             store.dispatch(showErrorToast(texts.common.loadingDiagramFailed));
         } else if (saveDiagramToFile.fulfilled.match(action)) {
-            store.dispatch(showErrorToast(texts.common.savingDiagramDone));
+            store.dispatch(showInfoToast(texts.common.savingDiagramDone));
         } else if (saveDiagramToServer.fulfilled.match(action)) {
             if (action.meta.arg.navigate) {
                 store.dispatch(push(action.payload.tokenToRead));
@@ -174,8 +179,8 @@ export function rootLoading(innerReducer: Reducer<any>, undoableReducer: Reducer
             const initialState = editorReducer(EditorState.empty(), initialAction);
 
             state = UndoableState.create(initialState, initialAction);
-        } else if (loadDiagram.fulfilled.match(action)) {
-            const { actions } = action.payload as { actions: AnyAction[] };
+        } else if (loadDiagramFromActions.match(action)) {
+            const actions = action.payload.actions;
 
             let firstAction = actions[0];
 
@@ -189,9 +194,7 @@ export function rootLoading(innerReducer: Reducer<any>, undoableReducer: Reducer
                 editor = undoableReducer(editor, loadedAction);
             }
 
-            const present = editor.present;
-
-            const diagram = present.diagrams.get(present.selectedDiagramId!);
+            const diagram = editor.present.diagrams.get(editor.present.selectedDiagramId!);
 
             if (diagram) {
                 state = undoableReducer(editor, selectItems(diagram, []));
