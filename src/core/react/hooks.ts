@@ -11,7 +11,51 @@ import * as React from 'react';
 import { useReactToPrint } from 'react-to-print';
 import { useEventCallback } from '../utils/react';
 
-export function useDetectPrint() {
+export function useOpenFile(fileType: string, onOpened: (file: File) => void): () => void {
+    const fileInputRef = React.useRef<HTMLInputElement | null>();
+    const fileCallback = React.useRef(onOpened);
+
+    React.useEffect(() => {
+        let invisibleInput = document.createElement('input');
+        invisibleInput.type = 'file';
+        invisibleInput.style.visibility = 'hidden';
+        invisibleInput.accept = fileType;
+    
+        invisibleInput.addEventListener('change', () => {
+            if (invisibleInput.files && invisibleInput.files.length > 0) {
+                const file = invisibleInput.files[0];
+
+                fileCallback.current(file);
+            }
+        });
+
+        document.body.appendChild(invisibleInput);
+
+        fileInputRef.current = invisibleInput;
+        
+        return () => {
+            document.body.removeChild(invisibleInput);
+
+            fileInputRef.current = null;
+        };
+    }, [fileType]);
+
+    React.useEffect(() => {
+        if (fileInputRef.current) {
+            fileInputRef.current.accept = fileType;
+        }
+    }, [fileType]);
+
+    const doClick = useEventCallback(() => {
+        if (fileInputRef.current) {
+            fileInputRef.current.click();
+        }
+    });
+
+    return doClick;
+}
+
+export function useDetectPrint(): boolean {
     const [isPrinting, toggleStatus] = React.useState(false);
 
     React.useEffect(() => {

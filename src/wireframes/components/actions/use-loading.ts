@@ -7,14 +7,24 @@
 
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
-import { useEventCallback } from '@app/core';
+import { useEventCallback, useOpenFile } from '@app/core';
 import { texts } from '@app/texts';
-import { getDiagrams, newDiagram, saveDiagramToFile, saveDiagramToServer, useStore } from '@app/wireframes/model';
+import { getDiagrams, loadDiagramFromActions, newDiagram, saveDiagramToFile, saveDiagramToServer, showErrorToast, useStore } from '@app/wireframes/model';
 import { UIAction } from './shared';
 
 export function useLoading() {
     const dispatch = useDispatch();
     const diagrams = useStore(getDiagrams);
+    const openHandler = useOpenFile('.json', async file => {
+        try {
+            const fileJson = await file.text();
+            const fileActions = JSON.parse(fileJson);
+    
+            dispatch(loadDiagramFromActions({ actions: fileActions }));
+        } catch {
+            dispatch(showErrorToast(texts.common.loadingDiagramFailed));
+        }
+    });
 
     const canSave = React.useMemo(() => {
         for (const diagram of diagrams.values) {
@@ -64,5 +74,13 @@ export function useLoading() {
         onAction: doSaveToFile,
     }), [doSaveToFile, canSave]);
 
-    return { newDiagram: newDiagramAction, saveDiagram, saveDiagramToFile: saveDiagramToFileAction };
+    const openDiagramAction: UIAction = React.useMemo(() => ({
+        disabled: false,
+        icon: 'icon-folder-open',
+        label: texts.common.openFromFile,
+        tooltip: texts.common.openFromFileTooltip,
+        onAction: openHandler,
+    }), [openHandler]);
+
+    return { newDiagram: newDiagramAction, openDiagramAction, saveDiagram, saveDiagramToFile: saveDiagramToFileAction };
 }

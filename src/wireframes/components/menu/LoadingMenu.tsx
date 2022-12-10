@@ -57,6 +57,8 @@ export const LoadingMenu = React.memo(() => {
             <CustomTitle token={tokenToRead} />
 
             <ActionMenuButton displayMode='IconLabel' action={forLoading.newDiagram} />
+            <ActionMenuButton displayMode='Icon' action={forLoading.openDiagramAction} />
+
             <ActionDropdownButton displayMode='IconLabel' action={forLoading.saveDiagram} type='primary' overlay={menu} />
 
             <Button className='menu-item' size='large' onClick={doToggleInfoDialog}>
