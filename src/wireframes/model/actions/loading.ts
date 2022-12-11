@@ -11,11 +11,10 @@ import { saveAs } from 'file-saver';
 import { AnyAction, Reducer } from 'redux';
 import { texts } from '@app/texts';
 import { EditorState, EditorStateInStore, LoadingState, LoadingStateInStore, saveRecentDiagrams, UndoableState } from './../internal';
+import { getDiagram, postDiagram, putDiagram } from './api';
 import { addDiagram } from './diagrams';
 import { selectItems } from './items';
 import { showErrorToast, showInfoToast } from './ui';
-
-const API_URL = process.env.NODE_ENV === 'test_development' ? 'http://localhost:4000' : 'https://api.mydraft.cc';
 
 export const newDiagram =
     createAction<{ navigate: boolean }>('diagram/new');
@@ -31,13 +30,7 @@ export const loadDiagram =
             return null;
         }
 
-        const response = await fetch(`${API_URL}/${args.tokenToRead}`);
-
-        if (!response.ok) {
-            throw Error('Failed to load diagram');
-        }
-
-        const actions = await response.json();
+        const actions = await getDiagram(args.tokenToRead);
 
         return { tokenToRead: args.tokenToRead, tokenToWrite: args.tokenToWrite, actions };
     });
@@ -59,38 +52,14 @@ export const saveDiagramToServer =
         const tokenToWrite = state.loading.tokenToWrite;
         const tokenToRead = state.loading.tokenToRead;
 
-        const body = JSON.stringify(state.editor.actions);
-
         if (tokenToRead && tokenToWrite) {
-            const response = await fetch(`${API_URL}/${tokenToRead}/${tokenToWrite}`, {
-                method: 'PUT',
-                headers: {
-                    ContentType: 'text/json',
-                },
-                body,
-            });
-
-            if (!response.ok) {
-                throw Error('Failed to save diagram');
-            }
+            await putDiagram(tokenToRead, tokenToWrite, state.editor.actions);
 
             return { tokenToRead, tokenToWrite, update: true, navigate: args.navigate };
         } else {
-            const response = await fetch(`${API_URL}/`, {
-                method: 'POST',
-                headers: {
-                    ContentType: 'text/json',
-                },
-                body,
-            });
+            const { readToken, writeToken } = await postDiagram(state.editor.actions);
 
-            if (!response.ok) {
-                throw Error('Failed to save diagram');
-            }
-
-            const json = await response.json();
-
-            return { tokenToRead: json.readToken, tokenToWrite: json.writeToken, navigate: args.navigate };
+            return { tokenToRead: writeToken, tokenToWrite: readToken, navigate: args.navigate };
         }
     });
 
@@ -105,9 +74,11 @@ export function loadingMiddleware(): Middleware {
         } else if (loadDiagram.fulfilled.match(action)) {
             if (action.meta.arg.navigate && action.payload) {
                 store.dispatch(push(action.payload.tokenToRead));
+            }
+            
+            if (action.payload) {
                 store.dispatch(loadDiagramFromActions({ actions: action.payload!.actions }));
             }
-
         } else if (loadDiagramFromActions.match(action)) {
             store.dispatch(showInfoToast(texts.common.loadingDiagramDone));
         } else if (loadDiagram.rejected.match(action)) {
