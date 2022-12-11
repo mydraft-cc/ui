@@ -105,9 +105,11 @@ export function loadingMiddleware(): Middleware {
         } else if (loadDiagram.fulfilled.match(action)) {
             if (action.meta.arg.navigate && action.payload) {
                 store.dispatch(push(action.payload.tokenToRead));
+            }
+            
+            if (action.payload) {
                 store.dispatch(loadDiagramFromActions({ actions: action.payload!.actions }));
             }
-
         } else if (loadDiagramFromActions.match(action)) {
             store.dispatch(showInfoToast(texts.common.loadingDiagramDone));
         } else if (loadDiagram.rejected.match(action)) {
