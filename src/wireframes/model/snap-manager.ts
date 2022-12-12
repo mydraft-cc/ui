@@ -143,7 +143,7 @@ export class SnapManager {
                     }
                 } else if (xMode < 0) {
                     if (isXCandidate(l, line)) {
-                        dw = line.value - aabb.right;
+                        dw = aabb.left - line.value;
 
                         result.snapX = line;
                     }
