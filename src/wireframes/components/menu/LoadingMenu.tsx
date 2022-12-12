@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { QuestionCircleOutlined } from '@ant-design/icons';
+import { GithubOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import { Button, Menu, Modal } from 'antd';
 import * as React from 'react';
 import { Title, useEventCallback } from '@app/core';
@@ -63,6 +63,10 @@ export const LoadingMenu = React.memo(() => {
 
             <Button className='menu-item' size='large' onClick={doToggleInfoDialog}>
                 <QuestionCircleOutlined />
+            </Button>
+
+            <Button className='menu-item' size='large' href='https://github.com/mydraft-cc/ui' target='_blank'>
+                <GithubOutlined />
             </Button>
 
             <Modal title={texts.common.about} visible={isOpen} onCancel={doToggleInfoDialog} onOk={doToggleInfoDialog}>
