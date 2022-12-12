@@ -59,7 +59,7 @@ export const saveDiagramToServer =
         } else {
             const { readToken, writeToken } = await postDiagram(state.editor.actions);
 
-            return { tokenToRead: writeToken, tokenToWrite: readToken, navigate: args.navigate };
+            return { tokenToRead: readToken, tokenToWrite: writeToken, navigate: args.navigate };
         }
     });
 
