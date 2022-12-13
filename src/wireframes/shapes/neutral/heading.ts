@@ -27,7 +27,7 @@ export class Heading implements ShapePlugin {
     }
 
     public constraint(factory: ConstraintFactory) {
-        return factory.textSize(10);
+        return factory.textSize(10, 10);
     }
 
     public render(ctx: RenderContext) {

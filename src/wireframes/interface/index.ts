@@ -162,7 +162,7 @@ export interface ConstraintFactory {
 
     textHeight(padding: number): Constraint;
 
-    textSize(padding?: number, lineHeight?: number, resizeWidth?: false, minWidth?: number): Constraint;
+    textSize(paddingX?: number, paddingY?: number, lineHeight?: number, resizeWidth?: false, minWidth?: number): Constraint;
 }
 
 export interface ConfigurableFactory {

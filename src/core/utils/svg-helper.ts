@@ -44,6 +44,7 @@ export module SVGHelper {
         div.style.fontFamily = 'inherit';
         div.style.overflow = 'hidden';
         div.style.verticalAlign = verticalAlign || 'middle';
+        div.style.whiteSpace = 'nowrap';
         div.textContent = text || null;
 
         element.node.appendChild(div);

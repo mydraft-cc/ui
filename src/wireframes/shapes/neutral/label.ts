@@ -26,7 +26,7 @@ export class Label implements ShapePlugin {
     }
 
     public constraint(factory: ConstraintFactory) {
-        return factory.textSize(5);
+        return factory.textSize(5, 5);
     }
 
     public render(ctx: RenderContext) {

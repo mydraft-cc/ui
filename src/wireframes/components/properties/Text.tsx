@@ -26,22 +26,35 @@ export const Text = (props: TextProps) => {
     const { disabled, onTextChange, selection, text } = props;
 
     const [value, setValue] = React.useState(text);
+    const previousText = React.useRef(text);
 
     React.useEffect(() => {
         setValue(text);
+        
+        previousText.current = text;
     }, [selection, text]);
 
     const doSetText = useEventCallback((event: React.ChangeEvent<HTMLInputElement>) => {
         setValue(event.target.value);
     });
 
-    const doApply = useEventCallback((event: React.KeyboardEvent) => {
-        if (Keys.isEnter(event)) {
+    const doBlur = useEventCallback(() => {
+        if (value !== previousText.current) {
             onTextChange(value);
+
+            previousText.current = value;
+        }
+    });
+
+    const doApply = useEventCallback((event: React.KeyboardEvent) => {
+        if (value !== previousText.current && Keys.isEnter(event)) {
+            onTextChange(value);
+
+            previousText.current = value;
         }
     });
 
     return (
-        <Input disabled={disabled} value={value} onChange={doSetText} onKeyDown={doApply} />
+        <Input disabled={disabled} value={value} onChange={doSetText} onBlur={doBlur} onKeyDown={doApply} />
     );
 };

@@ -41,7 +41,7 @@ export class RadioButton implements ShapePlugin {
     }
 
     public constraint(factory: ConstraintFactory) {
-        return factory.textSize(8);
+        return factory.textSize((CIRCLE_MARGIN * 3 + CIRCLE_RADIUS * 2) / 2, 8);
     }
 
     public configurables(factory: ConfigurableFactory) {

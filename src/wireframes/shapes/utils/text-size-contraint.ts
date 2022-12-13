@@ -13,7 +13,8 @@ import { SVGRenderer2 } from './svg-renderer2';
 export class TextSizeConstraint implements Constraint {
     constructor(
         private readonly renderer: SVGRenderer2,
-        private readonly padding = 0,
+        private readonly paddingX = 0,
+        private readonly paddingY = 0,
         private readonly lineHeight = 1.2,
         private readonly resizeWidth = false,
         private readonly minWidth = 0,
@@ -42,7 +43,7 @@ export class TextSizeConstraint implements Constraint {
             let textWidth = this.renderer.getTextWidth(text, fontSize, fontFamily);
 
             if (textWidth) {
-                textWidth += 2 * this.padding;
+                textWidth += 2 * this.paddingX;
 
                 if (finalWidth < textWidth || !this.resizeWidth) {
                     finalWidth = textWidth;
@@ -52,7 +53,7 @@ export class TextSizeConstraint implements Constraint {
             }
         }
 
-        return new Vec2(finalWidth, fontSize * this.lineHeight + this.padding * 2).roundToMultipleOfTwo();
+        return new Vec2(finalWidth, fontSize * this.lineHeight + this.paddingY * 2).roundToMultipleOfTwo();
     }
 
     public calculateSizeX(): boolean {
