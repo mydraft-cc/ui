@@ -16,6 +16,9 @@ export interface AssetInfo {
 
     // The display name.
     displayName: string;
+
+    // The display search property.
+    displaySearch: string;
 }
 
 export interface ShapeInfo extends AssetInfo {
@@ -55,7 +58,12 @@ export const createInitialAssetsState: (rendererService: RendererService) => Ass
     const allShapes =
         rendererService.all.filter(x => x[1].showInGallery())
             .map(([name, renderer]) => {
-                return { displayName: name, name, offset: renderer.previewOffset() };
+                return {
+                    displayName: name, 
+                    displaySearch: name,
+                    name, 
+                    offset: renderer.previewOffset(),
+                };
             });
 
     return {

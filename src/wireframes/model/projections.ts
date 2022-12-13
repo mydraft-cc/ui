@@ -62,13 +62,13 @@ export const getSelectedIcons = createSelector(
 export const getFilteredIcons = createSelector(
     getSelectedIcons,
     getIconsFilterRegex,
-    (icons, filter) => icons.filter(x => filter.test(x.displayName)),
+    (icons, filter) => icons.filter(x => filter.test(x.displaySearch)),
 );
 
 export const getFilteredShapes = createSelector(
     getShapes,
     getShapesFilterRegex,
-    (shapes, filter) => shapes.filter(x => filter.test(x.displayName)),
+    (shapes, filter) => shapes.filter(x => filter.test(x.displaySearch)),
 );
 
 export const getFilteredDiagrams = createSelector(
