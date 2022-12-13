@@ -49,7 +49,7 @@ export const CustomProperty = (props: CustomPropertyProps) => {
     });
 
     const doChangeBoolean = useEventCallback((event: CheckboxChangeEvent) => {
-        onChange(configurable.name, event.target.value === true);
+        onChange(configurable.name, event.target.checked);
     });
 
     return (

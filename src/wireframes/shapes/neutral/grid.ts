@@ -10,6 +10,7 @@ import { CommonTheme } from './_theme';
 
 const HEADER_BACKGROUND_COLOR = 'HEADER_BACKGROUND_COLOR';
 const HEADER_FOREGROUND_COLOR = 'HEADER_FOREGROUND_COLOR';
+const HEADER_HIDDEN = 'HEADER_HIDDEN';
 
 const DEFAULT_APPEARANCE = {};
 DEFAULT_APPEARANCE[DefaultAppearance.FOREGROUND_COLOR] = CommonTheme.CONTROL_TEXT_COLOR;
@@ -21,6 +22,7 @@ DEFAULT_APPEARANCE[DefaultAppearance.STROKE_COLOR] = CommonTheme.CONTROL_BORDER_
 DEFAULT_APPEARANCE[DefaultAppearance.STROKE_THICKNESS] = CommonTheme.CONTROL_BORDER_THICKNESS;
 DEFAULT_APPEARANCE[HEADER_BACKGROUND_COLOR] = CommonTheme.CONTROL_BACKGROUND_COLOR;
 DEFAULT_APPEARANCE[HEADER_FOREGROUND_COLOR] = CommonTheme.CONTROL_TEXT_COLOR;
+DEFAULT_APPEARANCE[HEADER_HIDDEN] = false;
 
 export class Grid implements ShapePlugin {
     public identifier(): string {
@@ -39,6 +41,7 @@ export class Grid implements ShapePlugin {
         return [
             factory.color(HEADER_BACKGROUND_COLOR, 'Header Background'),
             factory.color(HEADER_FOREGROUND_COLOR, 'Header Text'),
+            factory.toggle(HEADER_HIDDEN, 'Hide Header'),
         ];
     }
 
@@ -117,7 +120,10 @@ export class Grid implements ShapePlugin {
         const rect = new Rect2(ctx.rect.x, ctx.rect.y, ctx.rect.w, height);
 
         ctx.renderer2.roundedRectangleTop(ctx.shape, CommonTheme.CONTROL_BORDER_RADIUS, rect, p => {
-            p.setBackgroundColor(ctx.shape.getAppearance(HEADER_BACKGROUND_COLOR));
+            if (!ctx.shape.getAppearance(HEADER_HIDDEN)) {
+                p.setBackgroundColor(ctx.shape.getAppearance(HEADER_BACKGROUND_COLOR));
+            }
+
             p.setStrokeColor(ctx.shape);
         });
     }
