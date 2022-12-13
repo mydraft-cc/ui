@@ -5,14 +5,19 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { DefaultAppearance, RenderContext, ShapePlugin } from '@app/wireframes/interface';
+import { ConfigurableFactory, DefaultAppearance, RenderContext, ShapePlugin } from '@app/wireframes/interface';
 import { CommonTheme } from './_theme';
+
+const IMAGE_URL = 'URL';
+const IMAGE_ASPECT_RATIO = 'ASPECT_RATIO';
 
 const DEFAULT_APPEARANCE = {};
 DEFAULT_APPEARANCE[DefaultAppearance.BACKGROUND_COLOR] = 0xFFFFFF;
 DEFAULT_APPEARANCE[DefaultAppearance.TEXT_DISABLED] = true;
 DEFAULT_APPEARANCE[DefaultAppearance.STROKE_COLOR] = CommonTheme.CONTROL_BORDER_COLOR;
 DEFAULT_APPEARANCE[DefaultAppearance.STROKE_THICKNESS] = CommonTheme.CONTROL_BORDER_THICKNESS;
+DEFAULT_APPEARANCE[IMAGE_URL] = '';
+DEFAULT_APPEARANCE[IMAGE_ASPECT_RATIO] = true;
 
 export class Image implements ShapePlugin {
     public identifier(): string {
@@ -27,9 +32,24 @@ export class Image implements ShapePlugin {
         return { x: 100, y: 100 };
     }
 
+    public configurables(factory: ConfigurableFactory) {
+        return [
+            factory.text(IMAGE_URL, 'Url'),
+            factory.toggle(IMAGE_ASPECT_RATIO, 'Preserve aspect ratio'),
+        ];
+    }
+
     public render(ctx: RenderContext) {
-        this.createBorder(ctx);
-        this.createCross(ctx);
+        const url = ctx.shape.getAppearance(IMAGE_URL);
+
+        if (url) {
+            const aspectRatio = ctx.shape.getAppearance(IMAGE_ASPECT_RATIO);
+
+            ctx.renderer2.raster(url, ctx.rect, aspectRatio);
+        } else {
+            this.createBorder(ctx);
+            this.createCross(ctx);
+        }
     }
 
     private createCross(ctx: RenderContext) {

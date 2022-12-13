@@ -77,7 +77,7 @@ export interface ShapeFactory {
 
     path(strokeWidth: RendererWidth, path: string, bounds?: Rect2, properties?: ShapePropertiesFunc): RendererElement;
 
-    raster(source: string, bounds?: Rect2, properties?: ShapePropertiesFunc): RendererElement;
+    raster(source: string, bounds?: Rect2, preserveAspectRatio?: boolean, properties?: ShapePropertiesFunc): RendererElement;
 
     text(config?: RendererText, bounds?: Rect2, properties?: ShapePropertiesFunc): RendererElement;
 
@@ -171,6 +171,10 @@ export interface ConfigurableFactory {
     slider(name: string, label: string, min: number, max: number): Configurable;
 
     number(name: string, label: string, min: number, max: number): Configurable;
+
+    text(name: string, label: string): Configurable;
+
+    toggle(name: string, label: string): Configurable;
 
     color(name: string, label: string): Configurable;
 }

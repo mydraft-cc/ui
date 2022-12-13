@@ -115,9 +115,10 @@ class Factory implements ShapeFactory {
         }, properties);
     }
 
-    public raster(source: string, bounds?: Rect2, properties?: ShapePropertiesFunc) {
+    public raster(source: string, bounds?: Rect2, preserveAspectRatio?: boolean, properties?: ShapePropertiesFunc) {
         return this.new('image', () => new svg.Image(), p => {
             p.setBackgroundColor('transparent');
+            p.setPreserveAspectValue(preserveAspectRatio);
             p.setImage(source);
             p.setTransform(bounds);
         }, properties);
@@ -288,6 +289,7 @@ type PropertySet = Partial<{
     ['font-size']: any;
     ['image']: any;
     ['opacity']: any;
+    ['preserve-aspect-ratio']: any;
     ['radius']: any;
     ['path']: any;
     ['stroke']: any;
@@ -307,6 +309,7 @@ const PROPERTIES: ReadonlyArray<keyof PropertySet> = [
     'font-size',
     'image',
     'opacity',
+    'preserve-aspect-ratio',
     'radius',
     'stroke',
     'stroke-cap',
@@ -329,6 +332,9 @@ class Properties implements ShapeProperties {
         },
         'opacity': (value, element) => {
             element.opacity(value);
+        },
+        'preserve-aspect-ratio': (value, element) => {
+            element.attr('preserveAspectRatio', value ? 'xMidYMid' : 'none');
         },
         'stroke': (value, element) => {
             element.stroke({ color: value });
@@ -444,6 +450,12 @@ class Properties implements ShapeProperties {
 
     public setPath(path: string | null | undefined): ShapeProperties {
         this.properties['path'] = path;
+
+        return this;
+    }
+
+    public setPreserveAspectValue(value: boolean | null | undefined): ShapeProperties {
+        this.properties['preserve-aspect-ratio'] = value;
 
         return this;
     }

@@ -13,6 +13,24 @@ export abstract class Configurable {
     }
 }
 
+export class TextConfigurable extends Configurable {
+    constructor(name: string, label: string,
+    ) {
+        super(name, label);
+
+        Object.freeze(this);
+    }
+}
+
+export class ToggleConfigurable extends Configurable {
+    constructor(name: string, label: string,
+    ) {
+        super(name, label);
+
+        Object.freeze(this);
+    }
+}
+
 export class SelectionConfigurable extends Configurable {
     constructor(name: string, label: string,
         public readonly options: string[],

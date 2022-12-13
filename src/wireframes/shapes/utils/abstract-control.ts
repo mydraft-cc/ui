@@ -8,7 +8,7 @@
 import * as svg from '@svgdotjs/svg.js';
 import { Rect2, SVGHelper, Types, Vec2 } from '@app/core';
 import { ConfigurableFactory, Constraint, ConstraintFactory, RenderContext, Shape, ShapePlugin } from '@app/wireframes/interface';
-import { ColorConfigurable, DiagramItem, MinSizeConstraint, NumberConfigurable, Renderer, SelectionConfigurable, SizeConstraint, SliderConfigurable, TextHeightConstraint } from '@app/wireframes/model';
+import { ColorConfigurable, DiagramItem, MinSizeConstraint, NumberConfigurable, Renderer, SelectionConfigurable, SizeConstraint, SliderConfigurable, TextConfigurable, TextHeightConstraint, ToggleConfigurable } from '@app/wireframes/model';
 import { SVGRenderer2 } from './svg-renderer2';
 import { TextSizeConstraint } from './text-size-contraint';
 
@@ -48,6 +48,14 @@ class DefaultConfigurableFactory implements ConfigurableFactory {
 
     public color(name: string, label: string) {
         return new ColorConfigurable(name, label);
+    }
+
+    public text(name: string, label: string) {
+        return new TextConfigurable(name, label);
+    }
+    
+    public toggle(name: string, label: string) {
+        return new ToggleConfigurable(name, label);
     }
 }
 
