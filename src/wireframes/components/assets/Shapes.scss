@@ -18,14 +18,23 @@
         line-height: 30px;
     }
 
-    &-image-row {
-        line-height: 120px;
-    }
-
     &-image {
         @include improve-image;
-        max-height: 70px;
-        max-width: 120px;
+        align-items: center;
+        display: flex;
+        flex-direction: row;
+        flex-grow: 1;
+        height: 120px;
+        justify-content: center;
+
+        & > div {
+            max-height: 70px;
+            max-width: 120px;
+        }
+    }
+
+    svg {
+        width: 100%;
     }
 }
 

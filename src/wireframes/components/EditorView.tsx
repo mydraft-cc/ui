@@ -94,11 +94,6 @@ export const EditorViewInner = ({ diagram, spacing }: EditorViewProps & { diagra
             let x = ((offset?.x || 0) - spacing - componentRect.left) / zoom;
             let y = ((offset?.y || 0) - spacing - componentRect.top) / zoom;
 
-            if (item.shapeOffset) {
-                x += item.shapeOffset.x;
-                y += item.shapeOffset.y;
-            }
-
             const itemType = monitor.getItemType();
 
             switch (itemType) {
@@ -106,7 +101,7 @@ export const EditorViewInner = ({ diagram, spacing }: EditorViewProps & { diagra
                     dispatch(addIcon(selectedDiagramId, item.text, item.fontFamily, x, y));
                     break;
                 case 'DND_ASSET':
-                    dispatch(addVisual(selectedDiagramId, item['shape'], x, y));
+                    dispatch(addVisual(selectedDiagramId, item['name'], x, y));
                     break;
                 case NativeTypes.TEXT:
                     dispatch(addVisual(selectedDiagramId, 'Label', x, y, { TEXT: item.text }));
@@ -157,7 +152,7 @@ export const EditorViewInner = ({ diagram, spacing }: EditorViewProps & { diagra
     const padding = sizeInPx(spacing);
 
     return (
-        <Dropdown overlay={<ContextMenu onClick={doHide} />} trigger={['contextMenu']} visible={menuVisible} onVisibleChange={setMenuVisible}>
+        <Dropdown overlay={<ContextMenu onClick={doHide} />} trigger={['contextMenu']} visible={menuVisible} onVisibleChange={setMenuVisible}>            
             <div className='editor-view'>
                 <div className='editor-diagram' style={{ width: w, height: h, padding }} ref={ref} >
                     <Editor

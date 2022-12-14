@@ -7,7 +7,7 @@
 
 import * as svg from '@svgdotjs/svg.js';
 import * as React from 'react';
-import { sizeInPx, SVGHelper, Vec2 } from '@app/core';
+import { SVGHelper, Vec2 } from '@app/core';
 import { ShapePlugin } from '@app/wireframes/interface';
 import { DiagramItem } from '@app/wireframes/model';
 import { AbstractControl } from './utils/abstract-control';
@@ -19,67 +19,134 @@ interface ShapeRendererProps {
     appearance?: { [key: string]: any };
 
     // The optional height.
-    h?: number;
+    renderHeight?: number;
 
     // The optional width.
-    w?: number;
+    renderWidth?: number;
 
-    // The optional padding.
-    padding?: number;
+    // The desired width.
+    desiredWidth?: number;
+    
+    // The desired height.
+    desiredHeight?: number;
+
+    // True to use the preview size
+    usePreviewSize?: boolean;
+
+    // True to use the preview offset.
+    usePreviewOffset?: boolean;
 }
 
-export const ShapeRenderer = (props: ShapeRendererProps) => {
-    const { appearance, padding, plugin } = props;
+export const ShapeRenderer = React.memo((props: ShapeRendererProps) => {
+    const { 
+        appearance,
+        desiredHeight,
+        desiredWidth,
+        plugin, 
+        renderHeight,
+        renderWidth, 
+        usePreviewOffset,
+        usePreviewSize, 
+    } = props;
 
     const [document, setDocument] = React.useState<svg.Svg>();
 
-    const size = React.useMemo(() => {
-        const size = plugin.defaultSize();
+    const viewBox = getViewBox(plugin, 
+        desiredWidth,
+        desiredHeight,
+        usePreviewSize,
+        usePreviewOffset);
 
-        const w = props.w || size.x;
-        const h = props.h || size.y;
+    const doInit = React.useCallback((ref: SVGSVGElement) => {
+        if (!ref) {
+            return;
+        }
 
-        return {
-            w,
-            h,
-            wp: sizeInPx(w),
-            hp: sizeInPx(h),
-        };
-    }, [plugin, props.h, props.w]);
-
-    const doInit = React.useCallback((ref: HTMLDivElement) => {
-        const doc = svg.SVG().addTo(ref).css({ overflow: 'visible' });
-
-        setDocument(doc);
+        setDocument(svg.SVG(ref).css({ overflow: 'visible' }));
     }, []);
 
     React.useEffect(() => {
-        document?.size(size.w, size.h).viewbox(0, 0, size.w, size.h);
-    }, [document, size]);
+        if (!document) {
+            return;
+        }
+
+        document.viewbox(viewBox.x, viewBox.y, viewBox.outerSize.x, viewBox.outerSize.y);
+    }, [document, viewBox]);
 
     React.useEffect(() => {
-        if (document) {
-            const svgControl = new AbstractControl(plugin);
-
-            const group = document.group();
-
-            SVGHelper.setPosition(group, 0.5, 0.5);
-
-            const item =
-                DiagramItem.createShape('1', plugin.identifier(),
-                    size.w,
-                    size.h,
-                    { ...plugin.defaultAppearance(), ...appearance || {} })
-                    .transformWith(x => x.moveTo(new Vec2(size.w * 0.5, size.h * 0.5)));
-
-            svgControl.setContext(group);
-            svgControl.render(item, undefined);
+        if (!document) {
+            return;
         }
-    }, [appearance, document, plugin, size]);
+
+        if (!renderWidth && !renderHeight) {
+            document.width(viewBox.outerSize.x).height(viewBox.outerSize.y); 
+        } else if (renderWidth) {
+            document.width(renderWidth);
+        } else if (renderHeight) {
+            document.height(renderHeight);
+        }
+    }, [document, renderHeight, renderWidth, viewBox]);
+
+    React.useEffect(() => {
+        if (!document) {
+            return;
+        }
+
+        const svgControl = new AbstractControl(plugin);
+        const svgGroup = document.group();
+
+        SVGHelper.setPosition(svgGroup, 0.5, 0.5);
+
+        let x = viewBox.size.x * 0.5;
+        let y = viewBox.size.y * 0.5;
+
+        const shapeAppearance = { ...plugin.defaultAppearance(), ...appearance || {} };
+
+        const item =
+            DiagramItem.createShape('1', plugin.identifier(),
+                viewBox.size.x,
+                viewBox.size.y,
+                shapeAppearance)
+                .transformWith(t => t.moveTo(new Vec2(x, y)));
+
+        svgControl.setContext(svgGroup);
+        svgControl.render(item, undefined);
+    }, [appearance, document, plugin, viewBox]);
 
     return (
-        <div style={{ padding: padding || 10 }}>
-            <div style={{ width: size.w, height: size.h }} ref={doInit} />
-        </div>
+        <svg ref={doInit} />
     );
-};
+});
+
+export function getViewBox(
+    plugin: ShapePlugin,
+    desiredWidth?: number,
+    desiredHeight?: number,
+    usePreviewSize?: boolean, 
+    usePreviewOffset?: boolean) {
+    let x = 0;
+    let y = 0;
+
+    const size = usePreviewSize ?
+        plugin.previewSize?.(desiredWidth || 0, desiredHeight || 0) || plugin.defaultSize() : 
+        plugin.defaultSize();
+
+    let outerSize = { x: size.x, y: size.y };
+
+    if (usePreviewOffset) {
+        const offset = plugin.previewOffset?.();
+
+        if (offset) {
+            outerSize.x += offset.left;
+            outerSize.x += offset.right;
+
+            outerSize.y += offset.top;
+            outerSize.y += offset.bottom;
+
+            x -= offset.left;
+            y -= offset.top;
+        }
+    }
+
+    return { x, y, size, outerSize };
+}

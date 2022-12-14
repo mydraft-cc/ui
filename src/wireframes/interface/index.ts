@@ -34,7 +34,9 @@ export interface ShapePlugin {
 
     constraint?(factory: ConstraintFactory): Constraint;
 
-    previewOffset?(): { x: number; y: number };
+    previewOffset?(): { left: number; top: number; right: number; bottom: number };
+
+    previewSize?(desiredWidth: number, desiredHeight: number): { x: number; y: number };
 
     showInGallery?(): boolean;
 

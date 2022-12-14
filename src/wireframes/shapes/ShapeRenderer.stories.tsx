@@ -28,12 +28,12 @@ export default {
                 disable: true,
             },
         },
-        w: {
+        renderWidth: {
             table: {
                 disable: true,
             },
         },
-        h: {
+        renderHeight: {
             table: {
                 disable: true,
             },
@@ -43,206 +43,206 @@ export default {
 
 export const Browser = () => {
     return (
-        <ShapeRenderer plugin={new Shapes.Browser()} padding={100} />
+        <ShapeRenderer usePreviewOffset plugin={new Shapes.Browser()} />
     );
 };
 
 export const ButtonBar = () => {
     return (
-        <ShapeRenderer plugin={new Shapes.ButtonBar()} />
+        <ShapeRenderer usePreviewOffset plugin={new Shapes.ButtonBar()} />
     );
 };
 
 export const Button = () => {
     return (
-        <ShapeRenderer plugin={new Shapes.Button()} />
+        <ShapeRenderer usePreviewOffset plugin={new Shapes.Button()} />
     );
 };
 
 export const Checkbox = () => {
     return (
         <>
-            <ShapeRenderer plugin={new Shapes.Checkbox()} appearance={{ STATE: 'Checked' }} />
-            <ShapeRenderer plugin={new Shapes.Checkbox()} appearance={{ STATE: 'Normal' }} />
-            <ShapeRenderer plugin={new Shapes.Checkbox()} appearance={{ STATE: 'Interdeminate' }} />
+            <ShapeRenderer usePreviewOffset plugin={new Shapes.Checkbox()} appearance={{ STATE: 'Checked' }} />
+            <ShapeRenderer usePreviewOffset plugin={new Shapes.Checkbox()} appearance={{ STATE: 'Normal' }} />
+            <ShapeRenderer usePreviewOffset plugin={new Shapes.Checkbox()} appearance={{ STATE: 'Interdeminate' }} />
         </>
     );
 };
 
 export const ComboBox = () => {
     return (
-        <ShapeRenderer plugin={new Shapes.ComboBox()} />
+        <ShapeRenderer usePreviewOffset plugin={new Shapes.ComboBox()} />
     );
 };
 
 export const Comment = () => {
     return (
-        <ShapeRenderer plugin={new Shapes.Comment()} />
+        <ShapeRenderer usePreviewOffset plugin={new Shapes.Comment()} />
     );
 };
 
 export const Dropdown = () => {
     return (
-        <ShapeRenderer plugin={new Shapes.Dropdown()} />
+        <ShapeRenderer usePreviewOffset plugin={new Shapes.Dropdown()} />
     );
 };
 
 export const Grid = () => {
     return (
-        <ShapeRenderer plugin={new Shapes.Grid()} />
+        <ShapeRenderer usePreviewOffset plugin={new Shapes.Grid()} />
     );
 };
 
 export const Heading = () => {
     return (
-        <ShapeRenderer plugin={new Shapes.Heading()} />
+        <ShapeRenderer usePreviewOffset plugin={new Shapes.Heading()} />
     );
 };
 
 export const HorizontalLine = () => {
     return (
-        <ShapeRenderer plugin={new Shapes.HorizontalLine()} />
+        <ShapeRenderer usePreviewOffset plugin={new Shapes.HorizontalLine()} />
     );
 };
 
 export const HorizontalScrollbar = () => {
     return (
-        <ShapeRenderer plugin={new Shapes.HorizontalScrollbar()} />
+        <ShapeRenderer usePreviewOffset plugin={new Shapes.HorizontalScrollbar()} />
     );
 };
 
 export const Icon = () => {
     return (
         <>
-            <ShapeRenderer plugin={new Shapes.Icon()} appearance={{ TEXT: String.fromCharCode(0xf000) }} />
-            <ShapeRenderer plugin={new Shapes.Icon()} appearance={{ TEXT: String.fromCharCode(0xf001) }} />
+            <ShapeRenderer usePreviewOffset plugin={new Shapes.Icon()} appearance={{ TEXT: String.fromCharCode(0xf000) }} />
+            <ShapeRenderer usePreviewOffset plugin={new Shapes.Icon()} appearance={{ TEXT: String.fromCharCode(0xf001) }} />
         </>
     );
 };
 
 export const Label = () => {
     return (
-        <ShapeRenderer plugin={new Shapes.Label()} />
+        <ShapeRenderer usePreviewOffset plugin={new Shapes.Label()} />
     );
 };
 
 export const Link = () => {
     return (
-        <ShapeRenderer plugin={new Shapes.Link()} />
+        <ShapeRenderer usePreviewOffset plugin={new Shapes.Link()} />
     );
 };
 
 export const List = () => {
     return (
-        <ShapeRenderer plugin={new Shapes.List()} />
+        <ShapeRenderer usePreviewOffset plugin={new Shapes.List()} />
     );
 };
 
 export const Numeric = () => {
     return (
-        <ShapeRenderer plugin={new Shapes.Numeric()} />
+        <ShapeRenderer usePreviewOffset plugin={new Shapes.Numeric()} />
     );
 };
 
 export const Paragraph = () => {
     return (
-        <ShapeRenderer plugin={new Shapes.Paragraph()} />
+        <ShapeRenderer usePreviewOffset plugin={new Shapes.Paragraph()} />
     );
 };
 
 export const Phone = () => {
     return (
-        <ShapeRenderer plugin={new Shapes.Phone()} padding={100} />
+        <ShapeRenderer usePreviewOffset plugin={new Shapes.Phone()} />
     );
 };
 
 export const Progress = () => {
     return (
-        <ShapeRenderer plugin={new Shapes.Progress()} />
+        <ShapeRenderer usePreviewOffset plugin={new Shapes.Progress()} />
     );
 };
 
 export const RadioButton = () => {
     return (
         <>
-            <ShapeRenderer plugin={new Shapes.RadioButton()} appearance={{ STATE: 'Checked' }} />
-            <ShapeRenderer plugin={new Shapes.RadioButton()} appearance={{ STATE: 'Normal' }} />
+            <ShapeRenderer usePreviewOffset plugin={new Shapes.RadioButton()} appearance={{ STATE: 'Checked' }} />
+            <ShapeRenderer usePreviewOffset plugin={new Shapes.RadioButton()} appearance={{ STATE: 'Normal' }} />
         </>
     );
 };
 
 export const Raster = () => {
     return (
-        <ShapeRenderer plugin={new Shapes.Raster()} appearance={{ SOURCE: IMAGE }} w={300} h={200} />
+        <ShapeRenderer usePreviewOffset plugin={new Shapes.Raster()} appearance={{ SOURCE: IMAGE }} renderWidth={300} renderHeight={200} />
     );
 };
 
 export const Shape = () => {
     return (
         <>
-            <ShapeRenderer plugin={new Shapes.Shape()} appearance={{ SHAPE: 'Ellipse' }} />
-            <ShapeRenderer plugin={new Shapes.Shape()} appearance={{ SHAPE: 'Rectangle' }} />
-            <ShapeRenderer plugin={new Shapes.Shape()} appearance={{ SHAPE: 'Rhombus' }} />
-            <ShapeRenderer plugin={new Shapes.Shape()} appearance={{ SHAPE: 'Rounded Rectangle' }} />
-            <ShapeRenderer plugin={new Shapes.Shape()} appearance={{ SHAPE: 'Triangle' }} />
+            <ShapeRenderer usePreviewOffset plugin={new Shapes.Shape()} appearance={{ SHAPE: 'Ellipse' }} />
+            <ShapeRenderer usePreviewOffset plugin={new Shapes.Shape()} appearance={{ SHAPE: 'Rectangle' }} />
+            <ShapeRenderer usePreviewOffset plugin={new Shapes.Shape()} appearance={{ SHAPE: 'Rhombus' }} />
+            <ShapeRenderer usePreviewOffset plugin={new Shapes.Shape()} appearance={{ SHAPE: 'Rounded Rectangle' }} />
+            <ShapeRenderer usePreviewOffset plugin={new Shapes.Shape()} appearance={{ SHAPE: 'Triangle' }} />
         </>
     );
 };
 
 export const Slider = () => {
     return (
-        <ShapeRenderer plugin={new Shapes.Slider()} />
+        <ShapeRenderer usePreviewOffset plugin={new Shapes.Slider()} />
     );
 };
 
 export const Tabs = () => {
     return (
-        <ShapeRenderer plugin={new Shapes.Tabs()} />
+        <ShapeRenderer usePreviewOffset plugin={new Shapes.Tabs()} />
     );
 };
 
 export const TextArea = () => {
     return (
-        <ShapeRenderer plugin={new Shapes.TextArea()} />
+        <ShapeRenderer usePreviewOffset plugin={new Shapes.TextArea()} />
     );
 };
 
 export const TextInput = () => {
     return (
-        <ShapeRenderer plugin={new Shapes.TextInput()} />
+        <ShapeRenderer usePreviewOffset plugin={new Shapes.TextInput()} />
     );
 };
 
 export const Toggle = () => {
     return (
-        <ShapeRenderer plugin={new Shapes.Toggle()} />
+        <ShapeRenderer usePreviewOffset plugin={new Shapes.Toggle()} />
     );
 };
 
 export const ToggleUnchecked = () => {
     return (
         <>
-            <ShapeRenderer plugin={new Shapes.Toggle()} appearance={{ STATE: 'Checked' }} />
-            <ShapeRenderer plugin={new Shapes.Toggle()} appearance={{ STATE: 'Normal' }} />
+            <ShapeRenderer usePreviewOffset plugin={new Shapes.Toggle()} appearance={{ STATE: 'Checked' }} />
+            <ShapeRenderer usePreviewOffset plugin={new Shapes.Toggle()} appearance={{ STATE: 'Normal' }} />
         </>
     );
 };
 
 export const VerticalLine = () => {
     return (
-        <ShapeRenderer plugin={new Shapes.VerticalLine()} />
+        <ShapeRenderer usePreviewOffset plugin={new Shapes.VerticalLine()} />
     );
 };
 
 export const VerticalScrollbar = () => {
     return (
-        <ShapeRenderer plugin={new Shapes.VerticalScrollbar()} />
+        <ShapeRenderer usePreviewOffset plugin={new Shapes.VerticalScrollbar()} />
     );
 };
 
 export const Window = () => {
     return (
-        <ShapeRenderer plugin={new Shapes.Window()} padding={100} />
+        <ShapeRenderer usePreviewOffset plugin={new Shapes.Window()} />
     );
 };
 

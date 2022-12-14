@@ -17,6 +17,10 @@ class MockupRenderer implements Renderer {
         return {};
     }
 
+    public plugin() {
+        return null!;
+    }
+
     public identifier(): string {
         return 'identifier';
     }

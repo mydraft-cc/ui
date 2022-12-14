@@ -44,12 +44,12 @@ export class VerticalLine implements ShapePlugin {
         return { x: 2, y: 50 };
     }
 
-    public constraint() {
-        return BorderWidthConstraint.INSTANCE;
+    public previewSize(_: number, desiredHeight: number) {
+        return { x: 8, y: desiredHeight };
     }
 
-    public previewOffset() {
-        return new Vec2(24, 0);
+    public constraint() {
+        return BorderWidthConstraint.INSTANCE;
     }
 
     public render(ctx: RenderContext) {

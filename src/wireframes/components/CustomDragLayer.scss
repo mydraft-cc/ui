@@ -1,0 +1,15 @@
+@import 'mixins';
+@import 'vars';
+
+.drag-layer {
+    @include fixed(0, 0, 0, 0);
+    pointer-events: none;
+
+    & {
+        z-index: 100000;
+    }
+
+    svg {
+        position: absolute;
+    }
+}

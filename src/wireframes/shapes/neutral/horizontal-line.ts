@@ -44,12 +44,12 @@ export class HorizontalLine implements ShapePlugin {
         return { x: 50, y: 2 };
     }
 
-    public constraint() {
-        return BorderHeightConstraint.INSTANCE;
+    public previewSize(desiredWidth: number) {
+        return { x: desiredWidth, y: 7 };
     }
 
-    public previewOffset() {
-        return new Vec2(0, 24);
+    public constraint() {
+        return BorderHeightConstraint.INSTANCE;
     }
 
     public render(ctx: RenderContext) {
