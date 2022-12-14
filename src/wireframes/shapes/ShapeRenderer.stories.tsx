@@ -173,7 +173,7 @@ export const RadioButton = () => {
 
 export const Raster = () => {
     return (
-        <ShapeRenderer usePreviewOffset plugin={new Shapes.Raster()} appearance={{ SOURCE: IMAGE }} renderWidth={300} renderHeight={200} />
+        <ShapeRenderer usePreviewOffset plugin={new Shapes.Raster()} appearance={{ SOURCE: IMAGE }} desiredWidth={300} desiredHeight={300} />
     );
 };
 

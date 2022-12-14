@@ -18,12 +18,6 @@ interface ShapeRendererProps {
     // The optional appearance.
     appearance?: { [key: string]: any };
 
-    // The optional height.
-    renderHeight?: number;
-
-    // The optional width.
-    renderWidth?: number;
-
     // The desired width.
     desiredWidth?: number;
     
@@ -37,19 +31,18 @@ interface ShapeRendererProps {
     usePreviewOffset?: boolean;
 }
 
-export const ShapeRenderer = React.memo((props: ShapeRendererProps) => {
+export const ShapeRenderer = React.memo(React.forwardRef<HTMLDivElement, ShapeRendererProps>((props, ref) => {
     const { 
         appearance,
         desiredHeight,
         desiredWidth,
         plugin, 
-        renderHeight,
-        renderWidth, 
         usePreviewOffset,
         usePreviewSize, 
     } = props;
 
     const [document, setDocument] = React.useState<svg.Svg>();
+    const innerRef = React.useRef<SVGSVGElement>(null);
 
     const viewBox = getViewBox(plugin, 
         desiredWidth,
@@ -57,12 +50,12 @@ export const ShapeRenderer = React.memo((props: ShapeRendererProps) => {
         usePreviewSize,
         usePreviewOffset);
 
-    const doInit = React.useCallback((ref: SVGSVGElement) => {
-        if (!ref) {
+    React.useEffect(() => {
+        if (!innerRef.current) {
             return;
         }
 
-        setDocument(svg.SVG(ref).css({ overflow: 'visible' }));
+        setDocument(svg.SVG(innerRef.current!).css({ overflow: 'visible' }));
     }, []);
 
     React.useEffect(() => {
@@ -78,14 +71,18 @@ export const ShapeRenderer = React.memo((props: ShapeRendererProps) => {
             return;
         }
 
-        if (!renderWidth && !renderHeight) {
+        if (desiredWidth && desiredHeight) {
+            let aspectRatio = viewBox.outerSize.x / viewBox.outerSize.y;
+        
+            if (aspectRatio > desiredWidth / desiredHeight) {
+                document.width(desiredWidth);
+            } else {
+                document.height(desiredHeight);
+            }
+        } else {
             document.width(viewBox.outerSize.x).height(viewBox.outerSize.y); 
-        } else if (renderWidth) {
-            document.width(renderWidth);
-        } else if (renderHeight) {
-            document.height(renderHeight);
         }
-    }, [document, renderHeight, renderWidth, viewBox]);
+    }, [desiredHeight, desiredWidth, document, viewBox]);
 
     React.useEffect(() => {
         if (!document) {
@@ -114,9 +111,11 @@ export const ShapeRenderer = React.memo((props: ShapeRendererProps) => {
     }, [appearance, document, plugin, viewBox]);
 
     return (
-        <svg ref={doInit} />
+        <div ref={ref} style={{ lineHeight: 0 }}>
+            <svg ref={innerRef} />
+        </div>
     );
-});
+}));
 
 export function getViewBox(
     plugin: ShapePlugin,
