@@ -30,6 +30,10 @@ export class TextArea implements ShapePlugin {
         return { x: 160, y: 60 };
     }
 
+    public previewSize(desiredWidth: number) {
+        return { x: desiredWidth, y: 60 };
+    }
+
     public render(ctx: RenderContext) {
         this.createBorder(ctx);
         this.createText(ctx);

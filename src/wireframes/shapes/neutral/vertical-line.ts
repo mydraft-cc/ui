@@ -41,7 +41,7 @@ export class VerticalLine implements ShapePlugin {
     }
 
     public defaultSize() {
-        return { x: 2, y: 50 };
+        return { x: 2, y: 300 };
     }
 
     public previewSize(_: number, desiredHeight: number) {

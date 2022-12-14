@@ -55,7 +55,7 @@ export const ShapeImage = React.memo((props: ShapeImageProps) => {
 
     return (
         <div className='asset-shape-image'>
-            <div ref={drag} style={{ width: outerSize.x, height: outerSize.y }}>
+            <div ref={drag}>
                 <ShapeRenderer 
                     desiredHeight={DESIRED_HEIGHT} 
                     desiredWidth={DESIRED_WIDTH} 

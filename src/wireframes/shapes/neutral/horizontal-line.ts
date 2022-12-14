@@ -41,7 +41,7 @@ export class HorizontalLine implements ShapePlugin {
     }
 
     public defaultSize() {
-        return { x: 50, y: 2 };
+        return { x: 300, y: 2 };
     }
 
     public previewSize(desiredWidth: number) {
