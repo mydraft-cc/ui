@@ -71,51 +71,55 @@ class Context implements RenderContext {
 
 export class AbstractControl implements Renderer {
     constructor(
-        private readonly plugin: ShapePlugin,
+        private readonly shapePlugin: ShapePlugin,
     ) {
     }
 
     public identifier() {
-        return this.plugin.identifier();
+        return this.shapePlugin.identifier();
+    }
+
+    public plugin() {
+        return this.shapePlugin;
     }
 
     public defaultAppearance() {
-        if (Types.isFunction(this.plugin.defaultAppearance)) {
-            return this.plugin.defaultAppearance();
+        if (Types.isFunction(this.shapePlugin.defaultAppearance)) {
+            return this.shapePlugin.defaultAppearance();
         } else {
             return {};
         }
     }
 
     public showInGallery() {
-        if (Types.isFunction(this.plugin.showInGallery)) {
-            return this.plugin.showInGallery();
+        if (Types.isFunction(this.shapePlugin.showInGallery)) {
+            return this.shapePlugin.showInGallery();
         } else {
             return true;
         }
     }
 
     public configurables() {
-        if (Types.isFunction(this.plugin.configurables)) {
-            return this.plugin.configurables(DefaultConfigurableFactory.INSTANCE);
+        if (Types.isFunction(this.shapePlugin.configurables)) {
+            return this.shapePlugin.configurables(DefaultConfigurableFactory.INSTANCE);
         } else {
             return [];
         }
     }
 
     public constraint() {
-        if (Types.isFunction(this.plugin.constraint)) {
-            return this.plugin.constraint(DefaultConstraintFactory.INSTANCE);
+        if (Types.isFunction(this.shapePlugin.constraint)) {
+            return this.shapePlugin.constraint(DefaultConstraintFactory.INSTANCE);
         } else {
             return undefined;
         }
     }
 
     public previewOffset() {
-        if (Types.isFunction(this.plugin.previewOffset)) {
-            const offset = this.plugin.previewOffset();
+        if (Types.isFunction(this.shapePlugin.previewOffset)) {
+            const offset = this.shapePlugin.previewOffset();
 
-            return new Vec2(offset.x, offset.y);
+            return new Vec2(offset.left, offset.top);
         } else {
             return Vec2.ZERO;
         }
@@ -128,7 +132,7 @@ export class AbstractControl implements Renderer {
     }
 
     public createDefaultShape(id: string) {
-        const size = this.plugin.defaultSize();
+        const size = this.shapePlugin.defaultSize();
 
         return DiagramItem.createShape(id, this.identifier(), size.x, size.y, this.defaultAppearance(), this.configurables(), this.constraint());
     }
@@ -162,7 +166,7 @@ export class AbstractControl implements Renderer {
 
         SVGRenderer2.INSTANCE.setContainer(existing, index);
 
-        this.plugin.render(context);
+        this.shapePlugin.render(context);
 
         if (!options?.noTransform) {
             const to = shape.transform;

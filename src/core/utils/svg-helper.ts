@@ -135,6 +135,8 @@ export module SVGHelper {
 
                 if (text.style.verticalAlign === 'middle') {
                     text.style.lineHeight = sizeInPx(h);
+                } else {
+                    text.style.lineHeight = '1.5';
                 }
 
                 text.style.height = sizeInPx(h);

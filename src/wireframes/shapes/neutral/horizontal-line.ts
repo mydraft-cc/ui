@@ -41,15 +41,15 @@ export class HorizontalLine implements ShapePlugin {
     }
 
     public defaultSize() {
-        return { x: 50, y: 2 };
+        return { x: 300, y: 2 };
+    }
+
+    public previewSize(desiredWidth: number) {
+        return { x: desiredWidth, y: 7 };
     }
 
     public constraint() {
         return BorderHeightConstraint.INSTANCE;
-    }
-
-    public previewOffset() {
-        return new Vec2(0, 24);
     }
 
     public render(ctx: RenderContext) {

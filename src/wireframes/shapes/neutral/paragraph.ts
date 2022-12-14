@@ -27,6 +27,10 @@ export class Paragraph implements ShapePlugin {
         return { x: 170, y: 100 };
     }
 
+    public previewSize(desiredWidth: number, desiredHeight: number) {
+        return { x: desiredWidth, y: desiredHeight };
+    }
+
     public render(ctx: RenderContext) {
         ctx.renderer2.textMultiline(ctx.shape, ctx.rect);
     }

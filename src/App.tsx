@@ -15,6 +15,7 @@ import { useEventCallback, usePrinter } from '@app/core';
 import { ArrangeMenu, ClipboardMenu, EditorView, HistoryMenu, Icons, LoadingMenu, LockMenu, Pages, PrintView, Properties, Recent, SettingsMenu, Shapes, UIMenu } from '@app/wireframes/components';
 import { loadDiagram, newDiagram, selectTab, showInfoToast, toggleLeftSidebar, toggleRightSidebar, useStore } from '@app/wireframes/model';
 import { texts } from './texts';
+import { CustomDragLayer } from './wireframes/components/CustomDragLayer';
 import { PresentationView } from './wireframes/components/PresentationView';
 
 const logo = require('./images/logo.svg').default;
@@ -152,6 +153,8 @@ export const App = () => {
                     <PrintView onRender={printReady} />
                 </div>
             }
+
+            <CustomDragLayer />
         </>
     );
 };

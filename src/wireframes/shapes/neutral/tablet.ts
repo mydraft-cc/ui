@@ -5,7 +5,9 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { DefaultAppearance, Rect2, RenderContext, ShapePlugin, Vec2 } from '@app/wireframes/interface';
+import { DefaultAppearance, Rect2, RenderContext, ShapePlugin } from '@app/wireframes/interface';
+
+const OFFSET = { left: 15, top: 50, right: 15, bottom: 25 };
 
 const DEFAULT_APPEARANCE = {};
 DEFAULT_APPEARANCE[DefaultAppearance.BACKGROUND_COLOR] = 0xFFFFFF;
@@ -24,8 +26,12 @@ export class Tablet implements ShapePlugin {
         return { x: 640, y: 480 };
     }
 
+    public previewSize() {
+        return { x: 320, y: 240 };
+    }
+
     public previewOffset() {
-        return new Vec2(15, 50);
+        return OFFSET;
     }
 
     public render(ctx: RenderContext) {
@@ -38,7 +44,7 @@ export class Tablet implements ShapePlugin {
     }
 
     private createHull(ctx: RenderContext) {
-        const hullRect = new Rect2(-15, -50, ctx.rect.width + 30, ctx.rect.height + 75);
+        const hullRect = new Rect2(-OFFSET.left, -OFFSET.top, ctx.rect.width + OFFSET.left + OFFSET.right, ctx.rect.height + OFFSET.top + OFFSET.bottom);
 
         ctx.renderer2.rectangle(0, 20, hullRect, p => {
             p.setBackgroundColor(0);

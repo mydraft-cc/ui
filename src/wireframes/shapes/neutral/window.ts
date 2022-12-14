@@ -5,8 +5,10 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { DefaultAppearance, Rect2, RenderContext, ShapePlugin, Vec2 } from '@app/wireframes/interface';
+import { DefaultAppearance, Rect2, RenderContext, ShapePlugin } from '@app/wireframes/interface';
 import { CommonTheme } from './_theme';
+
+const OFFSET = { left: 2, top: 30, right: 2, bottom: 1 };
 
 const DEFAULT_APPEARANCE = {};
 DEFAULT_APPEARANCE[DefaultAppearance.BACKGROUND_COLOR] = 0xFFFFFF;
@@ -25,8 +27,12 @@ export class Window implements ShapePlugin {
         return { x: 800, y: 600 };
     }
 
+    public previewSize() {
+        return { x: 400, y: 300 };
+    }
+
     public previewOffset() {
-        return new Vec2(4, 70);
+        return OFFSET;
     }
 
     public render(ctx: RenderContext) {
@@ -39,7 +45,7 @@ export class Window implements ShapePlugin {
     }
 
     private createWindow(ctx: RenderContext) {
-        const windowRect = new Rect2(-2, -30, ctx.rect.width + 4, ctx.rect.height + 31);
+        const windowRect = new Rect2(-OFFSET.left, -OFFSET.top, ctx.rect.width + OFFSET.left + OFFSET.right, ctx.rect.height + OFFSET.top + OFFSET.bottom);
 
         ctx.renderer2.rectangle(1, 0, windowRect, p => {
             p.setBackgroundColor(CommonTheme.CONTROL_BACKGROUND_COLOR);

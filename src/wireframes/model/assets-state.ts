@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { Vec2 } from '@app/core';
+import { ShapePlugin } from '../interface';
 import { ICONS_FONT_AWESOME } from './../../icons/font_awesome_unified';
 import { ICONS_MATERIAL_DESIGN } from './../../icons/material_icons_unified';
 import { RendererService } from './renderer.service';
@@ -22,8 +22,8 @@ export interface AssetInfo {
 }
 
 export interface ShapeInfo extends AssetInfo {
-    // The offset when copy / paste.
-    offset: Vec2;
+    // The plugin.
+    plugin: ShapePlugin;
 }
 
 export interface IconInfo extends AssetInfo {
@@ -59,10 +59,10 @@ export const createInitialAssetsState: (rendererService: RendererService) => Ass
         rendererService.all.filter(x => x[1].showInGallery())
             .map(([name, renderer]) => {
                 return {
+                    plugin: renderer.plugin(),
                     displayName: name, 
                     displaySearch: name,
-                    name, 
-                    offset: renderer.previewOffset(),
+                    name,
                 };
             });
 
