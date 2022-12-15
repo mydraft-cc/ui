@@ -8,12 +8,13 @@
 import { Col, Row, Select } from 'antd';
 import * as React from 'react';
 import { texts } from '@app/texts';
-import { DefaultAppearance, getPageLink, isPageLink } from '@app/wireframes/interface';
+import { DefaultAppearance, getPageLink, getPageLinkId, isPageLink } from '@app/wireframes/interface';
 import { getDiagramId, getPageName, getSelectedItems, getSelectionSet, useStore } from '@app/wireframes/model';
 import { useAppearance } from './../actions';
 import { Text } from './Text';
 
 export const MoreProperties = React.memo(() => {
+    const diagramsMap = useStore(x => x.editor.present.diagrams);
     const diagramsOrdered = useStore(x => x.editor.present.orderedDiagrams);
     const selectedDiagramId = useStore(getDiagramId);
     const selectedItems = useStore(getSelectedItems);
@@ -23,7 +24,15 @@ export const MoreProperties = React.memo(() => {
         useAppearance<string | undefined>(selectedDiagramId, selectedSet,
             DefaultAppearance.LINK, true, true);
 
-    const isPageLinkCurrent = isPageLink(link.value);
+    const linkType = React.useMemo(() => {
+        if (isPageLink(link.value)) {
+            const pageId = getPageLinkId(link.value!);
+
+            return { isPageLink: true, validPage: !!diagramsMap.get(pageId) };
+        } else {
+            return { isPageLink: false, validPage: false };
+        }
+    }, [diagramsMap, link.value]);
 
     return (
         <>
@@ -32,14 +41,16 @@ export const MoreProperties = React.memo(() => {
                     <Row className='property'>
                         <Col span={12} className='property-label'>{texts.common.link}</Col>
                         <Col span={12} className='property-value'>
-                            <Text disabled={link.empty} text={!isPageLinkCurrent ? link.value : ''} selection={selectedSet} onTextChange={setLink} />
+                            <Text disabled={link.empty} text={!linkType.isPageLink ? link.value : ''} selection={selectedSet} onTextChange={setLink} />
                         </Col>
                     </Row>
 
                     <Row className='property'>
                         <Col span={12} className='property-label'>{texts.common.page}</Col>
                         <Col span={12} className='property-value'>
-                            <Select disabled={link.empty} value={isPageLinkCurrent ? link.value : ''} onChange={setLink}>
+                            <Select disabled={link.empty} value={linkType.isPageLink && linkType.validPage ? link.value : ''} onChange={setLink}>
+                                <Select.Option value={undefined}><></></Select.Option>
+
                                 {diagramsOrdered.map((x, index) => 
                                     <Select.Option key={x.id} value={getPageLink(x.id)}>{getPageName(x, index)}</Select.Option>,
                                 )}
