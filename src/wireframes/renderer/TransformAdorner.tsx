@@ -7,7 +7,7 @@
 
 import * as svg from '@svgdotjs/svg.js';
 import * as React from 'react';
-import { Rotation, SVGHelper, Vec2 } from '@app/core';
+import { Rotation, SVGHelper, Timer, Vec2 } from '@app/core';
 import { Diagram, DiagramItem, SnapManager, SnapMode, Transform } from '@app/wireframes/model';
 import { SVGRenderer2 } from '../shapes/utils/svg-renderer2';
 import { InteractionOverlays } from './interaction-overlays';
@@ -58,7 +58,7 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
     private manipulationMode = Mode.None;
     private manipulationOffset = Vec2.ZERO;
     private moveShape: svg.Element = null!;
-    private moveTimer?: any;
+    private moveTimer?: Timer | null;
     private overlays: InteractionOverlays;
     private resizeShapes: svg.Element[] = [];
     private rotateShape: svg.Element = null!;
@@ -188,9 +188,6 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
         this.startTransform = this.transform;
         this.startPosition = null!;
 
-        // The other shapes will not changes, so we can calculate the snap points now.
-        this.snapManager.prepare(this.props.selectedDiagram, this.props.viewSize, this.transform);
-
         const run = () => {
             const delta = new Vec2(xd * counter, yd * counter);
 
@@ -198,7 +195,7 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
             this.overlays.reset();
 
             // Show the overlay after a few movements, not the first click.
-            this.move(delta, getSnapMode(event), counter > 5);
+            this.move(delta, 'None', false);
 
             this.renderPreview();
             this.renderShapes();
@@ -211,9 +208,7 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
 
         run();
 
-        this.moveTimer = setInterval(() => {
-            run();
-        }, 50);
+        this.moveTimer = new Timer(() => run(), 200, 2000);
     }
 
     public onKeyUp(event: KeyboardEvent, next: (event: KeyboardEvent) => void) {
@@ -479,12 +474,8 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
     private stopEverything() {
         this.props.onPreviewEnd();
 
-        if (this.moveTimer) {
-            console.log('Destroy Timer');
-            clearInterval(this.moveTimer);
-    
-            this.moveTimer = null;
-        }
+        this.moveTimer?.destroy();
+        this.moveTimer = null;
 
         this.manipulationMode = Mode.None;
         this.manipulated = false;
