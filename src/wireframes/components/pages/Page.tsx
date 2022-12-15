@@ -9,7 +9,7 @@ import { CheckOutlined, DeleteOutlined, FileMarkdownOutlined, FileOutlined } fro
 import { Col, Dropdown, Input, Menu, Row } from 'antd';
 import classNames from 'classnames';
 import * as React from 'react';
-import { useEventCallback } from '@app/core';
+import { Keys, useEventCallback } from '@app/core';
 import { texts } from '@app/texts';
 import { Diagram, getPageName } from '@app/wireframes/model';
 
@@ -51,31 +51,27 @@ export const Page = (props: PageProps) => {
         selected,
     } = props;
 
-    const currentText = React.useRef<string>();
-    const [editText, setEditText] = React.useState('');
+    const [editName, setEditName] = React.useState('');
     const [editing, setEditing] = React.useState(false);
 
-    const setTextValue = useEventCallback((text: string) => {
-        currentText.current = getPageName(text, index);
+    const pageMaster = React.useMemo(() => {
+        return diagrams.find(x => x.id === diagram.master)?.id;
+    }, [diagrams, diagram.master]);
 
-        setEditText(currentText.current);
-    });
-
-    React.useEffect(() => {
-        setTextValue(getPageName(diagram, index));
-    }, [diagram, index, setTextValue]);
+    const pageName = React.useMemo(() => {
+        return getPageName(diagram, index);
+    }, [diagram, index]);
 
     const setText = useEventCallback((event: React.ChangeEvent<HTMLInputElement>) => {
-        setTextValue(event.target.value);
+        setEditName(event.target.value);
     });
 
     const doRename = useEventCallback(() => {
-        setTextValue(getPageName(diagram, index));
+        setEditName(pageName);
         setEditing(true);
     });
 
     const doRenameEnd = useEventCallback(() => {
-        setTextValue(getPageName(diagram, index));
         setEditing(false);
     });
 
@@ -91,26 +87,22 @@ export const Page = (props: PageProps) => {
         onSetMaster(diagram.id, master);
     });
 
-    const master = React.useMemo(() => {
-        return diagrams.find(x => x.id === diagram.master)?.id;
-    }, [diagrams, diagram.master]);
-
     const initInput = React.useCallback((event: Input) => {
         event?.focus();
     }, []);
 
     const doEnter = useEventCallback((event: React.KeyboardEvent) => {
-        if (event.key === 'Enter') {
+        if (Keys.isEnter(event)) {
             setEditing(false);
 
-            onRename(diagram.id, currentText.current || '');
+            onRename(diagram.id, editName);
         }
     });
 
     return (
         <div className='page-container'>
             {editing ? (
-                <Input value={editText} onChange={setText} onBlur={doRenameEnd} onKeyUp={doEnter} ref={initInput} />
+                <Input value={editName} onChange={setText} onBlur={doRenameEnd} onKeyUp={doEnter} ref={initInput} />
             ) : (
                 <Dropdown overlay={
                     <Menu selectable={false}>
@@ -127,7 +119,7 @@ export const Page = (props: PageProps) => {
                                 id={undefined}
                                 title={texts.common.none}
                                 diagramId={diagram.id}
-                                diagramMaster={master}
+                                diagramMaster={pageMaster}
                                 hide={false}
                                 onSetMaster={doSetMaster}
                             />
@@ -137,7 +129,7 @@ export const Page = (props: PageProps) => {
                                     id={item.id}
                                     title={getPageName(item, index)}
                                     diagramId={diagram.id}
-                                    diagramMaster={master}
+                                    diagramMaster={pageMaster}
                                     hide={item.id === diagram.id}
                                     onSetMaster={doSetMaster}
                                 />,
@@ -147,14 +139,14 @@ export const Page = (props: PageProps) => {
                 } trigger={['contextMenu']}>
                     <Row className={classNames('page', { selected })} wrap={false} onDoubleClick={doRename} onClick={doSelect}>
                         <Col flex='none'>
-                            {master ? (
+                            {pageMaster ? (
                                 <FileMarkdownOutlined />
                             ) : (
                                 <FileOutlined />
                             )}
                         </Col>
                         <Col flex='auto' className='page-title no-select'>
-                            {editText}
+                            {pageName}
                         </Col>
                     </Row>
                 </Dropdown>
