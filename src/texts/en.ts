@@ -67,6 +67,7 @@ export const texts = {
         recent: 'Recent',
         redo: 'Redo',
         remove: 'Delete',
+        rename: 'Rename',
         removeTooltip: 'Delete selected items',
         saveDiagram: 'Save',
         saveDiagramToFile: 'Save to File',

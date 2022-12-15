@@ -69,12 +69,12 @@ export const Page = (props: PageProps) => {
         setTextValue(event.target.value);
     });
 
-    const doStart = useEventCallback(() => {
+    const doRename = useEventCallback(() => {
         setTextValue(getPageName(diagram, index));
         setEditing(true);
     });
 
-    const doEnd = useEventCallback(() => {
+    const doRenameEnd = useEventCallback(() => {
         setTextValue(getPageName(diagram, index));
         setEditing(false);
     });
@@ -110,12 +110,16 @@ export const Page = (props: PageProps) => {
     return (
         <div className='page-container'>
             {editing ? (
-                <Input value={editText} onChange={setText} onBlur={doEnd} onKeyUp={doEnter} ref={initInput} />
+                <Input value={editText} onChange={setText} onBlur={doRenameEnd} onKeyUp={doEnter} ref={initInput} />
             ) : (
                 <Dropdown overlay={
                     <Menu selectable={false}>
                         <Menu.Item key='delete' icon={<DeleteOutlined />} onClick={doDelete}>
                             {texts.common.delete}
+                        </Menu.Item>
+
+                        <Menu.Item key='rename' onClick={doRename}>
+                            {texts.common.rename}
                         </Menu.Item>
 
                         <Menu.SubMenu title={texts.common.masterPage}>
@@ -141,7 +145,7 @@ export const Page = (props: PageProps) => {
                         </Menu.SubMenu>
                     </Menu>
                 } trigger={['contextMenu']}>
-                    <Row className={classNames('page', { selected })} wrap={false} onDoubleClick={doStart} onClick={doSelect}>
+                    <Row className={classNames('page', { selected })} wrap={false} onDoubleClick={doRename} onClick={doSelect}>
                         <Col flex='none'>
                             {master ? (
                                 <FileMarkdownOutlined />
