@@ -63,7 +63,9 @@ export const Checkbox = () => {
     return (
         <>
             <ShapeRenderer usePreviewOffset plugin={new Shapes.Checkbox()} appearance={{ STATE: 'Checked' }} />
+            <hr />
             <ShapeRenderer usePreviewOffset plugin={new Shapes.Checkbox()} appearance={{ STATE: 'Normal' }} />
+            <hr />
             <ShapeRenderer usePreviewOffset plugin={new Shapes.Checkbox()} appearance={{ STATE: 'Interdeminate' }} />
         </>
     );
@@ -115,6 +117,7 @@ export const Icon = () => {
     return (
         <>
             <ShapeRenderer usePreviewOffset plugin={new Shapes.Icon()} appearance={{ TEXT: String.fromCharCode(0xf000) }} />
+            <hr />
             <ShapeRenderer usePreviewOffset plugin={new Shapes.Icon()} appearance={{ TEXT: String.fromCharCode(0xf001) }} />
         </>
     );
@@ -146,7 +149,13 @@ export const Numeric = () => {
 
 export const Paragraph = () => {
     return (
-        <ShapeRenderer usePreviewOffset plugin={new Shapes.Paragraph()} />
+        <>
+            <ShapeRenderer usePreviewOffset plugin={new Shapes.Paragraph()} />
+            <hr />
+            <ShapeRenderer usePreviewOffset plugin={new Shapes.Paragraph()} appearance={{ TEXT: 'Lorem ipsum dolor sit amet, alii rebum postea eam ex.\nEt mei laoreet officiis, summo sensibus id me.' }} />
+            <hr />
+            <ShapeRenderer usePreviewOffset plugin={new Shapes.Paragraph()} appearance={{ TEXT: 'Lorem ipsum dolor sit amet, alii rebum postea eam ex.\n\nEt mei laoreet officiis, summo sensibus id me.' }} />
+        </>
     );
 };
 
@@ -166,6 +175,7 @@ export const RadioButton = () => {
     return (
         <>
             <ShapeRenderer usePreviewOffset plugin={new Shapes.RadioButton()} appearance={{ STATE: 'Checked' }} />
+            <hr />
             <ShapeRenderer usePreviewOffset plugin={new Shapes.RadioButton()} appearance={{ STATE: 'Normal' }} />
         </>
     );
@@ -181,9 +191,13 @@ export const Shape = () => {
     return (
         <>
             <ShapeRenderer usePreviewOffset plugin={new Shapes.Shape()} appearance={{ SHAPE: 'Ellipse' }} />
+            <hr />
             <ShapeRenderer usePreviewOffset plugin={new Shapes.Shape()} appearance={{ SHAPE: 'Rectangle' }} />
+            <hr />
             <ShapeRenderer usePreviewOffset plugin={new Shapes.Shape()} appearance={{ SHAPE: 'Rhombus' }} />
+            <hr />
             <ShapeRenderer usePreviewOffset plugin={new Shapes.Shape()} appearance={{ SHAPE: 'Rounded Rectangle' }} />
+            <hr />
             <ShapeRenderer usePreviewOffset plugin={new Shapes.Shape()} appearance={{ SHAPE: 'Triangle' }} />
         </>
     );
@@ -223,6 +237,7 @@ export const ToggleUnchecked = () => {
     return (
         <>
             <ShapeRenderer usePreviewOffset plugin={new Shapes.Toggle()} appearance={{ STATE: 'Checked' }} />
+            <hr />
             <ShapeRenderer usePreviewOffset plugin={new Shapes.Toggle()} appearance={{ STATE: 'Normal' }} />
         </>
     );

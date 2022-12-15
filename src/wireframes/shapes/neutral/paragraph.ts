@@ -24,11 +24,11 @@ export class Paragraph implements ShapePlugin {
     }
 
     public defaultSize() {
-        return { x: 170, y: 100 };
+        return { x: 200, y: 140 };
     }
 
     public previewSize(desiredWidth: number, desiredHeight: number) {
-        return { x: desiredWidth, y: desiredHeight };
+        return { x: desiredWidth * 2, y: desiredHeight * 2 };
     }
 
     public render(ctx: RenderContext) {
