@@ -40,11 +40,10 @@ export module SVGHelper {
         const div = document.createElement('div');
         div.className = 'no-select';
         div.style.textAlign = alignment || 'center';
-        div.style.fontSize = sizeInPx(fontSize || 10);
         div.style.fontFamily = 'inherit';
+        div.style.fontSize = sizeInPx(fontSize || 10);
         div.style.overflow = 'hidden';
         div.style.verticalAlign = verticalAlign || 'middle';
-        div.style.whiteSpace = 'nowrap';
         div.textContent = text || null;
 
         element.node.appendChild(div);
