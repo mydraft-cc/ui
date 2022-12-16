@@ -8,8 +8,10 @@
 import { ConfigurableFactory, DefaultAppearance, Rect2, RenderContext, ShapePlugin } from '@app/wireframes/interface';
 import { CommonTheme } from './_theme';
 
-const BAR_SIZE = 'BAR_SIZE';
+const ARROW_COLOR = 'ARROW_COLOR';
+const BAR_COLOR = 'BAR_COLOR';
 const BAR_POSITION = 'BAR_POSITION';
+const BAR_SIZE = 'BAR_SIZE';
 
 const DEFAULT_APPEARANCE = {};
 DEFAULT_APPEARANCE[DefaultAppearance.FOREGROUND_COLOR] = CommonTheme.CONTROL_TEXT_COLOR;
@@ -17,8 +19,10 @@ DEFAULT_APPEARANCE[DefaultAppearance.BACKGROUND_COLOR] = CommonTheme.CONTROL_BAC
 DEFAULT_APPEARANCE[DefaultAppearance.STROKE_COLOR] = CommonTheme.CONTROL_BACKGROUND_COLOR;
 DEFAULT_APPEARANCE[DefaultAppearance.STROKE_THICKNESS] = 2;
 DEFAULT_APPEARANCE[DefaultAppearance.TEXT_DISABLED] = true;
-DEFAULT_APPEARANCE[BAR_SIZE] = 50;
+DEFAULT_APPEARANCE[ARROW_COLOR] = 0xbdbdbd;
 DEFAULT_APPEARANCE[BAR_POSITION] = 0;
+DEFAULT_APPEARANCE[BAR_COLOR] = 0xbdbdbd;
+DEFAULT_APPEARANCE[BAR_SIZE] = 50;
 
 export class VerticalScrollbar implements ShapePlugin {
     public defaultAppearance() {
@@ -37,6 +41,8 @@ export class VerticalScrollbar implements ShapePlugin {
         return [
             factory.slider(BAR_SIZE, 'Bar Size', 0, 100),
             factory.slider(BAR_SIZE, 'Bar Position', 0, 100),
+            factory.color(BAR_COLOR, 'Bar Color'),
+            factory.color(ARROW_COLOR, 'Arrow Color'),
         ];
     }
 
@@ -51,18 +57,19 @@ export class VerticalScrollbar implements ShapePlugin {
 
     private createBackground(ctx: RenderContext, clickSize: number) {
         ctx.renderer2.group(items => {
-            const barSize = ctx.shape.getAppearance(BAR_SIZE) / 100;
-            const barPosition = ctx.shape.getAppearance(BAR_POSITION) / 100 * (ctx.rect.height - 2 * clickSize) * (1 - barSize);
-            const barRect = new Rect2(ctx.rect.x, ctx.rect.y + clickSize + barPosition, ctx.rect.width, (ctx.rect.height - 2 * clickSize) * barSize);
+            // Rail
+            items.rectangle(0, 0, ctx.rect, p => {
+                p.setBackgroundColor(ctx.shape);
+            });
+
+            const barHeight = ctx.shape.getAppearance(BAR_SIZE) / 100;
+            const barOffset = ctx.shape.getAppearance(BAR_POSITION) / 100 * (ctx.rect.height - 2 * clickSize) * (1 - barHeight);
+            
+            const barRect = new Rect2(ctx.rect.x, ctx.rect.y + clickSize + barOffset, ctx.rect.width, (ctx.rect.height - 2 * clickSize) * barHeight);
 
             // Bar
             items.rectangle(0, 0, barRect, p => {
-                p.setBackgroundColor(0xbdbdbd);
-            });
-
-            // Rail
-            items.rectangle(0, 0, barRect, p => {
-                p.setBackgroundColor(ctx.shape);
+                p.setBackgroundColor(ctx.shape.getAppearance(BAR_COLOR));
             });
         }, mask => {
             mask.rectangle(0, 0, ctx.rect);
@@ -82,7 +89,7 @@ export class VerticalScrollbar implements ShapePlugin {
         const h = clickSize * 0.3;
 
         ctx.renderer2.path(0, `M${x - 0.5 * w},${y - 0.4 * h} L${x},${y + 0.6 * h},L${x + 0.5 * w},${y - 0.4 * h} z`, undefined, p => {
-            p.setBackgroundColor(0xbdbdbd);
+            p.setBackgroundColor(ctx.shape.getAppearance(ARROW_COLOR));
         });
     }
 
@@ -93,7 +100,7 @@ export class VerticalScrollbar implements ShapePlugin {
         const h = clickSize * 0.3;
 
         ctx.renderer2.path(0, `M${x - 0.5 * w},${y + 0.4 * h} L${x},${y - 0.6 * h},L${x + 0.5 * w},${y + 0.4 * h} z`, undefined, p => {
-            p.setBackgroundColor(0xbdbdbd);
+            p.setBackgroundColor(ctx.shape.getAppearance(ARROW_COLOR));
         });
     }
 }
