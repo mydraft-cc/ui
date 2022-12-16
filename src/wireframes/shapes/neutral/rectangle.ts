@@ -13,14 +13,14 @@ const PADDING_HORIZONTAL = 'PADDING_HORIZONTAL2';
 const PADDING_VERTICAL = 'PADDING_VERTICAL2';
 
 const DEFAULT_APPEARANCE = {
-    [DefaultAppearance.FOREGROUND_COLOR]: 0,
+    [BORDER_RADIUS]: 0,
     [DefaultAppearance.BACKGROUND_COLOR]: 0xFFFFFF,
-    [DefaultAppearance.TEXT]: 'Rectangle',
-    [DefaultAppearance.TEXT_ALIGNMENT]: 'center',
     [DefaultAppearance.FONT_SIZE]: CommonTheme.CONTROL_FONT_SIZE,
+    [DefaultAppearance.FOREGROUND_COLOR]: 0,
     [DefaultAppearance.STROKE_COLOR]: CommonTheme.CONTROL_BORDER_COLOR,
     [DefaultAppearance.STROKE_THICKNESS]: CommonTheme.CONTROL_BORDER_THICKNESS,
-    [BORDER_RADIUS]: 0,
+    [DefaultAppearance.TEXT_ALIGNMENT]: 'center',
+    [DefaultAppearance.TEXT]: 'Rectangle',
     [PADDING_HORIZONTAL]: 10,
     [PADDING_VERTICAL]: 10,
 };

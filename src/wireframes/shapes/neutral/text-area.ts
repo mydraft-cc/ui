@@ -9,13 +9,13 @@ import { DefaultAppearance, RenderContext, ShapePlugin } from '@app/wireframes/i
 import { CommonTheme } from './_theme';
 
 const DEFAULT_APPEARANCE = {
-    [DefaultAppearance.FOREGROUND_COLOR]: CommonTheme.CONTROL_TEXT_COLOR,
     [DefaultAppearance.BACKGROUND_COLOR]: 0xFFFFFF,
-    [DefaultAppearance.TEXT]: 'TextArea',
-    [DefaultAppearance.TEXT_ALIGNMENT]: 'left',
     [DefaultAppearance.FONT_SIZE]: CommonTheme.CONTROL_FONT_SIZE,
+    [DefaultAppearance.FOREGROUND_COLOR]: CommonTheme.CONTROL_TEXT_COLOR,
     [DefaultAppearance.STROKE_COLOR]: CommonTheme.CONTROL_BORDER_COLOR,
     [DefaultAppearance.STROKE_THICKNESS]: CommonTheme.CONTROL_BORDER_THICKNESS,
+    [DefaultAppearance.TEXT_ALIGNMENT]: 'left',
+    [DefaultAppearance.TEXT]: 'TextArea',
 };
 
 export class TextArea implements ShapePlugin {

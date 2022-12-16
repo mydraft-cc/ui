@@ -9,13 +9,13 @@ import { DefaultAppearance, Rect2, RenderContext, ShapePlugin } from '@app/wiref
 import { CommonTheme } from './_theme';
 
 const DEFAULT_APPEARANCE = {
-    [DefaultAppearance.FOREGROUND_COLOR]: CommonTheme.CONTROL_TEXT_COLOR,
     [DefaultAppearance.BACKGROUND_COLOR]: CommonTheme.CONTROL_BACKGROUND_COLOR,
-    [DefaultAppearance.TEXT]: '43',
-    [DefaultAppearance.TEXT_ALIGNMENT]: 'left',
     [DefaultAppearance.FONT_SIZE]: CommonTheme.CONTROL_FONT_SIZE,
+    [DefaultAppearance.FOREGROUND_COLOR]: CommonTheme.CONTROL_TEXT_COLOR,
     [DefaultAppearance.STROKE_COLOR]: CommonTheme.CONTROL_BORDER_COLOR,
     [DefaultAppearance.STROKE_THICKNESS]: CommonTheme.CONTROL_BORDER_THICKNESS,
+    [DefaultAppearance.TEXT_ALIGNMENT]: 'left',
+    [DefaultAppearance.TEXT]: '43',
 };
 
 export class Numeric implements ShapePlugin {

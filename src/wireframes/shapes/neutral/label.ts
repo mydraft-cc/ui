@@ -8,9 +8,9 @@ import { ConstraintFactory, DefaultAppearance, RenderContext, ShapePlugin, Visua
 import { CommonTheme } from './_theme';
 
 const DEFAULT_APPEARANCE = {
+    [DefaultAppearance.FONT_SIZE]: CommonTheme.CONTROL_FONT_SIZE,
     [DefaultAppearance.FOREGROUND_COLOR]: CommonTheme.CONTROL_TEXT_COLOR,
     [DefaultAppearance.TEXT]: 'Label',
-    [DefaultAppearance.FONT_SIZE]: CommonTheme.CONTROL_FONT_SIZE,
 };
 
 export class Label implements ShapePlugin {

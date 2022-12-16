@@ -14,14 +14,14 @@ const THUMB_POSITION = 'BAR_POSITION';
 const THUMB_SIZE = 'BAR_SIZE';
 
 const DEFAULT_APPEARANCE = {
-    [DefaultAppearance.FOREGROUND_COLOR]: CommonTheme.CONTROL_TEXT_COLOR,
+    [ARROW_COLOR]: 0xbdbdbd,
     [DefaultAppearance.BACKGROUND_COLOR]: CommonTheme.CONTROL_BACKGROUND_COLOR,
+    [DefaultAppearance.FOREGROUND_COLOR]: CommonTheme.CONTROL_TEXT_COLOR,
     [DefaultAppearance.STROKE_COLOR]: CommonTheme.CONTROL_BACKGROUND_COLOR,
     [DefaultAppearance.STROKE_THICKNESS]: 2,
     [DefaultAppearance.TEXT_DISABLED]: true,
-    [ARROW_COLOR]: 0xbdbdbd,
-    [THUMB_POSITION]: 0,
     [THUMB_COLOR]: 0xbdbdbd,
+    [THUMB_POSITION]: 0,
     [THUMB_SIZE]: 50,
 };
 

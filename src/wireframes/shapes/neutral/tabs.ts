@@ -9,11 +9,9 @@ import { Color, ConfigurableFactory, DefaultAppearance, Rect2, RenderContext, Sh
 import { CommonTheme } from './_theme';
 
 const TAB_COLOR = 'TAB_COLOR';
-
 const TAB_ALIGNMENT = 'TAB_ALIGNMENT';
 const TAB_ALIGNMENT_LEFT = 'Left';
 const TAB_ALIGNMENT_RIGHT = 'Right';
-
 const TAB_POSITION = 'TAB_POSITION';
 const TAB_POSITION_TOP = 'Top';
 const TAB_POSITION_BOTTOM = 'Bottom';

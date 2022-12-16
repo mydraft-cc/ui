@@ -13,11 +13,11 @@ const IMAGE_ASPECT_RATIO = 'ASPECT_RATIO';
 
 const DEFAULT_APPEARANCE = {
     [DefaultAppearance.BACKGROUND_COLOR]: 0xFFFFFF,
-    [DefaultAppearance.TEXT_DISABLED]: true,
     [DefaultAppearance.STROKE_COLOR]: CommonTheme.CONTROL_BORDER_COLOR,
     [DefaultAppearance.STROKE_THICKNESS]: CommonTheme.CONTROL_BORDER_THICKNESS,
-    [IMAGE_URL]: '',
+    [DefaultAppearance.TEXT_DISABLED]: true,
     [IMAGE_ASPECT_RATIO]: true,
+    [IMAGE_URL]: '',
 };
 
 export class Image implements ShapePlugin {

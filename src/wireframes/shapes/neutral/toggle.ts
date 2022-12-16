@@ -14,11 +14,11 @@ const STATE_NORMAL = 'Normal';
 const STATE_CHECKED = 'Checked';
 
 const DEFAULT_APPEARANCE = {
-    [DefaultAppearance.FOREGROUND_COLOR]: 0x238b45,
     [DefaultAppearance.BACKGROUND_COLOR]: 0xbdbdbd,
-    [DefaultAppearance.TEXT_DISABLED]: true,
+    [DefaultAppearance.FOREGROUND_COLOR]: 0x238b45,
     [DefaultAppearance.STROKE_COLOR]: 0xffffff,
     [DefaultAppearance.STROKE_THICKNESS]: 4,
+    [DefaultAppearance.TEXT_DISABLED]: true,
     [STATE]: STATE_CHECKED,
 };
 

@@ -13,13 +13,13 @@ const HEADER_FOREGROUND_COLOR = 'HEADER_FOREGROUND_COLOR';
 const HEADER_HIDDEN = 'HEADER_HIDDEN';
 
 const DEFAULT_APPEARANCE = {
-    [DefaultAppearance.FOREGROUND_COLOR]: CommonTheme.CONTROL_TEXT_COLOR,
     [DefaultAppearance.BACKGROUND_COLOR]: '#fff',
-    [DefaultAppearance.TEXT]: 'column1,column2,column3\nrow1,row1,row1\nrow2,row2',
-    [DefaultAppearance.TEXT_ALIGNMENT]: 'center',
     [DefaultAppearance.FONT_SIZE]: CommonTheme.CONTROL_FONT_SIZE,
+    [DefaultAppearance.FOREGROUND_COLOR]: CommonTheme.CONTROL_TEXT_COLOR,
     [DefaultAppearance.STROKE_COLOR]: CommonTheme.CONTROL_BORDER_COLOR,
     [DefaultAppearance.STROKE_THICKNESS]: CommonTheme.CONTROL_BORDER_THICKNESS,
+    [DefaultAppearance.TEXT_ALIGNMENT]: 'center',
+    [DefaultAppearance.TEXT]: 'column1,column2,column3\nrow1,row1,row1\nrow2,row2',
     [HEADER_BACKGROUND_COLOR]: CommonTheme.CONTROL_BACKGROUND_COLOR,
     [HEADER_FOREGROUND_COLOR]: CommonTheme.CONTROL_TEXT_COLOR,
     [HEADER_HIDDEN]: false,

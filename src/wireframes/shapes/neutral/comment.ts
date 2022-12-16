@@ -9,10 +9,10 @@ import { DefaultAppearance, RenderContext, ShapePlugin } from '@app/wireframes/i
 import { CommonTheme } from './_theme';
 
 const DEFAULT_APPEARANCE = {
-    [DefaultAppearance.TEXT]: 'Lorem ipsum dolor sit amet, alii rebum postea eam ex. Et mei laoreet officiis, summo sensibus id mei.',
-    [DefaultAppearance.TEXT_ALIGNMENT]: 'left',
     [DefaultAppearance.FONT_SIZE]: CommonTheme.CONTROL_FONT_SIZE,
     [DefaultAppearance.STROKE_THICKNESS]: 1,
+    [DefaultAppearance.TEXT_ALIGNMENT]: 'left',
+    [DefaultAppearance.TEXT]: 'Lorem ipsum dolor sit amet, alii rebum postea eam ex. Et mei laoreet officiis, summo sensibus id mei.',
 };
 
 export class Comment implements ShapePlugin {

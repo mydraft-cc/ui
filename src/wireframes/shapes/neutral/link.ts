@@ -9,13 +9,13 @@ import { ConstraintFactory, DefaultAppearance, RenderContext, ShapePlugin, Visua
 import { CommonTheme } from './_theme';
 
 const DEFAULT_APPEARANCE = {
-    [DefaultAppearance.FOREGROUND_COLOR]: 0x08519c,
     [DefaultAppearance.BACKGROUND_COLOR]: CommonTheme.CONTROL_BACKGROUND_COLOR,
-    [DefaultAppearance.TEXT]: 'Link',
-    [DefaultAppearance.TEXT_ALIGNMENT]: 'center',
     [DefaultAppearance.FONT_SIZE]: CommonTheme.CONTROL_FONT_SIZE,
+    [DefaultAppearance.FOREGROUND_COLOR]: 0x08519c,
     [DefaultAppearance.STROKE_COLOR]: CommonTheme.CONTROL_BORDER_COLOR,
     [DefaultAppearance.STROKE_THICKNESS]: CommonTheme.CONTROL_BORDER_THICKNESS,
+    [DefaultAppearance.TEXT_ALIGNMENT]: 'center',
+    [DefaultAppearance.TEXT]: 'Link',
 };
 
 export class Link implements ShapePlugin {

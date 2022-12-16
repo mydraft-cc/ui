@@ -8,7 +8,7 @@
 import { ConfigurableFactory, ConstraintFactory, DefaultAppearance, Rect2, RenderContext, ShapePlugin, Vec2 } from '@app/wireframes/interface';
 import { CommonTheme } from './_theme';
 
-const STATE_KEY = 'STATE';
+const STATE = 'STATE';
 const STATE_NORMAL = 'Normal';
 const STATE_CHECKED = 'Checked';
 const CIRCLE_MARGIN = 4;
@@ -18,14 +18,14 @@ const CIRCLE_CHECK_RADIUS = CIRCLE_RADIUS - 4;
 const TEXT_POSITION_X = 2 * CIRCLE_MARGIN + 2 * CIRCLE_RADIUS;
 
 const DEFAULT_APPEARANCE = {
-    [DefaultAppearance.FOREGROUND_COLOR]: CommonTheme.CONTROL_TEXT_COLOR,
     [DefaultAppearance.BACKGROUND_COLOR]: CommonTheme.CONTROL_BACKGROUND_COLOR,
-    [DefaultAppearance.TEXT]: 'RadioButton',
-    [DefaultAppearance.TEXT_ALIGNMENT]: 'left',
     [DefaultAppearance.FONT_SIZE]: CommonTheme.CONTROL_FONT_SIZE,
+    [DefaultAppearance.FOREGROUND_COLOR]: CommonTheme.CONTROL_TEXT_COLOR,
     [DefaultAppearance.STROKE_COLOR]: CommonTheme.CONTROL_BORDER_COLOR,
     [DefaultAppearance.STROKE_THICKNESS]: CommonTheme.CONTROL_BORDER_THICKNESS,
-    [STATE_KEY]: STATE_NORMAL,
+    [DefaultAppearance.TEXT_ALIGNMENT]: 'left',
+    [DefaultAppearance.TEXT]: 'RadioButton',
+    [STATE]: STATE_NORMAL,
 };
 
 export class RadioButton implements ShapePlugin {
@@ -47,7 +47,7 @@ export class RadioButton implements ShapePlugin {
 
     public configurables(factory: ConfigurableFactory) {
         return [
-            factory.selection(STATE_KEY, 'State', [
+            factory.selection(STATE, 'State', [
                 STATE_NORMAL,
                 STATE_CHECKED,
             ]),
@@ -68,7 +68,7 @@ export class RadioButton implements ShapePlugin {
             p.setBackgroundColor(ctx.shape);
         });
 
-        const state = ctx.shape.getAppearance(STATE_KEY);
+        const state = ctx.shape.getAppearance(STATE);
 
         if (state === STATE_CHECKED) {
             // Checked circle

@@ -9,9 +9,9 @@ import { ConstraintFactory, DefaultAppearance, RenderContext, ShapePlugin } from
 import { CommonTheme } from './_theme';
 
 const DEFAULT_APPEARANCE = {
+    [DefaultAppearance.FONT_SIZE]: 24,
     [DefaultAppearance.FOREGROUND_COLOR]: CommonTheme.CONTROL_TEXT_COLOR,
     [DefaultAppearance.TEXT]: 'Heading',
-    [DefaultAppearance.FONT_SIZE]: 24,
 };
 
 export class Heading implements ShapePlugin {

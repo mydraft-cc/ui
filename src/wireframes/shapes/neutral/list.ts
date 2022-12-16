@@ -11,14 +11,14 @@ import { CommonTheme } from './_theme';
 const ACCENT_COLOR = 'ACCENT_COLOR';
 
 const DEFAULT_APPEARANCE = {
-    [DefaultAppearance.FOREGROUND_COLOR]: CommonTheme.CONTROL_TEXT_COLOR,
+    [ACCENT_COLOR]: 0x2171b5,
     [DefaultAppearance.BACKGROUND_COLOR]: 0xffffff,
-    [DefaultAppearance.TEXT]: 'item1\nitem2\nitem3*\nitem4',
-    [DefaultAppearance.TEXT_ALIGNMENT]: 'left',
     [DefaultAppearance.FONT_SIZE]: CommonTheme.CONTROL_FONT_SIZE,
+    [DefaultAppearance.FOREGROUND_COLOR]: CommonTheme.CONTROL_TEXT_COLOR,
     [DefaultAppearance.STROKE_COLOR]: CommonTheme.CONTROL_BORDER_COLOR,
     [DefaultAppearance.STROKE_THICKNESS]: CommonTheme.CONTROL_BORDER_THICKNESS,
-    [ACCENT_COLOR]: 0x2171b5,
+    [DefaultAppearance.TEXT_ALIGNMENT]: 'left',
+    [DefaultAppearance.TEXT]: 'item1\nitem2\nitem3*\nitem4',
 };
 
 export class List implements ShapePlugin {
