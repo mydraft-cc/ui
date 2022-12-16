@@ -13,8 +13,8 @@ import { ColorResult, SketchPicker } from 'react-color';
 import { texts } from '@app/texts';
 import { Color } from './../utils/color';
 import { ColorPalette } from './../utils/color-palette';
-import { useEventCallback } from './../utils/react';
 import './ColorPicker.scss';
+import { useEventCallback } from './hooks';
 
 type ColorTab = 'palette' | 'advanced';
 

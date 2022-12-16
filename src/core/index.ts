@@ -6,6 +6,7 @@
 */
 
 export * from './react/ColorPicker';
+export * from './react/Clipboard';
 export * from './react/Grid';
 export * from './react/hooks';
 export * from './react/Shortcut';

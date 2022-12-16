@@ -9,7 +9,6 @@
 
 import * as React from 'react';
 import { useReactToPrint } from 'react-to-print';
-import { useEventCallback } from '../utils/react';
 
 export function useOpenFile(fileType: string, onOpened: (file: File) => void): () => void {
     const fileInputRef = React.useRef<HTMLInputElement | null>();
@@ -151,3 +150,53 @@ export function usePrinter(): [() => void, () => void, boolean, React.MutableRef
 
     return [doPrint, doMakeReady, isPrinting, printRef];
 }
+
+export const useDocumentEvent = <K extends keyof DocumentEventMap>(type: K, listener: (event: DocumentEventMap[K]) => any) => {
+    const listenerRef = React.useRef(listener);
+
+    listenerRef.current = listener;
+
+    React.useEffect(() => {
+        const callback = (event: any) => {
+            listenerRef.current(event);
+        };
+
+        document.addEventListener(type, callback);
+
+        return () => {
+            document.removeEventListener(type, callback);
+        };
+    }, [type]);
+};
+
+export const useWindowEvent = <K extends keyof WindowEventMap>(type: K, listener: (event: WindowEventMap[K]) => any) => {
+    const listenerRef = React.useRef(listener);
+
+    listenerRef.current = listener;
+
+    React.useEffect(() => {
+        const callback = (event: any) => {
+            listenerRef.current(event);
+        };
+
+        window.addEventListener(type, callback);
+
+        return () => {
+            window.removeEventListener(type, callback);
+        };
+    }, [type]);
+};
+
+type Fn<ARGS extends any[], R> = (...args: ARGS) => R;
+
+export const useEventCallback = <A extends any[], R>(fn: Fn<A, R>): Fn<A, R> => {
+    let ref = React.useRef<Fn<A, R>>(fn);
+
+    React.useLayoutEffect(() => {
+        ref.current = fn;
+    });
+
+    return React.useMemo(() => (...args: A): R => {
+        return ref.current(...args);
+    }, []);
+};

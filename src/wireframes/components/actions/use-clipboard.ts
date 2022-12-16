@@ -8,12 +8,13 @@
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
 import { SerializerContext } from '@app/context';
-import { useEventCallback } from '@app/core';
+import { ClipboardCopyEvent, ClipboardPasteEvent, useClipboard as useClipboardProvider } from '@app/core';
 import { texts } from '@app/texts';
 import { DiagramItemSet, getDiagram, getSelectedItems, pasteItems, removeItems, useStore } from '@app/wireframes/model';
 import { UIAction } from './shared';
 
 const OFFSET = 50;
+const PREFIX = 'my-draft:';
 
 export function useClipboard() {
     const dispatch = useDispatch();
@@ -22,65 +23,63 @@ export function useClipboard() {
     const selectedItems = useStore(getSelectedItems);
     const serializer = React.useContext(SerializerContext);
     const canCopy = selectedItems.length > 0;
-    const [clipboard, setClipboard] = React.useState<string>();
 
-    const doCopy = useEventCallback(() => {
-        if (selectedDiagram) {
-            const set =
-                DiagramItemSet.createFromDiagram(
-                    selectedItems,
-                    selectedDiagram);
+    const clipboard = useClipboardProvider({ 
+        onPaste: (event: ClipboardPasteEvent) => {
+            const text = event['text'] as string;
+    
+            if (selectedDiagram && text && text.indexOf(PREFIX) === 0) {
+                offset.current += OFFSET;
+    
+                dispatch(pasteItems(selectedDiagram, text.substring(PREFIX.length), offset.current));
+                return true;
+            }
+    
+            return;
+        },
+        onCopy: (event: ClipboardCopyEvent) => {
+            if (selectedDiagram) {
+                const set =
+                    DiagramItemSet.createFromDiagram(
+                        selectedItems,
+                        selectedDiagram);
+    
+                event.clipboard.set(`${PREFIX}${serializer.serializeSet(set)}`);
+    
+                if (event.isCut) {
+                    dispatch(removeItems(selectedDiagram, selectedItems));
+                }
+                
+                offset.current = 0;
+            }
 
-            const json = serializer.serializeSet(set);
-
-            setClipboard(json);
-            
-            offset.current = 0;
-        }
-    });
-
-    const doCut = useEventCallback(() => {
-        if (selectedDiagram) {
-            doCopy();
-
-            dispatch(removeItems(selectedDiagram, selectedItems));
-        }
-    });
-
-    const doPaste = useEventCallback(() => {
-        if (selectedDiagram && clipboard) {
-            offset.current += OFFSET;
-
-            dispatch(pasteItems(selectedDiagram, clipboard, offset.current));
-        }
+            return true;
+        },
     });
 
     const copy: UIAction = React.useMemo(() => ({
         disabled: !canCopy,
         icon: 'icon-copy',
         label: texts.common.copy,
-        shortcut: 'MOD + C',
         tooltip: texts.common.copyTooltip,
-        onAction: doCopy,
-    }), [canCopy, doCopy]);
+        onAction: clipboard.copy,
+    }), [canCopy, clipboard]);
 
     const cut: UIAction = React.useMemo(() => ({
         disabled: !canCopy,
         icon: 'icon-cut',
         label: texts.common.cut,
-        shortcut: 'MOD + X',
         tooltip: texts.common.cutTooltip,
-        onAction: doCut,
-    }), [canCopy, doCut]);
+        onAction: clipboard.cut,
+    }), [canCopy, clipboard]);
 
     const paste: UIAction = React.useMemo(() => ({
         disabled: !clipboard,
         icon: 'icon-paste',
         label: texts.common.paste,
-        shortcut: 'MOD + V',
         tooltip: texts.common.pasteTooltip,
-        onAction: doPaste,
-    }), [clipboard, doPaste]);
+        onAction: clipboard.paste,
+    }), [clipboard]);
 
     return { copy, cut, paste };
 }
