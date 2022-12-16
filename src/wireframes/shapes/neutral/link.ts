@@ -35,22 +35,9 @@ export class Link implements ShapePlugin {
     }
 
     public render(ctx: RenderContext) {
-        const textItem = ctx.renderer2.text(ctx.shape, ctx.rect, p => {
+        ctx.renderer2.text(ctx.shape, ctx.rect, p => {
             p.setForegroundColor(ctx.shape);
-        });
-
-        const fontSize = ctx.shape.fontSize;
-
-        const b = ctx.renderer2.getBounds(textItem);
-
-        const w = Math.floor(Math.min(b.width, ctx.rect.width));
-        const x = Math.floor((ctx.rect.width - w) * 0.5);
-        const y = Math.floor((ctx.rect.cy + fontSize * 0.5)) + (ctx.shape.strokeThickness % 2 === 1 ? 0.5 : 0);
-
-        const path = `M${x},${y} L${x + w},${y}`;
-
-        ctx.renderer2.path(ctx.shape, path, undefined, p => {
-            p.setStrokeColor(ctx.shape.foregroundColor);
+            p.setTextDecoration('underline');
         });
     }
 }

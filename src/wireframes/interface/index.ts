@@ -10,6 +10,7 @@ import { Color, Rect2, Vec2 } from '@app/core';
 export { Color, Rect2, Vec2 } from '@app/core';
 
 export type TextConfig = { text: string; fontSize?: number; fontFamily?: string; alignment?: string };
+export type TextDecoration = 'underline' | 'none';
 export type RendererColor = string | number | Color | Shape;
 export type RendererElement = any;
 export type RendererOpacity = number | Shape;
@@ -59,6 +60,8 @@ export interface ShapeProperties {
     setOpacity(opacity: RendererOpacity): ShapeProperties;
 
     setText(text: RendererText | string): ShapeProperties;
+    
+    setTextDecoration(decoration: TextDecoration): ShapeProperties;
 }
 
 export type ShapePropertiesFunc = (properties: ShapeProperties) => void;

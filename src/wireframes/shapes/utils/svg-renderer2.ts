@@ -11,7 +11,7 @@ import * as svg from '@svgdotjs/svg.js';
 import { marked } from 'marked';
 import { Rect } from 'react-measure';
 import { Rect2, sizeInPx, SVGHelper, Types } from '@app/core';
-import { RendererColor, RendererElement, RendererOpacity, RendererText, RendererWidth, Shape, ShapeFactory, ShapeFactoryFunc, ShapeProperties, ShapePropertiesFunc, TextConfig } from '@app/wireframes/interface';
+import { RendererColor, RendererElement, RendererOpacity, RendererText, RendererWidth, Shape, ShapeFactory, ShapeFactoryFunc, ShapeProperties, ShapePropertiesFunc, TextConfig, TextDecoration } from '@app/wireframes/interface';
 import { AbstractRenderer2 } from './abstract-renderer';
 
 export * from './abstract-renderer';
@@ -298,6 +298,7 @@ type PropertySet = Partial<{
     ['stroke-width']: any;
     ['text']: any;
     ['text-alignment']: any;
+    ['text-decoration']: any;
     ['transform']: any;
     ['vertical-alignment']: any;
 }>;
@@ -318,6 +319,7 @@ const PROPERTIES: ReadonlyArray<keyof PropertySet> = [
     'path',
     'text',
     'text-alignment',
+    'text-decoration',
     'vertical-alignment',
     'transform', // Transform must be last.
 ];
@@ -389,6 +391,13 @@ class Properties implements ShapeProperties {
 
             if (div?.nodeName === 'DIV') {
                 div.style.textAlign = value;
+            }
+        },
+        'text-decoration': (value, element) => {
+            const div = element.node.children[0] as HTMLDivElement;
+
+            if (div?.nodeName === 'DIV') {
+                div.style.textDecoration = value;
             }
         },
         'vertical-alignment': (value, element) => {
@@ -498,6 +507,12 @@ class Properties implements ShapeProperties {
 
     public setAlignment(alignment: TextConfig | null | undefined): ShapeProperties {
         this.properties['text-alignment'] = this.getTextAlignment(alignment);
+
+        return this;
+    }
+
+    public setTextDecoration(decoration: TextDecoration): ShapeProperties {
+        this.properties['text-decoration'] = decoration;
 
         return this;
     }
