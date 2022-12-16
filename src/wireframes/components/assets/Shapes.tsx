@@ -8,7 +8,7 @@
 import { SearchOutlined } from '@ant-design/icons';
 import { Input } from 'antd';
 import * as React from 'react';
-import { ReactReduxContext, useDispatch } from 'react-redux';
+import { useDispatch, useStore as useReduxStore } from 'react-redux';
 import { Grid, useEventCallback } from '@app/core';
 import { texts } from '@app/texts';
 import { addVisual, filterShapes, getDiagramId, getFilteredShapes, getShapesFilter, ShapeInfo, useStore } from '@app/wireframes/model';
@@ -23,12 +23,11 @@ export const Shapes = () => {
     const dispatch = useDispatch();
     const shapesFiltered = useStore(getFilteredShapes);
     const shapesFilter = useStore(getShapesFilter);
-
-    const storeContext = React.useContext(ReactReduxContext);
+    const store = useReduxStore();
 
     const cellRenderer = React.useCallback((shape: ShapeInfo) => {
         const doAdd = () => {
-            const selectedDiagramId = getDiagramId(storeContext.store.getState());
+            const selectedDiagramId = getDiagramId(store.getState());
 
             if (selectedDiagramId) {
                 dispatch(addVisual(selectedDiagramId, shape.name, 100, 100));
@@ -44,7 +43,7 @@ export const Shapes = () => {
                 <div className='asset-shape-title'>{shape.displayName}</div>
             </div>
         );
-    }, [dispatch, storeContext.store]);
+    }, [dispatch, store]);
 
     const doFilterShapes = useEventCallback((event: React.ChangeEvent<HTMLInputElement>) => {
         dispatch(filterShapes({ filter: event.target.value }));

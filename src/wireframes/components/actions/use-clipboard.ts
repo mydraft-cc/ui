@@ -7,7 +7,7 @@
 
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
-import { SerializerContext } from '@app/context';
+import { useSerializer } from '@app/context';
 import { ClipboardCopyEvent, ClipboardPasteEvent, useClipboard as useClipboardProvider } from '@app/core';
 import { texts } from '@app/texts';
 import { DiagramItemSet, getDiagram, getSelectedItems, pasteItems, removeItems, useStore } from '@app/wireframes/model';
@@ -21,7 +21,7 @@ export function useClipboard() {
     const offset = React.useRef(0);
     const selectedDiagram = useStore(getDiagram);
     const selectedItems = useStore(getSelectedItems);
-    const serializer = React.useContext(SerializerContext);
+    const serializer = useSerializer();
     const canCopy = selectedItems.length > 0;
 
     const clipboard = useClipboardProvider({ 

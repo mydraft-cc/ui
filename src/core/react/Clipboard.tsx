@@ -17,21 +17,32 @@ export interface ClipboardCopyEvent {
     clipboard: ClipboardInstance;
 }
 
-export interface ClipboadTextEvent {
+export interface ClipboardPasteEvent {
+    items: ReadonlyArray<ClipboardItem>;
+}
+
+export interface ClipboadTextItem {
     type: 'Text';
 
     // The text when the clipboard contains a text value.
     text: string;
 }
 
-export interface ClipboardFileEvent {
+export interface ClipboardImageItem {
     type: 'Image';
 
     // The loaded image when the clipboard contains a file value.
-    images: LoadedImage[];
+    image: LoadedImage;
 }
 
-export type ClipboardPasteEvent = ClipboardFileEvent | ClipboadTextEvent;
+export interface ClipboardUrlItem {
+    type: 'Url';
+
+    // The URL when the clipboard contains a URL value.
+    url: string;
+}
+
+export type ClipboardItem = ClipboadTextItem | ClipboardImageItem | ClipboardUrlItem;
 
 class ClipboardInstance {
     private fallback?: string;
@@ -91,18 +102,10 @@ const ContextConnector = React.memo(() => {
             return;
         }
 
-        const images: LoadedImage[] = [];
+        const items = await loadImagesToClipboardItems(event.clipboardData.files);
 
-        for (let i = 0; i < event.clipboardData.files.length; i++) {
-            const image = await loadImage(event.clipboardData.files.item(i));
-
-            if (image != null) {
-                images.push(image);
-            }
-        }
-
-        if (images.length > 0) {
-            emitPaste(context, { type: 'Image', images });
+        if (items.length > 0) {
+            emitPaste(context, ...items);
         }
     });
 
@@ -199,10 +202,10 @@ async function tryEmitPaste(context: ClipboardContextType) {
 }
 
 function emitCopy(context: ClipboardContextType, isCut: boolean) {
-    const frozenEvent = Object.freeze({ isCut, clipboard: context.clipboard });
+    const event = Object.freeze({ isCut, clipboard: context.clipboard });
 
     for (const callback of context.onCopy) {
-        const shouldStop = callback(frozenEvent);
+        const shouldStop = callback(event);
 
         if (shouldStop) {
             break;
@@ -210,11 +213,11 @@ function emitCopy(context: ClipboardContextType, isCut: boolean) {
     }
 }
 
-function emitPaste(context: ClipboardContextType, event: ClipboardPasteEvent) {
-    const frozenEvent = Object.freeze(event);
+function emitPaste(context: ClipboardContextType, ...items: ClipboardItem[]) {
+    const event = Object.freeze({ items });
 
     for (const callback of context.onPaste) {
-        const shouldStop = callback(frozenEvent);
+        const shouldStop = callback(event);
 
         if (shouldStop) {
             break;
@@ -222,7 +225,21 @@ function emitPaste(context: ClipboardContextType, event: ClipboardPasteEvent) {
     }
 }
 
-type LoadedImage = { width: number; height: number; source: string };
+export type LoadedImage = { width: number; height: number; source: string };
+
+export async function loadImagesToClipboardItems(files: FileList) {
+    const items: ClipboardItem[] = [];
+
+    for (let i = 0; i < files.length; i++) {
+        const image = await loadImage(files.item(i));
+
+        if (image != null) {
+            items.push({ type: 'Image', image });
+        }
+    }
+
+    return items;
+}
 
 export function loadImage(file: File | null) {
     return new Promise<LoadedImage | null>((resolve) => {

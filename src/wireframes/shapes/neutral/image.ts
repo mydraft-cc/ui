@@ -11,13 +11,14 @@ import { CommonTheme } from './_theme';
 const IMAGE_URL = 'URL';
 const IMAGE_ASPECT_RATIO = 'ASPECT_RATIO';
 
-const DEFAULT_APPEARANCE = {};
-DEFAULT_APPEARANCE[DefaultAppearance.BACKGROUND_COLOR] = 0xFFFFFF;
-DEFAULT_APPEARANCE[DefaultAppearance.TEXT_DISABLED] = true;
-DEFAULT_APPEARANCE[DefaultAppearance.STROKE_COLOR] = CommonTheme.CONTROL_BORDER_COLOR;
-DEFAULT_APPEARANCE[DefaultAppearance.STROKE_THICKNESS] = CommonTheme.CONTROL_BORDER_THICKNESS;
-DEFAULT_APPEARANCE[IMAGE_URL] = '';
-DEFAULT_APPEARANCE[IMAGE_ASPECT_RATIO] = true;
+const DEFAULT_APPEARANCE = {
+    [DefaultAppearance.BACKGROUND_COLOR]: 0xFFFFFF,
+    [DefaultAppearance.TEXT_DISABLED]: true,
+    [DefaultAppearance.STROKE_COLOR]: CommonTheme.CONTROL_BORDER_COLOR,
+    [DefaultAppearance.STROKE_THICKNESS]: CommonTheme.CONTROL_BORDER_THICKNESS,
+    [IMAGE_URL]: '',
+    [IMAGE_ASPECT_RATIO]: true,
+};
 
 export class Image implements ShapePlugin {
     public identifier(): string {

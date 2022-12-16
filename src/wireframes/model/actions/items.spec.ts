@@ -7,9 +7,8 @@
 
 /* eslint-disable @typescript-eslint/naming-convention */
 
-import { Rotation, Vec2 } from '@app/core';
-import { DefaultAppearance } from '@app/wireframes/interface';
-import { addIcon, addImage, addVisual, buildItems, calculateSelection, Diagram, DiagramItem, DiagramItemSet, EditorState, pasteItems, removeItems, RendererService, selectItems, Serializer, Transform, unlockItems } from '@app/wireframes/model';
+import { Vec2 } from '@app/core';
+import { addVisual, buildItems, calculateSelection, Diagram, DiagramItem, DiagramItemSet, EditorState, pasteItems, removeItems, RendererService, selectItems, Serializer, unlockItems } from '@app/wireframes/model';
 import { Button } from '@app/wireframes/shapes/neutral/button';
 import { Icon } from '@app/wireframes/shapes/shared/icon';
 import { Raster } from '@app/wireframes/shapes/shared/raster';
@@ -93,73 +92,6 @@ describe('ItemsReducer', () => {
         const newShape = state_2.diagrams.get(diagram.id)!.items.get('2')!;
 
         expect(newShape.isLocked).toBeFalsy();
-    });
-
-    it('should add icon to diagram and select the shape', () => {
-        const shapeId = 'shape';
-
-        const action = addIcon(diagram, 'Icon', 'FontAwesome', 20, 40, shapeId);
-
-        const state_1 = EditorState.empty().addDiagram(diagram);
-        const state_2 = reducer(state_1, action);
-
-        const newDiagram = state_2.diagrams.get(diagram.id)!;
-        const newIcon = newDiagram.items.get(shapeId)!;
-
-        expect(newIcon.id).toBe(shapeId);
-        expect(newIcon.renderer).toBe('Icon');
-        expect(newIcon.appearance.get(DefaultAppearance.TEXT)).toBe('Icon');
-        expect(newIcon.appearance.get(DefaultAppearance.ICON_FONT_FAMILY)).toBe('FontAwesome');
-        expect(newIcon.transform).toEqual(new Transform(new Vec2(40, 60), new Vec2(40, 40), Rotation.ZERO));
-
-        expect(newDiagram.selectedIds.values).toEqual([shapeId]);
-    });
-
-    it('should add raster to diagram and select the shape', () => {
-        const shapeId = 'shape';
-
-        const action = addImage(diagram, 'source', 20, 40, 60, 80, shapeId);
-
-        const state_1 = EditorState.empty().addDiagram(diagram);
-        const state_2 = reducer(state_1, action);
-
-        const newDiagram = state_2.diagrams.get(diagram.id)!;
-        const newImage = newDiagram.items.get(shapeId)!;
-
-        expect(newImage.id).toBe(shapeId);
-        expect(newImage.appearance.get('SOURCE')).toBe('source');
-        expect(newImage.renderer).toBe('Raster');
-        expect(newImage.transform).toEqual(new Transform(new Vec2(50, 80), new Vec2(60, 80), Rotation.ZERO));
-
-        expect(newDiagram.selectedIds.values).toEqual([shapeId]);
-    });
-
-    it('should add raster and resize to max height of 300 if height is larger', () => {
-        const shapeId = 'shape';
-
-        const action = addImage(diagram, 'source', 20, 40, 600, 800, shapeId);
-
-        const state_1 = EditorState.empty().addDiagram(diagram);
-        const state_2 = reducer(state_1, action);
-
-        const newDiagram = state_2.diagrams.get(diagram.id)!;
-        const newImage = newDiagram.items.get(shapeId)!;
-
-        expect(newImage.transform.size).toEqual(new Vec2(225, 300));
-    });
-
-    it('should add raster and resize to max width of 300 if width is larger', () => {
-        const shapeId = 'shape';
-
-        const action = addImage(diagram, 'source', 20, 40, 600, 300, shapeId);
-
-        const state_1 = EditorState.empty().addDiagram(diagram);
-        const state_2 = reducer(state_1, action);
-
-        const newDiagram = state_2.diagrams.get(diagram.id)!;
-        const newImage = newDiagram.items.get(shapeId)!;
-
-        expect(newImage.transform.size).toEqual(new Vec2(300, 150));
     });
 
     it('should add visual and select this visual', () => {

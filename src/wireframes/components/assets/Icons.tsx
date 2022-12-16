@@ -8,10 +8,11 @@
 import { SearchOutlined } from '@ant-design/icons';
 import { Input, Select } from 'antd';
 import * as React from 'react';
-import { ReactReduxContext, useDispatch } from 'react-redux';
+import { useDispatch, useStore as useReduxStore } from 'react-redux';
+import { useRenderer } from '@app/context';
 import { Grid, useEventCallback } from '@app/core';
 import { texts } from '@app/texts';
-import { addIcon, filterIcons, getDiagramId, getFilteredIcons, getIconSet, getIconSets, getIconsFilter, IconInfo, selectIcons, useStore } from '@app/wireframes/model';
+import { addVisual, filterIcons, getDiagramId, getFilteredIcons, getIconSet, getIconSets, getIconsFilter, IconInfo, selectIcons, useStore } from '@app/wireframes/model';
 import { Icon } from './Icon';
 import './Icons.scss';
 
@@ -21,19 +22,23 @@ const keyBuilder = (icon: IconInfo) => {
 
 export const Icons = React.memo(() => {
     const dispatch = useDispatch();
-    const iconsFiltered = useStore(getFilteredIcons);
-    const iconsFilter = useStore(getIconsFilter);
-    const iconSets = useStore(getIconSets);
+    const renderer = useRenderer();
     const iconSet = useStore(getIconSet);
-
-    const storeContext = React.useContext(ReactReduxContext);
+    const iconSets = useStore(getIconSets);
+    const iconsFilter = useStore(getIconsFilter);
+    const iconsFiltered = useStore(getFilteredIcons);
+    const store = useReduxStore();
 
     const cellRenderer = React.useCallback((icon: IconInfo) => {
         const doAdd = () => {
-            const selectedDiagramId = getDiagramId(storeContext.store.getState());
+            const selectedDiagramId = getDiagramId(store.getState());
 
             if (selectedDiagramId) {
-                dispatch(addIcon(selectedDiagramId, icon.text, icon.fontFamily, 100, 100));
+                const visuals = renderer.createVisuals([{ type: 'Icon', ...icon }]);
+
+                for (const visual of visuals) {
+                    dispatch(addVisual(selectedDiagramId, visual.id, 100, 100, visual.appearance, undefined, visual.width, visual.height));
+                }
             }
         };
 
@@ -46,7 +51,7 @@ export const Icons = React.memo(() => {
                 <div className='asset-icon-title'>{icon.displayName}</div>
             </div>
         );
-    }, [dispatch, storeContext.store]);
+    }, [dispatch, renderer, store]);
 
     const doFilterIcons = useEventCallback((event: React.ChangeEvent<HTMLInputElement>) => {
         dispatch(filterIcons({ filter: event.target.value }));

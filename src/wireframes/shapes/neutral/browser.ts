@@ -10,9 +10,10 @@ import { CommonTheme } from './_theme';
 
 const OFFSET = { left: 4, top: 70, right: 4, bottom: 15 };
 
-const DEFAULT_APPEARANCE = {};
-DEFAULT_APPEARANCE[DefaultAppearance.BACKGROUND_COLOR] = 0xFFFFFF;
-DEFAULT_APPEARANCE[DefaultAppearance.TEXT_DISABLED] = true;
+const DEFAULT_APPEARANCE = {
+    [DefaultAppearance.BACKGROUND_COLOR]: 0xFFFFFF,
+    [DefaultAppearance.TEXT_DISABLED]: true,
+};
 
 const REFRESH_CODE = String.fromCharCode(0xf021);
 

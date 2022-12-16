@@ -10,15 +10,16 @@ import { CommonTheme } from './_theme';
 
 const ACCENT_COLOR = 'ACCENT_COLOR';
 
-const DEFAULT_APPEARANCE = {};
-DEFAULT_APPEARANCE[DefaultAppearance.FOREGROUND_COLOR] = CommonTheme.CONTROL_TEXT_COLOR;
-DEFAULT_APPEARANCE[DefaultAppearance.BACKGROUND_COLOR] = 0xffffff;
-DEFAULT_APPEARANCE[DefaultAppearance.TEXT] = 'item1\nitem2\nitem3*\nitem4';
-DEFAULT_APPEARANCE[DefaultAppearance.TEXT_ALIGNMENT] = 'left';
-DEFAULT_APPEARANCE[DefaultAppearance.FONT_SIZE] = CommonTheme.CONTROL_FONT_SIZE;
-DEFAULT_APPEARANCE[DefaultAppearance.STROKE_COLOR] = CommonTheme.CONTROL_BORDER_COLOR;
-DEFAULT_APPEARANCE[DefaultAppearance.STROKE_THICKNESS] = CommonTheme.CONTROL_BORDER_THICKNESS;
-DEFAULT_APPEARANCE[ACCENT_COLOR] = 0x2171b5;
+const DEFAULT_APPEARANCE = {
+    [DefaultAppearance.FOREGROUND_COLOR]: CommonTheme.CONTROL_TEXT_COLOR,
+    [DefaultAppearance.BACKGROUND_COLOR]: 0xffffff,
+    [DefaultAppearance.TEXT]: 'item1\nitem2\nitem3*\nitem4',
+    [DefaultAppearance.TEXT_ALIGNMENT]: 'left',
+    [DefaultAppearance.FONT_SIZE]: CommonTheme.CONTROL_FONT_SIZE,
+    [DefaultAppearance.STROKE_COLOR]: CommonTheme.CONTROL_BORDER_COLOR,
+    [DefaultAppearance.STROKE_THICKNESS]: CommonTheme.CONTROL_BORDER_THICKNESS,
+    [ACCENT_COLOR]: 0x2171b5,
+};
 
 export class List implements ShapePlugin {
     public identifier(): string {

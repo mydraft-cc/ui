@@ -9,23 +9,12 @@
 
 import { ActionReducerMapBuilder, createAction, Middleware } from '@reduxjs/toolkit';
 import { MathHelper, Vec2 } from '@app/core';
-import { DefaultAppearance } from '@app/wireframes/interface';
 import { Diagram, DiagramItem, DiagramItemSet, EditorState, RendererService, Serializer } from './../internal';
 import { createDiagramAction, createItemsAction, DiagramRef, ItemsRef } from './utils';
 
 export const addVisual =
-    createAction('items/addVisual', (diagram: DiagramRef, renderer: string, x: number, y: number, properties?: object, shapeId?: string) => {
-        return { payload: createDiagramAction(diagram, { shapeId: shapeId || MathHelper.guid(), renderer, position: { x, y }, properties }) };
-    });
-
-export const addImage =
-    createAction('items/addImage', (diagram: DiagramRef, source: string, x: number, y: number, w: number, h: number, shapeId?: string) => {
-        return { payload: createDiagramAction(diagram, { shapeId: shapeId || MathHelper.guid(), source, position: { x, y }, size: { w, h } }) };
-    });
-
-export const addIcon =
-    createAction('items/addIcon', (diagram: DiagramRef, text: string, fontFamily: string, x: number, y: number, shapeId?: string) => {
-        return { payload: createDiagramAction(diagram, { shapeId: shapeId || MathHelper.guid(), text, fontFamily, position: { x, y } }) };
+    createAction('items/addVisual', (diagram: DiagramRef, renderer: string, x: number, y: number, appearance?: object, shapeId?: string, width?: number, height?: number) => {
+        return { payload: createDiagramAction(diagram, { shapeId: shapeId || MathHelper.guid(), renderer, position: { x, y }, appearance, width, height }) };
     });
 
 export const lockItems =
@@ -52,8 +41,6 @@ export const pasteItems =
     createAction('items/paste', (diagram: DiagramRef, json: string, offset = 0) => {
         return { payload: createDiagramAction(diagram, { json, offset }) };
     });
-
-const MAX_IMAGE_SIZE = 300;
 
 export function itemsMiddleware(serializer: Serializer): Middleware {
     const middleware: Middleware = () => next => action => {
@@ -133,76 +120,29 @@ export function buildItems(builder: ActionReducerMapBuilder<EditorState>, render
                 return diagram;
             });
         })
-        .addCase(addIcon, (state, action) => {
-            const { diagramId, fontFamily, position, shapeId, text } = action.payload;
-
-            return state.updateDiagram(diagramId, diagram => {
-                const rendererInstance = rendererService.get('Icon');
-
-                const shape = rendererInstance.createDefaultShape(shapeId);
-
-                const finalPosition =
-                    new Vec2(
-                        position.x + shape.transform.size.x * 0.5,
-                        position.y + shape.transform.size.y * 0.5);
-
-                const configured =
-                    shape.transformWith(t => t.moveTo(finalPosition))
-                        .setAppearance(DefaultAppearance.TEXT, text)
-                        .setAppearance(DefaultAppearance.ICON_FONT_FAMILY, fontFamily);
-
-                return diagram.addVisual(configured).selectItems([configured.id]);
-            });
-        })
-        .addCase(addImage, (state, action) => {
-            const { diagramId, position, shapeId, size, source } = action.payload;
-
-            return state.updateDiagram(diagramId, diagram => {
-                let finalSize = new Vec2(size.w, size.h);
-
-                if (finalSize.x > MAX_IMAGE_SIZE || finalSize.y > MAX_IMAGE_SIZE) {
-                    const ratio = finalSize.x / finalSize.y;
-
-                    if (ratio > 1) {
-                        finalSize = new Vec2(MAX_IMAGE_SIZE, MAX_IMAGE_SIZE / ratio);
-                    } else {
-                        finalSize = new Vec2(MAX_IMAGE_SIZE * ratio, MAX_IMAGE_SIZE);
-                    }
-                }
-
-                const finalPosition =
-                    new Vec2(
-                        position.x + finalSize.x * 0.5,
-                        position.y + finalSize.y * 0.5);
-
-                const rendererInstance = rendererService.get('Raster');
-
-                const shape =
-                    rendererInstance.createDefaultShape(shapeId)
-                        .transformWith(t => t.resizeTo(finalSize))
-                        .transformWith(t => t.moveTo(finalPosition))
-                        .setAppearance('SOURCE', source);
-
-                return diagram.addVisual(shape).selectItems([shape.id]);
-            });
-        })
         .addCase(addVisual, (state, action) => {
-            const { diagramId, position, properties, renderer, shapeId } = action.payload;
+            const { diagramId, position, appearance, renderer, shapeId, width, height } = action.payload;
 
             return state.updateDiagram(diagramId, diagram => {
                 const rendererInstance = rendererService.get(renderer);
 
                 const shape = rendererInstance.createDefaultShape(shapeId);
 
-                const finalPosition =
-                    new Vec2(
-                        position.x + shape.transform.size.x * 0.5,
-                        position.y + shape.transform.size.y * 0.5);
+                let configured = shape.transformWith(transform => {
+                    if (width && height) {
+                        transform = transform.resizeTo(new Vec2(width, height));
+                    }
 
-                let configured = shape.transformWith(t => t.moveTo(finalPosition));
+                    const finalPosition =
+                        new Vec2(
+                            position.x + transform.size.x * 0.5,
+                            position.y + transform.size.y * 0.5);
+                            
+                    return transform.moveTo(finalPosition);
+                });
 
-                if (properties) {
-                    for (const [key, value] of Object.entries(properties)) {
+                if (appearance) {
+                    for (const [key, value] of Object.entries(appearance)) {
                         configured = configured.setAppearance(key, value);
                     }
                 }
