@@ -7,7 +7,8 @@
 
 import * as React from 'react';
 import { SizeMeProps, withSize } from 'react-sizeme';
-import { sizeInPx, useEventCallback } from './../utils/react';
+import { sizeInPx } from './../utils/react';
+import { useEventCallback } from './hooks';
 
 interface GridProps {
     // The items to render.

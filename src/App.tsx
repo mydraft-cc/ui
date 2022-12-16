@@ -11,7 +11,7 @@ import classNames from 'classnames';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
 import { useRouteMatch } from 'react-router';
-import { useEventCallback, usePrinter } from '@app/core';
+import { ClipboardContainer, useEventCallback, usePrinter } from '@app/core';
 import { ArrangeMenu, ClipboardMenu, EditorView, HistoryMenu, Icons, LoadingMenu, LockMenu, Pages, PrintView, Properties, Recent, SettingsMenu, Shapes, UIMenu } from '@app/wireframes/components';
 import { loadDiagram, newDiagram, selectTab, showInfoToast, toggleLeftSidebar, toggleRightSidebar, useStore } from '@app/wireframes/model';
 import { texts } from './texts';
@@ -74,7 +74,7 @@ export const App = () => {
     });
 
     return (
-        <>
+        <ClipboardContainer>
             <Layout className='screen-mode'>
                 <Layout.Header>
                     <img className='logo' src={logo} alt='mydraft.cc' />
@@ -155,6 +155,6 @@ export const App = () => {
             }
 
             <CustomDragLayer />
-        </>
+        </ClipboardContainer>
     );
 };

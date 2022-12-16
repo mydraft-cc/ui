@@ -15,30 +15,31 @@ export interface ShortcutProps {
     // The key binding.
     keys: string;
 
+    // Allows the default settings.
+    allowDefault?: boolean;
+
     // Triggered when the keys are pressed.
     onPressed: () => any;
 }
 
 export const Shortcut = (props: ShortcutProps) => {
-    const { disabled, keys, onPressed } = props;
+    const currentProps = React.useRef(props);
 
-    const currentDisabled = React.useRef(disabled);
-    const currentOnPressed = React.useRef(onPressed);
-
-    currentDisabled.current = disabled;
-    currentOnPressed.current = onPressed;
+    currentProps.current = props;
 
     React.useEffect(() => {
-        const simplifiedKeys = keys.toLocaleLowerCase().replace(/[\s]/g, '');
+        const simplifiedKeys = props.keys.toLocaleLowerCase().replace(/[\s]/g, '');
 
         Mousetrap.bind(simplifiedKeys, (event) => {
-            if (!currentDisabled.current) {
-                currentOnPressed.current();
+            if (!currentProps.current.disabled) {
+                currentProps.current.onPressed();
             }
 
-            event.preventDefault();
-            event.stopPropagation();
-            event.stopImmediatePropagation();
+            if (!currentProps.current.allowDefault) {
+                event.preventDefault();
+                event.stopPropagation();
+                event.stopImmediatePropagation();
+            }
 
             return false;
         });
@@ -46,7 +47,7 @@ export const Shortcut = (props: ShortcutProps) => {
         return () => {
             Mousetrap.unbind(simplifiedKeys);
         };
-    }, [keys]);
+    }, [props.keys]);
 
     return <></>;
 };

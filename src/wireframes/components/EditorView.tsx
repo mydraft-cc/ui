@@ -12,7 +12,7 @@ import { NativeTypes } from 'react-dnd-html5-backend';
 import { findDOMNode } from 'react-dom';
 import { useDispatch } from 'react-redux';
 import { RendererContext } from '@app/context';
-import { sizeInPx, useEventCallback } from '@app/core';
+import { loadImage, sizeInPx, useClipboard, useEventCallback } from '@app/core';
 import { addIcon, addImage, addVisual, changeItemsAppearance, Diagram, getDiagram, getDiagramId, getEditor, getMasterDiagram, getSelectedItems, getSelectedItemsWithLocked, selectItems, Transform, transformItems, useStore } from '@app/wireframes/model';
 import { Editor } from '@app/wireframes/renderer/Editor';
 import { DiagramRef, ItemsRef } from '../model/actions/utils';
@@ -42,8 +42,9 @@ export const EditorViewInner = ({ diagram, spacing }: EditorViewProps & { diagra
     const editorColor = editor.color;
     const editorSize = editor.size;
     const masterDiagram = useStore(getMasterDiagram);
-    const ref = React.useRef<any>();
+    const renderRef = React.useRef<any>();
     const renderer = React.useContext(RendererContext);
+    const selectedPoint = React.useRef({ x: 0, y: 0 });
     const selectedDiagramId = useStore(getDiagramId);
     const state = useStore(s => s);
     const zoom = useStore(s => s.ui.zoom);
@@ -66,6 +67,58 @@ export const EditorViewInner = ({ diagram, spacing }: EditorViewProps & { diagra
         setMenuVisible(false);
     });
 
+    const doSetPosition = useEventCallback((event: React.MouseEvent) => {
+        selectedPoint.current = { x: event.nativeEvent.offsetX, y: event.nativeEvent.offsetY };
+    });
+
+    const addImages = useEventCallback((files: File[] | FileList | undefined, x: number, y: number) => {
+        if (!selectedDiagramId || !files) {
+            return;
+        }
+
+        async function loadFiles(diagramId: string, files: File[]) {
+            for (const file of files) {
+                const image = await loadImage(file);
+
+                if (image != null) {
+                    dispatch(addImage(diagramId, image.source, x, y, image.width, image.height));
+                }
+            }
+        }
+
+        loadFiles(selectedDiagramId, Array.from(files));
+    });
+
+    const addUrls = useEventCallback((urls: string[] | undefined, x: number, y: number) => {
+        if (!selectedDiagramId || !urls) {
+            return;
+        }
+
+        for (const url of urls) {
+            dispatch(addVisual(selectedDiagramId, 'Link', x, y, { TEXT: url }));
+            break;
+        }
+    });
+
+    useClipboard({
+        onPaste: event => {
+            if (!selectedDiagramId) {
+                return;
+            }
+    
+            const x = selectedPoint.current.x;
+            const y = selectedPoint.current.y;
+    
+            if (event.type === 'Text') {
+                dispatch(addVisual(selectedDiagramId, 'Link', x, y, { TEXT: event.text }));
+            } else if (event.images) {
+                const image = event.images[0];
+    
+                dispatch(addImage(selectedDiagramId, image.source, x, y, image.width, image.height));
+            }
+        },
+    });
+
     const [, drop] = useDrop({
         accept: [
             NativeTypes.URL,
@@ -75,7 +128,7 @@ export const EditorViewInner = ({ diagram, spacing }: EditorViewProps & { diagra
             'DND_ICON',
         ],
         drop: (item: any, monitor: DropTargetMonitor) => {
-            if (!monitor || !ref.current || !selectedDiagramId) {
+            if (!monitor || !renderRef.current || !selectedDiagramId) {
                 return;
             }
 
@@ -89,7 +142,7 @@ export const EditorViewInner = ({ diagram, spacing }: EditorViewProps & { diagra
                 return;
             }
 
-            const componentRect = (findDOMNode(ref.current) as HTMLElement)!.getBoundingClientRect();
+            const componentRect = (findDOMNode(renderRef.current) as HTMLElement)!.getBoundingClientRect();
 
             let x = ((offset?.x || 0) - spacing - componentRect.left) / zoom;
             let y = ((offset?.y || 0) - spacing - componentRect.top) / zoom;
@@ -107,41 +160,18 @@ export const EditorViewInner = ({ diagram, spacing }: EditorViewProps & { diagra
                     dispatch(addVisual(selectedDiagramId, 'Label', x, y, { TEXT: item.text }));
                     break;
                 case NativeTypes.FILE: {
-                    const files = item.files as File[];
-
-                    for (const file of files) {
-                        if (file.type.indexOf('image') === 0) {
-                            const reader = new FileReader();
-
-                            reader.onload = (loadedFile: any) => {
-                                const imageSource: string = loadedFile.target.result;
-                                const imageElement = document.createElement('img');
-
-                                imageElement.onload = () => {
-                                    dispatch(addImage(selectedDiagramId, imageSource, x, y, imageElement.width, imageElement.height));
-                                };
-                                imageElement.src = imageSource;
-                            };
-                            reader.readAsDataURL(file);
-                            break;
-                        }
-                    }
+                    addImages(item.files, x, y);
                     break;
                 }
                 case NativeTypes.URL: {
-                    const urls = item.urls as string[];
-
-                    for (const url of urls) {
-                        dispatch(addVisual(selectedDiagramId, 'Link', x, y, { TEXT: url }));
-                        break;
-                    }
+                    addUrls(item.urls, x, y);
                     break;
                 }
             }
         },
     });
 
-    drop(ref);
+    drop(renderRef);
 
     const zoomedOuterWidth = 2 * spacing + zoomedSize.x;
     const zoomedOuterHeight = 2 * spacing + zoomedSize.y;
@@ -153,8 +183,8 @@ export const EditorViewInner = ({ diagram, spacing }: EditorViewProps & { diagra
 
     return (
         <Dropdown overlay={<ContextMenu onClick={doHide} />} trigger={['contextMenu']} visible={menuVisible} onVisibleChange={setMenuVisible}>            
-            <div className='editor-view'>
-                <div className='editor-diagram' style={{ width: w, height: h, padding }} ref={ref} >
+            <div className='editor-view' onClick={doSetPosition}>
+                <div className='editor-diagram' style={{ width: w, height: h, padding }} ref={renderRef} >
                     <Editor
                         color={editorColor}
                         diagram={diagram}
