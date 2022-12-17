@@ -9,7 +9,7 @@
 
 import { Store } from 'redux';
 import { texts } from '@app/texts';
-import { showInfoToast } from '@app/wireframes/model';
+import { showToast } from '@app/wireframes/model';
 
 export function registerServiceWorker(store: Store) {
     if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator) {
@@ -28,7 +28,7 @@ export function registerServiceWorker(store: Store) {
                         installingWorker.onstatechange = () => {
                             if (installingWorker.state === 'installed') {
                                 if (navigator.serviceWorker.controller) {
-                                    store.dispatch(showInfoToast(texts.common.newVersion));
+                                    store.dispatch(showToast({ content: texts.common.newVersion }));
 
                                     console.log('New content is available; please refresh.');
                                 } else {

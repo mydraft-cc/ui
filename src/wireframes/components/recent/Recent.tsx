@@ -10,7 +10,7 @@ import * as React from 'react';
 import { useDispatch } from 'react-redux';
 import { useEventCallback } from '@app/core';
 import { texts } from '@app/texts';
-import { loadDiagram, RecentDiagram, useStore } from '@app/wireframes/model';
+import { loadDiagramFromServer, RecentDiagram, useStore } from '@app/wireframes/model';
 import { RecentItem } from './RecentItem';
 import './Recent.scss';
 
@@ -19,7 +19,7 @@ export const Recent = () => {
     const recent = useStore(x => x.loading.recentDiagrams);
 
     const doLoad = useEventCallback((item: RecentDiagram) => {
-        dispatch(loadDiagram({ tokenToRead: item.tokenToRead, tokenToWrite: item.tokenToWrite, navigate: true }));
+        dispatch(loadDiagramFromServer({ tokenToRead: item.tokenToRead, tokenToWrite: item.tokenToWrite, navigate: true }));
     });
 
     const orderedRecent = React.useMemo(() => {
