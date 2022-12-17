@@ -29,23 +29,21 @@ export class Raster implements ShapePlugin {
 
     public create(source: VisualSource) {
         if (source.type == 'Image') {
-            let { width, height, source: data } = source.image;
+            let { width: w, height: h, source: data } = source.image;
 
-            if (width > MAX_IMAGE_SIZE || height > MAX_IMAGE_SIZE) {
-                const ratio = width / height;
+            if (w > MAX_IMAGE_SIZE || h > MAX_IMAGE_SIZE) {
+                const ratio = w / h;
 
                 if (ratio > 1) {
-                    width = MAX_IMAGE_SIZE;
-
-                    height = MAX_IMAGE_SIZE / ratio;
+                    w = MAX_IMAGE_SIZE;
+                    h = MAX_IMAGE_SIZE / ratio;
                 } else {
-                    height = MAX_IMAGE_SIZE;
-                    
-                    width = MAX_IMAGE_SIZE * ratio;
+                    h = MAX_IMAGE_SIZE;
+                    w = MAX_IMAGE_SIZE * ratio;
                 }
             }
 
-            return { width, height, appearance: { [SOURCE]: data } };
+            return { width: w, height: h, appearance: { [SOURCE]: data } };
         }
 
         return null;
