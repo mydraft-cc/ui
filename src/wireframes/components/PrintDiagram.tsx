@@ -72,8 +72,8 @@ export const PrintDiagram = (props: PrintDiagramProps) => {
                 color={color}
                 diagram={diagram}
                 masterDiagram={diagrams.get(diagram.master!)}
-                onRender={doOnRender}
                 onNavigate={onNavigate}
+                onRender={doOnRender}
                 rendererService={rendererService}
                 selectedItems={[]}
                 selectedItemsWithLocked={[]}
