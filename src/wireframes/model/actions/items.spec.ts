@@ -14,7 +14,7 @@ import { Button } from '@app/wireframes/shapes/neutral/button';
 import { Icon } from '@app/wireframes/shapes/shared/icon';
 import { Raster } from '@app/wireframes/shapes/shared/raster';
 import { AbstractControl } from '@app/wireframes/shapes/utils/abstract-control';
-import { lockItems } from './items';
+import { lockItems, renameItems } from './items';
 import { createClassReducer } from './utils';
 
 describe('ItemsReducer', () => {
@@ -71,6 +71,17 @@ describe('ItemsReducer', () => {
         const newDiagram = state_2.diagrams.get(diagram.id)!;
 
         expect(newDiagram.selectedIds.size).toBe(0);
+    });
+
+    it('should rename item', () => {
+        const action = renameItems(diagram, [shape1], 'Name');
+
+        const state_1 = EditorState.empty().addDiagram(diagram);
+        const state_2 = reducer(state_1, action);
+
+        const newShape = state_2.diagrams.get(diagram.id)!.items.get('1')!;
+
+        expect(newShape.name).toEqual('Name');
     });
 
     it('should lock item', () => {

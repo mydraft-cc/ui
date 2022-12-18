@@ -41,16 +41,19 @@ export const RenderLayer = React.memo((props: RenderLayerProps) => {
     const shapesRendered = React.useRef(onRender);
     const shapeRefsById = React.useRef<{ [id: string]: ShapeRef }>({});
 
+    const itemIds = diagram?.itemIds;
+    const items = diagram?.items;
+
     const orderedShapes = React.useMemo(() => {
         const flattenShapes: DiagramItem[] = [];
 
-        if (diagram) {
+        if (items && itemIds) {
             let handleContainer: (itemIds: DiagramContainer) => any;
 
             // eslint-disable-next-line prefer-const
             handleContainer = itemIds => {
                 for (const id of itemIds.values) {
-                    const item = diagram.items.get(id);
+                    const item = items.get(id);
 
                     if (item) {
                         if (item.type === 'Shape') {
@@ -64,11 +67,11 @@ export const RenderLayer = React.memo((props: RenderLayerProps) => {
                 }
             };
 
-            handleContainer(diagram.itemIds);
+            handleContainer(itemIds);
         }
 
         return flattenShapes;
-    }, [diagram]);
+    }, [itemIds, items]);
 
     React.useEffect(() => {
         const allShapesById: { [id: string]: boolean } = {};
@@ -100,11 +103,12 @@ export const RenderLayer = React.memo((props: RenderLayerProps) => {
 
         let hasIdChanged = false;
 
-        allShapes.forEach((shape, i) => {
-            if (!references[shape.id].checkIndex(i)) {
+        for (let i = 0; i < allShapes.length; i++) {
+            if (!references[allShapes[i].id].checkIndex(i)) {
                 hasIdChanged = true;
+                break;
             }
-        });
+        }
 
         // If the index of at least once shape has changed we have to remove them all to render them in the correct order.
         if (hasIdChanged) {

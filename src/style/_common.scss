@@ -309,6 +309,44 @@ header {
     }
 }
 
+//
+// > Trees
+//
+.tree-item {
+    &-header-container {
+        margin-top: 1px;
+        margin-bottom: 1px;
+        height: 34px;
+    }
+
+    &-header {
+        align-items: center;
+        cursor: default;
+        direction: ltr;
+        display: flex;
+        padding: 5px;
+
+        &:hover {
+            background-color: $color-theme-blue-dark;
+            border: 0;
+            border-radius: 2px;
+            color: $color-white;
+        }
+
+        &.selected {
+            background-color: $color-theme-blue;
+            border: 0;
+            border-radius: 2px;
+            color: $color-white;
+        }
+    }
+
+    &-title {
+        @include truncate;
+        margin-left: 10px;
+    }
+}
+
 .print-mode {
     display: none;
 }

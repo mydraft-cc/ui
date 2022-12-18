@@ -222,6 +222,13 @@ describe('Diagram', () => {
         expect(group2.childIds.values).toEqual([shape1.id, shape2.id]);
     });
 
+    it('should move items', () => {
+        const diagram_2 = diagram_1.addVisual(shape1).addVisual(shape2).addVisual(shape3);
+        const diagram_3 = diagram_2.moveItems([shape1.id], 2);
+
+        expect(diagram_3.itemIds.values).toEqual([shape2.id, shape3.id, shape1.id]);
+    });
+
     it('should bring items to front', () => {
         const diagram_2 = diagram_1.addVisual(shape1).addVisual(shape2).addVisual(shape3);
         const diagram_3 = diagram_2.bringToFront([shape1.id]);
