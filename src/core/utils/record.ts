@@ -7,8 +7,8 @@
 
 import { Types } from './types';
 
-export abstract class Record<T> {
-    private readonly values: {};
+export abstract class Record<T extends object> {
+    private readonly values: T;
 
     public get<K extends keyof T>(key: K): T[K] {
         return this.values[key as string];
@@ -22,13 +22,27 @@ export abstract class Record<T> {
     }
 
     public set<K extends keyof T>(key: K, value: T[K]): this {
-        const values = { ...this.values, [key]: value };
+        const values = { ...this.values };
+
+        if (Types.isUndefined(value)) {
+            delete values[key];
+        } else {
+            values[key] = value;
+        }
 
         return this.makeRecord(values);
     }
 
     public merge(props: Partial<T>) {
-        const values = { ...this.values, ...props };
+        const values = { ...this.values };
+
+        for (const [key, value] of Object.entries(props)) {
+            if (Types.isUndefined(value)) {
+                delete values[key];
+            } else {
+                values[key] = value;
+            }
+        }
 
         return this.makeRecord(values);
     }
@@ -48,7 +62,7 @@ export abstract class Record<T> {
         return record;
     }
 
-    protected afterClone(values: object) {
+    protected afterClone(values: T) {
         return values;
     }
 }

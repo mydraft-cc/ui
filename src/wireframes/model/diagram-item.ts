@@ -300,12 +300,12 @@ export class DiagramItem extends Record<Props> implements Shape {
         }
     }
 
-    protected afterClone(values: ImmutableMap<any>, prev?: DiagramItem) {
+    protected afterClone(values: Props, prev?: DiagramItem) {
         if (this.constraint) {
             const size = this.constraint.updateSize(this, this.transform.size, prev);
 
             if (size.x > 0 && size.y > 0) {
-                return values.set('transform', this.transform.resizeTopLeft(size));
+                values.transform = this.transform.resizeTopLeft(size);
             }
         }
 
