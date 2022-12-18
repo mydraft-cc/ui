@@ -47,7 +47,7 @@ export abstract class Record<T extends object> {
         return this.makeRecord(values);
     }
 
-    private makeRecord(values: object) {
+    private makeRecord(values: T) {
         if (Types.equals(values, this.values)) {
             return this;
         }
