@@ -13,7 +13,7 @@ import { Transform } from '@app/wireframes/model';
 describe('Transform', () => {
     const transform = new Transform(new Vec2(10, 20), new Vec2(30, 40), Rotation.fromDegree(45));
 
-    it('should convert from json', () => {
+    it('should convert from old json', () => {
         const json = {
             position: {
                 x: 10,
@@ -35,14 +35,32 @@ describe('Transform', () => {
         expect(parsed.rotation.degree).toEqual(45);
     });
 
+    it('should convert from new json', () => {
+        const json = {
+            x: 10,
+            y: 20,
+            w: 30,
+            h: 40,
+            r: 45,
+        };
+
+        const parsed = Transform.fromJS(json);
+
+        expect(parsed.position.x).toEqual(10);
+        expect(parsed.position.y).toEqual(20);
+        expect(parsed.size.x).toEqual(30);
+        expect(parsed.size.y).toEqual(40);
+        expect(parsed.rotation.degree).toEqual(45);
+    });
+
     it('should convert to json', () => {
         const json = transform.toJS();
 
-        expect(json.position.x).toEqual(10);
-        expect(json.position.y).toEqual(20);
-        expect(json.size.x).toEqual(30);
-        expect(json.size.y).toEqual(40);
-        expect(json.rotation).toEqual(45);
+        expect(json.x).toEqual(10);
+        expect(json.y).toEqual(20);
+        expect(json.w).toEqual(30);
+        expect(json.h).toEqual(40);
+        expect(json.r).toEqual(45);
     });
 
     it('should make correct equal comparisons', () => {
