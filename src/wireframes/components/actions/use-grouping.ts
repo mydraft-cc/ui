@@ -23,7 +23,7 @@ export function useGrouping() {
 
     const doGroup = useEventCallback(() => {
         if (selectedDiagramId) {
-            dispatch(groupItems(selectedDiagramId, selectedItems, MathHelper.guid()));
+            dispatch(groupItems(selectedDiagramId, selectedItems, MathHelper.nextId()));
         }
     });
 

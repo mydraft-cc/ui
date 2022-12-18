@@ -182,9 +182,13 @@ export class Diagram extends Record<Props> {
         });
     }
 
-    public updateItem(id: string, updater: (value: DiagramItem) => DiagramItem) {
-        return this.mutate([id], ({ items }) => {
-            items = items.update(id, updater);
+    public updateItems(ids: ReadonlyArray<string>, updater: (value: DiagramItem) => DiagramItem) {
+        return this.mutate(ids, ({ items }) => {
+            items = items.mutate(mutator => {
+                for (const id of ids) {
+                    mutator.update(id, updater);
+                }
+            });
 
             return { items };
         });
@@ -216,9 +220,9 @@ export class Diagram extends Record<Props> {
         }
 
         return this.mutate([], ({ itemIds: rootIds, items }) => {
-            items = items.mutate(m => {
+            items = items.mutate(mutator => {
                 for (const item of set.allItems) {
-                    m.set(item.id, item);
+                    mutator.set(item.id, item);
                 }
             });
 
@@ -266,7 +270,7 @@ export class Diagram extends Record<Props> {
         // Compute a new instance ID with every change, so we can identity the instance without saving the reference.
         const update = updater({
             id: this.id,
-            instanceId: MathHelper.guid(),
+            instanceId: MathHelper.nextId(),
             itemIds: rootIds,
             items: this.items,
             selectedIds: 

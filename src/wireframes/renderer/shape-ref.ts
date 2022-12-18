@@ -15,10 +15,6 @@ export class ShapeRef {
 
     public renderedElement: svg.Element | null = null;
 
-    public get renderId() {
-        return this.renderedElement?.id();
-    }
-
     constructor(
         public readonly doc: svg.Container,
         public readonly renderer: Renderer,
@@ -55,31 +51,22 @@ export class ShapeRef {
     }
 
     public render(shape: DiagramItem) {
-        const mustRender = this.currentShape !== shape || !this.renderedElement;
-
         const previousElement = this.renderedElement;
 
-        // Try to add them first, because we cannot handle clip paths that are not added.
-        if (previousElement && !previousElement.parent()) {
-            this.doc.add(previousElement);
+        if (this.currentShape === shape && previousElement) {
+            this.doc.add(this.renderedElement!);
+            return;
         }
 
-        if (mustRender) {
-            this.renderer.setContext(this.doc);
+        this.renderer.setContext(this.doc);
+        this.renderedElement = this.renderer.render(shape, previousElement, { debug: this.showDebugMarkers });
 
-            const newElement = this.renderer.render(shape, this.renderedElement, { debug: this.showDebugMarkers });
+        // Always update shape to keep a reference to the actual object, not the old object.
+        this.renderedElement!.node['shape'] = shape;
 
-            // Always update shape to keep a reference to the actual object, not the old object.
-            newElement.node['shape'] = shape;
-
-            if (newElement !== previousElement) {
-                // For new elements we might have to add them.
-                if (!newElement.parent()) {
-                    this.doc.add(newElement);
-                }
-
-                this.renderedElement = newElement;
-            }
+        // For new elements we might have to add them.
+        if (!this.renderedElement!.parent()) {
+            this.doc.add(this.renderedElement!);
         }
 
         this.currentShape = shape;

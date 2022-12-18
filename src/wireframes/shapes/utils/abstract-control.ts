@@ -146,8 +146,8 @@ export class AbstractControl implements Renderer {
         const container = SVGRenderer2.INSTANCE.getContainer();
 
         if (!existing) {
-            existing = container.group();
-            existing.rect().fill('#fff').opacity(0.001);
+            existing = new svg.G();
+            existing.add(new svg.Rect().fill('#fff').opacity(0.001));
 
             if (options?.debug) {
                 existing.rect().fill('#fff').stroke({ color: '#ff0000' });

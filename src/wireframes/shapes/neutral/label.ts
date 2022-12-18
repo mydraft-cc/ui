@@ -43,6 +43,6 @@ export class Label implements ShapePlugin {
     public render(ctx: RenderContext) {
         ctx.renderer2.text(ctx.shape, ctx.rect, p => {
             p.setForegroundColor(ctx.shape);
-        });
+        }, true);
     }
 }

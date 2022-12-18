@@ -18,7 +18,7 @@ import { createDiagramAction, DiagramRef } from './utils';
  */
 export const addImage =
     createAction('items/addImage', (diagram: DiagramRef, source: string, x: number, y: number, w: number, h: number, shapeId?: string) => {
-        return { payload: createDiagramAction(diagram, { shapeId: shapeId || MathHelper.guid(), source, position: { x, y }, size: { w, h } }) };
+        return { payload: createDiagramAction(diagram, { shapeId: shapeId || MathHelper.nextId(), source, position: { x, y }, size: { w, h } }) };
     });
 
 /**
@@ -26,7 +26,7 @@ export const addImage =
  */
 export const addIcon =
     createAction('items/addIcon', (diagram: DiagramRef, text: string, fontFamily: string, x: number, y: number, shapeId?: string) => {
-        return { payload: createDiagramAction(diagram, { shapeId: shapeId || MathHelper.guid(), text, fontFamily, position: { x, y } }) };
+        return { payload: createDiagramAction(diagram, { shapeId: shapeId || MathHelper.nextId(), text, fontFamily, position: { x, y } }) };
     });
     
 const MAX_IMAGE_SIZE = 300;

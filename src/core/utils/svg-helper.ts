@@ -9,6 +9,7 @@ import * as svg from '@svgdotjs/svg.js';
 import { Color } from './color';
 import { sizeInPx } from './react';
 import { Rect2 } from './rect2';
+import { Types } from './types';
 import { Vec2 } from './vec2';
 
 export interface MatrixTransform {
@@ -176,10 +177,8 @@ export module SVGHelper {
     }
 
     export function toColor(value: string | number | Color | null | undefined): string {
-        if (value === 'transparent') {
-            return 'transparent';
-        } else if (value === 'none') {
-            return 'none';
+        if (Types.isString(value)) {
+            return value;
         } else if (value) {
             return Color.fromValue(value).toString();
         } else {

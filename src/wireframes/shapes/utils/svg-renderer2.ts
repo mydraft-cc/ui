@@ -91,10 +91,10 @@ class Factory implements ShapeFactory {
         }, properties);
     }
 
-    public text(config?: RendererText, bounds?: Rect2, properties?: ShapePropertiesFunc) {
+    public text(config?: RendererText, bounds?: Rect2, properties?: ShapePropertiesFunc, allowMarkdown?: boolean) {
         return this.new('foreignObject', () => SVGHelper.createText(), p => {
             p.setBackgroundColor('transparent');
-            p.setText(config?.text);
+            p.setText(config?.text, allowMarkdown);
             p.setFontSize(config);
             p.setFontFamily(config);
             p.setAlignment(config);
@@ -103,10 +103,10 @@ class Factory implements ShapeFactory {
         }, properties);
     }
 
-    public textMultiline(config?: RendererText, bounds?: Rect2, properties?: ShapePropertiesFunc) {
+    public textMultiline(config?: RendererText, bounds?: Rect2, properties?: ShapePropertiesFunc, allowMarkdown?: boolean) {
         return this.new('foreignObject', () => SVGHelper.createText(), p => {
             p.setBackgroundColor('transparent');
-            p.setText(config?.text?.replace(/\n/g, '<br />'));
+            p.setText(config?.text?.replace(/\n/g, '<br />'), allowMarkdown);
             p.setFontSize(config);
             p.setFontFamily(config);
             p.setAlignment(config);
@@ -165,11 +165,14 @@ class Factory implements ShapeFactory {
             element = this.container.clipper()?.get(0) as T;
 
             if (!element || element.node.tagName !== name) {
-                element?.remove();
                 element = factory();
 
-                this.container.unclip();
-                this.container.clipWith(element);
+                const clipPath = new svg.ClipPath();
+
+                clipPath.add(element);
+
+                this.container.add(clipPath);
+                this.container.clipWith(clipPath);
             }
 
             this.wasClipped = true;
@@ -212,12 +215,12 @@ class Factory implements ShapeFactory {
         for (let i = this.containerIndex; i < size; i++) {
             const last = this.container.last();
 
-            last.clipper()?.remove();
-            last.remove();
+            if (last.node.tagName !== 'clipPath' || !this.wasClipped) {
+                last.remove();
+            }
         }
 
         if (!this.wasClipped) {
-            this.container.clipper()?.remove();
             this.container.unclip();
         }
     }
@@ -288,6 +291,7 @@ type PropertySet = Partial<{
     ['font-family']: any;
     ['font-size']: any;
     ['image']: any;
+    ['markdown']: any;
     ['opacity']: any;
     ['preserve-aspect-ratio']: any;
     ['radius']: any;
@@ -309,6 +313,7 @@ const PROPERTIES: ReadonlyArray<keyof PropertySet> = [
     'font-family',
     'font-size',
     'image',
+    'markdown',
     'opacity',
     'preserve-aspect-ratio',
     'radius',
@@ -379,11 +384,24 @@ class Properties implements ShapeProperties {
                 div.style.fontSize = `${value}px`;
             }
         },
+        'markdown': (value, element) => {
+            const div = element.node.children[0] as HTMLDivElement;
+
+            if (div?.nodeName === 'DIV') {
+                const textOrHtml = marked.parseInline(value);
+
+                if (textOrHtml.indexOf('<') >= 0) {
+                    div.innerHTML = textOrHtml;
+                } else {
+                    div.innerText = textOrHtml;
+                }
+            }
+        },
         'text': (value, element) => {
             const div = element.node.children[0] as HTMLDivElement;
 
             if (div?.nodeName === 'DIV') {
-                div.innerHTML = marked.parseInline(value);
+                div.innerText = value;
             }
         },
         'text-alignment': (value, element) => {
@@ -475,12 +493,6 @@ class Properties implements ShapeProperties {
         return this;
     }
 
-    public setText(text: RendererText | string | null | undefined): ShapeProperties {
-        this.properties['text'] = this.getText(text);
-
-        return this;
-    }
-
     public setTransform(rect: Rect | null | undefined): ShapeProperties {
         this.properties['transform'] = { rect };
 
@@ -535,6 +547,16 @@ class Properties implements ShapeProperties {
 
         if (Number.isFinite(value)) {
             this.properties['opacity'] = value;
+        }
+
+        return this;
+    }
+
+    public setText(text: RendererText | string | null | undefined, markdown?: boolean): ShapeProperties {
+        if (markdown) {
+            this.properties['markdown'] = this.getText(text);
+        } else {
+            this.properties['text'] = this.getText(text);
         }
 
         return this;

@@ -22,6 +22,12 @@ export abstract class Record<T extends object> {
     }
 
     public set<K extends keyof T>(key: K, value: T[K]): this {
+        const current = this.values[key];
+    
+        if (Types.equals(current, value)) {
+            return this;
+        }
+
         const values = { ...this.values };
 
         if (Types.isUndefined(value)) {
@@ -36,28 +42,38 @@ export abstract class Record<T extends object> {
     public merge(props: Partial<T>) {
         const values = { ...this.values };
 
+        let updates = 0;
+
         for (const [key, value] of Object.entries(props)) {
+            const current = this.values[key];
+    
+            if (Types.equals(current, value)) {
+                continue;
+            }
+
             if (Types.isUndefined(value)) {
                 delete values[key];
             } else {
                 values[key] = value;
             }
+
+            updates++;
+        }
+
+        if (updates === 0) {
+            return this;
         }
 
         return this.makeRecord(values);
     }
 
     private makeRecord(values: T) {
-        if (Types.equals(values, this.values)) {
-            return this;
-        }
-
         const record = Object.create(Object.getPrototypeOf(this));
 
         record.values = values;
         record.values = record.afterClone(values, this);
 
-        Object.freeze(record.value);
+        Object.freeze(record.values);
 
         return record;
     }

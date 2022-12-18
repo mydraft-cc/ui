@@ -11,6 +11,8 @@ type Mutator<T> = {
     remove: (key: string) => void;
 
     set: (key: string, value: T) => void;
+
+    update: (key: string, updater: (value: T) => T) => void;
 };
 
 export class ImmutableMap<T> {
@@ -98,7 +100,7 @@ export class ImmutableMap<T> {
 
         let updated = false;
 
-        updater({
+        const mutator: Mutator<T> = {
             set: (k, v) => {
                 if (k) {
                     const current = this.items[k];
@@ -119,7 +121,16 @@ export class ImmutableMap<T> {
                     }
                 }
             },
-        });
+            update: (k, updater: (value: T) => T) => {
+                if (k) {
+                    if (items.hasOwnProperty(k)) {
+                        mutator.set(k, updater(items[k]));
+                    }
+                }
+            },
+        };
+
+        updater(mutator);
 
         if (!updated) {
             return this;

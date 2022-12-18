@@ -57,87 +57,97 @@ export function buildAlignment(builder: ActionReducerMapBuilder<EditorState>) {
 }
 
 function distributeHorizontally(itemIds: ReadonlyArray<string>, diagram: Diagram) {
-    const targets = findTargets(itemIds, diagram);
-    const targetBounds = Rect2.fromRects(targets.map(t => t.aabb));
+    const targetItems = findTargets(itemIds, diagram);
+    const targetBounds = Rect2.fromRects(targetItems.map(t => t.aabb));
 
     let totalWidth = 0;
 
-    for (const target of targets) {
+    for (const target of targetItems) {
         totalWidth += target.aabb.width;
     }
 
-    const margin = (targetBounds.width - totalWidth) / (targets.length - 1);
+    const margin = (targetBounds.width - totalWidth) / (targetItems.length - 1);
 
     let x = targetBounds.left;
+    let i = 0;
 
-    for (const target of targets.sort((a, b) => a.aabb.x - b.aabb.x)) {
+    const sortedTargets = targetItems.sort((a, b) => a.aabb.x - b.aabb.x);
+    const sortedTargetIds = sortedTargets.map(x => x.itemId);
+
+    return diagram.updateItems(sortedTargetIds, item => {
+        const target = sortedTargets[i++];
+
         if (x !== target.aabb.x) {
             const newPosition = new Vec2(x, target.aabb.y);
 
             const dx = newPosition.x - target.aabb.x;
             const dy = newPosition.y - target.aabb.y;
 
-            diagram = diagram.updateItem(target.itemId, item => {
-                return item.transformByBounds(target.transform, target.transform.moveBy(new Vec2(dx, dy)));
-            });
+            item = item.transformByBounds(target.transform, target.transform.moveBy(new Vec2(dx, dy)));
         }
 
         x += target.aabb.width + margin;
-    }
 
-    return diagram;
+        return item;
+    });
 }
 
 function distributeVertically(itemIds: ReadonlyArray<string>, diagram: Diagram) {
-    const targets = findTargets(itemIds, diagram);
-    const targetBounds = Rect2.fromRects(targets.map(t => t.aabb));
+    const targetItems = findTargets(itemIds, diagram);
+    const targetBounds = Rect2.fromRects(targetItems.map(t => t.aabb));
 
     let totalHeight = 0;
 
-    for (const target of targets) {
+    for (const target of targetItems) {
         totalHeight += target.aabb.height;
     }
 
-    const margin = (targetBounds.height - totalHeight) / (targets.length - 1);
+    const margin = (targetBounds.height - totalHeight) / (targetItems.length - 1);
 
     let y = targetBounds.top;
+    let i = 0;
 
-    for (const target of targets.sort((a, b) => a.aabb.y - b.aabb.y)) {
+    const sortedTargets = targetItems.sort((a, b) => a.aabb.y - b.aabb.y);
+    const sortedTargetIds = sortedTargets.map(x => x.itemId);
+
+    return diagram.updateItems(sortedTargetIds, item => {
+        const target = sortedTargets[i++];
+
         if (y !== target.aabb.y) {
             const newPosition = new Vec2(target.aabb.x, y);
 
             const dx = newPosition.x - target.aabb.x;
             const dy = newPosition.y - target.aabb.y;
 
-            diagram = diagram.updateItem(target.itemId, item => {
-                return item.transformByBounds(target.transform, target.transform.moveBy(new Vec2(dx, dy)));
-            });
+            item = item.transformByBounds(target.transform, target.transform.moveBy(new Vec2(dx, dy)));
         }
 
         y += target.aabb.height + margin;
-    }
 
-    return diagram;
+        return item;
+    });
 }
 
 function alignShapes(itemIds: ReadonlyArray<string>, diagram: Diagram, transformer: (bounds: Rect2, item: Rect2) => Vec2): Diagram {
-    const targets = findTargets(itemIds, diagram);
-    const targetBounds = Rect2.fromRects(targets.map(t => t.aabb));
+    const targetItems = findTargets(itemIds, diagram);
+    const targetBounds = Rect2.fromRects(targetItems.map(t => t.aabb));
 
-    for (const target of targets) {
+    let i = 0;
+
+    return diagram.updateItems(targetItems.map(x => x.itemId), item => {
+        const target = targetItems[i++];
+
         const newPosition = transformer(targetBounds, target.aabb);
 
         const dx = newPosition.x - target.aabb.x;
         const dy = newPosition.y - target.aabb.y;
 
         if (dx !== 0 || dy !== 0) {
-            diagram = diagram.updateItem(target.itemId, item => {
-                return item.transformByBounds(target.transform, target.transform.moveBy(new Vec2(dx, dy)));
-            });
+            item = item.transformByBounds(target.transform, target.transform.moveBy(new Vec2(dx, dy)));
         }
-    }
 
-    return diagram;
+        return item;
+    });
 }
 
 function findTargets(itemIds: ReadonlyArray<string>, diagram: Diagram): TransformTarget[] {

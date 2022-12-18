@@ -86,21 +86,21 @@ describe('Diagram', () => {
         const newShape = oldShape.setAppearance('border-width', 10);
 
         const diagram_2 = diagram_1.addVisual(oldShape);
-        const diagram_3 = diagram_2.updateItem(oldShape.id, () => newShape);
+        const diagram_3 = diagram_2.updateItems([oldShape.id], () => newShape);
 
         expect(diagram_3.items.size).toBe(1);
         expect(diagram_3.items.get(oldShape.id)).toEqual(newShape);
     });
 
     it('should return original diagram when visual to update does not exist.', () => {
-        const diagram_2 = diagram_1.updateItem(shape1.id, v => v.setAppearance('color', 0xFF00FF));
+        const diagram_2 = diagram_1.updateItems([shape1.id], v => v.setAppearance('color', 0xFF00FF));
 
         expect(diagram_2).toBe(diagram_1);
     });
 
     it('should return original diagram when updater returns same item', () => {
         const diagram_2 = diagram_1.addVisual(shape1);
-        const diagram_3 = diagram_2.updateItem(shape1.id, v => v);
+        const diagram_3 = diagram_2.updateItems([shape1.id], v => v);
 
         expect(diagram_3).toBe(diagram_2);
     });

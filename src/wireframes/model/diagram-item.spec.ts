@@ -67,20 +67,6 @@ describe('DiagramItem', () => {
         expect(item_1.bounds(null!)).toBe(item_1.transform);
     });
 
-    it('should return original shape when transforming to null shape', () => {
-        const item_2 = item_1.transformTo(null!);
-
-        expect(item_2).toBe(item_1);
-    });
-
-    it('should replace transformation when transforming to', () => {
-        const newTransform = new Transform(Vec2.ZERO, Vec2.ZERO, Rotation.ZERO);
-
-        const item_2 = item_1.transformTo(newTransform);
-
-        expect(item_2.transform).toEqual(newTransform);
-    });
-
     it('should return original shape when transforming from null old bounds', () => {
         const item_2 = item_1.transformByBounds(null!, item_1.transform);
 
@@ -152,38 +138,11 @@ describe('DiagramItem', () => {
         expect(item_3).toBe(item_2);
     });
 
-    it('should return original visual when key to set is null', () => {
-        const item_2 = item_1.setAppearance('color', 13);
-        const item_3 = item_2.unsetAppearance(null!);
-
-        expect(item_3).toBe(item_2);
-    });
-
-    it('should remove appearance', () => {
-        const item_2 = item_1.setAppearance('color', 13);
-        const item_3 = item_2.unsetAppearance('color');
-
-        expect(item_3.appearance.get('color')).toBeUndefined();
-    });
-
     it('should not set appearance when item is a group', () => {
         const group_1 = DiagramItem.createGroup('i', []);
         const group_2 = group_1.setAppearance('color', 'red');
 
         expect(group_2).toBe(group_1);
-    });
-
-    it('should not remove appearance when item is a group', () => {
-        const group_1 = DiagramItem.createGroup('i', []);
-        const group_2 = group_1.unsetAppearance('color');
-
-        expect(group_2).toBe(group_1);
-    });
-
-    it('should return original visual when key to remove does not exist', () => {
-        const item_2 = item_1.unsetAppearance('color');
-
-        expect(item_2).toBe(item_1);
     });
 
     it('should return original visual when resetting appearance to null', () => {

@@ -231,16 +231,6 @@ export class DiagramItem extends Record<Props> implements Shape {
         return this.set('appearance', appearance);
     }
 
-    public unsetAppearance(key: string) {
-        if (this.type === 'Group') {
-            return this;
-        }
-
-        const appearance = this.appearance.remove(key);
-
-        return this.set('appearance', appearance);
-    }
-
     public transformWith(transformer: (t: Transform) => Transform) {
         if (this.type === 'Group' || !transformer) {
             return this;
@@ -248,15 +238,7 @@ export class DiagramItem extends Record<Props> implements Shape {
 
         const newTransform = transformer(this.transform);
 
-        return this.transformTo(newTransform);
-    }
-
-    public transformTo(transform: Transform) {
-        if (this.type === 'Group' || !transform) {
-            return this;
-        }
-
-        return this.set('transform', transform);
+        return this.set('transform', newTransform);
     }
 
     public bounds(diagram: Diagram): Transform {
@@ -296,7 +278,7 @@ export class DiagramItem extends Record<Props> implements Shape {
         } else {
             const transform = this.transform.transformByBounds(oldBounds, newBounds, undefined);
 
-            return this.transformTo(transform);
+            return this.set('transform', transform);
         }
     }
 
