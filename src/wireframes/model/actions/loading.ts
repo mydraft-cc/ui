@@ -15,26 +15,27 @@ import { getDiagram, postDiagram, putDiagram } from './api';
 import { addDiagram } from './diagrams';
 import { selectItems } from './items';
 import { migrateOldAction } from './obsolete';
-import { showErrorToast, showInfoToast } from './ui';
+import { showToast } from './ui';
 
 export const newDiagram =
     createAction<{ navigate: boolean }>('diagram/new');
 
-export const loadDiagramFromActions =
-    createAction<{ actions: AnyAction[] }>('diagram/load/actions');
+export const loadDiagramFromFile =
+    createAsyncThunk('diagram/load/file', async (args: { file: File }) => {
+        const actions: AnyAction[] = JSON.parse(await args.file.text());
 
-export const loadDiagram =
-    createAsyncThunk('diagram/load', async (args: { tokenToRead: string; tokenToWrite?: string; navigate: boolean }, thunkAPI) => {
-        const state = thunkAPI.getState() as LoadingStateInStore;
+        return { actions };
+    });
 
-        if (!args.tokenToRead || args.tokenToRead === state.loading.tokenToRead) {
-            return null;
-        }
-
+export const loadDiagramFromServer =
+    createAsyncThunk('diagram/load/server', async (args: { tokenToRead: string; tokenToWrite?: string; navigate: boolean }) => {
         const actions = await getDiagram(args.tokenToRead);
 
         return { tokenToRead: args.tokenToRead, tokenToWrite: args.tokenToWrite, actions };
     });
+
+const loadDiagramInternal =
+    createAction<{ actions: AnyAction[]; requestId: string }>('diagram/load/actions');
 
 export const saveDiagramToFile = 
     createAsyncThunk('diagram/save/file', async (_, thunkAPI) => {
@@ -47,7 +48,7 @@ export const saveDiagramToFile =
     });
 
 export const saveDiagramToServer =
-    createAsyncThunk('diagram/save/server', async (args: { navigate?: boolean }, thunkAPI) => {
+    createAsyncThunk('diagram/save/server', async (args: { navigate?: boolean; operationId?: string }, thunkAPI) => {
         const state = thunkAPI.getState() as LoadingStateInStore & EditorStateInStore;
 
         const tokenToWrite = state.loading.tokenToWrite;
@@ -65,46 +66,59 @@ export const saveDiagramToServer =
     });
 
 export function loadingMiddleware(): Middleware {
-    const middleware: Middleware = store => next => action => {
-        const result = next(action);
-
-        if (newDiagram.match(action)) {
-            if (action.payload?.navigate) {
-                store.dispatch(push(''));
-            }
-        } else if (loadDiagram.fulfilled.match(action)) {
-            if (action.meta.arg.navigate && action.payload) {
-                store.dispatch(push(action.payload.tokenToRead));
-            }
-            
-            if (action.payload) {
-                store.dispatch(loadDiagramFromActions({ actions: action.payload!.actions }));
-            }
-        } else if (loadDiagramFromActions.match(action)) {
-            store.dispatch(showInfoToast(texts.common.loadingDiagramDone));
-        } else if (loadDiagram.rejected.match(action)) {
-            store.dispatch(showErrorToast(texts.common.loadingDiagramFailed));
-        } else if (saveDiagramToFile.fulfilled.match(action)) {
-            store.dispatch(showInfoToast(texts.common.savingDiagramDone));
-        } else if (saveDiagramToServer.fulfilled.match(action)) {
-            if (action.meta.arg.navigate) {
-                store.dispatch(push(action.payload.tokenToRead));
-            }
-
-            saveRecentDiagrams((store.getState() as LoadingStateInStore).loading.recentDiagrams);
-
-            if (!action.payload.update) {
-                const fullUrl = `${window.location.protocol}//${window.location.host}/${action.payload.tokenToRead}`;
-
-                store.dispatch(showInfoToast(texts.common.savingDiagramDoneUrl(fullUrl)));
-            } else {
-                store.dispatch(showInfoToast(texts.common.savingDiagramDone));
-            }
-        } else if (saveDiagramToServer.rejected.match(action)) {
-            store.dispatch(showErrorToast(texts.common.savingDiagramFailed));
+    const middleware: Middleware = store => next => action => {        
+        if (loadDiagramFromServer.pending.match(action) ||  loadDiagramFromFile.pending.match(action)) {
+            store.dispatch(showToast({ content: texts.common.loadingDiagram, type: 'loading', key: action.meta.requestId }));
+        } else if ( saveDiagramToServer.pending.match(action) || saveDiagramToFile.pending.match(action)) {
+            store.dispatch(showToast({ content: texts.common.savingDiagram, type: 'loading', key: action.meta.requestId }));
         }
 
-        return result;
+        try {
+            const result = next(action);
+
+            if (newDiagram.match(action) ) {
+                if (action.payload.navigate) {
+                    store.dispatch(push(''));
+                }
+            } else if (loadDiagramFromServer.fulfilled.match(action)) {
+                if (action.meta.arg.navigate) {
+                    store.dispatch(push(action.payload.tokenToRead));
+                }
+                
+                store.dispatch(loadDiagramInternal({ actions: action.payload!.actions, requestId: action.meta.requestId }));
+            } else if (loadDiagramFromFile.fulfilled.match(action)) {
+                store.dispatch(loadDiagramInternal({ actions: action.payload!.actions, requestId: action.meta.requestId }));
+            } else if (loadDiagramFromServer.rejected.match(action) ||  loadDiagramFromFile.rejected.match(action)) {
+                store.dispatch(showToast({ content: texts.common.loadingDiagramFailed, type: 'error', key: action.meta.requestId, delayed: 1000 }));
+            } else if (loadDiagramInternal.match(action)) {
+                store.dispatch(showToast({ content: texts.common.loadingDiagramDone, type: 'success', key: action.payload.requestId, delayed: 1000 }));
+            } else if (saveDiagramToServer.fulfilled.match(action)) {
+                if (action.meta.arg.navigate) {
+                    store.dispatch(push(action.payload.tokenToRead));
+                }
+
+                saveRecentDiagrams((store.getState() as LoadingStateInStore).loading.recentDiagrams);
+
+                const content = action.payload.update ? 
+                    texts.common.savingDiagramDone :
+                    texts.common.savingDiagramDoneUrl(`${window.location.protocol}//${window.location.host}/${action.payload.tokenToRead}`);
+
+                store.dispatch(showToast({ content, type: 'success', key: action.meta.requestId, delayed: 1000 }));
+            } else if (saveDiagramToFile.fulfilled.match(action)) {
+                store.dispatch(showToast({ content: texts.common.savingDiagramDone, type: 'success', key: action.meta.requestId, delayed: 1000 }));
+            } else if (saveDiagramToServer.rejected.match(action) || saveDiagramToFile.rejected.match(action)) {
+                store.dispatch(showToast({ content: texts.common.savingDiagramFailed, type: 'error', key: action.meta.requestId, delayed: 1000 }));
+            }
+
+            return result;
+        } catch (ex) {
+            if (loadDiagramInternal.match(action)) {
+                store.dispatch(showToast({ content: texts.common.loadingDiagramFailed, type: 'error', key: action.payload.requestId, delayed: 1000 }));
+            }
+            
+            console.error(ex);
+            throw ex;
+        }
     };
 
     return middleware;
@@ -117,13 +131,13 @@ export function loading(initialState: LoadingState) {
             state.tokenToRead = null;
             state.tokenToWrite = null;
         })
-        .addCase(loadDiagram.pending, (state) => {
+        .addCase(loadDiagramFromServer.pending, (state) => {
             state.isLoading = true;
         })
-        .addCase(loadDiagram.rejected, (state) => {
+        .addCase(loadDiagramFromServer.rejected, (state) => {
             state.isLoading = false;
         })
-        .addCase(loadDiagram.fulfilled, (state, action) => {
+        .addCase(loadDiagramFromServer.fulfilled, (state, action) => {
             state.isLoading = false;
             state.tokenToRead = action.payload?.tokenToRead;
             state.tokenToWrite = action.payload?.tokenToWrite;
@@ -151,7 +165,7 @@ export function rootLoading(innerReducer: Reducer<any>, undoableReducer: Reducer
             const initialState = editorReducer(EditorState.empty(), initialAction);
 
             state = UndoableState.create(initialState, initialAction);
-        } else if (loadDiagramFromActions.match(action)) {
+        } else if (loadDiagramInternal.match(action)) {
             const actions = action.payload.actions;
 
             let firstAction = actions[0];

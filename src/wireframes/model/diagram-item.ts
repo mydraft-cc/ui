@@ -23,6 +23,9 @@ type ItemProps = {
     // The locking state.
     isLocked?: boolean;
 
+    // The name of the item.
+    name?: string;
+
     // The type of the item.
     type: 'Shape' | 'Group';
 };
@@ -69,6 +72,10 @@ export class DiagramItem extends Record<Props> implements Shape {
 
     public get type() {
         return this.get('type');
+    }
+
+    public get name() {
+        return this.get('name');
     }
 
     public get appearance() {
@@ -202,6 +209,10 @@ export class DiagramItem extends Record<Props> implements Shape {
         return this.set('isLocked', undefined);
     }
 
+    public rename(name: string) {
+        return this.set('name', name);
+    }
+
     public replaceAppearance(appearance: Appearance) {
         if (this.type === 'Group' || !appearance) {
             return this;
@@ -289,12 +300,12 @@ export class DiagramItem extends Record<Props> implements Shape {
         }
     }
 
-    protected afterClone(values: ImmutableMap<any>, prev?: DiagramItem) {
+    protected afterClone(values: Props, prev?: DiagramItem) {
         if (this.constraint) {
             const size = this.constraint.updateSize(this, this.transform.size, prev);
 
             if (size.x > 0 && size.y > 0) {
-                return values.set('transform', this.transform.resizeTopLeft(size));
+                values.transform = this.transform.resizeTopLeft(size);
             }
         }
 

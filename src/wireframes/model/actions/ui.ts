@@ -7,14 +7,12 @@
 
 import { createAction, createReducer } from '@reduxjs/toolkit';
 import { message } from 'antd';
+import { NoticeType } from 'antd/lib/message';
 import { AnyAction, Dispatch, Middleware, Reducer } from 'redux';
 import { UIState } from './../internal';
 
-export const showInfoToast =
-    createAction<string>('ui/infoToast');
-
-export const showErrorToast =
-    createAction<string>('ui/errorToast');
+export const showToast =
+    createAction<{ content: string; type?: NoticeType; key?: string; delayed?: number }>('ui/infoToast');
 
 export const setZoom =
     createAction<number>('ui/zoom');
@@ -36,10 +34,12 @@ export const filterDiagrams =
 
 export function toastMiddleware() {
     const middleware: Middleware = () => (next: Dispatch<AnyAction>) => (action: any) => {
-        if (showInfoToast.match(action)) {
-            message.info(action.payload);
-        } else if (showErrorToast.match(action)) {
-            message.error(action.payload);
+        if (showToast.match(action)) {
+            const { content, delayed, key, type } = action.payload;
+
+            setTimeout(() => {
+                message.open({ content, key, type: type || 'info' });
+            }, delayed);
         }
 
         return next(action);

@@ -21,8 +21,20 @@ export const orderItems =
         return { payload: createItemsAction(diagram, items, { mode }) };
     });
 
+export const moveItems =
+    createAction('items/move', (diagram: DiagramRef, items: ItemsRef, index: number) => {
+        return { payload: createItemsAction(diagram, items, { index }) };
+    });
+
 export function buildOrdering(builder: ActionReducerMapBuilder<EditorState>) {
     return builder
+        .addCase(moveItems, (state, action) => {
+            const { diagramId, itemIds, index } = action.payload;
+
+            return state.updateDiagram(diagramId, diagram => {
+                return diagram.moveItems(itemIds, index);
+            });
+        })
         .addCase(orderItems, (state, action) => {
             const { diagramId, itemIds, mode } = action.payload;
 

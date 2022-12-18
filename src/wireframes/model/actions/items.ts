@@ -37,6 +37,11 @@ export const removeItems =
         return { payload: createItemsAction(diagram, items) };
     });
 
+export const renameItems =
+    createAction('items/rename', (diagram: DiagramRef, items: ItemsRef, name: string) => {
+        return { payload: createItemsAction(diagram, items, { name }) };
+    });
+
 export const pasteItems =
     createAction('items/paste', (diagram: DiagramRef, json: string, offset = 0) => {
         return { payload: createDiagramAction(diagram, { json, offset }) };
@@ -80,6 +85,17 @@ export function buildItems(builder: ActionReducerMapBuilder<EditorState>, render
 
                 for (const item of set.allItems) {
                     diagram = diagram.updateItem(item.id, i => i.lock());
+                }
+
+                return diagram;
+            });
+        })
+        .addCase(renameItems, (state, action) => {
+            const { diagramId, itemIds, name } = action.payload;
+
+            return state.updateDiagram(diagramId, diagram => {
+                for (const itemId of itemIds) {
+                    diagram = diagram.updateItem(itemId, i => i.rename(name));
                 }
 
                 return diagram;

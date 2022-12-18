@@ -15,6 +15,14 @@ import { Transform } from './transform';
 describe('DiagramItem', () => {
     const item_1 = DiagramItem.createShape('1', 'btn', 100, 20);
 
+    it('should instantiate with factory method', () => {
+        expect(item_1).toBeDefined();
+        expect(item_1.id).toBeDefined();
+        expect(item_1.renderer).toBe('btn');
+        expect(item_1.transform.size.x).toBe(100);
+        expect(item_1.transform.size.y).toBe(20);
+    });
+
     it('should return original item when already unlocked', () => {
         const item_2 = item_1.unlock();
 
@@ -41,12 +49,18 @@ describe('DiagramItem', () => {
         expect(item_3).toBe(item_2);
     });
 
-    it('should instantiate with factory method', () => {
-        expect(item_1).toBeDefined();
-        expect(item_1.id).toBeDefined();
-        expect(item_1.renderer).toBe('btn');
-        expect(item_1.transform.size.x).toBe(100);
-        expect(item_1.transform.size.y).toBe(20);
+    it('should rename item', () => {
+        const item_2 = item_1.rename('Name');
+
+        expect(item_2.name).toBe('Name');
+    });
+
+
+    it('should return original when renaming with same name', () => {
+        const item_2 = item_1.rename('Name');
+        const item_3 = item_2.rename('Name');
+
+        expect(item_3).toBe(item_2);
     });
 
     it('should return transform as adorner bounds', () => {

@@ -7,7 +7,7 @@
 
 /* eslint-disable @typescript-eslint/naming-convention */
 
-import { buildOrdering, Diagram, DiagramItem, EditorState, orderItems, OrderMode } from '@app/wireframes/model';
+import { buildOrdering, Diagram, DiagramItem, EditorState, moveItems, orderItems, OrderMode } from '@app/wireframes/model';
 import { createClassReducer } from './utils';
 
 describe('OrderingReducer', () => {
@@ -43,19 +43,28 @@ describe('OrderingReducer', () => {
         expect(state_2).toBe(state_1);
     });
 
-    it('should bring shape forwards', () => {
+    it('should move items', () => {
+        const action = moveItems( diagram, [shape1], 1);
+
+        const state_1 = EditorState.empty().addDiagram(diagram);
+        const state_2 = reducer(state_1, action);
+
+        expect(state_2.diagrams.get(diagram.id)?.itemIds.values).toEqual([shape2.id, shape1.id, shape3.id]);
+    });
+
+    it('should bring item forwards', () => {
         testOrdering(OrderMode.BringForwards, shape1, [shape2.id, shape1.id, shape3.id]);
     });
 
-    it('should bring shape to front', () => {
+    it('should bring item to front', () => {
         testOrdering(OrderMode.BringToFront, shape1, [shape2.id, shape3.id, shape1.id]);
     });
 
-    it('should send shape backwards', () => {
+    it('should send item backwards', () => {
         testOrdering(OrderMode.SendBackwards, shape3, [shape1.id, shape3.id, shape2.id]);
     });
 
-    it('should send shape to back', () => {
+    it('should send item to back', () => {
         testOrdering(OrderMode.SendToBack, shape3, [shape3.id, shape1.id, shape2.id]);
     });
 

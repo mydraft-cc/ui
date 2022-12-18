@@ -17,34 +17,49 @@ const text = require('@app/legal.html');
 
 export const LoadingMenu = React.memo(() => {
     const forLoading = useLoading();
+    const editor = useStore(s => s.editor);
     const tokenToRead = useStore(s => s.loading.tokenToRead);
     const tokenToWrite = useStore(s => s.loading.tokenToWrite);
+    const saveTimer = React.useRef<any>();
     const saveAction = React.useRef(forLoading.saveDiagram);
     const [isOpen, setIsOpen] = React.useState(false);
 
-    React.useEffect(() => {
-        saveAction.current = forLoading.saveDiagram;
-    }, [forLoading.saveDiagram]);
+    saveAction.current = forLoading.saveDiagram;
 
     const doToggleInfoDialog = useEventCallback(() => {
         setIsOpen(x => !x);
     });
 
     React.useEffect(() => {
+        function clearTimer() {
+            if (saveTimer.current) {
+                clearInterval(saveTimer.current);
+                saveTimer.current = null;
+            }
+        }
+
         if (tokenToWrite) {
-            const timer = setInterval(() => {
-                if (!saveAction.current.disabled) {
-                    saveAction.current.onAction();
-                }
-            }, 30000);
+            if (!saveTimer.current) {
+                saveTimer.current = setInterval(() => {
+                    if (!saveAction.current.disabled) {
+                        saveAction.current.onAction();
+                    }
+                }, 30000);
+            }
+
+            const stopTimer = setTimeout(() => {
+                clearTimer();
+            }, 40000);
 
             return () => {
-                clearInterval(timer);
+                clearTimeout(stopTimer);
             };
         } else {
+            clearTimer();
+
             return undefined;
         }
-    }, [tokenToWrite]);
+    }, [tokenToWrite, editor]);
 
     const menu = (
         <Menu >

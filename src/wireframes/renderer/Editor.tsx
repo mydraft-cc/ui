@@ -93,7 +93,8 @@ export const Editor = React.memo((props: EditorProps) => {
     const diagramTools = React.useRef<svg.Element>();
     const renderMainLayer = React.useRef<svg.Container>();
     const renderMasterLayer = React.useRef<svg.Container>();
-    const [interactionService, setInteractionService] = React.useState<InteractionService>();
+    const [interactionMasterService, setInteractionMasterService] = React.useState<InteractionService>();
+    const [interactionMainService, setInteractionMainService] = React.useState<InteractionService>();
     const [interactionPreviews, setInteractionPreviews] = React.useState<DiagramItem[]>();
     const [fullSelection, setFullSelection] = React.useState<DiagramItem[]>([]);
 
@@ -108,31 +109,36 @@ export const Editor = React.memo((props: EditorProps) => {
         adornersSelect.current = doc.group();
         adornersTransform.current = doc.group();
 
-        setInteractionService(new InteractionService([
+        setInteractionMainService(new InteractionService([
             adornersSelect.current,
             adornersTransform.current],
         renderMainLayer.current, doc));
+
+        setInteractionMasterService(new InteractionService([
+            adornersSelect.current,
+            adornersTransform.current],
+        renderMasterLayer.current, doc));
     }, []);
 
     React.useEffect(() => {
-        if (interactionService) {
+        if (interactionMainService) {
             SVGHelper.setPosition(diagramTools.current!, 0.5, 0.5);
             SVGHelper.setPosition(adornersSelect.current!, 0.5, 0.5);
             SVGHelper.setPosition(adornersTransform.current!, 0.5, 0.5);
             SVGHelper.setPosition(renderMasterLayer.current!, 0.5, 0.5);
             SVGHelper.setPosition(renderMainLayer.current!, 0.5, 0.5);
         }
-    }, [interactionService]);
+    }, [interactionMainService]);
 
     React.useEffect(() => {
-        if (interactionService) {
+        if (interactionMainService) {
             SVGHelper.setSize(diagramTools.current!, w, h);
             SVGHelper.setSize(adornersSelect.current!, w, h);
             SVGHelper.setSize(adornersTransform.current!, w, h);
             SVGHelper.setSize(renderMasterLayer.current!, w, h);
             SVGHelper.setSize(renderMainLayer.current!, w, h);
         }
-    }, [w, h, interactionService]);
+    }, [w, h, interactionMainService]);
 
     const doPreview = useEventCallback((items: DiagramItem[]) => {
         setInteractionPreviews(items);
@@ -153,7 +159,7 @@ export const Editor = React.memo((props: EditorProps) => {
                 zoom={zoom}
                 zoomedSize={zoomedSize} />
 
-            {interactionService && diagram && (
+            {interactionMainService && diagram && (
                 <>
                     <RenderLayer
                         diagram={masterDiagram}
@@ -173,7 +179,7 @@ export const Editor = React.memo((props: EditorProps) => {
                     {onTransformItems &&
                         <TransformAdorner
                             adorners={adornersTransform.current!}
-                            interactionService={interactionService}
+                            interactionService={interactionMainService}
                             onPreview={doPreview}
                             onPreviewEnd={doPreviewEnd}
                             onTransformItems={onTransformItems}
@@ -187,7 +193,7 @@ export const Editor = React.memo((props: EditorProps) => {
                     {onSelectItems &&
                         <SelectionAdorner
                             adorners={adornersSelect.current!}
-                            interactionService={interactionService}
+                            interactionService={interactionMainService}
                             onSelectItems={onSelectItems}
                             selectedDiagram={diagram}
                             selectedItems={fullSelection}
@@ -196,7 +202,7 @@ export const Editor = React.memo((props: EditorProps) => {
 
                     {onChangeItemsAppearance &&
                         <TextAdorner
-                            interactionService={interactionService}
+                            interactionService={interactionMainService}
                             onChangeItemsAppearance={onChangeItemsAppearance}
                             selectedDiagram={diagram}
                             selectedItems={selectedItems}
@@ -215,10 +221,11 @@ export const Editor = React.memo((props: EditorProps) => {
                     }
 
                     {onNavigate &&
-                        <NavigateAdorner
-                            interactionService={interactionService}
-                            onNavigate={onNavigate}
-                        />
+                        <NavigateAdorner interactionService={interactionMainService} onNavigate={onNavigate} />
+                    }
+
+                    {onNavigate && interactionMasterService &&
+                        <NavigateAdorner interactionService={interactionMasterService} onNavigate={onNavigate} />
                     }
                 </>
             )}
