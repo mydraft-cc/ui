@@ -8,10 +8,11 @@
 import { Constraint, DefaultAppearance, RenderContext, Shape, ShapePlugin, Vec2 } from '@app/wireframes/interface';
 import { CommonTheme } from './_theme';
 
-const DEFAULT_APPEARANCE = {};
-DEFAULT_APPEARANCE[DefaultAppearance.STROKE_COLOR] = CommonTheme.CONTROL_BORDER_COLOR;
-DEFAULT_APPEARANCE[DefaultAppearance.STROKE_THICKNESS] = 2;
-DEFAULT_APPEARANCE[DefaultAppearance.TEXT_DISABLED] = true;
+const DEFAULT_APPEARANCE = {
+    [DefaultAppearance.STROKE_COLOR]: CommonTheme.CONTROL_BORDER_COLOR,
+    [DefaultAppearance.STROKE_THICKNESS]: 2,
+    [DefaultAppearance.TEXT_DISABLED]: true,
+};
 
 class BorderWidthConstraint implements Constraint {
     public static readonly INSTANCE = new BorderWidthConstraint();

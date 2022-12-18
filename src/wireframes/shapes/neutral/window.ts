@@ -10,9 +10,10 @@ import { CommonTheme } from './_theme';
 
 const OFFSET = { left: 2, top: 30, right: 2, bottom: 1 };
 
-const DEFAULT_APPEARANCE = {};
-DEFAULT_APPEARANCE[DefaultAppearance.BACKGROUND_COLOR] = 0xFFFFFF;
-DEFAULT_APPEARANCE[DefaultAppearance.TEXT_DISABLED] = true;
+const DEFAULT_APPEARANCE = {
+    [DefaultAppearance.BACKGROUND_COLOR]: 0xFFFFFF,
+    [DefaultAppearance.TEXT_DISABLED]: true,
+};
 
 export class Window implements ShapePlugin {
     public identifier(): string {

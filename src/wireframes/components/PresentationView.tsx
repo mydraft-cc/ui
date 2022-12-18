@@ -8,7 +8,7 @@
 import { ArrowLeftOutlined, ArrowRightOutlined, CloseOutlined, FullscreenExitOutlined, FullscreenOutlined } from '@ant-design/icons';
 import { Button } from 'antd';
 import * as React from 'react';
-import { RendererContext } from '@app/context';
+import { useRenderer } from '@app/context';
 import { sizeInPx, useEventCallback, useFullscreen } from '@app/core';
 import { getPageLinkId, isPageLink } from '@app/wireframes/interface';
 import { useStore } from '@app/wireframes/model';
@@ -27,7 +27,7 @@ export const PresentationView = (props: PresentationViewProps) => {
     const color = useStore(x => x.editor.present.color);
     const diagrams = useStore(x => x.editor.present.diagrams);
     const diagramsOrdered = useStore(x => x.editor.present.orderedDiagrams);
-    const renderer = React.useContext(RendererContext);
+    const renderer = useRenderer();
     const size = useStore(x => x.editor.present.size);
     const [pageIndex, setPageIndex] = React.useState(0);
 

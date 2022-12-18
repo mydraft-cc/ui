@@ -12,6 +12,7 @@ export * from './diagrams';
 export * from './grouping';
 export * from './items';
 export * from './loading';
+export * from './obsolete';
 export * from './ordering';
 export * from './ui';
 export * from './undoable';

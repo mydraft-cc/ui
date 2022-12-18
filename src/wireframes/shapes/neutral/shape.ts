@@ -15,15 +15,16 @@ const SHAPE_ELLIPSE = 'Ellipse';
 const SHAPE_TRIANGLE = 'Triangle';
 const SHAPE_RHOMBUS = 'Rhombus';
 
-const DEFAULT_APPEARANCE = {};
-DEFAULT_APPEARANCE[DefaultAppearance.FOREGROUND_COLOR] = 0;
-DEFAULT_APPEARANCE[DefaultAppearance.BACKGROUND_COLOR] = 0xFFFFFF;
-DEFAULT_APPEARANCE[DefaultAppearance.TEXT] = 'Shape';
-DEFAULT_APPEARANCE[DefaultAppearance.TEXT_ALIGNMENT] = 'center';
-DEFAULT_APPEARANCE[DefaultAppearance.FONT_SIZE] = CommonTheme.CONTROL_FONT_SIZE;
-DEFAULT_APPEARANCE[DefaultAppearance.STROKE_COLOR] = CommonTheme.CONTROL_BORDER_COLOR;
-DEFAULT_APPEARANCE[DefaultAppearance.STROKE_THICKNESS] = CommonTheme.CONTROL_BORDER_THICKNESS;
-DEFAULT_APPEARANCE[SHAPE] = SHAPE_RECTANGLE;
+const DEFAULT_APPEARANCE = {
+    [DefaultAppearance.BACKGROUND_COLOR]: 0xFFFFFF,
+    [DefaultAppearance.FONT_SIZE]: CommonTheme.CONTROL_FONT_SIZE,
+    [DefaultAppearance.FOREGROUND_COLOR]: 0,
+    [DefaultAppearance.STROKE_COLOR]: CommonTheme.CONTROL_BORDER_COLOR,
+    [DefaultAppearance.STROKE_THICKNESS]: CommonTheme.CONTROL_BORDER_THICKNESS,
+    [DefaultAppearance.TEXT_ALIGNMENT]: 'center',
+    [DefaultAppearance.TEXT]: 'Shape',
+    [SHAPE]: SHAPE_RECTANGLE,
+};
 
 export class Shape implements ShapePlugin {
     public identifier(): string {

@@ -5,18 +5,24 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { Color, Rect2, Vec2 } from '@app/core';
+import { Color, LoadedImage, Rect2, Vec2 } from '@app/core';
 
 export { Color, Rect2, Vec2 } from '@app/core';
 
-export type TextConfig = { text: string; fontSize?: number; fontFamily?: string; alignment?: string };
-export type TextDecoration = 'underline' | 'none';
+export type Appearance = { [key: string]: any };
+export type VisualSourceIcon = { type: 'Icon';  text: string; fontFamily: string };
+export type VisualSourceImage = { type: 'Image';  image: LoadedImage };
+export type VisualSourceText = { type: 'Text';  text: string };
+export type VisualSourceUrl = { type: 'Url'; url: string };
+export type VisualSource = VisualSourceIcon | VisualSourceImage | VisualSourceText | VisualSourceUrl;
+export type Configurable = any;
 export type RendererColor = string | number | Color | Shape;
 export type RendererElement = any;
 export type RendererOpacity = number | Shape;
 export type RendererText = TextConfig | Shape;
 export type RendererWidth = number | Shape;
-export type Configurable = any;
+export type TextConfig = { text: string; fontSize?: number; fontFamily?: string; alignment?: string };
+export type TextDecoration = 'underline' | 'none';
 
 export interface RenderContext {
     readonly shape: Shape;
@@ -27,7 +33,7 @@ export interface RenderContext {
 export interface ShapePlugin {
     identifier(): string;
 
-    defaultAppearance(): { [key: string]: any };
+    defaultAppearance(): Appearance;
 
     defaultSize(): { x: number; y: number };
 
@@ -38,6 +44,8 @@ export interface ShapePlugin {
     previewOffset?(): { left: number; top: number; right: number; bottom: number };
 
     previewSize?(desiredWidth: number, desiredHeight: number): { x: number; y: number };
+
+    create?(source: VisualSource): { width?: number; height?: number; appearance: Appearance } | null | undefined;
 
     showInGallery?(): boolean;
 

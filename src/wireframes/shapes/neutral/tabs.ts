@@ -9,26 +9,25 @@ import { Color, ConfigurableFactory, DefaultAppearance, Rect2, RenderContext, Sh
 import { CommonTheme } from './_theme';
 
 const TAB_COLOR = 'TAB_COLOR';
-
 const TAB_ALIGNMENT = 'TAB_ALIGNMENT';
 const TAB_ALIGNMENT_LEFT = 'Left';
 const TAB_ALIGNMENT_RIGHT = 'Right';
-
 const TAB_POSITION = 'TAB_POSITION';
 const TAB_POSITION_TOP = 'Top';
 const TAB_POSITION_BOTTOM = 'Bottom';
 
-const DEFAULT_APPEARANCE = {};
-DEFAULT_APPEARANCE[DefaultAppearance.FOREGROUND_COLOR] = CommonTheme.CONTROL_TEXT_COLOR;
-DEFAULT_APPEARANCE[DefaultAppearance.BACKGROUND_COLOR] = 0xffffff;
-DEFAULT_APPEARANCE[DefaultAppearance.TEXT] = 'left,middle*,right';
-DEFAULT_APPEARANCE[DefaultAppearance.TEXT_ALIGNMENT] = 'center';
-DEFAULT_APPEARANCE[DefaultAppearance.FONT_SIZE] = CommonTheme.CONTROL_FONT_SIZE;
-DEFAULT_APPEARANCE[DefaultAppearance.STROKE_COLOR] = CommonTheme.CONTROL_BORDER_COLOR;
-DEFAULT_APPEARANCE[DefaultAppearance.STROKE_THICKNESS] = CommonTheme.CONTROL_BORDER_THICKNESS;
-DEFAULT_APPEARANCE[TAB_COLOR] = CommonTheme.CONTROL_BACKGROUND_COLOR;
-DEFAULT_APPEARANCE[TAB_ALIGNMENT] = TAB_ALIGNMENT_LEFT;
-DEFAULT_APPEARANCE[TAB_POSITION] = TAB_POSITION_TOP;
+const DEFAULT_APPEARANCE = {
+    [DefaultAppearance.FOREGROUND_COLOR]: CommonTheme.CONTROL_TEXT_COLOR,
+    [DefaultAppearance.BACKGROUND_COLOR]: 0xffffff,
+    [DefaultAppearance.TEXT]: 'left,middle*,right',
+    [DefaultAppearance.TEXT_ALIGNMENT]: 'center',
+    [DefaultAppearance.FONT_SIZE]: CommonTheme.CONTROL_FONT_SIZE,
+    [DefaultAppearance.STROKE_COLOR]: CommonTheme.CONTROL_BORDER_COLOR,
+    [DefaultAppearance.STROKE_THICKNESS]: CommonTheme.CONTROL_BORDER_THICKNESS,
+    [TAB_COLOR]: CommonTheme.CONTROL_BACKGROUND_COLOR,
+    [TAB_ALIGNMENT]: TAB_ALIGNMENT_LEFT,
+    [TAB_POSITION]: TAB_POSITION_TOP,
+};
 
 export class Tabs implements ShapePlugin {
     public identifier(): string {

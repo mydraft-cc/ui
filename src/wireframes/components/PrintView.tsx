@@ -6,7 +6,7 @@
 */
 
 import * as React from 'react';
-import { RendererContext } from '@app/context';
+import { useRenderer } from '@app/context';
 import { useEventCallback } from '@app/core';
 import { Diagram, useStore } from '@app/wireframes/model';
 import { PrintDiagram } from './PrintDiagram';
@@ -24,7 +24,7 @@ export const PrintView = (props: PrintRendererProps) => {
     const diagrams = useStore(x => x.editor.present.diagrams);
     const diagramsOrdered = useStore(x => x.editor.present.orderedDiagrams);
     const rendered = React.useRef<{ [id: string]: Boolean }>({});
-    const renderer = React.useContext(RendererContext);
+    const renderer = useRenderer();
     const size = useStore(x => x.editor.present.size);
 
     React.useEffect(() => {

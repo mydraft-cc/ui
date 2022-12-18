@@ -14,6 +14,7 @@ import { EditorState, EditorStateInStore, LoadingState, LoadingStateInStore, sav
 import { getDiagram, postDiagram, putDiagram } from './api';
 import { addDiagram } from './diagrams';
 import { selectItems } from './items';
+import { migrateOldAction } from './obsolete';
 import { showToast } from './ui';
 
 export const newDiagram =
@@ -54,7 +55,7 @@ export const saveDiagramToServer =
         const tokenToRead = state.loading.tokenToRead;
 
         if (tokenToRead && tokenToWrite) {
-            await putDiagram(tokenToRead, tokenToWrite, state.editor.actions);
+            await putDiagram(tokenToRead, tokenToWrite, state.editor.actions.filter(x => !selectItems.match(x)));
 
             return { tokenToRead, tokenToWrite, update: true, navigate: args.navigate };
         } else {
@@ -176,7 +177,7 @@ export function rootLoading(innerReducer: Reducer<any>, undoableReducer: Reducer
             let editor = UndoableState.create(editorReducer(EditorState.empty(), firstAction), firstAction);
 
             for (const loadedAction of actions.slice(1)) {
-                editor = undoableReducer(editor, loadedAction);
+                editor = undoableReducer(editor, migrateOldAction(loadedAction));
             }
 
             const diagram = editor.present.diagrams.get(editor.present.selectedDiagramId!);

@@ -9,9 +9,10 @@ import { DefaultAppearance, Rect2, RenderContext, ShapePlugin } from '@app/wiref
 
 const OFFSET = { left: 15, top: 50, right: 15, bottom: 25 };
 
-const DEFAULT_APPEARANCE = {};
-DEFAULT_APPEARANCE[DefaultAppearance.BACKGROUND_COLOR] = 0xFFFFFF;
-DEFAULT_APPEARANCE[DefaultAppearance.TEXT_DISABLED] = true;
+const DEFAULT_APPEARANCE = {
+    [DefaultAppearance.BACKGROUND_COLOR]: 0xFFFFFF,
+    [DefaultAppearance.TEXT_DISABLED]: true,
+};
 
 export class Tablet implements ShapePlugin {
     public identifier(): string {

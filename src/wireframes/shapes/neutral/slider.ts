@@ -8,19 +8,19 @@
 import { ConfigurableFactory, ConstraintFactory, DefaultAppearance, Rect2, RenderContext, ShapePlugin, Vec2 } from '@app/wireframes/interface';
 import { CommonTheme } from './_theme';
 
-const ACCENT_COLOR = 'ACCENT_COLOR';
+const THUMB_COLOR = 'ACCENT_COLOR';
+const THUMB_VALUE = 'VALUE';
 
-const VALUE = 'VALUE';
-
-const DEFAULT_APPEARANCE = {};
-DEFAULT_APPEARANCE[DefaultAppearance.FOREGROUND_COLOR] = 0xffffff;
-DEFAULT_APPEARANCE[DefaultAppearance.BACKGROUND_COLOR] = CommonTheme.CONTROL_BACKGROUND_COLOR;
-DEFAULT_APPEARANCE[DefaultAppearance.FONT_SIZE] = CommonTheme.CONTROL_FONT_SIZE;
-DEFAULT_APPEARANCE[DefaultAppearance.STROKE_COLOR] = CommonTheme.CONTROL_BORDER_COLOR;
-DEFAULT_APPEARANCE[DefaultAppearance.STROKE_THICKNESS] = CommonTheme.CONTROL_BORDER_THICKNESS;
-DEFAULT_APPEARANCE[DefaultAppearance.TEXT_DISABLED] = true;
-DEFAULT_APPEARANCE[ACCENT_COLOR] = 0x2171b5;
-DEFAULT_APPEARANCE[VALUE] = 50;
+const DEFAULT_APPEARANCE = {
+    [DefaultAppearance.BACKGROUND_COLOR]: CommonTheme.CONTROL_BACKGROUND_COLOR,
+    [DefaultAppearance.FONT_SIZE]: CommonTheme.CONTROL_FONT_SIZE,
+    [DefaultAppearance.FOREGROUND_COLOR]: 0xffffff,
+    [DefaultAppearance.STROKE_COLOR]: CommonTheme.CONTROL_BORDER_COLOR,
+    [DefaultAppearance.STROKE_THICKNESS]: CommonTheme.CONTROL_BORDER_THICKNESS,
+    [DefaultAppearance.TEXT_DISABLED]: true,
+    [THUMB_COLOR]: 0x2171b5,
+    [THUMB_VALUE]: 50,
+};
 
 const HEIGHT_TOTAL = 20;
 const HEIGHT_BORDER = 8;
@@ -44,15 +44,15 @@ export class Slider implements ShapePlugin {
 
     public configurables(factory: ConfigurableFactory) {
         return [
-            factory.slider(VALUE, 'Value', 0, 100),
-            factory.color(ACCENT_COLOR, 'Accent Color'),
+            factory.slider(THUMB_VALUE, 'Value', 0, 100),
+            factory.color(THUMB_COLOR, 'Accent Color'),
         ];
     }
 
     public render(ctx: RenderContext) {
         const sliderRect = new Rect2(HEIGHT_TOTAL * 0.5, (HEIGHT_TOTAL - HEIGHT_BORDER) * 0.5, ctx.rect.width - HEIGHT_TOTAL, HEIGHT_BORDER);
 
-        const relative = ctx.shape.getAppearance(VALUE) / 100;
+        const relative = ctx.shape.getAppearance(THUMB_VALUE) / 100;
 
         this.createBackground(ctx, sliderRect, relative);
         this.createBorder(ctx, sliderRect);
@@ -74,7 +74,7 @@ export class Slider implements ShapePlugin {
 
             // Active item.
             items.rectangle(0, 0, activeRect, p => {
-                p.setBackgroundColor(ctx.shape.getAppearance(ACCENT_COLOR));
+                p.setBackgroundColor(ctx.shape.getAppearance(THUMB_COLOR));
             });
 
             const inactiveRect = new Rect2(bounds.x + bounds.width * relative, bounds.top, bounds.width * (1 - relative), bounds.height);

@@ -5,17 +5,18 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { ConstraintFactory, DefaultAppearance, RenderContext, ShapePlugin } from '@app/wireframes/interface';
+import { ConstraintFactory, DefaultAppearance, RenderContext, ShapePlugin, VisualSource } from '@app/wireframes/interface';
 import { CommonTheme } from './_theme';
 
-const DEFAULT_APPEARANCE = {};
-DEFAULT_APPEARANCE[DefaultAppearance.FOREGROUND_COLOR] = 0x08519c;
-DEFAULT_APPEARANCE[DefaultAppearance.BACKGROUND_COLOR] = CommonTheme.CONTROL_BACKGROUND_COLOR;
-DEFAULT_APPEARANCE[DefaultAppearance.TEXT] = 'Link';
-DEFAULT_APPEARANCE[DefaultAppearance.TEXT_ALIGNMENT] = 'center';
-DEFAULT_APPEARANCE[DefaultAppearance.FONT_SIZE] = CommonTheme.CONTROL_FONT_SIZE;
-DEFAULT_APPEARANCE[DefaultAppearance.STROKE_COLOR] = CommonTheme.CONTROL_BORDER_COLOR;
-DEFAULT_APPEARANCE[DefaultAppearance.STROKE_THICKNESS] = CommonTheme.CONTROL_BORDER_THICKNESS;
+const DEFAULT_APPEARANCE = {
+    [DefaultAppearance.BACKGROUND_COLOR]: CommonTheme.CONTROL_BACKGROUND_COLOR,
+    [DefaultAppearance.FONT_SIZE]: CommonTheme.CONTROL_FONT_SIZE,
+    [DefaultAppearance.FOREGROUND_COLOR]: 0x08519c,
+    [DefaultAppearance.STROKE_COLOR]: CommonTheme.CONTROL_BORDER_COLOR,
+    [DefaultAppearance.STROKE_THICKNESS]: CommonTheme.CONTROL_BORDER_THICKNESS,
+    [DefaultAppearance.TEXT_ALIGNMENT]: 'center',
+    [DefaultAppearance.TEXT]: 'Link',
+};
 
 export class Link implements ShapePlugin {
     public identifier(): string {
@@ -28,6 +29,16 @@ export class Link implements ShapePlugin {
 
     public defaultSize() {
         return { x: 40, y: 30 };
+    }
+
+    public create(source: VisualSource) {
+        if (source.type == 'Url') {
+            const { url } = source;
+
+            return { width: 40, height: 30, appearance: { [DefaultAppearance.TEXT]: url } };
+        }
+
+        return null;
     }
 
     public constraint(factory: ConstraintFactory) {

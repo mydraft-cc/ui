@@ -9,20 +9,21 @@ import { ConfigurableFactory, DefaultAppearance, Rect2, RenderContext, ShapePlug
 import { CommonTheme } from './_theme';
 
 const ARROW_COLOR = 'ARROW_COLOR';
-const BAR_COLOR = 'BAR_COLOR';
-const BAR_POSITION = 'BAR_POSITION';
-const BAR_SIZE = 'BAR_SIZE';
+const THUMB_COLOR = 'BAR_COLOR';
+const THUMB_POSITION = 'BAR_POSITION';
+const THUMB_SIZE = 'BAR_SIZE';
 
-const DEFAULT_APPEARANCE = {};
-DEFAULT_APPEARANCE[DefaultAppearance.FOREGROUND_COLOR] = CommonTheme.CONTROL_TEXT_COLOR;
-DEFAULT_APPEARANCE[DefaultAppearance.BACKGROUND_COLOR] = CommonTheme.CONTROL_BACKGROUND_COLOR;
-DEFAULT_APPEARANCE[DefaultAppearance.STROKE_COLOR] = CommonTheme.CONTROL_BACKGROUND_COLOR;
-DEFAULT_APPEARANCE[DefaultAppearance.STROKE_THICKNESS] = 2;
-DEFAULT_APPEARANCE[DefaultAppearance.TEXT_DISABLED] = true;
-DEFAULT_APPEARANCE[ARROW_COLOR] = 0xbdbdbd;
-DEFAULT_APPEARANCE[BAR_POSITION] = 0;
-DEFAULT_APPEARANCE[BAR_COLOR] = 0xbdbdbd;
-DEFAULT_APPEARANCE[BAR_SIZE] = 50;
+const DEFAULT_APPEARANCE = {
+    [ARROW_COLOR]: 0xbdbdbd,
+    [DefaultAppearance.BACKGROUND_COLOR]: CommonTheme.CONTROL_BACKGROUND_COLOR,
+    [DefaultAppearance.FOREGROUND_COLOR]: CommonTheme.CONTROL_TEXT_COLOR,
+    [DefaultAppearance.STROKE_COLOR]: CommonTheme.CONTROL_BACKGROUND_COLOR,
+    [DefaultAppearance.STROKE_THICKNESS]: 2,
+    [DefaultAppearance.TEXT_DISABLED]: true,
+    [THUMB_COLOR]: 0xbdbdbd,
+    [THUMB_POSITION]: 0,
+    [THUMB_SIZE]: 50,
+};
 
 export class VerticalScrollbar implements ShapePlugin {
     public defaultAppearance() {
@@ -39,9 +40,9 @@ export class VerticalScrollbar implements ShapePlugin {
 
     public configurables(factory: ConfigurableFactory) {
         return [
-            factory.slider(BAR_SIZE, 'Bar Size', 0, 100),
-            factory.slider(BAR_SIZE, 'Bar Position', 0, 100),
-            factory.color(BAR_COLOR, 'Bar Color'),
+            factory.color(THUMB_COLOR, 'Thumb Color'),
+            factory.slider(THUMB_SIZE, 'Thumb Size', 0, 100),
+            factory.slider(THUMB_SIZE, 'Thumb Position', 0, 100),
             factory.color(ARROW_COLOR, 'Arrow Color'),
         ];
     }
@@ -62,14 +63,14 @@ export class VerticalScrollbar implements ShapePlugin {
                 p.setBackgroundColor(ctx.shape);
             });
 
-            const barHeight = ctx.shape.getAppearance(BAR_SIZE) / 100;
-            const barOffset = ctx.shape.getAppearance(BAR_POSITION) / 100 * (ctx.rect.height - 2 * clickSize) * (1 - barHeight);
+            const barHeight = ctx.shape.getAppearance(THUMB_SIZE) / 100;
+            const barOffset = ctx.shape.getAppearance(THUMB_POSITION) / 100 * (ctx.rect.height - 2 * clickSize) * (1 - barHeight);
             
             const barRect = new Rect2(ctx.rect.x, ctx.rect.y + clickSize + barOffset, ctx.rect.width, (ctx.rect.height - 2 * clickSize) * barHeight);
 
             // Bar
             items.rectangle(0, 0, barRect, p => {
-                p.setBackgroundColor(ctx.shape.getAppearance(BAR_COLOR));
+                p.setBackgroundColor(ctx.shape.getAppearance(THUMB_COLOR));
             });
         }, mask => {
             mask.rectangle(0, 0, ctx.rect);

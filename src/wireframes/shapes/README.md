@@ -32,12 +32,12 @@ const STATE_NORMAL = 'Normal';
 const STATE_CHECKED = 'Checked';
 
 const DEFAULT_APPEARANCE = {};
-DEFAULT_APPEARANCE[DefaultAppearance.FOREGROUND_COLOR] = 0x238b45;
-DEFAULT_APPEARANCE[DefaultAppearance.BACKGROUND_COLOR] = 0xbdbdbd;
-DEFAULT_APPEARANCE[DefaultAppearance.TEXT_DISABLED] = true;
-DEFAULT_APPEARANCE[DefaultAppearance.STROKE_COLOR] = 0xffffff;
-DEFAULT_APPEARANCE[DefaultAppearance.STROKE_THICKNESS] = 4;
-DEFAULT_APPEARANCE[STATE] = STATE_CHECKED;
+[DefaultAppearance.FOREGROUND_COLOR]: 0x238b45,
+[DefaultAppearance.BACKGROUND_COLOR]: 0xbdbdbd,
+[DefaultAppearance.TEXT_DISABLED]: true,
+[DefaultAppearance.STROKE_COLOR]: 0xffffff,
+[DefaultAppearance.STROKE_THICKNESS]: 4,
+[STATE]: STATE_CHECKED,
 
 export class Toggle implements ShapePlugin {
     public identifier(): string {

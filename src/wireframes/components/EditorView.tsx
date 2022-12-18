@@ -11,11 +11,12 @@ import { DropTargetMonitor, useDrop } from 'react-dnd';
 import { NativeTypes } from 'react-dnd-html5-backend';
 import { findDOMNode } from 'react-dom';
 import { useDispatch } from 'react-redux';
-import { RendererContext } from '@app/context';
-import { loadImage, sizeInPx, useClipboard, useEventCallback } from '@app/core';
-import { addIcon, addImage, addVisual, changeItemsAppearance, Diagram, getDiagram, getDiagramId, getEditor, getMasterDiagram, getSelectedItems, getSelectedItemsWithLocked, selectItems, Transform, transformItems, useStore } from '@app/wireframes/model';
+import { useRenderer } from '@app/context';
+import { loadImagesToClipboardItems, sizeInPx, useClipboard, useEventCallback } from '@app/core';
+import { addVisual, changeItemsAppearance, Diagram, getDiagram, getDiagramId, getEditor, getMasterDiagram, getSelectedItems, getSelectedItemsWithLocked, selectItems, Transform, transformItems, useStore } from '@app/wireframes/model';
 import { Editor } from '@app/wireframes/renderer/Editor';
 import { DiagramRef, ItemsRef } from '../model/actions/utils';
+import { VisualSource } from './../interface';
 import { ContextMenu } from './context-menu/ContextMenu';
 import './EditorView.scss';
 
@@ -43,7 +44,7 @@ export const EditorViewInner = ({ diagram, spacing }: EditorViewProps & { diagra
     const editorSize = editor.size;
     const masterDiagram = useStore(getMasterDiagram);
     const renderRef = React.useRef<any>();
-    const renderer = React.useContext(RendererContext);
+    const renderer = useRenderer();
     const selectedPoint = React.useRef({ x: 0, y: 0 });
     const selectedDiagramId = useStore(getDiagramId);
     const state = useStore(s => s);
@@ -71,32 +72,18 @@ export const EditorViewInner = ({ diagram, spacing }: EditorViewProps & { diagra
         selectedPoint.current = { x: event.nativeEvent.offsetX, y: event.nativeEvent.offsetY };
     });
 
-    const addImages = useEventCallback((files: File[] | FileList | undefined, x: number, y: number) => {
-        if (!selectedDiagramId || !files) {
+    const doPaste = useEventCallback((sources: ReadonlyArray<VisualSource>, x: number, y: number) => {
+        if (!selectedDiagramId) {
             return;
         }
 
-        async function loadFiles(diagramId: string, files: File[]) {
-            for (const file of files) {
-                const image = await loadImage(file);
+        const visuals = renderer.createVisuals(sources);
 
-                if (image != null) {
-                    dispatch(addImage(diagramId, image.source, x, y, image.width, image.height));
-                }
-            }
-        }
+        for (const visual of visuals) {
+            dispatch(addVisual(selectedDiagramId, visual.id, x, y, visual.appearance, undefined, visual.width, visual.height));
 
-        loadFiles(selectedDiagramId, Array.from(files));
-    });
-
-    const addUrls = useEventCallback((urls: string[] | undefined, x: number, y: number) => {
-        if (!selectedDiagramId || !urls) {
-            return;
-        }
-
-        for (const url of urls) {
-            dispatch(addVisual(selectedDiagramId, 'Link', x, y, { TEXT: url }));
-            break;
+            x += 40;
+            y += 40;
         }
     });
 
@@ -108,14 +95,8 @@ export const EditorViewInner = ({ diagram, spacing }: EditorViewProps & { diagra
     
             const x = selectedPoint.current.x;
             const y = selectedPoint.current.y;
-    
-            if (event.type === 'Text') {
-                dispatch(addVisual(selectedDiagramId, 'Link', x, y, { TEXT: event.text }));
-            } else if (event.images) {
-                const image = event.images[0];
-    
-                dispatch(addImage(selectedDiagramId, image.source, x, y, image.width, image.height));
-            }
+
+            doPaste(event.items, x, y);
         },
     });
 
@@ -127,7 +108,7 @@ export const EditorViewInner = ({ diagram, spacing }: EditorViewProps & { diagra
             'DND_ASSET',
             'DND_ICON',
         ],
-        drop: (item: any, monitor: DropTargetMonitor) => {
+        drop: async (item: any, monitor: DropTargetMonitor) => {
             if (!monitor || !renderRef.current || !selectedDiagramId) {
                 return;
             }
@@ -150,21 +131,25 @@ export const EditorViewInner = ({ diagram, spacing }: EditorViewProps & { diagra
             const itemType = monitor.getItemType();
 
             switch (itemType) {
-                case 'DND_ICON':
-                    dispatch(addIcon(selectedDiagramId, item.text, item.fontFamily, x, y));
-                    break;
                 case 'DND_ASSET':
                     dispatch(addVisual(selectedDiagramId, item['name'], x, y));
                     break;
-                case NativeTypes.TEXT:
-                    dispatch(addVisual(selectedDiagramId, 'Label', x, y, { TEXT: item.text }));
+                case 'DND_ICON':
+                    doPaste([{ type: 'Icon', ...item }], x, y);
                     break;
-                case NativeTypes.FILE: {
-                    addImages(item.files, x, y);
+                case NativeTypes.TEXT:
+                    doPaste([{ type: 'Text', ...item }], x, y);
+                    break;
+                case NativeTypes.URL: {
+                    const urls: string[] = item.urls;
+
+                    doPaste(urls.map(url => ({ type: 'Url', url })), x, y);
                     break;
                 }
-                case NativeTypes.URL: {
-                    addUrls(item.urls, x, y);
+                case NativeTypes.FILE: {
+                    const files: FileList = item.files;
+
+                    doPaste(await loadImagesToClipboardItems(files), x, y);
                     break;
                 }
             }

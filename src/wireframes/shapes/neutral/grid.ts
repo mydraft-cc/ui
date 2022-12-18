@@ -12,17 +12,18 @@ const HEADER_BACKGROUND_COLOR = 'HEADER_BACKGROUND_COLOR';
 const HEADER_FOREGROUND_COLOR = 'HEADER_FOREGROUND_COLOR';
 const HEADER_HIDDEN = 'HEADER_HIDDEN';
 
-const DEFAULT_APPEARANCE = {};
-DEFAULT_APPEARANCE[DefaultAppearance.FOREGROUND_COLOR] = CommonTheme.CONTROL_TEXT_COLOR;
-DEFAULT_APPEARANCE[DefaultAppearance.BACKGROUND_COLOR] = '#fff';
-DEFAULT_APPEARANCE[DefaultAppearance.TEXT] = 'column1,column2,column3\nrow1,row1,row1\nrow2,row2';
-DEFAULT_APPEARANCE[DefaultAppearance.TEXT_ALIGNMENT] = 'center';
-DEFAULT_APPEARANCE[DefaultAppearance.FONT_SIZE] = CommonTheme.CONTROL_FONT_SIZE;
-DEFAULT_APPEARANCE[DefaultAppearance.STROKE_COLOR] = CommonTheme.CONTROL_BORDER_COLOR;
-DEFAULT_APPEARANCE[DefaultAppearance.STROKE_THICKNESS] = CommonTheme.CONTROL_BORDER_THICKNESS;
-DEFAULT_APPEARANCE[HEADER_BACKGROUND_COLOR] = CommonTheme.CONTROL_BACKGROUND_COLOR;
-DEFAULT_APPEARANCE[HEADER_FOREGROUND_COLOR] = CommonTheme.CONTROL_TEXT_COLOR;
-DEFAULT_APPEARANCE[HEADER_HIDDEN] = false;
+const DEFAULT_APPEARANCE = {
+    [DefaultAppearance.BACKGROUND_COLOR]: '#fff',
+    [DefaultAppearance.FONT_SIZE]: CommonTheme.CONTROL_FONT_SIZE,
+    [DefaultAppearance.FOREGROUND_COLOR]: CommonTheme.CONTROL_TEXT_COLOR,
+    [DefaultAppearance.STROKE_COLOR]: CommonTheme.CONTROL_BORDER_COLOR,
+    [DefaultAppearance.STROKE_THICKNESS]: CommonTheme.CONTROL_BORDER_THICKNESS,
+    [DefaultAppearance.TEXT_ALIGNMENT]: 'center',
+    [DefaultAppearance.TEXT]: 'column1,column2,column3\nrow1,row1,row1\nrow2,row2',
+    [HEADER_BACKGROUND_COLOR]: CommonTheme.CONTROL_BACKGROUND_COLOR,
+    [HEADER_FOREGROUND_COLOR]: CommonTheme.CONTROL_TEXT_COLOR,
+    [HEADER_HIDDEN]: false,
+};
 
 export class Grid implements ShapePlugin {
     public identifier(): string {

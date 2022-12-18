@@ -5,11 +5,12 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { DefaultAppearance, RenderContext, ShapePlugin } from '@app/wireframes/interface';
+import { DefaultAppearance, RenderContext, ShapePlugin, VisualSource } from '@app/wireframes/interface';
 
-const DEFAULT_APPEARANCE = {};
-DEFAULT_APPEARANCE[DefaultAppearance.FOREGROUND_COLOR] = 0;
-DEFAULT_APPEARANCE[DefaultAppearance.TEXT_DISABLED] = true;
+const DEFAULT_APPEARANCE = {
+    [DefaultAppearance.FOREGROUND_COLOR]: 0,
+    [DefaultAppearance.TEXT_DISABLED]: true,
+};
 
 export class Icon implements ShapePlugin {
     public identifier(): string {
@@ -22,6 +23,16 @@ export class Icon implements ShapePlugin {
 
     public defaultSize() {
         return { x: 40, y: 40 };
+    }
+
+    public create(source: VisualSource) {
+        if (source.type == 'Icon') {
+            const { text, fontFamily } = source;
+
+            return { appearance: { [DefaultAppearance.TEXT]: text, [DefaultAppearance.FONT_FAMILY]: fontFamily } };
+        }
+
+        return null;
     }
 
     public showInGallery() {

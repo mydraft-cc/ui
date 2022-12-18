@@ -8,10 +8,11 @@
 import { ConstraintFactory, DefaultAppearance, RenderContext, ShapePlugin } from '@app/wireframes/interface';
 import { CommonTheme } from './_theme';
 
-const DEFAULT_APPEARANCE = {};
-DEFAULT_APPEARANCE[DefaultAppearance.FOREGROUND_COLOR] = CommonTheme.CONTROL_TEXT_COLOR;
-DEFAULT_APPEARANCE[DefaultAppearance.TEXT] = 'Heading';
-DEFAULT_APPEARANCE[DefaultAppearance.FONT_SIZE] = 24;
+const DEFAULT_APPEARANCE = {
+    [DefaultAppearance.FONT_SIZE]: 24,
+    [DefaultAppearance.FOREGROUND_COLOR]: CommonTheme.CONTROL_TEXT_COLOR,
+    [DefaultAppearance.TEXT]: 'Heading',
+};
 
 export class Heading implements ShapePlugin {
     public identifier(): string {

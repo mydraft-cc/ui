@@ -10,15 +10,16 @@ import { CommonTheme } from './_theme';
 
 const ACCENT_COLOR = 'ACCENT_COLOR';
 
-const DEFAULT_APPEARANCE = {};
-DEFAULT_APPEARANCE[DefaultAppearance.FOREGROUND_COLOR] = CommonTheme.CONTROL_TEXT_COLOR;
-DEFAULT_APPEARANCE[DefaultAppearance.BACKGROUND_COLOR] = CommonTheme.CONTROL_BACKGROUND_COLOR;
-DEFAULT_APPEARANCE[DefaultAppearance.TEXT] = 'left,middle*,right';
-DEFAULT_APPEARANCE[DefaultAppearance.TEXT_ALIGNMENT] = 'center';
-DEFAULT_APPEARANCE[DefaultAppearance.FONT_SIZE] = CommonTheme.CONTROL_FONT_SIZE;
-DEFAULT_APPEARANCE[DefaultAppearance.STROKE_COLOR] = CommonTheme.CONTROL_BORDER_COLOR;
-DEFAULT_APPEARANCE[DefaultAppearance.STROKE_THICKNESS] = CommonTheme.CONTROL_BORDER_THICKNESS;
-DEFAULT_APPEARANCE[ACCENT_COLOR] = 0x2171b5;
+const DEFAULT_APPEARANCE = {
+    [ACCENT_COLOR]: 0x2171b5,
+    [DefaultAppearance.BACKGROUND_COLOR]: CommonTheme.CONTROL_BACKGROUND_COLOR,
+    [DefaultAppearance.FONT_SIZE]: CommonTheme.CONTROL_FONT_SIZE,
+    [DefaultAppearance.FOREGROUND_COLOR]: CommonTheme.CONTROL_TEXT_COLOR,
+    [DefaultAppearance.STROKE_COLOR]: CommonTheme.CONTROL_BORDER_COLOR,
+    [DefaultAppearance.STROKE_THICKNESS]: CommonTheme.CONTROL_BORDER_THICKNESS,
+    [DefaultAppearance.TEXT_ALIGNMENT]: 'center',
+    [DefaultAppearance.TEXT]: 'left,middle*,right',
+};
 
 export class ButtonBar implements ShapePlugin {
     public identifier(): string {
