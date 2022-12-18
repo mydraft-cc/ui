@@ -238,6 +238,10 @@ export class DiagramItem extends Record<Props> implements Shape {
 
         const newTransform = transformer(this.transform);
 
+        if (!newTransform) {
+            return this;
+        }
+
         return this.set('transform', newTransform);
     }
 

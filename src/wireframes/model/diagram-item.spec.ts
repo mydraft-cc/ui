@@ -200,11 +200,11 @@ describe('DiagramItem', () => {
     });
 
     it('should update roration when transforming between bounds', () => {
-        const oldBounds = new Transform(Vec2.ZERO, Vec2.ZERO, Rotation.fromDegree(90));
-        const newBounds = new Transform(Vec2.ZERO, Vec2.ZERO, Rotation.fromDegree(215));
+        const boundsNew = new Transform(Vec2.ZERO, Vec2.ZERO, Rotation.fromDegree(90));
+        const boundsOld = new Transform(Vec2.ZERO, Vec2.ZERO, Rotation.fromDegree(215));
 
         const group_1 = DiagramItem.createGroup(groupId, []);
-        const group_2 = group_1.transformByBounds(oldBounds, newBounds);
+        const group_2 = group_1.transformByBounds(boundsNew, boundsOld);
 
         const actual = group_2.rotation;
         const expected = Rotation.fromDegree(125);

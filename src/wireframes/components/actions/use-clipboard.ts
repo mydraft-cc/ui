@@ -26,7 +26,7 @@ export function useClipboard() {
 
     const clipboard = useClipboardProvider({ 
         onPaste: (event: ClipboardPasteEvent) => {
-            const text = event['text'] as string;
+            const text = event.items[0]['text'] as string;
     
             if (selectedDiagram && text && text.indexOf(PREFIX) === 0) {
                 offset.current += OFFSET;

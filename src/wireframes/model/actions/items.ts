@@ -117,7 +117,10 @@ export function buildItems(builder: ActionReducerMapBuilder<EditorState>, render
                 diagram = diagram.addItems(set);
                 
                 diagram = diagram.updateItems(set.allVisuals.map(x => x.id), item => {
-                    return item.transformWith(t => t.moveBy(new Vec2(offset, offset)));
+                    const boundsOld = item.bounds(diagram);
+                    const boundsNew = boundsOld.moveBy(new Vec2(offset, offset));
+
+                    return item.transformByBounds(boundsOld, boundsNew);
                 });
                 
                 diagram = diagram.selectItems(set.rootIds);
@@ -165,7 +168,6 @@ export function calculateSelection(items: DiagramItem[], diagram: Diagram, isSin
     let selectedItems: DiagramItem[] = [];
 
     function resolveGroup(item: DiagramItem, stop?: DiagramItem) {
-        // eslint-disable-next-line no-constant-condition
         while (true) {
             const group = diagram.parent(item.id);
 

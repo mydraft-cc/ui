@@ -47,13 +47,13 @@ export function buildAppearance(builder: ActionReducerMapBuilder<EditorState>, r
             const { diagramId, itemIds } = action.payload;
 
             return state.updateDiagram(diagramId, diagram => {
-                const oldBounds = Transform.fromJS(action.payload.oldBounds);
-                const newBounds = Transform.fromJS(action.payload.newBounds);
+                const boundsOld = Transform.fromJS(action.payload.oldBounds);
+                const boundsNew = Transform.fromJS(action.payload.newBounds);
 
                 const set = DiagramItemSet.createFromDiagram(itemIds, diagram);
 
                 return diagram.updateItems(set.allItems.map(x => x.id), item => {
-                    return item.transformByBounds(oldBounds, newBounds);
+                    return item.transformByBounds(boundsOld, boundsNew);
                 });
             });
         });
