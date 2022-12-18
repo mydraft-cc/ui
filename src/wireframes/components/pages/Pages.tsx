@@ -13,7 +13,7 @@ import { useDispatch } from 'react-redux';
 import { useEventCallback } from '@app/core';
 import { texts } from '@app/texts';
 import { addDiagram, filterDiagrams, getDiagramId, getDiagramsFilter, getFilteredDiagrams, moveDiagram, removeDiagram, renameDiagram, selectDiagram, setDiagramMaster, useStore } from '@app/wireframes/model';
-import { Page } from './Page';
+import { Page, PageAction } from './Page';
 import './Pages.scss';
 
 export const Pages = () => {
@@ -27,20 +27,22 @@ export const Pages = () => {
         dispatch(addDiagram());
     });
 
-    const doRemoveDiagram = useEventCallback((diagramId: string) => {
-        dispatch(removeDiagram(diagramId));
-    });
+    const doAction = useEventCallback((diagramId: string, action: PageAction, arg?: any) => {
+        switch (action) {
+            case 'Delete':
+                dispatch(removeDiagram(diagramId));
+                break;
+            case 'SetMaster':
+                dispatch(setDiagramMaster(diagramId, arg));
+                break;
+            case 'Rename':
+                dispatch(renameDiagram(diagramId, arg));
+                break;
+            case 'Select':
+                dispatch(selectDiagram(diagramId));
+                break;
 
-    const doRenameDiagram = useEventCallback((diagramId: string, title: string) => {
-        dispatch(renameDiagram(diagramId, title));
-    });
-
-    const doSelectDiagram = useEventCallback((diagramId: string) => {
-        dispatch(selectDiagram(diagramId));
-    });
-
-    const doSetMaster = useEventCallback((diagramId: string, master: string | undefined) => {
-        dispatch(setDiagramMaster(diagramId, master));
+        }
     });
 
     const doFilterShapes = useEventCallback((event: React.ChangeEvent<HTMLInputElement>) => {
@@ -82,10 +84,7 @@ export const Pages = () => {
                                                 diagram={item}
                                                 diagrams={diagramsOrdered}
                                                 index={index}
-                                                onDelete={doRemoveDiagram}
-                                                onRename={doRenameDiagram}
-                                                onSetMaster={doSetMaster}
-                                                onSelect={doSelectDiagram}
+                                                onAction={doAction}
                                                 selected={item.id === diagramId}
                                             />
                                         </div>

@@ -11,7 +11,9 @@ import classNames from 'classnames';
 import * as React from 'react';
 import { Keys, useEventCallback } from '@app/core';
 import { texts } from '@app/texts';
-import { Diagram, DiagramItem } from '@app/wireframes/model';
+import { Diagram, DiagramItem, OrderMode } from '@app/wireframes/model';
+
+export type OutlineItemAction = 'Delete' | 'Rename' | 'Move' | 'Select';
 
 export interface OutlineItemProps {
     // The item.
@@ -23,14 +25,14 @@ export interface OutlineItemProps {
     // The level.
     level: number;
 
-    // Invoked when the will will be renamed.
-    onRename: (itemId: string, title: string) => void;
+    // True, if the item is the first.
+    isFirst: boolean;
 
-    // Invoked when the will will be deleted.
-    onDelete: (itemId: string) => void;
+    // True, if the item is the last.
+    isLast: boolean;
 
-    // Invoked when the item will be selected.
-    onSelect: (itemId: string) => void;
+    // When an action should be executed.
+    onAction: (itemId: string, action: OutlineItemAction, arg?: any) => void;
 }
 
 export const OutlineItem = (props: OutlineItemProps) => {
@@ -38,9 +40,9 @@ export const OutlineItem = (props: OutlineItemProps) => {
         diagram,
         diagramItem,
         level,
-        onDelete,
-        onRename,
-        onSelect,
+        isFirst,
+        isLast,
+        onAction,
     } = props;
 
     const [editName, setEditName] = React.useState('');
@@ -53,34 +55,40 @@ export const OutlineItem = (props: OutlineItemProps) => {
         setEditName(event.target.value);
     });
 
-    const doRename = useEventCallback(() => {
+    const doRenameStart = useEventCallback(() => {
         setEditName(itemName);
         setEditing(true);
     });
 
-    const doRenameEnd = useEventCallback(() => {
+    const doRenameCancel = useEventCallback(() => {
         setEditing(false);
     });
 
     const doDelete = useEventCallback(() => {
-        onDelete(diagramItem.id);
+        onAction(diagramItem.id, 'Delete');
     });
 
     const doSelect = useEventCallback(() => {
-        onSelect(diagramItem.id);
+        onAction(diagramItem.id, 'Select');
+    });
+
+    const doMove = useEventCallback((event: { key: string }) => {
+        onAction(diagramItem.id, 'Move', event.key);
+    });
+
+    const doEnter = useEventCallback((event: React.KeyboardEvent) => {
+        if (Keys.isEnter(event) || Keys.isEscape(event)) {
+            setEditing(false);
+        }
+
+        if (Keys.isEnter(event)) {
+            onAction(diagramItem.id, 'Rename', editName);
+        }
     });
 
     const initInput = React.useCallback((event: Input) => {
         event?.focus();
     }, []);
-
-    const doEnter = useEventCallback((event: React.KeyboardEvent) => {
-        if (Keys.isEnter(event)) {
-            setEditing(false);
-
-            onRename(diagramItem.id, editName);
-        }
-    });
 
     const selected = diagram.selectedIds.has(diagramItem.id);
 
@@ -88,20 +96,44 @@ export const OutlineItem = (props: OutlineItemProps) => {
         <div className='tree-item'>
             <div className='tree-item-header-container'>
                 {editing ? (
-                    <Input value={editName} onChange={setText} onBlur={doRenameEnd} onKeyUp={doEnter} ref={initInput} />
+                    <Input value={editName} onChange={setText} onBlur={doRenameCancel} onKeyUp={doEnter} ref={initInput} />
                 ) : (
                     <Dropdown overlay={
                         <Menu selectable={false}>
+                            <Menu.Item key='rename' onClick={doRenameStart}>
+                                {texts.common.rename}
+                            </Menu.Item>
+
+                            <Menu.Divider />
+
+                            {level === 0 && 
+                                <>
+                                    <Menu.Item key={OrderMode.BringToFront} onClick={doMove} disabled={isLast}>
+                                        {texts.common.bringToFront}
+                                    </Menu.Item>
+        
+                                    <Menu.Item key={OrderMode.BringForwards} onClick={doMove} disabled={isLast}>
+                                        {texts.common.bringForwards}
+                                    </Menu.Item>
+        
+                                    <Menu.Item key={OrderMode.SendBackwards} onClick={doMove} disabled={isFirst}>
+                                        {texts.common.sendBackwards}
+                                    </Menu.Item>
+        
+                                    <Menu.Item key={OrderMode.SendToBack}onClick={doMove} disabled={isFirst}>
+                                        {texts.common.sendToBack}
+                                    </Menu.Item>
+        
+                                    <Menu.Divider />
+                                </>
+                            }
+
                             <Menu.Item key='delete' icon={<DeleteOutlined />} onClick={doDelete}>
                                 {texts.common.delete}
                             </Menu.Item>
-
-                            <Menu.Item key='rename' onClick={doRename}>
-                                {texts.common.rename}
-                            </Menu.Item>
                         </Menu>
                     } trigger={['contextMenu']}>
-                        <Row className={classNames('tree-item-header', { selected })} wrap={false} style={{ marginLeft: level * 20 }} onDoubleClick={doRename} onClick={doSelect}>
+                        <Row className={classNames('tree-item-header', { selected })} wrap={false} style={{ marginLeft: level * 20 }} onDoubleClick={doRenameStart} onClick={doSelect}>
                             <Col flex='none'>
                                 {isGroup ? (
                                     <span onClick={() => setExpanded(x => !x)}>
@@ -123,20 +155,34 @@ export const OutlineItem = (props: OutlineItemProps) => {
                 )}
             </div>
 
-            {expanded && isGroup && 
-                <div>
-                    {diagram.children(diagramItem).map(item =>
-                        <OutlineItem key={item.id}
-                            diagram={diagram}
-                            diagramItem={item}
-                            level={level + 1}
-                            onDelete={onDelete}
-                            onRename={onRename}
-                            onSelect={onSelect}
-                        />,
-                    )}
-                </div>
+            {expanded && isGroup &&
+                <>{renderChildren(props)}</>
             }
         </div>
     );
 };
+
+function renderChildren(props: OutlineItemProps) {
+    const children = props.diagram.children(props.diagramItem);
+
+    if (children.length === 0) {
+        return null;
+    }
+
+    const newLevel = props.level + 1;
+
+    return (
+        <div>
+            {children.map((item, index) =>
+                <OutlineItem key={item.id}
+                    diagram={props.diagram}
+                    diagramItem={item}
+                    isFirst={index === 0}
+                    isLast={index === children.length - 1}
+                    level={newLevel}
+                    onAction={props.onAction}
+                />,
+            )}
+        </div>
+    );
+}

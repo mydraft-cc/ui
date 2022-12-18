@@ -13,6 +13,8 @@ import { Keys, useEventCallback } from '@app/core';
 import { texts } from '@app/texts';
 import { Diagram, getPageName } from '@app/wireframes/model';
 
+export type PageAction = 'Delete' | 'Rename' | 'SetMaster' | 'Select';
+
 export interface PageProps {
     // The page index.
     index: number;
@@ -26,17 +28,8 @@ export interface PageProps {
     // True if selected.
     selected?: boolean;
 
-    // Invoked when the diagram will be renamed.
-    onRename: (diagramId: string, title: string) => void;
-
-    // Invoked when the diagram will be deleted.
-    onDelete: (diagramId: string) => void;
-
-    // Invoked when the diagram master will be selected.
-    onSetMaster: (diagramId: string, master: string | undefined) => void;
-
-    // Invoked when the diagram will be selected.
-    onSelect: (diagramId: string) => void;
+    // When an action should be executed.
+    onAction: (diagramId: string, action: PageAction, arg?: any) => void;
 }
 
 export const Page = (props: PageProps) => {
@@ -44,10 +37,7 @@ export const Page = (props: PageProps) => {
         diagram,
         diagrams,
         index,
-        onDelete,
-        onRename,
-        onSetMaster,
-        onSelect,
+        onAction,
         selected,
     } = props;
 
@@ -66,44 +56,46 @@ export const Page = (props: PageProps) => {
         setEditName(event.target.value);
     });
 
-    const doRename = useEventCallback(() => {
+    const doRenameStart = useEventCallback(() => {
         setEditName(pageName);
         setEditing(true);
     });
 
-    const doRenameEnd = useEventCallback(() => {
+    const doRenameCancel = useEventCallback(() => {
         setEditing(false);
     });
 
     const doDelete = useEventCallback(() => {
-        onDelete(diagram.id);
+        onAction(diagram.id, 'Delete');
     });
 
     const doSelect = useEventCallback(() => {
-        onSelect(diagram.id);
+        onAction(diagram.id, 'Select');
     });
 
     const doSetMaster = useEventCallback((master: string | undefined) => {
-        onSetMaster(diagram.id, master);
+        onAction(diagram.id, 'SetMaster', master);
+    });
+
+    const doEnter = useEventCallback((event: React.KeyboardEvent) => {
+        if (Keys.isEnter(event) || Keys.isEscape(event)) {
+            setEditing(false);
+        }
+
+        if (Keys.isEnter(event)) {
+            onAction(diagram.id, 'Rename', editName);
+        }
     });
 
     const initInput = React.useCallback((event: Input) => {
         event?.focus();
     }, []);
 
-    const doEnter = useEventCallback((event: React.KeyboardEvent) => {
-        if (Keys.isEnter(event)) {
-            setEditing(false);
-
-            onRename(diagram.id, editName);
-        }
-    });
-
     return (
         <div className='tree-item'>
             <div className='tree-item-header-container'>
                 {editing ? (
-                    <Input value={editName} onChange={setText} onBlur={doRenameEnd} onKeyUp={doEnter} ref={initInput} />
+                    <Input value={editName} onChange={setText} onBlur={doRenameCancel} onKeyUp={doEnter} ref={initInput} />
                 ) : (
                     <Dropdown overlay={
                         <Menu selectable={false}>
@@ -111,7 +103,7 @@ export const Page = (props: PageProps) => {
                                 {texts.common.delete}
                             </Menu.Item>
 
-                            <Menu.Item key='rename' onClick={doRename}>
+                            <Menu.Item key='rename' onClick={doRenameStart}>
                                 {texts.common.rename}
                             </Menu.Item>
 
@@ -138,7 +130,7 @@ export const Page = (props: PageProps) => {
                             </Menu.SubMenu>
                         </Menu>
                     } trigger={['contextMenu']}>
-                        <Row className={classNames('tree-item-header', { selected })} wrap={false} onDoubleClick={doRename} onClick={doSelect}>
+                        <Row className={classNames('tree-item-header', { selected })} wrap={false} onDoubleClick={doRenameStart} onClick={doSelect}>
                             <Col flex='none'>
                                 {pageMaster ? (
                                     <FileMarkdownOutlined />
