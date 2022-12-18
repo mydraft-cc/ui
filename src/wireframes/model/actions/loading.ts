@@ -115,6 +115,7 @@ export function loadingMiddleware(): Middleware {
                 store.dispatch(showToast({ content: texts.common.loadingDiagramFailed, type: 'error', key: action.payload.requestId, delayed: 1000 }));
             }
             
+            console.error(ex);
             throw ex;
         }
     };

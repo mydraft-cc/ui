@@ -100,57 +100,59 @@ export const Page = (props: PageProps) => {
     });
 
     return (
-        <div className='page-container'>
-            {editing ? (
-                <Input value={editName} onChange={setText} onBlur={doRenameEnd} onKeyUp={doEnter} ref={initInput} />
-            ) : (
-                <Dropdown overlay={
-                    <Menu selectable={false}>
-                        <Menu.Item key='delete' icon={<DeleteOutlined />} onClick={doDelete}>
-                            {texts.common.delete}
-                        </Menu.Item>
+        <div className='tree-item'>
+            <div className='tree-item-header-container'>
+                {editing ? (
+                    <Input value={editName} onChange={setText} onBlur={doRenameEnd} onKeyUp={doEnter} ref={initInput} />
+                ) : (
+                    <Dropdown overlay={
+                        <Menu selectable={false}>
+                            <Menu.Item key='delete' icon={<DeleteOutlined />} onClick={doDelete}>
+                                {texts.common.delete}
+                            </Menu.Item>
 
-                        <Menu.Item key='rename' onClick={doRename}>
-                            {texts.common.rename}
-                        </Menu.Item>
+                            <Menu.Item key='rename' onClick={doRename}>
+                                {texts.common.rename}
+                            </Menu.Item>
 
-                        <Menu.SubMenu title={texts.common.masterPage}>
-                            <MasterPage
-                                id={undefined}
-                                title={texts.common.none}
-                                diagramId={diagram.id}
-                                diagramMaster={pageMaster}
-                                hide={false}
-                                onSetMaster={doSetMaster}
-                            />
-
-                            {diagrams.map((item, index) =>
-                                <MasterPage key={item.id}
-                                    id={item.id}
-                                    title={getPageName(item, index)}
+                            <Menu.SubMenu title={texts.common.masterPage}>
+                                <MasterPage
+                                    id={undefined}
+                                    title={texts.common.none}
                                     diagramId={diagram.id}
                                     diagramMaster={pageMaster}
-                                    hide={item.id === diagram.id}
+                                    hide={false}
                                     onSetMaster={doSetMaster}
-                                />,
-                            )}
-                        </Menu.SubMenu>
-                    </Menu>
-                } trigger={['contextMenu']}>
-                    <Row className={classNames('page', { selected })} wrap={false} onDoubleClick={doRename} onClick={doSelect}>
-                        <Col flex='none'>
-                            {pageMaster ? (
-                                <FileMarkdownOutlined />
-                            ) : (
-                                <FileOutlined />
-                            )}
-                        </Col>
-                        <Col flex='auto' className='page-title no-select'>
-                            {pageName}
-                        </Col>
-                    </Row>
-                </Dropdown>
-            )}
+                                />
+
+                                {diagrams.map((item, index) =>
+                                    <MasterPage key={item.id}
+                                        id={item.id}
+                                        title={getPageName(item, index)}
+                                        diagramId={diagram.id}
+                                        diagramMaster={pageMaster}
+                                        hide={item.id === diagram.id}
+                                        onSetMaster={doSetMaster}
+                                    />,
+                                )}
+                            </Menu.SubMenu>
+                        </Menu>
+                    } trigger={['contextMenu']}>
+                        <Row className={classNames('tree-item-header', { selected })} wrap={false} onDoubleClick={doRename} onClick={doSelect}>
+                            <Col flex='none'>
+                                {pageMaster ? (
+                                    <FileMarkdownOutlined />
+                                ) : (
+                                    <FileOutlined />
+                                )}
+                            </Col>
+                            <Col flex='auto' className='tree-item-title no-select'>
+                                {pageName}
+                            </Col>
+                        </Row>
+                    </Dropdown>
+                )}
+            </div>
         </div>
     );
 };

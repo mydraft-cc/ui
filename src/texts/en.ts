@@ -54,6 +54,7 @@ export const texts = {
         newVersion: 'A new version is available. Please press F5 to reload them.',
         none: 'None',
         noRecentDocument: 'No recent document found',
+        outline: 'Outline',
         openFromFile: 'Open from file',
         openFromFileTooltip: 'Open diagram from file',
         optionsTooltip: 'Show more options (CTRL + O)',

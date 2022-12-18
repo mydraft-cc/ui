@@ -5,38 +5,35 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { ImmutableMap } from './immutable-map';
 import { Types } from './types';
 
 export abstract class Record<T> {
-    private readonly values: ImmutableMap<any>;
+    private readonly values: {};
 
     public get<K extends keyof T>(key: K): T[K] {
-        return this.values.get(key as string);
+        return this.values[key as string];
     }
 
     constructor(values: T) {
-        this.values = ImmutableMap.of(values as any);
+        this.values = values;
         this.values = this.afterClone(this.values);
+
+        Object.freeze(values);
     }
 
     public set<K extends keyof T>(key: K, value: T[K]): this {
-        const values = this.values.set(key as string, value);
+        const values = { ...this.values, [key]: value };
 
         return this.makeRecord(values);
     }
 
     public merge(props: Partial<T>) {
-        const values = this.values.mutate(m => {
-            for (const [key, value] of Object.entries(props)) {
-                m.set(key, value);
-            }
-        });
+        const values = { ...this.values, ...props };
 
         return this.makeRecord(values);
     }
 
-    private makeRecord(values: ImmutableMap<any>) {
+    private makeRecord(values: object) {
         if (Types.equals(values, this.values)) {
             return this;
         }
@@ -46,10 +43,12 @@ export abstract class Record<T> {
         record.values = values;
         record.values = record.afterClone(values, this);
 
+        Object.freeze(record.value);
+
         return record;
     }
 
-    protected afterClone(values: ImmutableMap<any>) {
+    protected afterClone(values: object) {
         return values;
     }
 }

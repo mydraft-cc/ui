@@ -12,7 +12,7 @@ import * as React from 'react';
 import { useDispatch } from 'react-redux';
 import { useRouteMatch } from 'react-router';
 import { ClipboardContainer, useEventCallback, usePrinter } from '@app/core';
-import { ArrangeMenu, ClipboardMenu, EditorView, HistoryMenu, Icons, LoadingMenu, LockMenu, Pages, PrintView, Properties, Recent, SettingsMenu, Shapes, UIMenu } from '@app/wireframes/components';
+import { ArrangeMenu, ClipboardMenu, EditorView, HistoryMenu, Icons, LoadingMenu, LockMenu, Outline, Pages, PrintView, Properties, Recent, SettingsMenu, Shapes, UIMenu } from '@app/wireframes/components';
 import { loadDiagramFromServer, newDiagram, selectTab, showToast, toggleLeftSidebar, toggleRightSidebar, useStore } from '@app/wireframes/model';
 import { texts } from './texts';
 import { CustomDragLayer } from './wireframes/components/CustomDragLayer';
@@ -111,6 +111,9 @@ export const App = () => {
                             </Tabs.TabPane>
                             <Tabs.TabPane key='icons' tab={texts.common.icons}>
                                 <Icons />
+                            </Tabs.TabPane>
+                            <Tabs.TabPane key='outline' tab={texts.common.outline}>
+                                <Outline />
                             </Tabs.TabPane>
                             <Tabs.TabPane key='pages' tab={texts.common.pages}>
                                 <Pages />

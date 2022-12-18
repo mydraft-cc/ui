@@ -8,6 +8,7 @@
 export * from './assets/Icons';
 export * from './assets/Shapes';
 export * from './EditorView';
+export * from './outline/Outline';
 export * from './PrintView';
 export * from './menu/ArrangeMenu';
 export * from './menu/ClipboardMenu';

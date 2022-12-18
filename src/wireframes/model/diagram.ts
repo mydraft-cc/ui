@@ -88,6 +88,10 @@ export class Diagram extends Record<Props> {
         return this.set('master', master);
     }
 
+    public children(item: DiagramItem): ReadonlyArray<DiagramItem> {
+        return item.childIds.values.map(x => this.items.get(x)!).filter(x => !!x)!;
+    }
+
     public parent(id: string | DiagramItem) {
         if (!id) {
             return undefined;
@@ -135,6 +139,14 @@ export class Diagram extends Record<Props> {
             const selectedIds = ImmutableSet.of(...ids);
 
             return { selectedIds };
+        });
+    }
+
+    public moveItems(ids: ReadonlyArray<string>, index: number) {
+        return this.mutate(ids, ({ itemIds: rootIds }) => {
+            rootIds = rootIds.moveTo(ids, index);
+
+            return { itemIds: rootIds };
         });
     }
 

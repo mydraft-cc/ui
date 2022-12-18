@@ -23,6 +23,9 @@ type ItemProps = {
     // The locking state.
     isLocked?: boolean;
 
+    // The name of the item.
+    name?: string;
+
     // The type of the item.
     type: 'Shape' | 'Group';
 };
@@ -69,6 +72,10 @@ export class DiagramItem extends Record<Props> implements Shape {
 
     public get type() {
         return this.get('type');
+    }
+
+    public get name() {
+        return this.get('name');
     }
 
     public get appearance() {
@@ -200,6 +207,10 @@ export class DiagramItem extends Record<Props> implements Shape {
 
     public unlock() {
         return this.set('isLocked', undefined);
+    }
+
+    public rename(name: string) {
+        return this.set('name', name);
     }
 
     public replaceAppearance(appearance: Appearance) {
