@@ -16,7 +16,6 @@ import { Route } from 'react-router';
 import { applyMiddleware, combineReducers, compose, createStore } from 'redux';
 import thunk from 'redux-thunk';
 import { RendererContext, SerializerContext } from '@app/context';
-import { UserReport } from '@app/core';
 import { createInitialAssetsState, createInitialLoadingState, createInitialUIState, EditorState, selectDiagram, selectItems, Serializer } from '@app/wireframes/model';
 import * as Reducers from '@app/wireframes/model/actions';
 import { registerRenderers } from '@app/wireframes/shapes';
@@ -82,8 +81,6 @@ const Root = (
                 </Provider>
             </RendererContext.Provider>
         </SerializerContext.Provider>
-
-        <UserReport />
     </DndProvider>
 );
 
