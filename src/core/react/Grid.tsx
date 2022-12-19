@@ -117,7 +117,7 @@ const GridComponent = (props: SizeMeProps & GridProps) => {
             return { cellSize: 0, indexFirst: 0, indexLast: 0, height: 0 };
         }
 
-        let width = scrollContainer.scrollWidth;
+        let width = scrollContainer.clientWidth;
 
         if (width === 0 && size.width) {
             width = size.width;
@@ -131,14 +131,13 @@ const GridComponent = (props: SizeMeProps & GridProps) => {
 
         const cellSize = Math.floor(width / columns);
 
-        const height = cellSize * items.length / columns;
-
+        const scrollHeight = cellSize * items.length / columns;
         const scrollBottom = size.height + scrollTop;
 
         const indexFirst = Math.floor(scrollTop / cellSize) * columns;
         const indexLast = Math.floor(scrollBottom / cellSize) * columns + columns * 2;
 
-        return { cellSize, indexFirst, indexLast, height };
+        return { cellSize, indexFirst, indexLast, height: scrollHeight };
     }, [columns, items.length, scrollTop, scrollContainer, size]);
 
     return (

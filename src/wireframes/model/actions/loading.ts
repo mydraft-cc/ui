@@ -41,7 +41,7 @@ export const saveDiagramToFile =
     createAsyncThunk('diagram/save/file', async (_, thunkAPI) => {
         const state = thunkAPI.getState() as LoadingStateInStore & EditorStateInStore;
 
-        const bodyText = JSON.stringify(state.editor.actions, undefined, 2);
+        const bodyText = JSON.stringify(state.editor.actions);
         const bodyBlob = new Blob([bodyText], { type: 'application/json' });
 
         saveAs(bodyBlob, 'diagram.json');

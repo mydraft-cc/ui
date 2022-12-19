@@ -12,7 +12,7 @@ import { createDiagramAction, DiagramRef } from './utils';
 
 export const addDiagram =
     createAction('diagram/add', (diagramId?: string) => {
-        return { payload: createDiagramAction(diagramId || MathHelper.guid()) };
+        return { payload: createDiagramAction(diagramId || MathHelper.nextId()) };
     });
 
 export const selectDiagram =

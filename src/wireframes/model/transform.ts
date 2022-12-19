@@ -89,7 +89,11 @@ export class Transform {
     }
 
     public static fromJS(js: any): Transform {
-        return new Transform(new Vec2(js.position.x, js.position.y), new Vec2(js.size.x, js.size.y), Rotation.fromDegree(js.rotation));
+        if (js.position) {
+            return new Transform(new Vec2(js.position.x, js.position.y), new Vec2(js.size.x, js.size.y), Rotation.fromDegree(js.rotation));
+        } else {
+            return new Transform(new Vec2(js.x, js.y), new Vec2(js.w, js.h), Rotation.fromDegree(js.r));
+        }
     }
 
     public static createFromTransformationsAndRotation(transforms: Transform[], rotation: Rotation): Transform {
@@ -294,15 +298,11 @@ export class Transform {
 
     public toJS(): any {
         return {
-            position: {
-                x: this.position.x,
-                y: this.position.y,
-            },
-            size: {
-                x: this.size.x,
-                y: this.size.y,
-            },
-            rotation: this.rotation.degree,
+            x: this.position.x,
+            y: this.position.y,
+            w: this.size.x,
+            h: this.size.y,
+            r: this.rotation.degree,
         };
     }
 }

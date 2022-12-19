@@ -12,7 +12,7 @@ import { createItemsAction, DiagramRef, ItemsRef } from './utils';
 
 export const groupItems =
     createAction('grouping/group', (diagram: DiagramRef, items: ItemsRef, groupId?: string) => {
-        return { payload: createItemsAction(diagram, items, { groupId: groupId || MathHelper.guid() }) };
+        return { payload: createItemsAction(diagram, items, { groupId: groupId || MathHelper.nextId() }) };
     });
 
 export const ungroupItems =

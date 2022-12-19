@@ -9,6 +9,7 @@ import * as svg from '@svgdotjs/svg.js';
 import { Color } from './color';
 import { sizeInPx } from './react';
 import { Rect2 } from './rect2';
+import { Types } from './types';
 import { Vec2 } from './vec2';
 
 export interface MatrixTransform {
@@ -31,26 +32,7 @@ export module SVGHelper {
     export const COLOR_WHITE = new svg.Color('#fff');
     export const ZERO_POINT = new svg.Point(0, 0);
     export const IDENTITY_MATRIX = new svg.Matrix(1, 0, 0, 1, 0, 0);
-
-    export function createText(text?: string, fontSize?: number, alignment?: string, verticalAlign?: string) {
-        fontSize = fontSize || 10;
-
-        const element = new svg.ForeignObject();
-
-        const div = document.createElement('div');
-        div.className = 'no-select';
-        div.style.textAlign = alignment || 'center';
-        div.style.fontFamily = 'inherit';
-        div.style.fontSize = sizeInPx(fontSize || 10);
-        div.style.overflow = 'hidden';
-        div.style.verticalAlign = verticalAlign || 'middle';
-        div.textContent = text || null;
-
-        element.node.appendChild(div);
-
-        return element;
-    }
-
+    
     export function roundedRectangleRight(rectangle: Rect2, radius = 10) {
         const rad = Math.min(radius, rectangle.width * 0.5, rectangle.height * 0.5);
 
@@ -95,6 +77,25 @@ export module SVGHelper {
         return `M${r},${t} L${r},${b - rad} a${rad},${rad} 0 0 1 -${rad},${rad} L${l + rad},${b} a${rad},${rad} 0 0 1 -${rad},-${rad} L${l},${t}z`;
     }
 
+    export function createText(text?: string, fontSize?: number, alignment?: string, verticalAlign?: string) {
+        fontSize = fontSize || 10;
+
+        const element = new svg.ForeignObject();
+
+        const div = document.createElement('div');
+        div.className = 'no-select';
+        div.style.textAlign = alignment || 'center';
+        div.style.fontFamily = 'inherit';
+        div.style.fontSize = fontSize ? sizeInPx(fontSize) : '10px';
+        div.style.overflow = 'hidden';
+        div.style.verticalAlign = verticalAlign || 'middle';
+        div.textContent = text || null;
+
+        element.node.appendChild(div);
+
+        return element;
+    }
+
     export function transform<T extends svg.Element>(element: T, t: MatrixTransform, adjust = true, move = false): T {
         let x = t.rect ? t.rect.x : t.x || 0;
         let y = t.rect ? t.rect.y : t.y || 0;
@@ -107,8 +108,9 @@ export module SVGHelper {
             y = Math.round(y);
         }
 
+        // Use the alternative methods with O to not create a new matrix.
         let matrix = new svg.Matrix()
-            .rotate(
+            .rotateO(
                 t.rotation || 0,
                 t.rx || (x + 0.5 * w),
                 t.ry || (y + 0.5 * h),
@@ -116,7 +118,8 @@ export module SVGHelper {
 
         if (!move) {
             if (t.rect || t.x || t.y) {
-                matrix = matrix.multiply(new svg.Matrix().translate(x, y));
+                // Use the alternative methods with O to not create a new matrix.
+                matrix = matrix.multiplyO(new svg.Matrix().translateO(x, y));
             }
 
             element.matrix(matrix);
@@ -176,10 +179,8 @@ export module SVGHelper {
     }
 
     export function toColor(value: string | number | Color | null | undefined): string {
-        if (value === 'transparent') {
-            return 'transparent';
-        } else if (value === 'none') {
-            return 'none';
+        if (Types.isString(value)) {
+            return value;
         } else if (value) {
             return Color.fromValue(value).toString();
         } else {

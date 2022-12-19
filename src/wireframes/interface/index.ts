@@ -92,9 +92,9 @@ export interface ShapeFactory {
 
     raster(source: string, bounds?: Rect2, preserveAspectRatio?: boolean, properties?: ShapePropertiesFunc): RendererElement;
 
-    text(config?: RendererText, bounds?: Rect2, properties?: ShapePropertiesFunc): RendererElement;
+    text(config?: RendererText, bounds?: Rect2, properties?: ShapePropertiesFunc, allowMarkdown?: boolean): RendererElement;
 
-    textMultiline(config?: RendererText, bounds?: Rect2, properties?: ShapePropertiesFunc): RendererElement;
+    textMultiline(config?: RendererText, bounds?: Rect2, properties?: ShapePropertiesFunc, allowMarkdown?: boolean): RendererElement;
 
     group(items: ShapeFactoryFunc, clip?: ShapeFactoryFunc, properties?: ShapePropertiesFunc): RendererElement;
 }

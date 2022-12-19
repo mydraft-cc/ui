@@ -79,8 +79,8 @@ describe('SVGRenderer2', () => {
             renderWithClip(true);
             const rendered = container.get(0) as svg.G;
 
-            expect(rendered.clipper()).toBeDefined();
-            expect(root.defs().children().length).toBe(1);
+            expect(rendered.attr('clip-path')).toBeDefined();
+            expect(rendered.children().length).toEqual(2);
         });
 
         it('should unset clip element', () => {
@@ -91,8 +91,8 @@ describe('SVGRenderer2', () => {
             const rendered2 = container.get(0) as svg.G;
 
             expect(rendered2).toBe(rendered1);
-            expect(rendered2.clipper()).toBeNull();
-            expect(root.defs().children().length).toBe(0);
+            expect(rendered2.attr('clip-path')).not.toBeDefined();
+            expect(rendered2.children().length).toEqual(1);
         });
 
         it('should only allow one clip element', () => {

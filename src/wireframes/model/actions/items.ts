@@ -14,7 +14,7 @@ import { createDiagramAction, createItemsAction, DiagramRef, ItemsRef } from './
 
 export const addVisual =
     createAction('items/addVisual', (diagram: DiagramRef, renderer: string, x: number, y: number, appearance?: object, shapeId?: string, width?: number, height?: number) => {
-        return { payload: createDiagramAction(diagram, { shapeId: shapeId || MathHelper.guid(), renderer, position: { x, y }, appearance, width, height }) };
+        return { payload: createDiagramAction(diagram, { shapeId: shapeId || MathHelper.nextId(), renderer, position: { x, y }, appearance, width, height }) };
     });
 
 export const lockItems =
@@ -83,22 +83,9 @@ export function buildItems(builder: ActionReducerMapBuilder<EditorState>, render
             return state.updateDiagram(diagramId, diagram => {
                 const set = DiagramItemSet.createFromDiagram(itemIds, diagram);
 
-                for (const item of set.allItems) {
-                    diagram = diagram.updateItem(item.id, i => i.lock());
-                }
-
-                return diagram;
-            });
-        })
-        .addCase(renameItems, (state, action) => {
-            const { diagramId, itemIds, name } = action.payload;
-
-            return state.updateDiagram(diagramId, diagram => {
-                for (const itemId of itemIds) {
-                    diagram = diagram.updateItem(itemId, i => i.rename(name));
-                }
-
-                return diagram;
+                return diagram.updateItems(set.allItems.map(x => x.id), item => {
+                    return item.lock();
+                });
             });
         })
         .addCase(unlockItems, (state, action) => {
@@ -107,11 +94,18 @@ export function buildItems(builder: ActionReducerMapBuilder<EditorState>, render
             return state.updateDiagram(diagramId, diagram => {
                 const set = DiagramItemSet.createFromDiagram(itemIds, diagram);
 
-                for (const item of set.allItems) {
-                    diagram = diagram.updateItem(item.id, i => i.unlock());
-                }
+                return diagram.updateItems(set.allItems.map(x => x.id), item => {
+                    return item.unlock();
+                });
+            });
+        })
+        .addCase(renameItems, (state, action) => {
+            const { diagramId, itemIds, name } = action.payload;
 
-                return diagram;
+            return state.updateDiagram(diagramId, diagram => {
+                return diagram.updateItems(itemIds, item => {
+                    return item.rename(name);
+                });
             });
         })
         .addCase(pasteItems, (state, action) => {
@@ -121,16 +115,14 @@ export function buildItems(builder: ActionReducerMapBuilder<EditorState>, render
                 const set = serializer.deserializeSet(json);
 
                 diagram = diagram.addItems(set);
+                
+                diagram = diagram.updateItems(set.allVisuals.map(x => x.id), item => {
+                    const boundsOld = item.bounds(diagram);
+                    const boundsNew = boundsOld.moveBy(new Vec2(offset, offset));
 
-                for (const item of set.allVisuals) {
-                    diagram = diagram.updateItem(item.id, i => {
-                        const oldBounds = i.bounds(diagram);
-                        const newBounds = oldBounds.moveBy(new Vec2(offset, offset));
-
-                        return i.transformByBounds(oldBounds, newBounds);
-                    });
-                }
-
+                    return item.transformByBounds(boundsOld, boundsNew);
+                });
+                
                 diagram = diagram.selectItems(set.rootIds);
 
                 return diagram;
@@ -176,7 +168,6 @@ export function calculateSelection(items: DiagramItem[], diagram: Diagram, isSin
     let selectedItems: DiagramItem[] = [];
 
     function resolveGroup(item: DiagramItem, stop?: DiagramItem) {
-        // eslint-disable-next-line no-constant-condition
         while (true) {
             const group = diagram.parent(item.id);
 

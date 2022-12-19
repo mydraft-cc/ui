@@ -107,7 +107,12 @@ export const ShapeRenderer = React.memo(React.forwardRef<HTMLDivElement, ShapeRe
                 .transformWith(t => t.moveTo(new Vec2(x, y)));
 
         svgControl.setContext(svgGroup);
-        svgControl.render(item, undefined);
+
+        const newElement: svg.Element = svgControl.render(item, undefined);
+
+        if (!newElement.parent()) {
+            svgGroup.add(newElement);
+        }
     }, [appearance, document, plugin, viewBox]);
 
     return (

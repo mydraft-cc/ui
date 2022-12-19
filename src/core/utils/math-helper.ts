@@ -6,6 +6,14 @@
 */
 
 export module MathHelper {
+    let CURRENT_ID = 0;
+
+    export function nextId() {
+        CURRENT_ID++;
+
+        return CURRENT_ID.toString();
+    }
+
     export function guid() {
         return `${s4() + s4()}-${s4()}-${s4()}-${s4()}-${s4()}${s4()}${s4()}`;
     }

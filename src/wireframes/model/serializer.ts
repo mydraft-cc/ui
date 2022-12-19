@@ -28,7 +28,7 @@ export class Serializer {
         for (const jsonShape of input.visuals) {
             const oldId = jsonShape.id;
 
-            jsonShape.id = MathHelper.guid();
+            jsonShape.id = MathHelper.nextId();
 
             idMap[oldId] = jsonShape.id;
         }
@@ -36,7 +36,7 @@ export class Serializer {
         for (const jsonGroup of input.groups) {
             const oldId = jsonGroup.id;
 
-            jsonGroup.id = MathHelper.guid();
+            jsonGroup.id = MathHelper.nextId();
 
             idMap[oldId] = jsonGroup.id;
         }

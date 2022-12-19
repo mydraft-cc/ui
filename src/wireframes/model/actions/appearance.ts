@@ -30,37 +30,31 @@ export function buildAppearance(builder: ActionReducerMapBuilder<EditorState>, r
 
                 const set = DiagramItemSet.createFromDiagram(itemIds, diagram);
 
-                for (const visual of set!.allVisuals) {
-                    diagram = diagram.updateItem(visual.id, item => {
-                        if (item.type === 'Shape') {
-                            const rendererInstance = rendererService.get(item.renderer);
+                return diagram.updateItems(set.allVisuals.map(x => x.id), item => {
+                    if (item.type === 'Shape') {
+                        const rendererInstance = rendererService.get(item.renderer);
 
-                            if (rendererInstance && (force || !Types.isUndefined(rendererInstance.defaultAppearance()[key]))) {
-                                return item.setAppearance(key, value);
-                            }
+                        if (rendererInstance && (force || !Types.isUndefined(rendererInstance.defaultAppearance()[key]))) {
+                            return item.setAppearance(key, value);
                         }
+                    }
 
-                        return item;
-                    });
-                }
-
-                return diagram;
+                    return item;
+                });
             });
         })
         .addCase(transformItems, (state, action) => {
             const { diagramId, itemIds } = action.payload;
 
             return state.updateDiagram(diagramId, diagram => {
-                const oldBounds = Transform.fromJS(action.payload.oldBounds);
-                const newBounds = Transform.fromJS(action.payload.newBounds);
+                const boundsOld = Transform.fromJS(action.payload.oldBounds);
+                const boundsNew = Transform.fromJS(action.payload.newBounds);
 
                 const set = DiagramItemSet.createFromDiagram(itemIds, diagram);
 
-                for (const item of set!.allItems) {
-                    diagram = diagram.updateItem(item.id, i => i.transformByBounds(oldBounds, newBounds));
-                }
-
-                return diagram;
+                return diagram.updateItems(set.allItems.map(x => x.id), item => {
+                    return item.transformByBounds(boundsOld, boundsNew);
+                });
             });
         });
 }

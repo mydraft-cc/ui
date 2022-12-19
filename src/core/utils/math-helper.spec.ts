@@ -8,11 +8,18 @@
 import { MathHelper } from '@app/core';
 
 describe('MathHelper', () => {
-    it('should calculate different ids', () => {
+    it('should calculate different guids', () => {
         const guid1 = MathHelper.guid();
         const guid2 = MathHelper.guid();
 
         expect(guid1).not.toBe(guid2);
+    });
+
+    it('should calculate different ids', () => {
+        const id1 = MathHelper.nextId();
+        const id2 = MathHelper.nextId();
+
+        expect(id1).not.toBe(id2);
     });
 
     it('should convert to rad', () => {
