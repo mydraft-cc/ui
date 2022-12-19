@@ -216,7 +216,7 @@ class Factory implements ShapeFactory {
         for (let i = childrenSize - 1; i >= this.containerIndex; i--) {
             const last = childNodes[i];
 
-            if (last.nodeName === 'clipPath' && !this.wasClipped) {
+            if (last.nodeName === 'clipPath' && this.wasClipped) {
                 i--;
             } else {
                 last.remove();
