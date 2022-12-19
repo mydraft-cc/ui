@@ -404,7 +404,13 @@ class Properties implements ShapeProperties {
             const div = element.node.children[0] as HTMLDivElement;
 
             if (div?.nodeName === 'DIV') {
-                div.innerText = value;
+                const textOrHtml = value;
+                
+                if (textOrHtml.indexOf('<') >= 0) {
+                    div.innerHTML = textOrHtml;
+                } else {
+                    div.innerText = textOrHtml;
+                }
             }
         },
         'text-alignment': (value, element) => {
