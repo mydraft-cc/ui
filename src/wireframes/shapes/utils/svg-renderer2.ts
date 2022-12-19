@@ -210,12 +210,13 @@ class Factory implements ShapeFactory {
     }
 
     public cleanupAll() {
-        const size = this.container.children().length;
+        const childNodes = this.container.node.childNodes;
+        const childrenSize = childNodes.length;
 
-        for (let i = this.containerIndex; i < size; i++) {
-            const last = this.container.last();
+        for (let i = this.containerIndex; i < childrenSize; i++) {
+            const last = childNodes[i - 1];
 
-            if (last.node.tagName !== 'clipPath' || !this.wasClipped) {
+            if (last.nodeName !== 'clipPath' || !this.wasClipped) {
                 last.remove();
             }
         }
@@ -332,10 +333,10 @@ const PROPERTIES: ReadonlyArray<keyof PropertySet> = [
 class Properties implements ShapeProperties {
     private static readonly SETTERS: Record<keyof PropertySet, (value: any, element: svg.Element) => void> = {
         'color': (value, element) => {
-            element.attr('color', value);
+            element.node.setAttribute('color', value);
         },
         'fill': (value, element) => {
-            element.attr('fill', value);
+            element.node.setAttribute('fill', value);
         },
         'opacity': (value, element) => {
             element.opacity(value);
