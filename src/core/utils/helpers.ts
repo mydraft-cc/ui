@@ -19,6 +19,27 @@ export function isModKey(key: KeyboardEvent | MouseEvent) {
     }
 }
 
+
+const escapeTestNoEncode = /[<>"']|&(?!(#\d{1,7}|#[Xx][a-fA-F0-9]{1,6}|\w+);)/;
+const escapeReplaceNoEncode = new RegExp(escapeTestNoEncode.source, 'g');
+const escapeReplacements = {
+    '&' : '&amp;',
+    '<' : '&lt;',
+    '>' : '&gt;',
+    '"' : '&quot;',
+    '\'': '&#39;',
+};
+
+const getEscapeReplacement = (ch: string) => escapeReplacements[ch];
+
+export function escapeHTML(html: string) {
+    if (escapeTestNoEncode.test(html)) {
+        return html.replace(escapeReplaceNoEncode, getEscapeReplacement);
+    }
+
+    return html;
+}
+
 export module Keys {
     const ALT = 18;
     const COMMA = 188;

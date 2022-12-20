@@ -29,7 +29,7 @@ export class Icon implements ShapePlugin {
         if (source.type == 'Icon') {
             const { text, fontFamily } = source;
 
-            return { appearance: { [DefaultAppearance.TEXT]: text, [DefaultAppearance.FONT_FAMILY]: fontFamily } };
+            return { appearance: { [DefaultAppearance.TEXT]: text, [DefaultAppearance.ICON_FONT_FAMILY]: fontFamily } };
         }
 
         return null;

@@ -10,7 +10,7 @@
 import * as svg from '@svgdotjs/svg.js';
 import { marked } from 'marked';
 import { Rect } from 'react-measure';
-import { Rect2, sizeInPx, SVGHelper, Types } from '@app/core';
+import { escapeHTML, Rect2, sizeInPx, SVGHelper, Types } from '@app/core';
 import { RendererColor, RendererElement, RendererOpacity, RendererText, RendererWidth, Shape, ShapeFactory, ShapeFactoryFunc, ShapeProperties, ShapePropertiesFunc, TextConfig, TextDecoration } from '@app/wireframes/interface';
 import { AbstractRenderer2 } from './abstract-renderer';
 
@@ -404,13 +404,7 @@ class Properties implements ShapeProperties {
             const div = element.node.children[0] as HTMLDivElement;
 
             if (div?.nodeName === 'DIV') {
-                const textOrHtml = value;
-                
-                if (textOrHtml.indexOf('<') >= 0) {
-                    div.innerHTML = textOrHtml;
-                } else {
-                    div.innerText = textOrHtml;
-                }
+                div.innerHTML = escapeHTML(value);
             }
         },
         'text-alignment': (value, element) => {
