@@ -208,7 +208,7 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
 
         run();
 
-        this.moveTimer = new Timer(() => run(), 200, 2000);
+        this.moveTimer = new Timer(() => run(), 200, 1000);
     }
 
     public onKeyUp(event: KeyboardEvent, next: (event: KeyboardEvent) => void) {

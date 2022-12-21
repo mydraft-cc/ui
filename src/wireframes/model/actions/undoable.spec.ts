@@ -77,7 +77,7 @@ describe('Undoable', () => {
     });
 
     it('should not merge actions when merger returns false', () => {
-        const reducer = undoable(inner, 0, { actionMerger: () => false });
+        const reducer = undoable(inner, 0, { actionMerger: () => null });
         const state_2 = reducer(state_1, { type: 'OTHER' });
         const state_3 = reducer(state_2, { type: 'OTHER' });
 
@@ -86,10 +86,10 @@ describe('Undoable', () => {
         expect(reducerCalled).toEqual(2);
     });
 
-    it('should merge actions when merger returns true', () => {
-        const reducer = undoable(inner, 0, { actionMerger: () => true });
+    it('should merge actions when merger returns merged action', () => {
+        const reducer = undoable(inner, 0, { actionMerger: () => ({ type: 'MERGED' }) });
         const state_2 = reducer(state_1, { type: 'OTHER' });
-        const state_3 = reducer(state_2, { type: 'OTHER' });
+        const state_3 = reducer(state_2, { type: 'MERGED' });
 
         expect(state_3.present).toEqual(reducerValue);
         expect(state_3.actions.length).toEqual(1);
