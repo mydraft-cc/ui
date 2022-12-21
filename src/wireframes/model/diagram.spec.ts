@@ -22,7 +22,7 @@ describe('Diagram', () => {
         expect(diagram_1.id).toBeDefined();
     });
 
-    it('should return original diagram when adding null visual', () => {
+    it('should return original diagram when adding null shape', () => {
         const diagram_2 = diagram_1.addShape(null!);
 
         expect(diagram_2).toBe(diagram_1);
@@ -40,7 +40,7 @@ describe('Diagram', () => {
         expect(diagram_2.master).toBe('master1');
     });
 
-    it('should add visual to items', () => {
+    it('should add shape to items', () => {
         const diagram_2 = diagram_1.addShape(shape1);
 
         expect(diagram_2.items.has(shape1.id)).toBeTruthy();
@@ -54,14 +54,14 @@ describe('Diagram', () => {
         expect(diagram_2.items.has(shape3.id)).toBeTruthy();
     });
 
-    it('should remove visual from items', () => {
+    it('should remove shape from items', () => {
         const diagram_2 = diagram_1.addShape(shape1);
         const diagram_3 = diagram_2.removeItems(DiagramItemSet.createFromDiagram([shape1.id], diagram_2)!);
 
         expect(diagram_3.items.has(shape1.id)).toBeFalsy();
     });
 
-    it('should remove selected visual from items', () => {
+    it('should remove selected shape from items', () => {
         const diagram_2 = diagram_1.addShape(shape1);
         const diagram_3 = diagram_2.selectItems([shape1.id]);
         const diagram_4 = diagram_3.removeItems(DiagramItemSet.createFromDiagram([shape1.id], diagram_2)!);
@@ -82,7 +82,7 @@ describe('Diagram', () => {
         expect(diagram_5.items.size).toBe(0);
     });
 
-    it('should update visual in items', () => {
+    it('should update shape in items', () => {
         const shapeOld = shape4;
         const shapeNew = shapeOld.setAppearance('border-width', 10);
 
@@ -93,7 +93,7 @@ describe('Diagram', () => {
         expect(diagram_3.items.get(shapeOld.id)).toEqual(shapeNew);
     });
 
-    it('should return original diagram when visual to update does not exist.', () => {
+    it('should return original diagram when shape to update does not exist.', () => {
         const diagram_2 = diagram_1.updateItems([shape1.id], v => v.setAppearance('color', 0xFF00FF));
 
         expect(diagram_2).toBe(diagram_1);
@@ -214,7 +214,7 @@ describe('Diagram', () => {
         const diagram_4 = diagram_3.group(groupId1, [shape1.id, shape2.id]);
         const diagram_5 = diagram_4.group(groupId2, [shape1.id, shape2.id]);
 
-        expect(diagram_5.rootIds.raw).toEqual([groupId1]);
+        expect(diagram_5.itemIds.raw).toEqual([groupId1]);
 
         const group1 = diagram_5.items.get(groupId1)!;
         const group2 = diagram_5.items.get(groupId2)!;
@@ -227,34 +227,34 @@ describe('Diagram', () => {
         const diagram_2 = diagram_1.addShape(shape1).addShape(shape2).addShape(shape3);
         const diagram_3 = diagram_2.moveItems([shape1.id], 2);
 
-        expect(diagram_3.rootIds.raw).toEqual([shape2.id, shape3.id, shape1.id]);
+        expect(diagram_3.itemIds.raw).toEqual([shape2.id, shape3.id, shape1.id]);
     });
 
     it('should bring items to front', () => {
         const diagram_2 = diagram_1.addShape(shape1).addShape(shape2).addShape(shape3);
         const diagram_3 = diagram_2.bringToFront([shape1.id]);
 
-        expect(diagram_3.rootIds.raw).toEqual([shape2.id, shape3.id, shape1.id]);
+        expect(diagram_3.itemIds.raw).toEqual([shape2.id, shape3.id, shape1.id]);
     });
 
     it('should bring items forwards', () => {
         const diagram_2 = diagram_1.addShape(shape1).addShape(shape2).addShape(shape3);
         const diagram_3 = diagram_2.bringForwards([shape1.id]);
 
-        expect(diagram_3.rootIds.raw).toEqual([shape2.id, shape1.id, shape3.id]);
+        expect(diagram_3.itemIds.raw).toEqual([shape2.id, shape1.id, shape3.id]);
     });
 
     it('should send items to back', () => {
         const diagram_2 = diagram_1.addShape(shape1).addShape(shape2).addShape(shape3);
         const diagram_3 = diagram_2.sendToBack([shape3.id]);
 
-        expect(diagram_3.rootIds.raw).toEqual([shape3.id, shape1.id, shape2.id]);
+        expect(diagram_3.itemIds.raw).toEqual([shape3.id, shape1.id, shape2.id]);
     });
 
     it('should send items backwards', () => {
         const diagram_2 = diagram_1.addShape(shape1).addShape(shape2).addShape(shape3);
         const diagram_3 = diagram_2.sendBackwards([shape3.id]);
 
-        expect(diagram_3.rootIds.raw).toEqual([shape1.id, shape3.id, shape2.id]);
+        expect(diagram_3.itemIds.raw).toEqual([shape1.id, shape3.id, shape2.id]);
     });
 });

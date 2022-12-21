@@ -26,11 +26,9 @@ describe('AppearanceReducer', () => {
         EditorState.create()
             .addDiagram(diagram);
 
-    const rendererService =
-        new RendererService()
-            .addRenderer(new AbstractControl(new Button()));
+    RendererService.addRenderer(new AbstractControl(new Button()));
 
-    const reducer = createClassReducer(state, builder => buildAppearance(builder, rendererService));
+    const reducer = createClassReducer(state, builder => buildAppearance(builder));
 
     it('should return same state if action is unknown', () => {
         const action = { type: 'UNKNOWN' };

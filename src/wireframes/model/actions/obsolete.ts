@@ -10,11 +10,11 @@
 import { AnyAction, createAction } from '@reduxjs/toolkit';
 import { MathHelper } from '@app/core';
 import { DefaultAppearance } from '@app/wireframes/interface';
-import { addVisual } from './items';
+import { addShape } from './items';
 import { createDiagramAction, DiagramRef } from './utils';
 
 /**
- * @deprecated Replaced with addVisual
+ * @deprecated Replaced with addShape
  */
 export const addImage =
     createAction('items/addImage', (diagram: DiagramRef, source: string, x: number, y: number, w: number, h: number, shapeId?: string) => {
@@ -22,20 +22,32 @@ export const addImage =
     });
 
 /**
- * @deprecated Replaced with addVisual
+ * @deprecated Replaced with addShape
  */
 export const addIcon =
     createAction('items/addIcon', (diagram: DiagramRef, text: string, fontFamily: string, x: number, y: number, shapeId?: string) => {
         return { payload: createDiagramAction(diagram, { shapeId: shapeId || MathHelper.nextId(), text, fontFamily, position: { x, y } }) };
     });
+
+/**
+ * @deprecated Replaced with addShape
+ */
+export const addVisual =
+    createAction('items/addVisual', (diagram: DiagramRef, renderer: string, x: number, y: number, appearance?: object, shapeId?: string, width?: number, height?: number) => {
+        return { payload: createDiagramAction(diagram, { shapeId: shapeId || MathHelper.nextId(), renderer, position: { x, y }, appearance, width, height }) };
+    });
     
 const MAX_IMAGE_SIZE = 300;
 
 export function migrateOldAction(action: AnyAction) {
-    if (addIcon.match(action)) {
+    if (addVisual.match(action)) {
         const payload = action.payload;
 
-        return addVisual(payload.diagramId,
+        return { type: addShape.type, payload };
+    } if (addIcon.match(action)) {
+        const payload = action.payload;
+
+        return addShape(payload.diagramId,
             'Icon',
             payload.position.x,
             payload.position.y,
@@ -62,7 +74,7 @@ export function migrateOldAction(action: AnyAction) {
             }
         }
 
-        return addVisual(payload.diagramId,
+        return addShape(payload.diagramId,
             'Raster',
             payload.position.x,
             payload.position.y,

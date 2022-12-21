@@ -77,8 +77,8 @@ export function useAppearanceCore<T>(selectedDiagramId: RefDiagramId, selectedSe
 
         let value: T | undefined, empty = true;
 
-        for (const visual of selectedSet.allShapes) {
-            const appearance = visual.appearance.get(key);
+        for (const shape of selectedSet.allShapes) {
+            const appearance = shape.appearance.get(key);
 
             if (!Types.isUndefined(appearance) || allowUndefined) {
                 empty = false;

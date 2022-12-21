@@ -15,18 +15,11 @@ import { Transform } from './transform';
 
 type IdMap = { [id: string]: string };
 
-export class Serializer {
-    constructor(
-        private readonly rendererService: RendererService,
-    ) {
-    }
-
-    public deserializeSet(json: string, assignNewIds = false): DiagramItemSet {
+export module Serializer {
+    export function deserializeSet(input: any, assignNewIds = false): DiagramItemSet {
         const allItems: DiagramItem[] = [];
 
-        const context = this.createContext(assignNewIds);
-
-        const input = JSON.parse(json);
+        const context = createContext(assignNewIds);
 
         for (const inputVisual of input.visuals) {
             const item = readDiagramItem(inputVisual, context);
@@ -47,7 +40,7 @@ export class Serializer {
         return new DiagramItemSet(allItems);
     }
 
-    public serializeSet(set: DiagramItemSet) {
+    export function serializeSet(set: DiagramItemSet) {
         const output: any = { visuals: [], groups: [] };
 
         for (const item of Object.values(set.allItems)) {
@@ -60,25 +53,23 @@ export class Serializer {
             }
         }
 
-        return JSON.stringify(output);
+        return output;
     }
 
-    public deserializeEditor(json: string) {
-        const context = this.createContext();
-
-        const input = JSON.parse(json);
+    export function deserializeEditor(input: any) {
+        const context = createContext();
 
         return readEditor(input, context);
     }
 
-    public serializeEditor(editor: EditorState) {
+    export function serializeEditor(editor: EditorState) {
         const output = writeEditor(editor);
 
-        return JSON.stringify(output);
+        return output;
     }
 
-    private createContext(assignNewIds = false) {
-        const context: SerializerContext = { idMap: (id: string) => id, rendererService: this.rendererService };
+    function createContext(assignNewIds = false) {
+        const context: SerializerContext = { idMap: (id: string) => id };
 
         if (assignNewIds) {
             const idMap: IdMap = {};
@@ -134,16 +125,14 @@ function readEditor(source: object, context: SerializerContext) {
 function readDiagram(source: object, context: SerializerContext) {
     const raw: any = readObject(source, DIAGRAM_SERIALIZERS, context);
 
-    const itemSet = new DiagramItemSet(raw.items);
-
-    return Diagram.create({ ...raw, ...itemSet });    
+    return Diagram.create(raw);
 }
 
 function readDiagramItem(source: object, context: SerializerContext) {
     const raw: any = readObject(source, DIAGRAM_ITEM_SERIALIZERS, context);
 
     if (raw.type === 'Shape') {
-        const defaults = context.rendererService.get(raw.renderer!)?.createDefaultShape();
+        const defaults = RendererService.get(raw.renderer!)?.createDefaultShape();
 
         if (!defaults) {
             return null;
@@ -171,8 +160,6 @@ function readObject(source: object, serializers: PropertySerializers, context: S
 
 interface SerializerContext {
     idMap: (id: string) => string;
-
-    rendererService: RendererService;
 }
 
 interface PropertySerializer {
@@ -188,13 +175,17 @@ const EDITOR_SERIALIZERS: PropertySerializers = {
         get: (source) => source,
         set: (source, ctx) => ctx.idMap(source),
     },
-    'orderedDiagrams': {
-        get: (source: ImmutableList<Diagram>) => source.raw.map(writeDiagram),
-        set: (source: any[], ctx) => source.map(x => readDiagram(x, ctx)).filter(x => !!x),
+    'diagrams': {
+        get: (source: ImmutableMap<Diagram>) => source.values.map(writeDiagram),
+        set: (source: any[], context) => buildObject(source.map(x => readDiagram(x, context)), x => x.id),
+    },
+    'diagramIds': {
+        get: (source: ImmutableList<string>) => source.raw,
+        set: (source: string[], ctx) => source.map(ctx.idMap),
     },
     'size': {
-        get: (source: Vec2) => source.toJS(),
-        set: (source: any) => Vec2.fromJS(source),
+        get: (source: Vec2) => ({ x: source.x, y: source.y }),
+        set: (source: any) => new Vec2(source.x, source.y),
     },
 };
 
@@ -209,9 +200,9 @@ const DIAGRAM_SERIALIZERS: PropertySerializers = {
     },
     'items': {
         get: (source: ImmutableMap<DiagramItem>) => source.values.map(writeDiagramItem),
-        set: (source: any[], context) => source.map(x => readDiagramItem(x, context)).filter(x => !!x),
+        set: (source: any[], context) => buildObject(source.map(x => readDiagramItem(x, context)), x => x.id),
     },
-    'rootIds': {
+    'itemIds': {
         get: (source: ImmutableList<string>) => source.raw,
         set: (source: string[], ctx) => source.map(ctx.idMap),
     },
@@ -247,8 +238,8 @@ const DIAGRAM_ITEM_SERIALIZERS: PropertySerializers = {
         set: (source) => source,
     },
     'rotation': {
-        get: (source: Rotation) => source.toJS(),
-        set: (source: any) => Rotation.fromJS(source),
+        get: (source: Rotation) => source.degree,
+        set: (source: any) => Rotation.fromDegree(source),
     },
     'type': {
         get: (source) => source,
@@ -259,3 +250,15 @@ const DIAGRAM_ITEM_SERIALIZERS: PropertySerializers = {
         set: (source: any) => Transform.fromJS(source),
     },
 };
+
+function buildObject<V>(source: ReadonlyArray<V | undefined | null>, selector: (source: V) => string) {
+    const result: { [key: string]: V } = {};
+
+    for (const item of source) {
+        if (item) {
+            result[selector(item)] = item;
+        }
+    }
+
+    return result;
+}

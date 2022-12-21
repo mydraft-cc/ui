@@ -11,12 +11,11 @@ import { DropTargetMonitor, useDrop } from 'react-dnd';
 import { NativeTypes } from 'react-dnd-html5-backend';
 import { findDOMNode } from 'react-dom';
 import { useDispatch } from 'react-redux';
-import { useRenderer } from '@app/context';
 import { loadImagesToClipboardItems, sizeInPx, useClipboard, useEventCallback } from '@app/core';
-import { addVisual, changeItemsAppearance, Diagram, getDiagram, getDiagramId, getEditor, getMasterDiagram, getSelectedItems, getSelectedItemsWithLocked, selectItems, Transform, transformItems, useStore } from '@app/wireframes/model';
+import { addShape, changeItemsAppearance, Diagram, getDiagram, getDiagramId, getEditor, getMasterDiagram, getSelectedItems, getSelectedItemsWithLocked, RendererService, selectItems, Transform, transformItems, useStore } from '@app/wireframes/model';
 import { Editor } from '@app/wireframes/renderer/Editor';
 import { DiagramRef, ItemsRef } from '../model/actions/utils';
-import { VisualSource } from './../interface';
+import { ShapeSource } from './../interface';
 import { ContextMenu } from './context-menu/ContextMenu';
 import './EditorView.scss';
 
@@ -44,7 +43,6 @@ export const EditorViewInner = ({ diagram, spacing }: EditorViewProps & { diagra
     const editorSize = editor.size;
     const masterDiagram = useStore(getMasterDiagram);
     const renderRef = React.useRef<any>();
-    const renderer = useRenderer();
     const selectedPoint = React.useRef({ x: 0, y: 0 });
     const selectedDiagramId = useStore(getDiagramId);
     const state = useStore(s => s);
@@ -72,15 +70,15 @@ export const EditorViewInner = ({ diagram, spacing }: EditorViewProps & { diagra
         selectedPoint.current = { x: event.nativeEvent.offsetX, y: event.nativeEvent.offsetY };
     });
 
-    const doPaste = useEventCallback((sources: ReadonlyArray<VisualSource>, x: number, y: number) => {
+    const doPaste = useEventCallback((sources: ReadonlyArray<ShapeSource>, x: number, y: number) => {
         if (!selectedDiagramId) {
             return;
         }
 
-        const visuals = renderer.createVisuals(sources);
+        const visuals = RendererService.createShapes(sources);
 
         for (const visual of visuals) {
-            dispatch(addVisual(selectedDiagramId, visual.id, x, y, visual.appearance, undefined, visual.width, visual.height));
+            dispatch(addShape(selectedDiagramId, visual.id, x, y, visual.appearance, undefined, visual.width, visual.height));
 
             x += 40;
             y += 40;
@@ -132,7 +130,7 @@ export const EditorViewInner = ({ diagram, spacing }: EditorViewProps & { diagra
 
             switch (itemType) {
                 case 'DND_ASSET':
-                    dispatch(addVisual(selectedDiagramId, item['name'], x, y));
+                    dispatch(addShape(selectedDiagramId, item['name'], x, y));
                     break;
                 case 'DND_ICON':
                     doPaste([{ type: 'Icon', ...item }], x, y);
@@ -177,7 +175,6 @@ export const EditorViewInner = ({ diagram, spacing }: EditorViewProps & { diagra
                         onChangeItemsAppearance={doChangeItemsAppearance}
                         onSelectItems={doSelectItems}
                         onTransformItems={doTransformItems}
-                        rendererService={renderer}
                         selectedItems={getSelectedItems(state)}
                         selectedItemsWithLocked={getSelectedItemsWithLocked(state)}
                         viewSize={editor.size}

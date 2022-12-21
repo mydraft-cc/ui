@@ -47,27 +47,11 @@ class MockupRenderer implements Renderer {
 }
 
 describe('RendererService', () => {
-    it('should instantiate', () => {
-        const rendererService = new RendererService();
-
-        expect(rendererService).toBeDefined();
-    });
-
-    it('should register renderer', () => {
-        const rendererService = new RendererService();
-        const rendererInstance = new MockupRenderer();
-
-        rendererService.addRendererById('btn', rendererInstance);
-
-        expect(rendererService.get('btn')).toBe(rendererInstance);
-    });
-
     it('should register renderer with identifier', () => {
-        const rendererService = new RendererService();
-        const rendererInstance = new MockupRenderer();
+        const renderer = new MockupRenderer();
 
-        rendererService.addRenderer(rendererInstance);
+        RendererService.addRenderer(renderer);
 
-        expect(rendererService.get('identifier')).toBe(rendererInstance);
+        expect(RendererService.get('identifier')).toBe(renderer);
     });
 });

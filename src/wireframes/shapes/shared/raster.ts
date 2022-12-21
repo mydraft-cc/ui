@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { DefaultAppearance, RenderContext, ShapePlugin, VisualSource } from '@app/wireframes/interface';
+import { DefaultAppearance, RenderContext, ShapePlugin, ShapeSource } from '@app/wireframes/interface';
 
 const MAX_IMAGE_SIZE = 300;
 const SOURCE = 'SOURCE';
@@ -27,7 +27,7 @@ export class Raster implements ShapePlugin {
         return { x: 80, y: 30 };
     }
 
-    public create(source: VisualSource) {
+    public create(source: ShapeSource) {
         if (source.type == 'Image') {
             let { width: w, height: h, source: data } = source.image;
 

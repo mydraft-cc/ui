@@ -11,7 +11,7 @@ import * as React from 'react';
 import { useDispatch, useStore as useReduxStore } from 'react-redux';
 import { Grid, useEventCallback } from '@app/core';
 import { texts } from '@app/texts';
-import { addVisual, filterShapes, getDiagramId, getFilteredShapes, getShapesFilter, ShapeInfo, useStore } from '@app/wireframes/model';
+import { addShape, filterShapes, getDiagramId, getFilteredShapes, getShapesFilter, ShapeInfo, useStore } from '@app/wireframes/model';
 import { ShapeImage } from './ShapeImage';
 import './Shapes.scss';
 
@@ -30,7 +30,7 @@ export const Shapes = () => {
             const selectedDiagramId = getDiagramId(store.getState());
 
             if (selectedDiagramId) {
-                dispatch(addVisual(selectedDiagramId, shape.name, 100, 100));
+                dispatch(addShape(selectedDiagramId, shape.name, 100, 100));
             }
         };
 

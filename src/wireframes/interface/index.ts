@@ -10,11 +10,11 @@ import { Color, LoadedImage, Rect2, Vec2 } from '@app/core';
 export { Color, Rect2, Vec2 } from '@app/core';
 
 export type Appearance = { [key: string]: any };
-export type VisualSourceIcon = { type: 'Icon';  text: string; fontFamily: string };
-export type VisualSourceImage = { type: 'Image';  image: LoadedImage };
-export type VisualSourceText = { type: 'Text';  text: string };
-export type VisualSourceUrl = { type: 'Url'; url: string };
-export type VisualSource = VisualSourceIcon | VisualSourceImage | VisualSourceText | VisualSourceUrl;
+export type ShapeSourceIcon = { type: 'Icon';  text: string; fontFamily: string };
+export type ShapeSourceImage = { type: 'Image';  image: LoadedImage };
+export type ShapeSourceText = { type: 'Text';  text: string };
+export type ShapeSourceUrl = { type: 'Url'; url: string };
+export type ShapeSource = ShapeSourceIcon | ShapeSourceImage | ShapeSourceText | ShapeSourceUrl;
 export type Configurable = any;
 export type RendererColor = string | number | Color | Shape;
 export type RendererElement = any;
@@ -45,7 +45,7 @@ export interface ShapePlugin {
 
     previewSize?(desiredWidth: number, desiredHeight: number): { x: number; y: number };
 
-    create?(source: VisualSource): { width?: number; height?: number; appearance: Appearance } | null | undefined;
+    create?(source: ShapeSource): { width?: number; height?: number; appearance: Appearance } | null | undefined;
 
     showInGallery?(): boolean;
 

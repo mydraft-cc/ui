@@ -7,7 +7,7 @@
 
 import * as React from 'react';
 import { Color, ImmutableMap, Rect2, useEventCallback, Vec2 } from '@app/core';
-import { Diagram, DiagramItem, RendererService } from '@app/wireframes/model';
+import { Diagram, DiagramItem } from '@app/wireframes/model';
 import { Editor } from '@app/wireframes/renderer/Editor';
 
 export interface PrintDiagramProps {
@@ -22,9 +22,6 @@ export interface PrintDiagramProps {
 
     // The color.
     color: Color;
-
-    // The renderer.
-    rendererService: RendererService;
 
     // True if the bounds should be used as size.
     useBounds?: boolean;
@@ -41,7 +38,6 @@ export const PrintDiagram = (props: PrintDiagramProps) => {
         color,
         diagram,
         diagrams,
-        rendererService,
         onRender,
         onNavigate,
         size,
@@ -74,7 +70,6 @@ export const PrintDiagram = (props: PrintDiagramProps) => {
                 masterDiagram={diagrams.get(diagram.master!)}
                 onNavigate={onNavigate}
                 onRender={doOnRender}
-                rendererService={rendererService}
                 selectedItems={[]}
                 selectedItemsWithLocked={[]}
                 viewBox={bounds}

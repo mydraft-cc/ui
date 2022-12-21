@@ -7,10 +7,9 @@
 
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
-import { useSerializer } from '@app/context';
 import { ClipboardCopyEvent, ClipboardPasteEvent, useClipboard as useClipboardProvider } from '@app/core';
 import { texts } from '@app/texts';
-import { DiagramItemSet, getDiagram, getSelectedItems, pasteItems, removeItems, useStore } from '@app/wireframes/model';
+import { DiagramItemSet, getDiagram, getSelectedItems, pasteItems, removeItems, Serializer, useStore } from '@app/wireframes/model';
 import { UIAction } from './shared';
 
 const OFFSET = 50;
@@ -21,7 +20,6 @@ export function useClipboard() {
     const offset = React.useRef(0);
     const selectedDiagram = useStore(getDiagram);
     const selectedItems = useStore(getSelectedItems);
-    const serializer = useSerializer();
     const canCopy = selectedItems.length > 0;
 
     const clipboard = useClipboardProvider({ 
@@ -44,7 +42,7 @@ export function useClipboard() {
                         selectedItems,
                         selectedDiagram);
     
-                event.clipboard.set(`${PREFIX}${serializer.serializeSet(set)}`);
+                event.clipboard.set(`${PREFIX}${JSON.stringify(Serializer.serializeSet(set))}`);
     
                 if (event.isCut) {
                     dispatch(removeItems(selectedDiagram, selectedItems));

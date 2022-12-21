@@ -8,7 +8,7 @@
 import * as svg from '@svgdotjs/svg.js';
 import * as React from 'react';
 import { Color, Rect2, SVGHelper, useEventCallback, Vec2 } from '@app/core';
-import { Diagram, DiagramItem, RendererService, Transform } from '@app/wireframes/model';
+import { Diagram, DiagramItem, Transform } from '@app/wireframes/model';
 import { CanvasView } from './CanvasView';
 import { NavigateAdorner } from './NavigateAdorner';
 import { QuickbarAdorner } from './QuickbarAdorner';
@@ -20,9 +20,6 @@ import { InteractionService } from './interaction-service';
 import './Editor.scss';
 
 export interface EditorProps {
-    // The renderer service.
-    rendererService: RendererService;
-
     // The selected diagram.
     diagram: Diagram;
 
@@ -76,7 +73,6 @@ export const Editor = React.memo((props: EditorProps) => {
         onRender,
         onSelectItems,
         onTransformItems,
-        rendererService,
         selectedItems,
         selectedItemsWithLocked,
         viewBox,
@@ -163,15 +159,13 @@ export const Editor = React.memo((props: EditorProps) => {
                 <>
                     <RenderLayer
                         diagram={masterDiagram}
-                        renderContainer={renderMasterLayer.current!}
-                        rendererService={rendererService}
+                        diagramLayer={renderMasterLayer.current!}
                         onRender={onRender}
                     />
 
                     <RenderLayer
                         diagram={diagram}
-                        renderContainer={renderMainLayer.current!}
-                        rendererService={rendererService}
+                        diagramLayer={renderMainLayer.current!}
                         previewItems={interactionPreviews}
                         onRender={onRender}
                     />

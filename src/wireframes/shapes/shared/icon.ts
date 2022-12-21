@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { DefaultAppearance, RenderContext, ShapePlugin, VisualSource } from '@app/wireframes/interface';
+import { DefaultAppearance, RenderContext, ShapePlugin, ShapeSource } from '@app/wireframes/interface';
 
 const DEFAULT_APPEARANCE = {
     [DefaultAppearance.FOREGROUND_COLOR]: 0,
@@ -25,7 +25,7 @@ export class Icon implements ShapePlugin {
         return { x: 40, y: 40 };
     }
 
-    public create(source: VisualSource) {
+    public create(source: ShapeSource) {
         if (source.type == 'Icon') {
             const { text, fontFamily } = source;
 

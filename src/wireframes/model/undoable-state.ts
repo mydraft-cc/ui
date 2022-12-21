@@ -13,6 +13,10 @@ interface State<T> {
 }
 
 export class UndoableState<T> {
+    public get firstState() {
+        return this.past[0]?.state || this.presentState.state;
+    }
+
     public get canUndo() {
         return this.past.length > 0;
     }

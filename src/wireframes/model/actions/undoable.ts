@@ -17,6 +17,7 @@ export const redo =
     createAction('redo');
 
 type Options = {
+    capacity?: number;
     actionsToIgnore?: string[];
     actionMerger?: (action: AnyAction, previous: AnyAction) => AnyAction | null | undefined;
     initialAction?: AnyAction;
@@ -33,7 +34,7 @@ export function undoable<T>(reducer: Reducer<T>, initialState: T, options?: Opti
         }
     }
 
-    return createClassReducer(UndoableState.create(initialState, initialAction), builder => builder
+    return createClassReducer(UndoableState.create(initialState, initialAction, options?.capacity), builder => builder
         .addCase(undo, state => {
             return state.undo();
         })

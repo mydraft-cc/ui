@@ -8,7 +8,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
 import { Vec2 } from '@app/core';
-import { addVisual, buildItems, calculateSelection, Diagram, DiagramItem, DiagramItemSet, EditorState, pasteItems, removeItems, RendererService, selectItems, Serializer, unlockItems } from '@app/wireframes/model';
+import { addShape, buildItems, calculateSelection, Diagram, DiagramItem, DiagramItemSet, EditorState, pasteItems, removeItems, RendererService, selectItems, Serializer, unlockItems } from '@app/wireframes/model';
 import { Button } from '@app/wireframes/shapes/neutral/button';
 import { Icon } from '@app/wireframes/shapes/shared/icon';
 import { Raster } from '@app/wireframes/shapes/shared/raster';
@@ -29,17 +29,15 @@ describe('ItemsReducer', () => {
             .addShape(shape3);
     diagram = diagram.group(groupId, [shape1.id, shape2.id]);
 
-    const rendererService
-        = new RendererService()
-            .addRenderer(new AbstractControl(new Icon()))
-            .addRenderer(new AbstractControl(new Button()))
-            .addRenderer(new AbstractControl(new Raster()));
+    RendererService.addRenderer(new AbstractControl(new Icon()));
+    RendererService.addRenderer(new AbstractControl(new Button()));
+    RendererService.addRenderer(new AbstractControl(new Raster()));
 
     const state =
         EditorState.create()
             .addDiagram(diagram);
 
-    const reducer = createClassReducer(state, builder => buildItems(builder, rendererService, new Serializer(rendererService)));
+    const reducer = createClassReducer(state, builder => buildItems(builder));
 
     it('should return same state if action is unknown', () => {
         const action = { type: 'UNKNOWN' };
@@ -105,10 +103,10 @@ describe('ItemsReducer', () => {
         expect(newShape.isLocked).toBeFalsy();
     });
 
-    it('should add visual and select this visual', () => {
+    it('should add shape and select this shape', () => {
         const shapeId = 'shape';
 
-        const action = addVisual(diagram, 'Button', 100, 20, { }, shapeId);
+        const action = addShape(diagram, 'Button', 100, 20, { }, shapeId);
 
         const state_1 = EditorState.create().addDiagram(diagram);
         const state_2 = reducer(state_1, action);
@@ -122,10 +120,10 @@ describe('ItemsReducer', () => {
         expect(newDiagram.selectedIds.values).toEqual([shapeId]);
     });
 
-    it('should add visual with default properties and select this visual', () => {
+    it('should add shape with default properties and select this shape', () => {
         const shapeId = 'shape';
 
-        const action = addVisual(diagram, 'Button', 100, 20, { text1: 'text1', text2: 'text2' }, shapeId);
+        const action = addShape(diagram, 'Button', 100, 20, { text1: 'text1', text2: 'text2' }, shapeId);
 
         const state_1 = EditorState.create().addDiagram(diagram)!;
         const state_2 = reducer(state_1, action);
@@ -142,9 +140,7 @@ describe('ItemsReducer', () => {
     });
 
     it('should paste json and add group and items', () => {
-        const serializer = new Serializer(rendererService);
-
-        const json = serializer.serializeSet(DiagramItemSet.createFromDiagram(diagram.rootIds.raw, diagram)!);
+        const json = JSON.stringify(Serializer.serializeSet(DiagramItemSet.createFromDiagram(diagram.itemIds.raw, diagram)!));
 
         const action = pasteItems(diagram, json);
 
@@ -154,7 +150,7 @@ describe('ItemsReducer', () => {
         const newDiagram = state_2.diagrams.get(diagram.id)!;
 
         expect(newDiagram.items.size).toBe(8);
-        expect(newDiagram.rootIds.size).toBe(4);
+        expect(newDiagram.itemIds.size).toBe(4);
         expect(newDiagram.selectedIds.size).toBe(2);
     });
 

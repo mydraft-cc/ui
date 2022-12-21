@@ -17,16 +17,11 @@ describe('Serializer', () => {
     const oldShape2 = DiagramItem.createShape(checkbox.createDefaultShape()).transformWith(t => t.moveTo(new Vec2(100, 20)));
     const oldShape3 = DiagramItem.createShape({ renderer: null! });
 
-    let renderers: RendererService;
-
     beforeEach(() => {
-        renderers = new RendererService();
-        renderers.addRenderer(checkbox);
+        RendererService.addRenderer(checkbox);
     });
 
     it('should serialize and deserialize set', () => {
-        const serializer = new Serializer(renderers);
-
         const groupId = 'group-1';
 
         const oldDiagram =
@@ -36,21 +31,20 @@ describe('Serializer', () => {
                 .addShape(oldShape3)
                 .group(groupId, [oldShape1.id, oldShape2.id]);
 
-        const oldSet = DiagramItemSet.createFromDiagram([oldDiagram.items.get(groupId)!], oldDiagram) !;
+        const diagramSetOld = DiagramItemSet.createFromDiagram([oldDiagram.items.get(groupId)!], oldDiagram) !;
+        const diagramSetNew = Serializer.deserializeSet(Serializer.serializeSet(diagramSetOld), false);
 
-        const newSet = serializer.deserializeSet(serializer.serializeSet(oldSet), false);
+        expect(diagramSetNew).toBeDefined();
 
-        expect(newSet).toBeDefined();
+        const newShape1 = diagramSetNew.allShapes[0];
+        const newShape2 = diagramSetNew.allShapes[1];
 
-        const newShape1 = newSet.allShapes[0];
-        const newShape2 = newSet.allShapes[1];
-
-        expect(newSet.allShapes.length).toBe(2);
+        expect(diagramSetNew.allShapes.length).toBe(2);
 
         compareShapes(newShape1, oldShape1);
         compareShapes(newShape2, oldShape2);
 
-        const group = newSet.allGroups[0];
+        const group = diagramSetNew.allGroups[0];
 
         expect(group.childIds.at(0)).toBe(newShape1.id);
         expect(group.childIds.at(1)).toBe(newShape2.id);

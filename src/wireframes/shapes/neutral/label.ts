@@ -4,7 +4,7 @@
  * @license
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
-import { ConstraintFactory, DefaultAppearance, RenderContext, ShapePlugin, VisualSource } from '@app/wireframes/interface';
+import { ConstraintFactory, DefaultAppearance, RenderContext, ShapePlugin, ShapeSource } from '@app/wireframes/interface';
 import { CommonTheme } from './_theme';
 
 const DEFAULT_APPEARANCE = {
@@ -26,7 +26,7 @@ export class Label implements ShapePlugin {
         return { x: 46, y: 30 };
     }
 
-    public create(source: VisualSource) {
+    public create(source: ShapeSource) {
         if (source.type == 'Text') {
             const { text } = source;
 

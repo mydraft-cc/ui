@@ -15,8 +15,7 @@ import { Provider } from 'react-redux';
 import { Route } from 'react-router';
 import { applyMiddleware, combineReducers, compose, createStore } from 'redux';
 import thunk from 'redux-thunk';
-import { RendererContext, SerializerContext } from '@app/context';
-import { createInitialAssetsState, createInitialLoadingState, createInitialUIState, EditorState, selectDiagram, selectItems, Serializer } from '@app/wireframes/model';
+import { createInitialAssetsState, createInitialLoadingState, createInitialUIState, EditorState, selectDiagram, selectItems } from '@app/wireframes/model';
 import * as Reducers from '@app/wireframes/model/actions';
 import { registerRenderers } from '@app/wireframes/shapes';
 import { App } from './App';
@@ -25,14 +24,14 @@ import { mergeAction } from './wireframes/model/actions/merger';
 import { createClassReducer } from './wireframes/model/actions/utils';
 import './index.scss';
 
-const editorRenderers = registerRenderers();
-const editorSerializer = new Serializer(editorRenderers);
+registerRenderers();
+
 const editorState = EditorState.create();
 
 const editorReducer = createClassReducer(editorState, builder => {
     Reducers.buildAlignment(builder);
-    Reducers.buildAppearance(builder, editorRenderers);
-    Reducers.buildItems(builder, editorRenderers, editorSerializer);
+    Reducers.buildAppearance(builder);
+    Reducers.buildItems(builder);
     Reducers.buildDiagrams(builder);
     Reducers.buildGrouping(builder);
     Reducers.buildOrdering(builder);
@@ -40,7 +39,8 @@ const editorReducer = createClassReducer(editorState, builder => {
 
 const undoableReducer = Reducers.undoable(
     editorReducer,
-    EditorState.create(), {
+    editorState, {
+        capacity: 20,
         actionMerger: mergeAction,
         actionsToIgnore: [
             selectDiagram.name,
@@ -54,7 +54,7 @@ const composeEnhancers = window['__REDUX_DEVTOOLS_EXTENSION_COMPOSE__'] || compo
 
 const store = createStore(
     combineReducers({
-        assets: Reducers.assets(createInitialAssetsState(editorRenderers)),
+        assets: Reducers.assets(createInitialAssetsState()),
         editor: Reducers.rootLoading(undoableReducer, undoableReducer, editorReducer),
         loading: Reducers.loading(createInitialLoadingState()),
         router: connectRouter(history),
@@ -72,15 +72,11 @@ const store = createStore(
 
 const Root = (
     <DndProvider backend={HTML5Backend}>
-        <SerializerContext.Provider value={editorSerializer}>
-            <RendererContext.Provider value={editorRenderers}>
-                <Provider store={store}>
-                    <ConnectedRouter history={history}>
-                        <Route path='/:token?' component={App} />
-                    </ConnectedRouter>
-                </Provider>
-            </RendererContext.Provider>
-        </SerializerContext.Provider>
+        <Provider store={store}>
+            <ConnectedRouter history={history}>
+                <Route path='/:token?' component={App} />
+            </ConnectedRouter>
+        </Provider>
     </DndProvider>
 );
 

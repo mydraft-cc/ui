@@ -48,11 +48,7 @@ export class Rotation {
     public static fromDegree(degree: number): Rotation {
         return new Rotation(MathHelper.toRad(degree), degree);
     }
-
-    public static fromJS(js: any): Rotation {
-        return new Rotation(MathHelper.toRad(js), js);
-    }
-
+    
     public equals(r: Rotation): boolean {
         return Rotation.equals(this, r);
     }
@@ -75,9 +71,5 @@ export class Rotation {
 
     public negate(): Rotation {
         return Rotation.fromDegree(-this.degree);
-    }
-
-    public toJS() {
-        return this.degree;
     }
 }

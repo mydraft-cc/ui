@@ -12,8 +12,8 @@ import { MathHelper, Vec2 } from '@app/core';
 import { Diagram, DiagramItem, DiagramItemSet, EditorState, RendererService, Serializer, Transform } from './../internal';
 import { createDiagramAction, createItemsAction, DiagramRef, ItemsRef } from './utils';
 
-export const addVisual =
-    createAction('items/addVisual', (diagram: DiagramRef, renderer: string, x: number, y: number, appearance?: object, shapeId?: string, width?: number, height?: number) => {
+export const addShape =
+    createAction('items/addShape', (diagram: DiagramRef, renderer: string, x: number, y: number, appearance?: object, shapeId?: string, width?: number, height?: number) => {
         return { payload: createDiagramAction(diagram, { shapeId: shapeId || MathHelper.nextId(), renderer, position: { x, y }, appearance, width, height }) };
     });
 
@@ -47,7 +47,7 @@ export const pasteItems =
         return { payload: createDiagramAction(diagram, { json, offset }) };
     });
 
-export function buildItems(builder: ActionReducerMapBuilder<EditorState>, rendererService: RendererService, serializer: Serializer) {
+export function buildItems(builder: ActionReducerMapBuilder<EditorState>) {
     return builder
         .addCase(selectItems, (state, action) => {
             const { diagramId, itemIds } = action.payload;
@@ -100,7 +100,7 @@ export function buildItems(builder: ActionReducerMapBuilder<EditorState>, render
             const { diagramId, json, offset } = action.payload;
 
             return state.updateDiagram(diagramId, diagram => {
-                const set = serializer.deserializeSet(json, true);
+                const set = Serializer.deserializeSet(JSON.parse(json), true);
 
                 diagram = diagram.addItems(set);
                 
@@ -116,11 +116,11 @@ export function buildItems(builder: ActionReducerMapBuilder<EditorState>, render
                 return diagram;
             });
         })
-        .addCase(addVisual, (state, action) => {
+        .addCase(addShape, (state, action) => {
             const { diagramId, position, appearance, renderer, shapeId, width, height } = action.payload;
 
             return state.updateDiagram(diagramId, diagram => {
-                const rendererInstance = rendererService.get(renderer);
+                const rendererInstance = RendererService.get(renderer);
 
                 const props = rendererInstance.createDefaultShape();
 

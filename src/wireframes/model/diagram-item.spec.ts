@@ -116,7 +116,7 @@ describe('DiagramItem', () => {
         expect(item_2.appearance.get('color')).toBe(33);
     });
 
-    it('should return original visual when setting appearance with null key', () => {
+    it('should return original shape when setting appearance with null key', () => {
         const item_2 = item_1.setAppearance(null!, 13);
 
         expect(item_2).toBe(item_1);
@@ -129,7 +129,7 @@ describe('DiagramItem', () => {
         expect(item_3.appearance.get('color')).toBe(42);
     });
 
-    it('should return original visual when appearance to set has same value', () => {
+    it('should return original shape when appearance to set has same value', () => {
         const item_2 = item_1.setAppearance('color', 13);
         const item_3 = item_2.setAppearance('color', 13);
 
@@ -143,7 +143,7 @@ describe('DiagramItem', () => {
         expect(group_2).toBe(group_1);
     });
 
-    it('should return original visual when resetting appearance to null', () => {
+    it('should return original shape when resetting appearance to null', () => {
         const item_2 = item_1.replaceAppearance(null!);
 
         expect(item_2).toBe(item_1);
