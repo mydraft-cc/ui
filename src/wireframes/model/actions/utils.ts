@@ -57,32 +57,6 @@ export function createDiagramAction<T extends {}>(diagram: DiagramRef, action?: 
     return result;
 }
 
-export function mergeAction(action: AnyAction, prevAction: AnyAction) {
-    if (action.type !== prevAction.type) {
-        return false;
-    }
-
-    const { diagramId, itemIds, timestamp } = action.payload;
-
-    if (!Types.isString(diagramId) ||
-        !Types.isArrayOfString(itemIds) ||
-        !Types.isNumber(timestamp)) {
-        return false;
-    }
-
-    const previousTimestamp = prevAction.payload.timestamp;
-
-    if (timestamp - previousTimestamp > 500) {
-        return false;
-    }
-
-    const result =
-        Types.equals(prevAction.payload.diagramId, diagramId) &&
-        Types.equals(prevAction.payload.itemIds, itemIds);
-
-    return result;
-}
-
 export function createClassReducer<S>(initialState: S, builderCallback: (builder: ActionReducerMapBuilder<S>) => void): Reducer<S> {
     const builder = new Builder(initialState);
 

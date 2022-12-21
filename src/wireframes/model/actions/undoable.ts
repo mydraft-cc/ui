@@ -18,14 +18,14 @@ export const redo =
 
 type Options = {
     actionsToIgnore?: string[];
-    actionMerger?: (action: AnyAction, previous: AnyAction) => boolean;
+    actionMerger?: (action: AnyAction, previous: AnyAction) => AnyAction | null | undefined;
     initialAction?: AnyAction;
 };
 
 export function undoable<T>(reducer: Reducer<T>, initialState: T, options?: Options) {
     const initialAction = options?.initialAction;
     const actionsToIgnore = {};
-    const actionMerger = options?.actionMerger || (() => false);
+    const actionMerger = options?.actionMerger || (() => undefined);
 
     if (options?.actionsToIgnore) {
         for (const type of options.actionsToIgnore) {
@@ -45,12 +45,20 @@ export function undoable<T>(reducer: Reducer<T>, initialState: T, options?: Opti
 
             if (newPresent === state.present) {
                 return state;
-            } else if (actionsToIgnore[action.type]) {
+            } 
+            
+            if (actionsToIgnore[action.type]) {
                 return state.replacePresent(newPresent);
-            } else if (state.lastAction && actionMerger(action, state.lastAction)) {
-                return state.replacePresent(newPresent, action);
-            } else {
-                return state.executed(newPresent, action);
             }
+            
+            if (state.lastAction) {
+                const merged = actionMerger(action, state.lastAction);
+
+                if (merged) {
+                    return state.replacePresent(newPresent, merged);
+                }
+            }
+
+            return state.executed(newPresent, action);
         }));
 }

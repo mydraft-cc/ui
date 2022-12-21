@@ -21,7 +21,8 @@ import * as Reducers from '@app/wireframes/model/actions';
 import { registerRenderers } from '@app/wireframes/shapes';
 import { App } from './App';
 import { registerServiceWorker } from './registerServiceWorker';
-import { createClassReducer, mergeAction } from './wireframes/model/actions/utils';
+import { mergeAction } from './wireframes/model/actions/merger';
+import { createClassReducer } from './wireframes/model/actions/utils';
 import './index.scss';
 
 const editorRenderers = registerRenderers();
