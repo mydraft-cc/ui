@@ -162,7 +162,7 @@ export function rootLoading(innerReducer: Reducer<any>, undoableReducer: Reducer
     return (state: any, action: any) => {
         if (newDiagram.match(action)) {
             const initialAction = addDiagram();
-            const initialState = editorReducer(EditorState.empty(), initialAction);
+            const initialState = editorReducer(EditorState.create(), initialAction);
 
             state = UndoableState.create(initialState, initialAction);
         } else if (loadDiagramInternal.match(action)) {
@@ -174,7 +174,7 @@ export function rootLoading(innerReducer: Reducer<any>, undoableReducer: Reducer
                 firstAction = addDiagram();
             }
 
-            let editor = UndoableState.create(editorReducer(EditorState.empty(), firstAction), firstAction);
+            let editor = UndoableState.create(editorReducer(EditorState.create(), firstAction), firstAction);
 
             for (const loadedAction of actions.slice(1)) {
                 editor = undoableReducer(editor, migrateOldAction(loadedAction));
@@ -186,7 +186,7 @@ export function rootLoading(innerReducer: Reducer<any>, undoableReducer: Reducer
                 state = undoableReducer(editor, selectItems(diagram, []));
             } else {
                 const initialAction = addDiagram();
-                const initialState = editorReducer(EditorState.empty(), initialAction);
+                const initialState = editorReducer(EditorState.create(), initialAction);
 
                 state = UndoableState.create(initialState, initialAction);
             }

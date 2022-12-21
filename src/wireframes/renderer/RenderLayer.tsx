@@ -7,7 +7,8 @@
 
 import * as svg from '@svgdotjs/svg.js';
 import * as React from 'react';
-import { Diagram, DiagramContainer, DiagramItem, RendererService } from '@app/wireframes/model';
+import { ImmutableList } from '@app/core';
+import { Diagram, DiagramItem, RendererService } from '@app/wireframes/model';
 import { ShapeRef } from './shape-ref';
 
 export interface RenderLayerProps {
@@ -41,18 +42,18 @@ export const RenderLayer = React.memo((props: RenderLayerProps) => {
     const shapesRendered = React.useRef(onRender);
     const shapeRefsById = React.useRef<{ [id: string]: ShapeRef }>({});
 
-    const itemIds = diagram?.itemIds;
+    const itemIds = diagram?.rootIds;
     const items = diagram?.items;
 
     const orderedShapes = React.useMemo(() => {
         const flattenShapes: DiagramItem[] = [];
 
         if (items && itemIds) {
-            let handleContainer: (itemIds: DiagramContainer) => any;
+            let handleContainer: (itemIds: ImmutableList<string>) => any;
 
             // eslint-disable-next-line prefer-const
             handleContainer = itemIds => {
-                for (const id of itemIds.values) {
+                for (const id of itemIds.raw) {
                     const item = items.get(id);
 
                     if (item) {

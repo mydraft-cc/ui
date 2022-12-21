@@ -9,7 +9,6 @@ export * from './assets-state';
 export * from './configurables';
 export * from './constraints';
 export * from './diagram';
-export * from './diagram-container';
 export * from './diagram-item';
 export * from './diagram-item-set';
 export * from './editor-state';

@@ -7,9 +7,9 @@
 
 import * as svg from '@svgdotjs/svg.js';
 import * as React from 'react';
-import { SVGHelper, Vec2 } from '@app/core';
+import { Rotation, SVGHelper, Vec2 } from '@app/core';
 import { ShapePlugin } from '@app/wireframes/interface';
-import { DiagramItem } from '@app/wireframes/model';
+import { DiagramItem, Transform } from '@app/wireframes/model';
 import { AbstractControl } from './utils/abstract-control';
 
 interface ShapeRendererProps {
@@ -94,17 +94,19 @@ export const ShapeRenderer = React.memo(React.forwardRef<HTMLDivElement, ShapeRe
 
         SVGHelper.setPosition(svgGroup, 0.5, 0.5);
 
-        let x = viewBox.size.x * 0.5;
-        let y = viewBox.size.y * 0.5;
-
-        const shapeAppearance = { ...plugin.defaultAppearance(), ...appearance || {} };
-
         const item =
-            DiagramItem.createShape('1', plugin.identifier(),
-                viewBox.size.x,
-                viewBox.size.y,
-                shapeAppearance)
-                .transformWith(t => t.moveTo(new Vec2(x, y)));
+            DiagramItem.createShape({
+                renderer: plugin.identifier(),
+                transform: new Transform(
+                    new Vec2(
+                        viewBox.size.x * 0.5,
+                        viewBox.size.y * 0.5), 
+                    new Vec2(
+                        viewBox.size.x,
+                        viewBox.size.y),
+                    Rotation.ZERO),
+                appearance: { ...plugin.defaultAppearance(), ...appearance || {} },
+            });
 
         svgControl.setContext(svgGroup);
 

@@ -86,7 +86,7 @@ export function buildDiagrams(builder: ActionReducerMapBuilder<EditorState>) {
         .addCase(addDiagram, (state, action) => {
             const { diagramId } = action.payload;
 
-            let newState = state.addDiagram(Diagram.empty(diagramId));
+            let newState = state.addDiagram(Diagram.create({ id: diagramId }));
 
             if (newState.diagrams.size === 1) {
                 newState = newState.selectDiagram(diagramId);

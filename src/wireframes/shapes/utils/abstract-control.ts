@@ -6,9 +6,9 @@
 */
 
 import * as svg from '@svgdotjs/svg.js';
-import { Rect2, SVGHelper, Types, Vec2 } from '@app/core';
+import { Rect2, Rotation, SVGHelper, Types, Vec2 } from '@app/core';
 import { ConfigurableFactory, Constraint, ConstraintFactory, RenderContext, Shape, ShapePlugin } from '@app/wireframes/interface';
-import { ColorConfigurable, DiagramItem, MinSizeConstraint, NumberConfigurable, Renderer, SelectionConfigurable, SizeConstraint, SliderConfigurable, TextConfigurable, TextHeightConstraint, ToggleConfigurable } from '@app/wireframes/model';
+import { ColorConfigurable, DiagramItem, InitialShapeProps, MinSizeConstraint, NumberConfigurable, Renderer, SelectionConfigurable, SizeConstraint, SliderConfigurable, TextConfigurable, TextHeightConstraint, ToggleConfigurable, Transform } from '@app/wireframes/model';
 import { SVGRenderer2 } from './svg-renderer2';
 import { TextSizeConstraint } from './text-size-contraint';
 
@@ -131,10 +131,12 @@ export class AbstractControl implements Renderer {
         return this;
     }
 
-    public createDefaultShape(id: string) {
+    public createDefaultShape(): InitialShapeProps {
         const size = this.shapePlugin.defaultSize();
 
-        return DiagramItem.createShape(id, this.identifier(), size.x, size.y, this.defaultAppearance(), this.configurables(), this.constraint());
+        const transform = new Transform(new Vec2(0.5 * size.x, 0.5 * size.y), new Vec2(size.x, size.y), Rotation.ZERO);
+
+        return { renderer: this.identifier(), transform, appearance: this.defaultAppearance(), configurables: this.configurables(), constraint: this.constraint() };
     }
 
     public render(shape: DiagramItem, existing: svg.G | undefined, options?: { debug?: boolean; noOpacity?: boolean; noTransform?: boolean }): any {

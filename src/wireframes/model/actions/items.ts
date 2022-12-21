@@ -7,9 +7,9 @@
 
 /* eslint-disable @typescript-eslint/no-loop-func */
 
-import { ActionReducerMapBuilder, createAction, Middleware } from '@reduxjs/toolkit';
+import { ActionReducerMapBuilder, createAction } from '@reduxjs/toolkit';
 import { MathHelper, Vec2 } from '@app/core';
-import { Diagram, DiagramItem, DiagramItemSet, EditorState, RendererService, Serializer } from './../internal';
+import { Diagram, DiagramItem, DiagramItemSet, EditorState, RendererService, Serializer, Transform } from './../internal';
 import { createDiagramAction, createItemsAction, DiagramRef, ItemsRef } from './utils';
 
 export const addVisual =
@@ -46,18 +46,6 @@ export const pasteItems =
     createAction('items/paste', (diagram: DiagramRef, json: string, offset = 0) => {
         return { payload: createDiagramAction(diagram, { json, offset }) };
     });
-
-export function itemsMiddleware(serializer: Serializer): Middleware {
-    const middleware: Middleware = () => next => action => {
-        if (pasteItems.match(action)) {
-            action.payload.json = serializer.generateNewIds(action.payload.json);
-        }
-
-        return next(action);
-    };
-
-    return middleware;
-}
 
 export function buildItems(builder: ActionReducerMapBuilder<EditorState>, rendererService: RendererService, serializer: Serializer) {
     return builder
@@ -112,18 +100,18 @@ export function buildItems(builder: ActionReducerMapBuilder<EditorState>, render
             const { diagramId, json, offset } = action.payload;
 
             return state.updateDiagram(diagramId, diagram => {
-                const set = serializer.deserializeSet(json);
+                const set = serializer.deserializeSet(json, true);
 
                 diagram = diagram.addItems(set);
                 
-                diagram = diagram.updateItems(set.allVisuals.map(x => x.id), item => {
+                diagram = diagram.updateItems(set.allShapes.map(x => x.id), item => {
                     const boundsOld = item.bounds(diagram);
                     const boundsNew = boundsOld.moveBy(new Vec2(offset, offset));
 
                     return item.transformByBounds(boundsOld, boundsNew);
                 });
                 
-                diagram = diagram.selectItems(set.rootIds);
+                diagram = diagram.selectItems(set.itemIds);
 
                 return diagram;
             });
@@ -134,28 +122,32 @@ export function buildItems(builder: ActionReducerMapBuilder<EditorState>, render
             return state.updateDiagram(diagramId, diagram => {
                 const rendererInstance = rendererService.get(renderer);
 
-                const shape = rendererInstance.createDefaultShape(shapeId);
+                const props = rendererInstance.createDefaultShape();
 
-                let configured = shape.transformWith(transform => {
-                    if (width && height) {
-                        transform = transform.resizeTo(new Vec2(width, height));
-                    }
+                props.id = shapeId;
 
-                    const finalPosition =
-                        new Vec2(
-                            position.x + transform.size.x * 0.5,
-                            position.y + transform.size.y * 0.5);
-                            
-                    return transform.moveTo(finalPosition);
-                });
-
-                if (appearance) {
-                    for (const [key, value] of Object.entries(appearance)) {
-                        configured = configured.setAppearance(key, value);
-                    }
+                if (!props.transform) {
+                    props.transform = Transform.ZERO;
                 }
 
-                return diagram.addVisual(configured).selectItems([configured.id]);
+                if (width && height) {
+                    props.transform = props.transform.resizeTo(new Vec2(width, height));
+                }
+
+                const finalPosition =
+                    new Vec2(
+                        position.x + props.transform.size.x * 0.5,
+                        position.y + props.transform.size.y * 0.5);
+                        
+                props.transform = props.transform.moveTo(finalPosition);
+
+                if (appearance) {
+                    props.appearance = { ...props.appearance || {}, ...appearance };
+                }
+
+                const shape = DiagramItem.createShape(props);
+
+                return diagram.addShape(shape).selectItems([shapeId]);
             });
         });
 }

@@ -6,8 +6,8 @@
 */
 
 import { Vec2 } from '@app/core';
-import { ShapePlugin } from '../interface';
-import { DiagramItem } from './diagram-item';
+import { ShapePlugin } from './../interface';
+import { DiagramItem, InitialShapeProps } from './diagram-item';
 
 export interface Renderer {
     identifier(): string;
@@ -20,7 +20,7 @@ export interface Renderer {
 
     showInGallery(): boolean;
 
-    createDefaultShape(id: string): DiagramItem;
+    createDefaultShape(): InitialShapeProps;
 
     setContext(context: any): Renderer;
 

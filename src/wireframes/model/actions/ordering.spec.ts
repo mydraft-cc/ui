@@ -11,25 +11,25 @@ import { buildOrdering, Diagram, DiagramItem, EditorState, moveItems, orderItems
 import { createClassReducer } from './utils';
 
 describe('OrderingReducer', () => {
-    const shape1 = DiagramItem.createShape('1', 'btn', 100, 100);
-    const shape2 = DiagramItem.createShape('2', 'btn', 100, 100);
-    const shape3 = DiagramItem.createShape('3', 'btn', 100, 100);
+    const shape1 = DiagramItem.createShape({ id: '1', renderer: 'Button' });
+    const shape2 = DiagramItem.createShape({ id: '2', renderer: 'Button' });
+    const shape3 = DiagramItem.createShape({ id: '3', renderer: 'Button' });
 
     const diagram =
-        Diagram.empty('1')
-            .addVisual(shape1)
-            .addVisual(shape2)
-            .addVisual(shape3);
+        Diagram.create({ id: '1' })
+            .addShape(shape1)
+            .addShape(shape2)
+            .addShape(shape3);
 
     const state =
-        EditorState.empty()
+        EditorState.create()
             .addDiagram(diagram);
 
     const reducer = createClassReducer(state, builder => buildOrdering(builder));
 
     it('should return same state if action is unknown', () => {
         const action = { type: 'UNKNOWN' };
-        const state_1 = EditorState.empty();
+        const state_1 = EditorState.create();
         const state_2 = reducer(state_1, action);
 
         expect(state_2).toBe(state_1);
@@ -37,7 +37,7 @@ describe('OrderingReducer', () => {
 
     it('should return same state if action has unknown ordering type', () => {
         const action = orderItems('UNKNOWN' as any, diagram, []);
-        const state_1 = EditorState.empty();
+        const state_1 = EditorState.create();
         const state_2 = reducer(state_1, action);
 
         expect(state_2).toBe(state_1);
@@ -46,10 +46,10 @@ describe('OrderingReducer', () => {
     it('should move items', () => {
         const action = moveItems( diagram, [shape1], 1);
 
-        const state_1 = EditorState.empty().addDiagram(diagram);
+        const state_1 = EditorState.create().addDiagram(diagram);
         const state_2 = reducer(state_1, action);
 
-        expect(state_2.diagrams.get(diagram.id)?.itemIds.values).toEqual([shape2.id, shape1.id, shape3.id]);
+        expect(state_2.diagrams.get(diagram.id)?.rootIds.raw).toEqual([shape2.id, shape1.id, shape3.id]);
     });
 
     it('should bring item forwards', () => {
@@ -71,9 +71,9 @@ describe('OrderingReducer', () => {
     function testOrdering(mode: OrderMode, shape: DiagramItem, expectedIds: string[]) {
         const action = orderItems(mode, diagram, [shape]);
 
-        const state_1 = EditorState.empty().addDiagram(diagram);
+        const state_1 = EditorState.create().addDiagram(diagram);
         const state_2 = reducer(state_1, action);
 
-        expect(state_2.diagrams.get(diagram.id)?.itemIds.values).toEqual(expectedIds);
+        expect(state_2.diagrams.get(diagram.id)?.rootIds.raw).toEqual(expectedIds);
     }
 });

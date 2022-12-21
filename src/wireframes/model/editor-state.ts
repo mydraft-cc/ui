@@ -29,6 +29,17 @@ type Props = {
     color: Color;
 };
 
+export type InitialEditorProps = {
+    // The actual diagrams.
+    diagrams?: ReadonlyArray<Diagram>;
+
+    // The size of all diagrams.
+    size?: Vec2;
+
+    // The color for all diagrams.
+    color?: Color;
+};
+
 export class EditorState extends Record<Props> {
     public get selectedDiagramId() {
         return this.get('selectedDiagramId');
@@ -51,15 +62,17 @@ export class EditorState extends Record<Props> {
     }
 
     public get orderedDiagrams(): ReadonlyArray<Diagram> {
-        return this.diagramIds.values.map(x => this.diagrams.get(x)).filter(x => !!x) as Diagram[];
+        return this.diagramIds.raw.map(x => this.diagrams.get(x)).filter(x => !!x) as Diagram[];
     }
 
-    public static empty(): EditorState {
+    public static create(setup: InitialEditorProps = {}): EditorState {
+        const { color, diagrams, size } = setup;
+
         const props: Props = {
-            color: Color.WHITE,
-            diagrams: ImmutableMap.empty(),
-            diagramIds: ImmutableList.empty(),
-            size: new Vec2(1000, 1000),
+            color: color || Color.WHITE,
+            diagrams: ImmutableMap.create(diagrams, x => x.id),
+            diagramIds: ImmutableList.of(diagrams?.map(x => x.id)),
+            size: size || new Vec2(1000, 1000),
         };
 
         return new EditorState(props);

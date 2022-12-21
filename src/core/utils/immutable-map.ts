@@ -5,6 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
+import { ImmutableList } from './immutable-list';
 import { Types, without } from './types';
 
 type Mutator<T> = {
@@ -30,7 +31,7 @@ export class ImmutableMap<T> {
         return this.keys.map(k => this.items[k]);
     }
 
-    public toJS() {
+    public get raw() {
         return this.items;
     }
 
@@ -53,11 +54,27 @@ export class ImmutableMap<T> {
         return ImmutableMap.EMPTY;
     }
 
-    public static of<V>(items: { [key: string]: V }) {
-        if (!items || Object.keys(items).length === 0) {
+    public static of<V>(items: { [key: string]: V } | ImmutableMap<V> | undefined) {
+        if (!items) {
+            return ImmutableMap.EMPTY;
+        } else if (items instanceof ImmutableMap) {
+            return items;
+        } else if (Object.keys(items).length === 0) {
             return ImmutableMap.EMPTY;
         } else {
             return new ImmutableMap<V>(items);
+        }
+    }
+
+    public static create<V>(items: ReadonlyArray<V> | ImmutableList<V> | undefined, selector: (source: V) => string): ImmutableMap<V> {
+        if (!items) {
+            return ImmutableMap.EMPTY;
+        } else if (Types.isArray(items)) {
+            return new ImmutableMap<V>(buildObject(items, selector));
+        } else if (Object.keys(items).length === 0) {
+            return ImmutableMap.EMPTY;
+        } else {
+            return new ImmutableMap<V>(buildObject(items.raw, selector));
         }
     }
 
@@ -146,4 +163,14 @@ export class ImmutableMap<T> {
 
         return Types.equalsObject(this.items, other.items);
     }
+}
+
+function buildObject<V>(source: ReadonlyArray<V>, selector: (source: V) => string) {
+    const result: { [key: string]: V } = {};
+
+    for (const item of source) {
+        result[selector(item)] = item;
+    }
+
+    return result;
 }

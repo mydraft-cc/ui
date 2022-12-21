@@ -5,16 +5,13 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { ImmutableMap, Record, Rotation, Types, Vec2 } from '@app/core';
+import { ImmutableList, ImmutableMap, MathHelper, Record, Rotation } from '@app/core';
 import { DefaultAppearance, Shape } from '@app/wireframes/interface';
 import { Configurable } from './configurables';
 import { Constraint } from './constraints';
 import { Diagram } from './diagram';
-import { DiagramContainer } from './diagram-container';
 import { DiagramItemSet } from './diagram-item-set';
 import { Transform } from './transform';
-
-type Appearance = ImmutableMap<any>;
 
 type ItemProps = {
     // The unique id for each item.
@@ -32,7 +29,7 @@ type ItemProps = {
 
 type GroupProps = {
     // The child ids.
-    childIds: DiagramContainer;
+    childIds: ImmutableList<string>;
 
     // The cache for child values.
     childCache: object;
@@ -58,10 +55,41 @@ type ShapeProps = {
     renderCache: object;
 
     // The appearance.
-    appearance: Appearance;
+    appearance: ImmutableMap<any>;
 };
 
 type Props = ItemProps & GroupProps & ShapeProps;
+
+export type InitialShapeProps = {
+    // The identity.
+    id?: string;
+
+    // The transform.
+    transform?: Transform;
+
+    // The configurable properties.
+    configurables?: ReadonlyArray<Configurable>;
+
+    // The transform constraints.
+    constraint?: Constraint;
+
+    // The appearance.
+    appearance?: { [key: string]: any } | ImmutableMap<any>;
+
+    // The id of the renderer.
+    renderer: string;
+};
+
+export type InitialGroupProps = {
+    // The identity.
+    id?: string;
+
+    // The transformation..
+    childIds?: ReadonlyArray<string> | ImmutableList<string>;
+
+    // The id of the renderer.
+    rotation?: Rotation;
+};
 
 export class DiagramItem extends Record<Props> implements Shape {
     private cachedBounds: { [id: string]: Transform } | undefined = {};
@@ -166,35 +194,31 @@ export class DiagramItem extends Record<Props> implements Shape {
         return this.appearance.get(key);
     }
 
-    public static createGroup(id: string, ids: DiagramContainer | ReadonlyArray<string>,
-        rotation?: Rotation | null,
-    ) {
-        const childIds = getChildIds(ids);
+    public static createGroup(setup: InitialGroupProps = {}) {
+        const { id, childIds, rotation } = setup;
 
         const props: GroupProps & ItemProps = {
-            id,
+            id: id || MathHelper.nextId(),
             childCache: {},
-            childIds,
-            type: 'Group',
+            childIds: ImmutableList.of(childIds),
             rotation: rotation || Rotation.ZERO,
+            type: 'Group',
         };
 
         return new DiagramItem(props as any);
     }
 
-    public static createShape(id: string, renderer: string, w: number, h: number,
-        visual?: Appearance | { [key: string]: any },
-        configurables?: Configurable[],
-        constraint?: Constraint,
-    ) {
+    public static createShape(setup: InitialShapeProps) {
+        const { id, appearance, configurables, constraint, renderer, transform } = setup;
+
         const props: ShapeProps & ItemProps = {
-            id,
-            appearance: getAppearance(visual),
+            id: id || MathHelper.nextId(),
+            appearance: ImmutableMap.of(appearance),
             configurables,
             constraint,
             renderCache: {},
             renderer,
-            transform: createTransform(w, h),
+            transform: transform || Transform.ZERO,
             type: 'Shape',
         };
 
@@ -213,7 +237,7 @@ export class DiagramItem extends Record<Props> implements Shape {
         return this.set('name', name);
     }
 
-    public replaceAppearance(appearance: Appearance) {
+    public replaceAppearance(appearance:ImmutableMap<any>) {
         if (this.type === 'Group' || !appearance) {
             return this;
         }
@@ -255,11 +279,11 @@ export class DiagramItem extends Record<Props> implements Shape {
             if (!cached) {
                 const set = DiagramItemSet.createFromDiagram([this.id], diagram);
 
-                if (!set || set.allItems.length === 0) {
+                if (set.allShapes.length === 0) {
                     return Transform.ZERO;
                 }
 
-                const transforms = set.allVisuals.filter(x => x.type === 'Shape').map(x => x.transform);
+                const transforms = set.allShapes.map(x => x.transform);
 
                 this.cachedBounds[cacheId] = cached = Transform.createFromTransformationsAndRotation(transforms, this.rotation);
             }
@@ -297,24 +321,4 @@ export class DiagramItem extends Record<Props> implements Shape {
 
         return values;
     }
-}
-
-function getAppearance(visual: Appearance | { [key: string]: any } | undefined): Appearance {
-    if (Types.isObject(visual)) {
-        return ImmutableMap.of(<any>visual);
-    }
-
-    return visual || ImmutableMap.empty();
-}
-
-function getChildIds(childIds: DiagramContainer | ReadonlyArray<string> | undefined): DiagramContainer {
-    if (Types.isArray(childIds)) {
-        return DiagramContainer.of(...childIds);
-    }
-
-    return childIds || new DiagramContainer([]);
-}
-
-function createTransform(w: number, h: number): Transform {
-    return new Transform(Vec2.ZERO, new Vec2(w, h), Rotation.ZERO);
 }

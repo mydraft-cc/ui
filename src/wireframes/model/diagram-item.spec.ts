@@ -13,14 +13,12 @@ import { DiagramItem } from './diagram-item';
 import { Transform } from './transform';
 
 describe('DiagramItem', () => {
-    const item_1 = DiagramItem.createShape('1', 'btn', 100, 20);
+    const item_1 = DiagramItem.createShape({ id: '1', renderer: 'Button' });
 
     it('should instantiate with factory method', () => {
         expect(item_1).toBeDefined();
         expect(item_1.id).toBeDefined();
-        expect(item_1.renderer).toBe('btn');
-        expect(item_1.transform.size.x).toBe(100);
-        expect(item_1.transform.size.y).toBe(20);
+        expect(item_1.renderer).toBe('Button');
     });
 
     it('should return original item when already unlocked', () => {
@@ -63,7 +61,7 @@ describe('DiagramItem', () => {
         expect(item_3).toBe(item_2);
     });
 
-    it('should return transform as adorner bounds', () => {
+    it('should return transform as bounds', () => {
         expect(item_1.bounds(null!)).toBe(item_1.transform);
     });
 
@@ -139,7 +137,7 @@ describe('DiagramItem', () => {
     });
 
     it('should not set appearance when item is a group', () => {
-        const group_1 = DiagramItem.createGroup('i', []);
+        const group_1 = DiagramItem.createGroup();
         const group_2 = group_1.setAppearance('color', 'red');
 
         expect(group_2).toBe(group_1);
@@ -165,11 +163,11 @@ describe('DiagramItem', () => {
 
     const groupId = 'group-1';
 
-    const shape1 = DiagramItem.createShape('1', 'btn', 100, 50).transformWith(t => t.moveTo(new Vec2(100, 100)));
-    const shape2 = DiagramItem.createShape('2', 'btn', 100, 50).transformWith(t => t.moveTo(new Vec2(200, 100)));
+    const shape1 = DiagramItem.createShape({ id: '1', renderer: 'Button', transform: new Transform(new Vec2(100, 100), new Vec2(100, 50), Rotation.ZERO) });
+    const shape2 = DiagramItem.createShape({ id: '2', renderer: 'Button', transform: new Transform(new Vec2(200, 100), new Vec2(100, 50), Rotation.ZERO) });
 
     it('should instantiate with factory method', () => {
-        const group = DiagramItem.createGroup(groupId, [shape1.id, shape2.id]);
+        const group = DiagramItem.createGroup({ id: groupId, childIds: [shape1.id, shape2.id] });
 
         expect(group).toBeDefined();
         expect(group.id).toBeDefined();
@@ -179,21 +177,21 @@ describe('DiagramItem', () => {
     });
 
     it('should return original group when transforming from null old bounds', () => {
-        const group_1 = DiagramItem.createGroup(groupId, []);
+        const group_1 = DiagramItem.createGroup({ id: groupId });
         const group_2 = group_1.transformByBounds(null!, transform);
 
         expect(group_2).toBe(group_1);
     });
 
     it('should return original group when transforming to null new bounds', () => {
-        const group_1 = DiagramItem.createGroup(groupId, []);
+        const group_1 = DiagramItem.createGroup({ id: groupId });
         const group_2 = group_1.transformByBounds(transform, null!);
 
         expect(group_2).toBe(group_1);
     });
 
     it('should return original group when transforming between equal bounds', () => {
-        const group_1 = DiagramItem.createGroup(groupId, []);
+        const group_1 = DiagramItem.createGroup({ id: groupId });
         const group_2 = group_1.transformByBounds(transform, transform);
 
         expect(group_2).toBe(group_1);
@@ -203,7 +201,7 @@ describe('DiagramItem', () => {
         const boundsNew = new Transform(Vec2.ZERO, Vec2.ZERO, Rotation.fromDegree(90));
         const boundsOld = new Transform(Vec2.ZERO, Vec2.ZERO, Rotation.fromDegree(215));
 
-        const group_1 = DiagramItem.createGroup(groupId, []);
+        const group_1 = DiagramItem.createGroup({ id: groupId });
         const group_2 = group_1.transformByBounds(boundsNew, boundsOld);
 
         const actual = group_2.rotation;
@@ -213,9 +211,9 @@ describe('DiagramItem', () => {
     });
 
     it('should create zero bounds if child id is not in diagram', () => {
-        const diagram = Diagram.empty(groupId);
+        const diagram = Diagram.create({ id: groupId });
 
-        const group = DiagramItem.createGroup(groupId, ['invalid']);
+        const group = DiagramItem.createGroup({ id: groupId, childIds: ['invalid'] });
 
         const actual = group.bounds(diagram);
         const expected = Transform.ZERO;
@@ -223,11 +221,11 @@ describe('DiagramItem', () => {
         expect(actual).toEqual(expected);
     });
 
-    it('should calculate adorner bounds from children', () => {
+    it('should calculate bounds from children', () => {
         let diagram =
-            Diagram.empty(groupId)
-                .addVisual(shape1)
-                .addVisual(shape2);
+            Diagram.create({ id: '1' })
+                .addShape(shape1)
+                .addShape(shape2);
 
         diagram = diagram.group(groupId, [shape1.id, shape2.id]);
 
@@ -239,11 +237,11 @@ describe('DiagramItem', () => {
         expect(actual).toEqual(expected);
     });
 
-    it('should cache calculate adorner bounds', () => {
+    it('should cache calculate bounds', () => {
         let diagram =
-            Diagram.empty(groupId)
-                .addVisual(shape1)
-                .addVisual(shape2);
+            Diagram.create({ id: '1' })
+                .addShape(shape1)
+                .addShape(shape2);
 
         diagram = diagram.group(groupId, [shape1.id, shape2.id]);
 

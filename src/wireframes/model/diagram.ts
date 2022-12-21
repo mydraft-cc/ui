@@ -6,7 +6,6 @@
 */
 
 import { ImmutableList, ImmutableMap, ImmutableSet, MathHelper, Record, Types } from '@app/core';
-import { DiagramContainer } from './diagram-container';
 import { DiagramItem } from './diagram-item';
 import { DiagramItemSet } from './diagram-item-set';
 
@@ -24,10 +23,27 @@ type Props = {
     items: ImmutableMap<DiagramItem>;
 
     // The rootIds ids.
-    itemIds: DiagramContainer;
+    rootIds: ImmutableList<string>;
 
     // The selected ids.
     selectedIds: ImmutableSet;
+
+    // Set the master diagram.
+    master?: string;
+};
+
+export type InitialDiagramProps = {
+    // The unique id of the diagram.
+    id?: string;
+
+    // The optional title.
+    title?: string;
+
+    // The list of items.
+    items?: { [id: string]: DiagramItem } | ImmutableMap<DiagramItem>;
+
+    // The rootIds ids.
+    rootIds?: ReadonlyArray<string> | ImmutableList<string>;
 
     // Set the master diagram.
     master?: string;
@@ -52,8 +68,8 @@ export class Diagram extends Record<Props> {
         return this.get('items');
     }
 
-    public get itemIds() {
-        return this.get('itemIds');
+    public get rootIds() {
+        return this.get('rootIds');
     }
 
     public get selectedIds() {
@@ -65,16 +81,19 @@ export class Diagram extends Record<Props> {
     }
 
     public get rootItems(): ReadonlyArray<DiagramItem> {
-        return this.itemIds.values.map(x => this.items.get(x)).filter(x => !!x) as DiagramItem[];
+        return this.rootIds.raw.map(x => this.items.get(x)).filter(x => !!x) as DiagramItem[];
     }
 
-    public static empty(id: string) {
+    public static create(setup: InitialDiagramProps = {}) {
+        const { id, items, rootIds, master } = setup;
+
         const props: Props = {
-            id,
-            instanceId: id,
-            items: ImmutableMap.empty(),
-            itemIds: ImmutableList.empty(),
+            id: id || MathHelper.nextId(),
+            instanceId: MathHelper.nextId(),
+            items: ImmutableMap.of(items),
+            rootIds: ImmutableList.of(rootIds),
             selectedIds: ImmutableSet.empty(),
+            master,
         };
 
         return new Diagram(props);
@@ -89,7 +108,7 @@ export class Diagram extends Record<Props> {
     }
 
     public children(item: DiagramItem): ReadonlyArray<DiagramItem> {
-        return item.childIds.values.map(x => this.items.get(x)!).filter(x => !!x)!;
+        return item.childIds.raw.map(x => this.items.get(x)!).filter(x => !!x)!;
     }
 
     public parent(id: string | DiagramItem) {
@@ -108,7 +127,7 @@ export class Diagram extends Record<Props> {
                 const item = this.items.get(key);
 
                 if (item?.type === 'Group') {
-                    for (const childId of item.childIds.values) {
+                    for (const childId of item.childIds.raw) {
                         this.parents[childId] = item;
                     }
                 }
@@ -118,19 +137,19 @@ export class Diagram extends Record<Props> {
         return this.parents[id];
     }
 
-    public addVisual(visual: DiagramItem) {
-        if (!visual || this.items.get(visual.id)) {
+    public addShape(shape: DiagramItem) {
+        if (!shape || this.items.get(shape.id)) {
             return this;
         }
 
-        return this.mutate([], ({ itemIds: rootIds, items }) => {
-            items = items.set(visual.id, visual);
+        return this.mutate([], ({ rootIds, items }) => {
+            items = items.set(shape.id, shape);
 
             if (items !== this.items) {
-                rootIds = rootIds.add(visual.id);
+                rootIds = rootIds.add(shape.id);
             }
 
-            return { items, itemIds: rootIds };
+            return { items, rootIds };
         });
     }
 
@@ -143,42 +162,42 @@ export class Diagram extends Record<Props> {
     }
 
     public moveItems(ids: ReadonlyArray<string>, index: number) {
-        return this.mutate(ids, ({ itemIds: rootIds }) => {
+        return this.mutate(ids, ({ rootIds }) => {
             rootIds = rootIds.moveTo(ids, index);
 
-            return { itemIds: rootIds };
+            return { rootIds };
         });
     }
 
     public bringToFront(ids: ReadonlyArray<string>) {
-        return this.mutate(ids, ({ itemIds: rootIds }) => {
+        return this.mutate(ids, ({ rootIds }) => {
             rootIds = rootIds.bringToFront(ids);
 
-            return { itemIds: rootIds };
+            return { rootIds };
         });
     }
 
     public bringForwards(ids: ReadonlyArray<string>) {
-        return this.mutate(ids, ({ itemIds: rootIds }) => {
+        return this.mutate(ids, ({ rootIds }) => {
             rootIds = rootIds.bringForwards(ids);
 
-            return { itemIds: rootIds };
+            return { rootIds };
         });
     }
 
     public sendToBack(ids: ReadonlyArray<string>) {
-        return this.mutate(ids, ({ itemIds: rootIds }) => {
+        return this.mutate(ids, ({ rootIds }) => {
             rootIds = rootIds.sendToBack(ids);
 
-            return { itemIds: rootIds };
+            return { rootIds };
         });
     }
 
     public sendBackwards(ids: ReadonlyArray<string>) {
-        return this.mutate(ids, ({ itemIds: rootIds }) => {
+        return this.mutate(ids, ({ rootIds }) => {
             rootIds = rootIds.sendBackwards(ids);
 
-            return { itemIds: rootIds };
+            return { rootIds };
         });
     }
 
@@ -195,22 +214,22 @@ export class Diagram extends Record<Props> {
     }
 
     public group(groupId: string, ids: ReadonlyArray<string>) {
-        return this.mutate(ids, ({ itemIds: rootIds, items }) => {
+        return this.mutate(ids, ({ rootIds, items }) => {
             rootIds = rootIds.add(groupId).remove(...ids);
 
-            items = items.set(groupId, DiagramItem.createGroup(groupId, ids));
+            items = items.set(groupId, DiagramItem.createGroup({ id: groupId, childIds: ids }));
 
-            return { items, itemIds: rootIds };
+            return { items, rootIds };
         });
     }
 
     public ungroup(groupId: string) {
-        return this.mutate([groupId], ({ itemIds: rootIds, items }) => {
-            rootIds = rootIds.add(...items.get(groupId)?.childIds?.values!).remove(groupId);
+        return this.mutate([groupId], ({ rootIds, items }) => {
+            rootIds = rootIds.add(...items.get(groupId)?.childIds?.raw!).remove(groupId);
 
             items = items.remove(groupId);
 
-            return { items, itemIds: rootIds };
+            return { items, rootIds };
         });
     }
 
@@ -219,16 +238,16 @@ export class Diagram extends Record<Props> {
             return this;
         }
 
-        return this.mutate([], ({ itemIds: rootIds, items }) => {
+        return this.mutate([], ({ rootIds, items }) => {
             items = items.mutate(mutator => {
                 for (const item of set.allItems) {
                     mutator.set(item.id, item);
                 }
             });
 
-            rootIds = rootIds.add(...set.rootIds);
+            rootIds = rootIds.add(...set.itemIds);
 
-            return { items, itemIds: rootIds };
+            return { items, rootIds };
         });
     }
 
@@ -237,22 +256,22 @@ export class Diagram extends Record<Props> {
             return this;
         }
 
-        return this.mutate([], ({ itemIds: rootIds, items, selectedIds }) => {
+        return this.mutate([], ({ rootIds, items, selectedIds }) => {
             items = items.mutate(m => {
-                for (const id of set.allIds) {
-                    m.remove(id);
+                for (const item of set.allItems) {
+                    m.remove(item.id);
                 }
             });
 
             selectedIds = selectedIds.mutate(m => {
-                for (const id of set.allIds) {
-                    m.remove(id);
+                for (const item of set.allItems) {
+                    m.remove(item.id);
                 }
             });
 
-            rootIds = rootIds.remove(...set.rootIds);
+            rootIds = rootIds.remove(...set.itemIds);
 
-            return { items, itemIds: rootIds, selectedIds };
+            return { items, rootIds, selectedIds };
         });
     }
 
@@ -265,23 +284,22 @@ export class Diagram extends Record<Props> {
 
         const parent = this.parent(items[0]);
 
-        const rootIds = parent?.childIds || this.itemIds;
+        const rootIds = parent?.childIds || this.rootIds;
 
         // Compute a new instance ID with every change, so we can identity the instance without saving the reference.
         const update = updater({
             id: this.id,
             instanceId: MathHelper.nextId(),
-            itemIds: rootIds,
             items: this.items,
-            selectedIds: 
-            this.selectedIds, 
+            rootIds,
+            selectedIds: this.selectedIds, 
         });
 
-        if (update.itemIds && parent) {
+        if (update.rootIds && parent) {
             update.items = update.items || this.items;
-            update.items = update.items.update(parent.id, p => p.set('childIds', update.itemIds!));
+            update.items = update.items.update(parent.id, p => p.set('childIds', update.rootIds!));
 
-            delete update.itemIds;
+            delete update.rootIds;
         }
 
         return this.merge(update);

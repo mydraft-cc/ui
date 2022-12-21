@@ -81,4 +81,8 @@ export abstract class Record<T extends object> {
     protected afterClone(values: T) {
         return values;
     }
+
+    public unsafeValues() {
+        return this.values;
+    }
 }

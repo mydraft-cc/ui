@@ -77,7 +77,7 @@ export function useAppearanceCore<T>(selectedDiagramId: RefDiagramId, selectedSe
 
         let value: T | undefined, empty = true;
 
-        for (const visual of selectedSet.allVisuals) {
+        for (const visual of selectedSet.allShapes) {
             const appearance = visual.appearance.get(key);
 
             if (!Types.isUndefined(appearance) || allowUndefined) {
@@ -98,7 +98,7 @@ export function useAppearanceCore<T>(selectedDiagramId: RefDiagramId, selectedSe
 
     const doChangeAppearance = useEventCallback((value: T) => {
         if (selectedDiagramId && selectedSet) {
-            dispatch(changeItemsAppearance(selectedDiagramId, selectedSet.allVisuals, key, converter.write(value), force));
+            dispatch(changeItemsAppearance(selectedDiagramId, selectedSet.allShapes, key, converter.write(value), force));
         }
     });
 

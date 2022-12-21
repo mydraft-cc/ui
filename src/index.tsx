@@ -26,7 +26,7 @@ import './index.scss';
 
 const editorRenderers = registerRenderers();
 const editorSerializer = new Serializer(editorRenderers);
-const editorState = EditorState.empty();
+const editorState = EditorState.create();
 
 const editorReducer = createClassReducer(editorState, builder => {
     Reducers.buildAlignment(builder);
@@ -39,7 +39,7 @@ const editorReducer = createClassReducer(editorState, builder => {
 
 const undoableReducer = Reducers.undoable(
     editorReducer,
-    EditorState.empty(), {
+    EditorState.create(), {
         actionMerger: mergeAction,
         actionsToIgnore: [
             selectDiagram.name,
@@ -65,7 +65,6 @@ const store = createStore(
             routerMiddleware(history),
             Reducers.toastMiddleware(),
             Reducers.loadingMiddleware(),
-            Reducers.itemsMiddleware(editorSerializer),
         ),
     ),
 );

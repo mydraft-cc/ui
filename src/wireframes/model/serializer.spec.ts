@@ -13,8 +13,9 @@ import { AbstractControl } from '../shapes/utils/abstract-control';
 describe('Serializer', () => {
     const checkbox = new AbstractControl(new Checkbox());
 
-    const oldShape1 = checkbox.createDefaultShape('1').transformWith(t => t.moveTo(new Vec2(100, 20)));
-    const oldShape2 = checkbox.createDefaultShape('2').transformWith(t => t.moveTo(new Vec2(30, 10)));
+    const oldShape1 = DiagramItem.createShape(checkbox.createDefaultShape()).transformWith(t => t.moveTo(new Vec2(100, 20)));
+    const oldShape2 = DiagramItem.createShape(checkbox.createDefaultShape()).transformWith(t => t.moveTo(new Vec2(100, 20)));
+    const oldShape3 = DiagramItem.createShape({ renderer: null! });
 
     let renderers: RendererService;
 
@@ -23,30 +24,28 @@ describe('Serializer', () => {
         renderers.addRenderer(checkbox);
     });
 
-    it('should serialize and deserialize', () => {
+    it('should serialize and deserialize set', () => {
         const serializer = new Serializer(renderers);
 
         const groupId = 'group-1';
 
         const oldDiagram =
-            Diagram.empty('1')
-                .addVisual(oldShape1)
-                .addVisual(oldShape2)
-                .addVisual(DiagramItem.createShape('3', null!, 100, 100))
+            Diagram.create({ id: '1' })
+                .addShape(oldShape1)
+                .addShape(oldShape2)
+                .addShape(oldShape3)
                 .group(groupId, [oldShape1.id, oldShape2.id]);
 
         const oldSet = DiagramItemSet.createFromDiagram([oldDiagram.items.get(groupId)!], oldDiagram) !;
 
-        const json = serializer.serializeSet(oldSet);
-
-        const newSet = serializer.deserializeSet(serializer.generateNewIds(json));
+        const newSet = serializer.deserializeSet(serializer.serializeSet(oldSet), false);
 
         expect(newSet).toBeDefined();
 
-        const newShape1 = newSet.allVisuals[0];
-        const newShape2 = newSet.allVisuals[1];
+        const newShape1 = newSet.allShapes[0];
+        const newShape2 = newSet.allShapes[1];
 
-        expect(newSet.allVisuals.length).toBe(2);
+        expect(newSet.allShapes.length).toBe(2);
 
         compareShapes(newShape1, oldShape1);
         compareShapes(newShape2, oldShape2);
@@ -65,6 +64,5 @@ describe('Serializer', () => {
         expect(newShape.transform.position.y).toBe(originalShape.transform.position.y);
         expect(newShape.transform.size.x).toBe(originalShape.transform.size.x);
         expect(newShape.transform.size.y).toBe(originalShape.transform.size.y);
-        expect(newShape.id).not.toBe(originalShape.id);
     }
 });

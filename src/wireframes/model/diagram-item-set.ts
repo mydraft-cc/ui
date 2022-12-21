@@ -10,41 +10,38 @@ import { Diagram } from './diagram';
 import { DiagramItem } from './diagram-item';
 
 export class DiagramItemSet {
-    public readonly rootItems: DiagramItem[] = [];
     public readonly allItems: DiagramItem[] = [];
+    public readonly allShapes: DiagramItem[] = [];
+    public readonly allGroups: DiagramItem[] = [];
+    public readonly itemIds: string[] = [];
 
     public isValid = true;
 
-    public get rootIds(): string[] {
-        return this.rootItems.map(i => i.id);
-    }
-
-    public get allIds(): string[] {
-        return this.allItems.map(i => i.id);
-    }
-
-    constructor(
-        public readonly allGroups: DiagramItem[],
-        public readonly allVisuals: DiagramItem[],
-    ) {
-        this.allItems.push(...allGroups);
-        this.allItems.push(...allVisuals);
-
+    constructor(source: DiagramItem[]) {
         const parents: { [id: string]: boolean } = {};
 
-        for (const group of this.allGroups) {
-            for (const childId of group.childIds.values) {
-                if (!this.allItems.find(i => i.id === childId) || parents[childId]) {
-                    this.isValid = false;
+        for (const item of source) {
+            this.allItems.push(item);
+
+            if (item.type !== 'Group') {
+                this.allShapes.push(item);
+            } else {
+                this.allGroups.push(item);
+                
+                for (const childId of item.childIds.raw) {
+                    if (!source.find(i => i.id === childId) || parents[childId]) {
+                        this.isValid = false;
+                    }
+    
+                    parents[childId] = true;
                 }
 
-                parents[childId] = true;
             }
         }
 
-        for (const item of this.allItems) {
+        for (const item of source) {
             if (!parents[item.id]) {
-                this.rootItems.push(item);
+                this.itemIds.push(item.id);
             }
         }
 
@@ -52,42 +49,11 @@ export class DiagramItemSet {
     }
 
     public static createFromDiagram(items: ReadonlyArray<string | DiagramItem>, diagram: Diagram): DiagramItemSet {
-        const allGroups: DiagramItem[] = [];
-        const allVisuals: DiagramItem[] = [];
+        const allItems: DiagramItem[] = [];
 
-        let flatItemsArray: (itemsOrIds: ReadonlyArray<string | DiagramItem>, isTopLevel: boolean) => void;
+        flattenItems(items, diagram, allItems);
 
-        // eslint-disable-next-line prefer-const
-        flatItemsArray = (itemsOrIds: ReadonlyArray<string | DiagramItem>) => {
-            for (const itemOrId of itemsOrIds) {
-                let item: DiagramItem;
-
-                if (Types.isString(itemOrId)) {
-                    item = diagram.items.get(itemOrId)!;
-                } else {
-                    item = itemOrId;
-                }
-
-                if (!item) {
-                    // eslint-disable-next-line no-continue
-                    continue;
-                }
-
-                if (item.type === 'Group') {
-                    allGroups.push(item);
-
-                    flatItemsArray(item.childIds.values, false);
-                } else {
-                    allVisuals.push(item);
-                }
-            }
-        };
-
-        if (items) {
-            flatItemsArray(items, true);
-        }
-
-        return new DiagramItemSet(allGroups, allVisuals);
+        return new DiagramItemSet(allItems);
     }
 
     public canAdd(diagram: Diagram): boolean {
@@ -116,5 +82,25 @@ export class DiagramItemSet {
         }
 
         return true;
+    }
+}
+
+function flattenItems(source: ReadonlyArray<string | DiagramItem>, diagram: Diagram, allItems: DiagramItem[]) {
+    for (const itemOrId of source) {
+        let item = itemOrId;
+
+        if (Types.isString(itemOrId)) {
+            item = diagram.items.get(itemOrId)!;
+        } else {
+            item = itemOrId;
+        }
+
+        if (item) {
+            allItems.push(item);
+        }
+
+        if (item?.type === 'Group') {
+            flattenItems(item.childIds.raw, diagram, allItems);
+        }
     }
 }

@@ -31,6 +31,10 @@ export class Vec2 {
         Object.freeze(this);
     }
 
+    public static fromJS(js: any): Vec2 {
+        return new Vec2(js.x, js.y);
+    }
+
     public equals(v: Vec2): boolean {
         return Vec2.equals(this, v);
     }
@@ -127,5 +131,12 @@ export class Vec2 {
         const x = (lhs.x * rhs.x) + (lhs.y * rhs.y);
 
         return MathHelper.toPositiveDegree(MathHelper.toDegree(Math.atan2(y, x)));
+    }
+
+    public toJS(): any {
+        return {
+            x: this.x,
+            y: this.y,
+        };
     }
 }

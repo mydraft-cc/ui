@@ -39,7 +39,7 @@ export function buildGrouping(builder: ActionReducerMapBuilder<EditorState>) {
                     const target = diagram.items.get(groupId);
 
                     if (target) {
-                        childIds.push(...target.childIds.values);
+                        childIds.push(...target.childIds.raw);
 
                         diagram = diagram.ungroup(groupId);
                     }

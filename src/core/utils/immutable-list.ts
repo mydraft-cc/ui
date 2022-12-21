@@ -15,7 +15,7 @@ export class ImmutableList<T> {
         return this.items.length;
     }
 
-    public get values() {
+    public get raw() {
         return this.items;
     }
 
@@ -34,11 +34,15 @@ export class ImmutableList<T> {
         return ImmutableList.EMPTY;
     }
 
-    public static of<V>(...items: V[]) {
-        if (!items || items.length === 0) {
+    public static of<V>(items: ReadonlyArray<V> | ImmutableList<V> | undefined) {
+        if (!items) {
+            return ImmutableList.EMPTY;
+        } else if (items instanceof ImmutableList) {
+            return items;
+        } else if (items.length === 0) {
             return ImmutableList.EMPTY;
         } else {
-            return new ImmutableList<V>([...items]);
+            return new ImmutableList<V>(items);
         }
     }
 

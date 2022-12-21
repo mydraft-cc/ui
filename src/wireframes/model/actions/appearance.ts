@@ -30,13 +30,11 @@ export function buildAppearance(builder: ActionReducerMapBuilder<EditorState>, r
 
                 const set = DiagramItemSet.createFromDiagram(itemIds, diagram);
 
-                return diagram.updateItems(set.allVisuals.map(x => x.id), item => {
-                    if (item.type === 'Shape') {
-                        const rendererInstance = rendererService.get(item.renderer);
+                return diagram.updateItems(set.allShapes.map(x => x.id), item => {
+                    const rendererInstance = rendererService.get(item.renderer);
 
-                        if (rendererInstance && (force || !Types.isUndefined(rendererInstance.defaultAppearance()[key]))) {
-                            return item.setAppearance(key, value);
-                        }
+                    if (rendererInstance && (force || !Types.isUndefined(rendererInstance.defaultAppearance()[key]))) {
+                        return item.setAppearance(key, value);
                     }
 
                     return item;
