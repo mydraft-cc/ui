@@ -30,7 +30,12 @@ export class Label implements ShapePlugin {
         if (source.type == 'Text') {
             const { text } = source;
 
-            return { width: 40, height: 30, appearance: { [DefaultAppearance.TEXT]: text } };
+            return {
+                renderer: this.identifier(),
+                appearance: {
+                    [DefaultAppearance.TEXT]: text,
+                },
+            };
         }
 
         return null;

@@ -43,7 +43,16 @@ export class Raster implements ShapePlugin {
                 }
             }
 
-            return { width: w, height: h, appearance: { [SOURCE]: data } };
+            return { 
+                renderer: this.identifier(),
+                size: {
+                    x: w,
+                    y: h,
+                }, 
+                appearance: { 
+                    [SOURCE]: data,
+                },
+            };
         }
 
         return null;

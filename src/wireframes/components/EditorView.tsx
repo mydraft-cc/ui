@@ -75,10 +75,10 @@ export const EditorViewInner = ({ diagram, spacing }: EditorViewProps & { diagra
             return;
         }
 
-        const visuals = RendererService.createShapes(sources);
+        const shapes = RendererService.createShapes(sources);
 
-        for (const visual of visuals) {
-            dispatch(addShape(selectedDiagramId, visual.id, x, y, visual.appearance, undefined, visual.width, visual.height));
+        for (const { appearance, renderer, size } of shapes) {
+            dispatch(addShape(selectedDiagramId, renderer, { position: { x, y }, size, appearance }));
 
             x += 40;
             y += 40;
@@ -130,7 +130,7 @@ export const EditorViewInner = ({ diagram, spacing }: EditorViewProps & { diagra
 
             switch (itemType) {
                 case 'DND_ASSET':
-                    dispatch(addShape(selectedDiagramId, item['name'], x, y));
+                    dispatch(addShape(selectedDiagramId, item['name'], { position: { x, y } }));
                     break;
                 case 'DND_ICON':
                     doPaste([{ type: 'Icon', ...item }], x, y);

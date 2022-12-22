@@ -32,10 +32,10 @@ export const Icons = React.memo(() => {
             const selectedDiagramId = getDiagramId(store.getState());
 
             if (selectedDiagramId) {
-                const visuals = RendererService.createShapes([{ type: 'Icon', ...icon }]);
+                const shapes = RendererService.createShapes([{ type: 'Icon', ...icon }]);
 
-                for (const visual of visuals) {
-                    dispatch(addShape(selectedDiagramId, visual.id, 100, 100, visual.appearance, undefined, visual.width, visual.height));
+                for (const { size, appearance, renderer } of shapes) {
+                    dispatch(addShape(selectedDiagramId, renderer, { position: { x: 100, y: 100 }, size, appearance }));
                 }
             }
         };

@@ -65,7 +65,7 @@ export class EditorState extends Record<Props> {
     }
 
     public get orderedDiagrams(): ReadonlyArray<Diagram> {
-        return this.diagramIds.raw.map(x => this.diagrams.get(x)).filter(x => !!x) as Diagram[];
+        return this.diagramIds.values.map(x => this.diagrams.get(x)).filter(x => !!x) as Diagram[];
     }
 
     public static create(setup: InitialEditorProps = {}): EditorState {

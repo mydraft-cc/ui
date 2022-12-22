@@ -56,7 +56,7 @@ export interface AssetsState {
 
 export const createInitialAssetsState: () => AssetsState = () => {
     const allShapes =
-        RendererService.all().filter(x => x[1].showInGallery())
+        RendererService.all().filter(x => x[1].plugin().showInGallery?.() !== false)
             .map(([name, renderer]) => {
                 return {
                     plugin: renderer.plugin(),

@@ -106,7 +106,7 @@ describe('ItemsReducer', () => {
     it('should add shape and select this shape', () => {
         const shapeId = 'shape';
 
-        const action = addShape(diagram, 'Button', 100, 20, { }, shapeId);
+        const action = addShape(diagram, 'Button', { position: { x: 100, y: 20 } }, shapeId);
 
         const state_1 = EditorState.create().addDiagram(diagram);
         const state_2 = reducer(state_1, action);
@@ -123,7 +123,7 @@ describe('ItemsReducer', () => {
     it('should add shape with default properties and select this shape', () => {
         const shapeId = 'shape';
 
-        const action = addShape(diagram, 'Button', 100, 20, { text1: 'text1', text2: 'text2' }, shapeId);
+        const action = addShape(diagram, 'Button', { position: { x: 100, y: 20 }, appearance: { text1: 'text1', text2: 'text2' } }, shapeId);
 
         const state_1 = EditorState.create().addDiagram(diagram)!;
         const state_2 = reducer(state_1, action);
@@ -140,7 +140,7 @@ describe('ItemsReducer', () => {
     });
 
     it('should paste json and add group and items', () => {
-        const json = JSON.stringify(Serializer.serializeSet(DiagramItemSet.createFromDiagram(diagram.itemIds.raw, diagram)!));
+        const json = JSON.stringify(Serializer.serializeSet(DiagramItemSet.createFromDiagram(diagram.itemIds.values, diagram)!));
 
         const action = pasteItems(diagram, json);
 

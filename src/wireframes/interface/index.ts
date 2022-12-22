@@ -10,6 +10,7 @@ import { Color, LoadedImage, Rect2, Vec2 } from '@app/core';
 export { Color, Rect2, Vec2 } from '@app/core';
 
 export type Appearance = { [key: string]: any };
+export type CreatedShape = { renderer: string; size?: { x: number; y: number }; appearance?: Appearance };
 export type ShapeSourceIcon = { type: 'Icon';  text: string; fontFamily: string };
 export type ShapeSourceImage = { type: 'Image';  image: LoadedImage };
 export type ShapeSourceText = { type: 'Text';  text: string };
@@ -21,6 +22,7 @@ export type RendererElement = any;
 export type RendererOpacity = number | Shape;
 export type RendererText = TextConfig | Shape;
 export type RendererWidth = number | Shape;
+export type Size = { x: number; y: number };
 export type TextConfig = { text: string; fontSize?: number; fontFamily?: string; alignment?: string };
 export type TextDecoration = 'underline' | 'none';
 
@@ -35,7 +37,7 @@ export interface ShapePlugin {
 
     defaultAppearance(): Appearance;
 
-    defaultSize(): { x: number; y: number };
+    defaultSize(): Size;
 
     configurables?(factory: ConfigurableFactory): Configurable[];
 
@@ -43,9 +45,9 @@ export interface ShapePlugin {
 
     previewOffset?(): { left: number; top: number; right: number; bottom: number };
 
-    previewSize?(desiredWidth: number, desiredHeight: number): { x: number; y: number };
+    previewSize?(desiredWidth: number, desiredHeight: number): Size;
 
-    create?(source: ShapeSource): { width?: number; height?: number; appearance: Appearance } | null | undefined;
+    create?(source: ShapeSource): CreatedShape | null | undefined;
 
     showInGallery?(): boolean;
 

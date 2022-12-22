@@ -41,26 +41,37 @@ const MAX_IMAGE_SIZE = 300;
 
 export function migrateOldAction(action: AnyAction) {
     if (addVisual.match(action)) {
-        const payload = action.payload;
+        const { diagramId, appearance, width, height, position, renderer, shapeId } = action.payload;
 
-        return { type: addShape.type, payload };
-    } if (addIcon.match(action)) {
-        const payload = action.payload;
-
-        return addShape(payload.diagramId,
-            'Icon',
-            payload.position.x,
-            payload.position.y,
+        return addShape(diagramId,
+            renderer,
             {
-                [DefaultAppearance.TEXT]: payload.text,
-                [DefaultAppearance.FONT_FAMILY]: payload.fontFamily,
+                appearance,
+                position,
+                size: width && height ? {
+                    x: width,
+                    y: height,
+                } : undefined,
             },
-            payload.shapeId);
-    } else if (addImage.match(action)) {
-        const payload = action.payload;
+            shapeId);
+    } if (addIcon.match(action)) {
+        const { diagramId, fontFamily, position, shapeId, text } = action.payload;
 
-        let w = payload.size.w;
-        let h = payload.size.h;
+        return addShape(diagramId,
+            'Icon',
+            {
+                position,
+                appearance: {
+                    [DefaultAppearance.TEXT]: text,
+                    [DefaultAppearance.FONT_FAMILY]: fontFamily,
+                },
+            },
+            shapeId);
+    } else if (addImage.match(action)) {
+        const { diagramId, position, size, shapeId, source } = action.payload;
+
+        let w = size.w;
+        let h = size.h;
 
         if (w > MAX_IMAGE_SIZE || h > MAX_IMAGE_SIZE) {
             const ratio = w / h;
@@ -74,16 +85,16 @@ export function migrateOldAction(action: AnyAction) {
             }
         }
 
-        return addShape(payload.diagramId,
+        return addShape(diagramId,
             'Raster',
-            payload.position.x,
-            payload.position.y,
             {
-                SOURCE: payload.source,
+                position,
+                appearance: {
+                    SOURCE: source,
+                },
+                size: { x: w, y: h },
             },
-            payload.shapeId,
-            w,
-            h);
+            shapeId);
     } else {
         return action;
     }

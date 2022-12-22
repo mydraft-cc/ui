@@ -5,10 +5,8 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { Appearance, ShapeSource } from './../interface';
+import { CreatedShape, ShapeSource } from './../interface';
 import { Renderer } from './renderer';
-
-type CreatedShape = { id: string; width?: number; height?: number; appearance: Appearance };
 
 export module RendererService {
     const REGISTERED_RENDERER: { [id: string]: Renderer } = {};
@@ -29,14 +27,14 @@ export module RendererService {
         const result: CreatedShape[] = [];
 
         for (const source of sources) {
-            for (const [id, renderer] of all()) {
+            for (const [, renderer] of all()) {
                 const plugin = renderer.plugin();
 
                 if (plugin.create) {
                     const shape = plugin.create(source);
 
                     if (shape) {
-                        result.push({ id, ...shape });
+                        result.push(shape);
                         break;
                     }
                 }

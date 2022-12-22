@@ -49,7 +49,7 @@ export const RenderLayer = React.memo((props: RenderLayerProps) => {
 
             // eslint-disable-next-line prefer-const
             handleContainer = itemIds => {
-                for (const id of itemIds.raw) {
+                for (const id of itemIds.values) {
                     const item = items.get(id);
 
                     if (item) {

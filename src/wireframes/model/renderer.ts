@@ -5,9 +5,10 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { Vec2 } from '@app/core';
-import { ShapePlugin } from './../interface';
+import { ShapePlugin, Size } from './../interface';
 import { DiagramItem, InitialShapeProps } from './diagram-item';
+
+type DefaultProps = Omit<Omit<InitialShapeProps, 'transform'>, 'id'> & { size: Size };
 
 export interface Renderer {
     identifier(): string;
@@ -16,11 +17,7 @@ export interface Renderer {
 
     defaultAppearance(): { [key: string]: any };
 
-    previewOffset(): Vec2;
-
-    showInGallery(): boolean;
-
-    createDefaultShape(): InitialShapeProps;
+    createDefaultShape(): DefaultProps;
 
     setContext(context: any): Renderer;
 

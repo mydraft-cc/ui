@@ -30,7 +30,7 @@ export const Shapes = () => {
             const selectedDiagramId = getDiagramId(store.getState());
 
             if (selectedDiagramId) {
-                dispatch(addShape(selectedDiagramId, shape.name, 100, 100));
+                dispatch(addShape(selectedDiagramId, shape.name, { position: { x: 100, y: 100 } }));
             }
         };
 

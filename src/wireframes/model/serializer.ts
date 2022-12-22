@@ -180,7 +180,7 @@ const EDITOR_SERIALIZERS: PropertySerializers = {
         set: (source: any[], context) => buildObject(source.map(x => readDiagram(x, context)), x => x.id),
     },
     'diagramIds': {
-        get: (source: ImmutableList<string>) => source.raw,
+        get: (source: ImmutableList<string>) => source.values,
         set: (source: string[], ctx) => source.map(ctx.idMap),
     },
     'size': {
@@ -203,7 +203,7 @@ const DIAGRAM_SERIALIZERS: PropertySerializers = {
         set: (source: any[], context) => buildObject(source.map(x => readDiagramItem(x, context)), x => x.id),
     },
     'itemIds': {
-        get: (source: ImmutableList<string>) => source.raw,
+        get: (source: ImmutableList<string>) => source.values,
         set: (source: string[], ctx) => source.map(ctx.idMap),
     },
     'title': {
@@ -218,7 +218,7 @@ const DIAGRAM_ITEM_SERIALIZERS: PropertySerializers = {
         set: (source: any) => source,
     },
     'childIds': {
-        get: (source: ImmutableList<string>) => source.raw,
+        get: (source: ImmutableList<string>) => source.values,
         set: (source: string[], ctx) => source.map(ctx.idMap),
     },
     'id': {

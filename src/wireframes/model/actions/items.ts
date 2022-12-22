@@ -8,13 +8,14 @@
 /* eslint-disable @typescript-eslint/no-loop-func */
 
 import { ActionReducerMapBuilder, createAction } from '@reduxjs/toolkit';
-import { MathHelper, Vec2 } from '@app/core';
+import { MathHelper, Rotation, Vec2 } from '@app/core';
+import { Appearance } from '@app/wireframes/interface';
 import { Diagram, DiagramItem, DiagramItemSet, EditorState, RendererService, Serializer, Transform } from './../internal';
 import { createDiagramAction, createItemsAction, DiagramRef, ItemsRef } from './utils';
 
 export const addShape =
-    createAction('items/addShape', (diagram: DiagramRef, renderer: string, x: number, y: number, appearance?: object, shapeId?: string, width?: number, height?: number) => {
-        return { payload: createDiagramAction(diagram, { shapeId: shapeId || MathHelper.nextId(), renderer, position: { x, y }, appearance, width, height }) };
+    createAction('items/addShape', (diagram: DiagramRef, renderer: string, props: { position?: { x: number; y: number }; size?: { x: number; y: number }; appearance?: Appearance } = {}, id?: string) => {
+        return { payload: createDiagramAction(diagram, { id: id || MathHelper.nextId(), renderer, ...props }) };
     });
 
 export const lockItems =
@@ -117,37 +118,31 @@ export function buildItems(builder: ActionReducerMapBuilder<EditorState>) {
             });
         })
         .addCase(addShape, (state, action) => {
-            const { diagramId, position, appearance, renderer, shapeId, width, height } = action.payload;
+            const { diagramId, appearance, id, position, renderer, size } = action.payload;
 
             return state.updateDiagram(diagramId, diagram => {
                 const rendererInstance = RendererService.get(renderer);
 
-                const props = rendererInstance.createDefaultShape();
+                const { size: defaultSize, appearance: defaultAppearance, ...other } = rendererInstance.createDefaultShape();
 
-                props.id = shapeId;
+                const initialSize = size || defaultSize;
+                const initialProps = {
+                    ...other,
+                    id,
+                    transform: new Transform(
+                        new Vec2(
+                            (position?.x || 0) + 0.5 * initialSize.x, 
+                            (position?.y || 0) + 0.5 * initialSize.y),
+                        new Vec2(
+                            initialSize.x,
+                            initialSize.y), 
+                        Rotation.ZERO),
+                    appearance: { ...defaultAppearance || {}, ...appearance },
+                };
 
-                if (!props.transform) {
-                    props.transform = Transform.ZERO;
-                }
+                const shape = DiagramItem.createShape(initialProps);
 
-                if (width && height) {
-                    props.transform = props.transform.resizeTo(new Vec2(width, height));
-                }
-
-                const finalPosition =
-                    new Vec2(
-                        position.x + props.transform.size.x * 0.5,
-                        position.y + props.transform.size.y * 0.5);
-                        
-                props.transform = props.transform.moveTo(finalPosition);
-
-                if (appearance) {
-                    props.appearance = { ...props.appearance || {}, ...appearance };
-                }
-
-                const shape = DiagramItem.createShape(props);
-
-                return diagram.addShape(shape).selectItems([shapeId]);
+                return diagram.addShape(shape).selectItems([id]);
             });
         });
 }

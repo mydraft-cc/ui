@@ -36,7 +36,7 @@ describe('ImmutableList', () => {
         const list_2 = list_1.add(1);
         const list_3 = list_2.add(2, 3);
 
-        expect(list_3.raw).toEqual([1, 2, 3]);
+        expect(list_3.values).toEqual([1, 2, 3]);
     });
 
     it('should original list when values to add is null', () => {
@@ -65,7 +65,7 @@ describe('ImmutableList', () => {
         const list_1 = ImmutableList.of([1, 2, 3, 4]);
         const list_2 = list_1.remove(2, 3);
 
-        expect(list_2.raw).toEqual([1, 4]);
+        expect(list_2.values).toEqual([1, 4]);
     });
 
     it('should return original list when item to remove is null', () => {
@@ -95,42 +95,42 @@ describe('ImmutableList', () => {
         const list_1 = ImmutableList.of([1, 2, 3, 4, 5, 6]);
         const list_2 = list_1.bringToFront([3, 5]);
 
-        expect(list_2.raw).toEqual([1, 2, 4, 6, 3, 5]);
+        expect(list_2.values).toEqual([1, 2, 4, 6, 3, 5]);
     });
 
     it('should bring forwards', () => {
         const list_1 = ImmutableList.of([1, 2, 3, 4, 5, 6]);
         const list_2 = list_1.bringForwards([3, 4]);
 
-        expect(list_2.raw).toEqual([1, 2, 5, 3, 4, 6]);
+        expect(list_2.values).toEqual([1, 2, 5, 3, 4, 6]);
     });
 
     it('should send to back', () => {
         const list_1 = ImmutableList.of([1, 2, 3, 4, 5, 6]);
         const list_2 = list_1.sendToBack([4, 5]);
 
-        expect(list_2.raw).toEqual([4, 5, 1, 2, 3, 6]);
+        expect(list_2.values).toEqual([4, 5, 1, 2, 3, 6]);
     });
 
     it('should send backwards', () => {
         const list_1 = ImmutableList.of([1, 2, 3, 4, 5, 6]);
         const list_2 = list_1.sendBackwards([3, 5]);
 
-        expect(list_2.raw).toEqual([1, 3, 5, 2, 4, 6]);
+        expect(list_2.values).toEqual([1, 3, 5, 2, 4, 6]);
     });
 
     it('should move item', () => {
         const list_1 = ImmutableList.of([1, 2, 3, 4, 5, 6]);
         const list_2 = list_1.moveTo([3], 1);
 
-        expect(list_2.raw).toEqual([1, 3, 2, 4, 5, 6]);
+        expect(list_2.values).toEqual([1, 3, 2, 4, 5, 6]);
     });
 
     it('should ignore items that are not found', () => {
         const list_1 = ImmutableList.of([1, 2, 3, 4, 5, 6]);
         const list_2 = list_1.bringToFront([3, 'not found']);
 
-        expect(list_2.raw).toEqual([1, 2, 4, 5, 6, 3]);
+        expect(list_2.values).toEqual([1, 2, 4, 5, 6, 3]);
     });
 
     it('should return original list no id to sort found', () => {

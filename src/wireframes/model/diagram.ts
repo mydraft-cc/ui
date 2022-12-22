@@ -84,7 +84,7 @@ export class Diagram extends Record<Props> {
     }
 
     public get rootItems(): ReadonlyArray<DiagramItem> {
-        return this.itemIds.raw.map(x => this.items.get(x)).filter(x => !!x) as DiagramItem[];
+        return this.itemIds.values.map(x => this.items.get(x)).filter(x => !!x) as DiagramItem[];
     }
 
     public static create(setup: InitialDiagramProps = {}) {
@@ -111,7 +111,7 @@ export class Diagram extends Record<Props> {
     }
 
     public children(item: DiagramItem): ReadonlyArray<DiagramItem> {
-        return item.childIds.raw.map(x => this.items.get(x)!).filter(x => !!x)!;
+        return item.childIds.values.map(x => this.items.get(x)!).filter(x => !!x)!;
     }
 
     public parent(id: string | DiagramItem) {
@@ -130,7 +130,7 @@ export class Diagram extends Record<Props> {
                 const item = this.items.get(key);
 
                 if (item?.type === 'Group') {
-                    for (const childId of item.childIds.raw) {
+                    for (const childId of item.childIds.values) {
                         this.parents[childId] = item;
                     }
                 }
@@ -227,8 +227,8 @@ export class Diagram extends Record<Props> {
     }
 
     public ungroup(groupId: string) {
-        return this.mutate([groupId], ({ itemIds, items }) => {
-            itemIds = itemIds.add(...items.get(groupId)?.childIds?.raw!).remove(groupId);
+        return this.mutate([groupId], ({ itemIds, items }, targetItems) => {
+            itemIds = itemIds.add(...targetItems[0].childIds?.values).remove(groupId);
 
             items = items.remove(groupId);
 
@@ -278,25 +278,23 @@ export class Diagram extends Record<Props> {
         });
     }
 
-    private mutate(itemIds: ReadonlyArray<string>, updater: (diagram: Props) => Partial<Props>): Diagram {
-        const items = this.findItems(itemIds);
+    private mutate(targetIds: ReadonlyArray<string>, updater: (diagram: Props, targetItems: DiagramItem[]) => Partial<Props>): Diagram {
+        const targetItems = this.findItems(targetIds);
 
-        if (!items) {
+        if (!targetItems) {
             return this;
         }
 
-        const parent = this.parent(items[0]);
-
-        const childOrRootIds = parent?.childIds || this.itemIds;
+        const parent = this.parent(targetItems[0]);
 
         // Compute a new instance ID with every change, so we can identity the instance without saving the reference.
         const update = updater({
             id: this.id,
             instanceId: MathHelper.nextId(),
             items: this.items,
-            itemIds: childOrRootIds,
+            itemIds: parent?.childIds || this.itemIds,
             selectedIds: this.selectedIds, 
-        });
+        }, targetItems);
 
         if (update.itemIds && parent) {
             update.items = update.items || this.items;

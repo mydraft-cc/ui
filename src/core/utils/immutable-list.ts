@@ -15,7 +15,7 @@ export class ImmutableList<T> {
         return this.items.length;
     }
 
-    public get raw() {
+    public get values() {
         return this.items;
     }
 

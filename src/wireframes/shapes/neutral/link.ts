@@ -35,7 +35,12 @@ export class Link implements ShapePlugin {
         if (source.type == 'Url') {
             const { url } = source;
 
-            return { width: 40, height: 30, appearance: { [DefaultAppearance.TEXT]: url } };
+            return {
+                renderer: this.identifier(),
+                appearance: {
+                    [DefaultAppearance.TEXT]: url,
+                },
+            };
         }
 
         return null;

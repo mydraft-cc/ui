@@ -28,7 +28,7 @@ export class DiagramItemSet {
             } else {
                 this.allGroups.push(item);
                 
-                for (const childId of item.childIds.raw) {
+                for (const childId of item.childIds.values) {
                     if (!source.find(i => i.id === childId) || parents[childId]) {
                         this.isValid = false;
                     }
@@ -51,7 +51,7 @@ export class DiagramItemSet {
     public static createFromDiagram(items: ReadonlyArray<string | DiagramItem>, diagram: Diagram): DiagramItemSet {
         const allItems: DiagramItem[] = [];
 
-        flattenItems(items, diagram, allItems);
+        flattenRootItems(items, diagram, allItems);
 
         return new DiagramItemSet(allItems);
     }
@@ -85,7 +85,12 @@ export class DiagramItemSet {
     }
 }
 
-function flattenItems(source: ReadonlyArray<string | DiagramItem>, diagram: Diagram, allItems: DiagramItem[]) {
+type OrderedItems = { item: DiagramItem; orderIndex: number }[];
+
+function flattenRootItems(source: ReadonlyArray<string | DiagramItem>, diagram: Diagram, allItems: DiagramItem[]) {
+    const byRoot: OrderedItems = [];
+    const byParents: { [id: string]: OrderedItems } = {};
+
     for (const itemOrId of source) {
         let item = itemOrId;
 
@@ -96,11 +101,62 @@ function flattenItems(source: ReadonlyArray<string | DiagramItem>, diagram: Diag
         }
 
         if (item) {
-            allItems.push(item);
+            const parent = diagram.parent(item);
+
+            if (parent) {
+                let byParent = byParents[parent.id];
+    
+                if (!byParent) {
+                    byParent = [];
+                    byParents[parent.id] = byParent;
+                }
+
+                const orderIndex = parent.childIds.values.indexOf(item.id);
+
+                byParent.push({ orderIndex, item });                
+            } else {
+                const orderIndex = diagram.itemIds.values.indexOf(item.id);
+
+                byRoot.push({ orderIndex, item });   
+            }
+        }
+    }
+
+    function handleParent(byParent: OrderedItems, diagram: Diagram, allItems: DiagramItem[]) {
+        if (byParent.length === 0) {
+            return;
         }
 
-        if (item?.type === 'Group') {
-            flattenItems(item.childIds.raw, diagram, allItems);
+        byParent.sort((a, b) => a.orderIndex - b.orderIndex);
+
+        for (const { item } of byParent) {
+            allItems.push(item);
+
+            if (item.type === 'Group') {
+                flattenItems(item.childIds.values, diagram, allItems);
+            }
+        }
+    }
+
+    handleParent(byRoot, diagram, allItems);
+
+    for (const byParent of Object.values(byParents)) {        
+        handleParent(byParent, diagram, allItems);
+    }
+}
+
+function flattenItems(source: ReadonlyArray<string>, diagram: Diagram, allItems: DiagramItem[]) {
+    for (const itemOrId of source) {
+        let item = diagram.items.get(itemOrId);
+
+        if (!item) {
+            continue;
+        }
+
+        allItems.push(item);
+
+        if (item.type === 'Group') {
+            flattenItems(item.childIds.values, diagram, allItems);
         }
     }
 }
