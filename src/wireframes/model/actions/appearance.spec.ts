@@ -8,10 +8,9 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
 import { Rotation, Vec2 } from '@app/core';
-import { buildAppearance, changeItemsAppearance, Diagram, DiagramItem, EditorState, RendererService, Transform, transformItems } from '@app/wireframes/model';
+import { buildAppearance, changeItemsAppearance, createClassReducer, Diagram, DiagramItem, EditorState, RendererService, Transform, transformItems } from '@app/wireframes/model';
 import { Button } from '@app/wireframes/shapes/neutral/button';
 import { AbstractControl } from '@app/wireframes/shapes/utils/abstract-control';
-import { createClassReducer } from './utils';
 
 describe('AppearanceReducer', () => {
     const shape1 = DiagramItem.createShape({ id: '1', renderer: 'Button', transform: new Transform(Vec2.ZERO, new Vec2(100, 100), Rotation.ZERO) });

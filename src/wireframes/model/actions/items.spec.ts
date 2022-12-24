@@ -8,13 +8,11 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
 import { Vec2 } from '@app/core';
-import { addShape, buildItems, calculateSelection, Diagram, DiagramItem, DiagramItemSet, EditorState, pasteItems, removeItems, RendererService, selectItems, Serializer, unlockItems } from '@app/wireframes/model';
+import { addShape, buildItems, calculateSelection, createClassReducer, Diagram, DiagramItem, DiagramItemSet, EditorState, lockItems, pasteItems, removeItems, renameItems, RendererService, selectItems, Serializer, unlockItems } from '@app/wireframes/model';
 import { Button } from '@app/wireframes/shapes/neutral/button';
 import { Icon } from '@app/wireframes/shapes/shared/icon';
 import { Raster } from '@app/wireframes/shapes/shared/raster';
 import { AbstractControl } from '@app/wireframes/shapes/utils/abstract-control';
-import { lockItems, renameItems } from './items';
-import { createClassReducer } from './utils';
 
 describe('ItemsReducer', () => {
     const groupId = 'group-1';

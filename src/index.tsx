@@ -5,6 +5,8 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
+/* eslint-disable @typescript-eslint/indent */
+
 import { ConnectedRouter, connectRouter, routerMiddleware } from 'connected-react-router';
 import { createBrowserHistory } from 'history';
 import * as React from 'react';
@@ -20,7 +22,6 @@ import * as Reducers from '@app/wireframes/model/actions';
 import { registerRenderers } from '@app/wireframes/shapes';
 import { App } from './App';
 import { registerServiceWorker } from './registerServiceWorker';
-import { mergeAction } from './wireframes/model/actions/merger';
 import { createClassReducer } from './wireframes/model/actions/utils';
 import './index.scss';
 
@@ -31,17 +32,16 @@ const editorState = EditorState.create();
 const editorReducer = createClassReducer(editorState, builder => {
     Reducers.buildAlignment(builder);
     Reducers.buildAppearance(builder);
-    Reducers.buildItems(builder);
     Reducers.buildDiagrams(builder);
     Reducers.buildGrouping(builder);
+    Reducers.buildItems(builder);
     Reducers.buildOrdering(builder);
 });
 
 const undoableReducer = Reducers.undoable(
     editorReducer,
     editorState, {
-        capacity: 20,
-        actionMerger: mergeAction,
+        actionMerger: Reducers.mergeAction,
         actionsToIgnore: [
             selectDiagram.name,
             selectItems.name,
@@ -54,11 +54,11 @@ const composeEnhancers = window['__REDUX_DEVTOOLS_EXTENSION_COMPOSE__'] || compo
 
 const store = createStore(
     combineReducers({
-        assets: Reducers.assets(createInitialAssetsState()),
-        editor: Reducers.rootLoading(undoableReducer, undoableReducer, editorReducer),
+         assets: Reducers.assets(createInitialAssetsState()),
+         editor: Reducers.rootLoading(undoableReducer, editorReducer),
         loading: Reducers.loading(createInitialLoadingState()),
-        router: connectRouter(history),
-        ui: Reducers.ui(createInitialUIState()),
+         router: connectRouter(history),
+             ui: Reducers.ui(createInitialUIState()),
     }),
     composeEnhancers(
         applyMiddleware(

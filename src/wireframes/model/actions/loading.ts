@@ -34,7 +34,7 @@ export const loadDiagramFromServer =
         return { tokenToRead: args.tokenToRead, tokenToWrite: args.tokenToWrite, stored };
     });
 
-const loadDiagramInternal =
+export const loadDiagramInternal =
     createAction<{ stored: any; requestId: string }>('diagram/load/actions');
 
 export const saveDiagramToFile = 
@@ -158,13 +158,13 @@ export function loading(initialState: LoadingState) {
         }));
 }
 
-export function rootLoading(innerReducer: Reducer<any>, undoableReducer: Reducer<UndoableState<EditorState>>, editorReducer: Reducer<EditorState>): Reducer<any> {
+export function rootLoading(undoableReducer: Reducer<UndoableState<EditorState>>, editorReducer: Reducer<EditorState>): Reducer<any> {
     return (state: any, action: any) => {
         if (newDiagram.match(action)) {
             const initialAction = addDiagram();
             const initialState = editorReducer(EditorState.create(), initialAction);
 
-            state = UndoableState.create(initialState, initialAction, 20);
+            state = UndoableState.create(initialState, initialAction);
         } else if (loadDiagramInternal.match(action)) {
             const stored = action.payload.stored;
 
@@ -184,9 +184,9 @@ export function rootLoading(innerReducer: Reducer<any>, undoableReducer: Reducer
                 firstAction = addDiagram();
             }
 
-            let editor = UndoableState.create(editorReducer(initialState, firstAction), firstAction, 20);
+            let editor = UndoableState.create(editorReducer(initialState, firstAction), firstAction);
 
-            for (const loadedAction of actions.slice(1)) {
+            for (const loadedAction of actions.slice(1).filter(handleAction)) {
                 editor = undoableReducer(editor, migrateOldAction(loadedAction));
             }
 
@@ -203,13 +203,17 @@ export function rootLoading(innerReducer: Reducer<any>, undoableReducer: Reducer
             state = editor;
         }
 
-        return innerReducer(state, action);
+        return undoableReducer(state, action);
     };
 }
 
 function getSaveState(state: EditorStateInStore) {
     const initial = Serializer.serializeEditor(state.editor.firstState);
-    const actions = state.editor.actions.filter((action, i) => i > 0 && !selectItems.match(action));
+    const actions = state.editor.actions.slice(1).filter(handleAction);
 
     return { initial, actions };
+}
+
+function handleAction(action: AnyAction) {
+    return !selectItems.match(action) && !selectDiagram.match(action);
 }

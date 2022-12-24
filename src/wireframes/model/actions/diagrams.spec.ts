@@ -8,8 +8,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
 import { Color, Vec2 } from '@app/core';
-import { addDiagram, buildDiagrams, changeColor, changeSize, Diagram, EditorState, moveDiagram, removeDiagram, renameDiagram, selectDiagram, setDiagramMaster } from '@app/wireframes/model';
-import { createClassReducer } from './utils';
+import { addDiagram, buildDiagrams, changeColor, changeSize, createClassReducer, Diagram, EditorState, moveDiagram, removeDiagram, renameDiagram, selectDiagram, setDiagramMaster } from '@app/wireframes/model';
 
 describe('DiagramReducer', () => {
     const state =

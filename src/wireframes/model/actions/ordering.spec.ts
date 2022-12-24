@@ -7,8 +7,7 @@
 
 /* eslint-disable @typescript-eslint/naming-convention */
 
-import { buildOrdering, Diagram, DiagramItem, EditorState, moveItems, orderItems, OrderMode } from '@app/wireframes/model';
-import { createClassReducer } from './utils';
+import { buildOrdering, createClassReducer, Diagram, DiagramItem, EditorState, moveItems, orderItems, OrderMode } from '@app/wireframes/model';
 
 describe('OrderingReducer', () => {
     const shape1 = DiagramItem.createShape({ id: '1', renderer: 'Button' });

@@ -7,8 +7,7 @@
 
 /* eslint-disable @typescript-eslint/naming-convention */
 
-import { buildGrouping, Diagram, DiagramItem, EditorState, groupItems, ungroupItems } from '@app/wireframes/model';
-import { createClassReducer } from './utils';
+import { buildGrouping, createClassReducer, Diagram, DiagramItem, EditorState, groupItems, ungroupItems } from '@app/wireframes/model';
 
 describe('GroupingReducer', () => {
     const state =

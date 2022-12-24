@@ -52,7 +52,7 @@ export class UndoableState<T> {
         Object.freeze(this);
     }
 
-    public static create<T>(present: T, action?: Action, capacity = Number.MAX_VALUE) {
+    public static create<T>(present: T, action?: Action, capacity = 50) {
         return new UndoableState<T>([], capacity, [], { state: present, action });
     }
 
