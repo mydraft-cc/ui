@@ -2,9 +2,7 @@ name: Build
 
 on:
   push:
-    branches:
-      - 'master'
-      - 'feature/*'
+    branches: [ master ]
 
   workflow_dispatch:
 
@@ -29,17 +27,7 @@ jobs:
 
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@4.1.7
-        if: github.ref == 'refs/heads/main'
         with:
           branch: gh-pages
           folder: build
           clean: false
-
-      - name: Deploy
-        uses: JamesIves/github-pages-deploy-action@4.1.7
-        if: github.ref != 'refs/heads/main'
-        with:
-          branch: gh-pages
-          folder: build
-          clean: false
-          target-folder: beta
