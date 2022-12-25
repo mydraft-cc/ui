@@ -32,6 +32,26 @@ describe('Serializer', () => {
         compareSets(newValue, original);
     });
 
+    it('should serialize and deserialize set when set has no types', () => {
+        const original =
+            DiagramItemSet.createFromDiagram([groupId],
+                createDiagram('1'));
+
+        const serialized = Serializer.serializeSet(original);
+
+        for (const visual of serialized.visuals) {
+            delete visual.type;
+        }
+
+        for (const group of serialized.groups) {
+            delete group.type;
+        }
+
+        const newValue = Serializer.deserializeSet(serialized);
+
+        compareSets(newValue, original);
+    });
+
     it('should not deserialize broken shape into set', () => {
         const original =
             DiagramItemSet.createFromDiagram([groupId],

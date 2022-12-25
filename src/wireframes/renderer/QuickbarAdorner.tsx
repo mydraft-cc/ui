@@ -33,7 +33,7 @@ export const QuickbarAdorner = (props: QuickbarAdornerProps) => {
         isPreviewing,
         selectedDiagram,
         selectedItems,
-        zoom
+        zoom,
     } = props;
 
     const forAlignment = useAlignment();

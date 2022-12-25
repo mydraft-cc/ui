@@ -138,9 +138,12 @@ describe('ItemsReducer', () => {
     });
 
     it('should paste json and add group and items', () => {
-        const json = JSON.stringify(Serializer.serializeSet(DiagramItemSet.createFromDiagram(diagram.itemIds.values, diagram)!));
+        let source: any = DiagramItemSet.createFromDiagram(diagram.itemIds.values, diagram)!;
+        source = Serializer.serializeSet(source);
+        source = JSON.stringify(source);
+        source = Serializer.generateNewIds(source);
 
-        const action = pasteItems(diagram, json);
+        const action = pasteItems(diagram, source);
 
         const state_1 = EditorState.create().addDiagram(diagram);
         const state_2 = reducer(state_1, action);

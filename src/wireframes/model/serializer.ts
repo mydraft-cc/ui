@@ -48,7 +48,7 @@ export module Serializer {
         const allItems: DiagramItem[] = [];
 
         for (const inputVisual of input.visuals) {
-            const item = readDiagramItem(inputVisual);
+            const item = readDiagramItem(inputVisual, 'Shape');
 
             if (item) {
                 allItems.push(item);
@@ -56,7 +56,7 @@ export module Serializer {
         }
 
         for (const inputGroup of input.groups) {
-            const item = readDiagramItem(inputGroup);
+            const item = readDiagramItem(inputGroup, 'Group');
 
             if (item) {
                 allItems.push(item);
@@ -131,10 +131,10 @@ function readDiagram(source: object) {
     return Diagram.create(raw);
 }
 
-function readDiagramItem(source: object) {
+function readDiagramItem(source: object, type?: any) {
     const raw: any = readObject(source, DIAGRAM_ITEM_SERIALIZERS);
 
-    if (raw.type === 'Shape') {
+    if ((raw.type || type) === 'Shape') {
         const defaults = RendererService.get(raw.renderer!)?.createDefaultShape();
 
         if (!defaults) {
