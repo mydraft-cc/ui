@@ -16,13 +16,39 @@ import { Transform } from './transform';
 type IdMap = { [id: string]: string };
 
 export module Serializer {
-    export function deserializeSet(input: any, assignNewIds = false): DiagramItemSet {
+    export function generateNewIds(json: string): string {
+        const input = JSON.parse(json);
+
+        const idMap: IdMap = {};
+
+        for (const jsonShape of input.visuals) {
+            const oldId = jsonShape.id;
+
+            jsonShape.id = MathHelper.nextId();
+
+            idMap[oldId] = jsonShape.id;
+        }
+
+        for (const jsonGroup of input.groups) {
+            const oldId = jsonGroup.id;
+
+            jsonGroup.id = MathHelper.nextId();
+
+            idMap[oldId] = jsonGroup.id;
+        }
+
+        for (const jsonGroup of input.groups) {
+            jsonGroup.childIds = jsonGroup.childIds.map((id: string) => idMap[id]);
+        }
+
+        return JSON.stringify(input);
+    }
+
+    export function deserializeSet(input: any): DiagramItemSet {
         const allItems: DiagramItem[] = [];
 
-        const context = createContext(assignNewIds);
-
         for (const inputVisual of input.visuals) {
-            const item = readDiagramItem(inputVisual, context);
+            const item = readDiagramItem(inputVisual);
 
             if (item) {
                 allItems.push(item);
@@ -30,7 +56,7 @@ export module Serializer {
         }
 
         for (const inputGroup of input.groups) {
-            const item = readDiagramItem(inputGroup, context);
+            const item = readDiagramItem(inputGroup);
 
             if (item) {
                 allItems.push(item);
@@ -57,36 +83,13 @@ export module Serializer {
     }
 
     export function deserializeEditor(input: any) {
-        const context = createContext();
-
-        return readEditor(input, context);
+        return readEditor(input);
     }
 
     export function serializeEditor(editor: EditorState) {
         const output = writeEditor(editor);
 
         return output;
-    }
-
-    function createContext(assignNewIds = false) {
-        const context: SerializerContext = { idMap: (id: string) => id };
-
-        if (assignNewIds) {
-            const idMap: IdMap = {};
-
-            context.idMap = id => {
-                let existing = idMap[id];
-
-                if (!existing) {
-                    existing = MathHelper.nextId();
-
-                    idMap[id] = existing;
-                }
-
-                return existing;
-            };
-        }
-        return context;
     }
 }
 
@@ -116,20 +119,20 @@ function writeObject(source: object, serializers: PropertySerializers) {
     return result;
 }
 
-function readEditor(source: object, context: SerializerContext) {
-    const raw: any = readObject(source, EDITOR_SERIALIZERS, context);
+function readEditor(source: object) {
+    const raw: any = readObject(source, EDITOR_SERIALIZERS);
 
     return EditorState.create(raw);
 }
 
-function readDiagram(source: object, context: SerializerContext) {
-    const raw: any = readObject(source, DIAGRAM_SERIALIZERS, context);
+function readDiagram(source: object) {
+    const raw: any = readObject(source, DIAGRAM_SERIALIZERS);
 
     return Diagram.create(raw);
 }
 
-function readDiagramItem(source: object, context: SerializerContext) {
-    const raw: any = readObject(source, DIAGRAM_ITEM_SERIALIZERS, context);
+function readDiagramItem(source: object) {
+    const raw: any = readObject(source, DIAGRAM_ITEM_SERIALIZERS);
 
     if (raw.type === 'Shape') {
         const defaults = RendererService.get(raw.renderer!)?.createDefaultShape();
@@ -144,28 +147,24 @@ function readDiagramItem(source: object, context: SerializerContext) {
     }
 }
 
-function readObject(source: object, serializers: PropertySerializers, context: SerializerContext) {
+function readObject(source: object, serializers: PropertySerializers) {
     const result = {};
 
     for (const [key, value] of Object.entries(source)) {
         const serializer = serializers[key];
 
         if (serializer) {
-            result[key] = serializer.set(value, context);
+            result[key] = serializer.set(value);
         }
     }
 
     return result;
 }
 
-interface SerializerContext {
-    idMap: (id: string) => string;
-}
-
 interface PropertySerializer {
     get(source: any): any;
     
-    set(source: any, context: SerializerContext): any;
+    set(source: any): any;
 }
 
 type PropertySerializers = { [key: string]: PropertySerializer };
@@ -173,15 +172,15 @@ type PropertySerializers = { [key: string]: PropertySerializer };
 const EDITOR_SERIALIZERS: PropertySerializers = {
     'id': {
         get: (source) => source,
-        set: (source, ctx) => ctx.idMap(source),
+        set: (source) => source,
     },
     'diagrams': {
         get: (source: ImmutableMap<Diagram>) => source.values.map(writeDiagram),
-        set: (source: any[], context) => buildObject(source.map(x => readDiagram(x, context)), x => x.id),
+        set: (source: any[]) => buildObject(source.map(readDiagram), x => x.id),
     },
     'diagramIds': {
         get: (source: ImmutableList<string>) => source.values,
-        set: (source: string[], ctx) => source.map(ctx.idMap),
+        set: (source) => source,
     },
     'size': {
         get: (source: Vec2) => ({ x: source.x, y: source.y }),
@@ -192,19 +191,19 @@ const EDITOR_SERIALIZERS: PropertySerializers = {
 const DIAGRAM_SERIALIZERS: PropertySerializers = {
     'id': {
         get: (source) => source,
-        set: (source, ctx) => ctx.idMap(source),
+        set: (source) => source,
     },
     'master': {
         get: (source) => source,
-        set: (source, ctx) => ctx.idMap(source),
+        set: (source) => source,
     },
     'items': {
         get: (source: ImmutableMap<DiagramItem>) => source.values.map(writeDiagramItem),
-        set: (source: any[], context) => buildObject(source.map(x => readDiagramItem(x, context)), x => x.id),
+        set: (source: any[]) => buildObject(source.map(readDiagramItem), x => x.id),
     },
     'itemIds': {
         get: (source: ImmutableList<string>) => source.values,
-        set: (source: string[], ctx) => source.map(ctx.idMap),
+        set: (source) => source,
     },
     'title': {
         get: (source) => source,
@@ -219,11 +218,11 @@ const DIAGRAM_ITEM_SERIALIZERS: PropertySerializers = {
     },
     'childIds': {
         get: (source: ImmutableList<string>) => source.values,
-        set: (source: string[], ctx) => source.map(ctx.idMap),
+        set: (source) => source,
     },
     'id': {
         get: (source) => source,
-        set: (source, ctx) => ctx.idMap(source),
+        set: (source) => source,
     },
     'isLocked': {
         get: (source) => source,

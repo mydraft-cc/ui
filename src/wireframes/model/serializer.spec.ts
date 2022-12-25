@@ -27,7 +27,7 @@ describe('Serializer', () => {
             DiagramItemSet.createFromDiagram([groupId],
                 createDiagram('1'));
 
-        const newValue = Serializer.deserializeSet(Serializer.serializeSet(original), false);
+        const newValue = Serializer.deserializeSet(Serializer.serializeSet(original));
 
         compareSets(newValue, original);
     });
@@ -37,7 +37,7 @@ describe('Serializer', () => {
             DiagramItemSet.createFromDiagram([groupId],
                 createDiagram('1').addShape(brokenShape));
 
-        const newValue = Serializer.deserializeSet(Serializer.serializeSet(original), false);
+        const newValue = Serializer.deserializeSet(Serializer.serializeSet(original));
 
         expect(newValue.allItems.length).toEqual(3);
     });

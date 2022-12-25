@@ -29,7 +29,12 @@ export interface QuickbarAdornerProps {
 }
 
 export const QuickbarAdorner = (props: QuickbarAdornerProps) => {
-    const { isPreviewing, selectedItems, zoom } = props;
+    const {
+        isPreviewing,
+        selectedDiagram,
+        selectedItems,
+        zoom
+    } = props;
 
     const forAlignment = useAlignment();
     const [selectionRect, setSelectionRect] = React.useState<Rect2>();
@@ -55,11 +60,11 @@ export const QuickbarAdorner = (props: QuickbarAdornerProps) => {
         setSelectionLock(false);
 
         if (selectedItems.length >= 2) {
-            setSelectionRect(Rect2.fromRects(selectedItems.map(x => x.transform.aabb)));
+            setSelectionRect(Rect2.fromRects(selectedItems.map(x => x.bounds(selectedDiagram).aabb)));
         } else {
             setSelectionRect(undefined);
         }
-    }, [selectedItems]);
+    }, [selectedDiagram, selectedItems]);
 
     if (!selectionRect || selectionLock) {
         return null;
