@@ -64,7 +64,6 @@ const store = createStore(
         applyMiddleware(
             thunk,
             routerMiddleware(history),
-            Reducers.itemsMiddleware(),
             Reducers.toastMiddleware(),
             Reducers.loadingMiddleware(),
         ),

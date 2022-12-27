@@ -60,10 +60,19 @@ type ShapeProps = {
 
 type Props = ItemProps & GroupProps & ShapeProps;
 
-export type InitialShapeProps = {
-    // The identity.
+
+type InitialItemProps = {
+    // The unique id for each item.
     id?: string;
 
+    // The locking state.
+    isLocked?: boolean;
+
+    // The name of the item.
+    name?: string;
+};
+
+export type InitialShapeProps = {
     // The transform.
     transform?: Transform;
 
@@ -78,18 +87,15 @@ export type InitialShapeProps = {
 
     // The id of the renderer.
     renderer: string;
-};
+} & InitialItemProps;
 
 export type InitialGroupProps = {
-    // The identity.
-    id?: string;
-
     // The transformation..
     childIds?: ReadonlyArray<string> | ImmutableList<string>;
 
     // The id of the renderer.
     rotation?: Rotation;
-};
+} & InitialItemProps;
 
 export class DiagramItem extends Record<Props> implements Shape {
     private cachedBounds: { [id: string]: Transform } | undefined = {};
@@ -195,12 +201,14 @@ export class DiagramItem extends Record<Props> implements Shape {
     }
 
     public static createGroup(setup: InitialGroupProps = {}) {
-        const { id, childIds, rotation } = setup;
+        const { id, childIds, isLocked, name, rotation } = setup;
 
         const props: GroupProps & ItemProps = {
             id: id || MathHelper.nextId(),
             childCache: {},
             childIds: ImmutableList.of(childIds),
+            isLocked,
+            name,
             rotation: rotation || Rotation.ZERO,
             type: 'Group',
         };
@@ -209,13 +217,15 @@ export class DiagramItem extends Record<Props> implements Shape {
     }
 
     public static createShape(setup: InitialShapeProps) {
-        const { id, appearance, configurables, constraint, renderer, transform } = setup;
+        const { id, appearance, configurables, constraint, isLocked, name, renderer, transform } = setup;
 
         const props: ShapeProps & ItemProps = {
             id: id || MathHelper.nextId(),
             appearance: ImmutableMap.of(appearance),
             configurables,
             constraint,
+            isLocked,
+            name,
             renderCache: {},
             renderer,
             transform: transform || Transform.ZERO,

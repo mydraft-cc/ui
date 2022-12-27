@@ -14,8 +14,8 @@ describe('Serializer', () => {
     const checkbox = new AbstractControl(new Checkbox());
 
     const groupId = 'group-1';
-    const oldShape1 = DiagramItem.createShape(checkbox.createDefaultShape()).transformWith(t => t.moveTo(new Vec2(100, 20)));
-    const oldShape2 = DiagramItem.createShape(checkbox.createDefaultShape()).transformWith(t => t.moveTo(new Vec2(100, 20)));
+    const oldShape1 = DiagramItem.createShape(checkbox.createDefaultShape()).transformWith(t => t.moveTo(new Vec2(100, 20))).rename('Named');
+    const oldShape2 = DiagramItem.createShape(checkbox.createDefaultShape()).transformWith(t => t.moveTo(new Vec2(100, 20))).lock();
     const brokenShape = DiagramItem.createShape({ renderer: null! });
 
     beforeEach(() => {
@@ -50,6 +50,29 @@ describe('Serializer', () => {
         const newValue = Serializer.deserializeSet(serialized);
 
         compareSets(newValue, original);
+    });
+
+    it('should compute new ids', () => {
+        const original =
+            DiagramItemSet.createFromDiagram([groupId],
+                createDiagram('1'));
+
+        const serialized = Serializer.serializeSet(original);
+
+        const updated = JSON.parse(Serializer.generateNewIds(JSON.stringify(serialized)));
+
+        let i = 0;
+        for (const visual of serialized.visuals) {
+            expect(visual.id).not.toEqual(updated.visuals[i].id);
+            i++;
+        }
+
+        i = 0;
+        for (const group of serialized.groups) {
+            expect(group.id).not.toEqual(updated.groups[i].id);
+            expect(group.childIds).not.toEqual(updated.groups[i].childIds);
+            i++;
+        }
     });
 
     it('should not deserialize broken shape into set', () => {
@@ -106,6 +129,7 @@ describe('Serializer', () => {
     function compareDiagrams(newValue: Diagram | undefined, original: Diagram) {
         expect(newValue).toBeDefined();
         expect(newValue?.items.size).toEqual(original.items.size);
+        expect(newValue?.title).toEqual(original?.title);
 
         for (const item of original.items.values) {
             compareShapes(newValue?.items.get(item.id), item);
@@ -121,18 +145,20 @@ describe('Serializer', () => {
         }
     }
 
-    function compareShapes(newShape: DiagramItem | undefined, original: DiagramItem) {
-        expect(newShape).toBeDefined();
-        expect(newShape?.type).toEqual(original.type);
+    function compareShapes(newValue: DiagramItem | undefined, original: DiagramItem) {
+        expect(newValue).toBeDefined();
+        expect(newValue?.type).toEqual(original.type);
+        expect(newValue?.name).toEqual(original?.name);
+        expect(newValue?.isLocked).toEqual(original?.isLocked);
 
         if (original.type === 'Group') {
-            expect(newShape?.childIds.equals(original.childIds)).toBeTrue();
-            expect(newShape?.rotation.equals(original.rotation)).toBeTrue();
+            expect(newValue?.childIds.equals(original.childIds)).toBeTrue();
+            expect(newValue?.rotation.equals(original.rotation)).toBeTrue();
         } else {
-            expect(newShape?.appearance.size).toBe(original.appearance.size);
-            expect(newShape?.configurables?.length).toBe(original.configurables?.length);
-            expect(newShape?.renderer).toBe(original.renderer);
-            expect(newShape?.transform.equals(original.transform)).toBeTrue();
+            expect(newValue?.appearance.size).toBe(original.appearance.size);
+            expect(newValue?.configurables?.length).toBe(original.configurables?.length);
+            expect(newValue?.renderer).toBe(original.renderer);
+            expect(newValue?.transform.equals(original.transform)).toBeTrue();
         }
     }
 });
