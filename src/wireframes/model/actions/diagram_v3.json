@@ -215,7 +215,7 @@
                         "type": "Shape"
                     }
                 ],
-                "itemIds": [
+                "rootIds": [
                     "2",
                     "5",
                     "8",

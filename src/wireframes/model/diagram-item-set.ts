@@ -13,7 +13,7 @@ export class DiagramItemSet {
     public readonly allItems: DiagramItem[] = [];
     public readonly allShapes: DiagramItem[] = [];
     public readonly allGroups: DiagramItem[] = [];
-    public readonly itemRootIds: string[] = [];
+    public readonly rootIds: string[] = [];
 
     public isValid = true;
 
@@ -41,7 +41,7 @@ export class DiagramItemSet {
 
         for (const item of source) {
             if (!parents[item.id]) {
-                this.itemRootIds.push(item.id);
+                this.rootIds.push(item.id);
             }
         }
 
@@ -115,7 +115,7 @@ function flattenRootItems(source: ReadonlyArray<string | DiagramItem>, diagram: 
 
                 byParent.push({ orderIndex, item });                
             } else {
-                const orderIndex = diagram.itemRootIds.values.indexOf(item.id);
+                const orderIndex = diagram.rootIds.values.indexOf(item.id);
 
                 byRoot.push({ orderIndex, item });   
             }

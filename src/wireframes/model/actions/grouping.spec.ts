@@ -43,7 +43,7 @@ describe('GroupingReducer', () => {
         const newDiagram = state_2.diagrams.get(diagram.id)!;
 
         expect(newDiagram.selectedIds.values).toEqual([groupId]);
-        expect(newDiagram.itemRootIds.values).toEqual([groupId]);
+        expect(newDiagram.rootIds.values).toEqual([groupId]);
     });
 
     it('should ungroup multiple groups and select their children', () => {
@@ -80,6 +80,6 @@ describe('GroupingReducer', () => {
         const ids = shapes.keys;
 
         expect(newDiagram.selectedIds.values).toEqual(ids);
-        expect(newDiagram.itemRootIds.values).toEqual(ids);
+        expect(newDiagram.rootIds.values).toEqual(ids);
     });
 });

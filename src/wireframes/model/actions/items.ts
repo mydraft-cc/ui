@@ -124,7 +124,7 @@ export function buildItems(builder: ActionReducerMapBuilder<EditorState>) {
                     return item.transformByBounds(boundsOld, boundsNew);
                 });
                 
-                diagram = diagram.selectItems(set.itemRootIds);
+                diagram = diagram.selectItems(set.rootIds);
 
                 return diagram;
             });

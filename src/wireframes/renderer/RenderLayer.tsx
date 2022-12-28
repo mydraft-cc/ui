@@ -38,7 +38,7 @@ export const RenderLayer = React.memo((props: RenderLayerProps) => {
     const shapesRendered = React.useRef(onRender);
     const shapeRefsById = React.useRef<{ [id: string]: ShapeRef }>({});
 
-    const itemIds = diagram?.itemRootIds;
+    const itemIds = diagram?.rootIds;
     const items = diagram?.items;
 
     const orderedShapes = React.useMemo(() => {
