@@ -30,7 +30,7 @@ export class ImmutableMap<T> {
         return this.keys.map(k => this.items[k]);
     }
 
-    public toJS() {
+    public get raw() {
         return this.items;
     }
 
@@ -53,8 +53,12 @@ export class ImmutableMap<T> {
         return ImmutableMap.EMPTY;
     }
 
-    public static of<V>(items: { [key: string]: V }) {
-        if (!items || Object.keys(items).length === 0) {
+    public static of<V>(items: { [key: string]: V } | ImmutableMap<V> | undefined) {
+        if (!items) {
+            return ImmutableMap.EMPTY;
+        } else if (items instanceof ImmutableMap) {
+            return items;
+        } else if (Object.keys(items).length === 0) {
             return ImmutableMap.EMPTY;
         } else {
             return new ImmutableMap<V>(items);

@@ -7,18 +7,16 @@
 
 import * as svg from '@svgdotjs/svg.js';
 import * as React from 'react';
-import { Diagram, DiagramContainer, DiagramItem, RendererService } from '@app/wireframes/model';
+import { ImmutableList } from '@app/core';
+import { Diagram, DiagramItem, RendererService } from '@app/wireframes/model';
 import { ShapeRef } from './shape-ref';
 
 export interface RenderLayerProps {
-    // The renderer service.
-    rendererService: RendererService;
-
     // The selected diagram.
     diagram?: Diagram;
 
     // The container to render on.
-    renderContainer: svg.Container;
+    diagramLayer: svg.Container;
 
     // The preview items.
     previewItems?: ReadonlyArray<DiagramItem>;
@@ -33,22 +31,21 @@ export const RenderLayer = React.memo((props: RenderLayerProps) => {
     const {
         diagram,
         previewItems,
-        renderContainer,
-        rendererService,
+        diagramLayer,
         onRender,
     } = props;
 
     const shapesRendered = React.useRef(onRender);
     const shapeRefsById = React.useRef<{ [id: string]: ShapeRef }>({});
 
-    const itemIds = diagram?.itemIds;
+    const itemIds = diagram?.rootIds;
     const items = diagram?.items;
 
     const orderedShapes = React.useMemo(() => {
         const flattenShapes: DiagramItem[] = [];
 
         if (items && itemIds) {
-            let handleContainer: (itemIds: DiagramContainer) => any;
+            let handleContainer: (itemIds: ImmutableList<string>) => any;
 
             // eslint-disable-next-line prefer-const
             handleContainer = itemIds => {
@@ -95,9 +92,9 @@ export const RenderLayer = React.memo((props: RenderLayerProps) => {
         // Create missing shapes.
         for (const shape of allShapes) {
             if (!references[shape.id]) {
-                const rendererInstance = rendererService.get(shape.renderer);
+                const renderer = RendererService.get(shape.renderer);
 
-                references[shape.id] = new ShapeRef(renderContainer, rendererInstance, showDebugOutlines);
+                references[shape.id] = new ShapeRef(diagramLayer, renderer, showDebugOutlines);
             }
         }
 
@@ -124,7 +121,7 @@ export const RenderLayer = React.memo((props: RenderLayerProps) => {
         if (shapesRendered.current) {
             shapesRendered.current();
         }
-    }, [renderContainer, orderedShapes, rendererService]);
+    }, [diagramLayer, orderedShapes]);
 
     React.useEffect(() => {
         if (previewItems) {

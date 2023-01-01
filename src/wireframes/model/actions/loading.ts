@@ -10,9 +10,9 @@ import { push } from 'connected-react-router';
 import { saveAs } from 'file-saver';
 import { AnyAction, Reducer } from 'redux';
 import { texts } from '@app/texts';
-import { EditorState, EditorStateInStore, LoadingState, LoadingStateInStore, saveRecentDiagrams, UndoableState } from './../internal';
+import { EditorState, EditorStateInStore, LoadingState, LoadingStateInStore, saveRecentDiagrams, Serializer, UndoableState } from './../internal';
 import { getDiagram, postDiagram, putDiagram } from './api';
-import { addDiagram } from './diagrams';
+import { addDiagram, selectDiagram } from './diagrams';
 import { selectItems } from './items';
 import { migrateOldAction } from './obsolete';
 import { showToast } from './ui';
@@ -22,26 +22,26 @@ export const newDiagram =
 
 export const loadDiagramFromFile =
     createAsyncThunk('diagram/load/file', async (args: { file: File }) => {
-        const actions: AnyAction[] = JSON.parse(await args.file.text());
+        const stored = JSON.parse(await args.file.text());
 
-        return { actions };
+        return { stored };
     });
 
 export const loadDiagramFromServer =
     createAsyncThunk('diagram/load/server', async (args: { tokenToRead: string; tokenToWrite?: string; navigate: boolean }) => {
-        const actions = await getDiagram(args.tokenToRead);
+        const stored = await getDiagram(args.tokenToRead);
 
-        return { tokenToRead: args.tokenToRead, tokenToWrite: args.tokenToWrite, actions };
+        return { tokenToRead: args.tokenToRead, tokenToWrite: args.tokenToWrite, stored };
     });
 
-const loadDiagramInternal =
-    createAction<{ actions: AnyAction[]; requestId: string }>('diagram/load/actions');
+export const loadDiagramInternal =
+    createAction<{ stored: any; requestId: string }>('diagram/load/actions');
 
 export const saveDiagramToFile = 
     createAsyncThunk('diagram/save/file', async (_, thunkAPI) => {
-        const state = thunkAPI.getState() as LoadingStateInStore & EditorStateInStore;
+        const state = thunkAPI.getState() as EditorStateInStore;
 
-        const bodyText = JSON.stringify(state.editor.actions);
+        const bodyText = JSON.stringify(getSaveState(state), undefined, 4);
         const bodyBlob = new Blob([bodyText], { type: 'application/json' });
 
         saveAs(bodyBlob, 'diagram.json');
@@ -55,11 +55,11 @@ export const saveDiagramToServer =
         const tokenToRead = state.loading.tokenToRead;
 
         if (tokenToRead && tokenToWrite) {
-            await putDiagram(tokenToRead, tokenToWrite, state.editor.actions.filter(x => !selectItems.match(x)));
+            await putDiagram(tokenToRead, tokenToWrite, getSaveState(state));
 
             return { tokenToRead, tokenToWrite, update: true, navigate: args.navigate };
         } else {
-            const { readToken, writeToken } = await postDiagram(state.editor.actions);
+            const { readToken, writeToken } = await postDiagram(getSaveState(state));
 
             return { tokenToRead: readToken, tokenToWrite: writeToken, navigate: args.navigate };
         }
@@ -85,9 +85,9 @@ export function loadingMiddleware(): Middleware {
                     store.dispatch(push(action.payload.tokenToRead));
                 }
                 
-                store.dispatch(loadDiagramInternal({ actions: action.payload!.actions, requestId: action.meta.requestId }));
+                store.dispatch(loadDiagramInternal({ stored: action.payload.stored, requestId: action.meta.requestId }));
             } else if (loadDiagramFromFile.fulfilled.match(action)) {
-                store.dispatch(loadDiagramInternal({ actions: action.payload!.actions, requestId: action.meta.requestId }));
+                store.dispatch(loadDiagramInternal({ stored: action.payload.stored, requestId: action.meta.requestId }));
             } else if (loadDiagramFromServer.rejected.match(action) ||  loadDiagramFromFile.rejected.match(action)) {
                 store.dispatch(showToast({ content: texts.common.loadingDiagramFailed, type: 'error', key: action.meta.requestId, delayed: 1000 }));
             } else if (loadDiagramInternal.match(action)) {
@@ -158,15 +158,25 @@ export function loading(initialState: LoadingState) {
         }));
 }
 
-export function rootLoading(innerReducer: Reducer<any>, undoableReducer: Reducer<UndoableState<EditorState>>, editorReducer: Reducer<EditorState>): Reducer<any> {
+export function rootLoading(undoableReducer: Reducer<UndoableState<EditorState>>, editorReducer: Reducer<EditorState>): Reducer<any> {
     return (state: any, action: any) => {
         if (newDiagram.match(action)) {
             const initialAction = addDiagram();
-            const initialState = editorReducer(EditorState.empty(), initialAction);
+            const initialState = editorReducer(EditorState.create(), initialAction);
 
             state = UndoableState.create(initialState, initialAction);
         } else if (loadDiagramInternal.match(action)) {
-            const actions = action.payload.actions;
+            const stored = action.payload.stored;
+
+            let initialState: EditorState;
+
+            if (stored.initial) {
+                initialState = Serializer.deserializeEditor(stored.initial);
+            } else {
+                initialState = EditorState.create();
+            }
+
+            const actions: AnyAction[] = stored.actions || stored;
 
             let firstAction = actions[0];
 
@@ -174,24 +184,36 @@ export function rootLoading(innerReducer: Reducer<any>, undoableReducer: Reducer
                 firstAction = addDiagram();
             }
 
-            let editor = UndoableState.create(editorReducer(EditorState.empty(), firstAction), firstAction);
+            let editor = UndoableState.create(editorReducer(initialState, firstAction), firstAction);
 
-            for (const loadedAction of actions.slice(1)) {
+            for (const loadedAction of actions.slice(1).filter(handleAction)) {
                 editor = undoableReducer(editor, migrateOldAction(loadedAction));
             }
 
-            const diagram = editor.present.diagrams.get(editor.present.selectedDiagramId!);
+            const selectedDiagram = editor.present.diagrams.get(editor.present.selectedDiagramId!);
 
-            if (diagram) {
-                state = undoableReducer(editor, selectItems(diagram, []));
-            } else {
-                const initialAction = addDiagram();
-                const initialState = editorReducer(EditorState.empty(), initialAction);
+            if (!selectedDiagram) {
+                const firstDiagram = editor.present.orderedDiagrams[0];
 
-                state = UndoableState.create(initialState, initialAction);
+                if (firstDiagram) {
+                    editor = undoableReducer(editor, selectDiagram(firstDiagram));
+                }
             }
+
+            state = editor;
         }
 
-        return innerReducer(state, action);
+        return undoableReducer(state, action);
     };
+}
+
+function getSaveState(state: EditorStateInStore) {
+    const initial = Serializer.serializeEditor(state.editor.firstState);
+    const actions = state.editor.actions.slice(1).filter(handleAction);
+
+    return { initial, actions };
+}
+
+function handleAction(action: AnyAction) {
+    return !selectItems.match(action) && !selectDiagram.match(action);
 }

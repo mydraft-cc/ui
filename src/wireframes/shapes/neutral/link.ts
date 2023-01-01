@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { ConstraintFactory, DefaultAppearance, RenderContext, ShapePlugin, VisualSource } from '@app/wireframes/interface';
+import { ConstraintFactory, DefaultAppearance, RenderContext, ShapePlugin, ShapeSource } from '@app/wireframes/interface';
 import { CommonTheme } from './_theme';
 
 const DEFAULT_APPEARANCE = {
@@ -31,11 +31,16 @@ export class Link implements ShapePlugin {
         return { x: 40, y: 30 };
     }
 
-    public create(source: VisualSource) {
+    public create(source: ShapeSource) {
         if (source.type == 'Url') {
             const { url } = source;
 
-            return { width: 40, height: 30, appearance: { [DefaultAppearance.TEXT]: url } };
+            return {
+                renderer: this.identifier(),
+                appearance: {
+                    [DefaultAppearance.TEXT]: url,
+                },
+            };
         }
 
         return null;

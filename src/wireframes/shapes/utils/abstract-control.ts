@@ -6,8 +6,8 @@
 */
 
 import * as svg from '@svgdotjs/svg.js';
-import { Rect2, SVGHelper, Types, Vec2 } from '@app/core';
-import { ConfigurableFactory, Constraint, ConstraintFactory, RenderContext, Shape, ShapePlugin } from '@app/wireframes/interface';
+import { Rect2, SVGHelper } from '@app/core';
+import { ConfigurableFactory, Constraint, ConstraintFactory, RenderContext, ShapePlugin } from '@app/wireframes/interface';
 import { ColorConfigurable, DiagramItem, MinSizeConstraint, NumberConfigurable, Renderer, SelectionConfigurable, SizeConstraint, SliderConfigurable, TextConfigurable, TextHeightConstraint, ToggleConfigurable } from '@app/wireframes/model';
 import { SVGRenderer2 } from './svg-renderer2';
 import { TextSizeConstraint } from './text-size-contraint';
@@ -22,6 +22,7 @@ class DefaultConstraintFactory implements ConstraintFactory {
     public minSize(): any {
         return new MinSizeConstraint();
     }
+    
     public textHeight(padding: number): any {
         return new TextHeightConstraint(padding);
     }
@@ -59,15 +60,7 @@ class DefaultConfigurableFactory implements ConfigurableFactory {
     }
 }
 
-class Context implements RenderContext {
-    public static readonly INSTANCE = new Context();
-
-    public readonly renderer2 = SVGRenderer2.INSTANCE;
-
-    public shape!: Shape;
-
-    public rect!: Rect2;
-}
+const GLOBAL_CONTEXT: Writeable<RenderContext> = { renderer2: SVGRenderer2.INSTANCE } as any;
 
 export class AbstractControl implements Renderer {
     constructor(
@@ -84,64 +77,27 @@ export class AbstractControl implements Renderer {
     }
 
     public defaultAppearance() {
-        if (Types.isFunction(this.shapePlugin.defaultAppearance)) {
-            return this.shapePlugin.defaultAppearance();
-        } else {
-            return {};
-        }
-    }
-
-    public showInGallery() {
-        if (Types.isFunction(this.shapePlugin.showInGallery)) {
-            return this.shapePlugin.showInGallery();
-        } else {
-            return true;
-        }
-    }
-
-    public configurables() {
-        if (Types.isFunction(this.shapePlugin.configurables)) {
-            return this.shapePlugin.configurables(DefaultConfigurableFactory.INSTANCE);
-        } else {
-            return [];
-        }
-    }
-
-    public constraint() {
-        if (Types.isFunction(this.shapePlugin.constraint)) {
-            return this.shapePlugin.constraint(DefaultConstraintFactory.INSTANCE);
-        } else {
-            return undefined;
-        }
-    }
-
-    public previewOffset() {
-        if (Types.isFunction(this.shapePlugin.previewOffset)) {
-            const offset = this.shapePlugin.previewOffset();
-
-            return new Vec2(offset.left, offset.top);
-        } else {
-            return Vec2.ZERO;
-        }
+        return this.shapePlugin.defaultAppearance?.();
     }
 
     public setContext(context: any): Renderer {
         SVGRenderer2.INSTANCE.setContainer(context);
-
         return this;
     }
 
-    public createDefaultShape(id: string) {
+    public createDefaultShape() {
+        const appearance = this.shapePlugin.defaultAppearance();
+        const constraint = this.shapePlugin.constraint?.(DefaultConstraintFactory.INSTANCE);
+        const configurables = this.shapePlugin.configurables?.(DefaultConfigurableFactory.INSTANCE);
+        const renderer = this.identifier();
         const size = this.shapePlugin.defaultSize();
 
-        return DiagramItem.createShape(id, this.identifier(), size.x, size.y, this.defaultAppearance(), this.configurables(), this.constraint());
+        return { renderer, size, appearance, configurables, constraint };
     }
 
     public render(shape: DiagramItem, existing: svg.G | undefined, options?: { debug?: boolean; noOpacity?: boolean; noTransform?: boolean }): any {
-        const context = Context.INSTANCE;
-
-        context.shape = shape;
-        context.rect = new Rect2(0, 0, shape.transform.size.x, shape.transform.size.y);
+        GLOBAL_CONTEXT.shape = shape;
+        GLOBAL_CONTEXT.rect = new Rect2(0, 0, shape.transform.size.x, shape.transform.size.y);
 
         const container = SVGRenderer2.INSTANCE.getContainer();
 
@@ -162,12 +118,12 @@ export class AbstractControl implements Renderer {
         }
 
         for (let i = 0; i < index; i++) {
-            SVGHelper.transform(existing.get(i), { rect: context.rect });
+            SVGHelper.transform(existing.get(i), { rect: GLOBAL_CONTEXT.rect });
         }
 
         SVGRenderer2.INSTANCE.setContainer(existing, index);
 
-        this.shapePlugin.render(context);
+        this.shapePlugin.render(GLOBAL_CONTEXT);
 
         if (!options?.noTransform) {
             const to = shape.transform;
@@ -193,3 +149,5 @@ export class AbstractControl implements Renderer {
         return existing;
     }
 }
+
+type Writeable<T> = { -readonly [P in keyof T]: T[P] };

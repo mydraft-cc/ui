@@ -7,19 +7,18 @@
 
 /* eslint-disable @typescript-eslint/naming-convention */
 
-import { buildGrouping, Diagram, DiagramItem, EditorState, groupItems, ungroupItems } from '@app/wireframes/model';
-import { createClassReducer } from './utils';
+import { buildGrouping, createClassReducer, Diagram, DiagramItem, EditorState, groupItems, ungroupItems } from '@app/wireframes/model';
 
 describe('GroupingReducer', () => {
     const state =
-        EditorState.empty();
+        EditorState.create();
 
     const reducer = createClassReducer(state, builder => buildGrouping(builder));
 
     it('should return same state if action is unknown', () => {
         const action = { type: 'UNKNOWN' };
 
-        const state_1 = EditorState.empty();
+        const state_1 = EditorState.create();
         const state_2 = reducer(state_1, action);
 
         expect(state_2).toBe(state_1);
@@ -30,21 +29,21 @@ describe('GroupingReducer', () => {
         const id2 = '2';
 
         const diagram =
-            Diagram.empty('1')
-                .addVisual(DiagramItem.createShape(id1, 'btn', 100, 100))
-                .addVisual(DiagramItem.createShape(id2, 'btn', 100, 100));
+            Diagram.create({ id: '1' })
+                .addShape(DiagramItem.createShape({ id: id1, renderer: 'Button' }))
+                .addShape(DiagramItem.createShape({ id: id2, renderer: 'Button' }));
 
         const groupId = 'group-1';
 
         const action = groupItems(diagram, diagram.items.values, groupId);
 
-        const state_1 = EditorState.empty().addDiagram(diagram);
+        const state_1 = EditorState.create().addDiagram(diagram);
         const state_2 = reducer(state_1, action);
 
         const newDiagram = state_2.diagrams.get(diagram.id)!;
 
         expect(newDiagram.selectedIds.values).toEqual([groupId]);
-        expect(newDiagram.itemIds.values).toEqual([groupId]);
+        expect(newDiagram.rootIds.values).toEqual([groupId]);
     });
 
     it('should ungroup multiple groups and select their children', () => {
@@ -57,11 +56,11 @@ describe('GroupingReducer', () => {
         const id4 = '4';
 
         let diagram =
-            Diagram.empty('1')
-                .addVisual(DiagramItem.createShape(id1, 'btn', 100, 100))
-                .addVisual(DiagramItem.createShape(id2, 'btn', 100, 100))
-                .addVisual(DiagramItem.createShape(id3, 'btn', 100, 100))
-                .addVisual(DiagramItem.createShape(id4, 'btn', 100, 100));
+            Diagram.create({ id: '1' })
+                .addShape(DiagramItem.createShape({ id: id1, renderer: 'Button' }))
+                .addShape(DiagramItem.createShape({ id: id2, renderer: 'Button' }))
+                .addShape(DiagramItem.createShape({ id: id3, renderer: 'Button' }))
+                .addShape(DiagramItem.createShape({ id: id4, renderer: 'btn' }));
 
         const shapes = diagram.items;
 
@@ -71,9 +70,9 @@ describe('GroupingReducer', () => {
         const group1 = diagram.items.get(groupId1)!;
         const group2 = diagram.items.get(groupId2)!;
 
-        const action = ungroupItems(diagram, [group1, group2, DiagramItem.createGroup('5', [])]);
+        const action = ungroupItems(diagram, [group1, group2, DiagramItem.createGroup({ id: '5' })]);
 
-        const state_1 = EditorState.empty().addDiagram(diagram);
+        const state_1 = EditorState.create().addDiagram(diagram);
         const state_2 = reducer(state_1, action);
 
         const newDiagram = state_2.diagrams.get(diagram.id)!;
@@ -81,6 +80,6 @@ describe('GroupingReducer', () => {
         const ids = shapes.keys;
 
         expect(newDiagram.selectedIds.values).toEqual(ids);
-        expect(newDiagram.itemIds.values).toEqual(ids);
+        expect(newDiagram.rootIds.values).toEqual(ids);
     });
 });

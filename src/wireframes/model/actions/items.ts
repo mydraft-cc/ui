@@ -8,13 +8,14 @@
 /* eslint-disable @typescript-eslint/no-loop-func */
 
 import { ActionReducerMapBuilder, createAction, Middleware } from '@reduxjs/toolkit';
-import { MathHelper, Vec2 } from '@app/core';
-import { Diagram, DiagramItem, DiagramItemSet, EditorState, RendererService, Serializer } from './../internal';
+import { MathHelper, Rotation, Vec2 } from '@app/core';
+import { Appearance } from '@app/wireframes/interface';
+import { Diagram, DiagramItem, DiagramItemSet, EditorState, RendererService, Serializer, Transform } from './../internal';
 import { createDiagramAction, createItemsAction, DiagramRef, ItemsRef } from './utils';
 
-export const addVisual =
-    createAction('items/addVisual', (diagram: DiagramRef, renderer: string, x: number, y: number, appearance?: object, shapeId?: string, width?: number, height?: number) => {
-        return { payload: createDiagramAction(diagram, { shapeId: shapeId || MathHelper.nextId(), renderer, position: { x, y }, appearance, width, height }) };
+export const addShape =
+    createAction('items/addShape', (diagram: DiagramRef, renderer: string, props: { position?: { x: number; y: number }; size?: { x: number; y: number }; appearance?: Appearance } = {}, id?: string) => {
+        return { payload: createDiagramAction(diagram, { id: id || MathHelper.nextId(), renderer, ...props }) };
     });
 
 export const lockItems =
@@ -47,10 +48,10 @@ export const pasteItems =
         return { payload: createDiagramAction(diagram, { json, offset }) };
     });
 
-export function itemsMiddleware(serializer: Serializer): Middleware {
+export function itemsMiddleware(): Middleware {
     const middleware: Middleware = () => next => action => {
         if (pasteItems.match(action)) {
-            action.payload.json = serializer.generateNewIds(action.payload.json);
+            action.payload.json = Serializer.generateNewIds(action.payload.json);
         }
 
         return next(action);
@@ -59,7 +60,7 @@ export function itemsMiddleware(serializer: Serializer): Middleware {
     return middleware;
 }
 
-export function buildItems(builder: ActionReducerMapBuilder<EditorState>, rendererService: RendererService, serializer: Serializer) {
+export function buildItems(builder: ActionReducerMapBuilder<EditorState>) {
     return builder
         .addCase(selectItems, (state, action) => {
             const { diagramId, itemIds } = action.payload;
@@ -112,11 +113,11 @@ export function buildItems(builder: ActionReducerMapBuilder<EditorState>, render
             const { diagramId, json, offset } = action.payload;
 
             return state.updateDiagram(diagramId, diagram => {
-                const set = serializer.deserializeSet(json);
+                const set = Serializer.deserializeSet(JSON.parse(json));
 
                 diagram = diagram.addItems(set);
                 
-                diagram = diagram.updateItems(set.allVisuals.map(x => x.id), item => {
+                diagram = diagram.updateItems(set.allShapes.map(x => x.id), item => {
                     const boundsOld = item.bounds(diagram);
                     const boundsNew = boundsOld.moveBy(new Vec2(offset, offset));
 
@@ -128,34 +129,32 @@ export function buildItems(builder: ActionReducerMapBuilder<EditorState>, render
                 return diagram;
             });
         })
-        .addCase(addVisual, (state, action) => {
-            const { diagramId, position, appearance, renderer, shapeId, width, height } = action.payload;
+        .addCase(addShape, (state, action) => {
+            const { diagramId, appearance, id, position, renderer, size } = action.payload;
 
             return state.updateDiagram(diagramId, diagram => {
-                const rendererInstance = rendererService.get(renderer);
+                const rendererInstance = RendererService.get(renderer);
 
-                const shape = rendererInstance.createDefaultShape(shapeId);
+                const { size: defaultSize, appearance: defaultAppearance, ...other } = rendererInstance.createDefaultShape();
 
-                let configured = shape.transformWith(transform => {
-                    if (width && height) {
-                        transform = transform.resizeTo(new Vec2(width, height));
-                    }
-
-                    const finalPosition =
+                const initialSize = size || defaultSize;
+                const initialProps = {
+                    ...other,
+                    id,
+                    transform: new Transform(
                         new Vec2(
-                            position.x + transform.size.x * 0.5,
-                            position.y + transform.size.y * 0.5);
-                            
-                    return transform.moveTo(finalPosition);
-                });
+                            (position?.x || 0) + 0.5 * initialSize.x, 
+                            (position?.y || 0) + 0.5 * initialSize.y),
+                        new Vec2(
+                            initialSize.x,
+                            initialSize.y), 
+                        Rotation.ZERO),
+                    appearance: { ...defaultAppearance || {}, ...appearance },
+                };
 
-                if (appearance) {
-                    for (const [key, value] of Object.entries(appearance)) {
-                        configured = configured.setAppearance(key, value);
-                    }
-                }
+                const shape = DiagramItem.createShape(initialProps);
 
-                return diagram.addVisual(configured).selectItems([configured.id]);
+                return diagram.addShape(shape).selectItems([id]);
             });
         });
 }

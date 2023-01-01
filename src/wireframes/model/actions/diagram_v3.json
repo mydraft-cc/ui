@@ -1,0 +1,277 @@
+{
+    "initial": {
+        "diagrams": [
+            {
+                "id": "1",
+                "items": [
+                    {
+                        "id": "2",
+                        "appearance": {
+                            "FOREGROUND_COLOR": 15790320,
+                            "FONT_SIZE": 16,
+                            "BACKGROUND_COLOR": 2434341,
+                            "STROKE_COLOR": 13224393,
+                            "STROKE_THICKNESS": 1,
+                            "TEXT_ALIGNMENT": "center",
+                            "TEXT": "Button"
+                        },
+                        "renderer": "Button",
+                        "transform": {
+                            "x": 161,
+                            "y": 205,
+                            "w": 100,
+                            "h": 30,
+                            "r": 0
+                        },
+                        "type": "Shape"
+                    },
+                    {
+                        "id": "5",
+                        "appearance": {
+                            "FOREGROUND_COLOR": 15790320,
+                            "FONT_SIZE": 16,
+                            "BACKGROUND_COLOR": 2434341,
+                            "STROKE_COLOR": 13224393,
+                            "STROKE_THICKNESS": 1,
+                            "TEXT_ALIGNMENT": "center",
+                            "TEXT": "Button"
+                        },
+                        "renderer": "Button",
+                        "transform": {
+                            "x": 212,
+                            "y": 373,
+                            "w": 100,
+                            "h": 30,
+                            "r": 0
+                        },
+                        "type": "Shape"
+                    },
+                    {
+                        "id": "8",
+                        "appearance": {
+                            "FOREGROUND_COLOR": 15790320,
+                            "FONT_SIZE": 16,
+                            "BACKGROUND_COLOR": 2434341,
+                            "STROKE_COLOR": 13224393,
+                            "STROKE_THICKNESS": 1,
+                            "TEXT_ALIGNMENT": "center",
+                            "TEXT": "Button"
+                        },
+                        "renderer": "Button",
+                        "transform": {
+                            "x": 123,
+                            "y": 121,
+                            "w": 100,
+                            "h": 30,
+                            "r": 0
+                        },
+                        "type": "Shape"
+                    },
+                    {
+                        "id": "11",
+                        "appearance": {
+                            "FOREGROUND_COLOR": 15790320,
+                            "FONT_SIZE": 16,
+                            "BACKGROUND_COLOR": 2434341,
+                            "STROKE_COLOR": 13224393,
+                            "STROKE_THICKNESS": 1,
+                            "TEXT_ALIGNMENT": "center",
+                            "TEXT": "Button"
+                        },
+                        "renderer": "Button",
+                        "transform": {
+                            "x": 345,
+                            "y": 235,
+                            "w": 100,
+                            "h": 30,
+                            "r": 0
+                        },
+                        "type": "Shape"
+                    },
+                    {
+                        "id": "14",
+                        "appearance": {
+                            "FOREGROUND_COLOR": 15790320,
+                            "FONT_SIZE": 16,
+                            "BACKGROUND_COLOR": 2434341,
+                            "STROKE_COLOR": 13224393,
+                            "STROKE_THICKNESS": 1,
+                            "TEXT_ALIGNMENT": "center",
+                            "TEXT": "Button"
+                        },
+                        "renderer": "Button",
+                        "transform": {
+                            "x": 463,
+                            "y": 452,
+                            "w": 100,
+                            "h": 30,
+                            "r": 0
+                        },
+                        "type": "Shape"
+                    },
+                    {
+                        "id": "17",
+                        "appearance": {
+                            "FOREGROUND_COLOR": 15790320,
+                            "FONT_SIZE": 16,
+                            "BACKGROUND_COLOR": 2434341,
+                            "STROKE_COLOR": 13224393,
+                            "STROKE_THICKNESS": 1,
+                            "TEXT_ALIGNMENT": "center",
+                            "TEXT": "Button"
+                        },
+                        "renderer": "Button",
+                        "transform": {
+                            "x": 389,
+                            "y": 137,
+                            "w": 100,
+                            "h": 30,
+                            "r": 0
+                        },
+                        "type": "Shape"
+                    },
+                    {
+                        "id": "20",
+                        "appearance": {
+                            "FOREGROUND_COLOR": 15790320,
+                            "FONT_SIZE": 16,
+                            "BACKGROUND_COLOR": 2434341,
+                            "STROKE_COLOR": 13224393,
+                            "STROKE_THICKNESS": 1,
+                            "TEXT_ALIGNMENT": "center",
+                            "TEXT": "Button"
+                        },
+                        "renderer": "Button",
+                        "transform": {
+                            "x": 127,
+                            "y": 537,
+                            "w": 100,
+                            "h": 30,
+                            "r": 0
+                        },
+                        "type": "Shape"
+                    },
+                    {
+                        "id": "23",
+                        "appearance": {
+                            "FOREGROUND_COLOR": 15790320,
+                            "FONT_SIZE": 16,
+                            "BACKGROUND_COLOR": 2434341,
+                            "STROKE_COLOR": 13224393,
+                            "STROKE_THICKNESS": 1,
+                            "TEXT_ALIGNMENT": "center",
+                            "TEXT": "Button"
+                        },
+                        "renderer": "Button",
+                        "transform": {
+                            "x": 401,
+                            "y": 645,
+                            "w": 100,
+                            "h": 30,
+                            "r": 0
+                        },
+                        "type": "Shape"
+                    },
+                    {
+                        "id": "26",
+                        "appearance": {
+                            "FOREGROUND_COLOR": 15790320,
+                            "FONT_SIZE": 16,
+                            "BACKGROUND_COLOR": 2434341,
+                            "STROKE_COLOR": 13224393,
+                            "STROKE_THICKNESS": 1,
+                            "TEXT_ALIGNMENT": "center",
+                            "TEXT": "Button"
+                        },
+                        "renderer": "Button",
+                        "transform": {
+                            "x": 415,
+                            "y": 323,
+                            "w": 100,
+                            "h": 30,
+                            "r": 0
+                        },
+                        "type": "Shape"
+                    },
+                    {
+                        "id": "29",
+                        "appearance": {
+                            "FOREGROUND_COLOR": 15790320,
+                            "FONT_SIZE": 16,
+                            "BACKGROUND_COLOR": 2434341,
+                            "STROKE_COLOR": 13224393,
+                            "STROKE_THICKNESS": 1,
+                            "TEXT_ALIGNMENT": "center",
+                            "TEXT": "Button"
+                        },
+                        "renderer": "Button",
+                        "transform": {
+                            "x": 613,
+                            "y": 299,
+                            "w": 100,
+                            "h": 30,
+                            "r": 0
+                        },
+                        "type": "Shape"
+                    }
+                ],
+                "rootIds": [
+                    "2",
+                    "5",
+                    "8",
+                    "11",
+                    "14",
+                    "17",
+                    "20",
+                    "23",
+                    "26",
+                    "29"
+                ]
+            }
+        ],
+        "diagramIds": [
+            "1"
+        ],
+        "size": {
+            "x": 1000,
+            "y": 1000
+        }
+    },
+    "actions": [
+        {
+            "type": "diagram/add",
+            "payload": {
+                "diagramId": "32",
+                "timestamp": 1671834357423
+            }
+        },
+        {
+            "type": "diagram/add",
+            "payload": {
+                "diagramId": "33",
+                "timestamp": 1671834358223
+            }
+        },
+        {
+            "type": "diagram/select",
+            "payload": {
+                "diagramId": "32",
+                "timestamp": 1671834359157
+            }
+        },
+        {
+            "type": "diagram/select",
+            "payload": {
+                "diagramId": "33",
+                "timestamp": 1671834360095
+            }
+        },
+        {
+            "type": "diagram/select",
+            "payload": {
+                "diagramId": "1",
+                "timestamp": 1671834361556
+            }
+        }
+    ]
+}

@@ -1,4 +1,9 @@
-import { AnyAction } from 'redux';
+/*
+ * mydraft.cc
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
 
 const API_URL = process.env.NODE_ENV === 'test_development' ? 'http://localhost:4000' : 'https://api.mydraft.cc';
 
@@ -9,12 +14,12 @@ export async function getDiagram(readToken: string) {
         throw Error('Failed to load diagram');
     }
 
-    const actions: AnyAction[] = await response.json();
+    const stored = await response.json();
 
-    return actions;
+    return stored;
 }
 
-export async function putDiagram(readToken: string, writeToken: string, body: ReadonlyArray<AnyAction>) {
+export async function putDiagram(readToken: string, writeToken: string, body: any) {
     const response = await fetch(`${API_URL}/${readToken}/${writeToken}`, {
         method: 'PUT',
         headers: {
@@ -28,7 +33,7 @@ export async function putDiagram(readToken: string, writeToken: string, body: Re
     }
 }
 
-export async function postDiagram(body: ReadonlyArray<AnyAction>)  {
+export async function postDiagram(body: any)  {
     const response = await fetch(`${API_URL}/`, {
         method: 'POST',
         headers: {

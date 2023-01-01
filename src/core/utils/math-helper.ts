@@ -6,7 +6,7 @@
 */
 
 export module MathHelper {
-    let CURRENT_ID = 0;
+    let CURRENT_ID = new Date().getTime();
 
     export function nextId() {
         CURRENT_ID++;

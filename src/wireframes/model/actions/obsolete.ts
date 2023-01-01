@@ -10,11 +10,11 @@
 import { AnyAction, createAction } from '@reduxjs/toolkit';
 import { MathHelper } from '@app/core';
 import { DefaultAppearance } from '@app/wireframes/interface';
-import { addVisual } from './items';
+import { addShape } from './items';
 import { createDiagramAction, DiagramRef } from './utils';
 
 /**
- * @deprecated Replaced with addVisual
+ * @deprecated Replaced with addShape
  */
 export const addImage =
     createAction('items/addImage', (diagram: DiagramRef, source: string, x: number, y: number, w: number, h: number, shapeId?: string) => {
@@ -22,33 +22,56 @@ export const addImage =
     });
 
 /**
- * @deprecated Replaced with addVisual
+ * @deprecated Replaced with addShape
  */
 export const addIcon =
     createAction('items/addIcon', (diagram: DiagramRef, text: string, fontFamily: string, x: number, y: number, shapeId?: string) => {
         return { payload: createDiagramAction(diagram, { shapeId: shapeId || MathHelper.nextId(), text, fontFamily, position: { x, y } }) };
     });
+
+/**
+ * @deprecated Replaced with addShape
+ */
+export const addVisual =
+    createAction('items/addVisual', (diagram: DiagramRef, renderer: string, x: number, y: number, appearance?: object, shapeId?: string, width?: number, height?: number) => {
+        return { payload: createDiagramAction(diagram, { shapeId: shapeId || MathHelper.nextId(), renderer, position: { x, y }, appearance, width, height }) };
+    });
     
 const MAX_IMAGE_SIZE = 300;
 
 export function migrateOldAction(action: AnyAction) {
-    if (addIcon.match(action)) {
-        const payload = action.payload;
+    if (addVisual.match(action)) {
+        const { diagramId, appearance, width, height, position, renderer, shapeId } = action.payload;
 
-        return addVisual(payload.diagramId,
-            'Icon',
-            payload.position.x,
-            payload.position.y,
+        return addShape(diagramId,
+            renderer,
             {
-                [DefaultAppearance.TEXT]: payload.text,
-                [DefaultAppearance.FONT_FAMILY]: payload.fontFamily,
+                appearance,
+                position,
+                size: width && height ? {
+                    x: width,
+                    y: height,
+                } : undefined,
             },
-            payload.shapeId);
-    } else if (addImage.match(action)) {
-        const payload = action.payload;
+            shapeId);
+    } if (addIcon.match(action)) {
+        const { diagramId, fontFamily, position, shapeId, text } = action.payload;
 
-        let w = payload.size.w;
-        let h = payload.size.h;
+        return addShape(diagramId,
+            'Icon',
+            {
+                position,
+                appearance: {
+                    [DefaultAppearance.TEXT]: text,
+                    [DefaultAppearance.FONT_FAMILY]: fontFamily,
+                },
+            },
+            shapeId);
+    } else if (addImage.match(action)) {
+        const { diagramId, position, size, shapeId, source } = action.payload;
+
+        let w = size.w;
+        let h = size.h;
 
         if (w > MAX_IMAGE_SIZE || h > MAX_IMAGE_SIZE) {
             const ratio = w / h;
@@ -62,16 +85,16 @@ export function migrateOldAction(action: AnyAction) {
             }
         }
 
-        return addVisual(payload.diagramId,
+        return addShape(diagramId,
             'Raster',
-            payload.position.x,
-            payload.position.y,
             {
-                SOURCE: payload.source,
+                position,
+                appearance: {
+                    SOURCE: source,
+                },
+                size: { x: w, y: h },
             },
-            payload.shapeId,
-            w,
-            h);
+            shapeId);
     } else {
         return action;
     }

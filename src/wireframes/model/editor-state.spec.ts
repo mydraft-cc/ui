@@ -11,12 +11,12 @@ import { Color, Vec2 } from '@app/core';
 import { Diagram, EditorState } from '@app/wireframes/model';
 
 describe('EditorState', () => {
-    const state_1 = EditorState.empty();
+    const state_1 = EditorState.create();
 
-    const diagram = Diagram.empty('1');
+    const diagram = Diagram.create({ id: '1' });
 
     it('should instantiate', () => {
-        const state = EditorState.empty();
+        const state = EditorState.create();
 
         expect(state).toBeDefined();
     });
@@ -58,8 +58,8 @@ describe('EditorState', () => {
     });
 
     it('should move diagram', () => {
-        const diagram1 = Diagram.empty('1');
-        const diagram2 = Diagram.empty('2');
+        const diagram1 = Diagram.create({ id: '1' });
+        const diagram2 = Diagram.create({ id: '2' });
 
         const state_2 = state_1.addDiagram(diagram1).addDiagram(diagram2);
         const state_3 = state_2.moveDiagram(diagram2.id, 0);
@@ -82,7 +82,7 @@ describe('EditorState', () => {
     });
 
     it('should update diagram', () => {
-        const newDiagram = Diagram.empty(diagram.id);
+        const newDiagram = Diagram.create({ id: diagram.id });
 
         const state_2 = state_1.addDiagram(diagram);
         const state_3 = state_2.updateDiagram(diagram.id, () => newDiagram);
@@ -93,7 +93,7 @@ describe('EditorState', () => {
 
     it('should return orignal state when diagram to update is not found', () => {
         const state_2 = state_1.addDiagram(diagram);
-        const state_3 = state_2.updateDiagram('unfound', d => Diagram.empty(d.id));
+        const state_3 = state_2.updateDiagram('unfound', d => Diagram.create({ id: d.id }));
 
         expect(state_3).toBe(state_2);
     });

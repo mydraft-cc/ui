@@ -5,46 +5,36 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { Appearance, VisualSource } from './../interface';
+import { CreatedShape, ShapeSource } from './../interface';
 import { Renderer } from './renderer';
 
-type CreatedVisual = { id: string; width?: number; height?: number; appearance: Appearance };
+export module RendererService {
+    const REGISTERED_RENDERER: { [id: string]: Renderer } = {};
 
-export class RendererService {
-    private readonly registeredRenderers: { [id: string]: Renderer } = {};
-
-    public get all() {
-        return Object.entries(this.registeredRenderers);
+    export function all() {
+        return Object.entries(REGISTERED_RENDERER);
     }
 
-    public get(id: string) {
-        return this.registeredRenderers[id];
+    export function get(id: string) {
+        return REGISTERED_RENDERER[id];
     }
 
-    public addRendererById(id: string, renderer: Renderer): RendererService {
-        this.registeredRenderers[id] = renderer;
-
-        return this;
+    export function addRenderer(renderer: Renderer) {
+        REGISTERED_RENDERER[renderer.identifier()] = renderer;
     }
 
-    public addRenderer(renderer: Renderer): RendererService {
-        this.registeredRenderers[renderer.identifier()] = renderer;
-
-        return this;
-    }
-
-    public createVisuals(sources: ReadonlyArray<VisualSource>): CreatedVisual[] {
-        const result: CreatedVisual[] = [];
+    export function createShapes(sources: ReadonlyArray<ShapeSource>): CreatedShape[] {
+        const result: CreatedShape[] = [];
 
         for (const source of sources) {
-            for (const [id, renderer] of this.all) {
+            for (const [, renderer] of all()) {
                 const plugin = renderer.plugin();
 
                 if (plugin.create) {
                     const shape = plugin.create(source);
 
                     if (shape) {
-                        result.push({ id, ...shape });
+                        result.push(shape);
                         break;
                     }
                 }

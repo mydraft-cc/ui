@@ -5,6 +5,8 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
+/* eslint-disable @typescript-eslint/indent */
+
 import { ConnectedRouter, connectRouter, routerMiddleware } from 'connected-react-router';
 import { createBrowserHistory } from 'history';
 import * as React from 'react';
@@ -15,33 +17,31 @@ import { Provider } from 'react-redux';
 import { Route } from 'react-router';
 import { applyMiddleware, combineReducers, compose, createStore } from 'redux';
 import thunk from 'redux-thunk';
-import { RendererContext, SerializerContext } from '@app/context';
-import { createInitialAssetsState, createInitialLoadingState, createInitialUIState, EditorState, selectDiagram, selectItems, Serializer } from '@app/wireframes/model';
+import { createInitialAssetsState, createInitialLoadingState, createInitialUIState, EditorState, selectDiagram, selectItems } from '@app/wireframes/model';
 import * as Reducers from '@app/wireframes/model/actions';
 import { registerRenderers } from '@app/wireframes/shapes';
 import { App } from './App';
 import { registerServiceWorker } from './registerServiceWorker';
-import { mergeAction } from './wireframes/model/actions/merger';
 import { createClassReducer } from './wireframes/model/actions/utils';
 import './index.scss';
 
-const editorRenderers = registerRenderers();
-const editorSerializer = new Serializer(editorRenderers);
-const editorState = EditorState.empty();
+registerRenderers();
+
+const editorState = EditorState.create();
 
 const editorReducer = createClassReducer(editorState, builder => {
     Reducers.buildAlignment(builder);
-    Reducers.buildAppearance(builder, editorRenderers);
-    Reducers.buildItems(builder, editorRenderers, editorSerializer);
+    Reducers.buildAppearance(builder);
     Reducers.buildDiagrams(builder);
     Reducers.buildGrouping(builder);
+    Reducers.buildItems(builder);
     Reducers.buildOrdering(builder);
 });
 
 const undoableReducer = Reducers.undoable(
     editorReducer,
-    EditorState.empty(), {
-        actionMerger: mergeAction,
+    editorState, {
+        actionMerger: Reducers.mergeAction,
         actionsToIgnore: [
             selectDiagram.name,
             selectItems.name,
@@ -54,11 +54,11 @@ const composeEnhancers = window['__REDUX_DEVTOOLS_EXTENSION_COMPOSE__'] || compo
 
 const store = createStore(
     combineReducers({
-        assets: Reducers.assets(createInitialAssetsState(editorRenderers)),
-        editor: Reducers.rootLoading(undoableReducer, undoableReducer, editorReducer),
+         assets: Reducers.assets(createInitialAssetsState()),
+         editor: Reducers.rootLoading(undoableReducer, editorReducer),
         loading: Reducers.loading(createInitialLoadingState()),
-        router: connectRouter(history),
-        ui: Reducers.ui(createInitialUIState()),
+         router: connectRouter(history),
+             ui: Reducers.ui(createInitialUIState()),
     }),
     composeEnhancers(
         applyMiddleware(
@@ -66,22 +66,17 @@ const store = createStore(
             routerMiddleware(history),
             Reducers.toastMiddleware(),
             Reducers.loadingMiddleware(),
-            Reducers.itemsMiddleware(editorSerializer),
         ),
     ),
 );
 
 const Root = (
     <DndProvider backend={HTML5Backend}>
-        <SerializerContext.Provider value={editorSerializer}>
-            <RendererContext.Provider value={editorRenderers}>
-                <Provider store={store}>
-                    <ConnectedRouter history={history}>
-                        <Route path='/:token?' component={App} />
-                    </ConnectedRouter>
-                </Provider>
-            </RendererContext.Provider>
-        </SerializerContext.Provider>
+        <Provider store={store}>
+            <ConnectedRouter history={history}>
+                <Route path='/:token?' component={App} />
+            </ConnectedRouter>
+        </Provider>
     </DndProvider>
 );
 

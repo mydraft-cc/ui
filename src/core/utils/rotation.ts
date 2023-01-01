@@ -48,7 +48,7 @@ export class Rotation {
     public static fromDegree(degree: number): Rotation {
         return new Rotation(MathHelper.toRad(degree), degree);
     }
-
+    
     public equals(r: Rotation): boolean {
         return Rotation.equals(this, r);
     }

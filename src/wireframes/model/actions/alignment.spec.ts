@@ -5,25 +5,24 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { Vec2 } from '@app/core';
-import { alignItems, AlignmentMode, buildAlignment, Diagram, DiagramItem, EditorState } from '@app/wireframes/model';
-import { createClassReducer } from './utils';
+import { Rotation, Vec2 } from '@app/core';
+import { alignItems, AlignmentMode, buildAlignment, createClassReducer, Diagram, DiagramItem, EditorState, Transform } from '@app/wireframes/model';
 
 /* eslint-disable @typescript-eslint/naming-convention */
 
 describe('AlignmentReducer', () => {
-    const shape1 = DiagramItem.createShape('1', 'btn', 20, 20).transformWith(t => t.moveTo(new Vec2(100, 100)));
-    const shape2 = DiagramItem.createShape('2', 'btn', 40, 40).transformWith(t => t.moveTo(new Vec2(200, 200)));
-    const shape3 = DiagramItem.createShape('3', 'btn', 80, 80).transformWith(t => t.moveTo(new Vec2(300, 300)));
+    const shape1 = DiagramItem.createShape({ id: '1', renderer: 'Button', transform: new Transform(new Vec2(100, 100), new Vec2(20, 20), Rotation.ZERO) });
+    const shape2 = DiagramItem.createShape({ id: '2', renderer: 'Button', transform: new Transform(new Vec2(200, 200), new Vec2(40, 40), Rotation.ZERO) });
+    const shape3 = DiagramItem.createShape({ id: '3', renderer: 'Button', transform: new Transform(new Vec2(300, 300), new Vec2(80, 80), Rotation.ZERO) });
 
     const diagram =
-        Diagram.empty('1')
-            .addVisual(shape1)
-            .addVisual(shape2)
-            .addVisual(shape3);
+        Diagram.create({ id: '1' })
+            .addShape(shape1)
+            .addShape(shape2)
+            .addShape(shape3);
 
     const state =
-        EditorState.empty()
+        EditorState.create()
             .addDiagram(diagram);
 
     const reducer = createClassReducer(state, builder => buildAlignment(builder));
@@ -31,7 +30,7 @@ describe('AlignmentReducer', () => {
     it('should return same state if action is unknown', () => {
         const action = { type: 'UNKNOWN' };
 
-        const state_1 = EditorState.empty();
+        const state_1 = EditorState.create();
         const state_2 = reducer(state_1, action);
 
         expect(state_2).toBe(state_1);
@@ -40,7 +39,7 @@ describe('AlignmentReducer', () => {
     it('should return same state if action has unknown alignment type', () => {
         const action = alignItems('UNKNOWN' as any, diagram, []);
 
-        const state_1 = EditorState.empty();
+        const state_1 = EditorState.create();
         const state_2 = reducer(state_1, action);
 
         expect(state_2).toBe(state_1);
@@ -81,7 +80,7 @@ describe('AlignmentReducer', () => {
     function expectPositionsAfterAlignment(type: AlignmentMode, positions: Vec2[]) {
         const action = alignItems(type, diagram, diagram.items.values);
 
-        const state_1 = EditorState.empty().addDiagram(diagram);
+        const state_1 = EditorState.create().addDiagram(diagram);
         const state_2 = reducer(state_1, action);
 
         const shapes = state_2.diagrams.get(diagram.id)!.items.values;

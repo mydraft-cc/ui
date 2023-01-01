@@ -79,76 +79,12 @@ export module Types {
         return true;
     }
 
-    export function isEmpty(value: any): boolean {
-        if (Types.isArray(value)) {
-            for (const v of value) {
-                if (!isEmpty(v)) {
-                    return false;
-                }
-            }
-
-            return true;
-        }
-
-        if (Types.isObject(value)) {
-            for (const key in value) {
-                if (value.hasOwnProperty(key)) {
-                    if (!isEmpty(value[key])) {
-                        return false;
-                    }
-                }
-            }
-
-            return true;
-        }
-
-        return Types.isUndefined(value) === true || Types.isNull(value) === true;
-    }
-
-    export function fastMerge<T>(lhs: ReadonlyArray<T>, rhs: ReadonlyArray<T>) {
-        if (rhs.length === 0) {
-            return lhs;
-        }
-
-        if (lhs.length === 0) {
-            return rhs;
-        }
-
-        return [...lhs, ...rhs];
-    }
-
-    export function clone<T>(lhs: T): T {
-        const any: any = lhs;
-
-        if (Types.isArray(lhs)) {
-            const result = [];
-
-            for (let i = 0; i < lhs.length; i++) {
-                result[i] = clone(lhs[i]);
-            }
-
-            return result as any;
-        } else if (Types.isObject(lhs)) {
-            const result = {};
-
-            for (const key in any) {
-                if (any.hasOwnProperty(key)) {
-                    result[key] = clone(lhs[key]);
-                }
-            }
-
-            return result as any;
-        }
-
-        return lhs;
-    }
-
-    export function equals(lhs: any, rhs: any, lazyString = false) {
+    export function equals(lhs: any, rhs: any, options?: EqualsOptions) {
         if (lhs === rhs || (lhs !== lhs && rhs !== rhs)) {
             return true;
         }
 
-        if (lazyString) {
+        if (options?.lazyString) {
             const result =
                 (lhs === '' && Types.isUndefined(rhs) ||
                 (rhs === '' && Types.isUndefined(lhs)));
@@ -167,21 +103,21 @@ export module Types {
         }
 
         if (Types.isArray(lhs) && Types.isArray(rhs)) {
-            return equalsArray(lhs, rhs, lazyString);
+            return equalsArray(lhs, rhs, options);
         } else if (Types.isObject(lhs) && Types.isObject(rhs)) {
-            return equalsObject(lhs, rhs, lazyString);
+            return equalsObject(lhs, rhs, options);
         }
 
         return false;
     }
 
-    export function equalsArray(lhs: ReadonlyArray<any>, rhs: ReadonlyArray<any>, lazyString = false) {
+    export function equalsArray(lhs: ReadonlyArray<any>, rhs: ReadonlyArray<any>, options?: EqualsOptions) {
         if (lhs.length !== rhs.length) {
             return false;
         }
 
         for (let i = 0; i < lhs.length; i++) {
-            if (!equals(lhs[i], rhs[i], lazyString)) {
+            if (!equals(lhs[i], rhs[i], options)) {
                 return false;
             }
         }
@@ -189,7 +125,7 @@ export module Types {
         return true;
     }
 
-    export function equalsObject(lhs: object, rhs: object, lazyString = false) {
+    export function equalsObject(lhs: object, rhs: object, options?: EqualsOptions) {
         const lhsKeys = Object.keys(lhs);
 
         if (lhsKeys.length !== Object.keys(rhs).length) {
@@ -197,7 +133,7 @@ export module Types {
         }
 
         for (const key of lhsKeys) {
-            if (!equals(lhs[key], rhs[key], lazyString)) {
+            if (!equals(lhs[key], rhs[key], options)) {
                 return false;
             }
         }
@@ -205,30 +141,12 @@ export module Types {
         return true;
     }
 
-    export function mergeInto(target: {}, source: {} | undefined | null) {
-        if (!Types.isObject(target) || !Types.isObject(source)) {
-            return source;
-        }
-
-        Object.entries(source).forEach(([key, sourceValue]) => {
-            const targetValue = target[key];
-
-            if (Types.isArray(targetValue) && Types.isArray(sourceValue)) {
-                target[key] = targetValue.concat(sourceValue);
-            } else if (Types.isObject(targetValue) && Types.isObject(sourceValue)) {
-                target[key] = mergeInto({ ...targetValue }, sourceValue);
-            } else {
-                target[key] = sourceValue;
-            }
-        });
-
-        return target;
-    }
-
     export function isValueObject(value: any) {
         return value && Types.isFunction(value.equals);
     }
 }
+
+type EqualsOptions = { lazyString?: boolean };
 
 export function without<T>(obj: { [key: string]: T }, key: string) {
     const copy = { ...obj };

@@ -1,0 +1,174 @@
+[
+    {
+        "type": "diagram/add",
+        "payload": {
+            "diagramId": "1",
+            "timestamp": 1671834269633
+        }
+    },
+    {
+        "type": "items/addVisual",
+        "payload": {
+            "diagramId": "1",
+            "timestamp": 1671834271974,
+            "shapeId": "2",
+            "renderer": "Button",
+            "position": {
+                "x": 111,
+                "y": 190
+            }
+        }
+    },
+    {
+        "type": "items/addVisual",
+        "payload": {
+            "diagramId": "1",
+            "timestamp": 1671834273517,
+            "shapeId": "5",
+            "renderer": "Button",
+            "position": {
+                "x": 162,
+                "y": 358
+            }
+        }
+    },
+    {
+        "type": "items/addVisual",
+        "payload": {
+            "diagramId": "1",
+            "timestamp": 1671834275527,
+            "shapeId": "8",
+            "renderer": "Button",
+            "position": {
+                "x": 73,
+                "y": 106
+            }
+        }
+    },
+    {
+        "type": "items/addVisual",
+        "payload": {
+            "diagramId": "1",
+            "timestamp": 1671834277309,
+            "shapeId": "11",
+            "renderer": "Button",
+            "position": {
+                "x": 295,
+                "y": 220
+            }
+        }
+    },
+    {
+        "type": "items/addVisual",
+        "payload": {
+            "diagramId": "1",
+            "timestamp": 1671834280387,
+            "shapeId": "14",
+            "renderer": "Button",
+            "position": {
+                "x": 413,
+                "y": 437
+            }
+        }
+    },
+    {
+        "type": "items/addVisual",
+        "payload": {
+            "diagramId": "1",
+            "timestamp": 1671834282149,
+            "shapeId": "17",
+            "renderer": "Button",
+            "position": {
+                "x": 339,
+                "y": 122
+            }
+        }
+    },
+    {
+        "type": "items/addVisual",
+        "payload": {
+            "diagramId": "1",
+            "timestamp": 1671834284016,
+            "shapeId": "20",
+            "renderer": "Button",
+            "position": {
+                "x": 77,
+                "y": 522
+            }
+        }
+    },
+    {
+        "type": "items/addVisual",
+        "payload": {
+            "diagramId": "1",
+            "timestamp": 1671834286421,
+            "shapeId": "23",
+            "renderer": "Button",
+            "position": {
+                "x": 351,
+                "y": 630
+            }
+        }
+    },
+    {
+        "type": "items/addVisual",
+        "payload": {
+            "diagramId": "1",
+            "timestamp": 1671834288262,
+            "shapeId": "26",
+            "renderer": "Button",
+            "position": {
+                "x": 365,
+                "y": 308
+            }
+        }
+    },
+    {
+        "type": "items/addVisual",
+        "payload": {
+            "diagramId": "1",
+            "timestamp": 1671834290464,
+            "shapeId": "29",
+            "renderer": "Button",
+            "position": {
+                "x": 563,
+                "y": 284
+            }
+        }
+    },
+    {
+        "type": "diagram/add",
+        "payload": {
+            "diagramId": "32",
+            "timestamp": 1671834357423
+        }
+    },
+    {
+        "type": "diagram/add",
+        "payload": {
+            "diagramId": "33",
+            "timestamp": 1671834358223
+        }
+    },
+    {
+        "type": "diagram/select",
+        "payload": {
+            "diagramId": "32",
+            "timestamp": 1671834359157
+        }
+    },
+    {
+        "type": "diagram/select",
+        "payload": {
+            "diagramId": "33",
+            "timestamp": 1671834360095
+        }
+    },
+    {
+        "type": "diagram/select",
+        "payload": {
+            "diagramId": "1",
+            "timestamp": 1671834361556
+        }
+    }
+]

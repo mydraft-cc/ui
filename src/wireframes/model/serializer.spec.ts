@@ -6,65 +6,159 @@
 */
 
 import { Vec2 } from '@app/core';
-import { Diagram, DiagramItem, DiagramItemSet, RendererService, Serializer } from '@app/wireframes/model';
+import { Diagram, DiagramItem, DiagramItemSet, EditorState, RendererService, Serializer } from '@app/wireframes/model';
 import { Checkbox } from '@app/wireframes/shapes/neutral/checkbox';
 import { AbstractControl } from '../shapes/utils/abstract-control';
 
 describe('Serializer', () => {
     const checkbox = new AbstractControl(new Checkbox());
 
-    const oldShape1 = checkbox.createDefaultShape('1').transformWith(t => t.moveTo(new Vec2(100, 20)));
-    const oldShape2 = checkbox.createDefaultShape('2').transformWith(t => t.moveTo(new Vec2(30, 10)));
-
-    let renderers: RendererService;
+    const groupId = 'group-1';
+    const oldShape1 = DiagramItem.createShape(checkbox.createDefaultShape()).transformWith(t => t.moveTo(new Vec2(100, 20))).rename('Named');
+    const oldShape2 = DiagramItem.createShape(checkbox.createDefaultShape()).transformWith(t => t.moveTo(new Vec2(100, 20))).lock();
+    const brokenShape = DiagramItem.createShape({ renderer: null! });
 
     beforeEach(() => {
-        renderers = new RendererService();
-        renderers.addRenderer(checkbox);
+        RendererService.addRenderer(checkbox);
     });
 
-    it('should serialize and deserialize', () => {
-        const serializer = new Serializer(renderers);
+    it('should serialize and deserialize set', () => {
+        const original =
+            DiagramItemSet.createFromDiagram([groupId],
+                createDiagram('1'));
 
-        const groupId = 'group-1';
+        const newValue = Serializer.deserializeSet(Serializer.serializeSet(original));
 
-        const oldDiagram =
-            Diagram.empty('1')
-                .addVisual(oldShape1)
-                .addVisual(oldShape2)
-                .addVisual(DiagramItem.createShape('3', null!, 100, 100))
+        compareSets(newValue, original);
+    });
+
+    it('should serialize and deserialize set when set has no types', () => {
+        const original =
+            DiagramItemSet.createFromDiagram([groupId],
+                createDiagram('1'));
+
+        const serialized = Serializer.serializeSet(original);
+
+        for (const visual of serialized.visuals) {
+            delete visual.type;
+        }
+
+        for (const group of serialized.groups) {
+            delete group.type;
+        }
+
+        const newValue = Serializer.deserializeSet(serialized);
+
+        compareSets(newValue, original);
+    });
+
+    it('should compute new ids', () => {
+        const original =
+            DiagramItemSet.createFromDiagram([groupId],
+                createDiagram('1'));
+
+        const serialized = Serializer.serializeSet(original);
+
+        const updated = JSON.parse(Serializer.generateNewIds(JSON.stringify(serialized)));
+
+        let i = 0;
+        for (const visual of serialized.visuals) {
+            expect(visual.id).not.toEqual(updated.visuals[i].id);
+            i++;
+        }
+
+        i = 0;
+        for (const group of serialized.groups) {
+            expect(group.id).not.toEqual(updated.groups[i].id);
+            expect(group.childIds).not.toEqual(updated.groups[i].childIds);
+            i++;
+        }
+    });
+
+    it('should not deserialize broken shape into set', () => {
+        const original =
+            DiagramItemSet.createFromDiagram([groupId],
+                createDiagram('1').addShape(brokenShape));
+
+        const newValue = Serializer.deserializeSet(Serializer.serializeSet(original));
+
+        expect(newValue.allItems.length).toEqual(3);
+    });
+
+    it('should serialize and deserialize editor', () => {
+        const original =
+            EditorState.create()
+                .addDiagram(createDiagram('1'))
+                .addDiagram(createDiagram('2'));
+
+        const newValue = Serializer.deserializeEditor(Serializer.serializeEditor(original));
+
+        compareEditors(newValue, original);
+    });
+
+    it('should deserialize broken shape into editor editor', () => {
+        const original =
+            EditorState.create()
+                .addDiagram(createDiagram('1').addShape(brokenShape))
+                .addDiagram(createDiagram('2'));
+
+        const newValue = Serializer.deserializeEditor(Serializer.serializeEditor(original));
+
+        expect(newValue.diagrams.values[0].items.size).toEqual(3);
+    });
+
+    function createDiagram(id: string) {
+        const diagram =
+            Diagram.create({ id })
+                .addShape(oldShape1)
+                .addShape(oldShape2)
                 .group(groupId, [oldShape1.id, oldShape2.id]);
 
-        const oldSet = DiagramItemSet.createFromDiagram([oldDiagram.items.get(groupId)!], oldDiagram) !;
+        return diagram;
+    }
 
-        const json = serializer.serializeSet(oldSet);
+    function compareEditors(newValue: EditorState | undefined, original: EditorState) {
+        expect(newValue).toBeDefined();
+        expect(newValue?.diagrams.size).toEqual(original.diagrams.size);
 
-        const newSet = serializer.deserializeSet(serializer.generateNewIds(json));
+        for (const item of original.diagrams.values) {
+            compareDiagrams(newValue?.diagrams.get(item.id), item);
+        }
+    }
 
-        expect(newSet).toBeDefined();
+    function compareDiagrams(newValue: Diagram | undefined, original: Diagram) {
+        expect(newValue).toBeDefined();
+        expect(newValue?.items.size).toEqual(original.items.size);
+        expect(newValue?.title).toEqual(original?.title);
 
-        const newShape1 = newSet.allVisuals[0];
-        const newShape2 = newSet.allVisuals[1];
+        for (const item of original.items.values) {
+            compareShapes(newValue?.items.get(item.id), item);
+        }
+    }
 
-        expect(newSet.allVisuals.length).toBe(2);
+    function compareSets(newValue: DiagramItemSet | undefined, original: DiagramItemSet) {
+        expect(newValue).toBeDefined();
+        expect(newValue?.allItems.length).toEqual(original.allItems.length);
 
-        compareShapes(newShape1, oldShape1);
-        compareShapes(newShape2, oldShape2);
+        for (const item of original.allItems) {
+            compareShapes(newValue?.allItems.find(x => x.id === item.id), item);
+        }
+    }
 
-        const group = newSet.allGroups[0];
+    function compareShapes(newValue: DiagramItem | undefined, original: DiagramItem) {
+        expect(newValue).toBeDefined();
+        expect(newValue?.type).toEqual(original.type);
+        expect(newValue?.name).toEqual(original?.name);
+        expect(newValue?.isLocked).toEqual(original?.isLocked);
 
-        expect(group.childIds.at(0)).toBe(newShape1.id);
-        expect(group.childIds.at(1)).toBe(newShape2.id);
-    });
-
-    function compareShapes(newShape: DiagramItem, originalShape: DiagramItem) {
-        expect(newShape.appearance.size).toBe(originalShape.appearance.size);
-        expect(newShape.configurables?.length).toBe(originalShape.configurables?.length);
-        expect(newShape.renderer).toBe(originalShape.renderer);
-        expect(newShape.transform.position.x).toBe(originalShape.transform.position.x);
-        expect(newShape.transform.position.y).toBe(originalShape.transform.position.y);
-        expect(newShape.transform.size.x).toBe(originalShape.transform.size.x);
-        expect(newShape.transform.size.y).toBe(originalShape.transform.size.y);
-        expect(newShape.id).not.toBe(originalShape.id);
+        if (original.type === 'Group') {
+            expect(newValue?.childIds.equals(original.childIds)).toBeTrue();
+            expect(newValue?.rotation.equals(original.rotation)).toBeTrue();
+        } else {
+            expect(newValue?.appearance.size).toBe(original.appearance.size);
+            expect(newValue?.configurables?.length).toBe(original.configurables?.length);
+            expect(newValue?.renderer).toBe(original.renderer);
+            expect(newValue?.transform.equals(original.transform)).toBeTrue();
+        }
     }
 });

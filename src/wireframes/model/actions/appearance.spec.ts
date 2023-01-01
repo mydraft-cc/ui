@@ -8,33 +8,30 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
 import { Rotation, Vec2 } from '@app/core';
-import { buildAppearance, changeItemsAppearance, Diagram, DiagramItem, EditorState, RendererService, Transform, transformItems } from '@app/wireframes/model';
+import { buildAppearance, changeItemsAppearance, createClassReducer, Diagram, DiagramItem, EditorState, RendererService, Transform, transformItems } from '@app/wireframes/model';
 import { Button } from '@app/wireframes/shapes/neutral/button';
 import { AbstractControl } from '@app/wireframes/shapes/utils/abstract-control';
-import { createClassReducer } from './utils';
 
 describe('AppearanceReducer', () => {
-    const shape1 = DiagramItem.createShape('1', 'Button', 100, 100);
-    const shape2 = DiagramItem.createShape('2', 'Button', 200, 200);
+    const shape1 = DiagramItem.createShape({ id: '1', renderer: 'Button', transform: new Transform(Vec2.ZERO, new Vec2(100, 100), Rotation.ZERO) });
+    const shape2 = DiagramItem.createShape({ id: '2', renderer: 'Button', transform: new Transform(Vec2.ZERO, new Vec2(200, 200), Rotation.ZERO) });
 
     const diagram =
-        Diagram.empty('1')
-            .addVisual(shape1)
-            .addVisual(shape2);
+        Diagram.create({ id: '1' })
+            .addShape(shape1)
+            .addShape(shape2);
 
     const state =
-        EditorState.empty()
+        EditorState.create()
             .addDiagram(diagram);
 
-    const rendererService =
-        new RendererService()
-            .addRenderer(new AbstractControl(new Button()));
+    RendererService.addRenderer(new AbstractControl(new Button()));
 
-    const reducer = createClassReducer(state, builder => buildAppearance(builder, rendererService));
+    const reducer = createClassReducer(state, builder => buildAppearance(builder));
 
     it('should return same state if action is unknown', () => {
         const action = { type: 'UNKNOWN' };
-        const state_1 = EditorState.empty();
+        const state_1 = EditorState.create();
         const state_2 = reducer(state_1, action);
 
         expect(state_2).toBe(state_1);
@@ -80,7 +77,7 @@ describe('AppearanceReducer', () => {
     });
 
     function expectShapesAfterAction(action: any, expect: (shape1: DiagramItem, shape2: DiagramItem) => void) {
-        const state_1 = EditorState.empty().addDiagram(diagram);
+        const state_1 = EditorState.create().addDiagram(diagram);
         const state_2 = reducer(state_1, action);
 
         const newDiagram = state_2.diagrams.get('1')!;

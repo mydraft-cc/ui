@@ -6,7 +6,6 @@
 */
 
 import * as React from 'react';
-import { useRenderer } from '@app/context';
 import { useEventCallback } from '@app/core';
 import { Diagram, useStore } from '@app/wireframes/model';
 import { PrintDiagram } from './PrintDiagram';
@@ -24,7 +23,6 @@ export const PrintView = (props: PrintRendererProps) => {
     const diagrams = useStore(x => x.editor.present.diagrams);
     const diagramsOrdered = useStore(x => x.editor.present.orderedDiagrams);
     const rendered = React.useRef<{ [id: string]: Boolean }>({});
-    const renderer = useRenderer();
     const size = useStore(x => x.editor.present.size);
 
     React.useEffect(() => {
@@ -52,7 +50,6 @@ export const PrintView = (props: PrintRendererProps) => {
                         diagram={d}
                         diagrams={diagrams}
                         onRender={doRender}
-                        rendererService={renderer}
                         size={size}
                     />
                 </div>,

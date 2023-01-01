@@ -9,10 +9,9 @@ import { SearchOutlined } from '@ant-design/icons';
 import { Input, Select } from 'antd';
 import * as React from 'react';
 import { useDispatch, useStore as useReduxStore } from 'react-redux';
-import { useRenderer } from '@app/context';
 import { Grid, useEventCallback } from '@app/core';
 import { texts } from '@app/texts';
-import { addVisual, filterIcons, getDiagramId, getFilteredIcons, getIconSet, getIconSets, getIconsFilter, IconInfo, selectIcons, useStore } from '@app/wireframes/model';
+import { addShape, filterIcons, getDiagramId, getFilteredIcons, getIconSet, getIconSets, getIconsFilter, IconInfo, RendererService, selectIcons, useStore } from '@app/wireframes/model';
 import { Icon } from './Icon';
 import './Icons.scss';
 
@@ -22,7 +21,6 @@ const keyBuilder = (icon: IconInfo) => {
 
 export const Icons = React.memo(() => {
     const dispatch = useDispatch();
-    const renderer = useRenderer();
     const iconSet = useStore(getIconSet);
     const iconSets = useStore(getIconSets);
     const iconsFilter = useStore(getIconsFilter);
@@ -34,10 +32,10 @@ export const Icons = React.memo(() => {
             const selectedDiagramId = getDiagramId(store.getState());
 
             if (selectedDiagramId) {
-                const visuals = renderer.createVisuals([{ type: 'Icon', ...icon }]);
+                const shapes = RendererService.createShapes([{ type: 'Icon', ...icon }]);
 
-                for (const visual of visuals) {
-                    dispatch(addVisual(selectedDiagramId, visual.id, 100, 100, visual.appearance, undefined, visual.width, visual.height));
+                for (const { size, appearance, renderer } of shapes) {
+                    dispatch(addShape(selectedDiagramId, renderer, { position: { x: 100, y: 100 }, size, appearance }));
                 }
             }
         };
@@ -51,7 +49,7 @@ export const Icons = React.memo(() => {
                 <div className='asset-icon-title'>{icon.displayName}</div>
             </div>
         );
-    }, [dispatch, renderer, store]);
+    }, [dispatch, store]);
 
     const doFilterIcons = useEventCallback((event: React.ChangeEvent<HTMLInputElement>) => {
         dispatch(filterIcons({ filter: event.target.value }));
