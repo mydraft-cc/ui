@@ -15,6 +15,7 @@ import { Color } from './../utils/color';
 import { ColorPalette } from './../utils/color-palette';
 import './ColorPicker.scss';
 import { useEventCallback } from './hooks';
+import {  useSelector } from "react-redux"; /* NEW ALEX */
 
 type ColorTab = 'palette' | 'advanced';
 
@@ -56,6 +57,20 @@ export const ColorPicker = React.memo((props: ColorPickerProps) => {
     const [colorHex, setColorHex] = React.useState(color.toString());
     const [visible, setVisible] = React.useState<boolean>(false);
 
+    const colorsCurrentlyUsed = useSelector((state) => Object.values(state['editor']['presentState']['state']['values']['diagrams']['items']));
+
+const colorsCurrentlyUsedInEditor = (theArray: any) => {
+     let result: any = [];
+     theArray.forEach((element: any) => {
+     for (let key in element.values.items.items) {
+     result.push(element.values.items.items[key].values.appearance.items.BACKGROUND_COLOR);
+    }});
+        let uniqueColors = result.filter((element:any, index:any) => {
+            return result.indexOf(element) === index;
+        }).filter((check:any) => isNaN(check))
+          return uniqueColors
+     }
+
     const selectedPalette = React.useMemo(() => {
         return palette || ColorPalette.colors();
     }, [palette]);
@@ -84,6 +99,7 @@ export const ColorPicker = React.memo((props: ColorPickerProps) => {
         onChange && onChange(result);
         setVisible(false);
         setColorHex(result.toString());
+
     });
 
     const doConfirmColor = useEventCallback(() => {
@@ -94,6 +110,7 @@ export const ColorPicker = React.memo((props: ColorPickerProps) => {
 
     const content = (
         <Tabs size='small' className='color-picker-tabs' animated={false} activeKey={activeColorTab} onChange={doSelectTab}>
+
             <Tabs.TabPane key='palette' tab={texts.common.palette}>
                 <div className='color-picker-colors'>
                     {selectedPalette.colors.map(c =>
@@ -102,7 +119,22 @@ export const ColorPicker = React.memo((props: ColorPickerProps) => {
                         </div>,
                     )}
                 </div>
+
+                {colorsCurrentlyUsedInEditor(colorsCurrentlyUsed).length > 0 && <div>{texts.common.documentColors}</div>}
+
+                <div className='color-picker-colors'>
+
+                  {colorsCurrentlyUsedInEditor(colorsCurrentlyUsed).map((c:any) =>
+
+                        <div className={classNames('color-picker-color')} key={c.toString()}>
+
+                            <div className='color-picker-color-inner' onClick={() => doSelectColor(c)} style={{ background: c.toString() }}></div>
+                        </div>,
+                    )}
+                </div>
+
             </Tabs.TabPane>
+
             <Tabs.TabPane key='advanced' tab={texts.common.advanced}>
                 <SketchPicker color={colorHex} onChange={doSelectColorResult} disableAlpha={true} width='210px' />
 

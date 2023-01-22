@@ -37,7 +37,7 @@ export const loadDiagramFromServer =
 export const loadDiagramInternal =
     createAction<{ stored: any; requestId: string }>('diagram/load/actions');
 
-export const saveDiagramToFile = 
+export const saveDiagramToFile =
     createAsyncThunk('diagram/save/file', async (_, thunkAPI) => {
         const state = thunkAPI.getState() as EditorStateInStore;
 
@@ -66,7 +66,7 @@ export const saveDiagramToServer =
     });
 
 export function loadingMiddleware(): Middleware {
-    const middleware: Middleware = store => next => action => {        
+    const middleware: Middleware = store => next => action => {
         if (loadDiagramFromServer.pending.match(action) ||  loadDiagramFromFile.pending.match(action)) {
             store.dispatch(showToast({ content: texts.common.loadingDiagram, type: 'loading', key: action.meta.requestId }));
         } else if ( saveDiagramToServer.pending.match(action) || saveDiagramToFile.pending.match(action)) {
@@ -84,7 +84,7 @@ export function loadingMiddleware(): Middleware {
                 if (action.meta.arg.navigate) {
                     store.dispatch(push(action.payload.tokenToRead));
                 }
-                
+
                 store.dispatch(loadDiagramInternal({ stored: action.payload.stored, requestId: action.meta.requestId }));
             } else if (loadDiagramFromFile.fulfilled.match(action)) {
                 store.dispatch(loadDiagramInternal({ stored: action.payload.stored, requestId: action.meta.requestId }));
@@ -99,7 +99,7 @@ export function loadingMiddleware(): Middleware {
 
                 saveRecentDiagrams((store.getState() as LoadingStateInStore).loading.recentDiagrams);
 
-                const content = action.payload.update ? 
+                const content = action.payload.update ?
                     texts.common.savingDiagramDone :
                     texts.common.savingDiagramDoneUrl(`${window.location.protocol}//${window.location.host}/${action.payload.tokenToRead}`);
 
@@ -111,11 +111,12 @@ export function loadingMiddleware(): Middleware {
             }
 
             return result;
+
         } catch (ex) {
             if (loadDiagramInternal.match(action)) {
                 store.dispatch(showToast({ content: texts.common.loadingDiagramFailed, type: 'error', key: action.payload.requestId, delayed: 1000 }));
             }
-            
+
             console.error(ex);
             throw ex;
         }
@@ -210,7 +211,6 @@ export function rootLoading(undoableReducer: Reducer<UndoableState<EditorState>>
 function getSaveState(state: EditorStateInStore) {
     const initial = Serializer.serializeEditor(state.editor.firstState);
     const actions = state.editor.actions.slice(1).filter(handleAction);
-
     return { initial, actions };
 }
 

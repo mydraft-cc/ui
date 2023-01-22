@@ -25,6 +25,7 @@ export interface EditorViewProps {
 }
 
 export const EditorView = (props: EditorViewProps) => {
+
     const diagram = useStore(getDiagram);
 
     if (!diagram) {
@@ -165,7 +166,7 @@ export const EditorViewInner = ({ diagram, spacing }: EditorViewProps & { diagra
     const padding = sizeInPx(spacing);
 
     return (
-        <Dropdown overlay={<ContextMenu onClick={doHide} />} trigger={['contextMenu']} visible={menuVisible} onVisibleChange={setMenuVisible}>            
+        <Dropdown overlay={<ContextMenu onClick={doHide} />} trigger={['contextMenu']} visible={menuVisible} onVisibleChange={setMenuVisible}>
             <div className='editor-view' onClick={doSetPosition}>
                 <div className='editor-diagram' style={{ width: w, height: h, padding }} ref={renderRef} >
                     <Editor
