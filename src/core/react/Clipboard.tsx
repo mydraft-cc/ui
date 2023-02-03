@@ -227,11 +227,19 @@ function emitPaste(context: ClipboardContextType, ...items: ClipboardItem[]) {
 
 export type LoadedImage = { width: number; height: number; source: string };
 
-export async function loadImagesToClipboardItems(files: FileList) {
+export async function loadImagesToClipboardItems(files: FileList | ReadonlyArray<File>) {
     const items: ClipboardItem[] = [];
 
     for (let i = 0; i < files.length; i++) {
-        const image = await loadImage(files.item(i));
+        let file: File | null;
+
+        if (Types.isArray(files)) {
+            file = files[i];
+        } else {
+            file = files.item(i);
+        }
+
+        const image = await loadImage(file);
 
         if (image != null) {
             items.push({ type: 'Image', image });

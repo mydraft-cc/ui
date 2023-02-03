@@ -145,7 +145,7 @@ export const EditorViewInner = ({ diagram, spacing }: EditorViewProps & { diagra
                     break;
                 }
                 case NativeTypes.FILE: {
-                    const files: FileList = item.files;
+                    const files: FileList | File[] = item.files;
 
                     doPaste(await loadImagesToClipboardItems(files), x, y);
                     break;
