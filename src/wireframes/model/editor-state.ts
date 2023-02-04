@@ -41,6 +41,7 @@ export type InitialEditorProps = {
 
     // The color for all diagrams.
     color?: Color;
+
 };
 
 export class EditorState extends Record<Props> {
@@ -70,14 +71,12 @@ export class EditorState extends Record<Props> {
 
     public static create(setup: InitialEditorProps = {}): EditorState {
         const { color, diagrams, diagramIds, size } = setup;
-
         const props: Props = {
             color: color || Color.WHITE,
             diagrams: ImmutableMap.of(diagrams),
             diagramIds: ImmutableList.of(diagramIds),
             size: size || new Vec2(1000, 1000),
         };
-
         return new EditorState(props);
     }
 

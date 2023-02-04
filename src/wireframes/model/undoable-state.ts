@@ -95,7 +95,6 @@ export class UndoableState<T> {
 
     public replacePresent(state: T, action?: Action) {
         const newPresent = { state, action: action || this.presentState.action };
-
         return new UndoableState(this.past, this.pastCapacity, this.future, newPresent);
     }
 }

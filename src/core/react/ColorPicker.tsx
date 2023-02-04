@@ -3,157 +3,177 @@
  *
  * @license
  * Copyright (c) Sebastian Stehle. All rights reserved.
-*/
+ */
 
-import { Button, Popover, Tabs } from 'antd';
-import { TooltipPlacement } from 'antd/lib/tooltip';
-import classNames from 'classnames';
-import * as React from 'react';
-import { ColorResult, SketchPicker } from 'react-color';
-import { texts } from '@app/texts';
-import { Color } from './../utils/color';
-import { ColorPalette } from './../utils/color-palette';
-import './ColorPicker.scss';
-import { useEventCallback } from './hooks';
-import {  useSelector } from "react-redux"; /* NEW ALEX */
+import { Button, Popover, Tabs } from "antd";
+import { TooltipPlacement } from "antd/lib/tooltip";
+import classNames from "classnames";
+import * as React from "react";
+import { ColorResult, SketchPicker } from "react-color";
+import { texts } from "@app/texts";
+import { Color } from "./../utils/color";
+import { ColorPalette } from "./../utils/color-palette";
+import "./ColorPicker.scss";
+import { useEventCallback } from "./hooks";
+// import { useSelector } from "react-redux";
+import { getDocumentColors } from "@app/wireframes/model/projections";
+import { useSelector } from "react-redux";
 
-type ColorTab = 'palette' | 'advanced';
+type ColorTab = "palette" | "advanced";
 
 interface ColorPickerProps {
-    // The selected color.
-    value?: Color | string | null;
+  // The selected color.
+  value?: Color | string | null;
 
-    // The color palette.
-    palette?: ColorPalette;
+  // The color palette.
+  palette?: ColorPalette;
 
-    // The active color tab.
-    activeColorTab?: ColorTab;
+  // The active color tab.
+  activeColorTab?: ColorTab;
 
-    // Where to place the popover
-    popoverPlacement?: TooltipPlacement;
+  // Where to place the popover
+  popoverPlacement?: TooltipPlacement;
 
-    // If disabled or not.
-    disabled?: boolean;
+  // If disabled or not.
+  disabled?: boolean;
 
-    // Triggered when the color has changed.
-    onChange?: (color: Color) => void;
+  // Triggered when the color has changed.
+  onChange?: (color: Color) => void;
 
-    // Triggered when the active color tab has changed.
-    onActiveColorTabChanged?: (key: ColorTab) => void;
+  // Triggered when the active color tab has changed.
+  onActiveColorTabChanged?: (key: ColorTab) => void;
 }
 
 export const ColorPicker = React.memo((props: ColorPickerProps) => {
-    const {
-        activeColorTab,
-        disabled,
-        onActiveColorTabChanged,
-        onChange,
-        palette,
-        popoverPlacement,
-        value,
-    } = props;
+  const {
+    activeColorTab,
+    disabled,
+    onActiveColorTabChanged,
+    onChange,
+    palette,
+    popoverPlacement,
+    value,
+  } = props;
 
-    const [color, setColor] = React.useState(Color.BLACK);
-    const [colorHex, setColorHex] = React.useState(color.toString());
-    const [visible, setVisible] = React.useState<boolean>(false);
+  const [color, setColor] = React.useState(Color.BLACK);
+  const [colorHex, setColorHex] = React.useState(color.toString());
+  const [visible, setVisible] = React.useState<boolean>(false);
+  const documentColors = useSelector(getDocumentColors);
 
-    const colorsCurrentlyUsed = useSelector((state) => Object.values(state['editor']['presentState']['state']['values']['diagrams']['items']));
+  const selectedPalette = React.useMemo(() => {
+    return palette || ColorPalette.colors();
+  }, [palette]);
 
-const colorsCurrentlyUsedInEditor = (theArray: any) => {
-     let result: any = [];
-     theArray.forEach((element: any) => {
-     for (let key in element.values.items.items) {
-     result.push(element.values.items.items[key].values.appearance.items.BACKGROUND_COLOR);
-    }});
-        let uniqueColors = result.filter((element:any, index:any) => {
-            return result.indexOf(element) === index;
-        }).filter((check:any) => isNaN(check))
-          return uniqueColors
-     }
+  React.useEffect(() => {
+    setColorHex(color.toString());
+  }, [color]);
 
-    const selectedPalette = React.useMemo(() => {
-        return palette || ColorPalette.colors();
-    }, [palette]);
+  React.useEffect(() => {
+    setColor(value ? Color.fromValue(value) : Color.BLACK);
+  }, [value]);
 
-    React.useEffect(() => {
-        setColorHex(color.toString());
-    }, [color]);
+  const doToggle = useEventCallback(() => {
+    setVisible((x) => !x);
+  });
 
-    React.useEffect(() => {
-        setColor(value ? Color.fromValue(value) : Color.BLACK);
-    }, [value]);
+  const doSelectColorResult = useEventCallback((result: ColorResult) => {
+    setColorHex(result.hex);
+  });
 
-    const doToggle = useEventCallback(() => {
-        setVisible(x => !x);
-    });
+  const doSelectTab = useEventCallback((key: string) => {
+    onActiveColorTabChanged && onActiveColorTabChanged(key as ColorTab);
+  });
 
-    const doSelectColorResult = useEventCallback((result: ColorResult) => {
-        setColorHex(result.hex);
-    });
+  const doSelectColor = useEventCallback((result: Color) => {
+    onChange && onChange(result);
+    setVisible(false);
+    setColorHex(result.toString());
+  });
 
-    const doSelectTab = useEventCallback((key: string) => {
-        onActiveColorTabChanged && onActiveColorTabChanged(key as ColorTab);
-    });
+  const doConfirmColor = useEventCallback(() => {
+    onChange && onChange(Color.fromValue(colorHex));
+    setVisible(false);
+    setColorHex(colorHex);
+  });
 
-    const doSelectColor = useEventCallback((result: Color) => {
-        onChange && onChange(result);
-        setVisible(false);
-        setColorHex(result.toString());
+  const content = (
+    <Tabs
+      size="small"
+      className="color-picker-tabs"
+      animated={false}
+      activeKey={activeColorTab}
+      onChange={doSelectTab}
+    >
+      <Tabs.TabPane key="palette" tab={texts.common.palette}>
+        <div className="color-picker-colors">
+          {selectedPalette.colors.map((c) => (
+            <div
+              className={classNames("color-picker-color", {
+                selected: c.eq(color),
+              })}
+              key={c.toString()}
+            >
+              <div
+                className="color-picker-color-inner"
+                onClick={() => doSelectColor(c)}
+                style={{ background: c.toString() }}
+              ></div>
+            </div>
+          ))}
+        </div>
 
-    });
+        {documentColors.length > 0 && <div>{texts.common.documentColors}</div>}
 
-    const doConfirmColor = useEventCallback(() => {
-        onChange && onChange(Color.fromValue(colorHex));
-        setVisible(false);
-        setColorHex(colorHex);
-    });
+        <div className="color-picker-colors">
+          {documentColors.map((c: any) => (
+            <div
+              className={classNames("color-picker-color")}
+              key={c.toString()}
+            >
+              <div
+                className="color-picker-color-inner"
+                onClick={() => doSelectColor(c)}
+                style={{ background: c.toString() }}
+              ></div>
+            </div>
+          ))}
+        </div>
+      </Tabs.TabPane>
 
-    const content = (
-        <Tabs size='small' className='color-picker-tabs' animated={false} activeKey={activeColorTab} onChange={doSelectTab}>
+      <Tabs.TabPane key="advanced" tab={texts.common.advanced}>
+        <SketchPicker
+          color={colorHex}
+          onChange={doSelectColorResult}
+          disableAlpha={true}
+          width="210px"
+        />
+        <Button onClick={doConfirmColor}>{texts.common.apply}</Button>
+      </Tabs.TabPane>
+    </Tabs>
+  );
 
-            <Tabs.TabPane key='palette' tab={texts.common.palette}>
-                <div className='color-picker-colors'>
-                    {selectedPalette.colors.map(c =>
-                        <div className={classNames('color-picker-color', { selected: c.eq(color) })} key={c.toString()}>
-                            <div className='color-picker-color-inner' onClick={() => doSelectColor(c)} style={{ background: c.toString() }}></div>
-                        </div>,
-                    )}
-                </div>
+  const placement = popoverPlacement || "left";
 
-                {colorsCurrentlyUsedInEditor(colorsCurrentlyUsed).length > 0 && <div>{texts.common.documentColors}</div>}
-
-                <div className='color-picker-colors'>
-
-                  {colorsCurrentlyUsedInEditor(colorsCurrentlyUsed).map((c:any) =>
-
-                        <div className={classNames('color-picker-color')} key={c.toString()}>
-
-                            <div className='color-picker-color-inner' onClick={() => doSelectColor(c)} style={{ background: c.toString() }}></div>
-                        </div>,
-                    )}
-                </div>
-
-            </Tabs.TabPane>
-
-            <Tabs.TabPane key='advanced' tab={texts.common.advanced}>
-                <SketchPicker color={colorHex} onChange={doSelectColorResult} disableAlpha={true} width='210px' />
-
-                <Button onClick={doConfirmColor}>
-                    {texts.common.apply}
-                </Button>
-            </Tabs.TabPane>
-        </Tabs>
-    );
-
-    const placement = popoverPlacement || 'left';
-
-    return (
-        <Popover content={content} visible={visible && !disabled} placement={placement} trigger='click' onVisibleChange={setVisible}>
-            <Button disabled={disabled} className='color-picker-button' onClick={doToggle}>
-                <div className='color-picker-color'>
-                    <div className='color-picker-color-inner' style={{ background: colorHex }}></div>
-                </div>
-            </Button>
-        </Popover>
-    );
+  return (
+    <Popover
+      content={content}
+      visible={visible && !disabled}
+      placement={placement}
+      trigger="click"
+      onVisibleChange={setVisible}
+    >
+      <Button
+        disabled={disabled}
+        className="color-picker-button"
+        onClick={doToggle}
+      >
+        <div className="color-picker-color">
+          <div
+            className="color-picker-color-inner"
+            style={{ background: colorHex }}
+          ></div>
+        </div>
+      </Button>
+    </Popover>
+  );
 });

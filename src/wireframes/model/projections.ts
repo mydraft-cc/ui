@@ -33,6 +33,12 @@ export const getOrderedDiagrams = (state: EditorStateInStore) => state.editor.pr
 export const getShapes = (state: AssetsStateInStore) => state.assets.shapes;
 export const getShapesFilter = (state: AssetsStateInStore) => state.assets.shapesFilter;
 
+
+export const getEditorDiagramItems = (state: any) => {
+    const items = state.editor.presentState.state.values.diagrams.items;
+    return items;
+};
+
 export const getIconsFilterRegex = createSelector(
     getIconsFilter,
     filter => new RegExp(filter || '.*', 'i'),
@@ -127,6 +133,41 @@ export const getSelectedShape = createSelector(
 export const getSelectedConfigurables = createSelector(
     getSelectedShape,
     shape => (shape ? shape.configurables : EMPTY_CONFIGURABLES),
+);
+
+
+export const getDocumentColors = createSelector(
+    getEditorDiagramItems,
+    (items) => {
+        const elements = Object.values(items) as any[];
+        const result = new Set();
+
+        for (const element of elements) {
+            for (let key in element.values.items.items) {
+            const backgroundColor =
+            element.values.items.items[key].values.appearance.items
+                .BACKGROUND_COLOR;
+                if (typeof backgroundColor === 'string' || backgroundColor instanceof String){
+                    result.add(backgroundColor);
+                }
+
+            const strokeColor =
+            element.values.items.items[key].values.appearance.items
+            .STROKE_COLOR;
+            if (typeof strokeColor === 'string' || strokeColor instanceof String){
+                result.add(strokeColor);
+            }
+
+            const foreGroundColor =
+            element.values.items.items[key].values.appearance.items
+            .FOREGROUND_COLOR;
+            if (typeof foreGroundColor === 'string' || foreGroundColor instanceof String){
+                result.add(foreGroundColor);
+            }
+            }
+        }
+        return Array.from(result.values());
+    },
 );
 
 export function getPageName(diagram: Diagram | string, index: number): string {

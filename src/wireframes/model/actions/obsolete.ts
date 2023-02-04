@@ -36,7 +36,7 @@ export const addVisual =
     createAction('items/addVisual', (diagram: DiagramRef, renderer: string, x: number, y: number, appearance?: object, shapeId?: string, width?: number, height?: number) => {
         return { payload: createDiagramAction(diagram, { shapeId: shapeId || MathHelper.nextId(), renderer, position: { x, y }, appearance, width, height }) };
     });
-    
+
 const MAX_IMAGE_SIZE = 300;
 
 export function migrateOldAction(action: AnyAction) {
