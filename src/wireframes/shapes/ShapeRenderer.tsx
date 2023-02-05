@@ -89,6 +89,8 @@ export const ShapeRenderer = React.memo(React.forwardRef<HTMLDivElement, ShapeRe
             return;
         }
 
+        document.clear();
+
         const svgControl = new AbstractControl(plugin);
         const svgGroup = document.group();
 
