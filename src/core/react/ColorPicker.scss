@@ -20,10 +20,12 @@ $size: 24px;
     &-color {
         & {
             @include circle($size);
+            align-items: center;
             background: $color-white;
             border: 2px solid $color-border;
             border-radius: $size;
-            display: inline-block;
+            display: inline-flex;
+            justify-content: center;
             margin: 1px;
         }
 
@@ -35,7 +37,7 @@ $size: 24px;
         }
 
         &-inner {
-            @include circle($size - 6px);
+            @include circle($size - 8px);
             margin: 1px;
         }
 

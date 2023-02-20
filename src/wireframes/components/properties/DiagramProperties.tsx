@@ -10,16 +10,17 @@ import * as React from 'react';
 import { useDispatch } from 'react-redux';
 import { Color, ColorPicker, useEventCallback } from '@app/core';
 import { texts } from '@app/texts';
-import { changeColor, changeSize, getEditor, useStore } from '@app/wireframes/model';
+import { changeColor, changeSize, getColors, getEditor, useStore } from '@app/wireframes/model';
 
 export const DiagramProperties = React.memo(() => {
     const dispatch = useDispatch();
     const editor = useStore(getEditor);
     const editorSize = editor.size;
     const editorColor = editor.color;
+    const recentColors = useStore(getColors);
+    const [color, setColor] = React.useState(Color.WHITE);
     const [sizeWidth, setWidth] = React.useState(0);
     const [sizeHeight, setHeight] = React.useState(0);
-    const [color, setColor] = React.useState(Color.WHITE);
 
     React.useEffect(() => {
         setWidth(editorSize.x);
@@ -57,7 +58,7 @@ export const DiagramProperties = React.memo(() => {
             <Row className='property'>
                 <Col span={12} className='property-label'>{texts.common.backgroundColor}</Col>
                 <Col span={12} className='property-value'>
-                    <ColorPicker value={color} onChange={doChangeColor} />
+                    <ColorPicker value={color} onChange={doChangeColor} recentColors={recentColors} />
                 </Col>
             </Row>
         </>

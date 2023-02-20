@@ -21,7 +21,6 @@ const BREWERS = {
 export class ColorPalette {
     constructor(
         public readonly colors: ReadonlyArray<Color>,
-        public readonly defaultColor: Color,
     ) {
     }
 
@@ -34,6 +33,6 @@ export class ColorPalette {
             }
         }
 
-        return new ColorPalette(colors, colors[7]);
+        return new ColorPalette(colors);
     }
 }

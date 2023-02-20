@@ -132,12 +132,12 @@
     @include border-radius($size * .5);
     @include force-height($size);
     @include force-width($size);
-    display: inline-block;
 }
 
 @mixin circle-icon($size) {
     @include circle($size);
     cursor: none;
+    display: inline-flex;
     font-size: .5 * $size;
     font-weight: normal;
     line-height: $size + .1rem;

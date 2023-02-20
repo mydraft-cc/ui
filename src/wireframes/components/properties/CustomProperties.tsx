@@ -9,8 +9,8 @@ import { Checkbox, Col, InputNumber, Row, Select } from 'antd';
 import { CheckboxChangeEvent } from 'antd/lib/checkbox';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
-import { Color, ColorPicker, useEventCallback } from '@app/core';
-import { changeItemsAppearance, ColorConfigurable, Configurable, getDiagramId, getSelectedConfigurables, getSelectedShape, NumberConfigurable, selectColorTab, SelectionConfigurable, SliderConfigurable, TextConfigurable, ToggleConfigurable, useStore } from '@app/wireframes/model';
+import { Color, ColorPalette, ColorPicker, useEventCallback } from '@app/core';
+import { changeItemsAppearance, ColorConfigurable, Configurable, getColors, getDiagramId, getSelectedConfigurables, getSelectedShape, NumberConfigurable, selectColorTab, SelectionConfigurable, SliderConfigurable, TextConfigurable, ToggleConfigurable, useStore } from '@app/wireframes/model';
 import { CustomSlider } from './CustomSlider';
 import { Text } from './Text';
 
@@ -24,6 +24,9 @@ interface CustomPropertyProps {
     // The selected color tab.
     selectedColorTab: string;
 
+    // The recent colors.
+    recentColors: ColorPalette;
+
     // When the value has changed.
     onChange: (name: string, value: any) => void;
 
@@ -36,6 +39,7 @@ export const CustomProperty = (props: CustomPropertyProps) => {
         configurable,
         onChange,
         onColorTabChange,
+        recentColors,
         selectedColorTab,
         value,
     } = props;
@@ -95,7 +99,8 @@ export const CustomProperty = (props: CustomPropertyProps) => {
                 {configurable instanceof ColorConfigurable &&
                     <ColorPicker activeColorTab={selectedColorTab as any} value={value}
                         onChange={doChangeColor}
-                        onActiveColorTabChanged={onColorTabChange} />
+                        onActiveColorTabChanged={onColorTabChange}
+                        recentColors={recentColors} />
                 }
             </Col>
         </Row>
@@ -104,6 +109,7 @@ export const CustomProperty = (props: CustomPropertyProps) => {
 
 export const CustomProperties = () => {
     const dispatch = useDispatch();
+    const recentColors = useStore(getColors);
     const selectedDiagramId = useStore(getDiagramId);
     const selectedColorTab = useStore(s => s.ui.selectedColorTab);
     const selectedConfigurables = useStore(getSelectedConfigurables);
@@ -131,6 +137,7 @@ export const CustomProperties = () => {
                     configurable={c}
                     onChange={doChange}
                     onColorTabChange={doSelectColorTab}
+                    recentColors={recentColors}
                     value={selectedShape.appearance.get(c.name)}
                 />,
             )}

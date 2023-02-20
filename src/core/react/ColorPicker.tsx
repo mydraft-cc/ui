@@ -25,6 +25,9 @@ interface ColorPickerProps {
     // The color palette.
     palette?: ColorPalette;
 
+    // The color palette.
+    recentColors?: ColorPalette;
+
     // The active color tab.
     activeColorTab?: ColorTab;
 
@@ -49,6 +52,7 @@ export const ColorPicker = React.memo((props: ColorPickerProps) => {
         onChange,
         palette,
         popoverPlacement,
+        recentColors,
         value,
     } = props;
 
@@ -102,6 +106,20 @@ export const ColorPicker = React.memo((props: ColorPickerProps) => {
                         </div>,
                     )}
                 </div>
+
+                {recentColors &&
+                    <div>
+                        <h4>{texts.common.recent}</h4>
+
+                        <div className='color-picker-colors'>
+                            {recentColors.colors.map(c =>
+                                <div className={classNames('color-picker-color', { selected: c.eq(color) })} key={c.toString()}>
+                                    <div className='color-picker-color-inner' onClick={() => doSelectColor(c)} style={{ background: c.toString() }}></div>
+                                </div>,
+                            )}
+                        </div>
+                    </div>
+                }
             </Tabs.TabPane>
             <Tabs.TabPane key='advanced' tab={texts.common.advanced}>
                 <SketchPicker color={colorHex} onChange={doSelectColorResult} disableAlpha={true} width='210px' />

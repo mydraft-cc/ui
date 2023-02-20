@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { Color, ImmutableList, ImmutableMap, Record, Vec2 } from '@app/core';
+import { Color, ImmutableList, ImmutableMap, MathHelper, Record, Vec2 } from '@app/core';
 import { Diagram } from './diagram';
 import { UndoableState } from './undoable-state';
 
@@ -24,6 +24,9 @@ type Props = {
 
     // The size of all diagrams.
     size: Vec2;
+
+    // The id of the state.
+    id: string;
 
     // The color for all diagrams.
     color: Color;
@@ -44,6 +47,10 @@ export type InitialEditorProps = {
 };
 
 export class EditorState extends Record<Props> {
+    public get id() {
+        return this.get('id');
+    }
+
     public get selectedDiagramId() {
         return this.get('selectedDiagramId');
     }
@@ -75,6 +82,7 @@ export class EditorState extends Record<Props> {
             color: color || Color.WHITE,
             diagrams: ImmutableMap.of(diagrams),
             diagramIds: ImmutableList.of(diagramIds),
+            id: MathHelper.guid(),
             size: size || new Vec2(1000, 1000),
         };
 

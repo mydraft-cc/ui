@@ -11,12 +11,13 @@ import { useDispatch } from 'react-redux';
 import { ColorPicker, useEventCallback } from '@app/core';
 import { texts } from '@app/texts';
 import { DefaultAppearance } from '@app/wireframes/interface';
-import { getDiagramId, getSelectedItems, getSelectionSet, selectColorTab, useStore } from '@app/wireframes/model';
+import { getColors, getDiagramId, getSelectedItems, getSelectionSet, selectColorTab, useStore } from '@app/wireframes/model';
 import { UniqueValue, useAppearance, useColorAppearance } from './../actions';
 import './VisualProperties.scss';
 
 export const VisualProperties = React.memo(() => {
     const dispatch = useDispatch();
+    const recentColors = useStore(getColors);
     const selectedColorTab = useStore(s => s.ui.selectedColorTab as any);
     const selectedDiagramId = useStore(getDiagramId);
     const selectedItems = useStore(getSelectedItems);
@@ -83,7 +84,8 @@ export const VisualProperties = React.memo(() => {
                         <Col span={12} className='property-value'>
                             <ColorPicker activeColorTab={selectedColorTab} disabled={strokeColor.empty} value={strokeColor.value}
                                 onChange={setStrokeColor}
-                                onActiveColorTabChanged={doSelectColorTab} />
+                                onActiveColorTabChanged={doSelectColorTab}
+                                recentColors={recentColors} />
                         </Col>
                     </Row>
                     <Row className='property'>
@@ -91,7 +93,8 @@ export const VisualProperties = React.memo(() => {
                         <Col span={12} className='property-value'>
                             <ColorPicker activeColorTab={selectedColorTab} disabled={foregroundColor.empty} value={foregroundColor.value}
                                 onChange={setForegroundColor}
-                                onActiveColorTabChanged={doSelectColorTab} />
+                                onActiveColorTabChanged={doSelectColorTab}
+                                recentColors={recentColors} />
                         </Col>
                     </Row>
                     <Row className='property'>
@@ -99,7 +102,8 @@ export const VisualProperties = React.memo(() => {
                         <Col span={12} className='property-value'>
                             <ColorPicker activeColorTab={selectedColorTab} disabled={backgroundColor.empty} value={backgroundColor.value}
                                 onChange={setBackgroundColor}
-                                onActiveColorTabChanged={doSelectColorTab} />
+                                onActiveColorTabChanged={doSelectColorTab}
+                                recentColors={recentColors} />
                         </Col>
                     </Row>
                     <Row className='property'>
