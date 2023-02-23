@@ -10,6 +10,7 @@ import classNames from 'classnames';
 import * as React from 'react';
 import { texts } from '@app/texts';
 import { getDiagram, getSelectedItems, useStore } from '@app/wireframes/model';
+import { Colors } from './Colors';
 import { CustomProperties } from './CustomProperties';
 import { DiagramProperties } from './DiagramProperties';
 import { LayoutProperties } from './LayoutProperties';
@@ -40,9 +41,12 @@ export const Properties = () => {
                 </Collapse.Panel>
             </Collapse>
 
-            <Collapse className={(classNames({ hidden: hasSelection || !hasDiagram }))} bordered={false} defaultActiveKey={['diagram']}>
+            <Collapse className={(classNames({ hidden: hasSelection || !hasDiagram }))} bordered={false} defaultActiveKey={['diagram', 'colors']}>
                 <Collapse.Panel key='diagram' header={texts.common.diagram}>
                     <DiagramProperties />
+                </Collapse.Panel>
+                <Collapse.Panel key='colors' header={texts.common.colors}>
+                    <Colors />
                 </Collapse.Panel>
             </Collapse>
         </>

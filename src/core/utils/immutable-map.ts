@@ -73,6 +73,31 @@ export class ImmutableMap<T> {
         return this.set(key, updater(this.get(key)!));
     }
 
+    public updateAll(updater: (value: T) => T) {
+        if (this.size === 0) {
+            return this;
+        }
+        
+        let updatedItems: { [key: string]: T } | undefined = undefined;
+
+        for (const [key, current] of Object.entries(this.items)) {
+            const newValue = updater(current);
+
+            if (Types.equals(current, newValue)) {
+                continue;
+            }
+
+            updatedItems ||= { ...this.items };
+            updatedItems[key] = newValue;
+        }
+
+        if (!updatedItems) {
+            return this;
+        }
+
+        return new ImmutableMap<T>(updatedItems);
+    }
+
     public set(key: string, value: T) {
         if (!key) {
             return this;
@@ -99,36 +124,40 @@ export class ImmutableMap<T> {
         return new ImmutableMap<T>(items);
     }
 
-    public mutate(updater: (mutator: Mutator<T>) => void) {
-        const items = { ...this.items };
-
-        let updated = false;
+    public mutate(updater: (mutator: Mutator<T>) => void): ImmutableMap<T> {
+        let updatedItems: { [key: string]: T } | undefined = undefined;
+        let updateCount = 0;
 
         const mutator: Mutator<T> = {
             set: (k, v) => {
                 if (k) {
+                    updatedItems ||= { ...this.items };
+
                     const current = this.items[k];
 
                     if (!Types.equals(current, v)) {
-                        updated = true;
-
-                        items[k] = v;
+                        updateCount++;
+                        updatedItems[k] = v;
                     }
                 }
             },
             remove: (k) => {
                 if (k) {
-                    if (items.hasOwnProperty(k)) {
-                        updated = true;
+                    updatedItems ||= { ...this.items };
 
-                        delete items[k];
+                    if (updatedItems.hasOwnProperty(k)) {
+                        updateCount++;
+
+                        delete updatedItems[k];
                     }
                 }
             },
             update: (k, updater: (value: T) => T) => {
                 if (k) {
-                    if (items.hasOwnProperty(k)) {
-                        mutator.set(k, updater(items[k]));
+                    updatedItems ||= { ...this.items };
+
+                    if (updatedItems.hasOwnProperty(k)) {
+                        mutator.set(k, updater(updatedItems[k]));
                     }
                 }
             },
@@ -136,11 +165,11 @@ export class ImmutableMap<T> {
 
         updater(mutator);
 
-        if (!updated) {
+        if (!updateCount || !updatedItems) {
             return this;
         }
 
-        return new ImmutableMap(items);
+        return new ImmutableMap(updatedItems);
     }
 
     public equals(other: ImmutableMap<T>) {

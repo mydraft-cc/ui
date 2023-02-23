@@ -9,13 +9,19 @@ import { createAction, createReducer } from '@reduxjs/toolkit';
 import { AssetsState } from './../internal';
 
 export const filterShapes =
-    createAction<{ filter: string }>('shapes/filter');
+    createAction('shapes/shapes', (filter: string) => {
+        return { payload:  { filter } };
+    });
 
 export const filterIcons =
-    createAction<{ filter: string }>('icons/filter');
+    createAction('icons/shapes', (filter: string) => {
+        return { payload:  { filter } };
+    });
 
 export const selectIcons =
-    createAction<{ iconSet: string }>('icons/select');
+    createAction('icons/select', (iconSet: string) => {
+        return { payload:  { iconSet } };
+    });
 
 export function assets(initialState: AssetsState) {
     return createReducer(initialState, builder => builder

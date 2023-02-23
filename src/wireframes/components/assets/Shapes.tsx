@@ -46,7 +46,7 @@ export const Shapes = () => {
     }, [dispatch, store]);
 
     const doFilterShapes = useEventCallback((event: React.ChangeEvent<HTMLInputElement>) => {
-        dispatch(filterShapes({ filter: event.target.value }));
+        dispatch(filterShapes(event.target.value));
     });
 
     return (

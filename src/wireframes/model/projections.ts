@@ -9,7 +9,7 @@ import { useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
 import { Color, ColorPalette, Types } from '@app/core';
 import { texts } from '@app/texts';
-import { addDiagram, addShape, changeColor, changeItemsAppearance, pasteItems, removeDiagram, removeItems } from './actions';
+import { addDiagram, addShape, changeColor, changeColors, changeItemsAppearance, pasteItems, removeDiagram, removeItems } from './actions';
 import { AssetsStateInStore } from './assets-state';
 import { Configurable } from './configurables';
 import { Diagram } from './diagram';
@@ -138,11 +138,13 @@ export const getColors = createSelector(
         const colors: { [color: string]: { count: number; color: Color } } = {};
 
         const addColor = (value: any) => {
-            let colorKey = value.toString();
+            const color = Color.fromValue(value);
+
+            let colorKey = color.toString();
             let colorEntry = colors[colorKey];
 
             if (!colorEntry) {
-                colorEntry = { count: 1, color: Color.fromValue(value) };
+                colorEntry = { count: 1, color };
                 colors[colorKey] = colorEntry;
             } else {
                 colorEntry.count++;
@@ -187,6 +189,7 @@ export const getColors = createSelector(
                         addDiagram.match(lastAction) ||
                         addShape.match(lastAction) ||
                         changeColor.match(lastAction) ||
+                        changeColors.match(lastAction) ||
                         changeItemsAppearance.match(lastAction) ||
                         pasteItems.match(lastAction) ||
                         removeDiagram.match(lastAction) ||

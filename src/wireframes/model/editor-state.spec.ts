@@ -105,6 +105,23 @@ describe('EditorState', () => {
         expect(state_3).toBe(state_2);
     });
 
+    it('should update all diagrams', () => {
+        const newDiagram = Diagram.create({ id: diagram.id });
+
+        const state_2 = state_1.addDiagram(diagram);
+        const state_3 = state_2.updateAllDiagrams(() => newDiagram);
+
+        expect(state_3.diagrams.size).toBe(1);
+        expect(state_3.diagrams.get(diagram.id)).toEqual(newDiagram);
+    });
+
+    it('should return orignal state when all updater returns same diagrams', () => {
+        const state_2 = state_1.addDiagram(diagram);
+        const state_3 = state_2.updateAllDiagrams(d => d);
+
+        expect(state_3).toBe(state_2);
+    });
+
     it('should change size', () => {
         const newSize = new Vec2(1500, 1200);
 

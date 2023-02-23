@@ -26,7 +26,9 @@ describe('LoadingReducer', () => {
         Reducers.buildOrdering(builder);
     });
 
-    const ignore = (_: string, key: string) => ~['instanceId', 'selectedIds', 'parents', 'computed'].indexOf(key);
+    const ignore = (path: string, key: string) => {
+        return (path.length === 1 && path[0] === 'values' && key === 'id') || ~['instanceId', 'selectedIds', 'parents', 'computed'].indexOf(key);
+    };        
 
     const undoableReducer = Reducers.undoable(
         editorReducer,
@@ -44,8 +46,8 @@ describe('LoadingReducer', () => {
     it('should load from old and new format V2', () => {
         const initial = undoableReducer(undefined, { type: 'NOOP' });
 
-        const editorV1 = rootReducer(initial, loadDiagramInternal({ stored: v1, requestId: '1' }));
-        const editorV2 = rootReducer(initial, loadDiagramInternal({ stored: v2, requestId: '2' }));
+        const editorV1 = rootReducer(initial, loadDiagramInternal(v1, '1'));
+        const editorV2 = rootReducer(initial, loadDiagramInternal(v2, '2'));
 
         expect(editorV1.present.diagrams.values[0].items.values.length).toEqual(10);
         expect(editorV2.present.diagrams.values[0].items.values.length).toEqual(10);
@@ -58,8 +60,8 @@ describe('LoadingReducer', () => {
     it('should load from old and new format V3', () => {
         const initial = undoableReducer(undefined, { type: 'NOOP' });
 
-        const editorV1 = rootReducer(initial, loadDiagramInternal({ stored: v1, requestId: '1' }));
-        const editorV3 = rootReducer(initial, loadDiagramInternal({ stored: v3, requestId: '2' }));
+        const editorV1 = rootReducer(initial, loadDiagramInternal(v1, '1'));
+        const editorV3 = rootReducer(initial, loadDiagramInternal(v3, '2'));
 
         expect(editorV1.present.diagrams.values[0].items.values.length).toEqual(10);
         expect(editorV3.present.diagrams.values[0].items.values.length).toEqual(10);

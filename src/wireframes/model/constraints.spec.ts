@@ -9,7 +9,13 @@ import { Vec2 } from '@app/core';
 import { DefaultAppearance } from '@app/wireframes/interface';
 import { DiagramItem, MinSizeConstraint, SizeConstraint, TextHeightConstraint } from '@app/wireframes/model';
 
-const shape = DiagramItem.createShape({ id: '1', renderer: 'Button', appearance: { [DefaultAppearance.FONT_SIZE]: 12 } });
+const shape = DiagramItem.createShape({ 
+    id: '1',
+    renderer: 'Button',
+    appearance: {
+        [DefaultAppearance.FONT_SIZE]: 12,
+    },
+});
 
 describe('TextHeightConstraint', () => {
     it('should set y size from font size', () => {

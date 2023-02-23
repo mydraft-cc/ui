@@ -82,7 +82,7 @@ describe('Diagram', () => {
         expect(diagram_5.items.size).toBe(0);
     });
 
-    it('should update shape in items', () => {
+    it('should update items', () => {
         const shapeOld = shape4;
         const shapeNew = shapeOld.setAppearance('border-width', 10);
 
@@ -93,15 +93,33 @@ describe('Diagram', () => {
         expect(diagram_3.items.get(shapeOld.id)).toEqual(shapeNew);
     });
 
-    it('should return original diagram when shape to update does not exist.', () => {
-        const diagram_2 = diagram_1.updateItems([shape1.id], v => v.setAppearance('color', 0xFF00FF));
+    it('should return original diagram when items to update does not exist.', () => {
+        const diagram_2 = diagram_1.updateItems([shape1.id], i => i.setAppearance('color', 0xFF00FF));
 
         expect(diagram_2).toBe(diagram_1);
     });
 
     it('should return original diagram when updater returns same item', () => {
         const diagram_2 = diagram_1.addShape(shape1);
-        const diagram_3 = diagram_2.updateItems([shape1.id], v => v);
+        const diagram_3 = diagram_2.updateItems([shape1.id], i => i);
+
+        expect(diagram_3).toBe(diagram_2);
+    });
+
+    it('should update all items', () => {
+        const shapeOld = shape4;
+        const shapeNew = shapeOld.setAppearance('border-width', 10);
+
+        const diagram_2 = diagram_1.addShape(shapeOld);
+        const diagram_3 = diagram_2.updateAllItems(() => shapeNew);
+
+        expect(diagram_3.items.size).toBe(1);
+        expect(diagram_3.items.get(shapeOld.id)).toEqual(shapeNew);
+    });
+
+    it('should return original diagram when all updater returns same items', () => {
+        const diagram_2 = diagram_1.addShape(shape1);
+        const diagram_3 = diagram_2.updateAllItems(i => i);
 
         expect(diagram_3).toBe(diagram_2);
     });

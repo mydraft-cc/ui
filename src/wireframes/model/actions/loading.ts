@@ -18,7 +18,9 @@ import { migrateOldAction } from './obsolete';
 import { showToast } from './ui';
 
 export const newDiagram =
-    createAction<{ navigate: boolean }>('diagram/new');
+    createAction('diagram/new', (navigate: boolean) => {
+        return { payload: { navigate } };
+    });
 
 export const loadDiagramFromFile =
     createAsyncThunk('diagram/load/file', async (args: { file: File }) => {
@@ -35,7 +37,9 @@ export const loadDiagramFromServer =
     });
 
 export const loadDiagramInternal =
-    createAction<{ stored: any; requestId: string }>('diagram/load/actions');
+    createAction('diagram/load/actions', (stored: any, requestId: string) => {
+        return { payload: { stored, requestId } };
+    });
 
 export const saveDiagramToFile = 
     createAsyncThunk('diagram/save/file', async (_, thunkAPI) => {
@@ -68,9 +72,9 @@ export const saveDiagramToServer =
 export function loadingMiddleware(): Middleware {
     const middleware: Middleware = store => next => action => {        
         if (loadDiagramFromServer.pending.match(action) ||  loadDiagramFromFile.pending.match(action)) {
-            store.dispatch(showToast({ content: texts.common.loadingDiagram, type: 'loading', key: action.meta.requestId }));
+            store.dispatch(showToast(texts.common.loadingDiagram, 'loading', action.meta.requestId));
         } else if ( saveDiagramToServer.pending.match(action) || saveDiagramToFile.pending.match(action)) {
-            store.dispatch(showToast({ content: texts.common.savingDiagram, type: 'loading', key: action.meta.requestId }));
+            store.dispatch(showToast(texts.common.savingDiagram, 'loading', action.meta.requestId));
         }
 
         try {
@@ -85,13 +89,13 @@ export function loadingMiddleware(): Middleware {
                     store.dispatch(push(action.payload.tokenToRead));
                 }
                 
-                store.dispatch(loadDiagramInternal({ stored: action.payload.stored, requestId: action.meta.requestId }));
+                store.dispatch(loadDiagramInternal(action.payload.stored, action.meta.requestId));
             } else if (loadDiagramFromFile.fulfilled.match(action)) {
-                store.dispatch(loadDiagramInternal({ stored: action.payload.stored, requestId: action.meta.requestId }));
+                store.dispatch(loadDiagramInternal(action.payload.stored, action.meta.requestId));
             } else if (loadDiagramFromServer.rejected.match(action) ||  loadDiagramFromFile.rejected.match(action)) {
-                store.dispatch(showToast({ content: texts.common.loadingDiagramFailed, type: 'error', key: action.meta.requestId, delayed: 1000 }));
+                store.dispatch(showToast(texts.common.loadingDiagramFailed, 'error', action.meta.requestId));
             } else if (loadDiagramInternal.match(action)) {
-                store.dispatch(showToast({ content: texts.common.loadingDiagramDone, type: 'success', key: action.payload.requestId, delayed: 1000 }));
+                store.dispatch(showToast(texts.common.loadingDiagramDone, 'success', action.payload.requestId));
             } else if (saveDiagramToServer.fulfilled.match(action)) {
                 if (action.meta.arg.navigate) {
                     store.dispatch(push(action.payload.tokenToRead));
@@ -103,17 +107,17 @@ export function loadingMiddleware(): Middleware {
                     texts.common.savingDiagramDone :
                     texts.common.savingDiagramDoneUrl(`${window.location.protocol}//${window.location.host}/${action.payload.tokenToRead}`);
 
-                store.dispatch(showToast({ content, type: 'success', key: action.meta.requestId, delayed: 1000 }));
+                store.dispatch(showToast(content, 'success', action.meta.requestId, 1000));
             } else if (saveDiagramToFile.fulfilled.match(action)) {
-                store.dispatch(showToast({ content: texts.common.savingDiagramDone, type: 'success', key: action.meta.requestId, delayed: 1000 }));
+                store.dispatch(showToast(texts.common.savingDiagramDone, 'success', action.meta.requestId));
             } else if (saveDiagramToServer.rejected.match(action) || saveDiagramToFile.rejected.match(action)) {
-                store.dispatch(showToast({ content: texts.common.savingDiagramFailed, type: 'error', key: action.meta.requestId, delayed: 1000 }));
+                store.dispatch(showToast(texts.common.savingDiagramFailed, 'error', action.meta.requestId));
             }
 
             return result;
         } catch (ex) {
             if (loadDiagramInternal.match(action)) {
-                store.dispatch(showToast({ content: texts.common.loadingDiagramFailed, type: 'error', key: action.payload.requestId, delayed: 1000 }));
+                store.dispatch(showToast(texts.common.loadingDiagramFailed, 'error', action.payload.requestId));
             }
             
             console.error(ex);

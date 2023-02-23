@@ -32,11 +32,11 @@ export const DiagramProperties = React.memo(() => {
     }, [editorColor]);
 
     const doChangeSize = useEventCallback(() => {
-        dispatch(changeSize({ width: sizeWidth, height: sizeHeight }));
+        dispatch(changeSize(sizeWidth, sizeHeight));
     });
 
     const doChangeColor = useEventCallback((color: Color) => {
-        dispatch(changeColor({ color: color.toString() }));
+        dispatch(changeColor(color));
     });
 
     return (

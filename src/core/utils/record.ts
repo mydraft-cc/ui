@@ -5,10 +5,13 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
+import { MathHelper } from './math-helper';
 import { Types } from './types';
 
 export abstract class Record<T extends object> {
     private readonly values: T;
+
+    public readonly instanceId: string;
 
     public get<K extends keyof T>(key: K): T[K] {
         return this.values[key as string];
@@ -17,6 +20,7 @@ export abstract class Record<T extends object> {
     constructor(values: T) {
         this.values = values;
         this.values = this.afterClone(this.values);
+        this.instanceId = MathHelper.nextId();
 
         Object.freeze(values);
     }
@@ -39,7 +43,7 @@ export abstract class Record<T extends object> {
         return this.makeRecord(values);
     }
 
-    public merge(props: Partial<T>) {
+    public merge(props: Partial<T>): this {
         const values = { ...this.values };
 
         let updates = 0;
@@ -72,6 +76,7 @@ export abstract class Record<T extends object> {
 
         record.values = values;
         record.values = record.afterClone(values, this);
+        record.instanceId = MathHelper.nextId();
 
         Object.freeze(record.values);
 

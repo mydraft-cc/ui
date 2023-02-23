@@ -43,13 +43,13 @@ export const App = () => {
         if (token && token.length > 0) {
             dispatch(loadDiagramFromServer({ tokenToRead: token, navigate: false }));
         } else {
-            dispatch(newDiagram({ navigate: false }));
+            dispatch(newDiagram(false));
         }
     }, [dispatch]);
 
     React.useEffect(() => {
         if (isPrinting) {
-            dispatch(showToast({ content: texts.common.printingStarted }));
+            dispatch(showToast(texts.common.printingStarted));
         }
     }, [dispatch, isPrinting]);
 

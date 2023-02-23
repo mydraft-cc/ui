@@ -78,7 +78,7 @@ describe('ImmutableMap', () => {
         expect(set_3.get('1')).toEqual(100);
     });
 
-    it('should return original set when item to remove is not found', () => {
+    it('should return original set when item to update is not found', () => {
         const set_1 = ImmutableMap.empty<number>();
         const set_2 = set_1.set('1', 10);
         const set_3 = set_2.update('unknown', x => x * x);
@@ -90,6 +90,22 @@ describe('ImmutableMap', () => {
         const set_1 = ImmutableMap.empty<number>();
         const set_2 = set_1.set('1', 10);
         const set_3 = set_2.update('unknown', x => x);
+
+        expect(set_3).toBe(set_2);
+    });
+
+    it('should update items', () => {
+        const set_1 = ImmutableMap.empty<number>();
+        const set_2 = set_1.set('1', 10);
+        const set_3 = set_2.updateAll(x => x * x);
+
+        expect(set_3.get('1')).toEqual(100);
+    });
+
+    it('should return original set when update returns same items', () => {
+        const set_1 = ImmutableMap.empty<number>();
+        const set_2 = set_1.set('1', 10);
+        const set_3 = set_2.updateAll(x => x);
 
         expect(set_3).toBe(set_2);
     });

@@ -12,25 +12,39 @@ import { AnyAction, Dispatch, Middleware, Reducer } from 'redux';
 import { UIState } from './../internal';
 
 export const showToast =
-    createAction<{ content: string; type?: NoticeType; key?: string; delayed?: number }>('ui/infoToast');
+    createAction('ui/infoToast', (content: string, type?: NoticeType, key?: string, delayed = 1000) => {
+        return { payload: { content, type, key, delayed } };
+    });
 
 export const setZoom =
-    createAction<number>('ui/zoom');
+    createAction('ui/zoom', (zoom: number) => {
+        return { payload: { zoom } };
+    });
 
 export const selectColorTab =
-    createAction<string>('ui/colorTab');
+    createAction('ui/colorTab', (tab: string) => {
+        return { payload: { tab } };
+    });
 
 export const selectTab =
-    createAction<string>('ui/tab');
-
-export const toggleLeftSidebar =
-    createAction('ui/toggleLeftSidebar');
-
-export const toggleRightSidebar =
-    createAction('ui/toggleRightSidebar');
+    createAction('ui/tab', (tab: string) => {
+        return { payload: { tab } };
+    });
 
 export const filterDiagrams =
-    createAction<{ filter: string }>('ui/diagrams/filter');
+    createAction('ui/diagrams/filter', (filter: string) => {
+        return { payload: { filter } };
+    });
+
+export const toggleLeftSidebar =
+    createAction('ui/toggleLeftSidebar', () => {
+        return { payload: { } };
+    });
+
+export const toggleRightSidebar =
+    createAction('ui/toggleRightSidebar', () => {
+        return { payload: { } };
+    });
 
 export function toastMiddleware() {
     const middleware: Middleware = () => (next: Dispatch<AnyAction>) => (action: any) => {
@@ -54,13 +68,13 @@ export function ui(initialState: UIState): Reducer<UIState> {
             state.diagramsFilter = action.payload.filter;
         })
         .addCase(setZoom, (state, action) => {
-            state.zoom = action.payload;
+            state.zoom = action.payload.zoom;
         })
         .addCase(selectTab, (state, action) => {
-            state.selectedTab = action.payload;
+            state.selectedTab = action.payload.tab;
         })
         .addCase(selectColorTab, (state, action) => {
-            state.selectedColorTab = action.payload;
+            state.selectedColorTab = action.payload.tab;
         })
         .addCase(toggleLeftSidebar, (state) => {
             state.showLeftSidebar = !state.showLeftSidebar;

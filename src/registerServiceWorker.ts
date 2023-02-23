@@ -28,7 +28,7 @@ export function registerServiceWorker(store: Store) {
                         installingWorker.onstatechange = () => {
                             if (installingWorker.state === 'installed') {
                                 if (navigator.serviceWorker.controller) {
-                                    store.dispatch(showToast({ content: texts.common.newVersion }));
+                                    store.dispatch(showToast(texts.common.newVersion));
 
                                     console.log('New content is available; please refresh.');
                                 } else {

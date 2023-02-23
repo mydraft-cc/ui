@@ -17,7 +17,7 @@ type Props = {
     selectedDiagramId?: string | null;
 
     // The actual diagrams.
-    diagrams: ImmutableMap<Diagram>;
+    diagrams: Diagrams;
 
     // The list of ordered diagram ids.
     diagramIds: DiagramIds;
@@ -97,36 +97,16 @@ export class EditorState extends Record<Props> {
         return this.set('color', color);
     }
 
-    public addDiagram(diagram: Diagram) {
-        if (!diagram || this.diagrams.get(diagram.id)) {
-            return this;
-        }
-
-        return this.mutate(
-            d => d.set(diagram.id, diagram),
-            d => d.add(diagram.id),
-            this.selectedDiagramId);
-    }
-
-    public removeDiagram(diagramId: string) {
-        return this.mutate(
-            d => d.remove(diagramId),
-            d => d.remove(diagramId),
-            diagramId === this.selectedDiagramId ? null : this.selectedDiagramId);
-    }
-
     public moveDiagram(diagramId: string, index: number) {
-        return this.mutate(
-            d => d,
-            d => d.moveTo([diagramId], index),
-            this.selectedDiagramId);
+        return this.set('diagramIds', this.diagramIds.moveTo([diagramId], index));
     }
 
     public updateDiagram(diagramId: string, updater: (value: Diagram) => Diagram) {
-        return this.mutate(
-            d => d.update(diagramId, updater),
-            d => d,
-            this.selectedDiagramId);
+        return this.set('diagrams', this.diagrams.update(diagramId, updater));
+    }
+
+    public updateAllDiagrams(updater: (value: Diagram) => Diagram) {
+        return this.set('diagrams', this.diagrams.updateAll(updater));
     }
 
     public selectDiagram(diagramId: string | null | undefined) {
@@ -137,11 +117,22 @@ export class EditorState extends Record<Props> {
         return this.set('selectedDiagramId', diagramId);
     }
 
-    private mutate(update: (diagrams: Diagrams) => Diagrams, updateIds: (diagrams: DiagramIds) => DiagramIds, selectedDiagramId: string | null | undefined): EditorState {
+    public removeDiagram(diagramId: string) {
         return this.merge({
-            diagrams: update(this.diagrams),
-            diagramIds: updateIds(this.diagramIds),
-            selectedDiagramId,
+            diagrams: this.diagrams.remove(diagramId),
+            diagramIds: this.diagramIds.remove(diagramId),
+            selectedDiagramId: this.selectedDiagramId ? null : this.selectedDiagramId,
+        });
+    }
+
+    public addDiagram(diagram: Diagram) {
+        if (!diagram || this.diagrams.get(diagram.id)) {
+            return this;
+        }
+
+        return this.merge({
+            diagrams: this.diagrams.set(diagram.id, diagram),
+            diagramIds: this.diagramIds.add(diagram.id),
         });
     }
 }

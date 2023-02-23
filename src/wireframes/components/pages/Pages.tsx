@@ -46,7 +46,7 @@ export const Pages = () => {
     });
 
     const doFilterShapes = useEventCallback((event: React.ChangeEvent<HTMLInputElement>) => {
-        dispatch(filterDiagrams({ filter: event.target.value }));
+        dispatch(filterDiagrams(event.target.value));
     });
 
     const doSort = useEventCallback((result: DropResult) => {

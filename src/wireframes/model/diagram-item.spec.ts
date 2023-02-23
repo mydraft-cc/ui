@@ -163,8 +163,25 @@ describe('DiagramItem', () => {
 
     const groupId = 'group-1';
 
-    const shape1 = DiagramItem.createShape({ id: '1', renderer: 'Button', transform: new Transform(new Vec2(100, 100), new Vec2(100, 50), Rotation.ZERO) });
-    const shape2 = DiagramItem.createShape({ id: '2', renderer: 'Button', transform: new Transform(new Vec2(200, 100), new Vec2(100, 50), Rotation.ZERO) });
+    const shape1 = DiagramItem.createShape({ 
+        id: '1',
+        renderer: 'Button',
+        transform: new Transform(
+            new Vec2(100, 100),
+            new Vec2(100, 50),
+            Rotation.ZERO,
+        ),
+    });
+
+    const shape2 = DiagramItem.createShape({ 
+        id: '2',
+        renderer: 'Button',
+        transform: new Transform(
+            new Vec2(200, 100),
+            new Vec2(100, 50),
+            Rotation.ZERO,
+        ),
+    });
 
     it('should instantiate with factory method', () => {
         const group = DiagramItem.createGroup({ id: groupId, childIds: [shape1.id, shape2.id] });

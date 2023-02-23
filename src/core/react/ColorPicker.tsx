@@ -7,13 +7,13 @@
 
 import { Button, Popover, Tabs } from 'antd';
 import { TooltipPlacement } from 'antd/lib/tooltip';
-import classNames from 'classnames';
 import * as React from 'react';
 import { ColorResult, SketchPicker } from 'react-color';
 import { texts } from '@app/texts';
 import { Color } from './../utils/color';
 import { ColorPalette } from './../utils/color-palette';
 import './ColorPicker.scss';
+import { ColorList } from './ColorList';
 import { useEventCallback } from './hooks';
 
 type ColorTab = 'palette' | 'advanced';
@@ -99,25 +99,13 @@ export const ColorPicker = React.memo((props: ColorPickerProps) => {
     const content = (
         <Tabs size='small' className='color-picker-tabs' animated={false} activeKey={activeColorTab} onChange={doSelectTab}>
             <Tabs.TabPane key='palette' tab={texts.common.palette}>
-                <div className='color-picker-colors'>
-                    {selectedPalette.colors.map(c =>
-                        <div className={classNames('color-picker-color', { selected: c.eq(color) })} key={c.toString()}>
-                            <div className='color-picker-color-inner' onClick={() => doSelectColor(c)} style={{ background: c.toString() }}></div>
-                        </div>,
-                    )}
-                </div>
+                <ColorList color={color} colors={selectedPalette} onClick={doSelectColor} />
 
                 {recentColors &&
                     <div>
                         <h4>{texts.common.recent}</h4>
 
-                        <div className='color-picker-colors'>
-                            {recentColors.colors.map(c =>
-                                <div className={classNames('color-picker-color', { selected: c.eq(color) })} key={c.toString()}>
-                                    <div className='color-picker-color-inner' onClick={() => doSelectColor(c)} style={{ background: c.toString() }}></div>
-                                </div>,
-                            )}
-                        </div>
+                        <ColorList color={color} colors={recentColors} onClick={doSelectColor} />
                     </div>
                 }
             </Tabs.TabPane>

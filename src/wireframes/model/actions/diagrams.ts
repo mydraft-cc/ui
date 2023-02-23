@@ -41,10 +41,14 @@ export const setDiagramMaster =
     });
 
 export const changeSize =
-    createAction<{ width: number; height: number }>('editor/size');
+    createAction('editor/size', (width: number, height: number) => {
+        return { payload:  { width, height } };
+    });
 
 export const changeColor =
-    createAction<{ color: string }>('editor/color');
+    createAction('editor/color', (color: Color) => {
+        return { payload:  { color: color.toString() } };
+    });
 
 export function buildDiagrams(builder: ActionReducerMapBuilder<EditorState>) {
     return builder

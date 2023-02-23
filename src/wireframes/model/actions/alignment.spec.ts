@@ -11,9 +11,32 @@ import { alignItems, AlignmentMode, buildAlignment, createClassReducer, Diagram,
 /* eslint-disable @typescript-eslint/naming-convention */
 
 describe('AlignmentReducer', () => {
-    const shape1 = DiagramItem.createShape({ id: '1', renderer: 'Button', transform: new Transform(new Vec2(100, 100), new Vec2(20, 20), Rotation.ZERO) });
-    const shape2 = DiagramItem.createShape({ id: '2', renderer: 'Button', transform: new Transform(new Vec2(200, 200), new Vec2(40, 40), Rotation.ZERO) });
-    const shape3 = DiagramItem.createShape({ id: '3', renderer: 'Button', transform: new Transform(new Vec2(300, 300), new Vec2(80, 80), Rotation.ZERO) });
+    const shape1 = DiagramItem.createShape({
+        id: '1', 
+        renderer: 'Button', 
+        transform: new Transform(
+            new Vec2(100, 100),
+            new Vec2(20, 20),
+            Rotation.ZERO),
+    });
+
+    const shape2 = DiagramItem.createShape({
+        id: '2', 
+        renderer: 'Button', 
+        transform: new Transform(
+            new Vec2(200, 200),
+            new Vec2(40, 40),
+            Rotation.ZERO),
+    });
+
+    const shape3 = DiagramItem.createShape({
+        id: '3', 
+        renderer: 'Button', 
+        transform: new Transform(
+            new Vec2(300, 300),
+            new Vec2(80, 80),
+            Rotation.ZERO),
+    });
 
     const diagram =
         Diagram.create({ id: '1' })

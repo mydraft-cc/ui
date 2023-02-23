@@ -7,14 +7,38 @@
 
 /* eslint-disable @typescript-eslint/naming-convention */
 
-import { Rotation, Vec2 } from '@app/core';
-import { buildAppearance, changeItemsAppearance, createClassReducer, Diagram, DiagramItem, EditorState, RendererService, Transform, transformItems } from '@app/wireframes/model';
+import { Color, Rotation, Vec2 } from '@app/core';
+import { DefaultAppearance } from '@app/wireframes/interface';
+import { buildAppearance, changeColors, changeItemsAppearance, createClassReducer, Diagram, DiagramItem, EditorState, RendererService, Transform, transformItems } from '@app/wireframes/model';
 import { Button } from '@app/wireframes/shapes/neutral/button';
 import { AbstractControl } from '@app/wireframes/shapes/utils/abstract-control';
 
 describe('AppearanceReducer', () => {
-    const shape1 = DiagramItem.createShape({ id: '1', renderer: 'Button', transform: new Transform(Vec2.ZERO, new Vec2(100, 100), Rotation.ZERO) });
-    const shape2 = DiagramItem.createShape({ id: '2', renderer: 'Button', transform: new Transform(Vec2.ZERO, new Vec2(200, 200), Rotation.ZERO) });
+    const shape1 = DiagramItem.createShape({ 
+        id: '1',
+        renderer: 'Button',
+        transform: new Transform(
+            Vec2.ZERO,
+            new Vec2(100, 100),
+            Rotation.ZERO,
+        ),
+        appearance: {
+            [DefaultAppearance.BACKGROUND_COLOR]: 0xff0000,
+        },
+    });
+
+    const shape2 = DiagramItem.createShape({ 
+        id: '2',
+        renderer: 'Button',
+        transform: new Transform(
+            Vec2.ZERO,
+            new Vec2(200, 200),
+            Rotation.ZERO,
+        ),
+        appearance: {
+            [DefaultAppearance.BACKGROUND_COLOR]: '#ff0000',
+        },
+    });
 
     const diagram =
         Diagram.create({ id: '1' })
@@ -38,11 +62,29 @@ describe('AppearanceReducer', () => {
     });
 
     it('should change appearance of all items to new value', () => {
-        const action = changeItemsAppearance(diagram, diagram.items.values, 'TEXT', 'MyValue');
+        const action = changeItemsAppearance(diagram, diagram.items.values, DefaultAppearance.TEXT, 'MyValue');
 
         expectShapesAfterAction(action, (newShape1, newShape2) => {
-            expect(newShape1.appearance.get('TEXT')).toEqual('MyValue');
-            expect(newShape2.appearance.get('TEXT')).toEqual('MyValue');
+            expect(newShape1.appearance.get(DefaultAppearance.TEXT)).toEqual('MyValue');
+            expect(newShape2.appearance.get(DefaultAppearance.TEXT)).toEqual('MyValue');
+        });
+    });
+
+    it('should change colors of all items to new value', () => {
+        const action = changeColors(Color.RED, Color.GREEN);
+
+        expectShapesAfterAction(action, (newShape1, newShape2) => {
+            expect(newShape1.appearance.get(DefaultAppearance.BACKGROUND_COLOR)).toEqual(0x00ff00);
+            expect(newShape2.appearance.get(DefaultAppearance.BACKGROUND_COLOR)).toEqual(0x00ff00);
+        });
+    });
+
+    it('should change colors when old color does not match', () => {
+        const action = changeColors(Color.BLUE, Color.GREEN);
+
+        expectShapesAfterAction(action, (newShape1, newShape2) => {
+            expect(newShape1.appearance.get(DefaultAppearance.BACKGROUND_COLOR)).not.toEqual(0x00ff00);
+            expect(newShape2.appearance.get(DefaultAppearance.BACKGROUND_COLOR)).not.toEqual(0x00ff00);
         });
     });
 

@@ -71,7 +71,7 @@ describe('DiagramReducer', () => {
     });
 
     it('should change size', () => {
-        const action = changeSize({ width: 1500, height: 1200 });
+        const action = changeSize(1500, 1200);
 
         const state_1 = EditorState.create();
         const state_2 = reducer(state_1, action);
@@ -80,12 +80,12 @@ describe('DiagramReducer', () => {
     });
 
     it('should change color', () => {
-        const action = changeColor({ color: '#f00' });
+        const action = changeColor(Color.RED);
 
         const state_1 = EditorState.create();
         const state_2 = reducer(state_1, action);
 
-        expect(state_2.color).toEqual(Color.fromString('#f00'));
+        expect(state_2.color).toEqual(Color.fromString('#ff0000'));
     });
 
     it('should rename title', () => {

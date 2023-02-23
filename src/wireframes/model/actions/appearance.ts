@@ -6,9 +6,14 @@
 */
 
 import { ActionReducerMapBuilder, createAction } from '@reduxjs/toolkit';
-import { Types } from '@app/core';
+import { Color, Types } from '@app/core';
 import { DiagramItemSet, EditorState, RendererService, Transform } from './../internal';
 import { createItemsAction, DiagramRef, ItemsRef } from './utils';
+
+export const changeColors =
+    createAction('items/color', (oldColor: Color, newColor: Color) => {
+        return { payload: { oldColor: oldColor.toString(), newColor: newColor.toString() } };
+    });
 
 export const changeItemsAppearance =
     createAction('items/appearance', (diagram: DiagramRef, shapes: ItemsRef, key: string, value: any, force = false) => {
@@ -22,6 +27,34 @@ export const transformItems =
 
 export function buildAppearance(builder: ActionReducerMapBuilder<EditorState>) {
     return builder
+        .addCase(changeColors, (state, action) => {
+            const oldColor = Color.fromValue(action.payload.oldColor);
+    
+            const newColorValue = Color.fromValue(action.payload.newColor);
+            const newColorNumber = newColorValue.toNumber();
+
+            return state.updateAllDiagrams(diagram => {
+                return diagram.updateAllItems(item => {
+                    if (item.type === 'Group') {
+                        return item;
+                    }
+
+                    const appearance = item.appearance.mutate(mutator => {
+                        for (const [key, value] of Object.entries(item.appearance.raw)) {
+                            if (key.endsWith('COLOR')) {
+                                const parsedColor = Color.fromValue(value);
+
+                                if (parsedColor.eq(oldColor)) {
+                                    mutator.set(key, newColorNumber);
+                                }
+                            }
+                        }
+                    });
+
+                    return item.replaceAppearance(appearance);
+                });
+            });
+        })
         .addCase(changeItemsAppearance, (state, action) => {
             const { diagramId, appearance, itemIds, force } = action.payload;
 

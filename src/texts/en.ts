@@ -20,6 +20,7 @@ export const texts = {
         backgroundColor: 'Background Color',
         bringForwards: 'Bring Forwards',
         bringToFront: 'Bring to Front',
+        colors: 'Colors',
         copy: 'Copy',
         copyTooltip: 'Copy Items',
         custom: 'Custom',

@@ -31,7 +31,7 @@ export function useLoading() {
     });
 
     const doNew = useEventCallback(() => {
-        dispatch(newDiagram({ navigate: true }));
+        dispatch(newDiagram(true));
     });
 
     const doSave = useEventCallback(() => {
