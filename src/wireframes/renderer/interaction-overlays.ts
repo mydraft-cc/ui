@@ -19,10 +19,15 @@ export class InteractionOverlays {
     private readonly labels: svg.Element[] = [];
     private indexLabels = 0;
     private indexLines = 0;
+    private zoom = 1;
 
     constructor(
         private readonly layer: svg.Container,
     ) {
+    }
+
+    public setZoom(zoom: number) {
+        this.zoom = zoom;
     }
 
     public showSnapAdorners2(snapResult: SnapResult) {
@@ -38,12 +43,12 @@ export class InteractionOverlays {
     public renderXLine(line: SnapLine) {
         if (!line.positions) {
             // Use rounding at the propery side and a offset of 0.5 pixels to have clear lines.
-            const x = getPosition(line.value, line.side === 'Left');
+            const x = getPosition(line.value);
 
-            this.renderLine(x, -4000, 1, 10000, line.isCenter ? COLOR_BLUE : COLOR_RED);
+            this.renderLine(x, -4000, 1 / this.zoom, 10000, line.isCenter ? COLOR_BLUE : COLOR_RED);
         } else if (line.diff) {
             const dx = line.diff.x;
-            const dy = line.diff.y;
+            const dy = line.diff.y / this.zoom;
     
             for (const position of line.positions) {
                 const x = Math.round(position.x) + .5;
@@ -58,12 +63,12 @@ export class InteractionOverlays {
     public renderYLine(line: SnapLine) {
         if (!line.positions) {
             // Use rounding at the propery side and a offset of 0.5 pixels to have clear lines.
-            const y = getPosition(line.value, line.side === 'Top');
+            const y = getPosition(line.value);
 
-            this.renderLine(-4000.5, y, 10000, 1, line.isCenter ? COLOR_BLUE : COLOR_RED);
+            this.renderLine(-4000.5, y, 10000, 1 / this.zoom, line.isCenter ? COLOR_BLUE : COLOR_RED);
         } else if (line.diff) {
             const dx = line.diff.x;
-            const dy = line.diff.y;
+            const dy = line.diff.y / this.zoom;
     
             for (const position of line.positions) {
                 const x = Math.round(position.x) + .5;
@@ -115,8 +120,8 @@ export class InteractionOverlays {
             labelRect.show();
         }
 
-        const w = SVGRenderer2.INSTANCE.getTextWidth(text, fontSize, 'inherit');
-        const h = fontSize * 1.5;
+        const w = SVGRenderer2.INSTANCE.getTextWidth(text, fontSize, 'inherit') / this.zoom;
+        const h = fontSize * 1.5 / this.zoom;
 
         if (centerX) {
             x -= 0.5 * w;
@@ -128,13 +133,13 @@ export class InteractionOverlays {
 
         const labelContent = labelText.node.children[0] as HTMLDivElement;
 
-        labelContent.style.fontSize = sizeInPx(fontSize);
+        labelContent.style.fontSize = sizeInPx(fontSize / this.zoom);
         labelContent.textContent = text;
         labelRect.fill(color);
 
         const bounds = new Rect2(x, y, w, h);
 
-        SVGHelper.transform(labelText, { rect: bounds });
+        SVGHelper.transform(labelText, { rect: bounds }, false);
         SVGHelper.transform(labelRect, { rect: bounds.inflate(padding) });
 
         // Increment by two because we create two DOM elements per label.
@@ -155,10 +160,6 @@ export class InteractionOverlays {
     }
 }
 
-function getPosition(value: number, topLeft = false) {
-    if (topLeft) {
-        return Math.floor(value) - 0.5;
-    } else {
-        return Math.floor(value) + 0.5;
-    }
+function getPosition(value: number) {
+    return Math.floor(value) - 0.5;
 }

@@ -50,6 +50,8 @@ export interface TransformAdornerProps {
     onTransformItems: (diagram: Diagram, items: DiagramItem[], oldBounds: Transform, newBounds: Transform) => void;
 }
 
+const DRAG_SIZE = 12;
+
 export class TransformAdorner extends React.PureComponent<TransformAdornerProps> implements InteractionHandler {
     private allElements: svg.Element[];
     private canResizeX = false;
@@ -486,54 +488,66 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
             return;
         }
 
+        const stroke = { width: 1 / this.props.zoom };
+
         const size = this.transform.size;
 
         const rotation = this.transform.rotation.degree;
         const position = this.transform.position;
 
+        const adornerSize = DRAG_SIZE / this.props.zoom;
+        const adornerHalfSize = adornerSize / 2;
+
         for (const resizeShape of this.resizeShapes) {
             const offset = resizeShape['offset'];
-
-            SVGHelper.transform(resizeShape, {
-                x: position.x - 7 + offset.x * (size.x + 4),
-                y: position.y - 7 + offset.y * (size.y + 4),
-                rx: position.x,
-                ry: position.y,
-                rotation,
-            }, true, true);
 
             const visible =
                 (offset.x === 0 || this.canResizeX) &&
                 (offset.y === 0 || this.canResizeY);
 
-            if (visible) {
-                resizeShape.show();
-            } else {
+            if (!visible) {
                 resizeShape.hide();
+                continue;
             }
+
+            SVGHelper.transform(resizeShape, {
+                x: position.x - adornerHalfSize + offset.x * (size.x + adornerHalfSize),
+                y: position.y - adornerHalfSize + offset.y * (size.y + adornerHalfSize),
+                w: adornerSize,
+                h: adornerSize,
+                rx: position.x,
+                ry: position.y,
+                rotation,
+            }, false, true);
+
+            resizeShape.stroke(stroke);
+            resizeShape.show();
         }
 
+        this.rotateShape.size(adornerSize, adornerSize);
+        this.rotateShape.stroke(stroke);
         this.rotateShape.show();
 
         SVGHelper.transform(this.rotateShape, {
-            x: position.x - 8,
-            y: position.y - 8 - size.y * 0.5 - 30,
+            x: position.x - adornerHalfSize,
+            y: position.y - adornerHalfSize - size.y * 0.5 - 30 / this.props.zoom,
             rx: position.x,
             ry: position.y,
             rotation,
         }, true, true);
 
+        this.moveShape.stroke(stroke);
         this.moveShape.show();
 
         SVGHelper.transform(this.moveShape, {
-            x: position.x - 0.5 * size.x - 1,
-            y: position.y - 0.5 * size.y - 1,
-            w: Math.floor(size.x + 2),
-            h: Math.floor(size.y + 2),
+            x: position.x - 0.5 * size.x - stroke.width,
+            y: position.y - 0.5 * size.y - stroke.width,
+            w: Math.floor(size.x) + 2 * stroke.width,
+            h: Math.floor(size.y) + 2 * stroke.width,
             rx: position.x,
             ry: position.y,
             rotation,
-        }, true, true);
+        }, false, true);
     }
 
     private hideShapes() {
@@ -552,7 +566,7 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
 
     private createRotateShape() {
         const rotateShape =
-            this.props.adorners.ellipse(16, 16)
+            this.props.adorners.ellipse(DRAG_SIZE, DRAG_SIZE)
                 .stroke({ color: TRANSFORMER_STROKE_COLOR, width: 1 }).fill(TRANSFORMER_FILL_COLOR);
 
         this.props.interactionService.setCursor(rotateShape, 'pointer');
@@ -561,13 +575,13 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
     }
 
     private createResizeShapes() {
-        const ys = [-0.5, -0.5, -0.5, 0.0, 0.0, 0.5, 0.5, 0.5];
-        const xs = [-0.5, 0.0, 0.5, -0.5, 0.5, -0.5, 0.0, 0.5];
+        const ys = [-0.5, -0.5, -0.5,  0.0, 0.0,  0.5, 0.5, 0.5];
+        const xs = [-0.5,  0.0,  0.5, -0.5, 0.5, -0.5, 0.0, 0.5];
         const as = [315, 0, 45, 270, 90, 215, 180, 135];
 
         for (let i = 0; i < xs.length; i++) {
             const resizeShape =
-                this.props.adorners.rect(14, 14)
+                this.props.adorners.rect(DRAG_SIZE, DRAG_SIZE)
                     .stroke({ color: TRANSFORMER_STROKE_COLOR, width: 1 }).fill(TRANSFORMER_FILL_COLOR);
 
             resizeShape['offset'] = new Vec2(xs[i], ys[i]);
@@ -579,6 +593,7 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
     }
 
     public render(): any {
+        this.overlays.setZoom(this.props.zoom);
         return null;
     }
 }

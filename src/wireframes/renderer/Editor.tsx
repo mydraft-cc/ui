@@ -99,6 +99,7 @@ export const Editor = React.memo((props: EditorProps) => {
     }, [selectedItemsWithLocked]);
 
     const doInit = React.useCallback((doc: svg.Svg) => {
+        // Create these layers in the correct order.
         diagramTools.current = doc.rect().fill('transparent');
         renderMasterLayer.current = doc.group();
         renderMainLayer.current = doc.group();
@@ -191,6 +192,7 @@ export const Editor = React.memo((props: EditorProps) => {
                             onSelectItems={onSelectItems}
                             selectedDiagram={diagram}
                             selectedItems={fullSelection}
+                            zoom={zoom}
                         />
                     }
 

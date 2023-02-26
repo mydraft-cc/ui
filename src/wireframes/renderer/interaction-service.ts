@@ -188,7 +188,7 @@ export class InteractionService {
                 const { x, y } = diagram.point(event.pageX, event.pageY);
 
                 const svgEvent =
-                    new SvgEvent(event, new Vec2(x, y),
+                    new SvgEvent(event, new Vec2(Math.round(x), Math.round(y)),
                         currentElement,
                         currentElement?.shape || null);
 

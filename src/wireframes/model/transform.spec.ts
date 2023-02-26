@@ -182,28 +182,42 @@ describe('Transform', () => {
         expect(transform_1).toBe(transform_0);
     });
 
-    [{
-        rotation: 0, expectedPosition: new Vec2(150, 100),
-    }, {
-        rotation: 90, expectedPosition: new Vec2(100, 150),
-    }, {
-        rotation: 180, expectedPosition: new Vec2(50, 100),
-    }, {
-        rotation: 270, expectedPosition: new Vec2(100, 50),
-    }].forEach(x => {
-        it(`should resize top left with ${x.rotation} rotation`, () => {
+    [
+        { rotation: 0,   expectedPosition: new Vec2(150, 100) }, 
+        { rotation: 90,  expectedPosition: new Vec2(100, 150) }, 
+        { rotation: 180, expectedPosition: new Vec2(50, 100) },
+        { rotation: 270, expectedPosition: new Vec2(100, 50) },
+    ].forEach(test => {
+        it(`should resize top left with ${test.rotation} rotation`, () => {
             const oldSize = new Vec2(100, 100);
-            const newSize = new Vec2(200, 100);
-
             const oldPos = new Vec2(100, 100);
-            const newPos = x.expectedPosition;
 
-            const rotation = Rotation.fromDegree(x.rotation);
+            const newSize = new Vec2(200, 100);
+            const newPos = test.expectedPosition;
+
+            const rotation = Rotation.fromDegree(test.rotation);
 
             const actual = new Transform(oldPos, oldSize, rotation).resizeTopLeft(newSize);
             const expected = new Transform(newPos, newSize, rotation);
 
             expect(actual).toEqual(expected);
+        });
+    });
+
+    [
+        { dw:  2, dx:  1 },
+        { dw:  1, dx:  0.5 },
+        { dw: -2, dx: -1 },
+        { dw: -1, dx: -0.5 },
+    ].forEach(test => {
+        it(`should transform by bounds with dw=${test.dw} and dx=${test.dx}`, () => {
+            const source = new Transform(new Vec2(50, 50), new Vec2(100, 100), Rotation.ZERO);
+            const target = new Transform(new Vec2(50 + test.dx, 50), new Vec2(100 + test.dw, 100), Rotation.ZERO);
+    
+            const actual = source.transformByBounds(source, target, undefined);
+    
+            expect(actual.position).toEqual(target.position);
+            expect(actual.size).toEqual(target.size);
         });
     });
 });

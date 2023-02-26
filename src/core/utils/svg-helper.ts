@@ -100,10 +100,15 @@ export module SVGHelper {
         let x = t.rect ? t.rect.x : t.x || 0;
         let y = t.rect ? t.rect.y : t.y || 0;
 
-        const w = Math.round(t.rect ? t.rect.width : t.w || 0);
-        const h = Math.round(t.rect ? t.rect.height : t.h || 0);
+        let w = t.rect ? t.rect.width : t.w || 0;
+        let h = t.rect ? t.rect.height : t.h || 0;
 
-        if (!t.rotation && adjust) {
+        if (adjust) {
+            w = Math.round(w);
+            h = Math.round(h);
+        }
+
+        if (adjust && !t.rotation) {
             x = Math.round(x);
             y = Math.round(y);
         }
