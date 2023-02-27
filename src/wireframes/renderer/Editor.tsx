@@ -9,6 +9,7 @@ import * as svg from '@svgdotjs/svg.js';
 import * as React from 'react';
 import { Color, Rect2, SVGHelper, useEventCallback, Vec2 } from '@app/core';
 import { Diagram, DiagramItem, Transform } from '@app/wireframes/model';
+import { useOverlayContext } from './../contexts/OverlayContext';
 import { CanvasView } from './CanvasView';
 import { NavigateAdorner } from './NavigateAdorner';
 import { QuickbarAdorner } from './QuickbarAdorner';
@@ -16,6 +17,7 @@ import { RenderLayer } from './RenderLayer';
 import { SelectionAdorner } from './SelectionAdorner';
 import { TextAdorner } from './TextAdorner';
 import { TransformAdorner } from './TransformAdorner';
+import { InteractionOverlays } from './interaction-overlays'; 
 import { InteractionService } from './interaction-service';
 import './Editor.scss';
 
@@ -84,9 +86,11 @@ export const Editor = React.memo((props: EditorProps) => {
     const w = viewSize.x;
     const h = viewSize.y;
 
-    const adornersSelect = React.useRef<svg.Container>();
-    const adornersTransform = React.useRef<svg.Container>();
+    const adornerSelectLayer = React.useRef<svg.Container>();
+    const adornerTransformLayer = React.useRef<svg.Container>();
     const diagramTools = React.useRef<svg.Element>();
+    const overlayContext = useOverlayContext();
+    const overlayLayer = React.useRef<svg.Container>();
     const renderMainLayer = React.useRef<svg.Container>();
     const renderMasterLayer = React.useRef<svg.Container>();
     const [interactionMasterService, setInteractionMasterService] = React.useState<InteractionService>();
@@ -103,39 +107,47 @@ export const Editor = React.memo((props: EditorProps) => {
         diagramTools.current = doc.rect().fill('transparent');
         renderMasterLayer.current = doc.group();
         renderMainLayer.current = doc.group();
-        adornersSelect.current = doc.group();
-        adornersTransform.current = doc.group();
+        adornerSelectLayer.current = doc.group();
+        adornerTransformLayer.current = doc.group();
+        overlayLayer.current = doc.group();
+        overlayContext.overlayManager = new InteractionOverlays(overlayLayer.current);
+
+        SVGHelper.setPosition(adornerSelectLayer.current!, 0.5, 0.5);
+        SVGHelper.setPosition(adornerTransformLayer.current!, 0.5, 0.5);
+        SVGHelper.setPosition(adornerTransformLayer.current!, 0.5, 0.5);
+        SVGHelper.setPosition(diagramTools.current!, 0.5, 0.5);
+        SVGHelper.setPosition(overlayLayer.current!, 0.5, 0.5);
+        SVGHelper.setPosition(renderMainLayer.current!, 0.5, 0.5);
 
         setInteractionMainService(new InteractionService([
-            adornersSelect.current,
-            adornersTransform.current],
+            adornerSelectLayer.current,
+            adornerTransformLayer.current],
         renderMainLayer.current, doc));
 
         setInteractionMasterService(new InteractionService([
-            adornersSelect.current,
-            adornersTransform.current],
+            adornerSelectLayer.current,
+            adornerTransformLayer.current],
         renderMasterLayer.current, doc));
-    }, []);
-
-    React.useEffect(() => {
-        if (interactionMainService) {
-            SVGHelper.setPosition(diagramTools.current!, 0.5, 0.5);
-            SVGHelper.setPosition(adornersSelect.current!, 0.5, 0.5);
-            SVGHelper.setPosition(adornersTransform.current!, 0.5, 0.5);
-            SVGHelper.setPosition(renderMasterLayer.current!, 0.5, 0.5);
-            SVGHelper.setPosition(renderMainLayer.current!, 0.5, 0.5);
-        }
-    }, [interactionMainService]);
+    }, [overlayContext]);
 
     React.useEffect(() => {
         if (interactionMainService) {
             SVGHelper.setSize(diagramTools.current!, w, h);
-            SVGHelper.setSize(adornersSelect.current!, w, h);
-            SVGHelper.setSize(adornersTransform.current!, w, h);
+            SVGHelper.setSize(adornerSelectLayer.current!, w, h);
+            SVGHelper.setSize(adornerTransformLayer.current!, w, h);
+            SVGHelper.setSize(diagramTools.current!, 0.5, 0.5);
             SVGHelper.setSize(renderMasterLayer.current!, w, h);
             SVGHelper.setSize(renderMainLayer.current!, w, h);
         }
     }, [w, h, interactionMainService]);
+    
+    React.useEffect(() => {
+        overlayContext.snapManager.prepare(diagram, viewSize);
+    }, [diagram, overlayContext.snapManager, viewSize]);
+    
+    React.useEffect(() => {
+        overlayContext.overlayManager['setZoom']?.(zoom);
+    }, [diagram, overlayContext.overlayManager, zoom]);
 
     const doPreview = useEventCallback((items: DiagramItem[]) => {
         setInteractionPreviews(items);
@@ -148,7 +160,7 @@ export const Editor = React.memo((props: EditorProps) => {
     });
 
     return (
-        <div className='editor' style={{ background: color.toString() }}>
+        <div className='editor' style={{ background: color.toString() }} ref={element => overlayContext.element = element}>
             <CanvasView
                 onInit={doInit}
                 viewBox={viewBox}
@@ -173,13 +185,15 @@ export const Editor = React.memo((props: EditorProps) => {
 
                     {onTransformItems &&
                         <TransformAdorner
-                            adorners={adornersTransform.current!}
+                            adorners={adornerTransformLayer.current!}
                             interactionService={interactionMainService}
                             onPreview={doPreview}
                             onPreviewEnd={doPreviewEnd}
                             onTransformItems={onTransformItems}
+                            overlayManager={overlayContext.overlayManager}
                             selectedDiagram={diagram}
                             selectedItems={selectedItems}
+                            snapManager={overlayContext.snapManager}
                             viewSize={viewSize}
                             zoom={zoom}
                         />
@@ -187,7 +201,7 @@ export const Editor = React.memo((props: EditorProps) => {
 
                     {onSelectItems &&
                         <SelectionAdorner
-                            adorners={adornersSelect.current!}
+                            adorners={adornerSelectLayer.current!}
                             interactionService={interactionMainService}
                             onSelectItems={onSelectItems}
                             selectedDiagram={diagram}

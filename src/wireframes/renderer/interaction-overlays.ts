@@ -30,7 +30,7 @@ export class InteractionOverlays {
         this.zoom = zoom;
     }
 
-    public showSnapAdorners2(snapResult: SnapResult) {
+    public showSnapAdorners(snapResult: SnapResult) {
         if (snapResult.snapX) {
             this.renderXLine(snapResult.snapX);
         }

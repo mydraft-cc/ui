@@ -176,7 +176,7 @@ export module SVGHelper {
     }
 
     export function setPosition(element: svg.Element, x: number, y: number) {
-        element.matrix(new svg.Matrix().translate(x, y));
+        element.matrix(new svg.Matrix().translateO(x, y));
     }
 
     export function setSize(element: svg.Element, width: number, height: number) {
