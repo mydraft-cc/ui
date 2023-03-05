@@ -47,7 +47,7 @@ export class Dropdown implements ShapePlugin {
 
         const path = `M${x - 0.5 * w},${y - 0.4 * h} L${x},${y + 0.6 * h},L${x + 0.5 * w},${y - 0.4 * h} z`;
 
-        ctx.renderer2.path(0, path, undefined, p => {
+        ctx.renderer2.path(0, path, p => {
             p.setBackgroundColor(ctx.shape.strokeColor);
         });
     }

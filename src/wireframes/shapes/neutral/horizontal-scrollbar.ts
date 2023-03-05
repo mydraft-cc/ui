@@ -91,7 +91,7 @@ export class HorizontalScrollbar implements ShapePlugin {
 
         const path = `M${x - 0.4 * w},${y - 0.5 * h} L${x + 0.6 * w},${y},L${x - 0.4 * w},${y + 0.5 * h} z`;
 
-        ctx.renderer2.path(0, path, undefined, p => {
+        ctx.renderer2.path(0, path, p => {
             p.setBackgroundColor(ctx.shape.getAppearance(ARROW_COLOR));
         });
     }
@@ -104,7 +104,7 @@ export class HorizontalScrollbar implements ShapePlugin {
 
         const path = `M${x + 0.4 * w},${y - 0.5 * h} L${x - 0.6 * w},${y},L${x + 0.4 * w},${y + 0.5 * h} z`;
 
-        ctx.renderer2.path(0, path, undefined, p => {
+        ctx.renderer2.path(0, path, p => {
             p.setBackgroundColor(ctx.shape.getAppearance(ARROW_COLOR));
         });
     }

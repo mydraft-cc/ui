@@ -7,11 +7,12 @@
 
 import * as svg from '@svgdotjs/svg.js';
 import * as React from 'react';
-import { Rotation, SVGHelper, Timer, Vec2 } from '@app/core';
+import { Rotation, Subscription, SVGHelper, Timer, Vec2 } from '@app/core';
 import { Diagram, DiagramItem, SnapManager, SnapMode, Transform } from '@app/wireframes/model';
 import { OverlayManager } from './../contexts/OverlayContext';
 import { SVGRenderer2 } from './../shapes/utils/svg-renderer2';
 import { InteractionHandler, InteractionService, SvgEvent } from './interaction-service';
+import { PreviewEvent } from './preview';
 
 enum Mode { None, Resize, Move, Rotate }
 
@@ -46,11 +47,8 @@ export interface TransformAdornerProps {
     // The overlay manager.
     overlayManager: OverlayManager;
 
-    // The preview of items.
-    onPreview: (items: DiagramItem[]) => void;
-
-    // The preview of items.
-    onPreviewEnd: () => void;
+    // The preview subscription.
+    previewStream: Subscription<PreviewEvent>;
 
     // A function to transform a set of items.
     onTransformItems: (diagram: Diagram, items: DiagramItem[], oldBounds: Transform, newBounds: Transform) => void;
@@ -189,8 +187,7 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
 
         let counter = 1;
 
-        this.startTransform = this.transform;
-        this.startPosition = null!;
+        this.startManipulation(null!, this.transform);
 
         const run = () => {
             const delta = new Vec2(xd * counter, yd * counter);
@@ -237,7 +234,7 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
                 this.startTransform,
                 this.transform);
         } finally {
-            this.stopEverything();
+            this.stopTransform();
         }
     }
 
@@ -257,15 +254,11 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
         hitItem = this.hitTest(event.position);
 
         if (!hitItem) {
-            this.manipulationMode = Mode.None;
             return;
         }
 
         // Reset the flag to indicate whether something has been manipulated.
-        this.manipulated = false;
-
-        this.startPosition = event.position;
-        this.startTransform = this.transform;
+        this.startManipulation(event.position!, this.transform);
 
         if (hitItem === this.moveShape) {
             this.manipulationMode = Mode.Move;
@@ -327,9 +320,14 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
     }
 
     private renderPreview() {
-        const previews = this.props.selectedItems.map(x => x.transformByBounds(this.startTransform, this.transform));
+        const items = {};
 
-        this.props.onPreview(previews);
+        for (const item of this.props.selectedItems) {
+            items[item.id] = item.transformByBounds(this.startTransform, this.transform);
+        }
+
+        // Use a stream of preview updates to bypass react for performance reasons.
+        this.props.previewStream.next({ type: 'Update', items });
     }
 
     private move(delta: Vec2, snapMode: SnapMode, showOverlay = true) {
@@ -459,7 +457,7 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
                 this.startTransform,
                 this.transform);
         } finally {
-            this.stopEverything();
+            this.stopTransform();
         }
     }
 
@@ -469,11 +467,26 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
             return;
         }
 
-        this.stopEverything();
+        this.stopTransform();
     }
 
-    private stopEverything() {
-        this.props.onPreviewEnd();
+    private startManipulation(position: Vec2, transform: Transform) {
+        // Use a stream of preview updates to bypass react for performance reasons.
+        this.props.previewStream.next({ type: 'Start' });
+
+        this.moveTimer?.destroy();
+        this.moveTimer = null;
+
+        this.manipulationMode = Mode.None;
+        this.manipulated = false;
+
+        this.startPosition = position;
+        this.startTransform = transform;
+    }
+
+    private stopTransform() {
+        // Use a stream of preview updates to bypass react for performance reasons.
+        this.props.previewStream.next({ type: 'End' });
 
         this.moveTimer?.destroy();
         this.moveTimer = null;
@@ -527,6 +540,7 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
         this.rotateShape.stroke(stroke);
         this.rotateShape.show();
 
+        SVGHelper.setSize(this.rotateShape, adornerSize, adornerSize);
         SVGHelper.transform(this.rotateShape, {
             x: position.x - adornerHalfSize,
             y: position.y - adornerHalfSize - size.y * 0.5 - 30 / this.props.zoom,
@@ -539,10 +553,10 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
         this.moveShape.show();
 
         SVGHelper.transform(this.moveShape, {
-            x: position.x - 0.5 * size.x - stroke.width,
-            y: position.y - 0.5 * size.y - stroke.width,
-            w: Math.floor(size.x) + 2 * stroke.width,
-            h: Math.floor(size.y) + 2 * stroke.width,
+            x: position.x - 0.5 * size.x - stroke.width + 0.5,
+            y: position.y - 0.5 * size.y - stroke.width + 0.5,
+            w: Math.floor(size.x) + stroke.width,
+            h: Math.floor(size.y) + stroke.width,
             rx: position.x,
             ry: position.y,
             rotation,

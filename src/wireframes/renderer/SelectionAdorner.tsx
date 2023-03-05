@@ -7,9 +7,10 @@
 
 import * as svg from '@svgdotjs/svg.js';
 import * as React from 'react';
-import { isModKey, Rect2, SVGHelper, Vec2 } from '@app/core';
+import { isModKey, Rect2, Subscription, SVGHelper, Vec2 } from '@app/core';
 import { calculateSelection, Diagram, DiagramItem } from '@app/wireframes/model';
 import { InteractionHandler, InteractionService, SvgEvent } from './interaction-service';
+import { PreviewEvent } from './preview';
 
 const SELECTION_STROKE_COLOR = '#080';
 const SELECTION_STROKE_LOCK_COLOR = '#f00';
@@ -30,6 +31,9 @@ export interface SelectionAdornerProps {
     // The interaction service.
     interactionService: InteractionService;
 
+    // The preview subscription.
+    previewStream: Subscription<PreviewEvent>;
+
     // A function to select a set of items.
     onSelectItems: (diagram: Diagram, itemIds: string[]) => any;
 }
@@ -41,6 +45,15 @@ export class SelectionAdorner extends React.Component<SelectionAdornerProps> imp
 
     public componentDidMount() {
         this.props.interactionService.addHandler(this);
+
+        // Use a stream of preview updates to bypass react for performance reasons.
+        this.props.previewStream.subscribe(event => {
+            if (event.type === 'Update') {
+                this.markItems(event.items);
+            } else {
+                this.markItems();
+            }
+        });
 
         this.selectionShape =
             this.props.adorners.rect(1, 1)
@@ -146,7 +159,7 @@ export class SelectionAdorner extends React.Component<SelectionAdornerProps> imp
         }
     }
 
-    private markItems() {
+    private markItems(preview?: { [id: string]: DiagramItem }) {
         for (const adorner of this.selectionMarkers) {
             adorner.hide();
         }
@@ -161,7 +174,7 @@ export class SelectionAdorner extends React.Component<SelectionAdornerProps> imp
         }
 
         // Use the inverted zoom level as stroke width.
-        const offset = 1 / this.props.zoom;
+        const strokeWidth = 1 / this.props.zoom;
 
         this.props.selectedItems.forEach((item, i) => {
             const marker = this.selectionMarkers[i];
@@ -172,22 +185,23 @@ export class SelectionAdorner extends React.Component<SelectionAdornerProps> imp
                     SELECTION_STROKE_COLOR;
                     
             // Use the inverted zoom level as stroke width to have a constant stroke style.
-            marker.stroke({ color, width: offset });
-
-            const bounds = item.bounds(this.props.selectedDiagram);
+            marker.stroke({ color, width: strokeWidth });
+            
+            const actualItem = preview?.[item.id] || item;
+            const actualBounds = actualItem.bounds(this.props.selectedDiagram);
 
             // Also adjust the bounds by the border width, to show the border outside of the shape.
-            this.transformShape(marker, bounds.position.sub(bounds.halfSize), bounds.size, offset, bounds.rotation.degree);
+            this.transformShape(marker, actualBounds.position.sub(actualBounds.halfSize), actualBounds.size, strokeWidth, actualBounds.rotation.degree);
         });
     }
 
     protected transformShape(shape: svg.Rect, position: Vec2, size: Vec2, offset: number, rotation = 0) {
         // We have to disable the adjustment mode to turn off the rounding.
         SVGHelper.transform(shape, {
-            x: position.x - offset,
-            y: position.y - offset,
-            w: size.x + 2 * offset,
-            h: size.y + 2 * offset,
+            x: position.x - 0.5 * offset,
+            y: position.y - 0.5 * offset,
+            w: size.x + offset,
+            h: size.y + offset,
             rotation,
         }, false);
 

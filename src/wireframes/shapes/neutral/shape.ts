@@ -72,13 +72,13 @@ export class Shape implements ShapePlugin {
         } else if (shapeType === SHAPE_TRIANGLE) {
             const path = `M0 ${b.bottom} L${b.cx} ${b.top} L${b.right} ${b.bottom} z`;
 
-            ctx.renderer2.path(ctx.shape, path, ctx.rect, p => {
+            ctx.renderer2.path(ctx.shape, path, p => {
                 this.styleShape(ctx, p);
             });
         } else if (shapeType === SHAPE_RHOMBUS) {
             const path = `M${b.cx} ${b.top} L${b.right} ${b.cy} L${b.cx} ${b.bottom} L${b.left} ${b.cy} z`;
 
-            ctx.renderer2.path(ctx.shape, path, ctx.rect, p => {
+            ctx.renderer2.path(ctx.shape, path, p => {
                 this.styleShape(ctx, p);
             });
         } else {

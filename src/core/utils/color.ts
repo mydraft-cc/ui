@@ -150,17 +150,15 @@ export class Color {
     }
 
     public static fromHsv(h: number, s: number, v: number): Color {
-        const hi = Math.floor(h / 60) % 6;
+        h /= 60;
 
-        const f = (h / 60) - Math.floor(h / 60);
-
-        v *= 255;
-
+        const i = Math.floor(h);
+        const f = (h - i);
         const p = (v * (1 - s));
         const q = (v * (1 - (f * s)));
         const t = (v * (1 - ((1 - f) * s)));
 
-        switch (hi) {
+        switch (i % 6) {
             case 0:
                 return new Color(v, t, p);
             case 1:

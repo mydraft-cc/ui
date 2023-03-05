@@ -76,6 +76,7 @@ export const PrintDiagram = (props: PrintDiagramProps) => {
                 viewSize={size}
                 zoom={1}
                 zoomedSize={zoomedSize}
+                isDefaultView={false}
             />
         </>
     );

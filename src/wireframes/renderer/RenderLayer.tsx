@@ -7,8 +7,9 @@
 
 import * as svg from '@svgdotjs/svg.js';
 import * as React from 'react';
-import { ImmutableList } from '@app/core';
+import { ImmutableList, Subscription } from '@app/core';
 import { Diagram, DiagramItem, RendererService } from '@app/wireframes/model';
+import { PreviewEvent } from './preview';
 import { ShapeRef } from './shape-ref';
 
 export interface RenderLayerProps {
@@ -18,8 +19,8 @@ export interface RenderLayerProps {
     // The container to render on.
     diagramLayer: svg.Container;
 
-    // The preview items.
-    previewItems?: ReadonlyArray<DiagramItem>;
+    // The preview subscription.
+    preview?: Subscription<PreviewEvent>;
 
     // True when rendered.
     onRender?: () => void;
@@ -30,8 +31,8 @@ const showDebugOutlines = process.env.NODE_ENV === 'false';
 export const RenderLayer = React.memo((props: RenderLayerProps) => {
     const {
         diagram,
-        previewItems,
         diagramLayer,
+        preview,
         onRender,
     } = props;
 
@@ -124,16 +125,18 @@ export const RenderLayer = React.memo((props: RenderLayerProps) => {
     }, [diagramLayer, orderedShapes]);
 
     React.useEffect(() => {
-        if (previewItems) {
-            for (const item of previewItems) {
-                shapeRefsById.current[item.id]?.setPreview(item);
+        return preview?.subscribe(event => {
+            if (event.type === 'Update') {
+                for (const item of Object.values(event.items)) {
+                    shapeRefsById.current[item.id]?.setPreview(item);
+                }
+            } else {
+                for (const reference of Object.values(shapeRefsById.current)) {
+                    reference.setPreview(null);
+                }
             }
-        } else {
-            for (const reference of Object.values(shapeRefsById.current)) {
-                reference.setPreview(null);
-            }
-        }
-    }, [previewItems]);
+        });
+    }, [preview]);
 
     return null;
 });

@@ -89,7 +89,7 @@ export class VerticalScrollbar implements ShapePlugin {
         const w = clickSize * 0.3;
         const h = clickSize * 0.3;
 
-        ctx.renderer2.path(0, `M${x - 0.5 * w},${y - 0.4 * h} L${x},${y + 0.6 * h},L${x + 0.5 * w},${y - 0.4 * h} z`, undefined, p => {
+        ctx.renderer2.path(0, `M${x - 0.5 * w},${y - 0.4 * h} L${x},${y + 0.6 * h},L${x + 0.5 * w},${y - 0.4 * h} z`, p => {
             p.setBackgroundColor(ctx.shape.getAppearance(ARROW_COLOR));
         });
     }
@@ -100,7 +100,7 @@ export class VerticalScrollbar implements ShapePlugin {
         const w = clickSize * 0.3;
         const h = clickSize * 0.3;
 
-        ctx.renderer2.path(0, `M${x - 0.5 * w},${y + 0.4 * h} L${x},${y - 0.6 * h},L${x + 0.5 * w},${y + 0.4 * h} z`, undefined, p => {
+        ctx.renderer2.path(0, `M${x - 0.5 * w},${y + 0.4 * h} L${x},${y - 0.6 * h},L${x + 0.5 * w},${y + 0.4 * h} z`, p => {
             p.setBackgroundColor(ctx.shape.getAppearance(ARROW_COLOR));
         });
     }

@@ -17,6 +17,7 @@ const RESIZE_SNAP_GRID = 10;
 const RESIZE_MINIMUM = 1;
 
 export type SnapMode = 'None' | 'Grid' | 'Shapes';
+export type SnapSide = 'Left' | 'Right' | 'Top' | 'Bottom';
 
 export type SnapResult = { 
     snapX?: SnapLine;
@@ -29,7 +30,7 @@ export type SnapLine = {
     value: number;
 
     // The side.
-    side?: 'Left' | 'Right' | 'Top' | 'Bottom';
+    side?: SnapSide;
     
     // The difference to a side.
     diff?: { x: number; y: number };
