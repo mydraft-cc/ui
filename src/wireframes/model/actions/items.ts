@@ -45,7 +45,7 @@ export const renameItems =
 
 export const pasteItems =
     createAction('items/paste', (diagram: DiagramRef, json: string, offset = 0) => {
-        return { payload: createDiagramAction(diagram, { json: Serializer.generateNewIds(json), offset }) };
+        return { payload: createDiagramAction(diagram, { json: Serializer.tryGenerateNewIds(json), offset }) };
     });
 
 export function buildItems(builder: ActionReducerMapBuilder<EditorState>) {
