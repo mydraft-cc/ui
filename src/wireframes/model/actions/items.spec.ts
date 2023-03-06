@@ -141,18 +141,24 @@ describe('ItemsReducer', () => {
         let source: any = DiagramItemSet.createFromDiagram(diagram.rootIds.values, diagram)!;
         source = Serializer.serializeSet(source);
         source = JSON.stringify(source);
-        source = Serializer.generateNewIds(source);
 
-        const action = pasteItems(diagram, source);
+        const action1 = pasteItems(diagram, source);
+        const action2 = pasteItems(diagram, source);
 
         const state_1 = EditorState.create().addDiagram(diagram);
-        const state_2 = reducer(state_1, action);
+        const state_2 = reducer(state_1, action1);
+        const state_3 = reducer(state_2, action2);
 
-        const newDiagram = state_2.diagrams.get(diagram.id)!;
+        const newDiagram1 = state_2.diagrams.get(diagram.id)!;
+        const newDiagram2 = state_3.diagrams.get(diagram.id)!;
 
-        expect(newDiagram.items.size).toBe(8);
-        expect(newDiagram.rootIds.size).toBe(4);
-        expect(newDiagram.selectedIds.size).toBe(2);
+        expect(newDiagram1.items.size).toBe(8);
+        expect(newDiagram1.rootIds.size).toBe(4);
+        expect(newDiagram1.selectedIds.size).toBe(2);
+
+        expect(newDiagram2.items.size).toBe(12);
+        expect(newDiagram2.rootIds.size).toBe(6);
+        expect(newDiagram2.selectedIds.size).toBe(2);
     });
 
     it('should not throw when pasting invalid json to diagram', () => {

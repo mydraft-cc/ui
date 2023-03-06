@@ -7,7 +7,7 @@
 
 /* eslint-disable @typescript-eslint/no-loop-func */
 
-import { ActionReducerMapBuilder, createAction, Middleware } from '@reduxjs/toolkit';
+import { ActionReducerMapBuilder, createAction } from '@reduxjs/toolkit';
 import { MathHelper, Rotation, Vec2 } from '@app/core';
 import { Appearance } from '@app/wireframes/interface';
 import { Diagram, DiagramItem, DiagramItemSet, EditorState, RendererService, Serializer, Transform } from './../internal';
@@ -45,20 +45,8 @@ export const renameItems =
 
 export const pasteItems =
     createAction('items/paste', (diagram: DiagramRef, json: string, offset = 0) => {
-        return { payload: createDiagramAction(diagram, { json, offset }) };
+        return { payload: createDiagramAction(diagram, { json: Serializer.generateNewIds(json), offset }) };
     });
-
-export function itemsMiddleware(): Middleware {
-    const middleware: Middleware = () => next => action => {
-        if (pasteItems.match(action)) {
-            action.payload.json = Serializer.generateNewIds(action.payload.json);
-        }
-
-        return next(action);
-    };
-
-    return middleware;
-}
 
 export function buildItems(builder: ActionReducerMapBuilder<EditorState>) {
     return builder
@@ -116,7 +104,7 @@ export function buildItems(builder: ActionReducerMapBuilder<EditorState>) {
                 const set = Serializer.deserializeSet(JSON.parse(json));
 
                 diagram = diagram.addItems(set);
-                
+
                 diagram = diagram.updateItems(set.allShapes.map(x => x.id), item => {
                     const boundsOld = item.bounds(diagram);
                     const boundsNew = boundsOld.moveBy(new Vec2(offset, offset));
