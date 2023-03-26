@@ -7,7 +7,9 @@
 
 import { AnyAction } from 'redux';
 import { Types } from '@app/core';
-import { transformItems } from './appearance';
+import { changeItemsAppearance, transformItems } from './appearance';
+import { changeColor, changeSize, renameDiagram } from './diagrams';
+import { renameItems, selectItems } from './items';
 
 export function mergeAction(action: AnyAction, prevAction: AnyAction): AnyAction | null {
     if (action.type !== prevAction.type) {
@@ -16,8 +18,7 @@ export function mergeAction(action: AnyAction, prevAction: AnyAction): AnyAction
 
     const { diagramId, itemIds, timestamp } = action.payload;
 
-    if (!Types.isString(diagramId) ||
-        !Types.isNumber(timestamp)) {
+    if (!Types.isString(diagramId) || !Types.isNumber(timestamp)) {
         return null;
     }
 
@@ -27,14 +28,32 @@ export function mergeAction(action: AnyAction, prevAction: AnyAction): AnyAction
         return null;
     }
 
-    if (!Types.equals(prevAction.payload.diagramId, diagramId) ||
-        !Types.equals(prevAction.payload.itemIds, itemIds)) {
+    if (!Types.equals(prevAction.payload.diagramId, diagramId)) {
         return null;
     }
 
-    if (transformItems.match(action) && transformItems.match(prevAction)) {
+    if (selectItems.match(prevAction)) {
+        return action;
+    }
+
+    if (!Types.equals(prevAction.payload.itemIds, itemIds)) {
+        return null;
+    }
+
+    if (transformItems.match(prevAction)) {
         return { type: action.type, payload: { ...action.payload, oldBounds: prevAction.payload.oldBounds } };
     }
 
-    return action;
+    if (changeColor.match(prevAction) ||
+        changeSize.match(prevAction) ||
+        renameDiagram.match(prevAction) ||
+        renameItems.match(prevAction)) {
+        return action;
+    }
+
+    if (changeItemsAppearance.match(prevAction) && prevAction.payload.appearance === action.payload.appearance) {
+        return action;
+    }
+
+    return null;
 }
