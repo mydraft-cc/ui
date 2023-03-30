@@ -6,9 +6,10 @@
 */
 
 import * as React from 'react';
-import { Rect2, sizeInPx, Vec2 } from '@app/core';
+import { Rect2, sizeInPx, Subscription, Vec2 } from '@app/core';
 import { ActionButton, useAlignment } from '@app/wireframes/components/actions';
 import { Diagram, DiagramItem } from '@app/wireframes/model';
+import { PreviewEvent } from './preview';
 import './QuickbarAdorner.scss';
 
 export interface QuickbarAdornerProps {
@@ -24,41 +25,45 @@ export interface QuickbarAdornerProps {
     // The selected items.
     selectedItems: DiagramItem[];
 
-    // True when another change is running.
-    isPreviewing: boolean;
+    // The preview subscription.
+    previewStream: Subscription<PreviewEvent>;
 }
 
 export const QuickbarAdorner = (props: QuickbarAdornerProps) => {
     const {
-        isPreviewing,
+        previewStream,
         selectedDiagram,
         selectedItems,
         zoom,
     } = props;
 
     const forAlignment = useAlignment();
+    const toolbarRoot = React.useRef<HTMLDivElement>(null);
+    const toolbarTimer = React.useRef<any>();
     const [selectionRect, setSelectionRect] = React.useState<Rect2>();
-    const [selectionLock, setSelectionLock] = React.useState(false);
 
     React.useEffect(() => {
-        let timer: any;
+        // Use a stream of preview updates to bypass react for performance reasons.
+        previewStream.subscribe(event => {
+            const toolbar = toolbarRoot.current;
 
-        if (isPreviewing) {
-            setSelectionLock(true);
-        } else {
-            timer = setTimeout(() => {
-                setSelectionLock(false);
-            }, 500);
-        }
+            if (!toolbar) {
+                return;
+            }
+    
+            clearTimeout(toolbarTimer.current);
 
-        return () => {
-            clearTimeout(timer);
-        };
-    }, [isPreviewing]);
+            if (event.type === 'End') {
+                toolbarTimer.current = setTimeout(() => {
+                    toolbar.style.display = 'block';
+                }, 500);
+            } else if (event.type === 'Start') {
+                toolbar.style.display = 'none';
+            }
+        });
+    }, [previewStream]);
 
     React.useEffect(() => {
-        setSelectionLock(false);
-
         if (selectedItems.length >= 2) {
             setSelectionRect(Rect2.fromRects(selectedItems.map(x => x.bounds(selectedDiagram).aabb)));
         } else {
@@ -66,7 +71,7 @@ export const QuickbarAdorner = (props: QuickbarAdornerProps) => {
         }
     }, [selectedDiagram, selectedItems]);
 
-    if (!selectionRect || selectionLock) {
+    if (!selectionRect) {
         return null;
     }
 
@@ -74,15 +79,17 @@ export const QuickbarAdorner = (props: QuickbarAdornerProps) => {
     const y = sizeInPx(Math.round(zoom * selectionRect.y - 100));
 
     return (
-        <div className='quickbar' style={{ left: x, top: y }}>
-            <ActionButton action={forAlignment.alignHorizontalLeft} />
-            <ActionButton action={forAlignment.alignHorizontalCenter} />
-            <ActionButton action={forAlignment.alignHorizontalRight} />
-            <ActionButton action={forAlignment.alignVerticalTop} />
-            <ActionButton action={forAlignment.alignVerticalCenter} />
-            <ActionButton action={forAlignment.alignVerticalBottom} />
-            <ActionButton action={forAlignment.distributeHorizontally} hideWhenDisabled />
-            <ActionButton action={forAlignment.distributeVertically} hideWhenDisabled />
+        <div ref={toolbarRoot}>
+            <div className='quickbar' style={{ left: x, top: y }}>
+                <ActionButton action={forAlignment.alignHorizontalLeft} />
+                <ActionButton action={forAlignment.alignHorizontalCenter} />
+                <ActionButton action={forAlignment.alignHorizontalRight} />
+                <ActionButton action={forAlignment.alignVerticalTop} />
+                <ActionButton action={forAlignment.alignVerticalCenter} />
+                <ActionButton action={forAlignment.alignVerticalBottom} />
+                <ActionButton action={forAlignment.distributeHorizontally} hideWhenDisabled />
+                <ActionButton action={forAlignment.distributeVertically} hideWhenDisabled />
+            </div>
         </div>
     );
 };

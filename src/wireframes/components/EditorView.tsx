@@ -180,6 +180,7 @@ export const EditorViewInner = ({ diagram, spacing }: EditorViewProps & { diagra
                         viewSize={editor.size}
                         zoom={zoom}
                         zoomedSize={zoomedSize}
+                        isDefaultView={true}
                     />
                 </div>
             </div>

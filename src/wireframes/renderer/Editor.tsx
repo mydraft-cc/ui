@@ -5,10 +5,13 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
+/* eslint-disable react-hooks/exhaustive-deps */
+
 import * as svg from '@svgdotjs/svg.js';
 import * as React from 'react';
-import { Color, Rect2, SVGHelper, useEventCallback, Vec2 } from '@app/core';
+import { Color, Rect2, Subscription, SVGHelper, Vec2 } from '@app/core';
 import { Diagram, DiagramItem, Transform } from '@app/wireframes/model';
+import { useOverlayContext } from './../contexts/OverlayContext';
 import { CanvasView } from './CanvasView';
 import { NavigateAdorner } from './NavigateAdorner';
 import { QuickbarAdorner } from './QuickbarAdorner';
@@ -16,7 +19,9 @@ import { RenderLayer } from './RenderLayer';
 import { SelectionAdorner } from './SelectionAdorner';
 import { TextAdorner } from './TextAdorner';
 import { TransformAdorner } from './TransformAdorner';
+import { InteractionOverlays } from './interaction-overlays'; 
 import { InteractionService } from './interaction-service';
+import { PreviewEvent } from './preview';
 import './Editor.scss';
 
 export interface EditorProps {
@@ -47,6 +52,9 @@ export interface EditorProps {
     // The zoom value of the canvas.
     zoom: number;
 
+    // True, if it is the default view.
+    isDefaultView: boolean;
+
     // True when rendered.
     onRender?: () => void;
 
@@ -67,6 +75,7 @@ export const Editor = React.memo((props: EditorProps) => {
     const {
         color,
         diagram,
+        isDefaultView,
         masterDiagram,
         onChangeItemsAppearance,
         onNavigate,
@@ -81,73 +90,69 @@ export const Editor = React.memo((props: EditorProps) => {
         zoomedSize,
     } = props;
 
-    const w = viewSize.x;
-    const h = viewSize.y;
-
-    const adornersSelect = React.useRef<svg.Container>();
-    const adornersTransform = React.useRef<svg.Container>();
+    const adornerSelectLayer = React.useRef<svg.Container>();
+    const adornerTransformLayer = React.useRef<svg.Container>();
     const diagramTools = React.useRef<svg.Element>();
+    const overlayContext = useOverlayContext();
+    const overlayLayer = React.useRef<svg.Container>();
     const renderMainLayer = React.useRef<svg.Container>();
     const renderMasterLayer = React.useRef<svg.Container>();
     const [interactionMasterService, setInteractionMasterService] = React.useState<InteractionService>();
     const [interactionMainService, setInteractionMainService] = React.useState<InteractionService>();
-    const [interactionPreviews, setInteractionPreviews] = React.useState<DiagramItem[]>();
-    const [fullSelection, setFullSelection] = React.useState<DiagramItem[]>([]);
 
-    React.useEffect(() => {
-        setFullSelection(selectedItemsWithLocked);
-    }, [selectedItemsWithLocked]);
+    // Use a stream of preview updates to bypass react for performance reasons.
+    const renderPreview = React.useRef(new Subscription<PreviewEvent>());
 
     const doInit = React.useCallback((doc: svg.Svg) => {
+        // Create these layers in the correct order.
         diagramTools.current = doc.rect().fill('transparent');
-        renderMasterLayer.current = doc.group();
-        renderMainLayer.current = doc.group();
-        adornersSelect.current = doc.group();
-        adornersTransform.current = doc.group();
+        renderMasterLayer.current = doc.group().id('masterLayer');
+        renderMainLayer.current = doc.group().id('parentLayer');
+        adornerSelectLayer.current = doc.group().id('selectLayer');
+        adornerTransformLayer.current = doc.group().id('transformLayer');
+        overlayLayer.current = doc.group().id('overlaysLayer');
 
         setInteractionMainService(new InteractionService([
-            adornersSelect.current,
-            adornersTransform.current],
+            adornerSelectLayer.current,
+            adornerTransformLayer.current],
         renderMainLayer.current, doc));
 
         setInteractionMasterService(new InteractionService([
-            adornersSelect.current,
-            adornersTransform.current],
+            adornerSelectLayer.current,
+            adornerTransformLayer.current],
         renderMasterLayer.current, doc));
+
+        if (isDefaultView) {
+            overlayContext.overlayManager = new InteractionOverlays(overlayLayer.current);
+        }
     }, []);
 
     React.useEffect(() => {
-        if (interactionMainService) {
-            SVGHelper.setPosition(diagramTools.current!, 0.5, 0.5);
-            SVGHelper.setPosition(adornersSelect.current!, 0.5, 0.5);
-            SVGHelper.setPosition(adornersTransform.current!, 0.5, 0.5);
-            SVGHelper.setPosition(renderMasterLayer.current!, 0.5, 0.5);
-            SVGHelper.setPosition(renderMainLayer.current!, 0.5, 0.5);
+        if (!interactionMainService) {
+            return;
         }
-    }, [interactionMainService]);
 
+        const w = viewSize.x;
+        const h = viewSize.y;
+
+        SVGHelper.setSize(diagramTools.current!, w, h);
+        SVGHelper.setSize(adornerSelectLayer.current!, w, h);
+        SVGHelper.setSize(adornerTransformLayer.current!, w, h);
+        SVGHelper.setSize(diagramTools.current!, 0.5, 0.5);
+        SVGHelper.setSize(renderMasterLayer.current!, w, h);
+        SVGHelper.setSize(renderMainLayer.current!, w, h);
+    }, [viewSize, interactionMainService]);
+    
     React.useEffect(() => {
-        if (interactionMainService) {
-            SVGHelper.setSize(diagramTools.current!, w, h);
-            SVGHelper.setSize(adornersSelect.current!, w, h);
-            SVGHelper.setSize(adornersTransform.current!, w, h);
-            SVGHelper.setSize(renderMasterLayer.current!, w, h);
-            SVGHelper.setSize(renderMainLayer.current!, w, h);
-        }
-    }, [w, h, interactionMainService]);
-
-    const doPreview = useEventCallback((items: DiagramItem[]) => {
-        setInteractionPreviews(items);
-        setFullSelection(selectedItemsWithLocked.map(x => items.find(y => x.id === y.id) || x));
-    });
-
-    const doPreviewEnd = useEventCallback(() => {
-        setInteractionPreviews(undefined);
-        setFullSelection(selectedItemsWithLocked);
-    });
+        overlayContext.snapManager.prepare(diagram, viewSize);
+    }, [diagram, overlayContext.snapManager, viewSize]);
+    
+    React.useEffect(() => {
+        overlayContext.overlayManager['setZoom']?.(zoom);
+    }, [diagram, overlayContext.overlayManager, zoom]);
 
     return (
-        <div className='editor' style={{ background: color.toString() }}>
+        <div className='editor' style={{ background: color.toString() }} ref={element => overlayContext.element = element}>
             <CanvasView
                 onInit={doInit}
                 viewBox={viewBox}
@@ -166,19 +171,20 @@ export const Editor = React.memo((props: EditorProps) => {
                     <RenderLayer
                         diagram={diagram}
                         diagramLayer={renderMainLayer.current!}
-                        previewItems={interactionPreviews}
+                        preview={renderPreview.current}
                         onRender={onRender}
                     />
 
                     {onTransformItems &&
                         <TransformAdorner
-                            adorners={adornersTransform.current!}
+                            adorners={adornerTransformLayer.current!}
                             interactionService={interactionMainService}
-                            onPreview={doPreview}
-                            onPreviewEnd={doPreviewEnd}
                             onTransformItems={onTransformItems}
+                            overlayManager={overlayContext.overlayManager}
+                            previewStream={renderPreview.current}
                             selectedDiagram={diagram}
                             selectedItems={selectedItems}
+                            snapManager={overlayContext.snapManager}
                             viewSize={viewSize}
                             zoom={zoom}
                         />
@@ -186,11 +192,13 @@ export const Editor = React.memo((props: EditorProps) => {
 
                     {onSelectItems &&
                         <SelectionAdorner
-                            adorners={adornersSelect.current!}
+                            adorners={adornerSelectLayer.current!}
                             interactionService={interactionMainService}
                             onSelectItems={onSelectItems}
+                            previewStream={renderPreview.current}
                             selectedDiagram={diagram}
-                            selectedItems={fullSelection}
+                            selectedItems={selectedItemsWithLocked}
+                            zoom={zoom}
                         />
                     }
 
@@ -206,7 +214,7 @@ export const Editor = React.memo((props: EditorProps) => {
 
                     {onTransformItems &&
                         <QuickbarAdorner
-                            isPreviewing={!!interactionPreviews}
+                            previewStream={renderPreview.current}
                             selectedDiagram={diagram}
                             selectedItems={selectedItems}
                             viewSize={viewSize}

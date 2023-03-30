@@ -17,6 +17,7 @@ const RESIZE_SNAP_GRID = 10;
 const RESIZE_MINIMUM = 1;
 
 export type SnapMode = 'None' | 'Grid' | 'Shapes';
+export type SnapSide = 'Left' | 'Right' | 'Top' | 'Bottom';
 
 export type SnapResult = { 
     snapX?: SnapLine;
@@ -29,7 +30,7 @@ export type SnapLine = {
     value: number;
 
     // The side.
-    side?: 'Left' | 'Right' | 'Top' | 'Bottom';
+    side?: SnapSide;
     
     // The difference to a side.
     diff?: { x: number; y: number };
@@ -72,12 +73,10 @@ export class SnapManager {
     private currentDiagram?: Diagram;
     private currentView?: Vec2;
     private grid?: GridItem[];
-    private referenceTransform?: Transform;
     private xLines?: SnapLine[];
     private yLines?: SnapLine[];
 
-    public prepare(diagram: Diagram, view: Vec2, transform: Transform) {
-        this.referenceTransform = transform;
+    public prepare(diagram: Diagram, view: Vec2) {
         this.currentDiagram = diagram;
         this.currentView = view;
 
@@ -107,7 +106,7 @@ export class SnapManager {
         if (snapMode === 'Shapes' && transform.rotation.degree === 0) {
             const aabb = transform.aabb;
 
-            const { xLines, yLines } = this.getSnapLines();
+            const { xLines, yLines } = this.getSnapLines(transform);
 
             // Compute the new x and y-positions once.
             const l = -delta.x + aabb.left;
@@ -210,7 +209,7 @@ export class SnapManager {
         let y = aabb.y + delta.y;
 
         if (snapMode === 'Shapes') {
-            const { xLines, yLines, grid } = this.getSnapLines();
+            const { xLines, yLines, grid } = this.getSnapLines(transform);
 
             // Compute the new x and y-positions once.
             const l = x;
@@ -308,12 +307,12 @@ export class SnapManager {
         return result;
     }
 
-    public getSnapLines() {
+    public getSnapLines(referenceTransform?: Transform) {
         if (this.xLines && this.yLines && this.grid) {
             return { xLines: this.xLines, yLines: this.yLines, grid: this.grid };
         }
 
-        const { referenceTransform, currentDiagram, currentView } = this;
+        const { currentDiagram, currentView } = this;
 
         const xLines: SnapLine[] = this.xLines = [];
         const yLines: SnapLine[] = this.yLines = [];
@@ -389,8 +388,8 @@ export class SnapManager {
         return { xLines, yLines, grid };
     }
 
-    public getDebugLines() {
-        const { xLines, yLines } = this.getSnapLines();
+    public getDebugLines(referenceTransform: Transform) {
+        const { xLines, yLines } = this.getSnapLines(referenceTransform);
 
         if (this.grid) {
             for (const line of xLines) {

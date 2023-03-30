@@ -80,7 +80,7 @@ export class Checkbox implements ShapePlugin {
         } else if (state === STATE_CHECKED) {
             const path = `M${bounds.left + 3} ${bounds.cy + 2} L${bounds.left + bounds.width * 0.4} ${bounds.bottom - 4} L${bounds.right - 3} ${bounds.top + 3}`;
 
-            ctx.renderer2.path(2, path, undefined, p => {
+            ctx.renderer2.path(2, path, p => {
                 p.setStrokeColor(ctx.shape);
                 p.setStrokeStyle('butt', 'butt');
             });

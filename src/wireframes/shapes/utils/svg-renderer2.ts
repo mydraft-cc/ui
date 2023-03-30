@@ -33,65 +33,91 @@ class Factory implements ShapeFactory {
         this.wasClipped = false;
     }
 
-    public rectangle(strokeWidth: RendererWidth, radius?: number, bounds?: Rect2, properties?: ShapePropertiesFunc) {
+    public getOuterBounds(strokeWidth: RendererWidth, bounds: Rect2) {
+        const actualStroke = getStrokeWidth(strokeWidth);
+        const actualBounds = getBounds(bounds, actualStroke);
+
+        return actualBounds;
+    }
+
+    public rectangle(strokeWidth: RendererWidth, radius: number, bounds: Rect2, properties?: ShapePropertiesFunc) {
+        const actualStroke = getStrokeWidth(strokeWidth);
+        const actualBounds = getBounds(bounds, actualStroke);
+    
         return this.new('rect', () => new svg.Rect(), p => {
             p.setBackgroundColor('transparent');
-            p.setStrokeWidth(strokeWidth);
+            p.setStrokeWidth(actualStroke);
             p.setRadius(radius || 0);
-            p.setTransform(bounds);
+            p.setTransform(actualBounds);
         }, properties);
     }
 
-    public ellipse(strokeWidth: RendererWidth, bounds?: Rect2, properties?: ShapePropertiesFunc) {
+    public ellipse(strokeWidth: RendererWidth, bounds: Rect2, properties?: ShapePropertiesFunc) {
+        const actualStroke = getStrokeWidth(strokeWidth);
+        const actualBounds = getBounds(bounds, actualStroke);
+
         return this.new('ellipse', () => new svg.Ellipse(), p => {
             p.setBackgroundColor('transparent');
-            p.setStrokeWidth(strokeWidth);
-            p.setTransform(bounds);
+            p.setStrokeWidth(actualStroke);
+            p.setTransform(actualBounds);
         }, properties);
     }
 
     public roundedRectangleLeft(strokeWidth: RendererWidth, radius: number, bounds: Rect2, properties?: ShapePropertiesFunc) {
+        const actualStroke = getStrokeWidth(strokeWidth);
+        const actualBounds = getBounds(bounds, actualStroke);
+
         return this.new('path', () => new svg.Path(), p => {
             p.setBackgroundColor('transparent');
-            p.setStrokeWidth(strokeWidth);
-            p.setPath(SVGHelper.roundedRectangleLeft(bounds, radius));
+            p.setStrokeWidth(actualStroke);
+            p.setPath(SVGHelper.roundedRectangleLeft(actualBounds, radius));
         }, properties);
     }
 
     public roundedRectangleRight(strokeWidth: RendererWidth, radius: number, bounds: Rect2, properties?: ShapePropertiesFunc) {
+        const actualStroke = getStrokeWidth(strokeWidth);
+        const actualBounds = getBounds(bounds, actualStroke);
+    
         return this.new('path', () => new svg.Path(), p => {
             p.setBackgroundColor('transparent');
-            p.setStrokeWidth(strokeWidth);
-            p.setPath(SVGHelper.roundedRectangleRight(bounds, radius));
+            p.setStrokeWidth(actualStroke);
+            p.setPath(SVGHelper.roundedRectangleRight(actualBounds, radius));
         }, properties);
     }
 
     public roundedRectangleTop(strokeWidth: RendererWidth, radius: number, bounds: Rect2, properties?: ShapePropertiesFunc) {
+        const actualStroke = getStrokeWidth(strokeWidth);
+        const actualBounds = getBounds(bounds, actualStroke);
+    
         return this.new('path', () => new svg.Path(), p => {
             p.setBackgroundColor('transparent');
-            p.setStrokeWidth(strokeWidth);
-            p.setPath(SVGHelper.roundedRectangleTop(bounds, radius));
+            p.setStrokeWidth(actualStroke);
+            p.setPath(SVGHelper.roundedRectangleTop(actualBounds, radius));
         }, properties);
     }
 
     public roundedRectangleBottom(strokeWidth: RendererWidth, radius: number, bounds: Rect2, properties?: ShapePropertiesFunc) {
+        const actualStroke = getStrokeWidth(strokeWidth);
+        const actualBounds = getBounds(bounds, actualStroke);
+    
         return this.new('path', () => new svg.Path(), p => {
             p.setBackgroundColor('transparent');
-            p.setStrokeWidth(strokeWidth);
-            p.setPath(SVGHelper.roundedRectangleBottom(bounds, radius));
+            p.setStrokeWidth(actualStroke);
+            p.setPath(SVGHelper.roundedRectangleBottom(actualBounds, radius));
         }, properties);
     }
 
-    public path(strokeWidth: RendererWidth, path: string, bounds?: Rect2, properties?: ShapePropertiesFunc) {
+    public path(strokeWidth: RendererWidth, path: string, properties?: ShapePropertiesFunc) {
+        const actualStroke = getStrokeWidth(strokeWidth);
+
         return this.new('path', () => new svg.Path(), p => {
             p.setBackgroundColor('transparent');
-            p.setStrokeWidth(strokeWidth);
+            p.setStrokeWidth(actualStroke);
             p.setPath(path);
-            p.setTransform(bounds);
         }, properties);
     }
 
-    public text(config?: RendererText, bounds?: Rect2, properties?: ShapePropertiesFunc, allowMarkdown?: boolean) {
+    public text(config: RendererText, bounds: Rect2, properties?: ShapePropertiesFunc, allowMarkdown?: boolean) {
         return this.new('foreignObject', () => SVGHelper.createText(), p => {
             p.setBackgroundColor('transparent');
             p.setText(config?.text, allowMarkdown);
@@ -103,7 +129,7 @@ class Factory implements ShapeFactory {
         }, properties);
     }
 
-    public textMultiline(config?: RendererText, bounds?: Rect2, properties?: ShapePropertiesFunc, allowMarkdown?: boolean) {
+    public textMultiline(config: RendererText, bounds: Rect2, properties?: ShapePropertiesFunc, allowMarkdown?: boolean) {
         return this.new('foreignObject', () => SVGHelper.createText(), p => {
             p.setBackgroundColor('transparent');
             p.setText(config?.text?.replace(/\n/g, '<br />'), allowMarkdown);
@@ -115,7 +141,7 @@ class Factory implements ShapeFactory {
         }, properties);
     }
 
-    public raster(source: string, bounds?: Rect2, preserveAspectRatio?: boolean, properties?: ShapePropertiesFunc) {
+    public raster(source: string, bounds: Rect2, preserveAspectRatio?: boolean, properties?: ShapePropertiesFunc) {
         return this.new('image', () => new svg.Image(), p => {
             p.setBackgroundColor('transparent');
             p.setPreserveAspectValue(preserveAspectRatio);
@@ -455,25 +481,25 @@ class Properties implements ShapeProperties {
     }
 
     public setBackgroundColor(color: RendererColor | null | undefined): ShapeProperties {
-        this.properties['fill'] = this.getBackgroundColor(color);
+        this.properties['fill'] = getBackgroundColor(color);
 
         return this;
     }
 
     public setForegroundColor(color: RendererColor | null | undefined): ShapeProperties {
-        this.properties['color'] = this.getForegroundColor(color);
+        this.properties['color'] = getForegroundColor(color);
 
         return this;
     }
 
     public setStrokeColor(color: RendererColor | null | undefined): ShapeProperties {
-        this.properties['stroke'] = this.getStrokeColor(color);
+        this.properties['stroke'] = getStrokeColor(color);
 
         return this;
     }
 
-    public setStrokeWidth(width: RendererWidth | null | undefined): ShapeProperties {
-        this.properties['stroke-width'] = this.getStrokeWidth(width);
+    public setStrokeWidth(width: number): ShapeProperties {
+        this.properties['stroke-width'] = width;
 
         return this;
     }
@@ -509,19 +535,19 @@ class Properties implements ShapeProperties {
     }
 
     public setFontSize(fontSize: TextConfig | Shape | number | null | undefined): ShapeProperties {
-        this.properties['font-size'] = this.getFontSize(fontSize);
+        this.properties['font-size'] = getFontSize(fontSize);
 
         return this;
     }
 
     public setFontFamily(fontFamily: TextConfig | string | null | undefined): ShapeProperties {
-        this.properties['font-family'] = this.getFontFamily(fontFamily);
+        this.properties['font-family'] = getFontFamily(fontFamily);
 
         return this;
     }
 
     public setAlignment(alignment: TextConfig | null | undefined): ShapeProperties {
-        this.properties['text-alignment'] = this.getTextAlignment(alignment);
+        this.properties['text-alignment'] = getTextAlignment(alignment);
 
         return this;
     }
@@ -546,7 +572,7 @@ class Properties implements ShapeProperties {
     }
 
     public setOpacity(opacity: RendererOpacity | null | undefined): ShapeProperties {
-        const value = this.getOpacity(opacity);
+        const value = getOpacity(opacity);
 
         if (Number.isFinite(value)) {
             this.properties['opacity'] = value;
@@ -557,9 +583,9 @@ class Properties implements ShapeProperties {
 
     public setText(text: RendererText | string | null | undefined, markdown?: boolean): ShapeProperties {
         if (markdown) {
-            this.properties['markdown'] = this.getText(text);
+            this.properties['markdown'] = getText(text);
         } else {
-            this.properties['text'] = this.getText(text);
+            this.properties['text'] = getText(text);
         }
 
         return this;
@@ -576,77 +602,83 @@ class Properties implements ShapeProperties {
 
         this.element.node['properties'] = this.properties;
     }
+}
 
-    private getBackgroundColor(value: RendererColor | null | undefined) {
-        if (isShape(value)) {
-            return SVGHelper.toColor(value.backgroundColor);
-        } else {
-            return SVGHelper.toColor(value);
-        }
+function getBounds(bounds: Rect2, strokeWidth: number) {
+    const halfStrokeWidth = strokeWidth / 2;
+
+    return bounds.inflate(-halfStrokeWidth, -halfStrokeWidth);
+}
+
+function getBackgroundColor(value: RendererColor | null | undefined) {
+    if (isShape(value)) {
+        return SVGHelper.toColor(value.backgroundColor);
+    } else {
+        return SVGHelper.toColor(value);
     }
+}
 
-    private getForegroundColor(value: RendererColor | null | undefined) {
-        if (isShape(value)) {
-            return SVGHelper.toColor(value.foregroundColor);
-        } else {
-            return SVGHelper.toColor(value);
-        }
+function getForegroundColor(value: RendererColor | null | undefined) {
+    if (isShape(value)) {
+        return SVGHelper.toColor(value.foregroundColor);
+    } else {
+        return SVGHelper.toColor(value);
     }
+}
 
-    private getStrokeColor(value: RendererColor | null | undefined) {
-        if (isShape(value)) {
-            return SVGHelper.toColor(value.strokeColor);
-        } else {
-            return SVGHelper.toColor(value);
-        }
+function getStrokeColor(value: RendererColor | null | undefined) {
+    if (isShape(value)) {
+        return SVGHelper.toColor(value.strokeColor);
+    } else {
+        return SVGHelper.toColor(value);
     }
+}
 
-    private getStrokeWidth(value: RendererWidth | null | null | undefined) {
-        if (isShape(value)) {
-            return value.strokeThickness;
-        } else {
-            return value || 0;
-        }
+function getStrokeWidth(value: RendererWidth | null | null | undefined) {
+    if (isShape(value)) {
+        return value.strokeThickness;
+    } else {
+        return value || 0;
     }
+}
 
-    private getText(value: TextConfig | Shape | string | null | undefined) {
-        if (isShape(value)) {
-            return value.text || '';
-        } else {
-            return value?.['text'] || value || '';
-        }
+function getText(value: TextConfig | Shape | string | null | undefined) {
+    if (isShape(value)) {
+        return value.text || '';
+    } else {
+        return value?.['text'] || value || '';
     }
+}
 
-    private getTextAlignment(value: TextConfig | Shape | string | null | undefined) {
-        if (isShape(value)) {
-            return value.textAlignment || 'center';
-        } else {
-            return value?.['alignment'] || value || 'center';
-        }
+function getTextAlignment(value: TextConfig | Shape | string | null | undefined) {
+    if (isShape(value)) {
+        return value.textAlignment || 'center';
+    } else {
+        return value?.['alignment'] || value || 'center';
     }
+}
 
-    private getFontSize(value: TextConfig | Shape | number | null | undefined) {
-        if (isShape(value)) {
-            return value.fontSize || 10;
-        } else {
-            return value?.['fontSize'] || value || 10;
-        }
+function getFontSize(value: TextConfig | Shape | number | null | undefined) {
+    if (isShape(value)) {
+        return value.fontSize || 10;
+    } else {
+        return value?.['fontSize'] || value || 10;
     }
+}
 
-    private getFontFamily(value: TextConfig | Shape | string | null | undefined) {
-        if (isShape(value)) {
-            return value.fontFamily || 'inherit';
-        } else {
-            return value?.['fontFamily'] || value || 10;
-        }
+function getFontFamily(value: TextConfig | Shape | string | null | undefined) {
+    if (isShape(value)) {
+        return value.fontFamily || 'inherit';
+    } else {
+        return value?.['fontFamily'] || value || 10;
     }
+}
 
-    private getOpacity(value: RendererWidth | null | undefined) {
-        if (isShape(value)) {
-            return value.opacity;
-        } else {
-            return value;
-        }
+function getOpacity(value: RendererWidth | null | undefined) {
+    if (isShape(value)) {
+        return value.opacity;
+    } else {
+        return value;
     }
 }
 

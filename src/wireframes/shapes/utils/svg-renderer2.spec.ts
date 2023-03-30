@@ -13,6 +13,7 @@ describe('SVGRenderer2', () => {
     let renderer: SVGRenderer2;
     let container: svg.G;
     let root: svg.Svg;
+    const bounds = new Rect2(0, 0, 100, 100);
 
     beforeEach(() => {
         root = svg.SVG().addTo(document.body);
@@ -99,10 +100,10 @@ describe('SVGRenderer2', () => {
             expect(() => {
                 render(r => {
                     r.group(g => {
-                        g.rectangle(1);
+                        g.rectangle(1, 0, bounds);
                     }, c => {
-                        c.rectangle(1);
-                        c.rectangle(1);
+                        c.rectangle(1, 0, bounds);
+                        c.rectangle(1, 0, bounds);
                     });
                 });
             }).toThrowError();
@@ -110,13 +111,13 @@ describe('SVGRenderer2', () => {
 
         function renderRect() {
             render(r => {
-                r.rectangle(1, 10, undefined);
+                r.rectangle(1, 10, bounds);
             });
         }
 
         function renderWithBackground(color: string) {
             render(r => {
-                r.rectangle(1, 10, undefined, p => {
+                r.rectangle(1, 10, bounds, p => {
                     p.setBackgroundColor(color);
                 });
             });
@@ -124,40 +125,40 @@ describe('SVGRenderer2', () => {
 
         function renderConditional(condition: boolean) {
             render(r => {
-                r.rectangle(1, 10);
+                r.rectangle(1, 10, bounds);
 
                 if (condition) {
                     r.path(1, '');
                 } else {
-                    r.ellipse(1);
+                    r.ellipse(1, bounds);
                 }
 
-                r.rectangle(1, 10);
+                r.rectangle(1, 10, bounds);
             });
         }
 
         function renderAdded(condition: boolean) {
             render(r => {
-                r.rectangle(1, 10);
+                r.rectangle(1, 10, bounds);
 
                 if (condition) {
-                    r.ellipse(1);
-                    r.ellipse(1);
+                    r.ellipse(1, bounds);
+                    r.ellipse(1, bounds);
                 } else {
-                    r.ellipse(1);
+                    r.ellipse(1, bounds);
                 }
 
-                r.rectangle(1, 10);
+                r.rectangle(1, 10, bounds);
             });
         }
 
         function renderWithClip(clip: boolean) {
             render(r => {
                 r.group(g => {
-                    g.rectangle(1);
+                    g.rectangle(1, 0, bounds);
                 }, c => {
                     if (clip) {
-                        c.rectangle(1);
+                        c.rectangle(1, 0, bounds);
                     }
                 });
             });
@@ -167,7 +168,7 @@ describe('SVGRenderer2', () => {
     describe('Elements', () => {
         it('should render ellipse', () => {
             render(r => {
-                r.ellipse(1);
+                r.ellipse(1, bounds);
             });
 
             expect(container.get(0).node.tagName).toEqual('ellipse');
@@ -183,7 +184,7 @@ describe('SVGRenderer2', () => {
 
         it('should render raster', () => {
             render(r => {
-                r.raster('source');
+                r.raster('source', bounds);
             });
 
             expect(container.get(0).node.tagName).toEqual('image');
@@ -191,7 +192,7 @@ describe('SVGRenderer2', () => {
 
         it('should render rectangle', () => {
             render(r => {
-                r.rectangle(1, 10, undefined);
+                r.rectangle(1, 10, bounds);
             });
 
             expect(container.get(0).node.tagName).toEqual('rect');
@@ -231,7 +232,7 @@ describe('SVGRenderer2', () => {
 
         it('should render text', () => {
             render(r => {
-                r.text();
+                r.text({} as any, bounds);
             });
 
             expect(container.get(0).node.tagName).toEqual('foreignObject');
@@ -239,7 +240,7 @@ describe('SVGRenderer2', () => {
 
         it('should render multiline text', () => {
             render(r => {
-                r.textMultiline();
+                r.textMultiline({} as any, bounds);
             });
 
             expect(container.get(0).node.tagName).toEqual('foreignObject');
@@ -249,7 +250,7 @@ describe('SVGRenderer2', () => {
     describe('Properties', () => {
         it('should render background', () => {
             render(r => {
-                r.rectangle(1, undefined, undefined, p => {
+                r.rectangle(1, 0, bounds, p => {
                     p.setBackgroundColor('#ff0000');
                 });
             });
@@ -259,7 +260,7 @@ describe('SVGRenderer2', () => {
 
         it('should render background from shape', () => {
             render(r => {
-                r.rectangle(1, undefined, undefined, p => {
+                r.rectangle(1, 0, bounds, p => {
                     p.setBackgroundColor({ backgroundColor: '#ff0000', getAppearance: () => false } as any);
                 });
             });
@@ -269,7 +270,7 @@ describe('SVGRenderer2', () => {
 
         it('should render foreground color', () => {
             render(r => {
-                r.rectangle(1, undefined, undefined, p => {
+                r.rectangle(1, 0, bounds, p => {
                     p.setForegroundColor('#00ff00');
                 });
             });
@@ -279,7 +280,7 @@ describe('SVGRenderer2', () => {
 
         it('should render foreground from shape', () => {
             render(r => {
-                r.rectangle(1, undefined, undefined, p => {
+                r.rectangle(1, 0, bounds, p => {
                     p.setForegroundColor({ foregroundColor: '#00ff00', getAppearance: () => false } as any);
                 });
             });
@@ -289,7 +290,7 @@ describe('SVGRenderer2', () => {
 
         it('should render stroke color', () => {
             render(r => {
-                r.rectangle(1, undefined, undefined, p => {
+                r.rectangle(1, 0, bounds, p => {
                     p.setStrokeColor('#0000ff');
                 });
             });
@@ -299,7 +300,7 @@ describe('SVGRenderer2', () => {
 
         it('should render stroke color from shape', () => {
             render(r => {
-                r.rectangle(1, undefined, undefined, p => {
+                r.rectangle(1, 0, bounds, p => {
                     p.setStrokeColor({ strokeColor: '#0000ff', getAppearance: () => false } as any);
                 });
             });
@@ -309,7 +310,7 @@ describe('SVGRenderer2', () => {
 
         it('should render stroke style', () => {
             render(r => {
-                r.rectangle(1, undefined, undefined, p => {
+                r.rectangle(1, 0, bounds, p => {
                     p.setStrokeStyle('rounded', 'squared');
                 });
             });
@@ -320,7 +321,7 @@ describe('SVGRenderer2', () => {
 
         it('should render font family', () => {
             render(r => {
-                r.text(undefined, undefined, p => {
+                r.text({} as any, bounds, p => {
                     p.setFontFamily('Arial');
                 });
             });
@@ -330,7 +331,7 @@ describe('SVGRenderer2', () => {
 
         it('should render font family from shape', () => {
             render(r => {
-                r.text(undefined, undefined, p => {
+                r.text({} as any, bounds, p => {
                     p.setFontFamily({ fontFamily: 'Arial', getAppearance: () => false } as any);
                 });
             });
@@ -340,7 +341,7 @@ describe('SVGRenderer2', () => {
 
         it('should render opacity', () => {
             render(r => {
-                r.text(undefined, undefined, p => {
+                r.text({} as any, bounds, p => {
                     p.setOpacity(0.3);
                 });
             });
@@ -350,7 +351,7 @@ describe('SVGRenderer2', () => {
 
         it('should render opacity from shape', () => {
             render(r => {
-                r.text(undefined, undefined, p => {
+                r.text({} as any, bounds, p => {
                     p.setOpacity({ opacity: 0.3, getAppearance: () => false } as any);
                 });
             });
@@ -360,7 +361,7 @@ describe('SVGRenderer2', () => {
 
         it('should render text', () => {
             render(r => {
-                r.text(undefined, undefined, p => {
+                r.text({} as any, bounds, p => {
                     p.setText('Text');
                 });
             });
@@ -370,7 +371,7 @@ describe('SVGRenderer2', () => {
 
         it('should render text from shape', () => {
             render(r => {
-                r.text(undefined, undefined, p => {
+                r.text({} as any, bounds, p => {
                     p.setText({ text: 'Text', getAppearance: () => false } as any);
                 });
             });

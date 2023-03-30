@@ -16,6 +16,14 @@ import { Transform } from './transform';
 type IdMap = { [id: string]: string };
 
 export module Serializer {
+    export function tryGenerateNewIds(json: string): string {
+        try {
+            return generateNewIds(json);
+        } catch {
+            return json;
+        }
+    }
+
     export function generateNewIds(json: string): string {
         const input = JSON.parse(json);
 

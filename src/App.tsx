@@ -17,6 +17,7 @@ import { loadDiagramFromServer, newDiagram, selectTab, showToast, toggleLeftSide
 import { texts } from './texts';
 import { CustomDragLayer } from './wireframes/components/CustomDragLayer';
 import { PresentationView } from './wireframes/components/PresentationView';
+import { OverlayContainer } from './wireframes/contexts/OverlayContext';
 
 const logo = require('./images/logo.svg').default;
 
@@ -74,90 +75,92 @@ export const App = () => {
     });
 
     return (
-        <ClipboardContainer>
-            <Layout className='screen-mode'>
-                <Layout.Header>
-                    <img className='logo' src={logo} alt='mydraft.cc' />
+        <OverlayContainer>
+            <ClipboardContainer>
+                <Layout className='screen-mode'>
+                    <Layout.Header>
+                        <img className='logo' src={logo} alt='mydraft.cc' />
 
-                    <HistoryMenu />
-                    <span className='menu-separator' />
+                        <HistoryMenu />
+                        <span className='menu-separator' />
 
-                    <LockMenu />
-                    <span className='menu-separator' />
+                        <LockMenu />
+                        <span className='menu-separator' />
 
-                    <ArrangeMenu />
-                    <span className='menu-separator' />
+                        <ArrangeMenu />
+                        <span className='menu-separator' />
 
-                    <ClipboardMenu />
-                    <span className='menu-separator' />
+                        <ClipboardMenu />
+                        <span className='menu-separator' />
 
-                    <UIMenu onPlay={doPresent} />
-                    <span className='menu-separator' />
+                        <UIMenu onPlay={doPresent} />
+                        <span className='menu-separator' />
 
-                    <SettingsMenu onPrint={print} />
+                        <SettingsMenu onPrint={print} />
 
-                    <span style={{ float: 'right' }}>
-                        <LoadingMenu />
-                    </span>
-                </Layout.Header>
-                <Layout className='content'>
-                    <Layout.Sider width={320} className='sidebar-left'
-                        collapsed={!showLeftSidebar}
-                        collapsedWidth={0}>
+                        <span style={{ float: 'right' }}>
+                            <LoadingMenu />
+                        </span>
+                    </Layout.Header>
+                    <Layout className='content'>
+                        <Layout.Sider width={320} className='sidebar-left'
+                            collapsed={!showLeftSidebar}
+                            collapsedWidth={0}>
 
-                        <Tabs type='card' onTabClick={doSelectTab} activeKey={selectedTab}>
-                            <Tabs.TabPane key='shapes' tab={texts.common.shapes}>
-                                <Shapes />
-                            </Tabs.TabPane>
-                            <Tabs.TabPane key='icons' tab={texts.common.icons}>
-                                <Icons />
-                            </Tabs.TabPane>
-                            <Tabs.TabPane key='outline' tab={texts.common.outline}>
-                                <Outline />
-                            </Tabs.TabPane>
-                            <Tabs.TabPane key='pages' tab={texts.common.pages}>
-                                <Pages />
-                            </Tabs.TabPane>
-                            <Tabs.TabPane key='recent' tab={texts.common.recent}>
-                                <Recent />
-                            </Tabs.TabPane>
-                        </Tabs>
-                    </Layout.Sider>
-                    <Layout.Content className='editor-content'>
-                        <EditorView spacing={40} />
-                    </Layout.Content>
-                    <Layout.Sider width={330} className='sidebar-right'
-                        collapsed={!showRightSidebar}
-                        collapsedWidth={0}>
+                            <Tabs type='card' onTabClick={doSelectTab} activeKey={selectedTab}>
+                                <Tabs.TabPane key='shapes' tab={texts.common.shapes}>
+                                    <Shapes />
+                                </Tabs.TabPane>
+                                <Tabs.TabPane key='icons' tab={texts.common.icons}>
+                                    <Icons />
+                                </Tabs.TabPane>
+                                <Tabs.TabPane key='outline' tab={texts.common.outline}>
+                                    <Outline />
+                                </Tabs.TabPane>
+                                <Tabs.TabPane key='pages' tab={texts.common.pages}>
+                                    <Pages />
+                                </Tabs.TabPane>
+                                <Tabs.TabPane key='recent' tab={texts.common.recent}>
+                                    <Recent />
+                                </Tabs.TabPane>
+                            </Tabs>
+                        </Layout.Sider>
+                        <Layout.Content className='editor-content'>
+                            <EditorView spacing={40} />
+                        </Layout.Content>
+                        <Layout.Sider width={330} className='sidebar-right'
+                            collapsed={!showRightSidebar}
+                            collapsedWidth={0}>
 
-                        <Properties />
-                    </Layout.Sider>
+                            <Properties />
+                        </Layout.Sider>
 
-                    <Button icon={showLeftSidebar ? <LeftOutlined /> : <RightOutlined />}
-                        className={classNames('toggle-button-left', { visible: showLeftSidebar })}
-                        size='small'
-                        shape='circle'
-                        onClick={doToggleLeftSidebar} />
+                        <Button icon={showLeftSidebar ? <LeftOutlined /> : <RightOutlined />}
+                            className={classNames('toggle-button-left', { visible: showLeftSidebar })}
+                            size='small'
+                            shape='circle'
+                            onClick={doToggleLeftSidebar} />
 
-                    <Button icon={showRightSidebar ? <RightOutlined /> : <LeftOutlined />}
-                        className={classNames('toggle-button-right', { visible: showRightSidebar })}
-                        size='small'
-                        shape='circle'
-                        onClick={doToggleRightSidebar} />
+                        <Button icon={showRightSidebar ? <RightOutlined /> : <LeftOutlined />}
+                            className={classNames('toggle-button-right', { visible: showRightSidebar })}
+                            size='small'
+                            shape='circle'
+                            onClick={doToggleRightSidebar} />
+                    </Layout>
                 </Layout>
-            </Layout>
 
-            {presenting &&
-                <PresentationView onClose={doEdit} />
-            }
+                {presenting &&
+                    <PresentationView onClose={doEdit} />
+                }
 
-            {isPrinting &&
-                <div className='print-mode' ref={ref}>
-                    <PrintView onRender={printReady} />
-                </div>
-            }
+                {isPrinting &&
+                    <div className='print-mode' ref={ref}>
+                        <PrintView onRender={printReady} />
+                    </div>
+                }
 
-            <CustomDragLayer />
-        </ClipboardContainer>
+                <CustomDragLayer />
+            </ClipboardContainer>
+        </OverlayContainer>
     );
 };

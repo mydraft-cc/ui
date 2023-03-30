@@ -61,7 +61,7 @@ export class Image implements ShapePlugin {
 
         const path = `M${l},${t} L${r},${b} M${l},${b} L${r},${t}`;
 
-        ctx.renderer2.path(ctx.shape, path, undefined, p => {
+        ctx.renderer2.path(ctx.shape, path, p => {
             p.setStrokeColor(ctx.shape);
             p.setStrokeStyle('butt', 'butt');
         });

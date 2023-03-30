@@ -78,9 +78,9 @@ export type ShapePropertiesFunc = (properties: ShapeProperties) => void;
 export type ShapeFactoryFunc = (factory: ShapeFactory) => void;
 
 export interface ShapeFactory {
-    ellipse(strokeWidth: RendererWidth, bounds?: Rect2, properties?: ShapePropertiesFunc): RendererElement;
+    ellipse(strokeWidth: RendererWidth, bounds: Rect2, properties?: ShapePropertiesFunc): RendererElement;
 
-    rectangle(strokeWidth: RendererWidth, radius?: number, bounds?: Rect2, properties?: ShapePropertiesFunc): RendererElement;
+    rectangle(strokeWidth: RendererWidth, radius: number, bounds: Rect2, properties?: ShapePropertiesFunc): RendererElement;
 
     roundedRectangleLeft(strokeWidth: RendererWidth, radius: number, bounds: Rect2, properties?: ShapePropertiesFunc): RendererElement;
 
@@ -90,13 +90,15 @@ export interface ShapeFactory {
 
     roundedRectangleBottom(strokeWidth: RendererWidth, radius: number, bounds: Rect2, properties?: ShapePropertiesFunc): RendererElement;
 
-    path(strokeWidth: RendererWidth, path: string, bounds?: Rect2, properties?: ShapePropertiesFunc): RendererElement;
+    path(strokeWidth: RendererWidth, path: string, properties?: ShapePropertiesFunc): RendererElement;
 
-    raster(source: string, bounds?: Rect2, preserveAspectRatio?: boolean, properties?: ShapePropertiesFunc): RendererElement;
+    raster(source: string, bounds: Rect2, preserveAspectRatio?: boolean, properties?: ShapePropertiesFunc): RendererElement;
 
-    text(config?: RendererText, bounds?: Rect2, properties?: ShapePropertiesFunc, allowMarkdown?: boolean): RendererElement;
+    text(config: RendererText, bounds: Rect2, properties?: ShapePropertiesFunc, allowMarkdown?: boolean): RendererElement;
 
-    textMultiline(config?: RendererText, bounds?: Rect2, properties?: ShapePropertiesFunc, allowMarkdown?: boolean): RendererElement;
+    textMultiline(config: RendererText, bounds: Rect2, properties?: ShapePropertiesFunc, allowMarkdown?: boolean): RendererElement;
+
+    getOuterBounds(strokeWidth: RendererWidth, bounds: Rect2): Rect2;
 
     group(items: ShapeFactoryFunc, clip?: ShapeFactoryFunc, properties?: ShapePropertiesFunc): RendererElement;
 }

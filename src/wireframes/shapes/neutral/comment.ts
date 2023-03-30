@@ -36,14 +36,16 @@ export class Comment implements ShapePlugin {
     }
 
     private createBorder(ctx: RenderContext, c: number) {
-        const l = ctx.rect.left;
-        const r = ctx.rect.right;
-        const t = ctx.rect.top;
-        const b = ctx.rect.bottom;
+        const outerBounds = ctx.renderer2.getOuterBounds(ctx.shape, ctx.rect);
+
+        const l = outerBounds.left;
+        const r = outerBounds.right;
+        const t = outerBounds.top;
+        const b = outerBounds.bottom;
 
         const path = `M${l + c},${t} L${r},${t} L${r},${b} L${l},${b} L${l},${t + c} L${l + c},${t} z M${l + c},${t} L${l + c},${t + c} L${l},${t + c}`;
 
-        ctx.renderer2.path(ctx.shape, path, undefined, p => {
+        ctx.renderer2.path(ctx.shape, path, p => {
             p.setBackgroundColor(0xfff9b7);
             p.setStrokeColor(0);
             p.setStrokeStyle('round', 'round');

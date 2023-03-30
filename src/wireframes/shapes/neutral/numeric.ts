@@ -58,7 +58,7 @@ export class Numeric implements ShapePlugin {
 
         const path = `M${x - 0.5 * w},${y} L${x},${y - h},L${x + 0.5 * w},${y} z`;
 
-        ctx.renderer2.path(0, path, undefined, p => {
+        ctx.renderer2.path(0, path, p => {
             p.setBackgroundColor(ctx.shape.strokeColor);
         });
     }
@@ -71,7 +71,7 @@ export class Numeric implements ShapePlugin {
 
         const path = `M${x - 0.5 * w},${y} L${x},${y + h},L${x + 0.5 * w},${y} z`;
 
-        ctx.renderer2.path(0, path, undefined, p => {
+        ctx.renderer2.path(0, path, p => {
             p.setBackgroundColor(ctx.shape.strokeColor);
         });
     }
