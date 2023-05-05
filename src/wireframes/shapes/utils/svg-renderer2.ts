@@ -419,7 +419,7 @@ class Properties implements ShapeProperties {
             if (div?.nodeName === 'DIV') {
                 const textOrHtml = marked.parseInline(value);
 
-                if (textOrHtml.indexOf('<') >= 0) {
+                if (textOrHtml.indexOf('&') >= 0 || textOrHtml.indexOf('<') >= 0) {
                     div.innerHTML = textOrHtml;
                 } else {
                     div.innerText = textOrHtml;

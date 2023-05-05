@@ -7,6 +7,7 @@
 
 import { ComponentMeta } from '@storybook/react';
 import * as React from 'react';
+import { DefaultAppearance } from '@app/wireframes/interface';
 import { ShapeRenderer } from './ShapeRenderer';
 import * as Shapes from './dependencies';
 
@@ -116,16 +117,22 @@ export const HorizontalScrollbar = () => {
 export const Icon = () => {
     return (
         <>
-            <ShapeRenderer usePreviewOffset plugin={new Shapes.Icon()} appearance={{ TEXT: String.fromCharCode(0xf000) }} />
+            <ShapeRenderer usePreviewOffset plugin={new Shapes.Icon()} appearance={{ [DefaultAppearance.TEXT]: String.fromCharCode(0xf000) }} />
             <hr />
-            <ShapeRenderer usePreviewOffset plugin={new Shapes.Icon()} appearance={{ TEXT: String.fromCharCode(0xf001) }} />
+            <ShapeRenderer usePreviewOffset plugin={new Shapes.Icon()} appearance={{ [DefaultAppearance.TEXT]: String.fromCharCode(0xf001) }} />
         </>
     );
 };
 
 export const Label = () => {
     return (
-        <ShapeRenderer usePreviewOffset plugin={new Shapes.Label()} />
+        <>
+            <ShapeRenderer usePreviewOffset plugin={new Shapes.Label()} />
+            <hr />
+            <ShapeRenderer usePreviewOffset plugin={new Shapes.Label()} appearance={{ [DefaultAppearance.TEXT]: 'Text with <' }} />
+            <hr />
+            <ShapeRenderer usePreviewOffset plugin={new Shapes.Label()} appearance={{ [DefaultAppearance.TEXT]: 'Text with >' }} />
+        </>
     );
 };
 
@@ -152,9 +159,9 @@ export const Paragraph = () => {
         <>
             <ShapeRenderer usePreviewOffset plugin={new Shapes.Paragraph()} />
             <hr />
-            <ShapeRenderer usePreviewOffset plugin={new Shapes.Paragraph()} appearance={{ TEXT: 'Lorem ipsum dolor sit amet, alii rebum postea eam ex.\nEt mei laoreet officiis, summo sensibus id me.' }} />
+            <ShapeRenderer usePreviewOffset plugin={new Shapes.Paragraph()} appearance={{ [DefaultAppearance.TEXT]: 'Lorem ipsum dolor sit amet, alii rebum postea eam ex.\nEt mei laoreet officiis, summo sensibus id me.' }} />
             <hr />
-            <ShapeRenderer usePreviewOffset plugin={new Shapes.Paragraph()} appearance={{ TEXT: 'Lorem ipsum dolor sit amet, alii rebum postea eam ex.\n\nEt mei laoreet officiis, summo sensibus id me.' }} />
+            <ShapeRenderer usePreviewOffset plugin={new Shapes.Paragraph()} appearance={{ [DefaultAppearance.TEXT]: 'Lorem ipsum dolor sit amet, alii rebum postea eam ex.\n\nEt mei laoreet officiis, summo sensibus id me.' }} />
         </>
     );
 };

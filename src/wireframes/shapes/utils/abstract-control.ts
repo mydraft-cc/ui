@@ -12,7 +12,7 @@ import { ColorConfigurable, DiagramItem, MinSizeConstraint, NumberConfigurable, 
 import { SVGRenderer2 } from './svg-renderer2';
 import { TextSizeConstraint } from './text-size-contraint';
 
-class DefaultConstraintFactory implements ConstraintFactory {
+export class DefaultConstraintFactory implements ConstraintFactory {
     public static readonly INSTANCE = new DefaultConstraintFactory();
 
     public size(width?: number, height?: number): any {
@@ -32,7 +32,7 @@ class DefaultConstraintFactory implements ConstraintFactory {
     }
 }
 
-class DefaultConfigurableFactory implements ConfigurableFactory {
+export class DefaultConfigurableFactory implements ConfigurableFactory {
     public static readonly INSTANCE = new DefaultConfigurableFactory();
 
     public selection(name: string, label: string, options: string[]) {

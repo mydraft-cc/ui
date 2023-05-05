@@ -10,7 +10,7 @@ import * as React from 'react';
 import { Rotation, SVGHelper, Vec2 } from '@app/core';
 import { ShapePlugin } from '@app/wireframes/interface';
 import { DiagramItem, Transform } from '@app/wireframes/model';
-import { AbstractControl } from './utils/abstract-control';
+import { AbstractControl, DefaultConstraintFactory } from './utils/abstract-control';
 
 interface ShapeRendererProps {
     plugin: ShapePlugin;
@@ -108,6 +108,8 @@ export const ShapeRenderer = React.memo(React.forwardRef<HTMLDivElement, ShapeRe
                         viewBox.size.y),
                     Rotation.ZERO),
                 appearance: { ...plugin.defaultAppearance(), ...appearance || {} },
+                configurables: [],
+                constraint: plugin?.constraint?.(DefaultConstraintFactory.INSTANCE),
             });
 
         svgControl.setContext(svgGroup);
