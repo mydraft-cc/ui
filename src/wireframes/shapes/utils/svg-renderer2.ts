@@ -361,43 +361,38 @@ const PROPERTIES: ReadonlyArray<keyof PropertySet> = [
 class Properties implements ShapeProperties {
     private static readonly SETTERS: Record<keyof PropertySet, (value: any, element: svg.Element) => void> = {
         'color': (value, element) => {
-            element.node.setAttribute('color', value);
+            SVGHelper.fastSetAttribute(element.node, 'color', value);
         },
         'fill': (value, element) => {
-            element.node.setAttribute('fill', value);
+            SVGHelper.setAttribute(element.node, 'fill', value);
         },
         'opacity': (value, element) => {
-            element.opacity(value);
+            SVGHelper.setAttribute(element.node, 'opactiy', value);
         },
         'preserve-aspect-ratio': (value, element) => {
-            element.attr('preserveAspectRatio', value ? 'xMidYMid' : 'none');
+            SVGHelper.setAttribute(element.node, 'preserveAspectRatio', value ? 'xMidYMid' : 'none');
         },
         'stroke': (value, element) => {
-            element.stroke({ color: value });
+            SVGHelper.setAttribute(element.node, 'stroke', value);
         },
         'stroke-cap': (value, element) => {
-            element.stroke({ linecap: value });
+            SVGHelper.setAttribute(element.node, 'stroke-linecap', value);
         },
         'stroke-line-join': (value, element) => {
-            element.stroke({ linejoin: value });
+            SVGHelper.setAttribute(element.node, 'stroke-linejoin', value);
         },
         'stroke-width': (value, element) => {
-            element.stroke({ width: value });
+            SVGHelper.setAttribute(element.node, 'stroke-width', value);
         },
         'image': (value, element) => {
-            const image = element as svg.Image;
-
-            image.load(value);
+            SVGHelper.setAttribute(element.node, 'href', value);
         },
         'path': (value, element) => {
-            const path = element as svg.Path;
-
-            path.plot(value);
+            SVGHelper.setAttribute(element.node, 'd', value);
         },
         'radius': (value, element) => {
-            const rect = element as svg.Rect;
-
-            rect.radius(value, value);
+            SVGHelper.setAttribute(element.node, 'rx', value);
+            SVGHelper.setAttribute(element.node, 'ry', value);
         },
         'font-family': (value, element) => {
             const div = element.node.children[0] as HTMLDivElement;
@@ -455,7 +450,7 @@ class Properties implements ShapeProperties {
             }
         },
         'transform': (value, element) => {
-            SVGHelper.transform(element, value, false);
+            SVGHelper.transformByRect(element, value, false);
         },
     };
 
@@ -523,7 +518,7 @@ class Properties implements ShapeProperties {
     }
 
     public setTransform(rect: Rect | null | undefined): ShapeProperties {
-        this.properties['transform'] = { rect };
+        this.properties['transform'] = rect;
 
         return this;
     }

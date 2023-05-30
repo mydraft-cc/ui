@@ -118,7 +118,7 @@ export class AbstractControl implements Renderer {
         }
 
         for (let i = 0; i < index; i++) {
-            SVGHelper.transform(existing.get(i), { rect: GLOBAL_CONTEXT.rect });
+            SVGHelper.transformByRect(existing.get(i), GLOBAL_CONTEXT.rect);
         }
 
         SVGRenderer2.INSTANCE.setContainer(existing, index);
@@ -128,7 +128,7 @@ export class AbstractControl implements Renderer {
         if (!options?.noTransform) {
             const to = shape.transform;
 
-            SVGHelper.transform(existing, {
+            SVGHelper.transformBy(existing, {
                 x: to.position.x - 0.5 * to.size.x,
                 y: to.position.y - 0.5 * to.size.y,
                 w: to.size.x,

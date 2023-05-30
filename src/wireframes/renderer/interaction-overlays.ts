@@ -164,8 +164,8 @@ export class InteractionOverlays {
         // The label dimensions needs to be calculated based on the zoom factor.
         padding /= this.zoom;
 
-        SVGHelper.transform(labelText, { rect: bounds }, false);
-        SVGHelper.transform(labelRect, { rect: bounds.inflate(padding) });
+        SVGHelper.transformByRect(labelText, bounds);
+        SVGHelper.transformByRect(labelRect, bounds.inflate(padding));
 
         // Increment by two because we create two DOM elements per label.
         this.indexLabels += 2;
