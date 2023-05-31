@@ -367,7 +367,7 @@ class Properties implements ShapeProperties {
             SVGHelper.setAttribute(element.node, 'fill', value);
         },
         'opacity': (value, element) => {
-            SVGHelper.setAttribute(element.node, 'opactiy', value);
+            SVGHelper.setAttribute(element.node, 'opacity', value);
         },
         'preserve-aspect-ratio': (value, element) => {
             SVGHelper.setAttribute(element.node, 'preserveAspectRatio', value ? 'xMidYMid' : 'none');
