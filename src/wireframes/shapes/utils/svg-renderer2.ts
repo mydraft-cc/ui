@@ -425,7 +425,13 @@ class Properties implements ShapeProperties {
             const div = element.node.children[0] as HTMLDivElement;
 
             if (div?.nodeName === 'DIV') {
-                div.innerHTML = escapeHTML(value);
+                const textOrHtml = escapeHTML(value);
+
+                if (textOrHtml.indexOf('&') >= 0 || textOrHtml.indexOf('<') >= 0) {
+                    div.innerHTML = textOrHtml;
+                } else {
+                    div.innerText = textOrHtml;
+                }
             }
         },
         'text-alignment': (value, element) => {
@@ -455,7 +461,7 @@ class Properties implements ShapeProperties {
     };
 
     private element: svg.Element = null!;
-    private properties: PropertySet = {};
+    private propertiesNew: PropertySet = {};
     private propertiesOld: PropertySet = {};
 
     public get shape() {
@@ -471,97 +477,97 @@ class Properties implements ShapeProperties {
             this.element = element;
         }
 
-        this.properties = {};
+        this.propertiesNew = {};
         this.propertiesOld = this.element.node['properties'] || {};
     }
 
     public setBackgroundColor(color: RendererColor | null | undefined): ShapeProperties {
-        this.properties['fill'] = getBackgroundColor(color);
+        this.propertiesNew['fill'] = getBackgroundColor(color);
 
         return this;
     }
 
     public setForegroundColor(color: RendererColor | null | undefined): ShapeProperties {
-        this.properties['color'] = getForegroundColor(color);
+        this.propertiesNew['color'] = getForegroundColor(color);
 
         return this;
     }
 
     public setStrokeColor(color: RendererColor | null | undefined): ShapeProperties {
-        this.properties['stroke'] = getStrokeColor(color);
+        this.propertiesNew['stroke'] = getStrokeColor(color);
 
         return this;
     }
 
     public setStrokeWidth(width: number): ShapeProperties {
-        this.properties['stroke-width'] = width;
+        this.propertiesNew['stroke-width'] = width;
 
         return this;
     }
 
     public setPath(path: string | null | undefined): ShapeProperties {
-        this.properties['path'] = path;
+        this.propertiesNew['path'] = path;
 
         return this;
     }
 
     public setPreserveAspectValue(value: boolean | null | undefined): ShapeProperties {
-        this.properties['preserve-aspect-ratio'] = value;
+        this.propertiesNew['preserve-aspect-ratio'] = value;
 
         return this;
     }
 
     public setRadius(radius: number | null | undefined): ShapeProperties {
-        this.properties['radius'] = radius || 0;
+        this.propertiesNew['radius'] = radius || 0;
 
         return this;
     }
 
     public setTransform(rect: Rect | null | undefined): ShapeProperties {
-        this.properties['transform'] = rect;
+        this.propertiesNew['transform'] = rect;
 
         return this;
     }
 
     public setImage(source: string | null | undefined): ShapeProperties {
-        this.properties['image'] = source;
+        this.propertiesNew['image'] = source;
 
         return this;
     }
 
     public setFontSize(fontSize: TextConfig | Shape | number | null | undefined): ShapeProperties {
-        this.properties['font-size'] = getFontSize(fontSize);
+        this.propertiesNew['font-size'] = getFontSize(fontSize);
 
         return this;
     }
 
     public setFontFamily(fontFamily: TextConfig | string | null | undefined): ShapeProperties {
-        this.properties['font-family'] = getFontFamily(fontFamily);
+        this.propertiesNew['font-family'] = getFontFamily(fontFamily);
 
         return this;
     }
 
     public setAlignment(alignment: TextConfig | null | undefined): ShapeProperties {
-        this.properties['text-alignment'] = getTextAlignment(alignment);
+        this.propertiesNew['text-alignment'] = getTextAlignment(alignment);
 
         return this;
     }
 
     public setTextDecoration(decoration: TextDecoration): ShapeProperties {
-        this.properties['text-decoration'] = decoration;
+        this.propertiesNew['text-decoration'] = decoration;
 
         return this;
     }
 
     public setVerticalAlignment(alignment: string | null | undefined): ShapeProperties {
-        this.properties['vertical-alignment'] = alignment;
+        this.propertiesNew['vertical-alignment'] = alignment;
 
         return this;
     }
 
     public setStrokeStyle(cap: string, join: string): ShapeProperties {
-        this.properties['stroke-cap'] = cap;
-        this.properties['stroke-line-join'] = join;
+        this.propertiesNew['stroke-cap'] = cap;
+        this.propertiesNew['stroke-line-join'] = join;
 
         return this;
     }
@@ -570,7 +576,7 @@ class Properties implements ShapeProperties {
         const value = getOpacity(opacity);
 
         if (Number.isFinite(value)) {
-            this.properties['opacity'] = value;
+            this.propertiesNew['opacity'] = value;
         }
 
         return this;
@@ -578,9 +584,9 @@ class Properties implements ShapeProperties {
 
     public setText(text: RendererText | string | null | undefined, markdown?: boolean): ShapeProperties {
         if (markdown) {
-            this.properties['markdown'] = getText(text);
+            this.propertiesNew['markdown'] = getText(text);
         } else {
-            this.properties['text'] = getText(text);
+            this.propertiesNew['text'] = getText(text);
         }
 
         return this;
@@ -588,14 +594,14 @@ class Properties implements ShapeProperties {
 
     public sync() {
         for (const key of PROPERTIES) {
-            const value = this.properties[key];
+            const value = this.propertiesNew[key];
 
             if (!Types.equals(value, this.propertiesOld[key])) {
                 Properties.SETTERS[key](value, this.element);
             }
         }
 
-        this.element.node['properties'] = this.properties;
+        this.element.node['properties'] = this.propertiesNew;
     }
 }
 
