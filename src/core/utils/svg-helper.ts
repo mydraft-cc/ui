@@ -13,8 +13,6 @@ import { Types } from './types';
 import { Vec2 } from './vec2';
 
 export interface MatrixTransform {
-    rect?: Rect2;
-
     x?: number;
     y?: number;
 
@@ -27,12 +25,7 @@ export interface MatrixTransform {
     h?: number;
 }
 
-export module SVGHelper {
-    export const COLOR_BLACK = new svg.Color('#000');
-    export const COLOR_WHITE = new svg.Color('#fff');
-    export const ZERO_POINT = new svg.Point(0, 0);
-    export const IDENTITY_MATRIX = new svg.Matrix(1, 0, 0, 1, 0, 0);
-    
+export module SVGHelper {    
     export function roundedRectangleRight(rectangle: Rect2, radius = 10) {
         const rad = Math.min(radius, rectangle.width * 0.5, rectangle.height * 0.5);
 
@@ -96,12 +89,23 @@ export module SVGHelper {
         return element;
     }
 
-    export function transform<T extends svg.Element>(element: T, t: MatrixTransform, adjust = true, move = false): T {
-        let x = t.rect ? t.rect.x : t.x || 0;
-        let y = t.rect ? t.rect.y : t.y || 0;
+    export function transformByRect<T extends svg.Element>(element: T, rect: Rect2, adjust = true): T {
+        return transformBy(element, {
+            x: rect.x,
+            y: rect.y,
+            w: rect.width,
+            h: rect.height,
+        }, adjust);
+    }
 
-        let w = t.rect ? t.rect.width : t.w || 0;
-        let h = t.rect ? t.rect.height : t.h || 0;
+    export function transformBy<T extends svg.Element>(element: T, t: MatrixTransform, adjust = true): T {
+        let x = t.x || 0;
+        let y = t.y || 0;
+
+        let w = t.w || 0;
+        let h = t.h || 0;
+
+        const r = t.rotation || 0;
 
         if (adjust) {
             w = Math.round(w);
@@ -113,30 +117,19 @@ export module SVGHelper {
             y = Math.round(y);
         }
 
-        // Use the alternative methods with O to not create a new matrix.
-        let matrix = new svg.Matrix()
-            .rotateO(
-                t.rotation || 0,
-                t.rx || (x + 0.5 * w),
-                t.ry || (y + 0.5 * h),
-            );
+        let matrix = new svg.Matrix();
 
-        if (!move) {
-            if (t.rect || t.x || t.y) {
-                // Use the alternative methods with O to not create a new matrix.
-                matrix = matrix.multiplyO(new svg.Matrix().translateO(x, y));
-            }
-
-            element.matrix(matrix);
-        } else {
-            element.matrix(matrix);
-
-            if (t.rect || t.x || t.y) {
-                element.move(x, y);
-            }
+        if (r !== 0) {
+            matrix.rotateO(r, t.rx || (x + 0.5 * w), t.ry || (y + 0.5 * h));
         }
 
-        if ((t.rect || t.w || t.h) && w > 0 && h > 0) {
+        if (x !== 0 || y !== 0) {
+            matrix.translateO(x, y);
+        }
+
+        element.matrix(matrix);
+
+        if (w > 0 && h > 0) {
             if (element.node.nodeName === 'foreignObject') {
                 const text = <HTMLDivElement>element.node.children[0];
 
@@ -150,21 +143,16 @@ export module SVGHelper {
             }
 
             if (element.node.nodeName === 'ellipse') {
-                const ellipse = <svg.Ellipse>(element as any);
-
-                ellipse.cx(w * 0.5);
-                ellipse.cy(h * 0.5);
-                ellipse.radius(w * 0.5, h * 0.5);
+                fastSetAttribute(element.node, 'cx', w * 0.5);
+                fastSetAttribute(element.node, 'cy', h * 0.5);
+                fastSetAttribute(element.node, 'rx', w * 0.5);
+                fastSetAttribute(element.node, 'ry', h * 0.5);
             } else {
                 setSize(element, w, h);
             }
         }
 
         return element;
-    }
-
-    export function vec2Point(vec: Vec2): svg.Point {
-        return new svg.Point(vec.x, vec.y);
     }
 
     export function point2Vec(point: svg.Point): Vec2 {
@@ -180,7 +168,42 @@ export module SVGHelper {
     }
 
     export function setSize(element: svg.Element, width: number, height: number) {
-        element.attr('width', width).attr('height', height);
+        fastSetAttribute(element.node, 'width', width);
+        fastSetAttribute(element.node, 'height', height);
+    }
+
+    export function fastSetAttribute(element: Element, name: string, value: any) {
+        const attrs: { [key: string]: any } = element['__attrs'] ||= {};
+
+        if (attrs[name] === value) {
+            return;
+        }
+
+        attrs[name] = value;
+        setAttribute(element, name, value);
+    }
+
+    export function setAttribute(element: Element, name: string, value: any) {
+        if (value === null) {
+            element.removeAttribute(name);
+            return;
+        }
+
+        const type = typeof value;
+
+        switch (type) {
+            case 'undefined':
+                element.removeAttribute(name);
+                break;
+            case 'number':
+                element.setAttribute(name, value.toString());
+                break;
+            case 'string':
+                element.setAttribute(name, value);
+                break;
+            default:
+                throw new Error('Not supported.');
+        }
     }
 
     export function toColor(value: string | number | Color | null | undefined): string {

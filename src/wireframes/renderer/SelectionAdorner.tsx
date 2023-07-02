@@ -197,7 +197,7 @@ export class SelectionAdorner extends React.Component<SelectionAdornerProps> imp
 
     protected transformShape(shape: svg.Rect, position: Vec2, size: Vec2, offset: number, rotation = 0) {
         // We have to disable the adjustment mode to turn off the rounding.
-        SVGHelper.transform(shape, {
+        SVGHelper.transformBy(shape, {
             x: position.x - 0.5 * offset,
             y: position.y - 0.5 * offset,
             w: size.x + offset,

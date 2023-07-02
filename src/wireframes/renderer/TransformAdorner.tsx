@@ -522,7 +522,7 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
                 continue;
             }
 
-            SVGHelper.transform(resizeShape, {
+            SVGHelper.transformBy(resizeShape, {
                 x: position.x - adornerHalfSize + offset.x * (size.x + adornerHalfSize),
                 y: position.y - adornerHalfSize + offset.y * (size.y + adornerHalfSize),
                 w: adornerSize,
@@ -530,7 +530,7 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
                 rx: position.x,
                 ry: position.y,
                 rotation,
-            }, false, true);
+            }, false);
 
             resizeShape.stroke(stroke);
             resizeShape.show();
@@ -541,18 +541,18 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
         this.rotateShape.show();
 
         SVGHelper.setSize(this.rotateShape, adornerSize, adornerSize);
-        SVGHelper.transform(this.rotateShape, {
+        SVGHelper.transformBy(this.rotateShape, {
             x: position.x - adornerHalfSize,
             y: position.y - adornerHalfSize - size.y * 0.5 - 30 / this.props.zoom,
             rx: position.x,
             ry: position.y,
             rotation,
-        }, true, true);
+        }, false);
 
         this.moveShape.stroke(stroke);
         this.moveShape.show();
 
-        SVGHelper.transform(this.moveShape, {
+        SVGHelper.transformBy(this.moveShape, {
             x: position.x - 0.5 * size.x - stroke.width + 0.5,
             y: position.y - 0.5 * size.y - stroke.width + 0.5,
             w: Math.floor(size.x) + stroke.width,
@@ -560,7 +560,7 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
             rx: position.x,
             ry: position.y,
             rotation,
-        }, false, true);
+        }, false);
     }
 
     private hideShapes() {
