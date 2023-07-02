@@ -145,8 +145,8 @@ export module SVGHelper {
             if (element.node.nodeName === 'ellipse') {
                 fastSetAttribute(element.node, 'cx', w * 0.5);
                 fastSetAttribute(element.node, 'cy', h * 0.5);
-                fastSetAttribute(element.node, 'x', x);
-                fastSetAttribute(element.node, 'y', y);
+                fastSetAttribute(element.node, 'rx', w * 0.5);
+                fastSetAttribute(element.node, 'ry', h * 0.5);
             } else {
                 setSize(element, w, h);
             }
