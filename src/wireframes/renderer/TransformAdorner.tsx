@@ -530,7 +530,7 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
                 rx: position.x,
                 ry: position.y,
                 rotation,
-            }, false);
+            }, false, true); // Do not set the position by matrix for bounding box calculation
 
             resizeShape.stroke(stroke);
             resizeShape.show();
@@ -547,7 +547,7 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
             rx: position.x,
             ry: position.y,
             rotation,
-        }, false);
+        }, false, true); // Do not set the position by matrix for bounding box calculation
 
         this.moveShape.stroke(stroke);
         this.moveShape.show();
@@ -560,7 +560,7 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
             rx: position.x,
             ry: position.y,
             rotation,
-        }, false);
+        }, false, true); // Do not set the position by matrix for bounding box calculation
     }
 
     private hideShapes() {

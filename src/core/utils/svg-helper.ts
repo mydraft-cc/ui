@@ -89,16 +89,16 @@ export module SVGHelper {
         return element;
     }
 
-    export function transformByRect<T extends svg.Element>(element: T, rect: Rect2, adjust = true): T {
+    export function transformByRect<T extends svg.Element>(element: T, rect: Rect2, adjust = true, move = false): T {
         return transformBy(element, {
             x: rect.x,
             y: rect.y,
             w: rect.width,
             h: rect.height,
-        }, adjust);
+        }, adjust, move);
     }
 
-    export function transformBy<T extends svg.Element>(element: T, t: MatrixTransform, adjust = true): T {
+    export function transformBy<T extends svg.Element>(element: T, t: MatrixTransform, adjust = true, move = false): T {
         let x = t.x || 0;
         let y = t.y || 0;
 
@@ -123,11 +123,19 @@ export module SVGHelper {
             matrix.rotateO(r, t.rx || (x + 0.5 * w), t.ry || (y + 0.5 * h));
         }
 
-        if (x !== 0 || y !== 0) {
-            matrix.translateO(x, y);
-        }
+        if (move) {
+            element.matrix(matrix);
 
-        element.matrix(matrix);
+            if (x !== 0 || y !== 0) {
+                element.move(x, y);
+            }
+        } else {
+            if (x !== 0 || y !== 0) {
+                matrix.translateO(x, y);
+            }
+
+            element.matrix(matrix);
+        }
 
         if (w > 0 && h > 0) {
             if (element.node.nodeName === 'foreignObject') {

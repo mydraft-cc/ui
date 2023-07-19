@@ -6,7 +6,7 @@
 */
 
 import * as svg from '@svgdotjs/svg.js';
-import { Color, Rect2, sizeInPx, SVGHelper } from '@app/core';
+import { Color, sizeInPx, SVGHelper } from '@app/core';
 import { SnapLine, SnapResult, Transform } from '@app/wireframes/model';
 import { SVGRenderer2 } from '../shapes/utils/svg-renderer2';
 
@@ -19,7 +19,7 @@ const MAX_VALUE = 1000;
 
 export class InteractionOverlays {
     private readonly lines: svg.Line[] = [];
-    private readonly labels: svg.Element[] = [];
+    private readonly labels: svg.G[] = [];
     private readonly textWidthCache: { [fontSize: string]: number } = {};
     private indexLabels = 0;
     private indexLines = 0;
@@ -113,19 +113,23 @@ export class InteractionOverlays {
     }
 
     private renderLabel(x: number, y: number, text: string, color: string, fontSize = 16, centerX = false, centerY = false, padding = 4) {
-        let labelRect = this.labels[this.indexLabels] as svg.Rect;
-        let labelText = this.labels[this.indexLabels + 1] as svg.ForeignObject;
+        let labelGroup = this.labels[this.indexLabels];
+        let labelRect: svg.Rect;
+        let labelText: svg.ForeignObject;
 
         // Reuse the rect and text if it alreadx exists to avoid creating unnecessary DOM elements.
-        if (!labelRect) {
-            labelRect = this.layer.rect();
-            labelText = SVGHelper.createText(text, fontSize, 'center', 'middle').attr('color', '#fff').addTo(this.layer);
+        if (!labelGroup) {
+            labelGroup = this.layer.group();
 
-            this.labels.push(labelRect);
-            this.labels.push(labelText);
+            labelRect = new svg.Rect().addTo(labelGroup);
+            labelText = SVGHelper.createText(text, fontSize, 'center', 'middle').attr('color', '#fff').addTo(labelGroup);
+
+            this.labels.push(labelGroup);
         } else {
-            labelText.show();
-            labelRect.show();
+            labelGroup.show();
+
+            labelRect = labelGroup.children().at(0) as svg.Rect;
+            labelText = labelGroup.children().at(1) as svg.ForeignObject;
         }
 
         let characterWidthKey = fontSize.toString();
@@ -159,16 +163,28 @@ export class InteractionOverlays {
         labelContent.textContent = text;
         labelRect.fill(color);
 
-        const bounds = new Rect2(x, y, w, h);
-
         // The label dimensions needs to be calculated based on the zoom factor.
         padding /= this.zoom;
 
-        SVGHelper.transformByRect(labelText, bounds);
-        SVGHelper.transformByRect(labelRect, bounds.inflate(padding));
+        SVGHelper.transformBy(labelGroup, {
+            x: x - padding,
+            y: y - padding,
+        });
 
-        // Increment by two because we create two DOM elements per label.
-        this.indexLabels += 2;
+        SVGHelper.transformBy(labelText, {
+            x: padding,
+            y: padding,
+            w: w,
+            h: h,
+        });
+
+        SVGHelper.transformBy(labelRect, {
+            w: w + 2 * padding,
+            h: h + 2 * padding,
+        });
+
+        // Increment by one because we create one group per label.
+        this.indexLabels += 1;
     }
 
     public reset() {

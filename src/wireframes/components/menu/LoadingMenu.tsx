@@ -8,7 +8,7 @@
 import { GithubOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import { Button, Menu, Modal } from 'antd';
 import * as React from 'react';
-import { Title, useEventCallback } from '@app/core';
+import { MarkerButton, Title, useEventCallback } from '@app/core';
 import { texts } from '@app/texts';
 import { useStore } from '@app/wireframes/model';
 import { ActionDropdownButton, ActionMenuButton, ActionMenuItem, useLoading } from './../actions';
@@ -83,6 +83,8 @@ export const LoadingMenu = React.memo(() => {
             <Button className='menu-item' size='large' href='https://github.com/mydraft-cc/ui' target='_blank'>
                 <GithubOutlined />
             </Button>
+
+            <MarkerButton />
 
             <Modal title={texts.common.about} visible={isOpen} onCancel={doToggleInfoDialog} onOk={doToggleInfoDialog}>
                 <div dangerouslySetInnerHTML={{ __html: text.default }} />
