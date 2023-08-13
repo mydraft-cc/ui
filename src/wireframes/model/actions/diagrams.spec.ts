@@ -8,7 +8,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
 import { Color, Vec2 } from '@app/core';
-import { addDiagram, buildDiagrams, changeColor, changeSize, createClassReducer, Diagram, EditorState, moveDiagram, removeDiagram, renameDiagram, selectDiagram, setDiagramMaster } from '@app/wireframes/model';
+import { addDiagram, buildDiagrams, changeColor, changeSize, createClassReducer, Diagram, duplicateDiagram, EditorState, moveDiagram, removeDiagram, renameDiagram, selectDiagram, setDiagramMaster } from '@app/wireframes/model';
 
 describe('DiagramReducer', () => {
     const state =
@@ -45,6 +45,17 @@ describe('DiagramReducer', () => {
         const state_2 = reducer(state_1, action);
 
         expect(state_2.selectedDiagramId).toBe(diagram.id);
+    });
+
+    it('should duplicate diagram', () => {
+        const diagram = Diagram.create({ id: '1' });
+
+        const action = duplicateDiagram(diagram);
+
+        const state_1 = EditorState.create().addDiagram(diagram);
+        const state_2 = reducer(state_1, action);
+
+        expect(state_2.diagrams.size).toBe(2);
     });
 
     it('should remove diagram', () => {

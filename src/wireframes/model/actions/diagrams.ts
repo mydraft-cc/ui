@@ -25,6 +25,11 @@ export const removeDiagram =
         return { payload: createDiagramAction(diagram) };
     });
 
+export const duplicateDiagram =
+    createAction('diagram/diagram', (diagram: DiagramRef) => {
+        return { payload: createDiagramAction(diagram) };
+    });
+
 export const moveDiagram =
     createAction('diagram/move', (diagram: DiagramRef, index: number) => {
         return { payload: createDiagramAction(diagram, { index }) };
@@ -86,6 +91,17 @@ export function buildDiagrams(builder: ActionReducerMapBuilder<EditorState>) {
             const { color } = action.payload;
 
             return state.changeColor(Color.fromString(color));
+        })
+        .addCase(duplicateDiagram, (state, action) => {
+            const { diagramId } = action.payload;
+
+            const diagram = state.diagrams.get(diagramId);
+
+            if (!diagram) {
+                return state;
+            }
+
+            return state.addDiagram(diagram.clone());
         })
         .addCase(addDiagram, (state, action) => {
             const { diagramId } = action.payload;

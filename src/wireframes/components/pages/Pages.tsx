@@ -12,7 +12,7 @@ import { DragDropContext, Draggable, Droppable, DropResult } from 'react-beautif
 import { useDispatch } from 'react-redux';
 import { useEventCallback } from '@app/core';
 import { texts } from '@app/texts';
-import { addDiagram, filterDiagrams, getDiagramId, getDiagramsFilter, getFilteredDiagrams, moveDiagram, removeDiagram, renameDiagram, selectDiagram, setDiagramMaster, useStore } from '@app/wireframes/model';
+import { addDiagram, duplicateDiagram, filterDiagrams, getDiagramId, getDiagramsFilter, getFilteredDiagrams, moveDiagram, removeDiagram, renameDiagram, selectDiagram, setDiagramMaster, useStore } from '@app/wireframes/model';
 import { Page, PageAction } from './Page';
 import './Pages.scss';
 
@@ -31,6 +31,9 @@ export const Pages = () => {
         switch (action) {
             case 'Delete':
                 dispatch(removeDiagram(diagramId));
+                break;
+            case 'Duplicate':
+                dispatch(duplicateDiagram(diagramId));
                 break;
             case 'SetMaster':
                 dispatch(setDiagramMaster(diagramId, arg));

@@ -122,6 +122,10 @@ export class Diagram extends Record<Props> {
         return this.set('items', this.items.updateAll(updater));
     }
 
+    public clone() {
+        return this.set('id', MathHelper.guid());
+    }
+
     public parent(id: string | DiagramItem) {
         if (!id) {
             return undefined;

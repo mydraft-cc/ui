@@ -31,6 +31,7 @@ export const texts = {
         diagram: 'Diagram',
         distributeHorizontally: 'Distribute Horizontally',
         distributeVertically: 'Distribute Vertically',
+        duplicate: 'Duplicate',
         findIcon: 'Find Icon',
         findPage: 'Find Page',
         findShape: 'Find Shape',

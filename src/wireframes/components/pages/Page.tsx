@@ -13,7 +13,7 @@ import { Keys, useEventCallback } from '@app/core';
 import { texts } from '@app/texts';
 import { Diagram, getPageName } from '@app/wireframes/model';
 
-export type PageAction = 'Delete' | 'Rename' | 'SetMaster' | 'Select';
+export type PageAction = 'Delete' | 'Rename' | 'SetMaster' | 'Select' | 'Duplicate';
 
 export interface PageProps {
     // The page index.
@@ -69,6 +69,10 @@ export const Page = (props: PageProps) => {
         onAction(diagram.id, 'Delete');
     });
 
+    const doDuplicate = useEventCallback(() => {
+        onAction(diagram.id, 'Duplicate');
+    });
+
     const doSelect = useEventCallback(() => {
         onAction(diagram.id, 'Select');
     });
@@ -101,6 +105,10 @@ export const Page = (props: PageProps) => {
                         <Menu selectable={false}>
                             <Menu.Item key='delete' icon={<DeleteOutlined />} onClick={doDelete}>
                                 {texts.common.delete}
+                            </Menu.Item>
+
+                            <Menu.Item key='duplicate' onClick={doDuplicate}>
+                                {texts.common.duplicate}
                             </Menu.Item>
 
                             <Menu.Item key='rename' onClick={doRenameStart}>
