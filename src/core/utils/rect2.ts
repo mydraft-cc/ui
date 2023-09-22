@@ -10,12 +10,22 @@ import { Types } from './types';
 import { Vec2 } from './vec2';
 
 export class Rect2 {
-    public static readonly ZERO = new Rect2(0, 0, 0, 0);
+    public static readonly TYPE_NAME = 'Rect2';
+
+    public readonly __typeName = Rect2.TYPE_NAME;
+
+    public static readonly ZERO = new Rect2(
+        0,
+        0,
+        0,
+        0);
+
     public static readonly EMPTY = new Rect2(
         Number.NEGATIVE_INFINITY,
         Number.NEGATIVE_INFINITY,
         Number.NEGATIVE_INFINITY,
         Number.NEGATIVE_INFINITY);
+
     public static readonly INFINITY = new Rect2(
         Number.POSITIVE_INFINITY,
         Number.POSITIVE_INFINITY,

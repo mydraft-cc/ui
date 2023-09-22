@@ -47,6 +47,10 @@ const ColorDefinitions: IColorDefinition[] = [
 ];
 
 export class Color {
+    public static readonly TYPE_NAME = 'Color';
+
+    public readonly __typeName = Color.TYPE_NAME;
+
     public static readonly BLACK = new Color(0, 0, 0);
     public static readonly WHITE = new Color(1, 1, 1);
     public static readonly GREEN = new Color(0, 1, 0);

@@ -48,7 +48,7 @@ describe('OrderingReducer', () => {
         const state_1 = EditorState.create().addDiagram(diagram);
         const state_2 = reducer(state_1, action);
 
-        expect(state_2.diagrams.get(diagram.id)?.rootIds.values).toEqual([shape2.id, shape1.id, shape3.id]);
+        expect(state_2.diagrams.get(diagram.id)?.itemIds.values).toEqual([shape2.id, shape1.id, shape3.id]);
     });
 
     it('should bring item forwards', () => {
@@ -73,6 +73,6 @@ describe('OrderingReducer', () => {
         const state_1 = EditorState.create().addDiagram(diagram);
         const state_2 = reducer(state_1, action);
 
-        expect(state_2.diagrams.get(diagram.id)?.rootIds.values).toEqual(expectedIds);
+        expect(state_2.diagrams.get(diagram.id)?.itemIds.values).toEqual(expectedIds);
     }
 });

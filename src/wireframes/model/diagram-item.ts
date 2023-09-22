@@ -98,6 +98,9 @@ export type InitialGroupProps = {
 } & InitialItemProps;
 
 export class DiagramItem extends Record<Props> implements Shape {
+    public static TYPE_NAME_SHAPE = 'DiagramShape';
+    public static TYPE_NAME_GROUP = 'DiagramGroup';
+
     private cachedBounds: { [id: string]: Transform } | undefined = {};
 
     public get id() {
@@ -213,7 +216,7 @@ export class DiagramItem extends Record<Props> implements Shape {
             type: 'Group',
         };
 
-        return new DiagramItem(props as any);
+        return new DiagramItem(props as any, DiagramItem.TYPE_NAME_GROUP);
     }
 
     public static createShape(setup: InitialShapeProps) {
@@ -232,7 +235,7 @@ export class DiagramItem extends Record<Props> implements Shape {
             type: 'Shape',
         };
 
-        return new DiagramItem(props as any);
+        return new DiagramItem(props as any, DiagramItem.TYPE_NAME_SHAPE);
     }
 
     public lock() {
@@ -283,7 +286,7 @@ export class DiagramItem extends Record<Props> implements Shape {
         if (this.type === 'Group') {
             this.cachedBounds ||= {};
         
-            let cacheId = diagram.instanceId;
+            let cacheId = diagram.__instanceId;
             let cached = this.cachedBounds[cacheId];
 
             if (!cached) {

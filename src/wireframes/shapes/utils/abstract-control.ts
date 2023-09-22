@@ -8,7 +8,7 @@
 import * as svg from '@svgdotjs/svg.js';
 import { Rect2, SVGHelper } from '@app/core';
 import { ConfigurableFactory, Constraint, ConstraintFactory, RenderContext, ShapePlugin } from '@app/wireframes/interface';
-import { ColorConfigurable, DiagramItem, MinSizeConstraint, NumberConfigurable, Renderer, SelectionConfigurable, SizeConstraint, SliderConfigurable, TextConfigurable, TextHeightConstraint, ToggleConfigurable } from '@app/wireframes/model';
+import { Configurable, DiagramItem, MinSizeConstraint, Renderer, SizeConstraint, TextHeightConstraint } from '@app/wireframes/model';
 import { SVGRenderer2 } from './svg-renderer2';
 import { TextSizeConstraint } from './text-size-contraint';
 
@@ -35,28 +35,28 @@ export class DefaultConstraintFactory implements ConstraintFactory {
 export class DefaultConfigurableFactory implements ConfigurableFactory {
     public static readonly INSTANCE = new DefaultConfigurableFactory();
 
-    public selection(name: string, label: string, options: string[]) {
-        return new SelectionConfigurable(name, label, options);
+    public selection(name: string, label: string, options: string[]): Configurable {
+        return { type: 'Selection', name, label, options };
     }
 
-    public slider(name: string, label: string, min: number, max: number) {
-        return new SliderConfigurable(name, label, min, max);
+    public slider(name: string, label: string, min: number, max: number): Configurable {
+        return { type: 'Slider', name, label, min, max };
     }
 
-    public number(name: string, label: string, min: number, max: number) {
-        return new NumberConfigurable(name, label, min, max);
+    public number(name: string, label: string, min: number, max: number): Configurable {
+        return { type: 'Number', name, label, min, max };
     }
 
-    public color(name: string, label: string) {
-        return new ColorConfigurable(name, label);
+    public color(name: string, label: string): Configurable {
+        return { type: 'Color', name, label };
     }
 
-    public text(name: string, label: string) {
-        return new TextConfigurable(name, label);
+    public text(name: string, label: string): Configurable {
+        return { type: 'Text', name, label };
     }
     
-    public toggle(name: string, label: string) {
-        return new ToggleConfigurable(name, label);
+    public toggle(name: string, label: string): Configurable {
+        return { type: 'Toggle', name, label };
     }
 }
 

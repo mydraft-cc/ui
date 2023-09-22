@@ -5,12 +5,15 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { ImmutableList, ImmutableMap, ImmutableSet, MathHelper, Record, Types } from '@app/core';
+import { ImmutableList, ImmutableMap, MathHelper, Record, Types } from '@app/core';
 import { DiagramItem } from './diagram-item';
 import { DiagramItemSet } from './diagram-item-set';
 
 type Items = ImmutableMap<DiagramItem>;
 type ItemIds = ImmutableList<string>;
+
+export type SelectedItemIds = ReadonlyArray<string>;
+export type SelectedItemsIdByUsers = ImmutableMap<SelectedItemIds>;
 
 type UpdateProps = {
     // The list of items.
@@ -20,7 +23,7 @@ type UpdateProps = {
     itemIds: ItemIds;
 
     // The selected ids.
-    selectedIds: ImmutableSet;
+    selectedIds: SelectedItemsIdByUsers;
 };
 
 type Props = {
@@ -34,10 +37,10 @@ type Props = {
     items: Items;
 
     // The root ids.
-    rootIds: ItemIds;
+    itemIds: ItemIds;
 
     // The selected ids.
-    selectedIds: ImmutableSet;
+    selectedIds: SelectedItemsIdByUsers;
 
     // Set the master diagram.
     master?: string;
@@ -54,13 +57,15 @@ export type InitialDiagramProps = {
     items?: { [id: string]: DiagramItem } | Items;
 
     // The rootIds ids.
-    rootIds?: ReadonlyArray<string> | ItemIds;
+    itemIds?: ReadonlyArray<string> | ItemIds;
 
     // Set the master diagram.
     master?: string;
 };
 
 export class Diagram extends Record<Props> {
+    public static TYPE_NAME = 'Diagram';
+
     private parents: { [id: string]: DiagramItem } = {};
 
     public get id() {
@@ -75,8 +80,8 @@ export class Diagram extends Record<Props> {
         return this.get('items');
     }
 
-    public get rootIds() {
-        return this.get('rootIds');
+    public get itemIds() {
+        return this.get('itemIds');
     }
 
     public get selectedIds() {
@@ -88,22 +93,22 @@ export class Diagram extends Record<Props> {
     }
 
     public get rootItems(): ReadonlyArray<DiagramItem> {
-        return this.rootIds.values.map(x => this.items.get(x)).filter(x => !!x) as DiagramItem[];
+        return this.itemIds.values.map(x => this.items.get(x)).filter(x => !!x) as DiagramItem[];
     }
 
     public static create(setup: InitialDiagramProps = {}) {
-        const { id, items, rootIds, master, title } = setup;
+        const { id, items, itemIds, master, title } = setup;
 
         const props: Props = {
             id: id || MathHelper.nextId(),
             items: ImmutableMap.of(items),
+            itemIds: ImmutableList.of(itemIds),
             master,
-            rootIds: ImmutableList.of(rootIds),
-            selectedIds: ImmutableSet.empty(),
+            selectedIds: ImmutableMap.empty(),
             title,
         };
 
-        return new Diagram(props);
+        return new Diagram(props, Diagram.TYPE_NAME);
     }
 
     public children(item: DiagramItem): ReadonlyArray<DiagramItem> {
@@ -176,9 +181,9 @@ export class Diagram extends Record<Props> {
         });
     }
 
-    public selectItems(ids: ReadonlyArray<string>) {
+    public selectItems(ids: SelectedItemIds, userId: string) {
         return this.mutate(ids, update => {
-            update.selectedIds = ImmutableSet.of(...ids);
+            update.selectedIds = update.selectedIds.set(userId, ids);
         });
     }
 
@@ -248,19 +253,25 @@ export class Diagram extends Record<Props> {
         }
 
         return this.mutate([], update => {
+            update.itemIds = update.itemIds.remove(...set.rootIds);
+
             update.items = update.items.mutate(m => {
                 for (const item of set.allItems) {
                     m.remove(item.id);
                 }
             });
 
-            update.selectedIds = update.selectedIds.mutate(m => {
-                for (const item of set.allItems) {
-                    m.remove(item.id);
+            update.selectedIds = update.selectedIds.mutate(mutator => {
+                for (const [key, value] of Object.entries(update.selectedIds)) {
+                    const ids = [...value];
+    
+                    for (const item of set.allItems) {
+                        ids.splice(ids.indexOf(item.id), 1);
+                    }
+    
+                    mutator.set(key, ids);
                 }
             });
-
-            update.itemIds = update.itemIds.remove(...set.rootIds);
         });
     }
 
@@ -301,21 +312,17 @@ export class Diagram extends Record<Props> {
             if (update.itemIds !== resultParent.childIds) {
                 update.items = update.items || this.items;
                 update.items = update.items.update(resultParent.id, p => p.set('childIds', update.itemIds));
+                update.itemIds = this.itemIds;
             }
-
         } else {
             update = {
                 items: this.items,
-                itemIds: this.rootIds,
+                itemIds: this.itemIds,
                 selectedIds: this.selectedIds, 
             };
 
             updater(update, resultItems);
-
-            update['rootIds'] = update.itemIds;
         }
-
-        delete (update as any).itemIds;
 
         return this.merge(update);
     }

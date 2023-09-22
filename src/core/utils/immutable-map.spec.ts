@@ -35,24 +35,22 @@ describe('ImmutableMap', () => {
         expect(set_5.has('3')).toBeTruthy();
     });
 
-    it('should convert to key array', () => {
+    it('should convert to keys array', () => {
         const set_1 = ImmutableMap.of<number>({ 1: 10, 2: 20 });
 
-        const array = set_1.keys;
-
-        expect(array.length).toBe(2);
-        expect(array).toContain('1');
-        expect(array).toContain('2');
+        expect(set_1.keys).toEqual(['1', '2']);
     });
 
-    it('should convert to value array', () => {
+    it('should convert to values array', () => {
         const set_1 = ImmutableMap.of<number>({ 1: 10, 2: 20 });
 
-        const array = set_1.values;
+        expect(set_1.values).toEqual([10, 20]);
+    });
 
-        expect(array.length).toBe(2);
-        expect(array).toContain(10);
-        expect(array).toContain(20);
+    it('should convert to entries array', () => {
+        const set_1 = ImmutableMap.of<number>({ 1: 10, 2: 20 });
+
+        expect(set_1.entries).toEqual([['1', 10], ['2', 20]]);
     });
 
     it('should return original set when key to add is null', () => {

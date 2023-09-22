@@ -10,7 +10,7 @@ import { CheckboxChangeEvent } from 'antd/lib/checkbox';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
 import { Color, ColorPalette, ColorPicker, useEventCallback } from '@app/core';
-import { changeItemsAppearance, ColorConfigurable, Configurable, getColors, getDiagramId, getSelectedConfigurables, getSelectedShape, NumberConfigurable, selectColorTab, SelectionConfigurable, SliderConfigurable, TextConfigurable, ToggleConfigurable, useStore } from '@app/wireframes/model';
+import { changeItemsAppearance, Configurable, getColors, getDiagramId, getSelectedConfigurables, getSelectedShape, selectColorTab, useStore } from '@app/wireframes/model';
 import { CustomSlider } from './CustomSlider';
 import { Text } from './Text';
 
@@ -62,31 +62,31 @@ export const CustomProperty = (props: CustomPropertyProps) => {
                 {configurable.label}
             </Col>
             <Col span={12} className='property-value'>
-                {configurable instanceof SliderConfigurable &&
+                {configurable.type === 'Slider' &&
                     <CustomSlider value={value}
                         min={configurable.min}
                         max={configurable.max}
                         onChange={doChangeValue} />
                 }
 
-                {configurable instanceof NumberConfigurable &&
+                {configurable.type === 'Number' &&
                     <InputNumber value={value}
                         min={configurable.min}
                         max={configurable.max}
                         onChange={doChangeValue} />
                 }
 
-                {configurable instanceof TextConfigurable &&
+                {configurable.type === 'Text' &&
                     <Text text={value}
                         onTextChange={doChangeValue} />
                 }
 
-                {configurable instanceof ToggleConfigurable &&
+                {configurable.type === 'Toggle' &&
                     <Checkbox checked={value}
                         onChange={doChangeBoolean} />
                 }
 
-                {configurable instanceof SelectionConfigurable &&
+                {configurable.type === 'Selection' &&
                     <Select value={value}
                         onChange={doChangeValue}
                     >
@@ -96,7 +96,7 @@ export const CustomProperty = (props: CustomPropertyProps) => {
                     </Select>
                 }
 
-                {configurable instanceof ColorConfigurable &&
+                {configurable.type === 'Color' &&
                     <ColorPicker activeColorTab={selectedColorTab as any} value={value}
                         onChange={doChangeColor}
                         onActiveColorTabChanged={onColorTabChange}

@@ -7,12 +7,13 @@
 
 /* eslint-disable @typescript-eslint/naming-convention */
 
-import { Color, Vec2 } from '@app/core';
+import { Color, MathHelper, Vec2 } from '@app/core';
 import { Diagram, EditorState } from '@app/wireframes/model';
 
 describe('EditorState', () => {
     const state_1 = EditorState.create();
 
+    const userId = MathHelper.guid();
     const diagram = Diagram.create({ id: '1' });
 
     it('should instantiate', () => {
@@ -50,11 +51,11 @@ describe('EditorState', () => {
 
     it('should unselect diagram when diagram to remove is selected', () => {
         const state_2 = state_1.addDiagram(diagram);
-        const state_3 = state_2.selectDiagram(diagram.id);
+        const state_3 = state_2.selectDiagram(diagram.id, userId);
         const state_4 = state_3.removeDiagram(diagram.id);
 
         expect(state_4.diagrams.has(diagram.id)).toBeFalsy();
-        expect(state_4.selectedDiagramId).toBeNull();
+        expect(state_4.selectedDiagramIds).toEqual({});
     });
 
     it('should move diagram', () => {
@@ -69,14 +70,14 @@ describe('EditorState', () => {
 
     it('should select diagram', () => {
         const state_2 = state_1.addDiagram(diagram);
-        const state_3 = state_2.selectDiagram(diagram.id);
+        const state_3 = state_2.selectDiagram(diagram.id, userId);
 
-        expect(state_3.selectedDiagramId).toBe(diagram.id);
+        expect(state_3.selectedDiagramIds).toEqual({ [userId]: diagram.id });
     });
 
     it('should return original state when diagram to select is not found', () => {
         const state_2 = state_1.addDiagram(diagram);
-        const state_3 = state_2.selectDiagram('unfound');
+        const state_3 = state_2.selectDiagram('unfound', userId);
 
         expect(state_3).toBe(state_2);
     });

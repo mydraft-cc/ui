@@ -20,13 +20,13 @@ export const ungroupItems =
         return { payload: createItemsAction(diagram, groups) };
     });
 
-export function buildGrouping(builder: ActionReducerMapBuilder<EditorState>) {
+export function buildGrouping(builder: ActionReducerMapBuilder<EditorState>, userId: string) {
     return builder
         .addCase(groupItems, (state, action) => {
             const { diagramId, groupId, itemIds } = action.payload;
 
             return state.updateDiagram(diagramId, diagram => {
-                return diagram.group(groupId, itemIds).selectItems([groupId]);
+                return diagram.group(groupId, itemIds).selectItems([groupId], userId);
             });
         })
         .addCase(ungroupItems, (state, action) => {
@@ -45,7 +45,7 @@ export function buildGrouping(builder: ActionReducerMapBuilder<EditorState>) {
                     }
                 }
 
-                diagram = diagram.selectItems(childIds);
+                diagram = diagram.selectItems(childIds, userId);
 
                 return diagram;
             });

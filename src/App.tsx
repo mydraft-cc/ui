@@ -15,6 +15,7 @@ import { ClipboardContainer, useEventCallback, usePrinter } from '@app/core';
 import { ArrangeMenu, ClipboardMenu, EditorView, HistoryMenu, Icons, LoadingMenu, LockMenu, Outline, Pages, PrintView, Properties, Recent, SettingsMenu, Shapes, UIMenu } from '@app/wireframes/components';
 import { loadDiagramFromServer, newDiagram, selectTab, showToast, toggleLeftSidebar, toggleRightSidebar, useStore } from '@app/wireframes/model';
 import { texts } from './texts';
+import { Presence } from './wireframes/collaboration';
 import { CustomDragLayer } from './wireframes/components/CustomDragLayer';
 import { PresentationView } from './wireframes/components/PresentationView';
 import { OverlayContainer } from './wireframes/contexts/OverlayContext';
@@ -81,24 +82,30 @@ export const App = () => {
                     <Layout.Header>
                         <img className='logo' src={logo} alt='mydraft.cc' />
 
-                        <HistoryMenu />
-                        <span className='menu-separator' />
+                        <span className='ant-menu-group'>
+                            <HistoryMenu />
+                            <span className='menu-separator' />
 
-                        <LockMenu />
-                        <span className='menu-separator' />
+                            <LockMenu />
+                            <span className='menu-separator' />
 
-                        <ArrangeMenu />
-                        <span className='menu-separator' />
+                            <ArrangeMenu />
+                            <span className='menu-separator' />
 
-                        <ClipboardMenu />
-                        <span className='menu-separator' />
+                            <ClipboardMenu />
+                            <span className='menu-separator' />
 
-                        <UIMenu onPlay={doPresent} />
-                        <span className='menu-separator' />
+                            <UIMenu onPlay={doPresent} />
+                            <span className='menu-separator' />
 
-                        <SettingsMenu onPrint={print} />
+                            <SettingsMenu onPrint={print} />
+                        </span>
 
-                        <span style={{ float: 'right' }}>
+                        <span className='ant-menu-group'>
+                            <Presence />
+
+                            <span className='menu-separator' />
+
                             <LoadingMenu />
                         </span>
                     </Layout.Header>

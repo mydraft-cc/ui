@@ -48,13 +48,13 @@ export const pasteItems =
         return { payload: createDiagramAction(diagram, { json: Serializer.tryGenerateNewIds(json), offset }) };
     });
 
-export function buildItems(builder: ActionReducerMapBuilder<EditorState>) {
+export function buildItems(builder: ActionReducerMapBuilder<EditorState>, userId: string) {
     return builder
         .addCase(selectItems, (state, action) => {
             const { diagramId, itemIds } = action.payload;
 
             return state.updateDiagram(diagramId, diagram => {
-                return diagram.selectItems(itemIds);
+                return diagram.selectItems(itemIds, userId);
             });
         })
         .addCase(removeItems, (state, action) => {
@@ -112,7 +112,7 @@ export function buildItems(builder: ActionReducerMapBuilder<EditorState>) {
                     return item.transformByBounds(boundsOld, boundsNew);
                 });
                 
-                diagram = diagram.selectItems(set.rootIds);
+                diagram = diagram.selectItems(set.rootIds, userId);
 
                 return diagram;
             });
@@ -142,12 +142,12 @@ export function buildItems(builder: ActionReducerMapBuilder<EditorState>) {
 
                 const shape = DiagramItem.createShape(initialProps);
 
-                return diagram.addShape(shape).selectItems([id]);
+                return diagram.addShape(shape).selectItems([id], userId);
             });
         });
 }
 
-export function calculateSelection(items: DiagramItem[], diagram: Diagram, isSingleSelection?: boolean, isCtrl?: boolean): string[] {
+export function calculateSelection(items: ReadonlyArray<DiagramItem>, diagram: Diagram, userId: string, isSingleSelection?: boolean, isCtrl?: boolean): string[] {
     if (!items) {
         return [];
     }
@@ -176,19 +176,23 @@ export function calculateSelection(items: DiagramItem[], diagram: Diagram, isSin
                 const singleId = single.id;
 
                 if (isCtrl) {
+                    const current = [...diagram.selectedIds[userId] || []];
+
                     if (!single.isLocked) {
-                        if (diagram.selectedIds.has(singleId)) {
-                            return diagram.selectedIds.remove(singleId).values;
+                        if (current[singleId]) {
+                            current.splice(current.indexOf(singleId), 1);
                         } else {
-                            return diagram.selectedIds.add(resolveGroup(single).id).values;
+                            current.push(singleId);
                         }
-                    } else {
-                        return diagram.selectedIds.values;
+
+                        return current;
                     }
+                    
+                    return current;
                 } else {
                     const group = diagram.parent(single.id);
 
-                    if (group && diagram.selectedIds.has(group.id)) {
+                    if (group && diagram.selectedIds[userId]?.[group.id]) {
                         selectedItems.push(resolveGroup(single, group));
                     } else {
                         selectedItems.push(resolveGroup(single));

@@ -9,6 +9,7 @@ import * as React from 'react';
 import { useDispatch } from 'react-redux';
 import { Shortcut, useEventCallback } from '@app/core';
 import { calculateSelection, getDiagram, selectItems, useStore } from '@app/wireframes/model';
+import { user } from '@app/wireframes/user';
 import { ActionMenuButton, useGrouping, useRemove } from './../actions';
 
 export const ArrangeMenu = React.memo(() => {
@@ -22,7 +23,8 @@ export const ArrangeMenu = React.memo(() => {
             const selection =
                 calculateSelection(
                     selectedDiagram.items.values,
-                    selectedDiagram);
+                    selectedDiagram,
+                    user.id);
 
             dispatch(selectItems(selectedDiagram, selection));
         }

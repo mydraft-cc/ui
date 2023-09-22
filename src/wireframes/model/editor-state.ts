@@ -7,14 +7,13 @@
 
 import { Color, ImmutableList, ImmutableMap, MathHelper, Record, Vec2 } from '@app/core';
 import { Diagram } from './diagram';
-import { UndoableState } from './undoable-state';
 
 type Diagrams = ImmutableMap<Diagram>;
 type DiagramIds = ImmutableList<string>;
 
 type Props = {
     // The id of the selected diagram.
-    selectedDiagramId?: string | null;
+    selectedDiagramIds: Readonly<{ [key: string]: string | null | undefined }>;
 
     // The actual diagrams.
     diagrams: Diagrams;
@@ -33,6 +32,9 @@ type Props = {
 };
 
 export type InitialEditorProps = {
+    // The unique id of the editor.
+    id?: string;
+
     // The actual diagrams.
     diagrams?: { [id: string]: Diagram } | ImmutableMap<Diagram>;
 
@@ -47,12 +49,14 @@ export type InitialEditorProps = {
 };
 
 export class EditorState extends Record<Props> {
+    public static TYPE_NAME = 'EditorState';
+
     public get id() {
         return this.get('id');
     }
 
-    public get selectedDiagramId() {
-        return this.get('selectedDiagramId');
+    public get selectedDiagramIds() {
+        return this.get('selectedDiagramIds');
     }
 
     public get diagrams() {
@@ -76,17 +80,18 @@ export class EditorState extends Record<Props> {
     }
 
     public static create(setup: InitialEditorProps = {}): EditorState {
-        const { color, diagrams, diagramIds, size } = setup;
+        const { color, diagrams, diagramIds, id, size } = setup;
 
         const props: Props = {
+            id: id || MathHelper.guid(),
             color: color || Color.WHITE,
             diagrams: ImmutableMap.of(diagrams),
             diagramIds: ImmutableList.of(diagramIds),
-            id: MathHelper.guid(),
+            selectedDiagramIds: {},
             size: size || new Vec2(1000, 1000),
         };
 
-        return new EditorState(props);
+        return new EditorState(props, EditorState.TYPE_NAME);
     }
 
     public changeSize(size: Vec2) {
@@ -109,19 +114,27 @@ export class EditorState extends Record<Props> {
         return this.set('diagrams', this.diagrams.updateAll(updater));
     }
 
-    public selectDiagram(diagramId: string | null | undefined) {
+    public selectDiagram(diagramId: string | null | undefined, userId: string) {
         if (!this.diagrams.get(diagramId!)) {
             return this;
         }
 
-        return this.set('selectedDiagramId', diagramId);
+        return this.set('selectedDiagramIds', { ...this.selectedDiagramIds, [userId]: diagramId });
     }
 
     public removeDiagram(diagramId: string) {
+        let selectedDiagramIds = { ...this.selectedDiagramIds };
+
+        for (const [key, value] of Object.entries(selectedDiagramIds)) {
+            if (value === diagramId) {
+                delete selectedDiagramIds[key];
+            }
+        }
+
         return this.merge({
             diagrams: this.diagrams.remove(diagramId),
             diagramIds: this.diagramIds.remove(diagramId),
-            selectedDiagramId: this.selectedDiagramId ? null : this.selectedDiagramId,
+            selectedDiagramIds,
         });
     }
 
@@ -138,5 +151,5 @@ export class EditorState extends Record<Props> {
 }
 
 export interface EditorStateInStore {
-    editor: UndoableState<EditorState>;
+    editor: EditorState;
 }

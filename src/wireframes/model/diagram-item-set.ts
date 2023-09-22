@@ -115,7 +115,7 @@ function flattenRootItems(source: ReadonlyArray<string | DiagramItem>, diagram: 
 
                 byParent.push({ orderIndex, item });                
             } else {
-                const orderIndex = diagram.rootIds.values.indexOf(item.id);
+                const orderIndex = diagram.itemIds.values.indexOf(item.id);
 
                 byRoot.push({ orderIndex, item });   
             }

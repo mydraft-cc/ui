@@ -17,9 +17,13 @@ export interface Constraint {
 }
 
 export class SizeConstraint implements Constraint {
+    public readonly __typeName = SizeConstraint.TYPE_NAME;
+
+    public static readonly TYPE_NAME = 'SizeConstraint';
+
     constructor(
-        private readonly width: number | undefined,
-        private readonly height: number | undefined,
+        public readonly width: number | undefined,
+        public readonly height: number | undefined,
     ) {
         Object.freeze(this);
     }
@@ -49,6 +53,10 @@ export class SizeConstraint implements Constraint {
 }
 
 export class MinSizeConstraint implements Constraint {
+    public readonly __typeName = MinSizeConstraint.TYPE_NAME;
+
+    public static readonly TYPE_NAME = 'MinSizeConstraint';
+    
     constructor() {
         Object.freeze(this);
     }
@@ -69,8 +77,12 @@ export class MinSizeConstraint implements Constraint {
 }
 
 export class TextHeightConstraint implements Constraint {
+    public readonly __typeName = TextHeightConstraint.TYPE_NAME;
+
+    public static readonly TYPE_NAME = 'TextHeightConstraint';
+
     constructor(
-        private readonly padding: number,
+        public readonly padding: number,
     ) {
         Object.freeze(this);
     }

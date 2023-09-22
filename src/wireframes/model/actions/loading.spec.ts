@@ -7,6 +7,7 @@
 
 /* eslint-disable @typescript-eslint/naming-convention */
 
+import { MathHelper } from '@app/core';
 import { EditorState, loadDiagramInternal, selectDiagram, selectItems } from '@app/wireframes/model';
 import * as Reducers from '@app/wireframes/model/actions';
 const diff = require('deep-diff').diff;
@@ -15,14 +16,15 @@ const v2 = require('./diagram_v2.json');
 const v3 = require('./diagram_v3.json');
 
 describe('LoadingReducer', () => {
-    const editorState = EditorState.create();
+    const userId = MathHelper.guid();
 
+    const editorState = EditorState.create();
     const editorReducer = Reducers.createClassReducer(editorState, builder => {
         Reducers.buildAlignment(builder);
         Reducers.buildAppearance(builder);
-        Reducers.buildDiagrams(builder);
-        Reducers.buildGrouping(builder);
-        Reducers.buildItems(builder);
+        Reducers.buildDiagrams(builder, userId);
+        Reducers.buildGrouping(builder, userId);
+        Reducers.buildItems(builder, userId);
         Reducers.buildOrdering(builder);
     });
 
@@ -41,7 +43,7 @@ describe('LoadingReducer', () => {
             ],
         });
     
-    const rootReducer = Reducers.rootLoading(undoableReducer, editorReducer);
+    const rootReducer = Reducers.rootLoading(editorReducer, MathHelper.guid());
 
     it('should load from old and new format V2', () => {
         const initial = undoableReducer(undefined, { type: 'NOOP' });

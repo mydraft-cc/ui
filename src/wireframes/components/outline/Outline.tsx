@@ -9,13 +9,14 @@ import * as React from 'react';
 import { DragDropContext, Draggable, Droppable, DropResult } from 'react-beautiful-dnd';
 import { useDispatch } from 'react-redux';
 import { useEventCallback } from '@app/core';
-import { getDiagram, moveItems, orderItems, removeItems, renameItems, selectItems, useStore } from '@app/wireframes/model';
+import { getDiagram, getSelectedIds, moveItems, orderItems, removeItems, renameItems, selectItems, useStore } from '@app/wireframes/model';
 import { OutlineItem, OutlineItemAction } from './OutlineItem';
 import './Outline.scss';
 
 export const Outline = () => {
     const dispatch = useDispatch();
     const diagram = useStore(getDiagram);
+    const selectedsIds = useStore(getSelectedIds);
 
     const doAction = useEventCallback((itemId: string, action: OutlineItemAction, arg?: any) => {
         switch (action) {
@@ -68,6 +69,7 @@ export const Outline = () => {
                                                 isLast={index === rootItems.length - 1}
                                                 level={0}
                                                 onAction={doAction}
+                                                selectedIds={selectedsIds}
                                             />
                                         </div>
                                     )}

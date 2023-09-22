@@ -12,7 +12,7 @@ import { NativeTypes } from 'react-dnd-html5-backend';
 import { findDOMNode } from 'react-dom';
 import { useDispatch } from 'react-redux';
 import { loadImagesToClipboardItems, sizeInPx, useClipboard, useEventCallback } from '@app/core';
-import { addShape, changeItemsAppearance, Diagram, getDiagram, getDiagramId, getEditor, getMasterDiagram, getSelectedItems, getSelectedItemsWithLocked, RendererService, selectItems, Transform, transformItems, useStore } from '@app/wireframes/model';
+import { addShape, changeItemsAppearance, Diagram, getDiagram, getDiagramId, getEditor, getMasterDiagram, getSelectedItems, RendererService, selectItems, Transform, transformItems, useStore } from '@app/wireframes/model';
 import { Editor } from '@app/wireframes/renderer/Editor';
 import { DiagramRef, ItemsRef } from '../model/actions/utils';
 import { ShapeSource } from './../interface';
@@ -45,7 +45,7 @@ export const EditorViewInner = ({ diagram, spacing }: EditorViewProps & { diagra
     const renderRef = React.useRef<any>();
     const selectedPoint = React.useRef({ x: 0, y: 0 });
     const selectedDiagramId = useStore(getDiagramId);
-    const state = useStore(s => s);
+    const selectedItems = useStore(getSelectedItems);
     const zoom = useStore(s => s.ui.zoom);
     const zoomedSize = editorSize.mul(zoom);
     const [menuVisible, setMenuVisible] = React.useState(false);
@@ -175,8 +175,7 @@ export const EditorViewInner = ({ diagram, spacing }: EditorViewProps & { diagra
                         onChangeItemsAppearance={doChangeItemsAppearance}
                         onSelectItems={doSelectItems}
                         onTransformItems={doTransformItems}
-                        selectedItems={getSelectedItems(state)}
-                        selectedItemsWithLocked={getSelectedItemsWithLocked(state)}
+                        selectedItems={selectedItems}
                         viewSize={editor.size}
                         zoom={zoom}
                         zoomedSize={zoomedSize}

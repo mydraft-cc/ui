@@ -6,10 +6,23 @@
 */
 
 import { moveItems } from './collections';
+import { MathHelper } from './math-helper';
 import { Types } from './types';
 
+type Mutator<T> = {
+    push: (item: T) => void;
+
+    set: (index: number, item: T) => void;
+
+    insert: (index: number, item: T) => void;
+
+    removeAt: (index: number) => void;
+};
+
 export class ImmutableList<T> {
-    private static readonly EMPTY = new ImmutableList<any>([]);
+    public readonly __typeName = ImmutableList.TYPE_NAME;
+
+    public static readonly TYPE_NAME = 'ImmutableList';
 
     public get size() {
         return this.items.length;
@@ -19,30 +32,33 @@ export class ImmutableList<T> {
         return this.items;
     }
 
+    public get raw() {
+        return this.items;
+    }
+
     public at(index: number): T | undefined {
         return this.items[index];
     }
 
-    constructor(
-        private readonly items: ReadonlyArray<T>,
+    constructor(private readonly items: ReadonlyArray<T>,
+        public readonly __instanceId: string,
     ) {
-        Object.freeze(this);
         Object.freeze(items);
     }
 
     public static empty<V>(): ImmutableList<V> {
-        return ImmutableList.EMPTY;
+        return new ImmutableList<V>([], MathHelper.nextId());
     }
 
-    public static of<V>(items: ReadonlyArray<V> | ImmutableList<V> | undefined) {
+    public static of<V>(items: ReadonlyArray<V> | ImmutableList<V> | undefined): ImmutableList<V> {
         if (!items) {
-            return ImmutableList.EMPTY;
+            return ImmutableList.empty();
         } else if (items instanceof ImmutableList) {
             return items;
         } else if (items.length === 0) {
-            return ImmutableList.EMPTY;
+            return ImmutableList.empty<V>();
         } else {
-            return new ImmutableList<V>(items);
+            return new ImmutableList<V>(items, MathHelper.nextId());
         }
     }
 
@@ -108,16 +124,54 @@ export class ImmutableList<T> {
         return this.replace(moveItems(this.items, items, target, relative));
     }
 
-    private replace(items: ReadonlyArray<T>): this {
+    private replace(items: ReadonlyArray<T>) {
         if (items === this.items) {
             return this;
         } else {
-            const newValue = Object.create(Object.getPrototypeOf(this));
-
-            newValue.items = items;
-
-            return newValue;
+            return new ImmutableList(items, this.__instanceId);
         }
+    }
+
+    public mutate(updater: (mutator: Mutator<T>) => void) {
+        let updatedItems: T[] | undefined = undefined;
+        let updateCount = 0;
+
+        const mutator: Mutator<T> = {
+            push: v => {
+                updatedItems ||= [...this.items];
+                updateCount++;
+                updatedItems.push(v);
+            },
+            insert: (i, v) => {
+                updatedItems ||= [...this.items];
+                updateCount++;
+                updatedItems.splice(i, 0, v);
+            },
+            set: (i, v) => {
+                updatedItems ||= [...this.items];
+
+                if (!Types.equals(updatedItems[i], v)) {
+                    updateCount++;
+                    updatedItems[i] = v;
+                }
+            },
+            removeAt: (i) => {
+                updatedItems ||= [...this.items];
+
+                if (i < updatedItems.length) {
+                    updatedItems.splice(i);
+                    updateCount++;
+                }
+            },
+        };
+
+        updater(mutator);
+
+        if (!updateCount || !updatedItems) {
+            return this;
+        }
+
+        return this.replace(updatedItems);
     }
 
     public equals(other: ImmutableList<T>) {

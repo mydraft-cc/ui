@@ -69,7 +69,7 @@ describe('ImmutableList', () => {
     });
 
     it('should return original list when item to remove is null', () => {
-        const items: string[] = null!;
+        const items: number[] = null!;
 
         const list_1 = ImmutableList.of([1]);
         const list_2 = list_1.remove(...items);
@@ -128,14 +128,14 @@ describe('ImmutableList', () => {
 
     it('should ignore items that are not found', () => {
         const list_1 = ImmutableList.of([1, 2, 3, 4, 5, 6]);
-        const list_2 = list_1.bringToFront([3, 'not found']);
+        const list_2 = list_1.bringToFront([3, -1]);
 
         expect(list_2.values).toEqual([1, 2, 4, 5, 6, 3]);
     });
 
     it('should return original list no id to sort found', () => {
         const list_1 = ImmutableList.of([1, 2, 3, 4, 5, 6]);
-        const list_2 = list_1.sendBackwards(['not found']);
+        const list_2 = list_1.sendBackwards([-1]);
 
         expect(list_2).toBe(list_1);
     });

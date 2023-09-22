@@ -10,6 +10,10 @@
 import { MathHelper } from './math-helper';
 
 export class Rotation {
+    public readonly __typeName = Rotation.TYPE_NAME;
+    
+    public static readonly TYPE_NAME = 'Rotation';
+
     public static readonly ZERO = Rotation.fromRadian(0);
 
     private readonly computed: { cos: number | null; sin: number | null } = { cos: null, sin: null };

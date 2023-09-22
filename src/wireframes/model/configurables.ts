@@ -5,68 +5,18 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-export abstract class Configurable {
-    constructor(
-        public readonly name: string,
-        public readonly label: string,
-    ) {
-    }
-}
+export type ConfigurableBase = { name: string; label: string };
 
-export class TextConfigurable extends Configurable {
-    constructor(name: string, label: string,
-    ) {
-        super(name, label);
+export type Configurable = ColorConfigurable | NumberConfigurable | SelectionConfigurable | SliderConfigurable | TextConfigurable | ToggleConfigurable;
 
-        Object.freeze(this);
-    }
-}
+export type ColorConfigurable = { type: 'Color' } & ConfigurableBase;
 
-export class ToggleConfigurable extends Configurable {
-    constructor(name: string, label: string,
-    ) {
-        super(name, label);
+export type NumberConfigurable = { type: 'Number'; min: number; max: number } & ConfigurableBase;
 
-        Object.freeze(this);
-    }
-}
+export type SelectionConfigurable = { type: 'Selection'; options: string[] } & ConfigurableBase;
 
-export class SelectionConfigurable extends Configurable {
-    constructor(name: string, label: string,
-        public readonly options: string[],
-    ) {
-        super(name, label);
+export type SliderConfigurable = { type: 'Slider'; min: number; max: number } & ConfigurableBase;
 
-        Object.freeze(this);
-    }
-}
+export type TextConfigurable = { type: 'Text' } & ConfigurableBase;
 
-export class SliderConfigurable extends Configurable {
-    constructor(name: string, label: string,
-        public readonly min = 0,
-        public readonly max = 100,
-    ) {
-        super(name, label);
-
-        Object.freeze(this);
-    }
-}
-
-export class NumberConfigurable extends Configurable {
-    constructor(name: string, label: string,
-        public readonly min = 0,
-        public readonly max = 100,
-    ) {
-        super(name, label);
-
-        Object.freeze(this);
-    }
-}
-
-export class ColorConfigurable extends Configurable {
-    constructor(name: string, label: string) {
-        super(name, label);
-
-        Object.freeze(this);
-    }
-}
+export type ToggleConfigurable = { type: 'Toggle' } & ConfigurableBase;

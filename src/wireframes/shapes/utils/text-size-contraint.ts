@@ -5,20 +5,41 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
+import { SourceObject, ValueResolver } from 'yjs-redux';
 import { Vec2 } from '@app/core';
 import { Constraint, Shape } from '@app/wireframes/interface';
 import { DiagramItem } from '@app/wireframes/model';
 import { SVGRenderer2 } from './svg-renderer2';
 
-export class TextSizeConstraint implements Constraint {
+export class TextSizeConstraintResolver implements ValueResolver<TextSizeConstraint> {
     constructor(
         private readonly renderer: SVGRenderer2,
-        private readonly paddingX = 0,
-        private readonly paddingY = 0,
-        private readonly lineHeight = 1.2,
-        private readonly resizeWidth = false,
-        private readonly minWidth = 0,
-    ) { }
+    ) {
+    }
+
+    public fromYjs(source: SourceObject): TextSizeConstraint {
+        return new TextSizeConstraint(this.renderer, source.paddingX as number, source.paddingY as number, source.lineHeight as number, source.resizeWidth as boolean, source.minWidth as number);
+    }
+    
+    public fromValue(source: TextSizeConstraint): SourceObject {
+        return { paddingX: source.paddingX, paddingY: source.paddingY, lineHeight: source.lineHeight, resizeWidth: source.resizeWidth, minWidth: source.minWidth };
+    }
+}
+
+export class TextSizeConstraint implements Constraint {
+    public static readonly TYPE_NAME = 'TextHeightConstraint';
+
+    public readonly __typeName = TextSizeConstraint.TYPE_NAME;
+
+    constructor(
+        public readonly renderer: SVGRenderer2,
+        public readonly paddingX = 0,
+        public readonly paddingY = 0,
+        public readonly lineHeight = 1.2,
+        public readonly resizeWidth = false,
+        public readonly minWidth = 0,
+    ) {
+    }
 
     public updateSize(shape: Shape, size: Vec2, prev: DiagramItem): Vec2 {
         const fontSize = shape.fontSize;

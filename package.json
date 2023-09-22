@@ -7,6 +7,8 @@
     "@marker.io/browser": "^0.18.0",
     "@reduxjs/toolkit": "^1.7.1",
     "@svgdotjs/svg.js": "^3.1.1",
+    "@y-sweet/client": "^0.0.8",
+    "@y-sweet/sdk": "^0.0.8",
     "antd": "4.18.2",
     "classnames": "^2.3.1",
     "connected-react-router": "^6.9.2",
@@ -28,7 +30,9 @@
     "redux": "4.1.2",
     "redux-thunk": "2.4.1",
     "reselect": "4.1.5",
-    "tslib": "2.3.1"
+    "tslib": "2.3.1",
+    "y-webrtc": "^10.2.5",
+    "yjs-redux": "^0.5.0"
   },
   "scripts": {
     "start": "node --max_old_space_size=6096 node_modules/webpack/bin/webpack.js serve --config config/webpack.config.js --port 3002 --hot --server-type https --server-options-pfx dev/squidex-dev.pfx --server-options-passphrase password",

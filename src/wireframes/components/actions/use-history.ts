@@ -6,42 +6,30 @@
 */
 
 import * as React from 'react';
-import { useDispatch } from 'react-redux';
-import { useEventCallback } from '@app/core';
 import { texts } from '@app/texts';
-import { redo, undo, useStore } from '@app/wireframes/model';
+import { useUndoManager } from '@app/wireframes/collaboration';
 import { UIAction } from './shared';
 
 export function useHistory() {
-    const dispatch = useDispatch();
-    const canRedo = useStore(s => s.editor.canRedo);
-    const canUndo = useStore(s => s.editor.canUndo);
-
-    const doRedo = useEventCallback(() => {
-        dispatch(redo());
-    });
-
-    const doUndo = useEventCallback(() => {
-        dispatch(undo());
-    });
+    const undoManager = useUndoManager();
 
     const redoAction: UIAction = React.useMemo(() => ({
-        disabled: !canRedo,
+        disabled: !undoManager.canRedo,
         icon: 'icon-redo',
         label: texts.common.redo,
         shortcut: 'MOD + Y',
         tooltip: texts.common.redo,
-        onAction: doRedo,
-    }), [canRedo, doRedo]);
+        onAction: undoManager.redo,
+    }), [undoManager.canRedo, undoManager.redo]);
 
     const undoAction: UIAction = React.useMemo(() => ({
-        disabled: !canUndo,
+        disabled: !undoManager.canUndo,
         icon: 'icon-undo',
         label: texts.common.undo,
         shortcut: 'MOD + Z',
         tooltip: texts.common.undo,
-        onAction: doUndo,
-    }), [canUndo, doUndo]);
+        onAction: undoManager.undo,
+    }), [undoManager.canUndo, undoManager.undo]);
 
     return { redo: redoAction, undo: undoAction };
 }

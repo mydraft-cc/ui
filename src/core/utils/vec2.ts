@@ -9,12 +9,25 @@ import { MathHelper } from './math-helper';
 import { Rotation } from './rotation';
 
 export class Vec2 {
-    public static readonly ZERO = new Vec2(0, 0);
+    public static readonly TYPE_NAME = 'Vec2';
 
-    public static readonly ONE = new Vec2(1, 1);
+    public readonly __typeName = Vec2.TYPE_NAME;
 
-    public static readonly POSITIVE_INFINITY = new Vec2(Number.POSITIVE_INFINITY, Number.POSITIVE_INFINITY);
-    public static readonly NEGATIVE_INFINITY = new Vec2(Number.NEGATIVE_INFINITY, Number.NEGATIVE_INFINITY);
+    public static readonly ZERO = new Vec2(
+        0,
+        0);
+
+    public static readonly ONE = new Vec2(
+        1,
+        1);
+        
+    public static readonly POSITIVE_INFINITY = new Vec2(
+        Number.POSITIVE_INFINITY,
+        Number.POSITIVE_INFINITY);
+
+    public static readonly NEGATIVE_INFINITY = new Vec2(
+        Number.NEGATIVE_INFINITY,
+        Number.NEGATIVE_INFINITY);
 
     public get length(): number {
         return Math.sqrt(this.x * this.x + this.y * this.y);

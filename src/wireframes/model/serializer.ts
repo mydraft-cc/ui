@@ -136,8 +136,12 @@ function readEditor(source: object) {
 function readDiagram(source: object) {
     const raw: any = readObject(source, DIAGRAM_SERIALIZERS);
 
-    if (!raw.rootIds) {
-        raw.rootIds = source['itemIds'];
+    if (!raw.itemIds) {
+        raw.itemIds = source['itemIds'];
+    }
+
+    if (!raw.itemIds) {
+        raw.itemIds = source['rootIds'];
     }
 
     return Diagram.create(raw);
@@ -213,7 +217,7 @@ const DIAGRAM_SERIALIZERS: PropertySerializers = {
         get: (source: ImmutableMap<DiagramItem>) => source.values.map(writeDiagramItem),
         set: (source: any[]) => buildObject(source.map(readDiagramItem), x => x.id),
     },
-    'rootIds': {
+    'itemIds': {
         get: (source: ImmutableList<string>) => source.values,
         set: (source) => source,
     },

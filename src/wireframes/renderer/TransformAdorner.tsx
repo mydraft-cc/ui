@@ -9,6 +9,7 @@ import * as svg from '@svgdotjs/svg.js';
 import * as React from 'react';
 import { Rotation, Subscription, SVGHelper, Timer, Vec2 } from '@app/core';
 import { Diagram, DiagramItem, SnapManager, SnapMode, Transform } from '@app/wireframes/model';
+import { user } from '@app/wireframes/user';
 import { OverlayManager } from './../contexts/OverlayContext';
 import { SVGRenderer2 } from './../shapes/utils/svg-renderer2';
 import { InteractionHandler, InteractionService, SvgEvent } from './interaction-service';
@@ -89,7 +90,7 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
     }
 
     public componentDidUpdate(prevProps: TransformAdornerProps) {
-        if (this.props.selectedDiagram.selectedIds !== prevProps.selectedDiagram.selectedIds) {
+        if (this.props.selectedDiagram.selectedIds[user.id] !== prevProps.selectedDiagram.selectedIds[user.id]) {
             this.rotation = Rotation.ZERO;
         }
 

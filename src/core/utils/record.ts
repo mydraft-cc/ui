@@ -11,16 +11,22 @@ import { Types } from './types';
 export abstract class Record<T extends object> {
     private readonly values: T;
 
-    public readonly instanceId: string;
+    public readonly __instanceId: string;
 
     public get<K extends keyof T>(key: K): T[K] {
         return this.values[key as string];
     }
 
-    constructor(values: T) {
+    public get raw() {
+        return this.values;
+    }
+
+    constructor(values: T,
+        public readonly __typeName: string, id?: string,
+    ){
+        this.__instanceId = id || (values as any)['__instanceId'] || MathHelper.nextId();
         this.values = values;
         this.values = this.afterClone(this.values);
-        this.instanceId = MathHelper.nextId();
 
         Object.freeze(values);
     }
@@ -76,7 +82,8 @@ export abstract class Record<T extends object> {
 
         record.values = values;
         record.values = record.afterClone(values, this);
-        record.instanceId = MathHelper.nextId();
+        record.__instanceId = this.__instanceId;
+        record.__typeName = this.__typeName;
 
         Object.freeze(record.values);
 

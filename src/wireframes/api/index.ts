@@ -5,6 +5,8 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
+import { ClientToken } from '@y-sweet/sdk';
+
 const API_URL = process.env.NODE_ENV === 'test_development' ? 'http://localhost:4000' : 'https://api.mydraft.cc';
 
 export async function getCollaborationToken(id: string) {
@@ -17,13 +19,12 @@ export async function getCollaborationToken(id: string) {
     });
 
     if (!response.ok) {
-        throw Error('Failed to load diagram');
+        throw Error('Failed to fetch token');
     }
 
     const stored = await response.json();
 
-    return stored;
-
+    return stored as ClientToken;
 }
 
 export async function getDiagram(readToken: string) {

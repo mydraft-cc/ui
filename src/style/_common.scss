@@ -30,7 +30,6 @@ body {
 }
 
 .logo {
-    @include fixed(15px, null, null, 10px);
     color: $color-white;
     font-size: 1.1rem;
     font-weight: bold;
@@ -40,9 +39,14 @@ body {
 .ant-layout {
     &-header {
         @include box-shadow-outer(0, 2px, 2px, .1);
+        align-items: center;
         background-color: white;
-        padding-left: 100px;
-        padding-right: 0;
+        display: flex;
+        flex-direction: row;
+        flex-grow: 0;
+        justify-content: space-between;
+        padding-left: 10px;
+        padding-right: 10px;
         overflow-x: hidden;
         overflow-y: hidden;
         text-align: center;
@@ -56,6 +60,21 @@ body {
             text-align: left;
         }
     }
+}
+
+.ant-menu-group {
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+    flex-grow: 0;
+}
+
+.ant-avatar-group {
+    @include force-height(60px);
+    display: inline-flex;
+    flex-direction: row;
+    flex-grow: 0;
+    align-items: center;
 }
 
 #root-layout > .ant-layout {
@@ -294,8 +313,6 @@ header {
             background: transparent !important;
             border: 0;
             border-radius: 0;
-            max-height: 60px;
-            min-height: 60px;
             opacity: .8;
         }
 

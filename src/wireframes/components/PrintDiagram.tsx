@@ -71,7 +71,6 @@ export const PrintDiagram = (props: PrintDiagramProps) => {
                 onNavigate={onNavigate}
                 onRender={doOnRender}
                 selectedItems={[]}
-                selectedItemsWithLocked={[]}
                 viewBox={bounds}
                 viewSize={size}
                 zoom={1}

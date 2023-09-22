@@ -23,10 +23,10 @@ export const PresentationView = (props: PresentationViewProps) => {
     const { onClose } = props;
 
     const [fullscreen, setFullscreen] = useFullscreen();
-    const color = useStore(x => x.editor.present.color);
-    const diagrams = useStore(x => x.editor.present.diagrams);
-    const diagramsOrdered = useStore(x => x.editor.present.orderedDiagrams);
-    const size = useStore(x => x.editor.present.size);
+    const color = useStore(x => x.editor.color);
+    const diagrams = useStore(x => x.editor.diagrams);
+    const diagramsOrdered = useStore(x => x.editor.orderedDiagrams);
+    const size = useStore(x => x.editor.size);
     const [pageIndex, setPageIndex] = React.useState(0);
 
     const doGoPrev = useEventCallback(() => {

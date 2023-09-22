@@ -11,16 +11,19 @@ import classNames from 'classnames';
 import * as React from 'react';
 import { Keys, useEventCallback } from '@app/core';
 import { texts } from '@app/texts';
-import { Diagram, DiagramItem, OrderMode } from '@app/wireframes/model';
+import { Diagram, DiagramItem, OrderMode, SelectedItemIds } from '@app/wireframes/model';
 
 export type OutlineItemAction = 'Delete' | 'Rename' | 'Move' | 'Select';
 
 export interface OutlineItemProps {
+    // The actual diagram.
+    diagram: Diagram;
+
     // The item.
     diagramItem: DiagramItem;
 
-    // The diagram.
-    diagram: Diagram;
+    // The selected ids.
+    selectedIds: SelectedItemIds;
 
     // The level.
     level: number;
@@ -37,12 +40,12 @@ export interface OutlineItemProps {
 
 export const OutlineItem = (props: OutlineItemProps) => {
     const {
-        diagram,
         diagramItem,
         level,
         isFirst,
         isLast,
         onAction,
+        selectedIds,
     } = props;
 
     const [editName, setEditName] = React.useState('');
@@ -90,7 +93,7 @@ export const OutlineItem = (props: OutlineItemProps) => {
         event?.focus();
     }, []);
 
-    const selected = diagram.selectedIds.has(diagramItem.id);
+    const selected = selectedIds.indexOf(diagramItem.id);
 
     return (
         <div className='tree-item'>
@@ -181,6 +184,7 @@ function renderChildren(props: OutlineItemProps) {
                     isLast={index === children.length - 1}
                     level={newLevel}
                     onAction={props.onAction}
+                    selectedIds={props.selectedIds}
                 />,
             )}
         </div>

@@ -14,8 +14,8 @@ import { useAppearance } from './../actions';
 import { Text } from './Text';
 
 export const MoreProperties = React.memo(() => {
-    const diagramsMap = useStore(x => x.editor.present.diagrams);
-    const diagramsOrdered = useStore(x => x.editor.present.orderedDiagrams);
+    const diagramsMap = useStore(x => x.editor.diagrams);
+    const diagramsOrdered = useStore(x => x.editor.orderedDiagrams);
     const selectedDiagramId = useStore(getDiagramId);
     const selectedItems = useStore(getSelectedItems);
     const selectedSet = useStore(getSelectionSet);

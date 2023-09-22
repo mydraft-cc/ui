@@ -34,9 +34,6 @@ export interface EditorProps {
     // The selected items.
     selectedItems: DiagramItem[];
 
-    // The selected items including locked items.
-    selectedItemsWithLocked: DiagramItem[];
-
     // The zoomed width of the canvas.
     zoomedSize: Vec2;
 
@@ -83,7 +80,6 @@ export const Editor = React.memo((props: EditorProps) => {
         onSelectItems,
         onTransformItems,
         selectedItems,
-        selectedItemsWithLocked,
         viewBox,
         viewSize,
         zoom,
@@ -197,7 +193,6 @@ export const Editor = React.memo((props: EditorProps) => {
                             onSelectItems={onSelectItems}
                             previewStream={renderPreview.current}
                             selectedDiagram={diagram}
-                            selectedItems={selectedItemsWithLocked}
                             zoom={zoom}
                         />
                     }

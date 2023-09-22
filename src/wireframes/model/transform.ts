@@ -17,6 +17,10 @@ export class Transform {
 
     private readonly computed: { aabb: Rect2 | null } = { aabb: null };
 
+    public readonly __typeName = Transform.TYPE_NAME;
+    
+    public static readonly TYPE_NAME = 'Transform';
+
     public readonly position: Vec2;
     public readonly size: Vec2;
 

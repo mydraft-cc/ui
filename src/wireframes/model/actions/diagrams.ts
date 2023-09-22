@@ -55,12 +55,12 @@ export const changeColor =
         return { payload:  { color: color.toString() } };
     });
 
-export function buildDiagrams(builder: ActionReducerMapBuilder<EditorState>) {
+export function buildDiagrams(builder: ActionReducerMapBuilder<EditorState>, userId: string) {
     return builder
         .addCase(selectDiagram, (state, action) => {
             const { diagramId } = action.payload;
 
-            return state.selectDiagram(diagramId);
+            return state.selectDiagram(diagramId, userId);
         })
         .addCase(renameDiagram, (state, action) => {
             const { diagramId, title } = action.payload;
@@ -109,7 +109,7 @@ export function buildDiagrams(builder: ActionReducerMapBuilder<EditorState>) {
             let newState = state.addDiagram(Diagram.create({ id: diagramId }));
 
             if (newState.diagrams.size === 1) {
-                newState = newState.selectDiagram(diagramId);
+                newState = newState.selectDiagram(diagramId, userId);
             }
 
             return newState;

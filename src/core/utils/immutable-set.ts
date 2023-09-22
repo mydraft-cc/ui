@@ -5,6 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
+import { MathHelper } from './math-helper';
 import { Types, without } from './types';
 
 type Mutator = {
@@ -14,7 +15,9 @@ type Mutator = {
 };
 
 export class ImmutableSet {
-    private static readonly EMPTY = new ImmutableSet({});
+    public static readonly TYPE_NAME = 'ImmutableSet';
+
+    public readonly __typeName = ImmutableSet.TYPE_NAME;
 
     public get size() {
         return Object.keys(this.items).length;
@@ -24,32 +27,35 @@ export class ImmutableSet {
         return Object.keys(this.items);
     }
 
+    public get raw() {
+        return this.items;
+    }
+
     public has(item: string) {
         return this.items.hasOwnProperty(item);
     }
 
-    private constructor(
-        private readonly items: { [item: string]: boolean },
+    private constructor(private readonly items: { [item: string]: boolean },
+        public readonly __instanceId: string,
     ) {
-        Object.freeze(this);
         Object.freeze(items);
     }
 
     public static empty(): ImmutableSet {
-        return ImmutableSet.EMPTY;
+        return new ImmutableSet({}, MathHelper.nextId());
     }
 
     public static of(...items: string[]): ImmutableSet {
         if (!items || items.length === 0) {
-            return ImmutableSet.EMPTY;
+            return ImmutableSet.empty();
         } else {
-            const itemMap = {};
+            const itemMap: Record<string, boolean> = {};
 
             for (const item of items) {
                 itemMap[item] = true;
             }
 
-            return new ImmutableSet(itemMap);
+            return new ImmutableSet(itemMap, MathHelper.nextId());
         }
     }
 
@@ -60,7 +66,7 @@ export class ImmutableSet {
 
         const items = { ...this.items, [item]: true };
 
-        return new ImmutableSet(items);
+        return new ImmutableSet(items, this.__instanceId);
     }
 
     public remove(item: string): ImmutableSet {
@@ -70,7 +76,7 @@ export class ImmutableSet {
 
         const items = without(this.items, item);
 
-        return new ImmutableSet(items);
+        return new ImmutableSet(items, this.__instanceId);
     }
 
     public mutate(updater: (mutator: Mutator) => void) {
@@ -103,7 +109,7 @@ export class ImmutableSet {
             return this;
         }
 
-        return new ImmutableSet(items);
+        return new ImmutableSet(items, this.__instanceId);
     }
 
     public equals(other: ImmutableSet) {

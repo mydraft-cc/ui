@@ -7,13 +7,13 @@
 
 /* eslint-disable @typescript-eslint/naming-convention */
 
+import { MathHelper } from '@app/core';
 import { buildGrouping, createClassReducer, Diagram, DiagramItem, EditorState, groupItems, ungroupItems } from '@app/wireframes/model';
 
 describe('GroupingReducer', () => {
-    const state =
-        EditorState.create();
-
-    const reducer = createClassReducer(state, builder => buildGrouping(builder));
+    const userId = MathHelper.guid();
+    const state = EditorState.create();
+    const reducer = createClassReducer(state, builder => buildGrouping(builder, userId));
 
     it('should return same state if action is unknown', () => {
         const action = { type: 'UNKNOWN' };
@@ -42,8 +42,9 @@ describe('GroupingReducer', () => {
 
         const newDiagram = state_2.diagrams.get(diagram.id)!;
 
-        expect(newDiagram.selectedIds.values).toEqual([groupId]);
-        expect(newDiagram.rootIds.values).toEqual([groupId]);
+        expect(newDiagram.selectedIds.get(userId)).toEqual([groupId]);
+        expect(newDiagram.items.size).toEqual(3);
+        expect(newDiagram.itemIds.values).toEqual([groupId]);
     });
 
     it('should ungroup multiple groups and select their children', () => {
@@ -77,9 +78,8 @@ describe('GroupingReducer', () => {
 
         const newDiagram = state_2.diagrams.get(diagram.id)!;
 
-        const ids = shapes.keys;
-
-        expect(newDiagram.selectedIds.values).toEqual(ids);
-        expect(newDiagram.rootIds.values).toEqual(ids);
+        expect(newDiagram.selectedIds.get(userId)).toEqual(shapes.keys);
+        expect(newDiagram.items.size).toEqual(5);
+        expect(newDiagram.itemIds.values).toEqual(shapes.keys);
     });
 });

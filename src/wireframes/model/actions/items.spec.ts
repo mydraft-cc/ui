@@ -7,7 +7,7 @@
 
 /* eslint-disable @typescript-eslint/naming-convention */
 
-import { Vec2 } from '@app/core';
+import { MathHelper, Vec2 } from '@app/core';
 import { addShape, buildItems, calculateSelection, createClassReducer, Diagram, DiagramItem, DiagramItemSet, EditorState, lockItems, pasteItems, removeItems, renameItems, RendererService, selectItems, Serializer, unlockItems } from '@app/wireframes/model';
 import { Button } from '@app/wireframes/shapes/neutral/button';
 import { Icon } from '@app/wireframes/shapes/shared/icon';
@@ -15,6 +15,7 @@ import { Raster } from '@app/wireframes/shapes/shared/raster';
 import { AbstractControl } from '@app/wireframes/shapes/utils/abstract-control';
 
 describe('ItemsReducer', () => {
+    const userId = MathHelper.guid();
     const groupId = 'group-1';
     const shape1 = DiagramItem.createShape({ id: '1', renderer: 'Button' });
     const shape2 = DiagramItem.createShape({ id: '2', renderer: 'Button' });
@@ -35,7 +36,7 @@ describe('ItemsReducer', () => {
         EditorState.create()
             .addDiagram(diagram);
 
-    const reducer = createClassReducer(state, builder => buildItems(builder));
+    const reducer = createClassReducer(state, builder => buildItems(builder, userId));
 
     it('should return same state if action is unknown', () => {
         const action = { type: 'UNKNOWN' };
@@ -54,7 +55,7 @@ describe('ItemsReducer', () => {
 
         const newDiagram = state_2.diagrams.get(diagram.id)!;
 
-        expect(newDiagram.selectedIds.values).toEqual([groupId]);
+        expect(newDiagram.selectedIds.get(userId)).toEqual([groupId]);
     });
 
     it('should remove items and all children', () => {
@@ -65,7 +66,7 @@ describe('ItemsReducer', () => {
 
         const newDiagram = state_2.diagrams.get(diagram.id)!;
 
-        expect(newDiagram.selectedIds.size).toBe(0);
+        expect(newDiagram.selectedIds[userId].length).toBe(0);
     });
 
     it('should rename item', () => {
@@ -115,7 +116,7 @@ describe('ItemsReducer', () => {
         expect(newShape.id).toBe(shapeId);
         expect(newShape.transform.position).toEqual(new Vec2(150, 35));
 
-        expect(newDiagram.selectedIds.values).toEqual([shapeId]);
+        expect(newDiagram.selectedIds.get(userId)).toEqual([shapeId]);
     });
 
     it('should add shape with default properties and select this shape', () => {
@@ -134,11 +135,11 @@ describe('ItemsReducer', () => {
         expect(newShape.appearance.get('text2')).toEqual('text2');
         expect(newShape.transform.position).toEqual(new Vec2(150, 35));
 
-        expect(newDiagram.selectedIds.values).toEqual([shapeId]);
+        expect(newDiagram.selectedIds.get(userId)).toEqual([shapeId]);
     });
 
     it('should paste json and add group and items', () => {
-        let source: any = DiagramItemSet.createFromDiagram(diagram.rootIds.values, diagram)!;
+        let source: any = DiagramItemSet.createFromDiagram(diagram.itemIds.values, diagram)!;
         source = Serializer.serializeSet(source);
         source = JSON.stringify(source);
 
@@ -153,12 +154,12 @@ describe('ItemsReducer', () => {
         const newDiagram2 = state_3.diagrams.get(diagram.id)!;
 
         expect(newDiagram1.items.size).toBe(8);
-        expect(newDiagram1.rootIds.size).toBe(4);
-        expect(newDiagram1.selectedIds.size).toBe(2);
+        expect(newDiagram1.itemIds.size).toBe(4);
+        expect(newDiagram1.selectedIds[userId].length).toBe(2);
 
         expect(newDiagram2.items.size).toBe(12);
-        expect(newDiagram2.rootIds.size).toBe(6);
-        expect(newDiagram2.selectedIds.size).toBe(2);
+        expect(newDiagram2.itemIds.size).toBe(6);
+        expect(newDiagram2.selectedIds[userId].length).toBe(2);
     });
 
     it('should not throw when pasting invalid json to diagram', () => {
@@ -171,49 +172,49 @@ describe('ItemsReducer', () => {
     });
 
     it('should return empty array of items when items array is null', () => {
-        const itemIds = calculateSelection(null!, diagram);
+        const itemIds = calculateSelection(null!, diagram, userId);
 
         expect(itemIds).toEqual([]);
     });
 
     it('should return empty array of item ids when selecting invalid items', () => {
-        const itemIds = calculateSelection([null!], diagram, true);
+        const itemIds = calculateSelection([null!], diagram, userId, true);
 
         expect(itemIds).toEqual([]);
     });
 
     it('should not handle grouped shapes when shape is not in group', () => {
-        const itemIds = calculateSelection([diagram.items.get(groupId)!], diagram, true);
+        const itemIds = calculateSelection([diagram.items.get(groupId)!], diagram, userId, true);
 
         expect(itemIds).toEqual([groupId]);
     });
 
     it('should return group id when selecting grouped items', () => {
-        const itemIds = calculateSelection([shape1, shape2], diagram);
+        const itemIds = calculateSelection([shape1, shape2], diagram, userId);
 
         expect(itemIds).toEqual([groupId]);
     });
 
     it('should Select grouped shape when group is selected', () => {
-        const selectedDiagram = diagram.selectItems([groupId]);
+        const selectedDiagram = diagram.selectItems([groupId], userId);
 
-        const itemIds = calculateSelection([shape1], selectedDiagram, true);
+        const itemIds = calculateSelection([shape1], selectedDiagram, userId, true);
 
         expect(itemIds).toEqual([shape1.id]);
     });
 
     it('should add item to selection list', () => {
-        const selectedDiagram = diagram.selectItems([groupId]);
+        const selectedDiagram = diagram.selectItems([groupId], userId);
 
-        const itemIds = calculateSelection([shape3], selectedDiagram, true, true);
+        const itemIds = calculateSelection([shape3], selectedDiagram, userId, true, true);
 
         expect(itemIds).toEqual([shape3.id, groupId]);
     });
 
     it('should remove item from selection list', () => {
-        const selectedDiagram = diagram.selectItems([groupId, shape3.id]);
+        const selectedDiagram = diagram.selectItems([groupId, shape3.id], userId);
 
-        const itemIds = calculateSelection([shape3], selectedDiagram, true, true);
+        const itemIds = calculateSelection([shape3], selectedDiagram, userId, true, true);
 
         expect(itemIds).toEqual([groupId]);
     });
