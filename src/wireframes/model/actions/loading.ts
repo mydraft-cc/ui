@@ -173,39 +173,27 @@ export function rootLoading(editorReducer: Reducer<EditorState>, userId: string)
         } else if (loadDiagramInternal.match(action)) {
             const stored = action.payload.stored;
 
-            let initialState: EditorState;
+            let editor: EditorState;
 
             if (stored.initial) {
-                initialState = Serializer.deserializeEditor(stored.initial);
+                editor = Serializer.deserializeEditor(stored.initial);
             } else {
-                initialState = EditorState.create();
+                editor = EditorState.create();
             }
 
             let actions: AnyAction[] = stored.actions || stored ;
 
-            if (!Types.isArray(actions)) {
-                actions = [];
-            }
-        
-            let firstAction = actions[0];
-
-            if (!firstAction) {
-                firstAction = addDiagram();
+            if (Types.isArray(actions) && actions.length > 0) {
+                for (const loadedAction of actions.filter(handleAction)) {
+                    editor = editorReducer(editor, migrateOldAction(loadedAction));
+                }
             }
 
-            let editor = editorReducer(initialState, firstAction);
-
-            for (const loadedAction of actions.slice(1).filter(handleAction)) {
-                editor = editorReducer(editor, migrateOldAction(loadedAction));
-            }
-
-            const selectedDiagram = editor.diagrams.get(editor.selectedDiagramIds[userId]!);
-
-            if (!selectedDiagram) {
+            if (!editor.diagrams.get(editor.selectedDiagramIds.get(userId)!)) {
                 const firstDiagram = editor.orderedDiagrams[0];
 
                 if (firstDiagram) {
-                    editor = editorReducer(editor, selectDiagram(firstDiagram));
+                    editor = editor.selectDiagram(firstDiagram.id, userId);
                 }
             }
 

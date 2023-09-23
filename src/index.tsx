@@ -65,6 +65,7 @@ const binder = createYjsReduxBinder({
         [Transform.TYPE_NAME]: new TransformResolver(),
         [Vec2.TYPE_NAME]: new Vec2Resolver(),
     },
+    syncAlways: false,
 });
 
 const history = createBrowserHistory();

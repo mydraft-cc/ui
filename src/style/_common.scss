@@ -56,6 +56,10 @@ body {
             max-height: 100%;
         }
 
+        .ant-btn {
+            box-shadow: none;
+        }
+
         @media (max-width: 1000px) {
             text-align: left;
         }

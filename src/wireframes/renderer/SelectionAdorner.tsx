@@ -8,6 +8,7 @@
 import * as svg from '@svgdotjs/svg.js';
 import * as React from 'react';
 import { isModKey, Rect2, Subscription, SVGHelper, Vec2 } from '@app/core';
+import { usePresence } from '@app/wireframes/collaboration';
 import { calculateSelection, Diagram, DiagramItem, Transform } from '@app/wireframes/model';
 import { User, user } from '@app/wireframes/user';
 import { InteractionHandler, InteractionService, SvgEvent } from './interaction-service';
@@ -38,8 +39,6 @@ export interface SelectionAdornerProps {
 
 type SelectionMarkers = { rect: svg.Rect; transform?: Transform };
 
-const X: any = {};
-
 export const SelectionAdorner = (props: SelectionAdornerProps) => {
     const {
         adorners,
@@ -52,7 +51,7 @@ export const SelectionAdorner = (props: SelectionAdornerProps) => {
 
     const [previewItems, setPreviewItems] = React.useState<Record<string, DiagramItem> | null>(null);
     const [selectionMarkers, setSelectionMarkers] = React.useState<SelectionMarkers[]>([]);
-    const selectionUsers = X;
+    const selectionUsers = usePresence();
     const selectionHandlerRef = React.useRef(new SelectionHandler());
 
     React.useEffect(() => {
