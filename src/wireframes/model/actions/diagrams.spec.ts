@@ -34,7 +34,7 @@ describe('DiagramReducer', () => {
 
         expect(state_2.diagrams.size).toBe(1);
         expect(state_2.diagrams.get('1')?.id).toBe('1');
-        expect(state_2.selectedDiagramIds).toBe({ [userId]: '1' });
+        expect(state_2.selectedDiagramIds.raw).toBe({ [userId]: '1' });
     });
 
     it('should select diagram', () => {
@@ -45,7 +45,7 @@ describe('DiagramReducer', () => {
         const state_1 = EditorState.create().addDiagram(diagram);
         const state_2 = reducer(state_1, action);
 
-        expect(state_2.selectedDiagramIds).toBe({ [userId]: diagram.id });
+        expect(state_2.selectedDiagramIds.raw).toBe({ [userId]: diagram.id });
     });
 
     it('should duplicate diagram', () => {

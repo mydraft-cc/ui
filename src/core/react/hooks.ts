@@ -187,10 +187,10 @@ export const useWindowEvent = <K extends keyof WindowEventMap>(type: K, listener
     }, [type]);
 };
 
-type Fn<ARGS extends any[], R> = (...args: ARGS) => R;
+type EventCallbackFunction<ARGS extends any[], R> = (...args: ARGS) => R;
 
-export const useEventCallback = <A extends any[], R>(fn: Fn<A, R>): Fn<A, R> => {
-    let ref = React.useRef<Fn<A, R>>(fn);
+export const useEventCallback = <A extends any[], R>(fn: EventCallbackFunction<A, R>): EventCallbackFunction<A, R> => {
+    let ref = React.useRef<EventCallbackFunction<A, R>>(fn);
 
     React.useLayoutEffect(() => {
         ref.current = fn;
@@ -199,4 +199,33 @@ export const useEventCallback = <A extends any[], R>(fn: Fn<A, R>): Fn<A, R> => 
     return React.useMemo(() => (...args: A): R => {
         return ref.current(...args);
     }, []);
+};
+
+type AsyncEffectFunction = (cancellation: { isCancelled: boolean }) => Promise<Function | undefined>;
+
+export const useAsyncEffect = (fn: AsyncEffectFunction, dependencies?: React.DependencyList) => {
+    const previousCleaner = React.useRef<Function | undefined>();
+
+    React.useEffect(() => {
+        previousCleaner.current?.();
+        previousCleaner.current = undefined;
+
+        const cancellation = {
+            isCancelled: false,
+        };
+
+        async function invoke() {
+            previousCleaner.current = await fn(cancellation);
+        }
+
+        invoke();
+
+        return () => {
+            previousCleaner.current?.();
+            previousCleaner.current = undefined;
+
+            cancellation.isCancelled = true;
+        };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, dependencies);
 };

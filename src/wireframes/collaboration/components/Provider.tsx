@@ -5,10 +5,12 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
+import { createYjsProvider } from '@y-sweet/client';
 import * as React from 'react';
-import { WebrtcProvider } from 'y-webrtc';
 import * as Y from 'yjs';
 import { useYjsReduxBinder } from 'yjs-redux';
+import { useAsyncEffect } from '@app/core';
+import { postCollaborationToken } from '@app/wireframes/api';
 import { useStore } from '@app/wireframes/model';
 import { CollaborationContext, CollaborationState } from './../hooks';
 
@@ -17,13 +19,35 @@ export const CollaborationProvider = (props: { children: React.ReactNode }) => {
     const editorId = useStore(x => x.editor.id);
     const editorBinder = useYjsReduxBinder();
 
-    React.useEffect(() => {
-        const document = new Y.Doc();
-        const provider = new WebrtcProvider(editorId, document);
+    useAsyncEffect(async cancellation => {
+        const clientDoc = new Y.Doc();
+        const clientToken = await postCollaborationToken(editorId);
 
-        console.log(`Connecting to room id '${editorId}'.`);
+        if (cancellation?.isCancelled) {
+            return undefined;
+        }
+        
+        const provider = createYjsProvider(clientDoc, clientToken, {
+            disableBc: true,
+        });
 
-        const unbind = editorBinder.connectSlice(document, 'editor',
+        provider.connect();
+
+        await new Promise(resolve => {
+            const handler = () => {
+                if (provider.wsconnected) {
+                    resolve(true);
+                }
+            };
+
+            provider.on('status', handler);
+        });
+
+        if (cancellation?.isCancelled) {
+            return undefined;
+        }
+
+        const unbind = editorBinder.connectSlice(clientDoc, 'editor',
             root => {
                 setState(state => ({
                     ...state,
@@ -32,17 +56,17 @@ export const CollaborationProvider = (props: { children: React.ReactNode }) => {
             },
         );
 
-        setState({ document, provider });
+        setState({ document: clientDoc, provider });
 
         return () => {
-            document.destroy();
+            clientDoc.destroy();
 
             provider.disconnect();
             provider.destroy();
 
             unbind();
         };
-    }, [editorBinder, editorId]);
+    }, [editorId, editorBinder]);
 
     return (
         <CollaborationContext.Provider value={state}>

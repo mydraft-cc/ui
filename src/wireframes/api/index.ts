@@ -9,9 +9,9 @@ import { ClientToken } from '@y-sweet/sdk';
 
 const API_URL = process.env.NODE_ENV === 'test_development' ? 'http://localhost:4000' : 'https://api.mydraft.cc';
 
-export async function getCollaborationToken(id: string) {
+export async function postCollaborationToken(id: string) {
     const response = await fetch(`${API_URL}/session/${id}`, {
-        method: 'PUT',
+        method: 'POST',
         headers: {
             ContentType: 'text/json',
         },

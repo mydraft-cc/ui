@@ -55,7 +55,7 @@ describe('EditorState', () => {
         const state_4 = state_3.removeDiagram(diagram.id);
 
         expect(state_4.diagrams.has(diagram.id)).toBeFalsy();
-        expect(state_4.selectedDiagramIds).toEqual({});
+        expect(state_4.selectedDiagramIds.raw).toEqual({});
     });
 
     it('should move diagram', () => {
@@ -72,7 +72,7 @@ describe('EditorState', () => {
         const state_2 = state_1.addDiagram(diagram);
         const state_3 = state_2.selectDiagram(diagram.id, userId);
 
-        expect(state_3.selectedDiagramIds).toEqual({ [userId]: diagram.id });
+        expect(state_3.selectedDiagramIds.raw).toEqual({ [userId]: diagram.id });
     });
 
     it('should return original state when diagram to select is not found', () => {

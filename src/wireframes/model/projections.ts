@@ -23,7 +23,7 @@ const EMPTY_STRING_ARRAY: string[] = [];
 const EMPTY_ITEMS_ARRAY: DiagramItem[] = [];
 const EMPTY_CONFIGURABLES: Configurable[] = [];
 
-export const getDiagramId = (state: EditorStateInStore) => state.editor.selectedDiagramIds[user.id];
+export const getDiagramId = (state: EditorStateInStore) => state.editor.selectedDiagramIds.get(user.id);
 export const getDiagrams = (state: EditorStateInStore) => state.editor.diagrams;
 export const getDiagramsFilter = (state: UIStateInStore) => state.ui.diagramsFilter;
 export const getEditorRoot = (state: EditorStateInStore) => state.editor;

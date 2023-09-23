@@ -13,7 +13,7 @@ type DiagramIds = ImmutableList<string>;
 
 type Props = {
     // The id of the selected diagram.
-    selectedDiagramIds: Readonly<{ [key: string]: string | null | undefined }>;
+    selectedDiagramIds: ImmutableMap<string | null | undefined>;
 
     // The actual diagrams.
     diagrams: Diagrams;
@@ -87,7 +87,7 @@ export class EditorState extends Record<Props> {
             color: color || Color.WHITE,
             diagrams: ImmutableMap.of(diagrams),
             diagramIds: ImmutableList.of(diagramIds),
-            selectedDiagramIds: {},
+            selectedDiagramIds: ImmutableMap.empty(),
             size: size || new Vec2(1000, 1000),
         };
 
@@ -119,15 +119,15 @@ export class EditorState extends Record<Props> {
             return this;
         }
 
-        return this.set('selectedDiagramIds', { ...this.selectedDiagramIds, [userId]: diagramId });
+        return this.set('selectedDiagramIds', this.selectedDiagramIds.set(userId, diagramId));
     }
 
     public removeDiagram(diagramId: string) {
-        let selectedDiagramIds = { ...this.selectedDiagramIds };
+        let selectedDiagramIds = this.selectedDiagramIds;
 
-        for (const [key, value] of Object.entries(selectedDiagramIds)) {
+        for (const [key, value] of selectedDiagramIds.entries) {
             if (value === diagramId) {
-                delete selectedDiagramIds[key];
+                selectedDiagramIds = selectedDiagramIds.remove(key);
             }
         }
 
