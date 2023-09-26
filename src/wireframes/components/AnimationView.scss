@@ -1,0 +1,42 @@
+@import 'mixins';
+@import 'vars';
+
+.animation-view {
+    display: block;
+    flex-direction: column;
+    width: 100%;
+    min-width: 600px;
+    background-color: $color-white;
+    border-top: solid 1px $color-border;
+}
+
+.title-editor {
+    width: 100%;
+    padding: .5em 1em;
+    display: inline-flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+
+    >h4 {
+        margin: 0;
+    }
+}
+
+.code-editor {
+    width: 100%;
+
+    >textarea {
+        padding: 1em;
+        margin: 0 1em;
+        width: calc(100% - 2 * 1em);
+        height: 100%;
+        border: solid 1px $color-border;
+        outline: none;
+        font-family: 'Source Code Pro', ui-monospace, monospace;
+        font-size: 14px;
+        background: $color-background;
+        color: $color-text;
+        resize: vertical;
+    }
+}

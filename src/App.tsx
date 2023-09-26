@@ -12,7 +12,7 @@ import * as React from 'react';
 import { useDispatch } from 'react-redux';
 import { useRouteMatch } from 'react-router';
 import { ClipboardContainer, useEventCallback, usePrinter } from '@app/core';
-import { ArrangeMenu, ClipboardMenu, EditorView, HistoryMenu, Icons, LoadingMenu, LockMenu, Outline, Pages, PrintView, Properties, Recent, SettingsMenu, Shapes, UIMenu } from '@app/wireframes/components';
+import { ArrangeMenu, AnimationView, ClipboardMenu, EditorView, HistoryMenu, Icons, LoadingMenu, LockMenu, Outline, Pages, PrintView, Properties, Recent, SettingsMenu, Shapes, UIMenu } from '@app/wireframes/components';
 import { loadDiagramFromServer, newDiagram, selectTab, showToast, toggleLeftSidebar, toggleRightSidebar, useStore } from '@app/wireframes/model';
 import { texts } from './texts';
 import { CustomDragLayer } from './wireframes/components/CustomDragLayer';
@@ -30,6 +30,9 @@ export const App = () => {
     const showLeftSidebar = useStore(s => s.ui.showLeftSidebar);
     const showRightSidebar = useStore(s => s.ui.showRightSidebar);
     const [presenting, setPresenting] = React.useState(false);
+    // const [code, setCode] = React.useState(
+    //     `function add(a, b) {\n  return a + b;\n}`
+    // );
 
     const [
         print,
@@ -147,6 +150,7 @@ export const App = () => {
                             shape='circle'
                             onClick={doToggleRightSidebar} />
                     </Layout>
+                    <AnimationView />
                 </Layout>
 
                 {presenting &&
