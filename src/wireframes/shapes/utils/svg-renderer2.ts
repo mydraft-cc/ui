@@ -10,7 +10,7 @@
 import * as svg from '@svgdotjs/svg.js';
 import { marked } from 'marked';
 import { Rect } from 'react-measure';
-import { escapeHTML, Rect2, sizeInPx, SVGHelper, TeXHelper, Types } from '@app/core';
+import { escapeHTML, Rect2, sizeInPx, SVGHelper, Types } from '@app/core';
 import { RendererColor, RendererElement, RendererOpacity, RendererText, RendererWidth, Shape, ShapeFactory, ShapeFactoryFunc, ShapeProperties, ShapePropertiesFunc, TextConfig, TextDecoration } from '@app/wireframes/interface';
 import { AbstractRenderer2 } from './abstract-renderer';
 
@@ -144,7 +144,7 @@ class Factory implements ShapeFactory {
     }
 
     public equation(config: RendererText, bounds: Rect2, properties?: ShapePropertiesFunc) {
-        return this.new('foreignObject', () => TeXHelper.createText(), p => {
+        return this.new('foreignObject', () => SVGHelper.createText(), p => {
             p.setBackgroundColor('transparent');
             p.setKatex(config?.text?.replace(/\n/g, ' \\newline '));
             p.setFontSize(config);

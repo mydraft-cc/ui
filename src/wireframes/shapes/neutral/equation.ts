@@ -25,11 +25,7 @@ export class Equation implements ShapePlugin {
     }
 
     public defaultSize() {
-        return { x: 200, y: 140 };
-    }
-
-    public previewSize(desiredWidth: number, desiredHeight: number) {
-        return { x: desiredWidth * 2, y: desiredHeight * 2 };
+        return { x: 140, y: 50 };
     }
 
     public render(ctx: RenderContext) {

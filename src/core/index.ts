@@ -27,7 +27,6 @@ export * from './utils/record';
 export * from './utils/rect2';
 export * from './utils/rotation';
 export * from './utils/svg-helper';
-export * from './utils/tex-helper';
 export * from './utils/subscription';
 export * from './utils/timer';
 export * from './utils/types';
