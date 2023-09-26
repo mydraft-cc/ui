@@ -98,6 +98,8 @@ export interface ShapeFactory {
 
     textMultiline(config: RendererText, bounds: Rect2, properties?: ShapePropertiesFunc, allowMarkdown?: boolean): RendererElement;
 
+    equation(config: RendererText, bounds: Rect2, properties?: ShapePropertiesFunc): RendererElement;
+
     getOuterBounds(strokeWidth: RendererWidth, bounds: Rect2): Rect2;
 
     group(items: ShapeFactoryFunc, clip?: ShapeFactoryFunc, properties?: ShapePropertiesFunc): RendererElement;

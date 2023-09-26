@@ -10,9 +10,11 @@
 import * as svg from '@svgdotjs/svg.js';
 import { marked } from 'marked';
 import { Rect } from 'react-measure';
-import { escapeHTML, Rect2, sizeInPx, SVGHelper, Types } from '@app/core';
+import { escapeHTML, Rect2, sizeInPx, SVGHelper, TeXHelper, Types } from '@app/core';
 import { RendererColor, RendererElement, RendererOpacity, RendererText, RendererWidth, Shape, ShapeFactory, ShapeFactoryFunc, ShapeProperties, ShapePropertiesFunc, TextConfig, TextDecoration } from '@app/wireframes/interface';
 import { AbstractRenderer2 } from './abstract-renderer';
+
+const katex = require('katex');
 
 export * from './abstract-renderer';
 
@@ -138,6 +140,18 @@ class Factory implements ShapeFactory {
             p.setAlignment(config);
             p.setVerticalAlignment('top');
             p.setTransform(bounds);
+        }, properties);
+    }
+
+    public equation(config: RendererText, bounds: Rect2, properties?: ShapePropertiesFunc) {
+        return this.new('foreignObject', () => TeXHelper.createText(), p => {
+            p.setBackgroundColor('transparent');
+            p.setKatex(config?.text?.replace(/\n/g, ' \\newline '));
+            p.setFontSize(config);
+            p.setAlignment(config);
+            p.setVerticalAlignment('top');
+            p.setTransform(bounds);
+            console.log(config, bounds);
         }, properties);
     }
 
@@ -320,6 +334,7 @@ type PropertySet = Partial<{
     ['font-family']: any;
     ['font-size']: any;
     ['image']: any;
+    ['katex']: any;
     ['markdown']: any;
     ['opacity']: any;
     ['preserve-aspect-ratio']: any;
@@ -342,6 +357,7 @@ const PROPERTIES: ReadonlyArray<keyof PropertySet> = [
     'font-family',
     'font-size',
     'image',
+    'katex',
     'markdown',
     'opacity',
     'preserve-aspect-ratio',
@@ -426,6 +442,22 @@ class Properties implements ShapeProperties {
 
             if (div?.nodeName === 'DIV') {
                 const textOrHtml = escapeHTML(value);
+
+                if (textOrHtml.indexOf('&') >= 0 || textOrHtml.indexOf('<') >= 0) {
+                    div.innerHTML = textOrHtml;
+                } else {
+                    div.innerText = textOrHtml;
+                }
+            }
+        },
+        'katex': (value, element) => {
+            const div = element.node.children[0] as HTMLDivElement;
+
+            if (div?.nodeName === 'DIV') {
+                var textOrHtml = katex.renderToString(value, {
+                    throwOnError: false,
+                    output: 'html',
+                });
 
                 if (textOrHtml.indexOf('&') >= 0 || textOrHtml.indexOf('<') >= 0) {
                     div.innerHTML = textOrHtml;
@@ -588,6 +620,12 @@ class Properties implements ShapeProperties {
         } else {
             this.propertiesNew['text'] = getText(text);
         }
+
+        return this;
+    }
+
+    public setKatex(text: RendererText | string | null | undefined): ShapeProperties {
+        this.propertiesNew['katex'] = getText(text);
 
         return this;
     }

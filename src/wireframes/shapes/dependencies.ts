@@ -12,6 +12,7 @@ export * from './neutral/checkbox';
 export * from './neutral/combo-box';
 export * from './neutral/comment';
 export * from './neutral/dropdown';
+export * from './neutral/equation';
 export * from './neutral/grid';
 export * from './neutral/heading';
 export * from './neutral/horizontal-line';
