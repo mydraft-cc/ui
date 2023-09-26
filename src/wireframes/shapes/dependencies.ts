@@ -5,6 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
+export * from './neutral/arrow';
 export * from './neutral/browser';
 export * from './neutral/button';
 export * from './neutral/button-bar';
