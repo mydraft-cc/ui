@@ -24,19 +24,46 @@
 }
 
 .code-editor {
-    width: 100%;
+    display: inline-flex;
+    gap: 10px;
+    width: calc(100% - 2 * 1em);
+    padding: .75em 1em;
+    margin: 0 1em;
+    border: solid 1px $color-border;
+    background-color: $color-background;
+    font-family: 'Source Code Pro', ui-monospace, monospace;
+    font-size: 14px;
+    line-height: 21px;
+    height: 200px;
+    overflow: auto;
+
+    >.line-numbers,
+    textarea {
+        height: 2000px;
+    }
 
     >textarea {
-        padding: 1em;
-        margin: 0 1em;
-        width: calc(100% - 2 * 1em);
-        height: 100%;
-        border: solid 1px $color-border;
+        padding: 0;
+        margin: 0;
+        width: 100%;
         outline: none;
-        font-family: 'Source Code Pro', ui-monospace, monospace;
-        font-size: 14px;
-        background: $color-background;
         color: $color-text;
-        resize: vertical;
+        background-color: $color-background;
+        border: 0;
+        resize: none;
+    }
+
+    >.line-numbers {
+        text-align: right;
+    }
+
+    >.line-numbers span {
+        counter-increment: linenumber;
+    }
+
+    >.line-numbers span::before {
+        content: counter(linenumber);
+        display: block;
+        color: $color-text-decent;
     }
 }

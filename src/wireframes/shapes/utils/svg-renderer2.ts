@@ -151,7 +151,6 @@ class Factory implements ShapeFactory {
             p.setAlignment(config);
             p.setVerticalAlignment('top');
             p.setTransform(bounds);
-            console.log(config, bounds);
         }, properties);
     }
 

@@ -30,9 +30,6 @@ export const App = () => {
     const showLeftSidebar = useStore(s => s.ui.showLeftSidebar);
     const showRightSidebar = useStore(s => s.ui.showRightSidebar);
     const [presenting, setPresenting] = React.useState(false);
-    // const [code, setCode] = React.useState(
-    //     `function add(a, b) {\n  return a + b;\n}`
-    // );
 
     const [
         print,
