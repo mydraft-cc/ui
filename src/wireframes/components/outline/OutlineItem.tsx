@@ -49,7 +49,7 @@ export const OutlineItem = (props: OutlineItemProps) => {
     const [editing, setEditing] = React.useState(false);
     const [expanded, setExpanded] = React.useState(true);
     const isGroup = diagramItem.type === 'Group';
-    const itemName = diagramItem.name || (isGroup ? texts.common.group : diagramItem.renderer);
+    const itemName = diagramItem.id || (isGroup ? texts.common.group : diagramItem.renderer);
 
     const setText = useEventCallback((event: React.ChangeEvent<HTMLInputElement>) => {
         setEditName(event.target.value);
