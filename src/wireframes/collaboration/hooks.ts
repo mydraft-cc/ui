@@ -15,7 +15,7 @@ export interface CollaborationState {
     document?: Y.Doc;
 
     // The actual provider.
-    provider?: { awareness: awarenessProtocol.Awareness; destroy: () => void };
+    provider?: { awareness: awarenessProtocol.Awareness | null; destroy: () => void };
 
     // The undo managher
     undoManager?: Y.UndoManager;
@@ -59,24 +59,18 @@ export const useUndoManager = () => {
 };
 
 export function usePresence(): Record<string, User> {
-    const provider = React.useContext(CollaborationContext).provider;
+    const awareness = React.useContext(CollaborationContext).provider?.awareness;
     const [presence, setPresence] = React.useState<Record<string, User>>({});
 
     React.useEffect(() => {
-        if (!provider?.awareness) {
+        if (!awareness) {
             return () => {};
-        }
-
-        const roomName = provider['roomName'];
-
-        if (roomName) {
-            console.log(`Connecting presence to room name '${roomName}'.`);
         }
 
         const handler = () => {
             const map: Record<string, User> = {};
 
-            provider.awareness.getStates().forEach(state => {
+            awareness.getStates().forEach(state => {
                 if (Object.keys(state).length > 0) {
                     const user = state as User;
 
@@ -87,13 +81,13 @@ export function usePresence(): Record<string, User> {
             setPresence(map);
         };
 
-        provider.awareness.on('change', handler);
-        provider.awareness.setLocalState(user);
+        awareness.on('change', handler);
+        awareness.setLocalState(user);
 
         return () => {
-            provider.awareness.off('change', handler);
+            awareness.off('change', handler);
         };
-    }, [provider]);
+    }, [awareness]);
 
     return presence;
 }

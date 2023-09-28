@@ -5,12 +5,11 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { createYjsProvider } from '@y-sweet/client';
+import { TiptapCollabProvider } from '@hocuspocus/provider';
 import * as React from 'react';
 import * as Y from 'yjs';
 import { useYjsReduxBinder } from 'yjs-redux';
 import { useAsyncEffect } from '@app/core';
-import { postCollaborationToken } from '@app/wireframes/api';
 import { useStore } from '@app/wireframes/model';
 import { CollaborationContext, CollaborationState } from './../hooks';
 
@@ -21,51 +20,39 @@ export const CollaborationProvider = (props: { children: React.ReactNode }) => {
     const editorId = editor.id;
 
     useAsyncEffect(async cancellation => {
-        const clientDoc = new Y.Doc();
-        const clientToken = await postCollaborationToken(editorId);
-
-        if (cancellation?.isCancelled) {
-            return undefined;
-        }
-        
-        const provider = createYjsProvider(clientDoc, clientToken, {
-            disableBc: true,
-        });
+        const provider = new TiptapCollabProvider({ appId: '7ME5ZQMY', name: editorId });
 
         provider.connect();
 
         await new Promise(resolve => {
             const handler = () => {
-                if (provider.wsconnected) {
+                if (!provider.hasUnsyncedChanges && provider.isConnected) {
                     resolve(true);
                 }
             };
 
-            provider.on('status', handler);
+            provider.on('unsyncedChanges', handler);
         });
 
         if (cancellation?.isCancelled) {
             return undefined;
         }
 
-        const unbind = binder.connectSlice(clientDoc, 'editor',
-            root => {
-                setState(state => ({
-                    ...state,
-                    undoManager: new Y.UndoManager(root),
-                }));
-            },
-        );
+        const synchronizer = binder.connectSlice(provider.document, 'editor');
 
-        setState({ document: clientDoc, provider });
+        synchronizer.on('connected', ({ root }) => {
+            setState(state => ({
+                ...state,
+                undoManager: new Y.UndoManager(root),
+            }));
+        });
+
+        setState({ document: provider.document, provider });
 
         return () => {
-            clientDoc.destroy();
-
+            synchronizer.destroy();
             provider.disconnect();
             provider.destroy();
-
-            unbind();
         };
     }, [editorId, binder]);
 

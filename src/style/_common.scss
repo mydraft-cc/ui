@@ -113,6 +113,10 @@ ul {
 .share {
     padding: 10px;
 
+    &.ant-menu {
+        line-height: 1rem;
+    }
+
     .ant-input-group {
         display: flex;
         line-height: 1rem;
