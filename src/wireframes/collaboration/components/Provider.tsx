@@ -16,8 +16,9 @@ import { CollaborationContext, CollaborationState } from './../hooks';
 
 export const CollaborationProvider = (props: { children: React.ReactNode }) => {
     const [state, setState] = React.useState<CollaborationState>({});
-    const editorId = useStore(x => x.editor.id);
-    const editorBinder = useYjsReduxBinder();
+    const binder = useYjsReduxBinder();
+    const editor = useStore(x => x.editor);
+    const editorId = editor.id;
 
     useAsyncEffect(async cancellation => {
         const clientDoc = new Y.Doc();
@@ -47,7 +48,7 @@ export const CollaborationProvider = (props: { children: React.ReactNode }) => {
             return undefined;
         }
 
-        const unbind = editorBinder.connectSlice(clientDoc, 'editor',
+        const unbind = binder.connectSlice(clientDoc, 'editor',
             root => {
                 setState(state => ({
                     ...state,
@@ -66,7 +67,7 @@ export const CollaborationProvider = (props: { children: React.ReactNode }) => {
 
             unbind();
         };
-    }, [editorId, editorBinder]);
+    }, [editorId, binder]);
 
     return (
         <CollaborationContext.Provider value={state}>

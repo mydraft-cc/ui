@@ -11,16 +11,17 @@ import { saveAs } from 'file-saver';
 import { AnyAction, Reducer } from 'redux';
 import { Types } from '@app/core';
 import { texts } from '@app/texts';
-import { EditorState, EditorStateInStore, LoadingState, LoadingStateInStore, saveRecentDiagrams, Serializer } from './../internal';
+import { user } from '@app/wireframes/user';
+import { Diagram, EditorState, EditorStateInStore, LoadingState, LoadingStateInStore, saveRecentDiagrams, Serializer } from './../internal';
 import { getDiagram, postDiagram, putDiagram } from './api';
-import { addDiagram, selectDiagram } from './diagrams';
+import { selectDiagram } from './diagrams';
 import { selectItems } from './items';
 import { migrateOldAction } from './obsolete';
 import { showToast } from './ui';
 
 export const newDiagram =
-    createAction('diagram/new', (navigate: boolean) => {
-        return { payload: { navigate } };
+    createAction('diagram/new', (navigate: boolean, initialId?: string) => {
+        return { payload: { navigate, initialId } };
     });
 
 export const loadDiagramFromFile =
@@ -166,8 +167,10 @@ export function loading(initialState: LoadingState) {
 export function rootLoading(editorReducer: Reducer<EditorState>, userId: string): Reducer<any> {
     return (state: any, action: any) => {
         if (newDiagram.match(action)) {
-            const initialAction = addDiagram();
-            const initialState = editorReducer(EditorState.create(), initialAction);
+            const initialDiagram = Diagram.create();
+            const initialState =
+                EditorState.create({ id: action.payload.initialId })
+                    .addDiagram(initialDiagram).selectDiagram(initialDiagram.id, user.id);
 
             state = initialState;
         } else if (loadDiagramInternal.match(action)) {

@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { ShapePlugin } from '../interface';
+import { ShapePlugin } from '@app/wireframes/interface';
 import { ICONS_FONT_AWESOME } from './../../icons/font_awesome_unified';
 import { ICONS_MATERIAL_DESIGN } from './../../icons/material_icons_unified';
 import { RendererService } from './renderer.service';

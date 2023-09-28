@@ -5,21 +5,20 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { GithubOutlined, QuestionCircleOutlined } from '@ant-design/icons';
-import { Button, Menu, Modal } from 'antd';
+import { BugOutlined, GithubOutlined, QuestionCircleOutlined } from '@ant-design/icons';
+import { Button, Dropdown, Menu, Modal } from 'antd';
 import * as React from 'react';
-import { MarkerButton, Title, useEventCallback } from '@app/core';
+import { Title, useEventCallback, useMarker } from '@app/core';
 import { texts } from '@app/texts';
 import { useStore } from '@app/wireframes/model';
-import { ActionDropdownButton, ActionMenuButton, ActionMenuItem, useLoading } from './../actions';
-
-const text = require('@app/legal.html');
+import { ActionDropdownButton, ActionMenuButton, ActionMenuItem, UIAction, useLoading } from './../actions';
 
 export const LoadingMenu = React.memo(() => {
     const forLoading = useLoading();
     const editor = useStore(s => s.editor);
     const tokenToRead = useStore(s => s.loading.tokenToRead);
     const tokenToWrite = useStore(s => s.loading.tokenToWrite);
+    const marker = useMarker();
     const saveTimer = React.useRef<any>();
     const saveAction = React.useRef(forLoading.saveDiagram);
     const [isOpen, setIsOpen] = React.useState(false);
@@ -61,37 +60,62 @@ export const LoadingMenu = React.memo(() => {
         }
     }, [tokenToWrite, editor]);
 
-    const menu = (
-        <Menu >
-            <ActionMenuItem displayMode='Label' action={forLoading.saveDiagramToFile} />
-        </Menu>
-    );
-
     return (
         <>
             <CustomTitle token={tokenToRead} />
 
             <ActionMenuButton displayMode='IconLabel' action={forLoading.newDiagram} />
-            <ActionMenuButton displayMode='Icon' action={forLoading.openDiagramAction} />
+            <ActionMenuButton displayMode='IconOnly' action={forLoading.openDiagramAction} />
 
-            <ActionDropdownButton displayMode='IconLabel' action={forLoading.saveDiagram} type='primary' overlay={menu} />
+            <ActionDropdownButton displayMode='IconLabel' action={forLoading.saveDiagram} type='primary' overlay={<SaveMenu action={forLoading.saveDiagramToFile} />} />
 
-            <Button className='menu-item' size='large' onClick={doToggleInfoDialog}>
-                <QuestionCircleOutlined />
-            </Button>
-
-            <Button className='menu-item' size='large' href='https://github.com/mydraft-cc/ui' target='_blank'>
-                <GithubOutlined />
-            </Button>
-
-            <MarkerButton />
-
+            <Dropdown overlay={<HelpMenu onToggle={doToggleInfoDialog} onMarker={marker.open} />}>
+                <Button className='menu-item' size='large'>
+                    <QuestionCircleOutlined />
+                </Button>
+            </Dropdown>
+    
             <Modal title={texts.common.about} visible={isOpen} onCancel={doToggleInfoDialog} onOk={doToggleInfoDialog}>
                 <div dangerouslySetInnerHTML={{ __html: text.default }} />
             </Modal>
         </>
     );
 });
+
+const SaveMenu = ({ action }: { action: UIAction }) => {
+    return (
+        <Menu>
+            <ActionMenuItem displayMode='Label' action={action} />
+        </Menu>
+    );
+};
+
+const text = require('@app/legal.html');
+
+const HelpMenu = ({ onMarker, onToggle }: { onToggle: () => void; onMarker: () => void }) => {
+    const openGithub = () => {
+        window.open('https://github.com/mydraft-cc/ui', '_target');
+    };
+
+    return (
+        <Menu>
+            <Menu.Item key='about' icon={<QuestionCircleOutlined />} 
+                title={texts.common.about} onClick={onToggle}>
+                {texts.common.about}
+            </Menu.Item>
+
+            <Menu.Item key='github' icon={<GithubOutlined />}
+                title={texts.common.github} onClick={openGithub}>
+                {texts.common.github}
+            </Menu.Item>
+
+            <Menu.Item key='bug' icon={<BugOutlined />}
+                title={texts.common.bug} onClick={onMarker}>
+                {texts.common.bug}
+            </Menu.Item>
+        </Menu>
+    );
+};
 
 const CustomTitle = React.memo(({ token }: { token?: string | null }) => {
     const title = token && token.length > 0 ?

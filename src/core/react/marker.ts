@@ -5,12 +5,10 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { SmileOutlined } from '@ant-design/icons';
 import markerSDK, { MarkerSdk } from '@marker.io/browser';
-import { Button } from 'antd';
 import * as React from 'react';
 
-export const MarkerButton = () => {
+export function useMarker() {
     const [widget, setWidget] = React.useState<MarkerSdk>();
 
     React.useEffect(() => {
@@ -26,10 +24,10 @@ export const MarkerButton = () => {
 
         loadMarker();
     }, []);
-    
-    return (
-        <Button className='menu-item' onClick={() => widget?.capture('advanced')}>
-            <SmileOutlined />
-        </Button>
-    );
-};
+
+    const open = React.useCallback(() => {
+        widget?.capture('advanced');
+    }, [widget]);
+
+    return { open };
+}

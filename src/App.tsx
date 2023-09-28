@@ -40,9 +40,11 @@ export const App = () => {
     ] = usePrinter();
 
     React.useEffect(() => {
-        const token = routeTokenSnapshot.current;
+        const token = routeTokenSnapshot.current as string;
 
-        if (token && token.length > 0) {
+        if (token?.indexOf('c:') === 0) {
+            dispatch(newDiagram(false, token.substring(2)));
+        } else if (token?.length > 0) {
             dispatch(loadDiagramFromServer({ tokenToRead: token, navigate: false }));
         } else {
             dispatch(newDiagram(false));

@@ -110,6 +110,18 @@ ul {
     padding-bottom: 10px;
 }
 
+.share {
+    padding: 10px;
+
+    .ant-input-group {
+        display: flex;
+        line-height: 1rem;
+        flex-flow: row;
+        flex-wrap: nowrap;
+        margin-top: 5px;
+    }
+}
+
 //
 // Sidebars
 //

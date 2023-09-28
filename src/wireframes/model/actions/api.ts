@@ -23,7 +23,6 @@ export async function getCollaborationToken(id: string) {
     const stored = await response.json();
 
     return stored;
-
 }
 
 export async function getDiagram(readToken: string) {

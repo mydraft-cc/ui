@@ -8,7 +8,7 @@
 import { PlayCircleOutlined } from '@ant-design/icons';
 import { Button } from 'antd';
 import * as React from 'react';
-import { ActionMenuButton, useUI } from '../actions';
+import { ActionMenuButton, useUI } from './../actions';
 
 export interface UIMenuProps {
     // The presentation callback.

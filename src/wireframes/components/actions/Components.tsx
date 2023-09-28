@@ -12,7 +12,7 @@ import * as React from 'react';
 import { isMac, Shortcut, Types } from '@app/core';
 import { UIAction } from './shared';
 
-type ActionDisplayMode = 'Icon' | 'IconLabel' | 'Label';
+type ActionDisplayMode = 'IconOnly' | 'IconLabel' | 'Label';
 
 type ActionProps = {
     // The action to show.
@@ -46,7 +46,7 @@ export const ActionMenuButton = React.memo((props: ActionProps & ButtonProps) =>
         <>
             <Tooltip mouseEnterDelay={1} title={title}>
                 <Button {...other} type={type} className={!type ? 'menu-item' : undefined} size='large' disabled={disabled} onClick={onAction}>
-                    <ButtonContent icon={icon} label={label} displayMode={displayMode || 'Icon'} />
+                    <ButtonContent icon={icon} label={label} displayMode={displayMode || 'IconOnly'} />
                 </Button>
             </Tooltip>
 
@@ -83,7 +83,7 @@ export const ActionDropdownButton = React.memo((props: ActionProps & DropdownBut
                     </Tooltip>,
                     React.cloneElement(rightButton as React.ReactElement<any, string>),
                 ]}>
-                <ButtonContent icon={icon} label={label} displayMode={displayMode || 'Icon'} />
+                <ButtonContent icon={icon} label={label} displayMode={displayMode || 'IconOnly'} />
             </Dropdown.Button>
 
             {shortcut &&
@@ -114,7 +114,7 @@ export const ActionButton = React.memo((props: ActionProps & ButtonProps) => {
         <>
             <Tooltip mouseEnterDelay={1} title={title}>
                 <Button {...other} disabled={disabled} onClick={onAction}>
-                    <ButtonContent icon={icon} label={label} displayMode={displayMode || 'Icon'} />
+                    <ButtonContent icon={icon} label={label} displayMode={displayMode || 'IconOnly'} />
                 </Button>
             </Tooltip>
         </>
@@ -138,7 +138,7 @@ export const ActionMenuItem = React.memo((props: ActionProps & MenuItemProps) =>
 
     return (
         <Menu.Item {...other} key={label} className='force-color' disabled={disabled} onClick={onAction}
-            icon={(actualDisplayMode === 'Icon' || actualDisplayMode === 'IconLabel') ? (
+            icon={(actualDisplayMode === 'IconOnly' || actualDisplayMode === 'IconLabel') ? (
                 <>
                     {Types.isString(icon) ? (
                         <span className='anticon'>
@@ -158,7 +158,7 @@ export const ActionMenuItem = React.memo((props: ActionProps & MenuItemProps) =>
 const ButtonContent = ({ displayMode, label, icon }: { icon: string | JSX.Element; label: string; displayMode: ActionDisplayMode }) => {
     return (
         <>
-            {(displayMode === 'Icon' || displayMode === 'IconLabel') &&
+            {(displayMode === 'IconOnly' || displayMode === 'IconLabel') &&
                 <>
                     {Types.isString(icon) ? (
                         <i className={icon} />

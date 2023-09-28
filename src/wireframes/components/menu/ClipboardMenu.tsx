@@ -6,7 +6,7 @@
 */
 
 import * as React from 'react';
-import { ActionMenuButton, useClipboard } from '../actions';
+import { ActionMenuButton, useClipboard } from './../actions';
 
 export const ClipboardMenu = React.memo(() => {
     const forClipboard = useClipboard();

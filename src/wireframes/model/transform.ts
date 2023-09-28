@@ -8,7 +8,7 @@
 /* eslint-disable no-multi-assign */
 
 import { Rect2, Rotation, Vec2 } from '@app/core';
-import { Constraint } from '../interface';
+import { Constraint } from '@app/wireframes/interface';
 
 const EPSILON = 0.1;
 

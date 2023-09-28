@@ -1,9 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Avatar } from 'antd';
+import { CopyOutlined, ShareAltOutlined } from '@ant-design/icons';
+import { Avatar, Button, Dropdown, Input, message } from 'antd';
 import * as React from 'react';
-import { usePresence } from '../hooks';
+import { copyTextToClipboard } from '@app/core';
+import { texts } from '@app/texts';
+import { useStore } from '@app/wireframes/model';
+import { usePresence } from './../hooks';
 
 export const Presence = () => {
+    const editor = useStore(x => x.editor);
+    const editorId = editor.id;
     const presence = usePresence();
 
     const sortedUsers = React.useMemo(() => {
@@ -17,12 +23,46 @@ export const Presence = () => {
     }, [presence]);
 
     return (
-        <Avatar.Group>
-            {sortedUsers.map(user =>
-                <Avatar key={user.id} style={{ backgroundColor: user.color }}>
-                    {user.initial}
-                </Avatar>,
-            )}
-        </Avatar.Group>
+        <>
+            {sortedUsers.length > 1 &&
+                <Avatar.Group>
+                    {sortedUsers.map(user =>
+                        <Avatar key={user.id} style={{ backgroundColor: user.color }}>
+                            {user.initial}
+                        </Avatar>,
+                    )}
+                </Avatar.Group>
+            }
+
+            <Dropdown overlay={<ShareMenu id={editorId} />}>
+                <Button className='menu-item' size='large'>
+                    <ShareAltOutlined />
+                </Button>
+            </Dropdown>
+        </>
+    );
+};
+
+export const ShareMenu = ({ id }: { id: string }) => {
+    const link = `${window.location.protocol}//${window.location.host}/c:${id}`;
+
+    const doCopy = () => {
+        copyTextToClipboard(link);
+    
+        message.open({ content: texts.common.copied, key: 'clipboard', type: 'info' });
+    };
+
+    return (
+        <div className='share ant-menu ant-menu-root'>
+            {texts.common.shareText}
+
+            <Input.Group compact>
+                <Input value={link} />
+
+                <Button onClick={doCopy}>
+                    <CopyOutlined />
+                </Button>
+            </Input.Group>
+        </div>
     );
 };

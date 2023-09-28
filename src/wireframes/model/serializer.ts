@@ -186,10 +186,6 @@ interface PropertySerializer {
 type PropertySerializers = { [key: string]: PropertySerializer };
 
 const EDITOR_SERIALIZERS: PropertySerializers = {
-    'id': {
-        get: (source) => source,
-        set: (source) => source,
-    },
     'diagrams': {
         get: (source: ImmutableMap<Diagram>) => source.values.map(writeDiagram),
         set: (source: any[]) => buildObject(source.map(readDiagram), x => x.id),

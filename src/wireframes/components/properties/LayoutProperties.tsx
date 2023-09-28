@@ -7,7 +7,7 @@
 
 import * as React from 'react';
 import { getDiagramId, useStore } from '@app/wireframes/model';
-import { ActionButton, useAlignment } from '../actions';
+import { ActionButton, useAlignment } from './../actions';
 import './LayoutProperties.scss';
 
 export const LayoutProperties = React.memo(() => {

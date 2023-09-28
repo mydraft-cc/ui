@@ -7,8 +7,8 @@
 
 import * as React from 'react';
 import { useDragLayer, XYCoord } from 'react-dnd';
-import { ShapePlugin } from '../interface';
-import { getViewBox, ShapeRenderer } from '../shapes/ShapeRenderer';
+import { ShapePlugin } from '@app/wireframes/interface';
+import { getViewBox, ShapeRenderer } from '@app/wireframes/shapes/ShapeRenderer';
 import './CustomDragLayer.scss';
 
 export const CustomDragLayer = () => {
