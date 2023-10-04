@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { Collapse } from 'antd';
+import { Collapse, PageHeader} from 'antd';
 import classNames from 'classnames';
 import * as React from 'react';
 import { texts } from '@app/texts';
@@ -17,13 +17,20 @@ import { LayoutProperties } from './LayoutProperties';
 import { MoreProperties } from './MoreProperties';
 import { TransformProperties } from './TransformProperties';
 import { VisualProperties } from './VisualProperties';
+// import { Header } from 'antd/lib/layout/layout';
 
 export const Properties = () => {
-    const hasSelection = useStore(getSelectedItems).length > 0;
-    const hasDiagram = !!useStore(getDiagram);
+    const selectedItems = useStore(getSelectedItems);
+    const selectedItem = useStore(getDiagram);
+    const hasSelection = selectedItems.length > 0;
+    const hasDiagram = !!selectedItem;
+    const multipleSelection = selectedItems.length > 1;
 
     return (
         <>
+                    <PageHeader className={(classNames({ hidden: !hasSelection}))} >
+                        {(hasSelection)? (multipleSelection? 'Group': ((selectedItems.at(0)?.name != undefined)? selectedItems.at(0)?.name : selectedItems.at(0)?.renderer+ " " + selectedItems.at(0)?.id.slice(10, 14)) ) : ''}
+                </PageHeader>
             <Collapse className={(classNames({ hidden: !hasSelection }))} bordered={false} defaultActiveKey={['layout', 'visual', 'more', 'custom']}>
                 <Collapse.Panel key='layout' header={texts.common.layout}>
                     <LayoutProperties />
