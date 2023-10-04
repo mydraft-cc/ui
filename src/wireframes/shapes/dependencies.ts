@@ -30,6 +30,7 @@ export * from './neutral/radio-button';
 export * from './neutral/rectangle';
 export * from './neutral/shape';
 export * from './neutral/slider';
+export * from './neutral/table';
 export * from './neutral/tablet';
 export * from './neutral/tabs';
 export * from './neutral/text-area';
