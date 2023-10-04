@@ -14,6 +14,16 @@ export module MathHelper {
         return CURRENT_ID.toString();
     }
 
+
+    export function nextCIId(isbegining:boolean, CURRENT_INSTANCE_ID?: any) {
+        if (isbegining ) {
+            CURRENT_INSTANCE_ID = 0;
+        }
+        CURRENT_INSTANCE_ID++;
+
+        return CURRENT_INSTANCE_ID.toString();
+    }
+
     export function guid() {
         return `${s4() + s4()}-${s4()}-${s4()}-${s4()}-${s4()}${s4()}${s4()}`;
     }

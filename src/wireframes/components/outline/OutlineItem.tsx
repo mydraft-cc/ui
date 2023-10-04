@@ -12,6 +12,7 @@ import * as React from 'react';
 import { Keys, useEventCallback } from '@app/core';
 import { texts } from '@app/texts';
 import { Diagram, DiagramItem, OrderMode } from '@app/wireframes/model';
+// import { MathHelper } from '@app/core';
 
 export type OutlineItemAction = 'Delete' | 'Rename' | 'Move' | 'Select';
 
@@ -45,11 +46,14 @@ export const OutlineItem = (props: OutlineItemProps) => {
         onAction,
     } = props;
 
+
     const [editName, setEditName] = React.useState('');
     const [editing, setEditing] = React.useState(false);
     const [expanded, setExpanded] = React.useState(true);
     const isGroup = diagramItem.type === 'Group';
-    const itemName = diagramItem.id || (isGroup ? texts.common.group : diagramItem.renderer);
+    const DefaultName =  diagramItem.renderer+ " " + diagramItem.id.slice(10, 14);
+    const changed_name = diagramItem.name != diagramItem.renderer;
+    const itemName = (changed_name ? diagramItem.name: diagramItem.name)  || DefaultName || (isGroup ? texts.common.group : diagramItem.renderer);
 
     const setText = useEventCallback((event: React.ChangeEvent<HTMLInputElement>) => {
         setEditName(event.target.value);
