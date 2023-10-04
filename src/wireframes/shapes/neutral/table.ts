@@ -5,28 +5,17 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { ConfigurableFactory, DefaultAppearance, Rect2, RenderContext, Shape, ShapePlugin } from '@app/wireframes/interface';
+import { DefaultAppearance, Rect2, RenderContext, Shape, ShapePlugin } from '@app/wireframes/interface';
 import { CommonTheme } from './_theme';
-
-// const CELL_STROKE_COLOR = 'STROKE_COLOR';
-// const CELL_STROKE_THICKNESS = 'STROKE_THICKNESS';
-// const CELL_STROKES_UP = 'CELL_STROKES_UP';
-// const CELL_STROKES_DOWN = 'CELL_STROKES_DOWN';
-// const CELL_STROKES_LEFT = 'CELL_STROKES_LEFT';
-// const CELL_STROKES_RIGHT = 'CELL_STROKES_RIGHT';
 
 const DEFAULT_APPEARANCE = {
     [DefaultAppearance.BACKGROUND_COLOR]: '#fff',
     [DefaultAppearance.FONT_SIZE]: CommonTheme.CONTROL_FONT_SIZE,
     [DefaultAppearance.FOREGROUND_COLOR]: CommonTheme.CONTROL_TEXT_COLOR,
-    [DefaultAppearance.STROKE_COLOR]: CommonTheme.CONTROL_BORDER_COLOR,
+    [DefaultAppearance.STROKE_COLOR]: CommonTheme.CONTROL_TEXT_COLOR,
     [DefaultAppearance.STROKE_THICKNESS]: 0,
     [DefaultAppearance.TEXT_ALIGNMENT]: 'center',
-    [DefaultAppearance.TEXT]: 'column1{strokeX=0};column2{strokeX=0};column3{strokeX=0}\nrow1{strokeX=0,strokeY=2};row1{strokeY=2,strokeX=0};row1{strokeY=2,strokeX=0}\nrow2{strokeX=0};row2{strokeX=0}',
-    // [CELL_STROKES_UP]: true,
-    // [CELL_STROKES_DOWN]: true,
-    // [CELL_STROKES_LEFT]: true,
-    // [CELL_STROKES_RIGHT]: true,
+    [DefaultAppearance.TEXT]: 'column1{strokeX=0};column2{strokeX=0};column3{strokeX=0}\nrow1{strokeX=0, strokeY=3};row1{strokeY=3, strokeX=0};row1{strokeY=3, strokeX=0}\nrow2{strokeX=0};merged row2{strokeX=0, spanX=2}',
 };
 
 export class Table implements ShapePlugin {
@@ -42,15 +31,6 @@ export class Table implements ShapePlugin {
         return { x: 260, y: 200 };
     }
 
-    // public configurables(factory: ConfigurableFactory) {
-    //     return [
-    //         factory.toggle(CELL_STROKES_LEFT, 'Left Stroke'),
-    //         factory.toggle(CELL_STROKES_RIGHT, 'Right Stroke'),
-    //         factory.toggle(CELL_STROKES_UP, 'Top Stroke'),
-    //         factory.toggle(CELL_STROKES_DOWN, 'Down Stroke'),
-    //     ];
-    // }
-
     public render(ctx: RenderContext) {
         const w = ctx.rect.width;
         const h = ctx.rect.height;
@@ -61,18 +41,20 @@ export class Table implements ShapePlugin {
         const cellHeight = h / content.length;
 
         this.createFrame(ctx);
-        this.createBorders(ctx, columnCount, cellWidth, h, content, styles, cellHeight, w);
-        this.createTexts(content, cellWidth, cellHeight, ctx);
+        this.createBorders(ctx, content, columnCount, cellWidth, cellHeight, styles);
+        this.createTexts(ctx, content, cellWidth, cellHeight, styles);
     }
 
-    private createTexts(rows: string[][], cellWidth: number, cellHeight: number, ctx: RenderContext) {
+    private createTexts(ctx: RenderContext, rows: string[][], cellWidth: number, cellHeight: number, styles: {}[][]) {
         let y = 0;
 
-        for (const row of rows) {
+        for (let i = 0; i < rows.length; i++) {
             let x = 0;
 
-            for (const cell of row) {
-                const rect = new Rect2(x, y, cellWidth, cellHeight);
+            for (let j = 0; j < rows[i].length; j++) {
+                const cell = rows[i][j];
+                const factorWidth = ((styles[i][j]['spanX'] == null) || (styles[i][j]['spanX'] < 1)) ? 1 : styles[i][j]['spanX'];
+                const rect = new Rect2(x, y, cellWidth * factorWidth, cellHeight);
 
                 ctx.renderer2.text(ctx.shape, rect, p => {
                     p.setText(cell);
@@ -86,8 +68,8 @@ export class Table implements ShapePlugin {
         }
     }
 
-    private createBorders(ctx: RenderContext, columnCount: number, cellWidth: number, h: number, rows: string[][], styles: {}[][], cellHeight: number, w: number) {
-        const stokeColor = ctx.shape.getAppearance(DefaultAppearance.STROKE_COLOR);
+    private createBorders(ctx: RenderContext, rows: string[][], columnCount: number, cellWidth: number, cellHeight: number, styles: {}[][]) {
+        const strokeColor = ctx.shape.getAppearance(DefaultAppearance.STROKE_COLOR);
 
         for (let x = 0; x < columnCount; x++) {
             for (let y = 0; y < rows.length; y++) {
@@ -101,13 +83,13 @@ export class Table implements ShapePlugin {
                 // Vertical
                 const rectX = new Rect2(offsetX, offsetY, strokeX, cellHeight);
                 ctx.renderer2.rectangle(0, 0, rectX, p => {
-                    p.setBackgroundColor(stokeColor);
+                    p.setBackgroundColor(strokeColor);
                 });
 
                 // Horizontal
                 const rectY = new Rect2(offsetX, offsetY, cellWidth, strokeY);
                 ctx.renderer2.rectangle(0, 0, rectY, p => {
-                    p.setBackgroundColor(stokeColor);
+                    p.setBackgroundColor(strokeColor);
                 });
             }
         }
@@ -127,7 +109,7 @@ export class Table implements ShapePlugin {
 
         for (var i = 0; i < params.length; i++) {
             var part = params[i].split('=');
-            record[part[0]] = part[1];
+            record[part[0].trim()] = part[1].trim();
         }
         return record;
     }
@@ -146,18 +128,30 @@ export class Table implements ShapePlugin {
             const content = key.split('\n').map(a => a.split(';').map(b => this.parseContent(b.trim())));
             const styles = key.split('\n').map(a => a.split(';').map(b => this.parseParams(b.trim())));
 
-            let columnCount = 0;
-
-            for (const i of content) {
-                columnCount = Math.max(columnCount, i.length);
-            }
-
             while (content.length < 2) {
                 content.push([]);
                 styles.push([]);
             }
 
-            for (var i = 0; i < content.length; i++) {
+            // Add empty cell for spanning
+            for (let i = 0; i < content.length; i++) {
+                for (let j = 0; j < content[i].length; j++) {
+                    const times = (styles[i][j]['spanX'] > 1) ? styles[i][j]['spanX'] - 1 : 0;
+                    for (var k = 0; k < times; k++) {
+                        content[i].splice(j + 1, 0, '');
+                        styles[i].splice(j + 1, 0, { 'strokeX': 0, 'strokeY': styles[i][j]['strokeY'] });
+                    }
+                }
+            }
+
+            // Determine max number of columns
+            let columnCount = 0;
+            for (const i of content) {
+                columnCount = Math.max(columnCount, i.length);
+            }
+
+            // Append blank cell in the end if not fulfill
+            for (let i = 0; i < content.length; i++) {
                 while (content[i].length < columnCount) {
                     content[i].push('');
                     styles[i].push({});
