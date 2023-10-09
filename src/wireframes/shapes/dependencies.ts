@@ -9,6 +9,7 @@ export * from './neutral/arrow';
 export * from './neutral/browser';
 export * from './neutral/button';
 export * from './neutral/button-bar';
+export * from './neutral/cells';
 export * from './neutral/checkbox';
 export * from './neutral/combo-box';
 export * from './neutral/comment';
