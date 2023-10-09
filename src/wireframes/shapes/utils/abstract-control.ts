@@ -179,19 +179,21 @@ export class AbstractControlCells implements Renderer {
         const configurables = this.shapePlugin[0].configurables?.(DefaultConfigurableFactory.INSTANCE);
         const renderer = this.identifier();
         const size: Size = {
-            x: this.shapePlugin[0].defaultSize().x * this.shapePlugin.length,
-            y: this.shapePlugin[0].defaultSize().y * this.shapePlugin.length,
+            x: this.shapePlugin[0].defaultSize().x,
+            y: this.shapePlugin[0].defaultSize().y,
         };
 
         return { renderer, size, appearance, configurables, constraint };
     }
 
     public render(shape: DiagramItem, existing: svg.G | undefined, options?: { debug?: boolean; noOpacity?: boolean; noTransform?: boolean }): any {
-        GLOBAL_CONTEXT.shape = shape;
-        GLOBAL_CONTEXT.rect = new Rect2(0, 0, shape.transform.size.x, shape.transform.size.y);
+        // const numShapePlugin = this.shapePlugin.length;
 
         const container = SVGRenderer2.INSTANCE.getContainer();
 
+        GLOBAL_CONTEXT.shape = shape;
+        GLOBAL_CONTEXT.rect = new Rect2(0, 0, shape.transform.size.x / 2, shape.transform.size.y);
+        
         // Use full color codes here to avoid the conversion in svg.js
         if (!existing) {
             existing = new svg.G();
@@ -214,10 +216,13 @@ export class AbstractControlCells implements Renderer {
 
         SVGRenderer2.INSTANCE.setContainer(existing, index);
 
-        for (const shape of this.shapePlugin) {
-            shape.render(GLOBAL_CONTEXT);
+        for (let i = 0; i < this.shapePlugin.length; i++) {
+            const shapePlugin = this.shapePlugin[i];
+            const width = shape.transform.size.x;
+            GLOBAL_CONTEXT.rect = new Rect2(i * width, 0, width, shape.transform.size.y);
+            shapePlugin.render(GLOBAL_CONTEXT);
         }
-
+        
         if (!options?.noTransform) {
             const to = shape.transform;
 
