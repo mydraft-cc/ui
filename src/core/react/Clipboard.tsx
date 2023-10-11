@@ -190,6 +190,10 @@ export function useClipboard(props?: ClipboardProps) {
         cut: () => {
             emitCopy(context, true);
         },
+        copyPaste: async () => {
+            emitCopy(context, false);
+            tryEmitPaste(context);
+        },
     }), [context]);
 }
 

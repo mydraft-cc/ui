@@ -11,9 +11,9 @@ import classNames from 'classnames';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
 import { useRouteMatch } from 'react-router';
-import { ClipboardContainer, useEventCallback, usePrinter } from '@app/core';
-import { ArrangeMenu, AnimationView, ClipboardMenu, EditorView, HistoryMenu, Icons, LoadingMenu, LockMenu, Outline, Pages, PrintView, Properties, Recent, SettingsMenu, Shapes, UIMenu } from '@app/wireframes/components';
-import { loadDiagramFromServer, newDiagram, selectTab, showToast, toggleLeftSidebar, toggleRightSidebar, useStore } from '@app/wireframes/model';
+import { ClipboardContainer, useEventCallback } from '@app/core';
+import { ArrangeMenu, AnimationView, ClipboardMenu, EditorView, HistoryMenu, Icons, LoadingMenu, LockMenu, Outline, Pages, Properties, Recent, Shapes, TableMenu } from '@app/wireframes/components';
+import { loadDiagramFromServer, newDiagram, selectTab, toggleLeftSidebar, toggleRightSidebar, useStore } from '@app/wireframes/model';
 import { texts } from './texts';
 import { CustomDragLayer } from './wireframes/components/CustomDragLayer';
 import { PresentationView } from './wireframes/components/PresentationView';
@@ -31,12 +31,12 @@ export const App = () => {
     const showRightSidebar = useStore(s => s.ui.showRightSidebar);
     const [presenting, setPresenting] = React.useState(false);
 
-    const [
-        print,
-        printReady,
-        isPrinting,
-        ref,
-    ] = usePrinter();
+    // const [
+    //     print,
+    //     printReady,
+    //     isPrinting,
+    //     ref,
+    // ] = usePrinter();
 
     React.useEffect(() => {
         const token = routeTokenSnapshot.current;
@@ -48,11 +48,11 @@ export const App = () => {
         }
     }, [dispatch]);
 
-    React.useEffect(() => {
-        if (isPrinting) {
-            dispatch(showToast(texts.common.printingStarted));
-        }
-    }, [dispatch, isPrinting]);
+    // React.useEffect(() => {
+    //     if (isPrinting) {
+    //         dispatch(showToast(texts.common.printingStarted));
+    //     }
+    // }, [dispatch, isPrinting]);
 
     const doSelectTab = useEventCallback((key: string) => {
         dispatch(selectTab(key));
@@ -70,9 +70,9 @@ export const App = () => {
         setPresenting(false);
     });
 
-    const doPresent = useEventCallback(() => {
-        setPresenting(true);
-    });
+    // const doPresent = useEventCallback(() => {
+    //     setPresenting(true);
+    // });
 
     return (
         <OverlayContainer>
@@ -93,10 +93,13 @@ export const App = () => {
                         <ClipboardMenu />
                         <span className='menu-separator' />
 
-                        <UIMenu onPlay={doPresent} />
-                        <span className='menu-separator' />
+                        {/* <UIMenu onPlay={doPresent} />
+                        <span className='menu-separator' /> */}
 
-                        <SettingsMenu onPrint={print} />
+                        <TableMenu />
+                        {/* <span className='menu-separator' /> */}
+
+                        {/* <SettingsMenu onPrint={print} /> */}
 
                         <span style={{ float: 'right' }}>
                             <LoadingMenu />
@@ -154,11 +157,11 @@ export const App = () => {
                     <PresentationView onClose={doEdit} />
                 }
 
-                {isPrinting &&
+                {/* {isPrinting &&
                     <div className='print-mode' ref={ref}>
                         <PrintView onRender={printReady} />
                     </div>
-                }
+                } */}
 
                 <CustomDragLayer />
             </ClipboardContainer>

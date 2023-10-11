@@ -13,13 +13,6 @@ import { AbstractControl } from './utils/abstract-control';
 export function registerRenderers() {
     RendererService.addRenderer(new AbstractControl(new Arrow()));
     RendererService.addRenderer(new AbstractControl(new Cell()));
-    // RendererService.addRenderer(new AbstractControl(new Cell('Cell 2')));
-    // RendererService.addRenderer(new AbstractControl(new Browser()));
-    // RendererService.addRenderer(new AbstractControl(new Button()));
-    // RendererService.addRenderer(new AbstractControl(new ButtonBar()));
-    // RendererService.addRenderer(new AbstractControl(new Checkbox()));
-    // RendererService.addRenderer(new AbstractControl(new ComboBox()));
-    // RendererService.addRenderer(new AbstractControl(new Dropdown()));
     RendererService.addRenderer(new AbstractControl(new Equation()));
     // RendererService.addRenderer(new AbstractControl(new Grid()));
     RendererService.addRenderer(new AbstractControl(new Heading()));

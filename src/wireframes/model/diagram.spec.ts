@@ -28,7 +28,7 @@ describe('Diagram', () => {
         expect(diagram_2).toBe(diagram_1);
     });
 
-    it('should set titel', () => {
+    it('should set title', () => {
         const diagram_2 = diagram_1.rename('title');
 
         expect(diagram_2.title).toBe('title');

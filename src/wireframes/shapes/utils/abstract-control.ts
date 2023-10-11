@@ -100,6 +100,7 @@ export class AbstractControl implements Renderer {
         GLOBAL_CONTEXT.rect = new Rect2(0, 0, shape.transform.size.x, shape.transform.size.y);
 
         const container = SVGRenderer2.INSTANCE.getContainer();
+        const index = (options?.debug) ? 2 : 1;
 
         // Use full color codes here to avoid the conversion in svg.js
         if (!existing) {
@@ -109,12 +110,6 @@ export class AbstractControl implements Renderer {
             if (options?.debug) {
                 existing.rect().fill('#ffffff').stroke({ color: '#ff0000' });
             }
-        }
-
-        let index = 1;
-
-        if (options?.debug) {
-            index = 2;
         }
 
         for (let i = 0; i < index; i++) {
@@ -179,7 +174,7 @@ export class AbstractControlCells implements Renderer {
         const configurables = this.shapePlugin[0].configurables?.(DefaultConfigurableFactory.INSTANCE);
         const renderer = this.identifier();
         const size: Size = {
-            x: this.shapePlugin[0].defaultSize().x,
+            x: this.shapePlugin[0].defaultSize().x * 2,
             y: this.shapePlugin[0].defaultSize().y,
         };
 
@@ -187,12 +182,10 @@ export class AbstractControlCells implements Renderer {
     }
 
     public render(shape: DiagramItem, existing: svg.G | undefined, options?: { debug?: boolean; noOpacity?: boolean; noTransform?: boolean }): any {
-        // const numShapePlugin = this.shapePlugin.length;
-
+        const numShapePlugin = this.shapePlugin.length;
+        const index = (options?.debug) ? 2 : 1;
         const container = SVGRenderer2.INSTANCE.getContainer();
-
         GLOBAL_CONTEXT.shape = shape;
-        GLOBAL_CONTEXT.rect = new Rect2(0, 0, shape.transform.size.x / 2, shape.transform.size.y);
         
         // Use full color codes here to avoid the conversion in svg.js
         if (!existing) {
@@ -202,27 +195,43 @@ export class AbstractControlCells implements Renderer {
             if (options?.debug) {
                 existing.rect().fill('#ffffff').stroke({ color: '#ff0000' });
             }
+
+            for (let i = 0; i < this.shapePlugin.length; i++) {
+                var subExisting = new svg.G();
+                subExisting.add(new svg.Rect().fill('#ffffff').opacity(0.001));
+
+                if (options?.debug) {
+                    subExisting.rect().fill('#ffffff').stroke({ color: '#ff0000' });
+                }
+                
+                SVGRenderer2.INSTANCE.setContainer(subExisting, index);
+
+                const shapePlugin = this.shapePlugin[i];
+                const width = shape.transform.size.x / numShapePlugin;
+
+                GLOBAL_CONTEXT.rect = new Rect2(i * width, 0, width, shape.transform.size.y);
+                shapePlugin.render(GLOBAL_CONTEXT);
+
+                for (let i = 0; i < index; i++) {
+                    SVGHelper.transformByRect(subExisting.get(i), GLOBAL_CONTEXT.rect);
+                }
+
+                if (!options?.noTransform) {
+                    SVGHelper.transformBy(subExisting, {
+                        x: i * width,
+                        w: width,
+                    });
+                }
+                
+                existing.add(subExisting);
+            }
         }
 
-        let index = 1;
-
-        if (options?.debug) {
-            index = 2;
-        }
-
+        GLOBAL_CONTEXT.rect = new Rect2(0, 0, shape.transform.size.x, shape.transform.size.y);
         for (let i = 0; i < index; i++) {
             SVGHelper.transformByRect(existing.get(i), GLOBAL_CONTEXT.rect);
         }
 
-        SVGRenderer2.INSTANCE.setContainer(existing, index);
-
-        for (let i = 0; i < this.shapePlugin.length; i++) {
-            const shapePlugin = this.shapePlugin[i];
-            const width = shape.transform.size.x;
-            GLOBAL_CONTEXT.rect = new Rect2(i * width, 0, width, shape.transform.size.y);
-            shapePlugin.render(GLOBAL_CONTEXT);
-        }
-        
         if (!options?.noTransform) {
             const to = shape.transform;
 
@@ -235,10 +244,6 @@ export class AbstractControlCells implements Renderer {
                 ry: to.position.y,
                 rotation: to.rotation.degree,
             });
-        }
-
-        if (!options?.noOpacity) {
-            existing.opacity(shape.opacity);
         }
 
         SVGRenderer2.INSTANCE.cleanupAll();

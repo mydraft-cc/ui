@@ -12,7 +12,7 @@ import { texts } from '@app/texts';
 import { DiagramItemSet, getDiagram, getSelectedItems, pasteItems, removeItems, Serializer, useStore } from '@app/wireframes/model';
 import { UIAction } from './shared';
 
-const OFFSET = 50;
+const OFFSET = 1;
 const PREFIX = 'my-draft:';
 
 export function useClipboard() {
@@ -29,7 +29,7 @@ export function useClipboard() {
             if (selectedDiagram && text && text.indexOf(PREFIX) === 0) {
                 offset.current += OFFSET;
     
-                dispatch(pasteItems(selectedDiagram, text.substring(PREFIX.length), offset.current));
+                dispatch(pasteItems(selectedDiagram, text.substring(PREFIX.length), offset.current, offset.current));
                 return true;
             }
     

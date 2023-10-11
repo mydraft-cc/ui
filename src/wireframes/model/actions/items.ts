@@ -44,8 +44,8 @@ export const renameItems =
     });
 
 export const pasteItems =
-    createAction('items/paste', (diagram: DiagramRef, json: string, offset = 0) => {
-        return { payload: createDiagramAction(diagram, { json: Serializer.tryGenerateNewIds(json), offset }) };
+    createAction('items/paste', (diagram: DiagramRef, json: string, offsetByX = 0, offsetByY = 0) => {
+        return { payload: createDiagramAction(diagram, { json: Serializer.tryGenerateNewIds(json), offsetByX, offsetByY }) };
     });
 
 export function buildItems(builder: ActionReducerMapBuilder<EditorState>) {
@@ -98,7 +98,7 @@ export function buildItems(builder: ActionReducerMapBuilder<EditorState>) {
             });
         })
         .addCase(pasteItems, (state, action) => {
-            const { diagramId, json, offset } = action.payload;
+            const { diagramId, json, offsetByX, offsetByY } = action.payload;
 
             return state.updateDiagram(diagramId, diagram => {
                 const set = Serializer.deserializeSet(JSON.parse(json));
@@ -107,7 +107,7 @@ export function buildItems(builder: ActionReducerMapBuilder<EditorState>) {
 
                 diagram = diagram.updateItems(set.allShapes.map(x => x.id), item => {
                     const boundsOld = item.bounds(diagram);
-                    const boundsNew = boundsOld.moveBy(new Vec2(offset, offset));
+                    const boundsNew = boundsOld.moveBy(boundsOld.size.mul(new Vec2(offsetByX, offsetByY)));
 
                     return item.transformByBounds(boundsOld, boundsNew);
                 });
