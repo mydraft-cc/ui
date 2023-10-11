@@ -5,15 +5,15 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { GithubOutlined, QuestionCircleOutlined } from '@ant-design/icons';
-import { Button, Menu, Modal } from 'antd';
+// import { GithubOutlined, QuestionCircleOutlined } from '@ant-design/icons';
+import { Menu } from 'antd';
 import * as React from 'react';
-import { MarkerButton, Title, useEventCallback } from '@app/core';
+import { Title } from '@app/core';
 import { texts } from '@app/texts';
 import { useStore } from '@app/wireframes/model';
 import { ActionDropdownButton, ActionMenuButton, ActionMenuItem, useLoading } from './../actions';
 
-const text = require('@app/legal.html');
+// const text = require('@app/legal.html');
 
 export const LoadingMenu = React.memo(() => {
     const forLoading = useLoading();
@@ -22,13 +22,13 @@ export const LoadingMenu = React.memo(() => {
     const tokenToWrite = useStore(s => s.loading.tokenToWrite);
     const saveTimer = React.useRef<any>();
     const saveAction = React.useRef(forLoading.saveDiagram);
-    const [isOpen, setIsOpen] = React.useState(false);
+    // const [isOpen, setIsOpen] = React.useState(false);
 
     saveAction.current = forLoading.saveDiagram;
 
-    const doToggleInfoDialog = useEventCallback(() => {
-        setIsOpen(x => !x);
-    });
+    // const doToggleInfoDialog = useEventCallback(() => {
+    //     setIsOpen(x => !x);
+    // });
 
     React.useEffect(() => {
         function clearTimer() {
@@ -75,7 +75,7 @@ export const LoadingMenu = React.memo(() => {
             <ActionMenuButton displayMode='Icon' action={forLoading.openDiagramAction} />
 
             <ActionDropdownButton displayMode='IconLabel' action={forLoading.saveDiagram} type='primary' overlay={menu} />
-
+{/* 
             <Button className='menu-item' size='large' onClick={doToggleInfoDialog}>
                 <QuestionCircleOutlined />
             </Button>
@@ -88,7 +88,7 @@ export const LoadingMenu = React.memo(() => {
 
             <Modal title={texts.common.about} visible={isOpen} onCancel={doToggleInfoDialog} onOk={doToggleInfoDialog}>
                 <div dangerouslySetInnerHTML={{ __html: text.default }} />
-            </Modal>
+            </Modal> */}
         </>
     );
 });

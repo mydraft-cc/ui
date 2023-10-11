@@ -97,9 +97,9 @@ export const App = () => {
                         <span className='menu-separator' /> */}
 
                         <TableMenu />
-                        {/* <span className='menu-separator' /> */}
+                        {/* <span className='menu-separator' />
 
-                        {/* <SettingsMenu onPrint={print} /> */}
+                        <SettingsMenu onPrint={print} /> */}
 
                         <span style={{ float: 'right' }}>
                             <LoadingMenu />
