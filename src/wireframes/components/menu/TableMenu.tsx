@@ -9,14 +9,14 @@ import { InsertRowBelowOutlined, InsertRowRightOutlined, CheckSquareOutlined, Ta
 import { useDispatch } from 'react-redux';
 import { useEventCallback, MathHelper } from '@app/core';
 import { Button, Tooltip } from 'antd';
-import { getDiagramId, DiagramItem, calculateSelection, getDiagram, groupItems, selectItems, useStore, DiagramItemSet, Serializer, pasteItems, getSelectedIds } from '@app/wireframes/model';
+import { getDiagramId, DiagramItem, calculateSelection, getDiagram, groupItems, selectItems, useStore, DiagramItemSet, Serializer, pasteItems, addShape } from '@app/wireframes/model';
 import * as React from 'react';
 
 export const TableMenu = React.memo(() => {
     const dispatch = useDispatch();
     const selectedDiagram = useStore(getDiagram);
     const selectedDiagramId = useStore(getDiagramId);
-    const selectedIDs = useStore(getSelectedIds);
+    // const selectedIDs = useStore(getSelectedIds);
     
     const PREFIX = 'my-draft:';
     const OFFSET = 1;
@@ -26,11 +26,13 @@ export const TableMenu = React.memo(() => {
     const tableContent: React.MutableRefObject<Set<string>> = React.useRef(new Set());
     
     const createTable = useEventCallback(() => {
-        selectedIDs.forEach(e => {
-            updateRef(e);
-        })
+        const INIT_POSITION = 40;
+        if (selectedDiagramId) {
+            const newShape = dispatch(addShape(selectedDiagramId, 'Cell', { position: { x: INIT_POSITION, y: INIT_POSITION } }));
+            updateRef(newShape.payload.id);
+        }
+
         onCreation.current = true;
-        console.log(`Row: ${Array.from(rowContent.current.values())} \n Column: ${Array.from(colContent.current.values())}`);
     });
 
     const updateRef = (id: string, mode?: string) => {
@@ -74,8 +76,6 @@ export const TableMenu = React.memo(() => {
                 }
             }
         }
-
-        console.log(`Row: ${Array.from(rowContent.current.values())} \n Column: ${Array.from(colContent.current.values())}`);
     });
 
     const addRow = useEventCallback(() => {
@@ -107,8 +107,6 @@ export const TableMenu = React.memo(() => {
                 }
             }
         }
-
-        console.log(`Row: ${Array.from(rowContent.current.values())} \n Column: ${Array.from(colContent.current.values())}`);
     });
 
     const saveTable = useEventCallback(() => {
