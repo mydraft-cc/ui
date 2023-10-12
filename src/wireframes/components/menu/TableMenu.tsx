@@ -185,12 +185,12 @@ export const TableMenu = React.memo(() => {
 
     return (
         <>
-            <Tooltip mouseEnterDelay={1} title={ 'Parse Table' }>
+            <Tooltip mouseEnterDelay={1} title={ 'Create Table' }>
                 <Button size='large' disabled={onCreation.current != 0} className='menu-item' onClick={ createTable }>
                     <TableOutlined />
                 </Button>
             </Tooltip>
-            <Tooltip mouseEnterDelay={1} title={ 'Parse Table' }>
+            <Tooltip mouseEnterDelay={1} title={ 'Edit Table' }>
                 <Button size='large' disabled={onCreation.current != 0} className='menu-item' onClick={ editTable }>
                     <EditOutlined />
                 </Button>
