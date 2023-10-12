@@ -12,11 +12,63 @@ const DEFAULT_APPEARANCE = {
     [DefaultAppearance.BACKGROUND_COLOR]: '#fff',
     [DefaultAppearance.FONT_SIZE]: CommonTheme.CONTROL_FONT_SIZE,
     [DefaultAppearance.FOREGROUND_COLOR]: CommonTheme.CONTROL_TEXT_COLOR,
-    [DefaultAppearance.STROKE_COLOR]: CommonTheme.CONTROL_TEXT_COLOR,
-    [DefaultAppearance.STROKE_THICKNESS]: 0,
     [DefaultAppearance.TEXT_ALIGNMENT]: 'center',
-    [DefaultAppearance.TEXT]: 'column1{strokeX=0};column2{strokeX=0};column3{strokeX=0}\nrow1{strokeX=0, strokeY=3};row1{strokeY=3, strokeX=0};row1{strokeY=3, strokeX=0}\nrow2{strokeX=0};merged row2{strokeX=0, spanX=2}',
+    [DefaultAppearance.TEXT]: 'column1{s1=2};column2{s1=2};column3{s1=2}\nrow1{s1=1};row1{s2=1};row1{s2=1}\nrow2{s2=2};merged row2{s1=0, s2=2, span=2}',
 };
+
+function parseParams(input: string) {
+    var field = input.match(/\{(.*?)\}/);
+    var params = (field == null) ? [] : field[0].replace(/\{/, '').replace(/\}/, '').split(',');
+    var record = {};
+
+    for (var i = 0; i < params.length; i++) {
+        var part = params[i].split('=');
+        record[part[0].trim()] = part[1].trim();
+    }
+    return record;
+}
+
+function parseContent(input: string) {
+    var content = input.replace(/\{(.*?)\}/, '');
+    return content;
+}
+
+export function parseTableText(text: string) {
+    const content = text.split('\n').map(a => a.split(';').map(b => parseContent(b.trim())));
+    const styles = text.split('\n').map(a => a.split(';').map(b => parseParams(b.trim())));
+
+    while (content.length < 2) {
+        content.push([]);
+        styles.push([]);
+    }
+
+    // Add empty cell for spanning
+    for (let i = 0; i < content.length; i++) {
+        for (let j = 0; j < content[i].length; j++) {
+            const times = (styles[i][j]['span'] > 1) ? styles[i][j]['span'] - 1 : 0;
+            for (var k = 0; k < times; k++) {
+                content[i].splice(j + 1, 0, '');
+                styles[i].splice(j + 1, 0, { 's1': styles[i][j]['s1'], 's2': styles[i][j]['s2'] });
+            }
+        }
+    }
+
+    // Determine max number of columns
+    let columnCount = 0;
+    for (const i of content) {
+        columnCount = Math.max(columnCount, i.length);
+    }
+
+    // Append blank cell in the end if not fulfill
+    for (let i = 0; i < content.length; i++) {
+        while (content[i].length < columnCount) {
+            content[i].push('');
+            styles[i].push({});
+        }
+    }
+
+    return { content, styles, columnCount };
+}
 
 export class Table implements ShapePlugin {
     public identifier(): string {
@@ -53,7 +105,7 @@ export class Table implements ShapePlugin {
 
             for (let j = 0; j < rows[i].length; j++) {
                 const cell = rows[i][j];
-                const factorWidth = ((styles[i][j]['spanX'] == null) || (styles[i][j]['spanX'] < 1)) ? 1 : styles[i][j]['spanX'];
+                const factorWidth = ((styles[i][j]['span'] == null) || (styles[i][j]['span'] < 1)) ? 1 : styles[i][j]['span'];
                 const rect = new Rect2(x, y, cellWidth * factorWidth, cellHeight);
 
                 ctx.renderer2.text(ctx.shape, rect, p => {
@@ -73,21 +125,21 @@ export class Table implements ShapePlugin {
 
         for (let x = 0; x < columnCount; x++) {
             for (let y = 0; y < rows.length; y++) {
-                const factorX = (styles[y][x]['strokeX'] == null) ? 1 : styles[y][x]['strokeX'];
-                const factorY = (styles[y][x]['strokeY'] == null) ? 1 : styles[y][x]['strokeY'];
-                const strokeX = CommonTheme.CONTROL_BORDER_THICKNESS * factorX;
-                const strokeY = CommonTheme.CONTROL_BORDER_THICKNESS * factorY;
-                const offsetX = Math.round(x * cellWidth - strokeX * 0.5);
-                const offsetY = Math.round(y * cellHeight - strokeY * 0.5);
+                const factorTop = (styles[y][x]['s1'] == null) ? 1 : styles[y][x]['s1'];
+                const factorBot = (styles[y][x]['s2'] == null) ? 1 : styles[y][x]['s2'];
+                const strokeTop = CommonTheme.CONTROL_BORDER_THICKNESS * factorTop;
+                const strokeBot = CommonTheme.CONTROL_BORDER_THICKNESS * factorBot;
+                const offsetX = Math.round(x * cellWidth);
+                const offsetY = Math.round(y * cellHeight - strokeTop * 0.25 - strokeBot * 0.25);
 
-                // Vertical
-                const rectX = new Rect2(offsetX, offsetY, strokeX, cellHeight);
+                // Top
+                const rectX = new Rect2(offsetX, offsetY, cellWidth, strokeTop);
                 ctx.renderer2.rectangle(0, 0, rectX, p => {
                     p.setBackgroundColor(strokeColor);
                 });
 
-                // Horizontal
-                const rectY = new Rect2(offsetX, offsetY, cellWidth, strokeY);
+                // Bottom
+                const rectY = new Rect2(offsetX, offsetY + cellHeight, cellWidth, strokeBot);
                 ctx.renderer2.rectangle(0, 0, rectY, p => {
                     p.setBackgroundColor(strokeColor);
                 });
@@ -102,67 +154,19 @@ export class Table implements ShapePlugin {
         });
     }
 
-    private parseParams(input: string) {
-        var field = input.match(/\{(.*?)\}/);
-        var params = (field == null) ? [] : field[0].replace(/\{/, '').replace(/\}/, '').split(',');
-        var record = {};
-
-        for (var i = 0; i < params.length; i++) {
-            var part = params[i].split('=');
-            record[part[0].trim()] = part[1].trim();
-        }
-        return record;
-    }
-
-    private parseContent(input: string) {
-        var content = input.replace(/\{(.*?)\}/, '');
-        return content;
-    }
-
     private parseText(shape: Shape) {
         const key = shape.text;
-
+    
         let result = shape.renderCache['PARSED'] as { key: string; parsed: Parsed };
-
+    
         if (!result || result.key !== key) {
-            const content = key.split('\n').map(a => a.split(';').map(b => this.parseContent(b.trim())));
-            const styles = key.split('\n').map(a => a.split(';').map(b => this.parseParams(b.trim())));
-
-            while (content.length < 2) {
-                content.push([]);
-                styles.push([]);
-            }
-
-            // Add empty cell for spanning
-            for (let i = 0; i < content.length; i++) {
-                for (let j = 0; j < content[i].length; j++) {
-                    const times = (styles[i][j]['spanX'] > 1) ? styles[i][j]['spanX'] - 1 : 0;
-                    for (var k = 0; k < times; k++) {
-                        content[i].splice(j + 1, 0, '');
-                        styles[i].splice(j + 1, 0, { 'strokeX': 0, 'strokeY': styles[i][j]['strokeY'] });
-                    }
-                }
-            }
-
-            // Determine max number of columns
-            let columnCount = 0;
-            for (const i of content) {
-                columnCount = Math.max(columnCount, i.length);
-            }
-
-            // Append blank cell in the end if not fulfill
-            for (let i = 0; i < content.length; i++) {
-                while (content[i].length < columnCount) {
-                    content[i].push('');
-                    styles[i].push({});
-                }
-            }
-
+            const { content, styles, columnCount } = parseTableText(key);
+    
             result = { parsed: { content, styles, columnCount }, key };
-
+    
             shape.renderCache['PARSED'] = result;
         }
-
+    
         return result.parsed;
     }
 }

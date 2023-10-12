@@ -43,6 +43,14 @@ export const VisualProperties = React.memo(() => {
         useAppearance<number>(selectedDiagramId, selectedSet,
             DefaultAppearance.STROKE_THICKNESS);
 
+    const [borderTop, setBorderTop] =
+    useAppearance<number>(selectedDiagramId, selectedSet,
+        DefaultAppearance.BORDER_TOP);
+
+    const [borderDown, setBorderDown] =
+    useAppearance<number>(selectedDiagramId, selectedSet,
+        DefaultAppearance.BORDER_DOWN);
+
     const [textAlignment, setTextAlignment] =
         useAppearance<string>(selectedDiagramId, selectedSet,
             DefaultAppearance.TEXT_ALIGNMENT);
@@ -73,6 +81,26 @@ export const VisualProperties = React.memo(() => {
                         <Col span={12} className='property-label'>{texts.common.strokeThickness}</Col>
                         <Col span={12} className='property-value'>
                             <Select disabled={strokeThickness.empty} value={strokeThickness.value} onChange={setStrokeThickness}>
+                                {DEFINED_STROKE_THICKNESSES.map(value =>
+                                    <Select.Option key={value.toString()} value={value}>{value}</Select.Option>,
+                                )}
+                            </Select>
+                        </Col>
+                    </Row>
+                    <Row className='property'>
+                        <Col span={12} className='property-label'>{'Border Top Thickness'}</Col>
+                        <Col span={12} className='property-value'>
+                            <Select disabled={borderTop.empty} value={borderTop.value} onChange={setBorderTop}>
+                                {DEFINED_STROKE_THICKNESSES.map(value =>
+                                    <Select.Option key={value.toString()} value={value}>{value}</Select.Option>,
+                                )}
+                            </Select>
+                        </Col>
+                    </Row>
+                    <Row className='property'>
+                        <Col span={12} className='property-label'>{'Border Down Thickness'}</Col>
+                        <Col span={12} className='property-value'>
+                            <Select disabled={borderDown.empty} value={borderDown.value} onChange={setBorderDown}>
                                 {DEFINED_STROKE_THICKNESSES.map(value =>
                                     <Select.Option key={value.toString()} value={value}>{value}</Select.Option>,
                                 )}

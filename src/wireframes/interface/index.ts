@@ -152,6 +152,8 @@ export const DefaultAppearance = {
     TEXT_ALIGNMENT: 'TEXT_ALIGNMENT',
     TEXT_DISABLED: 'TEXT_DISABLED',
     TEXT: 'TEXT',
+    BORDER_TOP: 'BORDER_TOP',
+    BORDER_DOWN: 'BORDER_DOWN',
 };
 
 export function getPageLink(id: string) {

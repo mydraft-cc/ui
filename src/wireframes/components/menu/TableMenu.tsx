@@ -5,35 +5,27 @@
  * 15 Oct 2023
 */
 
-import { InsertRowBelowOutlined, InsertRowRightOutlined, CheckSquareOutlined, TableOutlined } from '@ant-design/icons';
+import { InsertRowBelowOutlined, InsertRowRightOutlined, CheckSquareOutlined, TableOutlined, EditOutlined } from '@ant-design/icons';
 import { useDispatch } from 'react-redux';
-import { useEventCallback, MathHelper } from '@app/core';
+import { useEventCallback } from '@app/core';
 import { Button, Tooltip } from 'antd';
-import { getDiagramId, DiagramItem, calculateSelection, getDiagram, groupItems, selectItems, useStore, DiagramItemSet, Serializer, pasteItems, addShape } from '@app/wireframes/model';
+import { getDiagramId, DiagramItem, calculateSelection, getDiagram, selectItems, useStore, DiagramItemSet, Serializer, pasteItems, addShape, getSelectedItems, removeItems } from '@app/wireframes/model';
 import * as React from 'react';
+import { parseTableText } from '@app/wireframes/shapes/neutral/table';
 
 export const TableMenu = React.memo(() => {
     const dispatch = useDispatch();
     const selectedDiagram = useStore(getDiagram);
     const selectedDiagramId = useStore(getDiagramId);
-    // const selectedIDs = useStore(getSelectedIds);
+    const selectedItems = useStore(getSelectedItems);
     
     const PREFIX = 'my-draft:';
     const OFFSET = 1;
-    const onCreation = React.useRef(false);
+    const onCreation = React.useRef(0);
+    const tableInit: React.MutableRefObject<{}> = React.useRef({});
     const rowContent: React.MutableRefObject<Set<string>> = React.useRef(new Set());
     const colContent: React.MutableRefObject<Set<string>> = React.useRef(new Set());
     const tableContent: React.MutableRefObject<Set<string>> = React.useRef(new Set());
-    
-    const createTable = useEventCallback(() => {
-        const INIT_POSITION = 40;
-        if (selectedDiagramId) {
-            const newShape = dispatch(addShape(selectedDiagramId, 'Cell', { position: { x: INIT_POSITION, y: INIT_POSITION } }));
-            updateRef(newShape.payload.id);
-        }
-
-        onCreation.current = true;
-    });
 
     const updateRef = (id: string, mode?: string) => {
         mode = (mode) ? mode : '';
@@ -46,6 +38,63 @@ export const TableMenu = React.memo(() => {
             rowContent.current.add(id);
         }
     };
+
+    const createTable = useEventCallback(() => {
+        for (const selectedItem of selectedItems) {
+            if (selectedItem.renderer == 'Cell' && selectedDiagramId) {
+                const text = selectedItem.text;
+                const x = selectedItem.transform.left;
+                const y = selectedItem.transform.top;
+                const w = (selectedItem.transform.right - x);
+                const h = (selectedItem.transform.bottom - y);
+
+                updateRef(selectedItem.id);
+
+                // Save table
+                tableInit.current['text'] = text;
+                tableInit.current['x'] = x;
+                tableInit.current['y'] = y;
+                tableInit.current['w'] = w;
+                tableInit.current['h'] = h;
+            }
+        }
+
+        onCreation.current = 2;
+    });
+    
+    const editTable = useEventCallback(() => {
+        for (const selectedItem of selectedItems) {
+            if (selectedItem.renderer == 'Table' && selectedDiagramId) {
+                const text = selectedItem.text;
+                const x = selectedItem.transform.left;
+                const y = selectedItem.transform.top;
+                const { content, styles, columnCount } = parseTableText(text);
+                const w = (selectedItem.transform.right - x) / columnCount;
+                const h = (selectedItem.transform.bottom - y) / content.length;
+
+                for (let i = 0; i < content.length; i++) {
+                    for (let j = 0; j < columnCount; j++) {
+                        const newShape = dispatch(addShape(selectedDiagramId, 'Cell', { position: { x: x + j * w, y: y + i * h }, size : { x: w, y: h }, appearance : { 'TEXT': content[i][j],'BORDER_TOP': styles[i][i]['s1'], 'BORDER_DOWN': styles[i][i]['s2'] } }));
+                        updateRef(newShape.payload.id);
+                    }
+                }
+
+                // Save table
+                tableInit.current['text'] = text;
+                tableInit.current['x'] = x;
+                tableInit.current['y'] = y;
+                tableInit.current['w'] = w * columnCount;
+                tableInit.current['h'] = h * content.length;
+            }
+        }
+
+        // Remove table when done
+        if (selectedDiagramId) {
+            dispatch(removeItems(selectedDiagramId, selectedItems));
+        }
+
+        onCreation.current = 1;
+    });
 
     const addColumn = useEventCallback(() => {
         // Select previous column
@@ -123,35 +172,41 @@ export const TableMenu = React.memo(() => {
         }
 
         if (selectedDiagramId) {
-            dispatch(groupItems(selectedDiagramId, tableItems, MathHelper.nextId()));
+            dispatch(removeItems(selectedDiagramId, tableItems));
+            dispatch(addShape(selectedDiagramId, 'Table', { position: { x: tableInit.current['x'], y: tableInit.current['y'] }, size : { x: tableInit.current['w'], y: tableInit.current['h'] }, appearance : {text: tableInit.current['text']} }));
         }
 
         // Restart all refs
         rowContent.current = new Set();
         colContent.current = new Set();
         tableContent.current = new Set();
-        onCreation.current = false;
+        onCreation.current = 0;
     });
 
     return (
         <>
-            <Tooltip mouseEnterDelay={1} title={ 'Create Table' }>
-                <Button size='large' disabled={onCreation.current} className='menu-item' onClick={ createTable }>
+            <Tooltip mouseEnterDelay={1} title={ 'Parse Table' }>
+                <Button size='large' disabled={onCreation.current != 0} className='menu-item' onClick={ createTable }>
                     <TableOutlined />
                 </Button>
             </Tooltip>
-            <Tooltip mouseEnterDelay={1} title={ 'Add New Column' }>
-                <Button size='large' disabled={!onCreation.current} className='menu-item' onClick={ addColumn }>
+            <Tooltip mouseEnterDelay={1} title={ 'Parse Table' }>
+                <Button size='large' disabled={onCreation.current != 0} className='menu-item' onClick={ editTable }>
+                    <EditOutlined />
+                </Button>
+            </Tooltip>
+            <Tooltip mouseEnterDelay={1} title={ 'New Column' }>
+                <Button size='large' disabled={onCreation.current == 0} className='menu-item' onClick={ addColumn }>
                     <InsertRowRightOutlined />
                 </Button>
             </Tooltip>
-            <Tooltip mouseEnterDelay={1} title={ 'Add New Row' }>
-                <Button size='large' disabled={!onCreation.current} className='menu-item' onClick={ addRow }>
+            <Tooltip mouseEnterDelay={1} title={ 'New Row' }>
+                <Button size='large' disabled={onCreation.current == 0} className='menu-item' onClick={ addRow }>
                     <InsertRowBelowOutlined />
                 </Button>
             </Tooltip>
             <Tooltip mouseEnterDelay={1} title={ 'Save Table' }>
-                <Button size='large' disabled={!onCreation.current} className='menu-item' onClick={ saveTable }>
+                <Button size='large' disabled={onCreation.current == 0} className='menu-item' onClick={ saveTable }>
                     <CheckSquareOutlined />
                 </Button>
             </Tooltip>
