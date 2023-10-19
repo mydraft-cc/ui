@@ -51,11 +51,30 @@ export class Color {
 
     public readonly __typeName = Color.TYPE_NAME;
 
-    public static readonly BLACK = new Color(0, 0, 0);
-    public static readonly WHITE = new Color(1, 1, 1);
-    public static readonly GREEN = new Color(0, 1, 0);
-    public static readonly BLUE = new Color(0, 0, 1);
-    public static readonly RED = new Color(1, 0, 0);
+    public static readonly BLACK = new Color(
+        0,
+        0,
+        0);
+
+    public static readonly WHITE = new Color(
+        1,
+        1,
+        1);
+
+    public static readonly GREEN = new Color(
+        0,
+        1,
+        0);
+
+    public static readonly BLUE = new Color(
+        0,
+        0,
+        1);
+
+    public static readonly RED = new Color(
+        1,
+        0,
+        0);
 
     public readonly r: number;
     public readonly g: number;
@@ -218,5 +237,13 @@ export class Color {
         }
 
         return new Color(r, g, b);
+    }
+
+    public toJS() {
+        return { r: this.r, g: this.g, b: this.b };
+    }
+
+    public static fromJS(source: any) {
+        return new Color(source.r, source.g, source.b);
     }
 }

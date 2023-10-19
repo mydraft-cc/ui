@@ -43,16 +43,16 @@ describe('Diagram', () => {
         expect(diagram_2.master).toBe('master1');
     });
 
-    it('should add shape to items', () => {
+    it('should add shape to diagram', () => {
         const diagram_2 = diagram_1.addShape(shape1);
 
-        expect(diagram_2.items[userId][shape1.id]).toBeTruthy();
+        expect(diagram_2.items.has(shape1.id)).toBeTruthy();
     });
 
     it('should add items to diagram', () => {
         const diagram_2 = diagram_1.addItems(new DiagramItemSet([shape1, shape2, shape3]));
 
-        expect(diagram_2.items[userId][shape1.id]).toBeTruthy();
+        expect(diagram_2.items.has(shape1.id)).toBeTruthy();
         expect(diagram_2.items.has(shape2.id)).toBeTruthy();
         expect(diagram_2.items.has(shape3.id)).toBeTruthy();
     });
@@ -61,7 +61,7 @@ describe('Diagram', () => {
         const diagram_2 = diagram_1.addShape(shape1);
         const diagram_3 = diagram_2.removeItems(DiagramItemSet.createFromDiagram([shape1.id], diagram_2)!);
 
-        expect(diagram_3.items[userId][shape1.id]).toBeFalsy();
+        expect(diagram_3.items.has(shape1.id)).toBeFalsy();
     });
 
     it('should remove selected shape from items', () => {
@@ -69,9 +69,9 @@ describe('Diagram', () => {
         const diagram_3 = diagram_2.selectItems([shape1.id], userId);
         const diagram_4 = diagram_3.removeItems(DiagramItemSet.createFromDiagram([shape1.id], diagram_2)!);
 
-        expect(diagram_3.selectedIds[userId][shape1.id]).toBeTruthy();
-        expect(diagram_4.selectedIds[userId][shape1.id]).toBeFalsy();
-        expect(diagram_4.items[userId][shape1.id]).toBeFalsy();
+        expect(diagram_3.selectedIds.get(userId)).toContain(shape1.id);
+        expect(diagram_4.selectedIds.get(userId)).not.toContain(shape1.id);
+        expect(diagram_4.items.has(shape1.id)).toBeFalsy();
     });
 
     it('should remove children when removing group', () => {
@@ -131,7 +131,7 @@ describe('Diagram', () => {
         const diagram_2 = diagram_1.addShape(shape1);
         const diagram_3 = diagram_2.selectItems([shape1.id], userId);
 
-        expect(diagram_3.selectedIds[userId][shape1.id]).toBeTruthy();
+        expect(diagram_3.selectedIds.get(userId)).toContain(shape1.id);
     });
 
     it('should return original diagram when item to select is already selected', () => {
@@ -139,7 +139,7 @@ describe('Diagram', () => {
         const diagram_3 = diagram_2.selectItems([shape1.id], userId);
         const diagram_4 = diagram_3.selectItems([shape1.id], userId);
 
-        expect(diagram_4.selectedIds[userId][shape1.id]).toBeTruthy();
+        expect(diagram_4.selectedIds.get(userId)).toContain(shape1.id);
         expect(diagram_4.selectedIds).toBe(diagram_3.selectedIds);
     });
 
@@ -147,15 +147,14 @@ describe('Diagram', () => {
         const diagram_2 = diagram_1.selectItems([shape1.id], userId);
         const diagram_3 = diagram_2.selectItems([], userId);
 
-        expect(diagram_3.selectedIds[userId][shape1.id]).toBeFalsy();
+        expect(diagram_3.selectedIds.get(userId)).not.toContain(shape1.id);
     });
 
-    it('should return original diagram whwhen item to unselect is not selected', () => {
+    it('should return original diagram when item to unselect is not selected', () => {
         const diagram_2 = diagram_1.selectItems([], userId);
         const diagram_3 = diagram_2.selectItems([], userId);
 
-        expect(diagram_3.selectedIds[userId][shape1.id]).toBeFalsy();
-        expect(diagram_3.selectedIds).toBe(diagram_2.selectedIds);
+        expect(diagram_3).toBe(diagram_2);
     });
 
     it('should return original diagram when less than 2 shapes to be grouped are found', () => {
@@ -223,7 +222,7 @@ describe('Diagram', () => {
         const diagram_3 = diagram_2.addShape(shape2);
         const diagram_4 = diagram_3.selectItems([shape1.id, shape2.id], userId);
 
-        expect(diagram_4.selectedIds[userId][shape1.id]).toBeTruthy();
+        expect(diagram_4.selectedIds.get(userId)).toContain(shape1.id);
     });
 
     it('should group nested grouped shapes', () => {

@@ -262,7 +262,7 @@ export class Diagram extends Record<Props> {
             });
 
             update.selectedIds = update.selectedIds.mutate(mutator => {
-                for (const [key, value] of Object.entries(update.selectedIds)) {
+                for (const [key, value] of update.selectedIds.entries) {
                     const ids = [...value];
     
                     for (const item of set.allItems) {

@@ -32,10 +32,6 @@ export class ImmutableList<T> {
         return this.items;
     }
 
-    public get raw() {
-        return this.items;
-    }
-
     public at(index: number): T | undefined {
         return this.items[index];
     }

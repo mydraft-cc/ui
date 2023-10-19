@@ -13,13 +13,13 @@ import { Constraint } from '@app/wireframes/interface';
 const EPSILON = 0.1;
 
 export class Transform {
+    public static readonly TYPE_NAME = 'Transform';
+
+    public readonly __typeName = Transform.TYPE_NAME;
+
     public static readonly ZERO = new Transform(Vec2.ZERO, Vec2.ZERO, Rotation.ZERO);
 
     private readonly computed: { aabb: Rect2 | null } = { aabb: null };
-
-    public readonly __typeName = Transform.TYPE_NAME;
-    
-    public static readonly TYPE_NAME = 'Transform';
 
     public readonly position: Vec2;
     public readonly size: Vec2;
@@ -90,14 +90,6 @@ export class Transform {
 
     public static fromRects(rects: Rect2[]): Transform {
         return Transform.fromRect(Rect2.fromRects(rects));
-    }
-
-    public static fromJS(js: any): Transform {
-        if (js.position) {
-            return new Transform(new Vec2(js.position.x, js.position.y), new Vec2(js.size.x, js.size.y), Rotation.fromDegree(js.rotation));
-        } else {
-            return new Transform(new Vec2(js.x, js.y), new Vec2(js.w, js.h), Rotation.fromDegree(js.r));
-        }
     }
 
     public static createFromTransformationsAndRotation(transforms: Transform[], rotation: Rotation): Transform {
@@ -308,5 +300,13 @@ export class Transform {
             h: this.size.y,
             r: this.rotation.degree,
         };
+    }
+
+    public static fromJS(js: any): Transform {
+        if (js.position) {
+            return new Transform(new Vec2(js.position.x, js.position.y), new Vec2(js.size.x, js.size.y), Rotation.fromDegree(js.rotation));
+        } else {
+            return new Transform(new Vec2(js.x, js.y), new Vec2(js.w, js.h), Rotation.fromDegree(js.r));
+        }
     }
 }

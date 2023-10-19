@@ -12,7 +12,9 @@ import { DragDropContext, Draggable, Droppable, DropResult } from 'react-beautif
 import { useDispatch } from 'react-redux';
 import { useEventCallback } from '@app/core';
 import { texts } from '@app/texts';
+import { usePresence } from '@app/wireframes/collaboration';
 import { addDiagram, duplicateDiagram, filterDiagrams, getDiagramId, getDiagramsFilter, getFilteredDiagrams, moveDiagram, removeDiagram, renameDiagram, selectDiagram, setDiagramMaster, useStore } from '@app/wireframes/model';
+import { User, user } from '@app/wireframes/user';
 import { Page, PageAction } from './Page';
 import './Pages.scss';
 
@@ -22,6 +24,34 @@ export const Pages = () => {
     const diagrams = useStore(getFilteredDiagrams);
     const diagramsFilter = useStore(getDiagramsFilter);
     const diagramsOrdered = useStore(x => x.editor.orderedDiagrams);
+    const selectedIds = useStore(x => x.editor.selectedDiagramIds);
+    const selectionUsers = usePresence();
+
+    const selection = React.useMemo(() => {
+        const result: { [diagramId: string ]: User[] } = {};
+        
+        for (const [userId, selectedId] of selectedIds.entries) {
+            if (userId === user.id || !selectedId) {
+                continue;
+            }
+
+            const collaborator = selectionUsers[userId];
+    
+            if (!collaborator) {
+                continue;
+            }
+
+            let users = result[selectedId];
+            if (!users) {
+                users = [];
+                result[selectedId] = users;
+            }
+            
+            users.push(collaborator);
+        }
+
+        return result;
+    }, [selectedIds, selectionUsers]);
 
     const doAddDiagram = useEventCallback(() => {
         dispatch(addDiagram());
@@ -89,6 +119,7 @@ export const Pages = () => {
                                                 index={index}
                                                 onAction={doAction}
                                                 selected={item.id === diagramId}
+                                                selectedBy={selection[item.id] || NO_SELECTION}
                                             />
                                         </div>
                                     )}
@@ -101,3 +132,5 @@ export const Pages = () => {
         </>
     );
 };
+
+const NO_SELECTION: User[] = [];

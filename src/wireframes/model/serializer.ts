@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { ImmutableList, ImmutableMap, MathHelper, Rotation, Vec2 } from '@app/core';
+import { MathHelper, Rotation, Vec2 } from '@app/core';
 import { Diagram } from './diagram';
 import { DiagramItem } from './diagram-item';
 import { DiagramItemSet } from './diagram-item-set';
@@ -113,7 +113,7 @@ function writeDiagramItem(source: DiagramItem) {
     return writeObject(source.unsafeValues(), DIAGRAM_ITEM_SERIALIZERS);
 }
 
-function writeObject(source: object, serializers: PropertySerializers) {
+function writeObject(source: object, serializers: PropertySerializers<any>) {
     const result = {};
 
     for (const [key, value] of Object.entries(source)) {
@@ -163,7 +163,7 @@ function readDiagramItem(source: object, type?: any) {
     }
 }
 
-function readObject(source: object, serializers: PropertySerializers) {
+function readObject(source: object, serializers: PropertySerializers<any>) {
     const result = {};
 
     for (const [key, value] of Object.entries(source)) {
@@ -177,88 +177,100 @@ function readObject(source: object, serializers: PropertySerializers) {
     return result;
 }
 
-interface PropertySerializer {
-    get(source: any): any;
+interface PropertySerializer<T, K extends keyof T> {
+    get(source: T[K]): any;
     
     set(source: any): any;
 }
 
-type PropertySerializers = { [key: string]: PropertySerializer };
+type PropertySerializers<T> = Partial<{
+    [Property in keyof T]: PropertySerializer<T, Property>;
+}> & {
+    [key: string]: PropertySerializer<any, any>;
+};
 
-const EDITOR_SERIALIZERS: PropertySerializers = {
+const EDITOR_SERIALIZERS: PropertySerializers<EditorState> = {
+    'id': {
+        get: source => source,
+        set: source => source,
+    },
     'diagrams': {
-        get: (source: ImmutableMap<Diagram>) => source.values.map(writeDiagram),
-        set: (source: any[]) => buildObject(source.map(readDiagram), x => x.id),
+        get: source => source.values.map(writeDiagram),
+        set: source => buildObject((source as any[]).map(readDiagram), x => x.id),
     },
     'diagramIds': {
-        get: (source: ImmutableList<string>) => source.values,
-        set: (source) => source,
+        get: source => source.values,
+        set: source => source,
     },
     'size': {
-        get: (source: Vec2) => ({ x: source.x, y: source.y }),
-        set: (source: any) => new Vec2(source.x, source.y),
+        get: source => source.toJS(),
+        set: source => Vec2.fromJS(source),
     },
 };
 
-const DIAGRAM_SERIALIZERS: PropertySerializers = {
+const DIAGRAM_SERIALIZERS: PropertySerializers<Diagram> = {
     'id': {
-        get: (source) => source,
-        set: (source) => source,
+        get: source => source,
+        set: source => source,
     },
     'master': {
-        get: (source) => source,
-        set: (source) => source,
+        get: source => source,
+        set: source => source,
     },
     'items': {
-        get: (source: ImmutableMap<DiagramItem>) => source.values.map(writeDiagramItem),
-        set: (source: any[]) => buildObject(source.map(readDiagramItem), x => x.id),
+        get: source => source.values.map(writeDiagramItem),
+        set: source => buildObject((source as any[]).map(readDiagramItem), x => x.id),
     },
     'itemIds': {
-        get: (source: ImmutableList<string>) => source.values,
-        set: (source) => source,
+        get: source => source.values,
+        set: source => source,
+    },
+    'rootIds': {
+        get: source => { throw new Error(`Not supported to serialize ${source}.`); },
+        set: source => source,
     },
     'title': {
-        get: (source) => source,
-        set: (source) => source,
+        get: source => source,
+        set: source => source,
     },
 };
 
-const DIAGRAM_ITEM_SERIALIZERS: PropertySerializers = {
+const DIAGRAM_ITEM_SERIALIZERS: PropertySerializers<DiagramItem> = {
     'appearance': {
-        get: (source: ImmutableMap<any>) => source.raw,
-        set: (source: any) => source,
+        get: source => source.raw,
+        set: source => source,
     },
     'childIds': {
-        get: (source: ImmutableList<string>) => source.values,
-        set: (source) => source,
+        get: source => source.values,
+        set: source => source,
     },
     'id': {
-        get: (source) => source,
-        set: (source) => source,
+        get: source => source,
+        set: source => source,
     },
     'isLocked': {
-        get: (source) => source,
-        set: (source) => source,
+        get: source => source,
+        set: source => source,
     },
     'name': {
-        get: (source) => source,
-        set: (source) => source,
+        get: source => source,
+        set: source => source,
     },
     'renderer': {
-        get: (source) => source,
-        set: (source) => source,
+        get: source => source,
+        set: source => source,
     },
     'rotation': {
-        get: (source: Rotation) => source.degree,
-        set: (source: any) => Rotation.fromDegree(source),
+        get: source => source.toJS(),
+        set: source => Rotation.fromJS(source),
     },
     'type': {
         get: (source) => source,
         set: (source) => source,
     },
     'transform': {
-        get: (source: Transform) => source.toJS(),
-        set: (source: any) => Transform.fromJS(source),
+        get: source => source.toJS(),
+        set: source => Transform.fromJS(source),
     },
 };
 

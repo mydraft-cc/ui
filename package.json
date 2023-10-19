@@ -34,7 +34,7 @@
     "tslib": "2.3.1",
     "y-protocols": "^1.0.6",
     "y-webrtc": "^10.2.5",
-    "yjs-redux": "^0.9.0"
+    "yjs-redux": "^0.12.0"
   },
   "scripts": {
     "start": "node --max_old_space_size=6096 node_modules/webpack/bin/webpack.js serve --config config/webpack.config.js --port 3002 --hot --server-type https --server-options-pfx dev/squidex-dev.pfx --server-options-passphrase password",

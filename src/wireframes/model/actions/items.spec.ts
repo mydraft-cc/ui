@@ -66,7 +66,7 @@ describe('ItemsReducer', () => {
 
         const newDiagram = state_2.diagrams.get(diagram.id)!;
 
-        expect(newDiagram.selectedIds[userId].length).toBe(0);
+        expect(newDiagram.selectedIds.get(userId)).not.toBeDefined();
     });
 
     it('should rename item', () => {
@@ -155,11 +155,11 @@ describe('ItemsReducer', () => {
 
         expect(newDiagram1.items.size).toBe(8);
         expect(newDiagram1.itemIds.size).toBe(4);
-        expect(newDiagram1.selectedIds[userId].length).toBe(2);
+        expect(newDiagram1.selectedIds.get(userId)?.length).toBe(2);
 
         expect(newDiagram2.items.size).toBe(12);
         expect(newDiagram2.itemIds.size).toBe(6);
-        expect(newDiagram2.selectedIds[userId].length).toBe(2);
+        expect(newDiagram2.selectedIds.get(userId)?.length).toBe(2);
     });
 
     it('should not throw when pasting invalid json to diagram', () => {
@@ -195,7 +195,7 @@ describe('ItemsReducer', () => {
         expect(itemIds).toEqual([groupId]);
     });
 
-    it('should Select grouped shape when group is selected', () => {
+    it('should select grouped shape when group is selected', () => {
         const selectedDiagram = diagram.selectItems([groupId], userId);
 
         const itemIds = calculateSelection([shape1], selectedDiagram, userId, true);
@@ -208,7 +208,7 @@ describe('ItemsReducer', () => {
 
         const itemIds = calculateSelection([shape3], selectedDiagram, userId, true, true);
 
-        expect(itemIds).toEqual([shape3.id, groupId]);
+        expect(itemIds).toEqual([groupId, shape3.id]);
     });
 
     it('should remove item from selection list', () => {

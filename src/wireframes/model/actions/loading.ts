@@ -105,9 +105,10 @@ export function loadingMiddleware(): Middleware {
 
                 saveRecentDiagrams((store.getState() as LoadingStateInStore).loading.recentDiagrams);
 
-                const content = action.payload.update ? 
-                    texts.common.savingDiagramDone :
-                    texts.common.savingDiagramDoneUrl(`${window.location.protocol}//${window.location.host}/${action.payload.tokenToRead}`);
+                const content =
+                    action.payload.update ? 
+                        texts.common.savingDiagramDone :
+                        texts.common.savingDiagramDoneUrl(`${window.location.protocol}//${window.location.host}/${action.payload.tokenToRead}`);
 
                 store.dispatch(showToast(content, 'success', action.meta.requestId, 1000));
             } else if (saveDiagramToFile.fulfilled.match(action)) {

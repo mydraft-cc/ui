@@ -151,4 +151,13 @@ describe('Vec2', () => {
         expect(Vec2.angleBetween(new Vec2(1, 0), new Vec2(1, 1))).toBe(45);
         expect(Vec2.angleBetween(new Vec2(1, 0), new Vec2(0, 1))).toBe(90);
     });
+
+    it('should convert and read from json', () =>{
+        const source = new Vec2(20, 30);
+        const serialized = source.toJS();
+
+        const deserialized = Vec2.fromJS(serialized);
+
+        expect(deserialized).toEqual(source);
+    });
 });

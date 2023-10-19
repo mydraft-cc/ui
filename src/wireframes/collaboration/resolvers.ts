@@ -6,88 +6,32 @@
 */
 
 import { ArrayDiff, ArrayTypeResolver, ObjectDiff, ObjectTypeResolver, SourceArray, SourceObject, ValueResolver } from 'yjs-redux';
-import { Color, ImmutableList, ImmutableMap, ImmutableSet, Record, Rect2, Rotation, Vec2 } from '@app/core';
+import { Color, ImmutableList, ImmutableMap, Record, Rect2, Rotation, Vec2 } from '@app/core';
 import { MinSizeConstraint, SizeConstraint, TextHeightConstraint, Transform } from '@app/wireframes/model';
 
-export class MinSizeConstraintResolver implements ValueResolver<MinSizeConstraint> {
-    public fromYjs(): MinSizeConstraint {
-        return new MinSizeConstraint();
-    }
-    
-    public fromValue(): SourceObject {
-        return {};
+class DelegateValueResolver<T> implements ValueResolver<T> {
+    constructor(
+        public readonly fromYjs: (Source: SourceObject) => T,
+        public readonly fromValue: (Source: T) => SourceObject,
+    ) {
     }
 }
 
-export class SizeConstraintResolver implements ValueResolver<SizeConstraint> {
-    public fromYjs(source: SourceObject): SizeConstraint {
-        return new SizeConstraint(source.width as number, source.height as number);
-    }
-    
-    public fromValue(source: SizeConstraint): SourceObject {
-        return { width: source.width, height: source.height };
-    }
-}
+export const COLOR_RESOLVER = new DelegateValueResolver(Color.fromJS, s => s.toJS());
 
-export class TextHeightConstraintResolver implements ValueResolver<TextHeightConstraint> {
-    public fromYjs(source: SourceObject): TextHeightConstraint {
-        return new TextHeightConstraint(source.padding as number);
-    }
-    
-    public fromValue(source: TextHeightConstraint): SourceObject {
-        return { padding: source.padding };
-    }
-}
+export const MINSIZE_CONSTRAINT_RESOLVER = new DelegateValueResolver(() => new MinSizeConstraint(), () => ({}));
 
-export class TransformResolver implements ValueResolver<Transform> {
-    public fromYjs(source: SourceObject): Transform {
-        return Transform.fromJS(source);
-    }
-    
-    public fromValue(source: Transform): SourceObject {
-        return source.toJS();
-    }
-}
+export const RECT2_RESOLVER = new DelegateValueResolver(Rect2.fromJS, s => s.toJS());
 
-export class ColorResolver implements ValueResolver<Color> {
-    public fromYjs(source: SourceObject): Color {
-        return new Color(source.r as number, source.g as number, source.b as number);
-    }
-    
-    public fromValue(source: Color): SourceObject {
-        return { r: source.r, g: source.g, b: source.b };
-    }
-}
+export const ROTATION_RESOLVER = new DelegateValueResolver(Rotation.fromJS, s => s.toJS());
 
-export class RotationResolver implements ValueResolver<Rotation> {
-    public fromYjs(source: SourceObject): Rotation {
-        return Rotation.fromDegree(source.degree as number);
-    }
-    
-    public fromValue(source: Rotation): SourceObject {
-        return { degree: source.degree };
-    }
-}
+export const SIZE_CONSTRAINT_RESOLVER = new DelegateValueResolver(s => new SizeConstraint(s.w as number, s.h as number),  s => ({ w: s.width, h: s.height }));
 
-export class Vec2Resolver implements ValueResolver<Vec2> {
-    public fromYjs(source: SourceObject): Vec2 {
-        return new Vec2(source.x as number, source.y as number);
-    }
-    
-    public fromValue(source: Vec2): SourceObject {
-        return { x: source.x, y: source.y };
-    }
-}
+export const TEXTHEIGHT_CONSTRAINT_RESOLVER = new DelegateValueResolver(s => new TextHeightConstraint(s.p as number),  s => ({ p: s.padding }));
 
-export class Rect2Resolver implements ValueResolver<Rect2> {
-    public fromYjs(source: SourceObject): Rect2 {
-        return new Rect2(source.x as number, source.y as number, source.w as number, source.h as number);
-    }
-    
-    public fromValue(source: Rect2): SourceObject {
-        return { x: source.x, y: source.y, w: source.w, h: source.h };
-    }
-}
+export const TRANSFORM_RESOLVER = new DelegateValueResolver(Transform.fromJS, s => s.toJS());
+
+export const VEC2_RESOLVER = new DelegateValueResolver(Vec2.fromJS, s => s.toJS());
 
 export class ImmutableListResolver implements ArrayTypeResolver<ImmutableList<unknown>> {
     public readonly sourceType = 'Array';
@@ -97,7 +41,7 @@ export class ImmutableListResolver implements ArrayTypeResolver<ImmutableList<un
     }
 
     public syncToYjs(value: ImmutableList<unknown>): SourceArray {
-        return value.raw;
+        return value.values;
     }
 
     public syncToObject(existing: ImmutableList<unknown>, diffs: ArrayDiff[]): ImmutableList<unknown> {
@@ -131,30 +75,6 @@ export class ImmutableMapResolver implements ObjectTypeResolver<ImmutableMap<unk
                     mutator.remove(diff.key);
                 } else {
                     mutator.set(diff.key, diff.value);
-                }
-            }
-        });
-    }
-}
-
-export class ImmutableSetResolver implements ObjectTypeResolver<ImmutableSet> {
-    public readonly sourceType = 'Object';
-
-    public create(source: SourceObject): ImmutableSet {
-        return ImmutableSet.of(...Object.keys(source));
-    }
-
-    public syncToYjs(value: ImmutableSet): SourceObject {
-        return value.raw;
-    }
-
-    public syncToObject(existing: ImmutableSet, diffs: ObjectDiff[]): ImmutableSet {
-        return existing.mutate(mutator => {
-            for (const diff of diffs) {
-                if (diff.type === 'Remove') {
-                    mutator.remove(diff.key);
-                } else {
-                    mutator.add(diff.key);
                 }
             }
         });

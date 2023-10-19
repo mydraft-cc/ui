@@ -122,7 +122,7 @@ describe('DiagramItem', () => {
         expect(item_2).toBe(item_1);
     });
 
-    it('should replace appearance', () => {
+    it('should replace appearance value', () => {
         const item_2 = item_1.setAppearance('color', 13);
         const item_3 = item_2.setAppearance('color', 42);
 
@@ -150,11 +150,9 @@ describe('DiagramItem', () => {
     });
 
     it('should replace appearance', () => {
-        const appearance = ImmutableMap.empty();
+        const item_2 = item_1.replaceAppearance(ImmutableMap.empty());
 
-        const item_2 = item_1.replaceAppearance(appearance);
-
-        expect(item_2.appearance).toBe(appearance);
+        expect(item_2.appearance.size).toEqual(0);
     });
 });
 

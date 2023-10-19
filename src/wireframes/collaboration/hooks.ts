@@ -8,6 +8,7 @@
 import * as React from 'react';
 import * as awarenessProtocol from 'y-protocols/awareness';
 import * as Y from 'yjs';
+import { Types } from '@app/core';
 import { user, User } from '@app/wireframes/user';
 
 export interface CollaborationState {
@@ -58,8 +59,12 @@ export const useUndoManager = () => {
     return { canRedo, canUndo, redo, undo };
 };
 
+export function useAwareness() {
+    return React.useContext(CollaborationContext).provider?.awareness;
+}
+
 export function usePresence(): Record<string, User> {
-    const awareness = React.useContext(CollaborationContext).provider?.awareness;
+    const awareness = useAwareness();
     const [presence, setPresence] = React.useState<Record<string, User>>({});
 
     React.useEffect(() => {
@@ -72,17 +77,25 @@ export function usePresence(): Record<string, User> {
 
             awareness.getStates().forEach(state => {
                 if (Object.keys(state).length > 0) {
-                    const user = state as User;
+                    const user = state.user as User;
 
                     map[user.id] = user;
                 }
             });
 
-            setPresence(map);
+            setPresence(previous => {
+                if (Types.equals(previous, map)) {
+                    return previous;
+                } else {
+                    return map;
+                }
+            });
         };
 
         awareness.on('change', handler);
-        awareness.setLocalState(user);
+        awareness.setLocalStateField('user', user);
+
+        handler();
 
         return () => {
             awareness.off('change', handler);

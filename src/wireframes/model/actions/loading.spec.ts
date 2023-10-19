@@ -8,7 +8,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
 import { MathHelper } from '@app/core';
-import { EditorState, loadDiagramInternal, selectDiagram, selectItems } from '@app/wireframes/model';
+import { EditorState, loadDiagramInternal } from '@app/wireframes/model';
 import * as Reducers from '@app/wireframes/model/actions';
 const diff = require('deep-diff').diff;
 const v1 = require('./diagram_v1.json');
@@ -29,46 +29,35 @@ describe('LoadingReducer', () => {
     });
 
     const ignore = (path: string, key: string) => {
-        return (path.length === 1 && path[0] === 'values' && key === 'id') || ~['instanceId', 'selectedIds', 'parents', 'computed'].indexOf(key);
-    };        
-
-    const undoableReducer = Reducers.undoable(
-        editorReducer,
-        editorState, {
-            capacity: 20,
-            actionMerger: Reducers.mergeAction,
-            actionsToIgnore: [
-                selectDiagram.name,
-                selectItems.name,
-            ],
-        });
+        return (path.length === 1 && path[0] === 'values' && key === 'id') || ~['instanceId', 'selectedIds', 'parents', 'computed', '__instanceId'].indexOf(key);
+    };
     
-    const rootReducer = Reducers.rootLoading(editorReducer, MathHelper.guid());
+    const rootReducer = Reducers.rootLoading(editorReducer, userId);
 
     it('should load from old and new format V2', () => {
-        const initial = undoableReducer(undefined, { type: 'NOOP' });
+        const initial = editorState;
 
-        const editorV1 = rootReducer(initial, loadDiagramInternal(v1, '1'));
-        const editorV2 = rootReducer(initial, loadDiagramInternal(v2, '2'));
+        const editorV1 = rootReducer(initial, loadDiagramInternal(v1, '1')) as EditorState;
+        const editorV2 = rootReducer(initial, loadDiagramInternal(v2, '2')) as EditorState;
 
-        expect(editorV1.present.diagrams.values[0].items.values.length).toEqual(10);
-        expect(editorV2.present.diagrams.values[0].items.values.length).toEqual(10);
+        expect(editorV1.diagrams.values[0].items.values.length).toEqual(10);
+        expect(editorV2.diagrams.values[0].items.values.length).toEqual(10);
 
-        const diffsV2 = diff(editorV1.present, editorV2.present, ignore);
+        const diffsV2 = diff(editorV1, editorV2, ignore);
 
         expect(diffsV2).toEqual(undefined);
     });
 
     it('should load from old and new format V3', () => {
-        const initial = undoableReducer(undefined, { type: 'NOOP' });
+        const initial = editorState;
 
-        const editorV1 = rootReducer(initial, loadDiagramInternal(v1, '1'));
-        const editorV3 = rootReducer(initial, loadDiagramInternal(v3, '2'));
+        const editorV1 = rootReducer(initial, loadDiagramInternal(v1, '1')) as EditorState;
+        const editorV3 = rootReducer(initial, loadDiagramInternal(v3, '2')) as EditorState;
 
-        expect(editorV1.present.diagrams.values[0].items.values.length).toEqual(10);
-        expect(editorV3.present.diagrams.values[0].items.values.length).toEqual(10);
+        expect(editorV1.diagrams.values[0].items.values.length).toEqual(10);
+        expect(editorV3.diagrams.values[0].items.values.length).toEqual(10);
 
-        const diffsV3 = diff(editorV1.present, editorV3.present, ignore);
+        const diffsV3 = diff(editorV1, editorV3, ignore);
 
         expect(diffsV3).toEqual(undefined);
     });

@@ -14,7 +14,14 @@ export class Rotation {
     
     public static readonly TYPE_NAME = 'Rotation';
 
-    public static readonly ZERO = Rotation.fromRadian(0);
+    public static readonly ZERO = Rotation.fromDegree(
+        0);
+        
+    public static readonly POSITIVE_INFINITY = Rotation.fromDegree(
+        Number.POSITIVE_INFINITY);
+
+    public static readonly NEGATIVE_INFINITY = Rotation.fromDegree(
+        Number.NEGATIVE_INFINITY);
 
     private readonly computed: { cos: number | null; sin: number | null } = { cos: null, sin: null };
 
@@ -75,5 +82,13 @@ export class Rotation {
 
     public negate(): Rotation {
         return Rotation.fromDegree(-this.degree);
+    }
+
+    public toJS() {
+        return { degree: this.degree };
+    }
+
+    public static fromJS(source: any) {
+        return Rotation.fromDegree(source.degree);
     }
 }

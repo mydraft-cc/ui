@@ -6,12 +6,13 @@
 */
 
 import { CheckOutlined, DeleteOutlined, FileMarkdownOutlined, FileOutlined } from '@ant-design/icons';
-import { Col, Dropdown, Input, Menu, Row } from 'antd';
+import { Avatar, Col, Dropdown, Input, Menu, Row } from 'antd';
 import classNames from 'classnames';
 import * as React from 'react';
 import { Keys, useEventCallback } from '@app/core';
 import { texts } from '@app/texts';
 import { Diagram, getPageName } from '@app/wireframes/model';
+import { User } from '@app/wireframes/user';
 
 export type PageAction = 'Delete' | 'Rename' | 'SetMaster' | 'Select' | 'Duplicate';
 
@@ -28,6 +29,9 @@ export interface PageProps {
     // True if selected.
     selected?: boolean;
 
+    // The users that have selected this.
+    selectedBy: User[];
+
     // When an action should be executed.
     onAction: (diagramId: string, action: PageAction, arg?: any) => void;
 }
@@ -39,6 +43,7 @@ export const Page = (props: PageProps) => {
         index,
         onAction,
         selected,
+        selectedBy,
     } = props;
 
     const [editName, setEditName] = React.useState('');
@@ -148,6 +153,13 @@ export const Page = (props: PageProps) => {
                             </Col>
                             <Col flex='auto' className='tree-item-title no-select'>
                                 {pageName}
+                            </Col>
+                            <Col flex='auto' sm={3} className='tree-item-users'>
+                                <Avatar.Group maxCount={1}>
+                                    {selectedBy.map(user =>
+                                        <Avatar size={20} className='tree-item-user' key={user.id} style={{ backgroundColor: user.color }}>{user.initial}</Avatar>,
+                                    )}
+                                </Avatar.Group>
                             </Col>
                         </Row>
                     </Dropdown>

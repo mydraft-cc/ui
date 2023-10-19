@@ -7,22 +7,25 @@
 
 import { TiptapCollabProvider } from '@hocuspocus/provider';
 import * as React from 'react';
+import { useDispatch } from 'react-redux';
 import * as Y from 'yjs';
 import { useYjsReduxBinder } from 'yjs-redux';
 import { useAsyncEffect } from '@app/core';
-import { useStore } from '@app/wireframes/model';
+import { EditorState, selectDiagram, useStore } from '@app/wireframes/model';
+import { user } from '@app/wireframes/user';
 import { CollaborationContext, CollaborationState } from './../hooks';
 
-export const CollaborationProvider = (props: { children: React.ReactNode }) => {
-    const [state, setState] = React.useState<CollaborationState>({});
+export const CollaborationProvider = ({ children }: { children: React.ReactNode }) => {
+    const dispatch = useDispatch();
     const binder = useYjsReduxBinder();
     const editor = useStore(x => x.editor);
     const editorId = editor.id;
+    const [state, setState] = React.useState<CollaborationState>({});
 
     useAsyncEffect(async cancellation => {
+        setState({});
+    
         const provider = new TiptapCollabProvider({ appId: '7ME5ZQMY', name: editorId });
-
-        provider.connect();
 
         await new Promise(resolve => {
             const handler = () => {
@@ -35,19 +38,32 @@ export const CollaborationProvider = (props: { children: React.ReactNode }) => {
         });
 
         if (cancellation?.isCancelled) {
-            return undefined;
+            return () => {
+                provider.destroy();
+            };
         }
 
-        const synchronizer = binder.connectSlice(provider.document, 'editor');
+        const document = provider.document;
 
-        synchronizer.on('connected', ({ root }) => {
-            setState(state => ({
-                ...state,
-                undoManager: new Y.UndoManager(root),
-            }));
+        const synchronizer = binder.connectSlice({
+            sliceName: 'editor',
+            onSynced: root => {
+                setState(state => ({
+                    ...state,
+                    undoManager: new Y.UndoManager(root),
+                }));
+            },
+            onSyncedAsInit: (state: EditorState) => {
+                setTimeout(() => {
+                    if (!state.selectedDiagramIds.get(user.id) && state.diagramIds.size > 0) {
+                        dispatch(selectDiagram(state.diagramIds.at(0)!));
+                    }
+                });
+            },
+            document,
         });
 
-        setState({ document: provider.document, provider });
+        setState({ document, provider });
 
         return () => {
             synchronizer.destroy();
@@ -58,7 +74,7 @@ export const CollaborationProvider = (props: { children: React.ReactNode }) => {
 
     return (
         <CollaborationContext.Provider value={state}>
-            {props.children}
+            {children}
         </CollaborationContext.Provider>
     );
 };

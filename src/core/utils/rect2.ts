@@ -210,4 +210,12 @@ export class Rect2 {
 
         return new Rect2(minX, minY, Math.max(w, 0.0), Math.max(h, 0.0));
     }
+
+    public toJS() {
+        return { x: this.x, y: this.y, w: this.w, h: this.h };
+    }
+
+    public static fromJS(source: any) {
+        return new Rect2(source.x, source.y, source.w, source.h);
+    }
 }

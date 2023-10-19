@@ -270,4 +270,13 @@ describe('Color', () => {
     it('should throw error for invalid string', () => {
         expect(() => Color.fromValue('INVALID')).toThrowError('Color is not in a valid format.');
     });
+
+    it('should convert and read from json', () =>{
+        const source = new Color(1, 2, 3);
+        const serialized = source.toJS();
+
+        const deserialized = Color.fromJS(serialized);
+
+        expect(deserialized).toEqual(source);
+    });
 });

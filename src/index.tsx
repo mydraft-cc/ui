@@ -19,7 +19,7 @@ import { applyMiddleware, combineReducers, compose, createStore } from 'redux';
 import thunk from 'redux-thunk';
 import { createYjsReduxBinder, YjsReduxBinderProvider } from 'yjs-redux';
 import { Color, ImmutableList, ImmutableMap, Rect2, Rotation, Vec2 } from '@app/core';
-import { ColorResolver, ImmutableListResolver, ImmutableMapResolver, MinSizeConstraintResolver, RecordResolver, Rect2Resolver, RotationResolver, SizeConstraintResolver, TextHeightConstraintResolver, TransformResolver, Vec2Resolver } from '@app/wireframes/collaboration';
+import { COLOR_RESOLVER, ImmutableListResolver, ImmutableMapResolver, MINSIZE_CONSTRAINT_RESOLVER, RecordResolver, RECT2_RESOLVER, ROTATION_RESOLVER, SIZE_CONSTRAINT_RESOLVER, TEXTHEIGHT_CONSTRAINT_RESOLVER, TRANSFORM_RESOLVER, VEC2_RESOLVER } from '@app/wireframes/collaboration';
 import { CollaborationProvider } from '@app/wireframes/collaboration/components/Provider';
 import { createInitialAssetsState, createInitialLoadingState, createInitialUIState, Diagram, DiagramItem, EditorState, MinSizeConstraint, SizeConstraint, TextHeightConstraint, Transform } from '@app/wireframes/model';
 import * as Reducers from '@app/wireframes/model/actions';
@@ -55,15 +55,15 @@ const binder = createYjsReduxBinder({
         [ImmutableMap.TYPE_NAME]: new ImmutableMapResolver(),
     },
     valueResolvers: {
-        [Color.TYPE_NAME]: new ColorResolver(),
-        [MinSizeConstraint.TYPE_NAME]: new MinSizeConstraintResolver(),
-        [Rect2.TYPE_NAME]: new Rect2Resolver(),
-        [Rotation.TYPE_NAME]: new RotationResolver(),
-        [SizeConstraint.TYPE_NAME]: new SizeConstraintResolver(),
-        [TextHeightConstraint.TYPE_NAME]: new TextHeightConstraintResolver(),
+        [Color.TYPE_NAME]: COLOR_RESOLVER,
+        [MinSizeConstraint.TYPE_NAME]: MINSIZE_CONSTRAINT_RESOLVER,
+        [Rect2.TYPE_NAME]: RECT2_RESOLVER,
+        [Rotation.TYPE_NAME]: ROTATION_RESOLVER,
+        [SizeConstraint.TYPE_NAME]: SIZE_CONSTRAINT_RESOLVER,
+        [TextHeightConstraint.TYPE_NAME]: TEXTHEIGHT_CONSTRAINT_RESOLVER,
         [TextSizeConstraint.TYPE_NAME]: new TextSizeConstraintResolver(SVGRenderer2.INSTANCE),
-        [Transform.TYPE_NAME]: new TransformResolver(),
-        [Vec2.TYPE_NAME]: new Vec2Resolver(),
+        [Transform.TYPE_NAME]: TRANSFORM_RESOLVER,
+        [Vec2.TYPE_NAME]: VEC2_RESOLVER,
     },
     syncAlways: false,
 });

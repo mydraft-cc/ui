@@ -12,6 +12,7 @@ import { NativeTypes } from 'react-dnd-html5-backend';
 import { findDOMNode } from 'react-dom';
 import { useDispatch } from 'react-redux';
 import { loadImagesToClipboardItems, sizeInPx, useClipboard, useEventCallback } from '@app/core';
+import { Cursors } from '@app/wireframes/collaboration';
 import { addShape, changeItemsAppearance, Diagram, DiagramRef, getDiagram, getDiagramId, getEditor, getMasterDiagram, getSelectedItems, ItemsRef, RendererService, selectItems, Transform, transformItems, useStore } from '@app/wireframes/model';
 import { Editor } from '@app/wireframes/renderer/Editor';
 import { ShapeSource } from './../interface';
@@ -166,20 +167,24 @@ export const EditorViewInner = ({ diagram, spacing }: EditorViewProps & { diagra
     return (
         <Dropdown overlay={<ContextMenu onClick={doHide} />} trigger={['contextMenu']} visible={menuVisible} onVisibleChange={setMenuVisible}>            
             <div className='editor-view' onClick={doSetPosition}>
-                <div className='editor-diagram' style={{ width: w, height: h, padding }} ref={renderRef} >
-                    <Editor
-                        color={editorColor}
-                        diagram={diagram}
-                        masterDiagram={masterDiagram}
-                        onChangeItemsAppearance={doChangeItemsAppearance}
-                        onSelectItems={doSelectItems}
-                        onTransformItems={doTransformItems}
-                        selectedItems={selectedItems}
-                        viewSize={editor.size}
-                        zoom={zoom}
-                        zoomedSize={zoomedSize}
-                        isDefaultView={true}
-                    />
+                <div className='editor-diagram' style={{ width: w, height: h, padding }} ref={renderRef}>
+                    <div className='cursor-container'>
+                        <Editor
+                            color={editorColor}
+                            diagram={diagram}
+                            isDefaultView={true}
+                            masterDiagram={masterDiagram}
+                            onChangeItemsAppearance={doChangeItemsAppearance}
+                            onSelectItems={doSelectItems}
+                            onTransformItems={doTransformItems}
+                            selectedItems={selectedItems}
+                            viewSize={editor.size}
+                            zoom={zoom}
+                            zoomedSize={zoomedSize}
+                        />
+
+                        <Cursors matchKey={selectedDiagramId} zoom={zoom} />
+                    </div>
                 </div>
             </div>
         </Dropdown>

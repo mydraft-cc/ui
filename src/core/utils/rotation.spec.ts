@@ -65,4 +65,13 @@ describe('Rotation', () => {
         expect(Rotation.fromDegree(123).equals(Rotation.fromDegree(123))).toBeTruthy();
         expect(Rotation.fromDegree(123).equals(Rotation.fromDegree(234))).toBeFalsy();
     });
+
+    it('should convert and read from json', () =>{
+        const source = Rotation.fromDegree(45);
+        const serialized = source.toJS();
+
+        const deserialized = Rotation.fromJS(serialized);
+
+        expect(deserialized).toEqual(source);
+    });
 });

@@ -15,3 +15,11 @@
         margin: auto;
     }
 }
+
+.cursor-container {
+    position: relative;
+
+    .cursors {
+        @include absolute(0, null, null, 0);
+    }
+}

@@ -141,4 +141,12 @@ export class Vec2 {
 
         return MathHelper.toPositiveDegree(MathHelper.toDegree(Math.atan2(y, x)));
     }
+
+    public toJS() {
+        return { x: this.x, y: this.y };
+    }
+
+    public static fromJS(source: any) {
+        return new Vec2(source.x, source.y);
+    }
 }

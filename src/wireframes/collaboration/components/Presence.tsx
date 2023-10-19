@@ -5,6 +5,7 @@ import * as React from 'react';
 import { copyTextToClipboard } from '@app/core';
 import { texts } from '@app/texts';
 import { useStore } from '@app/wireframes/model';
+import { user } from '@app/wireframes/user';
 import { usePresence } from './../hooks';
 
 export const Presence = () => {
@@ -13,11 +14,13 @@ export const Presence = () => {
     const presence = usePresence();
 
     const sortedUsers = React.useMemo(() => {
-        const result = Object.values(presence);
+        const result = Object.values(presence).filter(x => x.id !== user.id);
 
         result.sort((a, b) => {
             return a.initial.localeCompare(b.initial);
         });
+
+        result.splice(0, 0, user);
 
         return result;
     }, [presence]);
@@ -25,7 +28,7 @@ export const Presence = () => {
     return (
         <>
             {sortedUsers.length > 1 &&
-                <Avatar.Group>
+                <Avatar.Group maxCount={2}>
                     {sortedUsers.map(user =>
                         <Avatar key={user.id} style={{ backgroundColor: user.color }}>
                             {user.initial}

@@ -176,23 +176,21 @@ export function calculateSelection(items: ReadonlyArray<DiagramItem>, diagram: D
                 const singleId = single.id;
 
                 if (isCtrl) {
-                    const current = [...diagram.selectedIds[userId] || []];
+                    const current = [...diagram.selectedIds.get(userId) || []];
 
                     if (!single.isLocked) {
-                        if (current[singleId]) {
+                        if (current.indexOf(singleId) >= 0) {
                             current.splice(current.indexOf(singleId), 1);
                         } else {
                             current.push(singleId);
                         }
-
-                        return current;
                     }
                     
                     return current;
                 } else {
                     const group = diagram.parent(single.id);
 
-                    if (group && diagram.selectedIds[userId]?.[group.id]) {
+                    if (group && hasSelection(diagram, group, userId)) {
                         selectedItems.push(resolveGroup(single, group));
                     } else {
                         selectedItems.push(resolveGroup(single));
@@ -220,4 +218,10 @@ export function calculateSelection(items: ReadonlyArray<DiagramItem>, diagram: D
     }
 
     return selectedItems.map(i => i.id);
+}
+
+function hasSelection(diagram: Diagram, group: DiagramItem, userId: string) {
+    const selection = diagram.selectedIds.get(userId);
+
+    return selection && selection.indexOf(group.id) >= 0;
 }

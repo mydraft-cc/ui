@@ -71,14 +71,14 @@ body {
     display: flex;
     flex-direction: row;
     flex-grow: 0;
-}
 
-.ant-avatar-group {
-    @include force-height(60px);
-    display: inline-flex;
-    flex-direction: row;
-    flex-grow: 0;
-    align-items: center;
+    .ant-avatar-group {
+        align-items: center;
+        display: inline-flex;
+        flex-direction: row;
+        flex-grow: 0;
+        margin-left: 20px;
+    }
 }
 
 #root-layout > .ant-layout {
@@ -362,6 +362,7 @@ header {
         direction: ltr;
         display: flex;
         padding: 5px;
+        position: relative;
 
         &:hover {
             background-color: $color-theme-blue-dark;
@@ -381,6 +382,19 @@ header {
     &-title {
         @include truncate;
         margin-left: 10px;
+    }
+
+    &-users {
+        align-items: center;
+        display: flex;
+        flex-direction: row;
+        flex-grow: 0;
+        line-height: 1;
+        justify-content: flex-end;
+
+        .ant-avatar-string {
+            transform: scale(.6) translateX(-50%) translateY(-10%) !important;
+        }
     }
 }
 

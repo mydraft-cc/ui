@@ -20,7 +20,6 @@ export * from './utils/color';
 export * from './utils/helpers';
 export * from './utils/immutable-list';
 export * from './utils/immutable-map';
-export * from './utils/immutable-set';
 export * from './utils/math-helper';
 export * from './utils/react';
 export * from './utils/record';

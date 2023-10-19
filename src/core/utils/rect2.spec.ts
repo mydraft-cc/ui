@@ -236,4 +236,13 @@ describe('Rect2', () => {
         expect(new Rect2(10, 10, 10, 10).equals(new Rect2(10, 10, 10, 10))).toBeTruthy();
         expect(new Rect2(10, 10, 10, 10).equals(new Rect2(20, 20, 20, 20))).toBeFalsy();
     });
+
+    it('should convert and read from json', () =>{
+        const source = new Rect2(20, 30, 40, 50);
+        const serialized = source.toJS();
+
+        const deserialized = Rect2.fromJS(serialized);
+
+        expect(deserialized).toEqual(source);
+    });
 });

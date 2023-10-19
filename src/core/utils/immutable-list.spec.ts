@@ -14,12 +14,14 @@ describe('ImmutableList', () => {
         const list = ImmutableList.empty<number>();
 
         expect(list.size).toBe(0);
+        expect(list).not.toBe(ImmutableList.empty());
     });
 
-    it('should cache empty instance', () => {
+    it('should return new empty instance if creating map from empty array', () => {
         const list = ImmutableList.of([]);
 
-        expect(list).toBe(ImmutableList.empty());
+        expect(list.size).toBe(0);
+        expect(list).not.toBe(ImmutableList.empty());
     });
 
     it('should instantiate from array of items', () => {
