@@ -96,6 +96,6 @@ export class Shape implements ShapePlugin {
     private createText(ctx: RenderContext) {
         ctx.renderer2.text(ctx.shape, ctx.rect.deflate(10, 10), p => {
             p.setForegroundColor(ctx.shape);
-        });
+        }, true);
     }
 }
