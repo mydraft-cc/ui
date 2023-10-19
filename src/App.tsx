@@ -24,7 +24,7 @@ const logo = require('./images/logo.svg').default;
 export const App = () => {
     const dispatch = useDispatch();
     const route = useRouteMatch();
-    const routeToken = route.params['token'] || null;
+    const routeToken = (route.params as any)['token'] || null;
     const routeTokenSnapshot = React.useRef(routeToken);
     const selectedTab = useStore(s => s.ui.selectedTab);
     const showLeftSidebar = useStore(s => s.ui.showLeftSidebar);

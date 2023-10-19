@@ -19,6 +19,7 @@ module.exports = {
         "@typescript-eslint",
     ],
     "rules": {
+        "@typescript-eslint/space-before-blocks": "off",
         "@typescript-eslint/dot-notation": "off",
         "@typescript-eslint/indent": [
             "error",

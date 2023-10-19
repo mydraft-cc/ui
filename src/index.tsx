@@ -9,7 +9,6 @@
 
 import { ConnectedRouter, connectRouter, routerMiddleware } from 'connected-react-router';
 import { createBrowserHistory } from 'history';
-import * as React from 'react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import * as ReactDOM from 'react-dom';
