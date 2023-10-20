@@ -154,52 +154,40 @@ describe('Color', () => {
         expect(color.b).toBe(0);
     });
 
-    it('should convert from hsv with red', () => {
-        const color = Color.fromHsv(0, 1, 1);
-
-        expect(color.r).toBe(1);
-        expect(color.g).toBe(0);
-        expect(color.b).toBe(0);
+    [
+        { r: 1, g: 0, b: 0, h: 0, name: 'red' },
+        { r: 1, g: 1, b: 0, h: 60, name: 'yellow' },
+        { r: 0, g: 1, b: 0, h: 120, name: 'green' },
+        { r: 0, g: 1, b: 1, h: 180, name: 'turkis' },
+        { r: 0, g: 0, b: 1, h: 240, name: 'blue' },
+        { r: 1, g: 0, b: 1, h: 300, name: 'pink' },
+        { r: 1, g: 0, b: 0, h: 360, name: 'red2' },
+    ].forEach(test => {
+        it(`should convert from hsl ${test.name}`, () => {
+            const color = Color.fromHsl(test.h, 1, 0.5);
+    
+            expect(color.r).toBeCloseTo(test.r);
+            expect(color.g).toBeCloseTo(test.g);
+            expect(color.b).toBeCloseTo(test.b);
+        });
     });
 
-    it('should convert from hsv with yellow', () => {
-        const color = Color.fromHsv(60, 1, 1);
-
-        expect(color.r).toBe(1);
-        expect(color.g).toBe(1);
-        expect(color.b).toBe(0);
-    });
-
-    it('should convert from hsv with blue', () => {
-        const color = Color.fromHsv(120, 1, 1);
-
-        expect(color.r).toBe(0);
-        expect(color.g).toBe(1);
-        expect(color.b).toBe(0);
-    });
-
-    it('should convert from hsv with turkis', () => {
-        const color = Color.fromHsv(180, 1, 1);
-
-        expect(color.r).toBe(0);
-        expect(color.g).toBe(1);
-        expect(color.b).toBe(1);
-    });
-
-    it('should convert from hsv with red', () => {
-        const color = Color.fromHsv(240, 1, 1);
-
-        expect(color.r).toBe(0);
-        expect(color.g).toBe(0);
-        expect(color.b).toBe(1);
-    });
-
-    it('should convert from hsv with pink', () => {
-        const color = Color.fromHsv(300, 1, 1);
-
-        expect(color.r).toBe(1);
-        expect(color.g).toBe(0);
-        expect(color.b).toBe(1);
+    [
+        { r: 1, g: 0, b: 0, h: 0, name: 'red' },
+        { r: 1, g: 1, b: 0, h: 60, name: 'yellow' },
+        { r: 0, g: 1, b: 0, h: 120, name: 'green' },
+        { r: 0, g: 1, b: 1, h: 180, name: 'turkis' },
+        { r: 0, g: 0, b: 1, h: 240, name: 'blue' },
+        { r: 1, g: 0, b: 1, h: 300, name: 'pink' },
+        { r: 1, g: 0, b: 0, h: 360, name: 'red2' },
+    ].forEach(test => {
+        it(`should convert from hsv ${test.name}`, () => {
+            const color = Color.fromHsv(test.h, 1, 1);
+    
+            expect(color.r).toBe(test.r);
+            expect(color.g).toBe(test.g);
+            expect(color.b).toBe(test.b);
+        });
     });
 
     it('should be valid black', () => {
