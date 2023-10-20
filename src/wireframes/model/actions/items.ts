@@ -123,6 +123,10 @@ export function buildItems(builder: ActionReducerMapBuilder<EditorState>) {
             return state.updateDiagram(diagramId, diagram => {
                 const rendererInstance = RendererService.get(renderer);
 
+                if (!rendererInstance) {
+                    throw new Error(`Cannot find renderer for ${renderer}.`);
+                }
+
                 const { size: defaultSize, appearance: defaultAppearance, ...other } = rendererInstance.createDefaultShape();
 
                 const initialSize = size || defaultSize;

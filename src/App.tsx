@@ -21,8 +21,8 @@ import { OverlayContainer } from './wireframes/contexts/OverlayContext';
 
 export const App = () => {
     const dispatch = useDispatch();
-    const route = useRouteMatch();
-    const routeToken = (route.params as any)['token'] || null;
+    const route = useRouteMatch<{ token?: string }>();
+    const routeToken = route.params.token || null;
     const routeTokenSnapshot = React.useRef(routeToken);
     const selectedTab = useStore(s => s.ui.selectedTab);
     const showLeftSidebar = useStore(s => s.ui.showLeftSidebar);

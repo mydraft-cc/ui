@@ -66,7 +66,11 @@ export function buildAppearance(builder: ActionReducerMapBuilder<EditorState>) {
                 return diagram.updateItems(set.allShapes.map(x => x.id), item => {
                     const rendererInstance = RendererService.get(item.renderer);
 
-                    if (rendererInstance && (force || !Types.isUndefined(rendererInstance.defaultAppearance()[key]))) {
+                    if (!rendererInstance) {
+                        throw new Error(`Cannot find renderer for ${item.renderer}.`);
+                    }
+
+                    if (force || !Types.isUndefined(rendererInstance.defaultAppearance()[key])) {
                         return item.setAppearance(key, value);
                     }
 

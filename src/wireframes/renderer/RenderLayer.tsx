@@ -93,9 +93,13 @@ export const RenderLayer = React.memo((props: RenderLayerProps) => {
         // Create missing shapes.
         for (const shape of allShapes) {
             if (!references[shape.id]) {
-                const renderer = RendererService.get(shape.renderer);
+                const rendererInstance = RendererService.get(shape.renderer);
 
-                references[shape.id] = new ShapeRef(diagramLayer, renderer, showDebugOutlines);
+                if (!rendererInstance) {
+                    throw new Error(`Cannot find renderer for ${shape.renderer}.`);
+                }
+
+                references[shape.id] = new ShapeRef(diagramLayer, rendererInstance, showDebugOutlines);
             }
         }
 
