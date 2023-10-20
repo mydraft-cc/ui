@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { sizeInPx } from '@app/core';
+import { sizeInPx } from '@app/core/utils';
 
 describe('React Helpers', () => {
     it('should convert number to pixels', () => {

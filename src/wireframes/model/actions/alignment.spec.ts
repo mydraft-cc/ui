@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { Rotation, Vec2 } from '@app/core';
+import { Rotation, Vec2 } from '@app/core/utils';
 import { alignItems, AlignmentMode, buildAlignment, createClassReducer, Diagram, DiagramItem, EditorState, Transform } from '@app/wireframes/model';
 
 /* eslint-disable @typescript-eslint/naming-convention */

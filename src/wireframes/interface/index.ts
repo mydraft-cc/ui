@@ -5,9 +5,9 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { Color, LoadedImage, Rect2, Vec2 } from '@app/core';
+import { Color, LoadedImage, Rect2, Vec2 } from '@app/core/utils';
 
-export { Color, Rect2, Vec2 } from '@app/core';
+export { Color, Rect2, Vec2 } from '@app/core/utils';
 
 export type Appearance = { [key: string]: any };
 export type CreatedShape = { renderer: string; size?: { x: number; y: number }; appearance?: Appearance };
@@ -132,7 +132,7 @@ export interface Shape {
 
     readonly textDisabled: boolean;
 
-    readonly renderCache: object;
+    readonly renderCache: Record<string, any>;
 
     getAppearance(key: string): any;
 }

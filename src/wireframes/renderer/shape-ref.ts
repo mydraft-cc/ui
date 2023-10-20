@@ -62,7 +62,7 @@ export class ShapeRef {
         this.renderedElement = this.renderer.render(shape, previousElement, { debug: this.showDebugMarkers });
 
         // Always update shape to keep a reference to the actual object, not the old object.
-        this.renderedElement!.node['shape'] = shape;
+        (this.renderedElement!.node as any)['shape'] = shape;
 
         // For new elements we might have to add them.
         if (!this.renderedElement!.parent()) {

@@ -19,8 +19,6 @@ import { CustomDragLayer } from './wireframes/components/CustomDragLayer';
 import { PresentationView } from './wireframes/components/PresentationView';
 import { OverlayContainer } from './wireframes/contexts/OverlayContext';
 
-const logo = require('./images/logo.svg').default;
-
 export const App = () => {
     const dispatch = useDispatch();
     const route = useRouteMatch();
@@ -79,7 +77,7 @@ export const App = () => {
             <ClipboardContainer>
                 <Layout className='screen-mode'>
                     <Layout.Header>
-                        <img className='logo' src={logo} alt='mydraft.cc' />
+                        <img className='logo' src='logo.svg' alt='mydraft.cc' />
 
                         <HistoryMenu />
                         <span className='menu-separator' />

@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { Record, Vec2 } from '@app/core';
+import { Record, Vec2 } from '@app/core/utils';
 
 /* eslint-disable @typescript-eslint/naming-convention */
 

@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { Vec2 } from '@app/core';
+import { Vec2 } from '@app/core/utils';
 import { Diagram, DiagramItem, DiagramItemSet, EditorState, RendererService, Serializer } from '@app/wireframes/model';
 import { Checkbox } from '@app/wireframes/shapes/neutral/checkbox';
 import { AbstractControl } from '../shapes/utils/abstract-control';
@@ -152,13 +152,13 @@ describe('Serializer', () => {
         expect(newValue?.isLocked).toEqual(original?.isLocked);
 
         if (original.type === 'Group') {
-            expect(newValue?.childIds.equals(original.childIds)).toBeTrue();
-            expect(newValue?.rotation.equals(original.rotation)).toBeTrue();
+            expect(newValue?.childIds.equals(original.childIds)).toBeTruthy();
+            expect(newValue?.rotation.equals(original.rotation)).toBeTruthy();
         } else {
             expect(newValue?.appearance.size).toBe(original.appearance.size);
             expect(newValue?.configurables?.length).toBe(original.configurables?.length);
             expect(newValue?.renderer).toBe(original.renderer);
-            expect(newValue?.transform.equals(original.transform)).toBeTrue();
+            expect(newValue?.transform.equals(original.transform)).toBeTruthy();
         }
     }
 });

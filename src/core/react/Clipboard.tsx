@@ -8,6 +8,7 @@
 import * as React from 'react';
 import { Types } from './../utils/types';
 import { useDocumentEvent } from './hooks';
+import { LoadedImage, Types } from '@app/core/utils';
 
 export interface ClipboardCopyEvent {
     // Indicates whether the event type is a cut event.
@@ -224,8 +225,6 @@ function emitPaste(context: ClipboardContextType, ...items: ClipboardItem[]) {
         }
     }
 }
-
-export type LoadedImage = { width: number; height: number; source: string };
 
 export async function loadImagesToClipboardItems(files: FileList | ReadonlyArray<File>) {
     const items: ClipboardItem[] = [];

@@ -14,7 +14,7 @@ export abstract class Record<T extends object> {
     public readonly instanceId: string;
 
     public get<K extends keyof T>(key: K): T[K] {
-        return this.values[key as string];
+        return (this.values as any)[key as string];
     }
 
     constructor(values: T) {
@@ -49,16 +49,16 @@ export abstract class Record<T extends object> {
         let updates = 0;
 
         for (const [key, value] of Object.entries(props)) {
-            const current = this.values[key];
+            const current = (this.values as any)[key];
     
             if (Types.equals(current, value)) {
                 continue;
             }
 
             if (Types.isUndefined(value)) {
-                delete values[key];
+                delete (values as any)[key];
             } else {
-                values[key] = value;
+                (values as any)[key] = value;
             }
 
             updates++;

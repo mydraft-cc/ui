@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { Color } from '@app/core';
+import { Color } from './color';
 
 describe('Color', () => {
     it('should instantiate', () => {

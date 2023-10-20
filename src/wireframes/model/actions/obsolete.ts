@@ -8,7 +8,7 @@
 /* eslint-disable @typescript-eslint/no-loop-func */
 
 import { AnyAction, createAction } from '@reduxjs/toolkit';
-import { MathHelper } from '@app/core';
+import { MathHelper } from '@app/core/utils';
 import { DefaultAppearance } from '@app/wireframes/interface';
 import { addShape } from './items';
 import { createDiagramAction, DiagramRef } from './utils';

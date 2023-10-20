@@ -7,12 +7,12 @@
 
 /* eslint-disable @typescript-eslint/naming-convention */
 
+import { diff } from 'deep-object-diff';
 import { EditorState, loadDiagramInternal, selectDiagram, selectItems } from '@app/wireframes/model';
 import * as Reducers from '@app/wireframes/model/actions';
-const diff = require('deep-diff').diff;
-const v1 = require('./diagram_v1.json');
-const v2 = require('./diagram_v2.json');
-const v3 = require('./diagram_v3.json');
+import v1 from './diagram_v1.json?raw';
+import v2 from './diagram_v2.json?raw';
+import v3 from './diagram_v3.json?raw';
 
 describe('LoadingReducer', () => {
     const editorState = EditorState.create();
@@ -26,9 +26,9 @@ describe('LoadingReducer', () => {
         Reducers.buildOrdering(builder);
     });
 
-    const ignore = (path: string, key: string) => {
+    /*const ignore = (path: string, key: string) => {
         return (path.length === 1 && path[0] === 'values' && key === 'id') || ~['instanceId', 'selectedIds', 'parents', 'computed'].indexOf(key);
-    };        
+    };*/        
 
     const undoableReducer = Reducers.undoable(
         editorReducer,
@@ -52,7 +52,7 @@ describe('LoadingReducer', () => {
         expect(editorV1.present.diagrams.values[0].items.values.length).toEqual(10);
         expect(editorV2.present.diagrams.values[0].items.values.length).toEqual(10);
 
-        const diffsV2 = diff(editorV1.present, editorV2.present, ignore);
+        const diffsV2 = diff(editorV1.present, editorV2.present);
 
         expect(diffsV2).toEqual(undefined);
     });
@@ -66,7 +66,7 @@ describe('LoadingReducer', () => {
         expect(editorV1.present.diagrams.values[0].items.values.length).toEqual(10);
         expect(editorV3.present.diagrams.values[0].items.values.length).toEqual(10);
 
-        const diffsV3 = diff(editorV1.present, editorV3.present, ignore);
+        const diffsV3 = diff(editorV1.present, editorV3.present);
 
         expect(diffsV3).toEqual(undefined);
     });

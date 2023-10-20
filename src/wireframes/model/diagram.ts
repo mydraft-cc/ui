@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { ImmutableList, ImmutableMap, ImmutableSet, MathHelper, Record, Types } from '@app/core';
+import { ImmutableList, ImmutableMap, ImmutableSet, MathHelper, Record, Types } from '@app/core/utils';
 import { DiagramItem } from './diagram-item';
 import { DiagramItemSet } from './diagram-item-set';
 
@@ -312,7 +312,7 @@ export class Diagram extends Record<Props> {
 
             updater(update, resultItems);
 
-            update['rootIds'] = update.itemIds;
+            (update as any)['rootIds'] = update.itemIds;
         }
 
         delete (update as any).itemIds;

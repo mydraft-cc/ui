@@ -19,7 +19,11 @@
       "@app/*": [
         "./src/*"
       ]
-    }
+    },
+    "types": [
+      "vitest/globals",
+      "vite/client"
+    ]
   },
   "include": ["src"],
   "references": [{ "path": "./tsconfig.node.json" }]

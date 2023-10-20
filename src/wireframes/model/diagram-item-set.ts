@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { Types } from '@app/core';
+import { Types } from '@app/core/utils';
 import { Diagram } from './diagram';
 import { DiagramItem } from './diagram-item';
 

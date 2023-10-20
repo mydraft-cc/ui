@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { Color, ImmutableList, ImmutableMap, MathHelper, Record, Vec2 } from '@app/core';
+import { Color, ImmutableList, ImmutableMap, MathHelper, Record, Vec2 } from '@app/core/utils';
 import { Diagram } from './diagram';
 import { UndoableState } from './undoable-state';
 

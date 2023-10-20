@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { ColorPalette } from '@app/core';
+import { ColorPalette } from '@app/core/utils';
 
 describe('ColorPalatte', () => {
     it('should generate colors', () => {

@@ -43,7 +43,7 @@ export class ImmutableSet {
         if (!items || items.length === 0) {
             return ImmutableSet.EMPTY;
         } else {
-            const itemMap = {};
+            const itemMap: Record<string, boolean> = {};
 
             for (const item of items) {
                 itemMap[item] = true;

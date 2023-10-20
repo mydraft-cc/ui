@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { ImmutableList } from '@app/core';
+import { ImmutableList } from '@app/core/utils';
 
 /* eslint-disable @typescript-eslint/naming-convention */
 

@@ -25,7 +25,7 @@ type Options = {
 
 export function undoable<T>(reducer: Reducer<T>, initialState: T, options?: Options) {
     const initialAction = options?.initialAction;
-    const actionsToIgnore = {};
+    const actionsToIgnore: Record<string, boolean> = {};
     const actionMerger = options?.actionMerger || (() => undefined);
 
     if (options?.actionsToIgnore) {

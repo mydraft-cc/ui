@@ -7,7 +7,7 @@
 
 import { useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
-import { Color, ColorPalette, Types } from '@app/core';
+import { Color, ColorPalette, Types } from '@app/core/utils';
 import { texts } from '@app/texts';
 import { addDiagram, addShape, changeColor, changeColors, changeItemsAppearance, pasteItems, removeDiagram, removeItems } from './actions';
 import { AssetsStateInStore } from './assets-state';
