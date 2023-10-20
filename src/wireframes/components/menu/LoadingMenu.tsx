@@ -86,7 +86,7 @@ export const LoadingMenu = React.memo(() => {
             <MarkerButton />
 
             <Modal title={texts.common.about} visible={isOpen} onCancel={doToggleInfoDialog} onOk={doToggleInfoDialog}>
-                <div dangerouslySetInnerHTML={{ __html: text.default }} />
+                <div dangerouslySetInnerHTML={{ __html: text }} />
             </Modal>
         </>
     );

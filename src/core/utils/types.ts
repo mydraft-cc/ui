@@ -125,7 +125,7 @@ export module Types {
         return true;
     }
 
-    export function equalsObject(lhs: Record<string, object>, rhs: Record<string, object>, options?: EqualsOptions) {
+    export function equalsObject(lhs: object, rhs: object, options?: EqualsOptions) {
         const lhsKeys = Object.keys(lhs);
 
         if (lhsKeys.length !== Object.keys(rhs).length) {
@@ -133,7 +133,7 @@ export module Types {
         }
 
         for (const key of lhsKeys) {
-            if (!equals(lhs[key], rhs[key], options)) {
+            if (!equals((lhs as any)[key], (rhs as any)[key], options)) {
                 return false;
             }
         }

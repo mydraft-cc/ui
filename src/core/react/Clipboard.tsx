@@ -6,9 +6,8 @@
 */
 
 import * as React from 'react';
-import { Types } from './../utils/types';
-import { useDocumentEvent } from './hooks';
 import { LoadedImage, Types } from '@app/core/utils';
+import { useDocumentEvent } from './hooks';
 
 export interface ClipboardCopyEvent {
     // Indicates whether the event type is a cut event.
