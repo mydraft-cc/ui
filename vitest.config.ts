@@ -10,9 +10,17 @@ export default defineConfig({
         }
     },
 
-    build: {
-        chunkSizeWarningLimit: 2000,
+    define: {
+        __REACT_DEVTOOLS_GLOBAL_HOOK__: { isDisabled: true }
     },
-    
-    plugins: [react({})],
+
+    test: {
+        globals: true,
+
+        browser: {
+            name: 'chrome', // browser name is required,
+            
+            slowHijackESM: false
+        },
+    },
 });
