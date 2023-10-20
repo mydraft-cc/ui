@@ -20,7 +20,7 @@ jobs:
         run: npm i
 
       - name: Run Tests 
-        run: npm run test:coverage
+        run: npm run test:ci
         
       - name: Run Build 
         run: npm run build
