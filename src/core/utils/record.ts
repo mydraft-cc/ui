@@ -14,7 +14,7 @@ export abstract class Record<T extends object> {
     public readonly instanceId: string;
 
     public get<K extends keyof T>(key: K): T[K] {
-        return this.values[key as string];
+        return this.values[key];
     }
 
     constructor(values: T) {
@@ -44,12 +44,12 @@ export abstract class Record<T extends object> {
     }
 
     public merge(props: Partial<T>): this {
-        const values = { ...this.values };
+        const values: any = { ...this.values };
 
         let updates = 0;
 
         for (const [key, value] of Object.entries(props)) {
-            const current = this.values[key];
+            const current = (this.values as any)[key];
     
             if (Types.equals(current, value)) {
                 continue;

@@ -6,7 +6,7 @@
 */
 
 import * as svg from '@svgdotjs/svg.js';
-import { Rect2 } from '@app/core';
+import { Rect2 } from '@app/core/utils';
 import { SVGRenderer2 } from './svg-renderer2';
 
 describe('SVGRenderer2', () => {

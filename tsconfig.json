@@ -1,32 +1,30 @@
 {
   "compilerOptions": {
-    "allowJs": false,
-    "baseUrl": ".",
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
-    "importHelpers": true,
-    "jsx": "react",
-    "lib": ["es6", "dom"],
-    "moduleResolution": "node",
-    "noEmitHelpers": true,
-    "noImplicitAny": true,
+    "allowImportingTsExtensions": true,
+    "isolatedModules": true,
+    "jsx": "react-jsx",
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "noEmit": true,
+    "noFallthroughCasesInSwitch": true,
     "noUnusedLocals": true,
-    "noUnusedParameters": false,
-	"noImplicitReturns": true,
-    "noImplicitThis": true,
-    "removeComments": false,
-    "sourceMap": true,
+    "noUnusedParameters": true,
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
     "strict": true,
-    "strictNullChecks": true,
-    "suppressImplicitAnyIndexErrors": true,
-    "target": "es5",
+    "target": "ES2020",
+    "useDefineForClassFields": true,
     "paths": {
-      "@app*": [
-        "src*"
+      "@app/*": [
+        "./src/*"
       ]
-    }
+    },
+    "types": [
+      "vitest/globals",
+      "vite/client"
+    ]
   },
-  "exclude": [
-    "node_modules"
-  ]
+  "include": ["src"],
+  "references": [{ "path": "./tsconfig.node.json" }]
 }

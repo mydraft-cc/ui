@@ -6,7 +6,6 @@
 */
 
 import { ComponentMeta } from '@storybook/react';
-import * as React from 'react';
 import { DefaultAppearance } from '@app/wireframes/interface';
 import { ShapeRenderer } from './ShapeRenderer';
 import * as Shapes from './dependencies';

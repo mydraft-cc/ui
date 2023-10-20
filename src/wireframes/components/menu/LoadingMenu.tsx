@@ -9,11 +9,10 @@ import { GithubOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import { Button, Menu, Modal } from 'antd';
 import * as React from 'react';
 import { MarkerButton, Title, useEventCallback } from '@app/core';
+import text from '@app/legal.html?raw';
 import { texts } from '@app/texts';
 import { useStore } from '@app/wireframes/model';
 import { ActionDropdownButton, ActionMenuButton, ActionMenuItem, useLoading } from './../actions';
-
-const text = require('@app/legal.html');
 
 export const LoadingMenu = React.memo(() => {
     const forLoading = useLoading();
@@ -87,7 +86,7 @@ export const LoadingMenu = React.memo(() => {
             <MarkerButton />
 
             <Modal title={texts.common.about} visible={isOpen} onCancel={doToggleInfoDialog} onOk={doToggleInfoDialog}>
-                <div dangerouslySetInnerHTML={{ __html: text.default }} />
+                <div dangerouslySetInnerHTML={{ __html: text }} />
             </Modal>
         </>
     );

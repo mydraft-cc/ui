@@ -43,7 +43,7 @@ export class ImmutableMap<T> {
     }
 
     private constructor(
-        private readonly items: { [key: string]: T },
+        private readonly items: Record<string, T>,
     ) {
         Object.freeze(this);
         Object.freeze(items);

@@ -7,7 +7,7 @@
 
 /* eslint-disable @typescript-eslint/naming-convention */
 
-import { Color, Vec2 } from '@app/core';
+import { Color, Vec2 } from '@app/core/utils';
 import { Diagram, EditorState } from '@app/wireframes/model';
 
 describe('EditorState', () => {

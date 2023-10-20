@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { Rect2, Rotation, Vec2 } from '@app/core';
+import { Rect2, Rotation, Vec2 } from '@app/core/utils';
 import { Transform } from '@app/wireframes/model';
 
 /* eslint-disable @typescript-eslint/naming-convention */
@@ -172,7 +172,7 @@ describe('Transform', () => {
         const actual = Transform.createFromTransformationsAndRotation([transformation1, transformation2], rotation);
         const expected = new Transform(new Vec2(300, 150), new Vec2(300, 140), Rotation.fromDegree(45));
 
-        expect(actual.equals(expected)).toBeTrue();
+        expect(actual.equals(expected)).toBeTruthy();
     });
 
     it('should return same instance when resizing to same size', () => {

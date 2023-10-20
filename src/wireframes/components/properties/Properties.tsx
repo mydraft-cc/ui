@@ -7,7 +7,6 @@
 
 import { Collapse } from 'antd';
 import classNames from 'classnames';
-import * as React from 'react';
 import { texts } from '@app/texts';
 import { getDiagram, getSelectedItems, useStore } from '@app/wireframes/model';
 import { Colors } from './Colors';

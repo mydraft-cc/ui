@@ -5,7 +5,6 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import * as React from 'react';
 import { useDragLayer, XYCoord } from 'react-dnd';
 import { ShapePlugin } from '../interface';
 import { getViewBox, ShapeRenderer } from '../shapes/ShapeRenderer';

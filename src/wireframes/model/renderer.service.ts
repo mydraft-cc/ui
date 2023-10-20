@@ -15,7 +15,7 @@ export module RendererService {
         return Object.entries(REGISTERED_RENDERER);
     }
 
-    export function get(id: string) {
+    export function get(id: string): Renderer | undefined {
         return REGISTERED_RENDERER[id];
     }
 

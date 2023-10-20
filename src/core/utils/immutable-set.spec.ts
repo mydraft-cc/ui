@@ -7,7 +7,7 @@
 
 /* eslint-disable @typescript-eslint/naming-convention */
 
-import { ImmutableSet } from '@app/core';
+import { ImmutableSet } from '@app/core/utils';
 
 describe('ImmutableSet', () => {
     it('should instantiate instance from array', () => {

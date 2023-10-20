@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { Rotation, Vec2 } from '@app/core';
+import { Rotation, Vec2 } from '@app/core/utils';
 
 describe('Vec2', () => {
     it('should instantiate from x and y value', () => {

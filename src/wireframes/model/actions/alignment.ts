@@ -6,7 +6,7 @@
 */
 
 import { ActionReducerMapBuilder, createAction } from '@reduxjs/toolkit';
-import { Rect2, Vec2 } from '@app/core';
+import { Rect2, Vec2 } from '@app/core/utils';
 import { Diagram, EditorState, Transform } from './../internal';
 import { createItemsAction, DiagramRef, ItemsRef } from './utils';
 

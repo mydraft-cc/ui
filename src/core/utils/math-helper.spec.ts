@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { MathHelper } from '@app/core';
+import { MathHelper } from '@app/core/utils';
 
 describe('MathHelper', () => {
     it('should calculate different guids', () => {

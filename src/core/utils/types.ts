@@ -133,7 +133,7 @@ export module Types {
         }
 
         for (const key of lhsKeys) {
-            if (!equals(lhs[key], rhs[key], options)) {
+            if (!equals((lhs as any)[key], (rhs as any)[key], options)) {
                 return false;
             }
         }

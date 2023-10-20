@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { MathHelper, Vec2 } from '@app/core';
+import { MathHelper, Vec2 } from '@app/core/utils';
 import { Shape } from '@app/wireframes/interface';
 
 export interface Constraint {

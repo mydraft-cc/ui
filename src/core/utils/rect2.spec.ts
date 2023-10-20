@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { Rect2, Rotation, Vec2 } from '@app/core';
+import { Rect2, Rotation, Vec2 } from '@app/core/utils';
 
 describe('Rect2', () => {
     it('should provide values from constructor', () => {

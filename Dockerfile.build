@@ -11,7 +11,7 @@ RUN npm install --loglevel=error
 COPY . .
 
 # Test Frontend
-RUN npm run test:coverage
+RUN npm run test:ci
 
 # Build Frontend
 RUN npm run build

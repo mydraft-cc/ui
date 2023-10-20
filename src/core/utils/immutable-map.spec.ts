@@ -7,7 +7,7 @@
 
 /* eslint-disable @typescript-eslint/naming-convention */
 
-import { ImmutableMap } from '@app/core';
+import { ImmutableMap } from '@app/core/utils';
 
 describe('ImmutableMap', () => {
     it('should instantiate without arguments', () => {

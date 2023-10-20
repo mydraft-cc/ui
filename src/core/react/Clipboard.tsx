@@ -6,7 +6,7 @@
 */
 
 import * as React from 'react';
-import { Types } from './../utils/types';
+import { LoadedImage, Types } from '@app/core/utils';
 import { useDocumentEvent } from './hooks';
 
 export interface ClipboardCopyEvent {
@@ -224,8 +224,6 @@ function emitPaste(context: ClipboardContextType, ...items: ClipboardItem[]) {
         }
     }
 }
-
-export type LoadedImage = { width: number; height: number; source: string };
 
 export async function loadImagesToClipboardItems(files: FileList | ReadonlyArray<File>) {
     const items: ClipboardItem[] = [];

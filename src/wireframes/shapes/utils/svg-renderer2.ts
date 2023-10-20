@@ -478,7 +478,7 @@ class Properties implements ShapeProperties {
         }
 
         this.propertiesNew = {};
-        this.propertiesOld = this.element.node['properties'] || {};
+        this.propertiesOld = (this.element.node as any)['properties'] || {};
     }
 
     public setBackgroundColor(color: RendererColor | null | undefined): ShapeProperties {
@@ -601,7 +601,7 @@ class Properties implements ShapeProperties {
             }
         }
 
-        this.element.node['properties'] = this.propertiesNew;
+        (this.element.node as any)['properties'] = this.propertiesNew;
     }
 }
 
@@ -647,7 +647,7 @@ function getText(value: TextConfig | Shape | string | null | undefined) {
     if (isShape(value)) {
         return value.text || '';
     } else {
-        return value?.['text'] || value || '';
+        return (value as any)?.['text'] || value || '';
     }
 }
 
@@ -655,7 +655,7 @@ function getTextAlignment(value: TextConfig | Shape | string | null | undefined)
     if (isShape(value)) {
         return value.textAlignment || 'center';
     } else {
-        return value?.['alignment'] || value || 'center';
+        return (value as any)?.['alignment'] || value || 'center';
     }
 }
 
@@ -663,7 +663,7 @@ function getFontSize(value: TextConfig | Shape | number | null | undefined) {
     if (isShape(value)) {
         return value.fontSize || 10;
     } else {
-        return value?.['fontSize'] || value || 10;
+        return (value as any)?.['fontSize'] || value || 10;
     }
 }
 
@@ -671,7 +671,7 @@ function getFontFamily(value: TextConfig | Shape | string | null | undefined) {
     if (isShape(value)) {
         return value.fontFamily || 'inherit';
     } else {
-        return value?.['fontFamily'] || value || 10;
+        return (value as any)?.['fontFamily'] || value || 10;
     }
 }
 

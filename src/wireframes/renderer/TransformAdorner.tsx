@@ -266,7 +266,7 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
             this.manipulationMode = Mode.Rotate;
         } else {
             this.manipulationMode = Mode.Resize;
-            this.manipulationOffset = hitItem['offset'];
+            this.manipulationOffset = (hitItem as any)['offset'];
         }
     }
 
@@ -320,7 +320,7 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
     }
 
     private renderPreview() {
-        const items = {};
+        const items: Record<string, DiagramItem> = {};
 
         for (const item of this.props.selectedItems) {
             items[item.id] = item.transformByBounds(this.startTransform, this.transform);
@@ -511,7 +511,7 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
         const adornerHalfSize = adornerSize / 2;
 
         for (const resizeShape of this.resizeShapes) {
-            const offset = resizeShape['offset'];
+            const offset = (resizeShape as any)['offset'];
 
             const visible =
                 (offset.x === 0 || this.canResizeX) &&
@@ -597,7 +597,7 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
                 this.props.adorners.rect(DRAG_SIZE, DRAG_SIZE)
                     .stroke({ color: TRANSFORMER_STROKE_COLOR, width: 1 }).fill(TRANSFORMER_FILL_COLOR);
 
-            resizeShape['offset'] = new Vec2(xs[i], ys[i]);
+            (resizeShape as any)['offset'] = new Vec2(xs[i], ys[i]);
 
             this.props.interactionService.setCursorAngle(resizeShape, as[i]);
 
