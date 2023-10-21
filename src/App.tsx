@@ -20,12 +20,10 @@ import { CustomDragLayer } from './wireframes/components/CustomDragLayer';
 import { PresentationView } from './wireframes/components/PresentationView';
 import { OverlayContainer } from './wireframes/contexts/OverlayContext';
 
-const logo = require('./images/logo.svg').default;
-
 export const App = () => {
     const dispatch = useDispatch();
-    const route = useRouteMatch();
-    const routeToken = route.params['token'] || null;
+    const route = useRouteMatch<{ token?: string }>();
+    const routeToken = route.params.token || null;
     const routeTokenSnapshot = React.useRef(routeToken);
     const selectedTab = useStore(s => s.ui.selectedTab);
     const showLeftSidebar = useStore(s => s.ui.showLeftSidebar);
@@ -82,7 +80,7 @@ export const App = () => {
             <ClipboardContainer>
                 <Layout className='screen-mode'>
                     <Layout.Header>
-                        <img className='logo' src={logo} alt='mydraft.cc' />
+                        <img className='logo' src='logo.svg' alt='mydraft.cc' />
 
                         <span className='ant-menu-group'>
                             <HistoryMenu />

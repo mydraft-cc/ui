@@ -133,11 +133,11 @@ export class InteractionService {
     }
 
     public setCursor(item: svg.Element, cursor: string) {
-        item.node['cursor'] = cursor;
+        (item.node as any)['cursor'] = cursor;
     }
 
     public setCursorAngle(item: svg.Element, angle: number) {
-        item.node['cursorAngle'] = angle;
+        (item.node as any)['cursorAngle'] = angle;
     }
 
     public showAdorners() {

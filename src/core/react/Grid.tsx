@@ -7,7 +7,7 @@
 
 import * as React from 'react';
 import { SizeMeProps, withSize } from 'react-sizeme';
-import { sizeInPx } from './../utils/react';
+import { sizeInPx } from '@app/core/utils';
 import { useEventCallback } from './hooks';
 
 interface GridProps {
@@ -107,7 +107,7 @@ const GridComponent = (props: SizeMeProps & GridProps) => {
     const [scrollContainer, setScrollContainer] = React.useState<HTMLDivElement | null>();
 
     const doScroll = useEventCallback((event: React.UIEvent<HTMLDivElement>) => {
-        const div: HTMLDivElement = event.target as any;
+        const div = event.target as HTMLDivElement;
 
         setScrollTop(div.scrollTop);
     });

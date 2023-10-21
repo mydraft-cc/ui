@@ -6,7 +6,7 @@
 */
 
 import { AnyAction } from 'redux';
-import { Types } from '@app/core';
+import { Types } from '@app/core/utils';
 import { changeItemsAppearance, transformItems } from './appearance';
 import { changeColor, changeSize, renameDiagram } from './diagrams';
 import { renameItems, selectItems } from './items';

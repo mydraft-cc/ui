@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { Rotation } from '@app/core';
+import { Rotation } from '@app/core/utils';
 
 describe('Rotation', () => {
     it('should sub correctly', () => {

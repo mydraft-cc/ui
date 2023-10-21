@@ -7,7 +7,7 @@
 
 import { ActionReducerMapBuilder } from '@reduxjs/toolkit';
 import { AnyAction, Reducer } from 'redux';
-import { Types } from '@app/core';
+import { Types } from '@app/core/utils';
 import { Diagram, DiagramItem } from './../internal';
 
 export type DiagramRef = string | Diagram;

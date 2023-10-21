@@ -6,9 +6,7 @@
 */
 
 import classNames from 'classnames';
-import * as React from 'react';
-import { Color } from './../utils/color';
-import { ColorPalette } from './../utils/color-palette';
+import { Color, ColorPalette } from '@app/core/utils';
 
 interface ColorListProps {
     // The selected color.

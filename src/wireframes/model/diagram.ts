@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { ImmutableList, ImmutableMap, MathHelper, Record, Types } from '@app/core';
+import { ImmutableList, ImmutableMap, MathHelper, Record, Types } from '@app/core/utils';
 import { DiagramItem } from './diagram-item';
 import { DiagramItemSet } from './diagram-item-set';
 

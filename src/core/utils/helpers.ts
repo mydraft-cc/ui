@@ -5,10 +5,8 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-const IS_MAC = window.navigator?.userAgent?.indexOf('Mac') >= 0;
-
 export function isMac() {
-    return IS_MAC;
+    return window.navigator?.userAgent?.indexOf('Mac') >= 0;
 }
 
 export function isModKey(key: KeyboardEvent | MouseEvent) {
@@ -22,11 +20,11 @@ export function isModKey(key: KeyboardEvent | MouseEvent) {
 
 const escapeTestNoEncode = /[<>"']|&(?!(#\d{1,7}|#[Xx][a-fA-F0-9]{1,6}|\w+);)/;
 const escapeReplaceNoEncode = new RegExp(escapeTestNoEncode.source, 'g');
-const escapeReplacements = {
-    '&': '&amp;',
-    '<': '&lt;',
-    '>': '&gt;',
-    '"': '&quot;',
+const escapeReplacements: Record<string, string> = {
+    '&' : '&amp;',
+    '<' : '&lt;',
+    '>' : '&gt;',
+    '"' : '&quot;',
     '\'': '&#39;',
 };
 

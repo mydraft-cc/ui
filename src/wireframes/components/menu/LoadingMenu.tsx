@@ -9,6 +9,7 @@ import { BugOutlined, GithubOutlined, QuestionCircleOutlined } from '@ant-design
 import { Button, Dropdown, Menu, Modal } from 'antd';
 import * as React from 'react';
 import { Title, useEventCallback, useMarker } from '@app/core';
+import text from '@app/legal.html?raw';
 import { texts } from '@app/texts';
 import { useStore } from '@app/wireframes/model';
 import { ActionDropdownButton, ActionMenuButton, ActionMenuItem, UIAction, useLoading } from './../actions';
@@ -76,7 +77,7 @@ export const LoadingMenu = React.memo(() => {
             </Dropdown>
     
             <Modal title={texts.common.about} visible={isOpen} onCancel={doToggleInfoDialog} onOk={doToggleInfoDialog}>
-                <div dangerouslySetInnerHTML={{ __html: text.default }} />
+                <div dangerouslySetInnerHTML={{ __html: text }} />
             </Modal>
         </>
     );
@@ -89,8 +90,6 @@ const SaveMenu = ({ action }: { action: UIAction }) => {
         </Menu>
     );
 };
-
-const text = require('@app/legal.html');
 
 const HelpMenu = ({ onMarker, onToggle }: { onToggle: () => void; onMarker: () => void }) => {
     const openGithub = () => {

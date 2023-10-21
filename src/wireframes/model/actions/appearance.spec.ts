@@ -7,7 +7,7 @@
 
 /* eslint-disable @typescript-eslint/naming-convention */
 
-import { Color, Rotation, Vec2 } from '@app/core';
+import { Color, Rotation, Vec2 } from '@app/core/utils';
 import { DefaultAppearance } from '@app/wireframes/interface';
 import { buildAppearance, changeColors, changeItemsAppearance, createClassReducer, Diagram, DiagramItem, EditorState, RendererService, Transform, transformItems } from '@app/wireframes/model';
 import { Button } from '@app/wireframes/shapes/neutral/button';

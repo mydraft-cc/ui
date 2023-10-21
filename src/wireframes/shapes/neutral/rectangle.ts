@@ -66,6 +66,6 @@ export class Rectangle implements ShapePlugin {
 
         ctx.renderer2.text(ctx.shape, ctx.rect.deflate(paddingHorizontal, paddingVertical), p => {
             p.setForegroundColor(ctx.shape);
-        });
+        }, true);
     }
 }

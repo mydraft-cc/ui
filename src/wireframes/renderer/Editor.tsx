@@ -144,7 +144,7 @@ export const Editor = React.memo((props: EditorProps) => {
     }, [diagram, overlayContext.snapManager, viewSize]);
     
     React.useEffect(() => {
-        overlayContext.overlayManager['setZoom']?.(zoom);
+        (overlayContext.overlayManager as any)['setZoom']?.(zoom);
     }, [diagram, overlayContext.overlayManager, zoom]);
 
     return (

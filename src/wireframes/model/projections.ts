@@ -7,7 +7,7 @@
 
 import { useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
-import { Color, ColorPalette, Types } from '@app/core';
+import { Color, ColorPalette, Types } from '@app/core/utils';
 import { texts } from '@app/texts';
 import { user } from '@app/wireframes/user';
 import { AssetsStateInStore } from './assets-state';

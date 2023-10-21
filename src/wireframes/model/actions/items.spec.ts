@@ -7,7 +7,7 @@
 
 /* eslint-disable @typescript-eslint/naming-convention */
 
-import { MathHelper, Vec2 } from '@app/core';
+import { MathHelper, Vec2 } from '@app/core/utils';
 import { addShape, buildItems, calculateSelection, createClassReducer, Diagram, DiagramItem, DiagramItemSet, EditorState, lockItems, pasteItems, removeItems, renameItems, RendererService, selectItems, Serializer, unlockItems } from '@app/wireframes/model';
 import { Button } from '@app/wireframes/shapes/neutral/button';
 import { Icon } from '@app/wireframes/shapes/shared/icon';

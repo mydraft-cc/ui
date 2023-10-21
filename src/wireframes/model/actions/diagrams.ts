@@ -6,7 +6,7 @@
 */
 
 import { ActionReducerMapBuilder, createAction } from '@reduxjs/toolkit';
-import { Color, MathHelper, Vec2 } from '@app/core';
+import { Color, MathHelper, Vec2 } from '@app/core/utils';
 import { Diagram, EditorState } from './../internal';
 import { createDiagramAction, DiagramRef } from './utils';
 

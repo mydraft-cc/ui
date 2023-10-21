@@ -19,8 +19,11 @@ jobs:
       - name: Install Dependencies
         run: npm i
 
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps
+
       - name: Run Tests 
-        run: npm run test:coverage
+        run: npm run test:ci
         
       - name: Run Build 
         run: npm run build
@@ -29,5 +32,5 @@ jobs:
         uses: JamesIves/github-pages-deploy-action@4.1.7
         with:
           branch: gh-pages
-          folder: build
+          folder: dist
           clean: false

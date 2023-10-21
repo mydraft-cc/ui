@@ -7,7 +7,6 @@
 
 import { Checkbox, Col, InputNumber, Row, Select } from 'antd';
 import { CheckboxChangeEvent } from 'antd/lib/checkbox';
-import * as React from 'react';
 import { useDispatch } from 'react-redux';
 import { Color, ColorPalette, ColorPicker, useEventCallback } from '@app/core';
 import { changeItemsAppearance, Configurable, getColors, getDiagramId, getSelectedConfigurables, getSelectedShape, selectColorTab, useStore } from '@app/wireframes/model';

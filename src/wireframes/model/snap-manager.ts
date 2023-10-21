@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { MathHelper, Rect2, Vec2 } from '@app/core';
+import { MathHelper, Rect2, Vec2 } from '@app/core/utils';
 import { Diagram } from './diagram';
 import { Transform } from './transform';
 

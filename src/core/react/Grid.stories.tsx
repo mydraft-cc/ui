@@ -6,7 +6,6 @@
 */
 
 import { ComponentMeta } from '@storybook/react';
-import * as React from 'react';
 import { Grid } from './Grid';
 
 export default {

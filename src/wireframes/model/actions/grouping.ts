@@ -6,7 +6,7 @@
 */
 
 import { ActionReducerMapBuilder, createAction } from '@reduxjs/toolkit';
-import { MathHelper } from '@app/core';
+import { MathHelper } from '@app/core/utils';
 import { EditorState } from './../internal';
 import { createItemsAction, DiagramRef, ItemsRef } from './utils';
 

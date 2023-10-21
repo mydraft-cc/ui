@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { ImmutableList } from '@app/core';
+import { ImmutableList } from '@app/core/utils';
 
 /* eslint-disable @typescript-eslint/naming-convention */
 
@@ -45,7 +45,7 @@ describe('ImmutableList', () => {
         const items: number[] = null!;
 
         const list_1 = ImmutableList.empty<number>();
-        const list_2 = list_1.add(...items);
+        const list_2 = list_1.add.apply(list_1, items);
 
         expect(list_2).toEqual(list_1);
     });
@@ -74,7 +74,7 @@ describe('ImmutableList', () => {
         const items: number[] = null!;
 
         const list_1 = ImmutableList.of([1]);
-        const list_2 = list_1.remove(...items);
+        const list_2 = list_1.remove.apply(list_1, items);
 
         expect(list_2).toBe(list_1);
     });
