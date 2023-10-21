@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { ImmutableList, MathHelper, Rotation, Vec2 } from '@app/core/utils';
+import { MathHelper, Rotation, Vec2 } from '@app/core/utils';
 import { Diagram } from './diagram';
 import { DiagramItem } from './diagram-item';
 import { DiagramItemSet } from './diagram-item-set';

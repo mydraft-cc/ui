@@ -9,7 +9,7 @@
 
 import { diff } from 'deep-object-diff';
 import { MathHelper, Types } from '@app/core';
-import { EditorState, loadDiagramInternal, RendererService, selectItems } from '@app/wireframes/model';
+import { EditorState, loadDiagramInternal, RendererService } from '@app/wireframes/model';
 import * as Reducers from '@app/wireframes/model/actions';
 import { Button } from '@app/wireframes/shapes/neutral/button';
 import { AbstractControl } from '@app/wireframes/shapes/utils/abstract-control';

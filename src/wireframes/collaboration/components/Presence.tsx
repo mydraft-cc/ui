@@ -1,3 +1,9 @@
+/*
+ * mydraft.cc
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { CopyOutlined, ShareAltOutlined } from '@ant-design/icons';
 import { Avatar, Button, Dropdown, Input, message } from 'antd';
@@ -46,7 +52,7 @@ export const Presence = () => {
     );
 };
 
-export const ShareMenu = ({ id }: { id: string }) => {
+const ShareMenu = ({ id }: { id: string }) => {
     const link = `${window.location.protocol}//${window.location.host}/c:${id}`;
 
     const doCopy = () => {

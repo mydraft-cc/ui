@@ -51,8 +51,6 @@ export class ImmutableList<T> {
             return ImmutableList.empty();
         } else if (items instanceof ImmutableList) {
             return items;
-        } else if (items.length === 0) {
-            return ImmutableList.empty<V>();
         } else {
             return new ImmutableList<V>(items, MathHelper.nextId());
         }

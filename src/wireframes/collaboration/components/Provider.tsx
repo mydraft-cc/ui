@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { TiptapCollabProvider } from '@hocuspocus/provider';
+import { HocuspocusProvider  } from '@hocuspocus/provider';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
 import * as Y from 'yjs';
@@ -25,7 +25,7 @@ export const CollaborationProvider = ({ children }: { children: React.ReactNode 
     useAsyncEffect(async cancellation => {
         setState({});
     
-        const provider = new TiptapCollabProvider({ appId: '7ME5ZQMY', name: editorId });
+        const provider = new HocuspocusProvider({ url: import.meta.env.VITE_SERVER_COLLABORATION_URL, name: editorId });
 
         await new Promise(resolve => {
             const handler = () => {
@@ -63,7 +63,7 @@ export const CollaborationProvider = ({ children }: { children: React.ReactNode 
             document,
         });
 
-        setState({ document, provider });
+        setState(s => ({ ...s, document, provider }));
 
         return () => {
             synchronizer.destroy();

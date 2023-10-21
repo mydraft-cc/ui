@@ -35,7 +35,7 @@ export const useUndoManager = () => {
         }
 
         const handler = () => {
-            setCanUndo(undoManager.canUndo());
+            setCanUndo(undoManager.undoStack.length > 1);
             setCanRedo(undoManager.canRedo());
         };
 

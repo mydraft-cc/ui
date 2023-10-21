@@ -12,6 +12,9 @@ type Diagrams = ImmutableMap<Diagram>;
 type DiagramIds = ImmutableList<string>;
 
 type Props = {
+    // The id of the state.
+    id: string;
+
     // The id of the selected diagram.
     selectedDiagramIds: ImmutableMap<string | null | undefined>;
 
@@ -24,9 +27,6 @@ type Props = {
     // The size of all diagrams.
     size: Vec2;
 
-    // The id of the state.
-    id: string;
-
     // The color for all diagrams.
     color: Color;
 };
@@ -34,6 +34,9 @@ type Props = {
 export type InitialEditorProps = {
     // The unique id of the editor.
     id?: string;
+
+    // The id of the selected diagram.
+    selectedDiagramIds?: { [user: string]: string | null | undefined } | ImmutableMap<string | null | undefined>;
 
     // The actual diagrams.
     diagrams?: { [id: string]: Diagram } | ImmutableMap<Diagram>;
@@ -80,14 +83,14 @@ export class EditorState extends Record<Props> {
     }
 
     public static create(setup: InitialEditorProps = {}): EditorState {
-        const { color, diagrams, diagramIds, id, size } = setup;
+        const { color, diagrams, diagramIds, id, selectedDiagramIds, size } = setup;
 
         const props: Props = {
             id: id || MathHelper.guid(),
             color: color || Color.WHITE,
             diagrams: ImmutableMap.of(diagrams),
             diagramIds: ImmutableList.of(diagramIds),
-            selectedDiagramIds: ImmutableMap.empty(),
+            selectedDiagramIds: ImmutableMap.of(selectedDiagramIds),
             size: size || new Vec2(1000, 1000),
         };
 

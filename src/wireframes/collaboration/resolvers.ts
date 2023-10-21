@@ -17,21 +17,29 @@ class DelegateValueResolver<T> implements ValueResolver<T> {
     }
 }
 
-export const COLOR_RESOLVER = new DelegateValueResolver(Color.fromJS, s => s.toJS());
+export const COLOR_RESOLVER =
+    new DelegateValueResolver(Color.fromJS, s => s.toJS());
 
-export const MINSIZE_CONSTRAINT_RESOLVER = new DelegateValueResolver(() => new MinSizeConstraint(), () => ({}));
+export const MINSIZE_CONSTRAINT_RESOLVER =
+    new DelegateValueResolver(() => new MinSizeConstraint(), () => ({}));
 
-export const RECT2_RESOLVER = new DelegateValueResolver(Rect2.fromJS, s => s.toJS());
+export const RECT2_RESOLVER =
+    new DelegateValueResolver(Rect2.fromJS, s => s.toJS());
 
-export const ROTATION_RESOLVER = new DelegateValueResolver(Rotation.fromJS, s => s.toJS());
+export const ROTATION_RESOLVER =
+    new DelegateValueResolver(Rotation.fromJS, s => s.toJS());
 
-export const SIZE_CONSTRAINT_RESOLVER = new DelegateValueResolver(s => new SizeConstraint(s.w as number, s.h as number),  s => ({ w: s.width, h: s.height }));
+export const SIZE_CONSTRAINT_RESOLVER =
+    new DelegateValueResolver(s => new SizeConstraint(s.w as number, s.h as number),  s => ({ w: s.width, h: s.height }));
 
-export const TEXTHEIGHT_CONSTRAINT_RESOLVER = new DelegateValueResolver(s => new TextHeightConstraint(s.p as number),  s => ({ p: s.padding }));
+export const TEXTHEIGHT_CONSTRAINT_RESOLVER =
+    new DelegateValueResolver(s => new TextHeightConstraint(s.p as number),  s => ({ p: s.padding }));
 
-export const TRANSFORM_RESOLVER = new DelegateValueResolver(Transform.fromJS, s => s.toJS());
+export const TRANSFORM_RESOLVER =
+    new DelegateValueResolver(Transform.fromJS, s => s.toJS());
 
-export const VEC2_RESOLVER = new DelegateValueResolver(Vec2.fromJS, s => s.toJS());
+export const VEC2_RESOLVER =
+    new DelegateValueResolver(Vec2.fromJS, s => s.toJS());
 
 export class ImmutableListResolver implements ArrayTypeResolver<ImmutableList<unknown>> {
     public readonly sourceType = 'Array';
@@ -98,7 +106,7 @@ export class RecordResolver<T extends Record<any>> implements ObjectTypeResolver
     }
 
     public syncToObject(existing: T, diffs: ObjectDiff[]): T {
-        const merge: object = {};
+        const merge: { [key: string ]: any } = {};
 
         for (const diff of diffs) {
             if (diff.type === 'Remove') {

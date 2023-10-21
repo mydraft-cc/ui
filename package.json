@@ -4,9 +4,12 @@
   "private": true,
   "dependencies": {
     "@ant-design/icons": "^4.7.0",
+    "@hocuspocus/provider": "^2.5.0",
     "@marker.io/browser": "^0.18.0",
     "@reduxjs/toolkit": "^1.7.1",
     "@svgdotjs/svg.js": "^3.1.1",
+    "@y-sweet/client": "^0.0.8",
+    "@y-sweet/sdk": "^0.0.8",
     "antd": "4.18.2",
     "classnames": "^2.3.1",
     "connected-react-router": "^6.9.2",
@@ -31,10 +34,13 @@
     "redux-thunk": "2.4.1",
     "reselect": "4.1.5",
     "tslib": "2.3.1",
-    "vite-plugin-pwa": "^0.16.5"
+    "y-protocols": "^1.0.6",
+    "y-webrtc": "^10.2.5",
+    "yjs-redux": "^0.14.0"
   },
   "scripts": {
     "start": "vite",
+    "start-local": "vite --mode local-server",
     "lint": "eslint src/**/*.ts[x]",
     "lint:fix": "eslint src/**/*.ts[x] --fix",
     "build": "tsc && vite build",
@@ -81,6 +87,7 @@
     "typescript": "^5.2.2",
     "vite": "^4.5.0",
     "vite-plugin-favicon": "^1.0.8",
+    "vite-plugin-pwa": "^0.16.5",
     "vitest": "^0.34.6",
     "webdriverio": "^8.16.10"
   }
