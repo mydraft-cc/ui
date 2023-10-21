@@ -26,7 +26,7 @@ export interface RenderLayerProps {
     onRender?: () => void;
 }
 
-const showDebugOutlines = process.env.NODE_ENV === 'false';
+const showDebugOutlines = false;
 
 export const RenderLayer = React.memo((props: RenderLayerProps) => {
     const {

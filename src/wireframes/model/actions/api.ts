@@ -5,10 +5,10 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-const API_URL = process.env.NODE_ENV === 'test_development' ? 'http://localhost:4000' : 'https://api.mydraft.cc';
+const SERVER_URL = import.meta.env.VITE_SERVER_URL;
 
 export async function getDiagram(readToken: string) {
-    const response = await fetch(`${API_URL}/${readToken}`);
+    const response = await fetch(`${SERVER_URL}/${readToken}`);
 
     if (!response.ok) {
         throw Error('Failed to load diagram');
@@ -20,7 +20,7 @@ export async function getDiagram(readToken: string) {
 }
 
 export async function putDiagram(readToken: string, writeToken: string, body: any) {
-    const response = await fetch(`${API_URL}/${readToken}/${writeToken}`, {
+    const response = await fetch(`${SERVER_URL}/${readToken}/${writeToken}`, {
         method: 'PUT',
         headers: {
             ContentType: 'text/json',
@@ -34,7 +34,7 @@ export async function putDiagram(readToken: string, writeToken: string, body: an
 }
 
 export async function postDiagram(body: any)  {
-    const response = await fetch(`${API_URL}/`, {
+    const response = await fetch(`${SERVER_URL}/`, {
         method: 'POST',
         headers: {
             ContentType: 'text/json',

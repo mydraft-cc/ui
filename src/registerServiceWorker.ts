@@ -12,7 +12,11 @@ import { texts } from '@app/texts';
 import { showToast } from '@app/wireframes/model';
 
 export function registerServiceWorker(store: Store) {
-    if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator) {
+    if (!import.meta.env.PROD) {
+        return;
+    }
+
+    if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
             const url = '/sw.js';
 
@@ -46,6 +50,10 @@ export function registerServiceWorker(store: Store) {
 }
 
 export function unregister() {
+    if (!import.meta.env.PROD) {
+        return;
+    }
+
     if ('serviceWorker' in navigator) {
         navigator.serviceWorker.ready.then(registration => {
             registration.unregister();

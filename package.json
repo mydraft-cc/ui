@@ -35,12 +35,13 @@
   },
   "scripts": {
     "start": "vite",
+    "start-local": "vite --mode local-server",
     "lint": "eslint src/**/*.ts[x]",
     "lint:fix": "eslint src/**/*.ts[x] --fix",
     "build": "tsc && vite build",
     "build-storybook": "storybook build",
     "test": "vitest --browser",
-    "test:ci": "vitest run --browser.name=chromium --browser.provider=playwright --browser.headless",
+    "test:ci": "vitest run --coverage --browser.name=chromium --browser.provider=playwright --browser.headless",
     "storybook": "storybook dev -p 6006",
     "chromatic": "npx chromatic --project-token=41cda26e5757"
   },
