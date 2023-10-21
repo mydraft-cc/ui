@@ -1,17 +1,16 @@
 import path from 'path';
-import react from '@vitejs/plugin-react';
 import { defineConfig } from 'vite';
 
 // https://vitejs.dev/config/
 export default defineConfig({
     resolve: {
         alias: {
-            '@app': path.resolve(__dirname, './src/')
-        }
+            '@app': path.resolve(__dirname, './src/'),
+        },
     },
 
     define: {
-        __REACT_DEVTOOLS_GLOBAL_HOOK__: { isDisabled: true }
+        __REACT_DEVTOOLS_GLOBAL_HOOK__: { isDisabled: true },
     },
 
     test: {
@@ -20,7 +19,7 @@ export default defineConfig({
         browser: {
             name: 'chrome', // browser name is required,
             
-            slowHijackESM: false
+            slowHijackESM: false,
         },
     },
-});
+} as any);
