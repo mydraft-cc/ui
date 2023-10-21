@@ -21,5 +21,9 @@ export default defineConfig({
             
             slowHijackESM: false,
         },
+
+        coverage: {
+            provider: 'istanbul',
+        },
     },
 } as any);

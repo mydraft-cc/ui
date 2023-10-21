@@ -68,6 +68,8 @@
     "@typescript-eslint/parser": "^6.8.0",
     "@vitejs/plugin-react": "^4.0.3",
     "@vitest/browser": "^0.34.6",
+    "@vitest/coverage-istanbul": "^0.34.6",
+    "@vitest/coverage-v8": "^0.34.6",
     "chromatic": "^7.4.0",
     "eslint": "^8.51.0",
     "eslint-config-airbnb-typescript": "^17.1.0",
