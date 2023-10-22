@@ -44,14 +44,14 @@ export const DiagramProperties = React.memo(() => {
             <Row className='property'>
                 <Col span={12} className='property-label'>{texts.common.width}</Col>
                 <Col span={12} className='property-value'>
-                    <InputNumber value={sizeWidth} min={100} max={3000} onChange={setWidth} onBlur={doChangeSize} />
+                    <InputNumber value={sizeWidth} min={100} max={3000} onChange={setWidth as any} onBlur={doChangeSize} />
                 </Col>
             </Row>
 
             <Row className='property'>
                 <Col span={12} className='property-label'>{texts.common.height}</Col>
                 <Col span={12} className='property-value'>
-                    <InputNumber value={sizeHeight} min={100} max={3000} onChange={setHeight} onBlur={doChangeSize} />
+                    <InputNumber value={sizeHeight} min={100} max={3000} onChange={setHeight as any} onBlur={doChangeSize} />
                 </Col>
             </Row>
 

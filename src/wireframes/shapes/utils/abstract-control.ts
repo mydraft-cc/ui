@@ -6,7 +6,7 @@
 */
 
 import * as svg from '@svgdotjs/svg.js';
-import { Rect2, SVGHelper } from '@app/core';
+import { Rect2, SVGHelper } from '@app/core/utils';
 import { ConfigurableFactory, Constraint, ConstraintFactory, RenderContext, ShapePlugin } from '@app/wireframes/interface';
 import { ColorConfigurable, DiagramItem, MinSizeConstraint, NumberConfigurable, Renderer, SelectionConfigurable, SizeConstraint, SliderConfigurable, TextConfigurable, TextHeightConstraint, ToggleConfigurable } from '@app/wireframes/model';
 import { SVGRenderer2 } from './svg-renderer2';

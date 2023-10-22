@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { Vec2 } from '@app/core';
+import { Vec2 } from '@app/core/utils';
 import { Constraint, Shape } from '@app/wireframes/interface';
 import { DiagramItem } from '@app/wireframes/model';
 import { SVGRenderer2 } from './svg-renderer2';

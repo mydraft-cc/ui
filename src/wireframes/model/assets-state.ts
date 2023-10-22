@@ -5,9 +5,9 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { ShapePlugin } from '../interface';
 import { ICONS_FONT_AWESOME } from './../../icons/font_awesome_unified';
 import { ICONS_MATERIAL_DESIGN } from './../../icons/material_icons_unified';
+import { ShapePlugin } from './../interface';
 import { RendererService } from './renderer.service';
 
 export interface AssetInfo {

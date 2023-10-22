@@ -6,9 +6,9 @@
 */
 
 import * as svg from '@svgdotjs/svg.js';
-import { Color, sizeInPx, SVGHelper } from '@app/core';
+import { Color, sizeInPx, SVGHelper } from '@app/core/utils';
 import { SnapLine, SnapResult, Transform } from '@app/wireframes/model';
-import { SVGRenderer2 } from '../shapes/utils/svg-renderer2';
+import { SVGRenderer2 } from './../shapes/utils/svg-renderer2';
 
 const COLOR_RED = Color.RED.toString();
 const COLOR_BLUE = Color.RED.toString();
