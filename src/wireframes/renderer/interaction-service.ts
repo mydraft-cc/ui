@@ -6,7 +6,7 @@
 */
 
 import * as svg from '@svgdotjs/svg.js';
-import { MathHelper, Vec2 } from '@app/core';
+import { MathHelper, Vec2 } from '@app/core/utils';
 import { DiagramItem } from '@app/wireframes/model';
 
 export class SvgEvent {
