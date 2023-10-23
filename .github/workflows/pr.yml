@@ -24,6 +24,9 @@ jobs:
 
       - name: Run Tests 
         run: npm run test:ci
+
+      - name: Run Tests again
+        run: npm run test:ci
         
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v3.1.4

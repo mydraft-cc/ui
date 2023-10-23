@@ -2,7 +2,7 @@ name: Multi Platform Test
 
 on:
   push:
-    branches: [ master ]
+    branches: [ none ]
 
   workflow_dispatch:
 
@@ -29,5 +29,5 @@ jobs:
       - name: Run Tests 
         run: npm run test:ci
 
-      - name: Run Tests 
+      - name: Run Tests again
         run: npm run test:ci
