@@ -35,7 +35,7 @@ describe('OrderingReducer', () => {
     });
 
     it('should return same state if action has unknown ordering type', () => {
-        const action = orderItems('UNKNOWN' as any, diagram, []);
+        const action = orderItems('UNKNOWN' as any, diagram, [shape1]);
         const state_1 = EditorState.create();
         const state_2 = reducer(state_1, action);
 

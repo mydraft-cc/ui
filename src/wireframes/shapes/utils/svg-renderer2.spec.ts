@@ -11,74 +11,74 @@ import { SVGRenderer2 } from './svg-renderer2';
 
 describe('SVGRenderer2', () => {
     let renderer: SVGRenderer2;
-    let container: svg.G;
-    let root: svg.Svg;
+    let svgGroup: svg.G;
+    let svgRoot: svg.Svg;
     const bounds = new Rect2(0, 0, 100, 100);
 
     beforeEach(() => {
-        root = svg.SVG().addTo(document.body);
-        container = new svg.G().addTo(root);
+        svgRoot = svg.SVG().addTo(document.body);
+        svgGroup = new svg.G().addTo(svgRoot);
 
         renderer = new SVGRenderer2();
-        renderer.setContainer(container);
+        renderer.setContainer(svgGroup);
     });
 
     describe('Process', () => {
         it('should render same element', () => {
             renderRect();
-            const rendered1 = container.get(0);
+            const rendered1 = svgGroup.get(0);
 
             renderRect();
-            const rendered2 = container.get(0);
+            const rendered2 = svgGroup.get(0);
 
             expect(rendered2).toBe(rendered1);
-            expect(container.children().length).toEqual(1);
+            expect(svgGroup.children().length).toEqual(1);
         });
 
         it('should render same element with different colors', () => {
             renderWithBackground('#00ff00');
-            const rendered1 = container.get(0);
+            const rendered1 = svgGroup.get(0);
 
             renderWithBackground('#ff0000');
-            const rendered2 = container.get(0);
+            const rendered2 = svgGroup.get(0);
 
             expect(rendered2).toBe(rendered1);
             expect(rendered2.fill()).toEqual('#ff0000');
-            expect(container.children().length).toEqual(1);
+            expect(svgGroup.children().length).toEqual(1);
         });
 
         it('should reuse element when element changed', () => {
             renderConditional(true);
-            const rendered1 = container.get(2);
+            const rendered1 = svgGroup.get(2);
 
             renderConditional(false);
-            const rendered2 = container.get(2);
+            const rendered2 = svgGroup.get(2);
 
             expect(rendered2).toBe(rendered1);
-            expect(container.children().length).toEqual(3);
+            expect(svgGroup.children().length).toEqual(3);
         });
 
         it('should not reuse element when element added', () => {
             renderAdded(false);
-            const rendered1 = container.get(2);
+            const rendered1 = svgGroup.get(2);
 
             renderAdded(true);
-            const rendered2 = container.get(2);
+            const rendered2 = svgGroup.get(2);
 
             expect(rendered2).not.toBe(rendered1);
-            expect(container.children().length).toEqual(4);
+            expect(svgGroup.children().length).toEqual(4);
         });
 
         it('should remove old elements', () => {
             renderAdded(true);
             renderAdded(false);
 
-            expect(container.children().length).toEqual(3);
+            expect(svgGroup.children().length).toEqual(3);
         });
 
         it('should set clip element', () => {
             renderWithClip(true);
-            const rendered = container.get(0) as svg.G;
+            const rendered = svgGroup.get(0) as svg.G;
 
             expect(rendered.attr('clip-path')).toBeDefined();
             expect(rendered.children().length).toEqual(2);
@@ -86,10 +86,10 @@ describe('SVGRenderer2', () => {
 
         it('should unset clip element', () => {
             renderWithClip(true);
-            const rendered1 = container.get(0) as svg.G;
+            const rendered1 = svgGroup.get(0) as svg.G;
 
             renderWithClip(false);
-            const rendered2 = container.get(0) as svg.G;
+            const rendered2 = svgGroup.get(0) as svg.G;
 
             expect(rendered2).toBe(rendered1);
             expect(rendered2.attr('clip-path')).not.toBeDefined();
@@ -171,7 +171,7 @@ describe('SVGRenderer2', () => {
                 r.ellipse(1, bounds);
             });
 
-            expect(container.get(0).node.tagName).toEqual('ellipse');
+            expect(svgGroup.get(0).node.tagName).toEqual('ellipse');
         });
 
         it('should render path', () => {
@@ -179,7 +179,7 @@ describe('SVGRenderer2', () => {
                 r.path(1, 'M0,0 L10,10');
             });
 
-            expect(container.get(0).node.tagName).toEqual('path');
+            expect(svgGroup.get(0).node.tagName).toEqual('path');
         });
 
         it('should render raster', () => {
@@ -187,7 +187,7 @@ describe('SVGRenderer2', () => {
                 r.raster('source', bounds);
             });
 
-            expect(container.get(0).node.tagName).toEqual('image');
+            expect(svgGroup.get(0).node.tagName).toEqual('image');
         });
 
         it('should render rectangle', () => {
@@ -195,7 +195,7 @@ describe('SVGRenderer2', () => {
                 r.rectangle(1, 10, bounds);
             });
 
-            expect(container.get(0).node.tagName).toEqual('rect');
+            expect(svgGroup.get(0).node.tagName).toEqual('rect');
         });
 
         it('should render rounded rectangle bottom', () => {
@@ -203,7 +203,7 @@ describe('SVGRenderer2', () => {
                 r.roundedRectangleBottom(1, 10, new Rect2(0, 0, 10, 10));
             });
 
-            expect(container.get(0).node.tagName).toEqual('path');
+            expect(svgGroup.get(0).node.tagName).toEqual('path');
         });
 
         it('should render rounded rectangle left', () => {
@@ -211,7 +211,7 @@ describe('SVGRenderer2', () => {
                 r.roundedRectangleLeft(1, 10, new Rect2(0, 0, 10, 10));
             });
 
-            expect(container.get(0).node.tagName).toEqual('path');
+            expect(svgGroup.get(0).node.tagName).toEqual('path');
         });
 
         it('should render rounded rectangle right', () => {
@@ -219,7 +219,7 @@ describe('SVGRenderer2', () => {
                 r.roundedRectangleRight(1, 10, new Rect2(0, 0, 10, 10));
             });
 
-            expect(container.get(0).node.tagName).toEqual('path');
+            expect(svgGroup.get(0).node.tagName).toEqual('path');
         });
 
         it('should render rounded rectangle top', () => {
@@ -227,7 +227,7 @@ describe('SVGRenderer2', () => {
                 r.roundedRectangleTop(1, 10, new Rect2(0, 0, 10, 10));
             });
 
-            expect(container.get(0).node.tagName).toEqual('path');
+            expect(svgGroup.get(0).node.tagName).toEqual('path');
         });
 
         it('should render text', () => {
@@ -235,7 +235,7 @@ describe('SVGRenderer2', () => {
                 r.text({} as any, bounds);
             });
 
-            expect(container.get(0).node.tagName).toEqual('foreignObject');
+            expect(svgGroup.get(0).node.tagName).toEqual('foreignObject');
         });
 
         it('should render multiline text', () => {
@@ -243,7 +243,7 @@ describe('SVGRenderer2', () => {
                 r.textMultiline({} as any, bounds);
             });
 
-            expect(container.get(0).node.tagName).toEqual('foreignObject');
+            expect(svgGroup.get(0).node.tagName).toEqual('foreignObject');
         });
     });
 
@@ -255,7 +255,7 @@ describe('SVGRenderer2', () => {
                 });
             });
 
-            expect(container.get(0).fill()).toEqual('#ff0000');
+            expect(svgGroup.get(0).fill()).toEqual('#ff0000');
         });
 
         it('should render background from shape', () => {
@@ -265,7 +265,7 @@ describe('SVGRenderer2', () => {
                 });
             });
 
-            expect(container.get(0).fill()).toEqual('#ff0000');
+            expect(svgGroup.get(0).fill()).toEqual('#ff0000');
         });
 
         it('should render foreground color', () => {
@@ -275,7 +275,7 @@ describe('SVGRenderer2', () => {
                 });
             });
 
-            expect(container.get(0).attr('color')).toEqual('#00ff00');
+            expect(svgGroup.get(0).attr('color')).toEqual('#00ff00');
         });
 
         it('should render foreground from shape', () => {
@@ -285,7 +285,7 @@ describe('SVGRenderer2', () => {
                 });
             });
 
-            expect(container.get(0).attr('color')).toEqual('#00ff00');
+            expect(svgGroup.get(0).attr('color')).toEqual('#00ff00');
         });
 
         it('should render stroke color', () => {
@@ -295,7 +295,7 @@ describe('SVGRenderer2', () => {
                 });
             });
 
-            expect(container.get(0).stroke()).toEqual('#0000ff');
+            expect(svgGroup.get(0).stroke()).toEqual('#0000ff');
         });
 
         it('should render stroke color from shape', () => {
@@ -305,7 +305,7 @@ describe('SVGRenderer2', () => {
                 });
             });
 
-            expect(container.get(0).stroke()).toEqual('#0000ff');
+            expect(svgGroup.get(0).stroke()).toEqual('#0000ff');
         });
 
         it('should render stroke style', () => {
@@ -315,8 +315,8 @@ describe('SVGRenderer2', () => {
                 });
             });
 
-            expect(container.get(0).attr('stroke-linecap')).toEqual('rounded');
-            expect(container.get(0).attr('stroke-linejoin')).toEqual('squared');
+            expect(svgGroup.get(0).attr('stroke-linecap')).toEqual('rounded');
+            expect(svgGroup.get(0).attr('stroke-linejoin')).toEqual('squared');
         });
 
         it('should render font family', () => {
@@ -326,7 +326,7 @@ describe('SVGRenderer2', () => {
                 });
             });
 
-            expect((container.get(0).node.children[0] as HTMLDivElement).style.fontFamily).toEqual('Arial');
+            expect((svgGroup.get(0).node.children[0] as HTMLDivElement).style.fontFamily).toEqual('Arial');
         });
 
         it('should render font family from shape', () => {
@@ -336,7 +336,7 @@ describe('SVGRenderer2', () => {
                 });
             });
 
-            expect((container.get(0).node.children[0] as HTMLDivElement).style.fontFamily).toEqual('Arial');
+            expect((svgGroup.get(0).node.children[0] as HTMLDivElement).style.fontFamily).toEqual('Arial');
         });
 
         it('should render opacity', () => {
@@ -346,7 +346,7 @@ describe('SVGRenderer2', () => {
                 });
             });
 
-            expect(container.get(0).opacity()).toEqual(0.3);
+            expect(svgGroup.get(0).opacity()).toEqual(0.3);
         });
 
         it('should render opacity from shape', () => {
@@ -356,7 +356,7 @@ describe('SVGRenderer2', () => {
                 });
             });
 
-            expect(container.get(0).opacity()).toEqual(0.3);
+            expect(svgGroup.get(0).opacity()).toEqual(0.3);
         });
 
         it('should render text', () => {
@@ -366,7 +366,7 @@ describe('SVGRenderer2', () => {
                 });
             });
 
-            expect((container.get(0).node.children[0]).textContent).toEqual('Text');
+            expect((svgGroup.get(0).node.children[0]).textContent).toEqual('Text');
         });
 
         it('should render text from shape', () => {
@@ -376,12 +376,12 @@ describe('SVGRenderer2', () => {
                 });
             });
 
-            expect((container.get(0).node.children[0]).textContent).toEqual('Text');
+            expect((svgGroup.get(0).node.children[0]).textContent).toEqual('Text');
         });
     });
 
     function render(action: (renderer: SVGRenderer2) => void) {
-        renderer.setContainer(container);
+        renderer.setContainer(svgGroup);
         action(renderer);
         renderer.cleanupAll();
     }

@@ -122,25 +122,25 @@ export const TransformProperties = () => {
         <>
             <Row className='property' gutter={4}>
                 <Col span={12}>
-                    <InputNumber prefix='x' value={x} onChange={setX} />
+                    <InputNumber prefix='x' value={x} onChange={setX as any} />
                 </Col>
                 <Col span={12}>
-                    <InputNumber prefix='w' value={w} onChange={setW} />
-                </Col>
-            </Row>
-
-            <Row className='property' gutter={4}>
-                <Col span={12}>
-                    <InputNumber prefix='y' value={y} onChange={setY} />
-                </Col>
-                <Col span={12}>
-                    <InputNumber prefix='h' value={h} onChange={setH} />
+                    <InputNumber prefix='w' value={w} onChange={setW as any} />
                 </Col>
             </Row>
 
             <Row className='property' gutter={4}>
                 <Col span={12}>
-                    <InputNumber prefix='r' value={r} onChange={setR} />
+                    <InputNumber prefix='y' value={y} onChange={setY as any} />
+                </Col>
+                <Col span={12}>
+                    <InputNumber prefix='h' value={h} onChange={setH as any} />
+                </Col>
+            </Row>
+
+            <Row className='property' gutter={4}>
+                <Col span={12}>
+                    <InputNumber prefix='r' value={r} onChange={setR as any} />
                 </Col>
             </Row>
         </>

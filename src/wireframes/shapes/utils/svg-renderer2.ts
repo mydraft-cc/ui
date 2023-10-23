@@ -10,7 +10,7 @@
 import * as svg from '@svgdotjs/svg.js';
 import { marked } from 'marked';
 import { Rect } from 'react-measure';
-import { escapeHTML, Rect2, sizeInPx, SVGHelper, Types } from '@app/core';
+import { escapeHTML, Rect2, sizeInPx, SVGHelper, Types } from '@app/core/utils';
 import { RendererColor, RendererElement, RendererOpacity, RendererText, RendererWidth, Shape, ShapeFactory, ShapeFactoryFunc, ShapeProperties, ShapePropertiesFunc, TextConfig, TextDecoration } from '@app/wireframes/interface';
 import { AbstractRenderer2 } from './abstract-renderer';
 
@@ -256,7 +256,7 @@ class Factory implements ShapeFactory {
 }
 
 export class SVGRenderer2 extends Factory implements AbstractRenderer2 {
-    private measureDiv: HTMLDivElement;
+    private readonly measureDiv: HTMLDivElement;
 
     public static readonly INSTANCE = new SVGRenderer2();
 

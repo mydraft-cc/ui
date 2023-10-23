@@ -60,7 +60,7 @@ describe('AlignmentReducer', () => {
     });
 
     it('should return same state if action has unknown alignment type', () => {
-        const action = alignItems('UNKNOWN' as any, diagram, []);
+        const action = alignItems('UNKNOWN' as any, diagram, diagram.items.values);
 
         const state_1 = EditorState.create();
         const state_2 = reducer(state_1, action);
