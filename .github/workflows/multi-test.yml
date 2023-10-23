@@ -28,3 +28,6 @@ jobs:
 
       - name: Run Tests 
         run: npm run test:ci
+
+      - name: Run Tests 
+        run: npm run test:ci
