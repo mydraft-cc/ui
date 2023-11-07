@@ -14,6 +14,7 @@ import { useAsyncEffect } from '@app/core';
 import { EditorState, selectDiagram, useStore } from '@app/wireframes/model';
 import { user } from '@app/wireframes/user';
 import { CollaborationContext, CollaborationState } from './../hooks';
+import { ExendedUndoManager } from './../services/extended-undo-manager';
 
 export const CollaborationProvider = ({ children }: { children: React.ReactNode }) => {
     const dispatch = useDispatch();
@@ -47,13 +48,13 @@ export const CollaborationProvider = ({ children }: { children: React.ReactNode 
 
         const synchronizer = binder.connectSlice({
             sliceName: 'editor',
-            onSynced: root => {
+            onSynced: (s, root) => {
                 setState(state => ({
                     ...state,
-                    undoManager: new Y.UndoManager(root),
+                    undoManager: new ExendedUndoManager(new Y.UndoManager(root), () => s.getcurrentAction()),
                 }));
             },
-            onSyncedAsInit: (state: EditorState) => {
+            onSyncedAsInit: (_, state: EditorState) => {
                 setTimeout(() => {
                     if (!state.selectedDiagramIds.get(user.id) && state.diagramIds.size > 0) {
                         dispatch(selectDiagram(state.diagramIds.at(0)!));

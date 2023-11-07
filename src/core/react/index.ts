@@ -10,7 +10,7 @@ export * from './ColorPicker';
 export * from './Clipboard';
 export * from './Grid';
 export * from './hooks';
-export * from './MarkerButton';
+export * from './marker';
 export * from './Shortcut';
 export * from './Title';
 export * from './UserReport';

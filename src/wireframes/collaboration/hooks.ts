@@ -10,6 +10,7 @@ import * as awarenessProtocol from 'y-protocols/awareness';
 import * as Y from 'yjs';
 import { Types } from '@app/core';
 import { user, User } from '@app/wireframes/user';
+import { ExendedUndoManager } from './services/extended-undo-manager';
 
 export interface CollaborationState {
     // The main document.
@@ -19,7 +20,7 @@ export interface CollaborationState {
     provider?: { awareness: awarenessProtocol.Awareness | null; destroy: () => void };
 
     // The undo managher
-    undoManager?: Y.UndoManager;
+    undoManager?: ExendedUndoManager;
 }
 
 export const CollaborationContext = React.createContext<CollaborationState>({});
@@ -30,22 +31,10 @@ export const useUndoManager = () => {
     const [canRedo, setCanRedo] = React.useState(false);
 
     React.useEffect(() => {
-        if (!undoManager) {
-            return () => { };
-        }
-
-        const handler = () => {
-            setCanUndo(undoManager.undoStack.length > 1);
+        return undoManager?.listen(() => {
+            setCanUndo(undoManager.canUndo());
             setCanRedo(undoManager.canRedo());
-        };
-
-        undoManager.on('stack-item-added', handler);
-        undoManager.on('stack-item-popped', handler);
-
-        return () => {
-            undoManager.off('stack-item-added', handler);
-            undoManager.off('stack-item-popped', handler);
-        };
+        });
     }, [undoManager]);
 
     const undo = React.useCallback(() => {
