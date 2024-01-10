@@ -11,6 +11,8 @@ body {
     &.sb-main-padded {
         overflow: inherit;
     }
+
+    margin: 0;
 }
 
 * {
@@ -92,7 +94,7 @@ ul {
 //
 .sidebar-left,
 .sidebar-right {
-    background: $color-white;
+    background: $color-white !important;
     border: 0;
     border-left: 1px solid $color-border;
     overflow-x: hidden;

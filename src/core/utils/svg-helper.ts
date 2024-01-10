@@ -131,7 +131,8 @@ export module SVGHelper {
             }
         } else {
             if (x !== 0 || y !== 0) {
-                matrix.translateO(x, y);
+                // Use the alternative methods with O to not create a new matrix.
+                matrix = matrix.multiplyO(new svg.Matrix().translateO(x, y));
             }
 
             element.matrix(matrix);
