@@ -269,8 +269,8 @@ export class Diagram extends Record<Props> {
             return this;
         }
 
-        const resultItems: DiagramItem[] = [];
-        const resultParent = this.parent(targetIds[0]);
+        let resultItems: DiagramItem[] = [];
+        let resultParent = this.parent(targetIds[0]);
 
         // All items must have the same parent for the update.
         for (const itemId of targetIds) {
@@ -281,7 +281,7 @@ export class Diagram extends Record<Props> {
             }
 
             if (this.parent(itemId) !== resultParent) {
-                return this;
+                resultParent == undefined;
             }
 
             resultItems.push(item);
@@ -302,7 +302,6 @@ export class Diagram extends Record<Props> {
                 update.items = update.items || this.items;
                 update.items = update.items.update(resultParent.id, p => p.set('childIds', update.itemIds));
             }
-
         } else {
             update = {
                 items: this.items,
