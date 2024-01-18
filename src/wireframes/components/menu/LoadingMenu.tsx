@@ -6,13 +6,14 @@
 */
 
 import { GithubOutlined, QuestionCircleOutlined } from '@ant-design/icons';
-import { Button, Menu, Modal } from 'antd';
+import { Button, Modal } from 'antd';
+import { MenuProps } from 'antd/lib';
 import * as React from 'react';
 import { MarkerButton, Title, useEventCallback } from '@app/core';
 import text from '@app/legal.html?raw';
 import { texts } from '@app/texts';
 import { useStore } from '@app/wireframes/model';
-import { ActionDropdownButton, ActionMenuButton, ActionMenuItem, useLoading } from './../actions';
+import { ActionDropdownButton, ActionMenuButton, buildMenuItem, useLoading } from './../actions';
 
 export const LoadingMenu = React.memo(() => {
     const forLoading = useLoading();
@@ -60,11 +61,9 @@ export const LoadingMenu = React.memo(() => {
         }
     }, [tokenToWrite, editor]);
 
-    const menu = (
-        <Menu >
-            <ActionMenuItem displayMode='Label' action={forLoading.saveDiagramToFile} />
-        </Menu>
-    );
+    const saveMenuItems: MenuProps['items'] = [
+        buildMenuItem(forLoading.saveDiagramToFile, 'save'),
+    ];
 
     return (
         <>
@@ -73,19 +72,17 @@ export const LoadingMenu = React.memo(() => {
             <ActionMenuButton displayMode='IconLabel' action={forLoading.newDiagram} />
             <ActionMenuButton displayMode='Icon' action={forLoading.openDiagramAction} />
 
-            <ActionDropdownButton displayMode='IconLabel' action={forLoading.saveDiagram} type='primary' overlay={menu} />
+            <ActionDropdownButton className='menu-dropdown' displayMode='IconLabel' action={forLoading.saveDiagram} type='primary' menu={{ items: saveMenuItems }} />
 
-            <Button className='menu-item' size='large' onClick={doToggleInfoDialog}>
-                <QuestionCircleOutlined />
-            </Button>
+            <Button className='menu-item' onClick={doToggleInfoDialog}
+                icon={<QuestionCircleOutlined />} />
 
-            <Button className='menu-item' size='large' href='https://github.com/mydraft-cc/ui' target='_blank'>
-                <GithubOutlined />
-            </Button>
+            <Button className='menu-item' href='https://github.com/mydraft-cc/ui' target='_blank'
+                icon={<GithubOutlined />} />
 
             <MarkerButton />
 
-            <Modal title={texts.common.about} visible={isOpen} onCancel={doToggleInfoDialog} onOk={doToggleInfoDialog}>
+            <Modal title={texts.common.about} open={isOpen} onCancel={doToggleInfoDialog} onOk={doToggleInfoDialog}>
                 <div dangerouslySetInnerHTML={{ __html: text }} />
             </Modal>
         </>

@@ -7,8 +7,8 @@
 
 import { Button, Col, Row, Select } from 'antd';
 import * as React from 'react';
-import { useDispatch } from 'react-redux';
 import { ColorPicker, useEventCallback } from '@app/core';
+import { useAppDispatch } from '@app/store';
 import { texts } from '@app/texts';
 import { DefaultAppearance } from '@app/wireframes/interface';
 import { getColors, getDiagramId, getSelectedItems, getSelectionSet, selectColorTab, useStore } from '@app/wireframes/model';
@@ -16,7 +16,7 @@ import { UniqueValue, useAppearance, useColorAppearance } from './../actions';
 import './VisualProperties.scss';
 
 export const VisualProperties = React.memo(() => {
-    const dispatch = useDispatch();
+    const dispatch = useAppDispatch();
     const recentColors = useStore(getColors);
     const selectedColorTab = useStore(s => s.ui.selectedColorTab as any);
     const selectedDiagramId = useStore(getDiagramId);

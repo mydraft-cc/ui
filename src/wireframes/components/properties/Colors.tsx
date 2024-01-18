@@ -6,12 +6,12 @@
 */
 
 import * as React from 'react';
-import { useDispatch } from 'react-redux';
 import { Color, ColorPicker } from '@app/core';
+import { useAppDispatch } from '@app/store';
 import { changeColors, getColors, useStore } from '@app/wireframes/model';
 
 export const Colors = () => {
-    const dispatch = useDispatch();
+    const dispatch = useAppDispatch();
     const recentColors = useStore(getColors);
 
     const doChangeColor = React.useCallback((oldColor: Color, newColor: Color) => {

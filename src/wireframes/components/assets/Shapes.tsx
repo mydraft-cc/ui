@@ -8,8 +8,9 @@
 import { SearchOutlined } from '@ant-design/icons';
 import { Input } from 'antd';
 import * as React from 'react';
-import { useDispatch, useStore as useReduxStore } from 'react-redux';
+import { useStore as useReduxStore } from 'react-redux';
 import { Grid, useEventCallback } from '@app/core';
+import { RootState, useAppDispatch } from '@app/store';
 import { texts } from '@app/texts';
 import { addShape, filterShapes, getDiagramId, getFilteredShapes, getShapesFilter, ShapeInfo, useStore } from '@app/wireframes/model';
 import { ShapeImage } from './ShapeImage';
@@ -20,10 +21,10 @@ const keyBuilder = (shape: ShapeInfo) => {
 };
 
 export const Shapes = () => {
-    const dispatch = useDispatch();
+    const dispatch = useAppDispatch();
     const shapesFiltered = useStore(getFilteredShapes);
     const shapesFilter = useStore(getShapesFilter);
-    const store = useReduxStore();
+    const store = useReduxStore<RootState>();
 
     const cellRenderer = React.useCallback((shape: ShapeInfo) => {
         const doAdd = () => {

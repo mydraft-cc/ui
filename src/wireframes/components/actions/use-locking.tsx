@@ -7,14 +7,14 @@
 
 import { LockOutlined, UnlockOutlined } from '@ant-design/icons';
 import * as React from 'react';
-import { useDispatch } from 'react-redux';
 import { useEventCallback } from '@app/core';
+import { useAppDispatch } from '@app/store';
 import { texts } from '@app/texts';
 import { getDiagramId, getSelectedItemWithLocked, lockItems, unlockItems, useStore } from '@app/wireframes/model';
 import { UIAction } from './shared';
 
 export function useLocking() {
-    const dispatch = useDispatch();
+    const dispatch = useAppDispatch();
     const selectedDiagramId = useStore(getDiagramId);
     const selectedItem = useStore(getSelectedItemWithLocked);
 

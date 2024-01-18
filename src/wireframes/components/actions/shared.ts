@@ -9,8 +9,8 @@
 /* eslint-disable one-var-declaration-per-line */
 
 import * as React from 'react';
-import { useDispatch } from 'react-redux';
 import { Color, Types, useEventCallback } from '@app/core';
+import { useAppDispatch } from '@app/store';
 import { changeItemsAppearance, DiagramItemSet } from '@app/wireframes/model';
 
 export interface UIAction {
@@ -38,6 +38,10 @@ export type UniqueConverter<TInput> = { parse: (value: any) => TInput; write: (v
 
 const DEFAULT_CONVERTER = {
     parse: (value: any) => {
+        if (value === 'undefined') {
+            return undefined!;
+        }
+
         return value;
     },
     write: (value: any) => {
@@ -47,6 +51,10 @@ const DEFAULT_CONVERTER = {
 
 const COLOR_CONVERTER: UniqueConverter<Color> = {
     parse: (value: any) => {
+        if (value === 'undefined') {
+            return undefined!;
+        }
+
         return Color.fromValue(value);
     },
     write: (value: Color) => {
@@ -68,7 +76,7 @@ export function useAppearance<T>(selectedDiagramId: RefDiagramId, selectedSet: R
 }
 
 export function useAppearanceCore<T>(selectedDiagramId: RefDiagramId, selectedSet: RefDiagramItemSet, key: string, converter: UniqueConverter<T>, allowUndefined = false, force = false): Result<T> {
-    const dispatch = useDispatch();
+    const dispatch = useAppDispatch();
 
     const value = React.useMemo(() => {
         if (!selectedSet) {

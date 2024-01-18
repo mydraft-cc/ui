@@ -32,28 +32,15 @@ body {
     border-radius: 0;
 }
 
-.logo {
-    @include fixed(15px, null, null, 10px);
-    color: $color-white;
-    font-size: 1.1rem;
-    font-weight: bold;
-    height: 40px;
-}
-
 .ant-layout {
     &-header {
         @include box-shadow-outer(0, 2px, 2px, .1);
         background-color: white;
-        padding-left: 100px;
-        padding-right: 0;
+        padding: 0 10px;
         overflow-x: hidden;
         overflow-y: hidden;
         text-align: center;
         z-index: 1000;
-
-        .logo {
-            max-height: 100%;
-        }
 
         @media (max-width: 1000px) {
             text-align: left;
@@ -281,14 +268,51 @@ header {
     }
 }
 
+.top-menu {
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+    flex-grow: 1;
+    justify-content: space-between;
+    padding: 10px 0;
+
+    & > div {
+        align-items: center;
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+    }
+
+    .ant-space-compact-block {
+        width: auto;
+    }
+
+    .logo {
+        color: $color-white;
+        font-size: 1.1rem;
+        font-weight: bold;
+        height: 40px;
+    }
+}
+
 .menu {
     &-separator {
         background: $color-border-dark;
         display: inline-block;
         height: 1rem;
+        margin-left: .5rem !important;
+        margin-right: .5rem !important;
+        width: 1px;
+    }
+
+    &-dropdown {
         margin-left: .5rem;
         margin-right: .5rem;
-        width: 1px;
+    }
+
+    &-item {
+        margin-left: .25rem;
+        margin-right: .25rem;
     }
 
     &-item,
@@ -297,8 +321,7 @@ header {
             background: transparent !important;
             border: 0;
             border-radius: 0;
-            max-height: 60px;
-            min-height: 60px;
+            box-shadow: none;
             opacity: .8;
         }
 

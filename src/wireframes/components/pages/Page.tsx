@@ -6,7 +6,8 @@
 */
 
 import { CheckOutlined, DeleteOutlined, FileMarkdownOutlined, FileOutlined } from '@ant-design/icons';
-import { Col, Dropdown, Input, Menu, Row } from 'antd';
+import { Col, Dropdown, Input, InputRef, Row } from 'antd';
+import { MenuProps } from 'antd/lib';
 import classNames from 'classnames';
 import * as React from 'react';
 import { Keys, useEventCallback } from '@app/core';
@@ -41,6 +42,7 @@ export const Page = (props: PageProps) => {
         selected,
     } = props;
 
+    const [isOpen, setIsOpen] = React.useState(false);
     const [editName, setEditName] = React.useState('');
     const [editing, setEditing] = React.useState(false);
 
@@ -91,9 +93,50 @@ export const Page = (props: PageProps) => {
         }
     });
 
-    const initInput = React.useCallback((event: Input) => {
+    const initInput = React.useCallback((event: InputRef) => {
         event?.focus();
     }, []);
+
+    const contextMenu: MenuProps =
+        isOpen ? {
+            mode: 'vertical',
+            items: [
+                {
+                    key: 'delete',
+                    onClick: doDelete,
+                    icon: <DeleteOutlined />,
+                    label: texts.common.delete,
+                },
+                {
+                    key: 'duplicate',
+                    onClick: doDuplicate,
+                    label: texts.common.duplicate,
+                },
+                {
+                    key: 'rename',
+                    onClick: doRenameStart,
+                    label: texts.common.rename,
+                },
+                {
+                    key: 'master',
+                    label: texts.common.masterPage,
+                    children: [
+                        {
+                            key: 'noMaster',
+                            onClick: () => doSetMaster(undefined),
+                            icon: !diagram.master ? <CheckOutlined /> : null,
+                            label: texts.common.none,
+                        },
+                        ...diagrams.map((d, index) => ({
+                            key: `master${d.id}`,
+                            onClick: () => doSetMaster(d.id),
+                            icon: diagram.master === d.id ? <CheckOutlined /> : null,
+                            label: getPageName(d, index),
+                        })),
+                    ],
+                },
+            ],
+        } : DEFAULT_MENU;
 
     return (
         <div className='tree-item'>
@@ -101,43 +144,7 @@ export const Page = (props: PageProps) => {
                 {editing ? (
                     <Input value={editName} onChange={setText} onBlur={doRenameCancel} onKeyUp={doEnter} ref={initInput} />
                 ) : (
-                    <Dropdown overlay={
-                        <Menu selectable={false}>
-                            <Menu.Item key='delete' icon={<DeleteOutlined />} onClick={doDelete}>
-                                {texts.common.delete}
-                            </Menu.Item>
-
-                            <Menu.Item key='duplicate' onClick={doDuplicate}>
-                                {texts.common.duplicate}
-                            </Menu.Item>
-
-                            <Menu.Item key='rename' onClick={doRenameStart}>
-                                {texts.common.rename}
-                            </Menu.Item>
-
-                            <Menu.SubMenu title={texts.common.masterPage}>
-                                <MasterPage
-                                    id={undefined}
-                                    title={texts.common.none}
-                                    diagramId={diagram.id}
-                                    diagramMaster={pageMaster}
-                                    hide={false}
-                                    onSetMaster={doSetMaster}
-                                />
-
-                                {diagrams.map((item, index) =>
-                                    <MasterPage key={item.id}
-                                        id={item.id}
-                                        title={getPageName(item, index)}
-                                        diagramId={diagram.id}
-                                        diagramMaster={pageMaster}
-                                        hide={item.id === diagram.id}
-                                        onSetMaster={doSetMaster}
-                                    />,
-                                )}
-                            </Menu.SubMenu>
-                        </Menu>
-                    } trigger={['contextMenu']}>
+                    <Dropdown menu={contextMenu} trigger={['contextMenu']} onOpenChange={setIsOpen}>
                         <Row className={classNames('tree-item-header', { selected })} wrap={false} onDoubleClick={doRenameStart} onClick={doSelect}>
                             <Col flex='none'>
                                 {pageMaster ? (
@@ -157,31 +164,4 @@ export const Page = (props: PageProps) => {
     );
 };
 
-const MasterPage = (props: {
-    title: string;
-    id: string | undefined;
-    diagramId: string;
-    diagramMaster: string | undefined;
-    hide: boolean;
-    onSetMaster: (master: string | undefined) => void;
-}) => {
-    const {
-        id,
-        diagramMaster,
-        hide,
-        onSetMaster,
-        title,
-    } = props;
-
-    if (hide) {
-        return null;
-    }
-
-    const selected = id === diagramMaster;
-
-    return (
-        <Menu.Item key={id} icon={selected ? <CheckOutlined /> : null} onClick={() => onSetMaster(id)}>
-            {title}
-        </Menu.Item>
-    );
-};
+const DEFAULT_MENU: MenuProps = { items: [], mode: 'vertical' };

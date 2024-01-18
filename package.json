@@ -10,7 +10,6 @@
     "@vitest/utils": "^0.34.6",
     "antd": "5.11.2",
     "classnames": "^2.3.2",
-    "connected-react-router": "^6.9.2",
     "date-fns": "^2.30.0",
     "deep-object-diff": "^1.1.9",
     "file-saver": "^2.0.5",

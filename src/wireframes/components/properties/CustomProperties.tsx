@@ -7,8 +7,8 @@
 
 import { Checkbox, Col, InputNumber, Row, Select } from 'antd';
 import { CheckboxChangeEvent } from 'antd/lib/checkbox';
-import { useDispatch } from 'react-redux';
 import { Color, ColorPalette, ColorPicker, useEventCallback } from '@app/core';
+import { useAppDispatch } from '@app/store';
 import { changeItemsAppearance, ColorConfigurable, Configurable, getColors, getDiagramId, getSelectedConfigurables, getSelectedShape, NumberConfigurable, selectColorTab, SelectionConfigurable, SliderConfigurable, TextConfigurable, ToggleConfigurable, useStore } from '@app/wireframes/model';
 import { CustomSlider } from './CustomSlider';
 import { Text } from './Text';
@@ -107,7 +107,7 @@ export const CustomProperty = (props: CustomPropertyProps) => {
 };
 
 export const CustomProperties = () => {
-    const dispatch = useDispatch();
+    const dispatch = useAppDispatch();
     const recentColors = useStore(getColors);
     const selectedDiagramId = useStore(getDiagramId);
     const selectedColorTab = useStore(s => s.ui.selectedColorTab);

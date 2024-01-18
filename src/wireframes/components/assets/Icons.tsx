@@ -8,8 +8,9 @@
 import { SearchOutlined } from '@ant-design/icons';
 import { Input, Select } from 'antd';
 import * as React from 'react';
-import { useDispatch, useStore as useReduxStore } from 'react-redux';
+import { useStore as useReduxStore } from 'react-redux';
 import { Grid, useEventCallback } from '@app/core';
+import { RootState, useAppDispatch } from '@app/store';
 import { texts } from '@app/texts';
 import { addShape, filterIcons, getDiagramId, getFilteredIcons, getIconSet, getIconSets, getIconsFilter, IconInfo, RendererService, selectIcons, useStore } from '@app/wireframes/model';
 import { Icon } from './Icon';
@@ -20,16 +21,16 @@ const keyBuilder = (icon: IconInfo) => {
 };
 
 export const Icons = React.memo(() => {
-    const dispatch = useDispatch();
+    const dispatch = useAppDispatch();
     const iconSet = useStore(getIconSet);
     const iconSets = useStore(getIconSets);
     const iconsFilter = useStore(getIconsFilter);
     const iconsFiltered = useStore(getFilteredIcons);
-    const store = useReduxStore();
+    const store = useReduxStore<RootState>();
 
     const cellRenderer = React.useCallback((icon: IconInfo) => {
         const doAdd = () => {
-            const selectedDiagramId = getDiagramId(store.getState());
+            const selectedDiagramId = getDiagramId(store.getState() as any);
 
             if (selectedDiagramId) {
                 const shapes = RendererService.createShapes([{ type: 'Icon', ...icon }]);

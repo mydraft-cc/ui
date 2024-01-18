@@ -6,21 +6,49 @@
 */
 
 import { LeftOutlined, RightOutlined } from '@ant-design/icons';
-import { Button, Layout, Tabs } from 'antd';
+import { Button, Layout, Tabs, TabsProps } from 'antd';
 import classNames from 'classnames';
 import * as React from 'react';
-import { useDispatch } from 'react-redux';
 import { useRouteMatch } from 'react-router';
 import { ClipboardContainer, useEventCallback, usePrinter } from '@app/core';
 import { ArrangeMenu, ClipboardMenu, EditorView, HistoryMenu, Icons, LoadingMenu, LockMenu, Outline, Pages, PrintView, Properties, Recent, SettingsMenu, Shapes, UIMenu } from '@app/wireframes/components';
 import { loadDiagramFromServer, newDiagram, selectTab, showToast, toggleLeftSidebar, toggleRightSidebar, useStore } from '@app/wireframes/model';
+import { useAppDispatch } from './store';
 import { texts } from './texts';
 import { CustomDragLayer } from './wireframes/components/CustomDragLayer';
 import { PresentationView } from './wireframes/components/PresentationView';
 import { OverlayContainer } from './wireframes/contexts/OverlayContext';
 
+const SidebarTabs: TabsProps['items'] = [
+    {
+        key: 'shapes',
+        label: texts.common.shapes,
+        children: <Shapes />,
+    },
+    {
+        key: 'icons',
+        label: texts.common.icons,
+        children: <Icons />,
+    },
+    {
+        key: 'outline',
+        label: texts.common.outline,
+        children: <Outline />,
+    },
+    {
+        key: 'pages',
+        label: texts.common.pages,
+        children: <Pages />,
+    },
+    {
+        key: 'recent',
+        label: texts.common.recent,
+        children: <Recent />,
+    },
+];
+
 export const App = () => {
-    const dispatch = useDispatch();
+    const dispatch = useAppDispatch();
     const route = useRouteMatch<{ token?: string }>();
     const routeToken = route.params.token || null;
     const routeTokenSnapshot = React.useRef(routeToken);
@@ -77,51 +105,39 @@ export const App = () => {
             <ClipboardContainer>
                 <Layout className='screen-mode'>
                     <Layout.Header>
-                        <img className='logo' src='logo.svg' alt='mydraft.cc' />
+                        <div className='top-menu'>
+                            <img className='logo' src='logo.svg' alt='mydraft.cc' />
 
-                        <HistoryMenu />
-                        <span className='menu-separator' />
+                            <div>
+                                <HistoryMenu />
+                                <span className='menu-separator' />
 
-                        <LockMenu />
-                        <span className='menu-separator' />
+                                <LockMenu />
+                                <span className='menu-separator' />
 
-                        <ArrangeMenu />
-                        <span className='menu-separator' />
+                                <ArrangeMenu />
+                                <span className='menu-separator' />
 
-                        <ClipboardMenu />
-                        <span className='menu-separator' />
+                                <ClipboardMenu />
+                                <span className='menu-separator' />
 
-                        <UIMenu onPlay={doPresent} />
-                        <span className='menu-separator' />
+                                <UIMenu onPlay={doPresent} />
+                                <span className='menu-separator' />
 
-                        <SettingsMenu onPrint={print} />
+                                <SettingsMenu onPrint={print} />
+                            </div>
 
-                        <span style={{ float: 'right' }}>
-                            <LoadingMenu />
-                        </span>
+                            <div>
+                                <LoadingMenu />
+                            </div>
+                        </div>
                     </Layout.Header>
                     <Layout className='content'>
                         <Layout.Sider width={320} className='sidebar-left'
                             collapsed={!showLeftSidebar}
                             collapsedWidth={0}>
 
-                            <Tabs type='card' onTabClick={doSelectTab} activeKey={selectedTab}>
-                                <Tabs.TabPane key='shapes' tab={texts.common.shapes}>
-                                    <Shapes />
-                                </Tabs.TabPane>
-                                <Tabs.TabPane key='icons' tab={texts.common.icons}>
-                                    <Icons />
-                                </Tabs.TabPane>
-                                <Tabs.TabPane key='outline' tab={texts.common.outline}>
-                                    <Outline />
-                                </Tabs.TabPane>
-                                <Tabs.TabPane key='pages' tab={texts.common.pages}>
-                                    <Pages />
-                                </Tabs.TabPane>
-                                <Tabs.TabPane key='recent' tab={texts.common.recent}>
-                                    <Recent />
-                                </Tabs.TabPane>
-                            </Tabs>
+                            <Tabs type='card' activeKey={selectedTab} items={SidebarTabs} onChange={doSelectTab} destroyInactiveTabPane={true} />
                         </Layout.Sider>
                         <Layout.Content className='editor-content'>
                             <EditorView spacing={40} />

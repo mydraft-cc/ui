@@ -6,14 +6,14 @@
 */
 
 import { DragDropContext, Draggable, Droppable, DropResult } from 'react-beautiful-dnd';
-import { useDispatch } from 'react-redux';
 import { useEventCallback } from '@app/core';
+import { useAppDispatch } from '@app/store';
 import { getDiagram, moveItems, orderItems, removeItems, renameItems, selectItems, useStore } from '@app/wireframes/model';
 import { OutlineItem, OutlineItemAction } from './OutlineItem';
 import './Outline.scss';
 
 export const Outline = () => {
-    const dispatch = useDispatch();
+    const dispatch = useAppDispatch();
     const diagram = useStore(getDiagram);
 
     const doAction = useEventCallback((itemId: string, action: OutlineItemAction, arg?: any) => {

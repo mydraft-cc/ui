@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { useSelector } from 'react-redux';
+import {  useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
 import { Color, ColorPalette, Types } from '@app/core/utils';
 import { texts } from '@app/texts';

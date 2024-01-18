@@ -6,15 +6,15 @@
 */
 
 import * as React from 'react';
-import { useDispatch } from 'react-redux';
 import { MathHelper } from '@app/core';
 import { useEventCallback } from '@app/core';
+import { useAppDispatch } from '@app/store';
 import { texts } from '@app/texts';
 import { getDiagramId, getSelectedGroups, getSelectedItems, groupItems, ungroupItems, useStore } from '@app/wireframes/model';
 import { UIAction } from './shared';
 
 export function useGrouping() {
-    const dispatch = useDispatch();
+    const dispatch = useAppDispatch();
     const selectedDiagramId = useStore(getDiagramId);
     const selectedGroups = useStore(getSelectedGroups);
     const selectedItems = useStore(getSelectedItems);

@@ -7,12 +7,12 @@
 
 import { Col, InputNumber, Row } from 'antd';
 import * as React from 'react';
-import { useDispatch } from 'react-redux';
 import { Rotation, useEventCallback, Vec2 } from '@app/core';
+import { useAppDispatch } from '@app/store';
 import { getDiagram, getDiagramId, getSelectionSet, Transform, transformItems, useStore } from '@app/wireframes/model';
 
 export const TransformProperties = () => {
-    const dispatch = useDispatch();
+    const dispatch = useAppDispatch();
     const selectedDiagram = useStore(getDiagram)!;
     const selectedDiagramId = useStore(getDiagramId);
     const selectedIds = selectedDiagram?.selectedIds;

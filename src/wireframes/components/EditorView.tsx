@@ -10,13 +10,13 @@ import * as React from 'react';
 import { DropTargetMonitor, useDrop } from 'react-dnd';
 import { NativeTypes } from 'react-dnd-html5-backend';
 import { findDOMNode } from 'react-dom';
-import { useDispatch } from 'react-redux';
 import { loadImagesToClipboardItems, sizeInPx, useClipboard, useEventCallback } from '@app/core';
+import { useAppDispatch } from '@app/store';
 import { addShape, changeItemsAppearance, Diagram, getDiagram, getDiagramId, getEditor, getMasterDiagram, getSelectedItems, getSelectedItemsWithLocked, RendererService, selectItems, Transform, transformItems, useStore } from '@app/wireframes/model';
 import { Editor } from '@app/wireframes/renderer/Editor';
 import { DiagramRef, ItemsRef } from '../model/actions/utils';
 import { ShapeSource } from './../interface';
-import { ContextMenu } from './context-menu/ContextMenu';
+import { useContextMenu } from './context-menu';
 import './EditorView.scss';
 
 export interface EditorViewProps {
@@ -37,7 +37,8 @@ export const EditorView = (props: EditorViewProps) => {
 };
 
 export const EditorViewInner = ({ diagram, spacing }: EditorViewProps & { diagram: Diagram }) => {
-    const dispatch = useDispatch();
+    const dispatch = useAppDispatch();
+    const [menuVisible, setMenuVisible] = React.useState(false);
     const editor = useStore(getEditor);
     const editorColor = editor.color;
     const editorSize = editor.size;
@@ -48,7 +49,7 @@ export const EditorViewInner = ({ diagram, spacing }: EditorViewProps & { diagra
     const state = useStore(s => s);
     const zoom = useStore(s => s.ui.zoom);
     const zoomedSize = editorSize.mul(zoom);
-    const [menuVisible, setMenuVisible] = React.useState(false);
+    const contextMenu = useContextMenu(menuVisible);
 
     const doChangeItemsAppearance = useEventCallback((diagram: DiagramRef, visuals: ItemsRef, key: string, value: any) => {
         dispatch(changeItemsAppearance(diagram, visuals, key, value));
@@ -60,10 +61,6 @@ export const EditorViewInner = ({ diagram, spacing }: EditorViewProps & { diagra
 
     const doTransformItems = useEventCallback((diagram: DiagramRef, items: ItemsRef, oldBounds: Transform, newBounds: Transform) => {
         dispatch(transformItems(diagram, items, oldBounds, newBounds));
-    });
-
-    const doHide = useEventCallback(() => {
-        setMenuVisible(false);
     });
 
     const doSetPosition = useEventCallback((event: React.MouseEvent) => {
@@ -165,7 +162,7 @@ export const EditorViewInner = ({ diagram, spacing }: EditorViewProps & { diagra
     const padding = sizeInPx(spacing);
 
     return (
-        <Dropdown overlay={<ContextMenu onClick={doHide} />} trigger={['contextMenu']} visible={menuVisible} onVisibleChange={setMenuVisible}>            
+        <Dropdown menu={contextMenu} trigger={['contextMenu']} onOpenChange={setMenuVisible}>            
             <div className='editor-view' onClick={doSetPosition}>
                 <div className='editor-diagram' style={{ width: w, height: h, padding }} ref={renderRef} >
                     <Editor
