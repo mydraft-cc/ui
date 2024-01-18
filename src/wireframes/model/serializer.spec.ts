@@ -140,8 +140,8 @@ describe('Serializer', () => {
         expect(newValue).toBeDefined();
         expect(newValue?.allItems.length).toEqual(original.allItems.length);
 
-        for (const item of original.allItems) {
-            compareShapes(newValue?.allItems.find(x => x.id === item.id), item);
+        for (const item of Object.values(original.allItems)) {
+            compareShapes(newValue?.allItems[item.id], item);
         }
     }
 

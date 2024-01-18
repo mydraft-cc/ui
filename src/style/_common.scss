@@ -49,7 +49,7 @@ body {
 }
 
 #root-layout > .ant-layout {
-    height: 100%;
+    @include fixed(0, 0, 0, 0);
 }
 
 svg {

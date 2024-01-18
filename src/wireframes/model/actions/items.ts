@@ -72,7 +72,7 @@ export function buildItems(builder: ActionReducerMapBuilder<EditorState>) {
             return state.updateDiagram(diagramId, diagram => {
                 const set = DiagramItemSet.createFromDiagram(itemIds, diagram);
 
-                return diagram.updateItems(set.allItems.map(x => x.id), item => {
+                return diagram.updateItems(Object.keys(set.allItems), item => {
                     return item.lock();
                 });
             });
@@ -83,7 +83,7 @@ export function buildItems(builder: ActionReducerMapBuilder<EditorState>) {
             return state.updateDiagram(diagramId, diagram => {
                 const set = DiagramItemSet.createFromDiagram(itemIds, diagram);
 
-                return diagram.updateItems(set.allItems.map(x => x.id), item => {
+                return diagram.updateItems(Object.keys(set.allItems), item => {
                     return item.unlock();
                 });
             });
@@ -105,7 +105,7 @@ export function buildItems(builder: ActionReducerMapBuilder<EditorState>) {
 
                 diagram = diagram.addItems(set);
 
-                diagram = diagram.updateItems(set.allShapes.map(x => x.id), item => {
+                diagram = diagram.updateItems(Object.keys(set.allShapes), item => {
                     const boundsOld = item.bounds(diagram);
                     const boundsNew = boundsOld.moveBy(new Vec2(offset, offset));
 

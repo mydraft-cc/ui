@@ -96,8 +96,11 @@ export class AbstractControl implements Renderer {
     }
 
     public render(shape: DiagramItem, existing: svg.G | undefined, options?: { debug?: boolean; noOpacity?: boolean; noTransform?: boolean }): any {
+        const localRect = new Rect2(0, 0, shape.transform.size.x, shape.transform.size.y);
+
+        // Reuse a global context to make the code easier.
         GLOBAL_CONTEXT.shape = shape;
-        GLOBAL_CONTEXT.rect = new Rect2(0, 0, shape.transform.size.x, shape.transform.size.y);
+        GLOBAL_CONTEXT.rect = localRect;
 
         const container = SVGRenderer2.INSTANCE.getContainer();
 
@@ -111,17 +114,27 @@ export class AbstractControl implements Renderer {
             }
         }
 
-        let index = 1;
+        // Calculate a special selection rect, that is slightly bigger than the bounds to make selection easier.
+        let selectionRect = GLOBAL_CONTEXT.rect;
+
+        const diffW = Math.max(0, MIN_DIMENSIONS - selectionRect.width);
+        const diffH = Math.max(0, MIN_DIMENSIONS - selectionRect.height);
+
+        if (diffW > 0 || diffH > 0) {
+            selectionRect = selectionRect.inflate(diffW * 0.5, diffH * 0.5);
+        }
+
+        SVGHelper.transformByRect(existing.get(0), selectionRect);
+
+        // The index of the main element that holds the reference.
+        let mainIndex = 1;
 
         if (options?.debug) {
-            index = 2;
+            SVGHelper.transformByRect(existing.get(1), localRect);
+            mainIndex++;
         }
 
-        for (let i = 0; i < index; i++) {
-            SVGHelper.transformByRect(existing.get(i), GLOBAL_CONTEXT.rect);
-        }
-
-        SVGRenderer2.INSTANCE.setContainer(existing, index);
+        SVGRenderer2.INSTANCE.setContainer(existing, mainIndex);
 
         this.shapePlugin.render(GLOBAL_CONTEXT);
 
@@ -149,5 +162,7 @@ export class AbstractControl implements Renderer {
         return existing;
     }
 }
+
+const MIN_DIMENSIONS = 10;
 
 type Writeable<T> = { -readonly [P in keyof T]: T[P] };

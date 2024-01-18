@@ -17,7 +17,7 @@ export const TransformProperties = () => {
     const selectedDiagramId = useStore(getDiagramId);
     const selectedIds = selectedDiagram?.selectedIds;
     const selectedSet = useStore(getSelectionSet)!;
-    const selectedSetItems = selectedSet?.allItems;
+    const selectedSetItems = Object.values(selectedSet?.allItems || {});
     const [rotation, setRotation] = React.useState(Rotation.ZERO);
 
     const doTransform = useEventCallback((update: (oldBounds: Transform) => Transform) => {
@@ -90,6 +90,7 @@ export const TransformProperties = () => {
         if (!selectedSetItems) {
             return;
         }
+    
         if (selectedSetItems.length === 0) {
             return Transform.ZERO;
         } else if (selectedSetItems.length === 1) {

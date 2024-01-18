@@ -10,10 +10,12 @@ import { Diagram } from './diagram';
 import { DiagramItem } from './diagram-item';
 
 export class DiagramItemSet {
-    public readonly allItems: DiagramItem[] = [];
-    public readonly allShapes: DiagramItem[] = [];
-    public readonly allGroups: DiagramItem[] = [];
+    public readonly allItems: Record<string, DiagramItem> = {};
+    public readonly allShapes: Record<string, DiagramItem> = {};
+    public readonly allGroups: Record<string, DiagramItem> = {};
     public readonly rootIds: string[] = [];
+
+    public static EMPTY = new DiagramItemSet([]);
 
     public isValid = true;
 
@@ -21,12 +23,12 @@ export class DiagramItemSet {
         const parents: { [id: string]: boolean } = {};
 
         for (const item of source) {
-            this.allItems.push(item);
+            this.allItems[item.id] = item;
 
             if (item.type !== 'Group') {
-                this.allShapes.push(item);
+                this.allShapes[item.id] = item;
             } else {
-                this.allGroups.push(item);
+                this.allGroups[item.id] = item;
                 
                 for (const childId of item.childIds.values) {
                     if (!source.find(i => i.id === childId) || parents[childId]) {
@@ -61,7 +63,7 @@ export class DiagramItemSet {
             return false;
         }
 
-        for (const item of this.allItems) {
+        for (const item of Object.values(this.allItems)) {
             if (diagram.items.has(item.id)) {
                 return false;
             }
@@ -75,7 +77,7 @@ export class DiagramItemSet {
             return false;
         }
 
-        for (const item of this.allItems) {
+        for (const item of Object.values(this.allItems)) {
             if (!diagram.items.has(item.id)) {
                 return false;
             }

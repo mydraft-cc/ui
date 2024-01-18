@@ -8,7 +8,7 @@
 import * as svg from '@svgdotjs/svg.js';
 import * as React from 'react';
 import { Rotation, Subscription, SVGHelper, Timer, Vec2 } from '@app/core';
-import { Diagram, DiagramItem, SnapManager, SnapMode, Transform } from '@app/wireframes/model';
+import { Diagram, DiagramItem, DiagramItemSet, SnapManager, SnapMode, Transform } from '@app/wireframes/model';
 import { OverlayManager } from './../contexts/OverlayContext';
 import { SVGRenderer2 } from './../shapes/utils/svg-renderer2';
 import { InteractionHandler, InteractionService, SvgEvent } from './interaction-service';
@@ -68,6 +68,8 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
     private resizeShapes: svg.Element[] = [];
     private rotateShape: svg.Element = null!;
     private rotation = Rotation.ZERO;
+    private selectionSet = DiagramItemSet.EMPTY;
+    private selectedShapes: Record<string, DiagramItem> = {};
     private startPosition = Vec2.ZERO;
     private startTransform = Transform.ZERO;
     private transform = Transform.ZERO;
@@ -99,6 +101,7 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
         if (this.hasSelection()) {
             this.calculateInitializeTransform();
             this.calculateResizeRestrictions();
+            this.calculateSelection();
             this.renderShapes();
         } else {
             this.hideShapes();
@@ -141,6 +144,18 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
             } else {
                 this.canResizeX = true;
                 this.canResizeY = true;
+            }
+        }
+    }
+
+    private calculateSelection() {
+        this.selectionSet = DiagramItemSet.createFromDiagram(this.props.selectedItems, this.props.selectedDiagram);
+        this.selectedShapes = {};
+
+        // Calculate the selected shapes once, because we need it for every transform update.
+        for (const item of this.props.selectedItems) {
+            if (item.type === 'Shape') {
+                this.selectedShapes[item.id] = item;
             }
         }
     }
@@ -320,18 +335,24 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
     }
 
     private renderPreview() {
-        const items: Record<string, DiagramItem> = {};
+        const items: Record<string, DiagramItem> = {}, selection: Record<string, DiagramItem> = {};
 
-        for (const item of this.props.selectedItems) {
-            items[item.id] = item.transformByBounds(this.startTransform, this.transform);
+        for (const item of Object.values(this.selectionSet.allItems)) {
+            const updated = item.transformByBounds(this.startTransform, this.transform);
+
+            if (this.selectedShapes[item.id]) {
+                selection[item.id] = updated;
+            }
+
+            items[item.id] = updated;
         }
 
         // Use a stream of preview updates to bypass react for performance reasons.
-        this.props.previewStream.next({ type: 'Update', items });
+        this.props.previewStream.next({ type: 'Update', items, selection });
     }
 
     private move(delta: Vec2, snapMode: SnapMode, showOverlay = true) {
-        const snapResult = this.props.snapManager.snapMoving(this.startTransform, delta, snapMode);
+        const snapResult = this.props.snapManager.snapMoving(this.startTransform, delta, snapMode, this.selectionSet.allItems);
 
         this.transform = this.startTransform.moveBy(snapResult.delta);
 
@@ -396,7 +417,8 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
         const snapResult =
             this.props.snapManager.snapResizing(this.startTransform, delta, snapMode,
                 this.manipulationOffset.x,
-                this.manipulationOffset.y);
+                this.manipulationOffset.y,
+                this.selectionSet.allItems);
 
         return snapResult;
     }

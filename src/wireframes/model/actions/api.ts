@@ -23,7 +23,7 @@ export async function putDiagram(readToken: string, writeToken: string, body: an
     const response = await fetch(`${SERVER_URL}/${readToken}/${writeToken}`, {
         method: 'PUT',
         headers: {
-            ContentType: 'text/json',
+            ['Content-Type']: 'application/json',
         },
         body: JSON.stringify(body),
     });
@@ -37,7 +37,7 @@ export async function postDiagram(body: any)  {
     const response = await fetch(`${SERVER_URL}/`, {
         method: 'POST',
         headers: {
-            ContentType: 'text/json',
+            ['Content-Type']: 'application/json',
         },
         body: JSON.stringify(body),
     });

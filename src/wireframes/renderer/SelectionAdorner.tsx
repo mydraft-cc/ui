@@ -49,7 +49,7 @@ export class SelectionAdorner extends React.Component<SelectionAdornerProps> imp
         // Use a stream of preview updates to bypass react for performance reasons.
         this.props.previewStream.subscribe(event => {
             if (event.type === 'Update') {
-                this.markItems(event.items);
+                this.markItems(event.selection);
             } else {
                 this.markItems();
             }
@@ -150,9 +150,7 @@ export class SelectionAdorner extends React.Component<SelectionAdornerProps> imp
             event.event.preventDefault();
         }
 
-        const aabb = event.shape?.bounds(diagram).aabb;
-
-        if (aabb?.contains(event.position) && event.shape) {
+        if (event.shape) {
             return calculateSelection([event.shape], diagram, true, isMod);
         } else {
             return [];
@@ -164,7 +162,7 @@ export class SelectionAdorner extends React.Component<SelectionAdornerProps> imp
             adorner.hide();
         }
 
-        const selection = this.props.selectedItems;
+        const selection = preview ? Object.values(preview) : this.props.selectedItems;
 
         // Add more markers if we do not have enough.
         while (this.selectionMarkers.length < selection.length) {
@@ -176,7 +174,7 @@ export class SelectionAdorner extends React.Component<SelectionAdornerProps> imp
         // Use the inverted zoom level as stroke width.
         const strokeWidth = 1 / this.props.zoom;
 
-        this.props.selectedItems.forEach((item, i) => {
+        selection.forEach((item, i) => {
             const marker = this.selectionMarkers[i];
 
             const color =
@@ -187,7 +185,7 @@ export class SelectionAdorner extends React.Component<SelectionAdornerProps> imp
             // Use the inverted zoom level as stroke width to have a constant stroke style.
             marker.stroke({ color, width: strokeWidth });
             
-            const actualItem = preview?.[item.id] || item;
+            const actualItem = item;
             const actualBounds = actualItem.bounds(this.props.selectedDiagram);
 
             // Also adjust the bounds by the border width, to show the border outside of the shape.

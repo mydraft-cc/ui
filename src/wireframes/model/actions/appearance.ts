@@ -63,7 +63,7 @@ export function buildAppearance(builder: ActionReducerMapBuilder<EditorState>) {
 
                 const set = DiagramItemSet.createFromDiagram(itemIds, diagram);
 
-                return diagram.updateItems(set.allShapes.map(x => x.id), item => {
+                return diagram.updateItems(Object.keys(set.allShapes), item => {
                     const rendererInstance = RendererService.get(item.renderer);
 
                     if (!rendererInstance) {
@@ -87,7 +87,7 @@ export function buildAppearance(builder: ActionReducerMapBuilder<EditorState>) {
 
                 const set = DiagramItemSet.createFromDiagram(itemIds, diagram);
 
-                return diagram.updateItems(set.allItems.map(x => x.id), item => {
+                return diagram.updateItems(Object.keys(set.allItems), item => {
                     return item.transformByBounds(boundsOld, boundsNew);
                 });
             });
