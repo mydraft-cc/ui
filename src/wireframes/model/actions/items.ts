@@ -72,7 +72,7 @@ export function buildItems(builder: ActionReducerMapBuilder<EditorState>) {
             return state.updateDiagram(diagramId, diagram => {
                 const set = DiagramItemSet.createFromDiagram(itemIds, diagram);
 
-                return diagram.updateItems(Object.keys(set.allItems), item => {
+                return diagram.updateItems(set.allItems.keys(), item => {
                     return item.lock();
                 });
             });
@@ -83,7 +83,7 @@ export function buildItems(builder: ActionReducerMapBuilder<EditorState>) {
             return state.updateDiagram(diagramId, diagram => {
                 const set = DiagramItemSet.createFromDiagram(itemIds, diagram);
 
-                return diagram.updateItems(Object.keys(set.allItems), item => {
+                return diagram.updateItems(set.allItems.keys(), item => {
                     return item.unlock();
                 });
             });
@@ -105,7 +105,7 @@ export function buildItems(builder: ActionReducerMapBuilder<EditorState>) {
 
                 diagram = diagram.addItems(set);
 
-                diagram = diagram.updateItems(Object.keys(set.allShapes), item => {
+                diagram = diagram.updateItems(set.allShapes.keys(), item => {
                     const boundsOld = item.bounds(diagram);
                     const boundsNew = boundsOld.moveBy(new Vec2(offset, offset));
 
@@ -151,7 +151,7 @@ export function buildItems(builder: ActionReducerMapBuilder<EditorState>) {
         });
 }
 
-export function calculateSelection(items: DiagramItem[], diagram: Diagram, isSingleSelection?: boolean, isCtrl?: boolean): string[] {
+export function calculateSelection(items: Iterable<DiagramItem>, diagram: Diagram, isSingleSelection?: boolean, isCtrl?: boolean): string[] {
     if (!items) {
         return [];
     }
@@ -173,8 +173,10 @@ export function calculateSelection(items: DiagramItem[], diagram: Diagram, isSin
     }
 
     if (isSingleSelection) {
-        if (items.length === 1) {
-            const single = items[0];
+        const itemsArray = Array.from(items);
+        
+        if (itemsArray.length === 1) {
+            const single = itemsArray[0];
 
             if (single) {
                 const singleId = single.id;
@@ -182,12 +184,12 @@ export function calculateSelection(items: DiagramItem[], diagram: Diagram, isSin
                 if (isCtrl) {
                     if (!single.isLocked) {
                         if (diagram.selectedIds.has(singleId)) {
-                            return diagram.selectedIds.remove(singleId).values;
+                            return Array.from(diagram.selectedIds.remove(singleId).values);
                         } else {
-                            return diagram.selectedIds.add(resolveGroup(single).id).values;
+                            return Array.from(diagram.selectedIds.add(resolveGroup(single).id).values);
                         }
                     } else {
-                        return diagram.selectedIds.values;
+                        return Array.from(diagram.selectedIds.values);
                     }
                 } else {
                     const group = diagram.parent(single.id);

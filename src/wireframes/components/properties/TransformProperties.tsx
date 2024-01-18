@@ -9,7 +9,9 @@ import { Col, InputNumber, Row } from 'antd';
 import * as React from 'react';
 import { Rotation, useEventCallback, Vec2 } from '@app/core';
 import { useAppDispatch } from '@app/store';
-import { getDiagram, getDiagramId, getSelectionSet, Transform, transformItems, useStore } from '@app/wireframes/model';
+import { DiagramItem, getDiagram, getDiagramId, getSelectionSet, Transform, transformItems, useStore } from '@app/wireframes/model';
+
+const NO_SELECTION: DiagramItem[] = [];
 
 export const TransformProperties = () => {
     const dispatch = useAppDispatch();
@@ -17,7 +19,7 @@ export const TransformProperties = () => {
     const selectedDiagramId = useStore(getDiagramId);
     const selectedIds = selectedDiagram?.selectedIds;
     const selectedSet = useStore(getSelectionSet)!;
-    const selectedSetItems = Object.values(selectedSet?.allItems || {});
+    const selectedItems = selectedSet?.allItems.values() || NO_SELECTION;
     const [rotation, setRotation] = React.useState(Rotation.ZERO);
 
     const doTransform = useEventCallback((update: (oldBounds: Transform) => Transform) => {
@@ -33,7 +35,7 @@ export const TransformProperties = () => {
             return;
         }
 
-        dispatch(transformItems(selectedDiagram, selectedSetItems, oldBounds, newBounds));
+        dispatch(transformItems(selectedDiagram, selectedItems, oldBounds, newBounds));
 
     });
 
@@ -87,20 +89,20 @@ export const TransformProperties = () => {
     }, [selectedIds]);
 
     const transform = React.useMemo(() => {
-        if (!selectedSetItems) {
+        if (!selectedItems) {
             return;
         }
     
-        if (selectedSetItems.length === 0) {
+        if (selectedItems.length === 0) {
             return Transform.ZERO;
-        } else if (selectedSetItems.length === 1) {
-            return selectedSetItems[0].bounds(selectedDiagram);
+        } else if (selectedItems.length === 1) {
+            return selectedItems[0].bounds(selectedDiagram);
         } else {
-            const bounds = selectedSetItems.map(x => x.bounds(selectedDiagram!));
+            const bounds = selectedItems.map(x => x.bounds(selectedDiagram!));
 
             return Transform.createFromTransformationsAndRotation(bounds, rotation);
         }
-    }, [rotation, selectedDiagram, selectedSetItems]);
+    }, [rotation, selectedDiagram, selectedItems]);
     
     React.useEffect(() => {
         if (!transform) {

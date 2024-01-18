@@ -25,30 +25,30 @@ describe('Diagram Item Set', () => {
     it('should create from root items', () => {
         const set = DiagramItemSet.createFromDiagram([groupId], diagram);
 
-        expect(Object.keys(set.allItems)).toEqual([groupId, child1.id, child2.id]);
+        expect(set.allItems.keys()).toBeSequence([groupId, child1.id, child2.id]);
     });
 
     it('should create from child items', () => {
         const set = DiagramItemSet.createFromDiagram([child1.id], diagram);
 
-        expect(Object.keys(set.allItems)).toEqual([child1.id]);
+        expect(set.allItems.keys()).toBeSequence([child1.id]);
     });
 
     it('should keep the order in children intact', () => {
         const set = DiagramItemSet.createFromDiagram([child2.id, child1.id], diagram);
 
-        expect(Object.keys(set.allItems)).toEqual([child1.id, child2.id]);
+        expect(set.allItems.keys()).toBeSequence([child1.id, child2.id]);
     });
 
     it('should keep the order in root intact', () => {
-        const set = DiagramItemSet.createFromDiagram([root2.id, root2.id], diagram);
+        const set = DiagramItemSet.createFromDiagram([root1.id, root2.id], diagram);
 
-        expect(Object.keys(set.allItems)).toEqual([root2.id, root2.id]);
+        expect(set.allItems.keys()).toEqual([root1.id, root2.id]);
     });
 
     it('should keep the order in mixed items intact', () => {
         const set = DiagramItemSet.createFromDiagram([root2.id, child2.id, root2.id, child1.id], diagram);
 
-        expect(Object.keys(set.allItems)).toEqual([root2.id, root2.id, child1.id, child2.id]);
+        expect(set.allItems.keys()).toEqual([root2.id, child1.id, child2.id]);
     });
 });

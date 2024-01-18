@@ -52,7 +52,7 @@ export const PrintDiagram = (props: PrintDiagramProps) => {
         let bounds: Rect2;
 
         if (useBounds) {
-            const aabbs = diagram.items.values.map(x => x.bounds(diagram).aabb);
+            const aabbs = Array.from(diagram.items.values, x => x.bounds(diagram).aabb);
 
             bounds = Rect2.fromRects(aabbs).inflate(20);
         } else {

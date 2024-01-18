@@ -10,9 +10,9 @@ import { Diagram } from './diagram';
 import { DiagramItem } from './diagram-item';
 
 export class DiagramItemSet {
-    public readonly allItems: Record<string, DiagramItem> = {};
-    public readonly allShapes: Record<string, DiagramItem> = {};
-    public readonly allGroups: Record<string, DiagramItem> = {};
+    public readonly allItems = new Map<string, DiagramItem>();
+    public readonly allShapes = new Map<string, DiagramItem>();
+    public readonly allGroups = new Map<string, DiagramItem>();
     public readonly rootIds: string[] = [];
 
     public static EMPTY = new DiagramItemSet([]);
@@ -23,12 +23,12 @@ export class DiagramItemSet {
         const parents: { [id: string]: boolean } = {};
 
         for (const item of source) {
-            this.allItems[item.id] = item;
+            this.allItems.set(item.id, item);
 
             if (item.type !== 'Group') {
-                this.allShapes[item.id] = item;
+                this.allShapes.set(item.id, item);
             } else {
-                this.allGroups[item.id] = item;
+                this.allGroups.set(item.id, item);
                 
                 for (const childId of item.childIds.values) {
                     if (!source.find(i => i.id === childId) || parents[childId]) {
@@ -50,7 +50,7 @@ export class DiagramItemSet {
         Object.freeze(this);
     }
 
-    public static createFromDiagram(items: ReadonlyArray<string | DiagramItem>, diagram: Diagram): DiagramItemSet {
+    public static createFromDiagram(items: Iterable<string | DiagramItem>, diagram: Diagram): DiagramItemSet {
         const allItems: DiagramItem[] = [];
 
         flattenRootItems(items, diagram, allItems);
@@ -63,7 +63,7 @@ export class DiagramItemSet {
             return false;
         }
 
-        for (const item of Object.values(this.allItems)) {
+        for (const item of this.allItems.values()) {
             if (diagram.items.has(item.id)) {
                 return false;
             }
@@ -77,7 +77,7 @@ export class DiagramItemSet {
             return false;
         }
 
-        for (const item of Object.values(this.allItems)) {
+        for (const item of this.allItems.values()) {
             if (!diagram.items.has(item.id)) {
                 return false;
             }
@@ -89,9 +89,9 @@ export class DiagramItemSet {
 
 type OrderedItems = { item: DiagramItem; orderIndex: number }[];
 
-function flattenRootItems(source: ReadonlyArray<string | DiagramItem>, diagram: Diagram, allItems: DiagramItem[]) {
+function flattenRootItems(source: Iterable<string | DiagramItem>, diagram: Diagram, allItems: DiagramItem[]) {
     const byRoot: OrderedItems = [];
-    const byParents: { [id: string]: OrderedItems } = {};
+    const byParents = new Map<string, OrderedItems>();
 
     for (const itemOrId of source) {
         let item = itemOrId;
@@ -106,18 +106,18 @@ function flattenRootItems(source: ReadonlyArray<string | DiagramItem>, diagram: 
             const parent = diagram.parent(item);
 
             if (parent) {
-                let byParent = byParents[parent.id];
+                let byParent = byParents.get(parent.id);
     
                 if (!byParent) {
                     byParent = [];
-                    byParents[parent.id] = byParent;
+                    byParents.set(parent.id, byParent);
                 }
 
-                const orderIndex = parent.childIds.values.indexOf(item.id);
+                const orderIndex = parent.childIds.indexOf(item.id);
 
                 byParent.push({ orderIndex, item });                
             } else {
-                const orderIndex = diagram.rootIds.values.indexOf(item.id);
+                const orderIndex = diagram.rootIds.indexOf(item.id);
 
                 byRoot.push({ orderIndex, item });   
             }
@@ -142,12 +142,12 @@ function flattenRootItems(source: ReadonlyArray<string | DiagramItem>, diagram: 
 
     handleParent(byRoot, diagram, allItems);
 
-    for (const byParent of Object.values(byParents)) {        
+    for (const byParent of byParents.values()) {        
         handleParent(byParent, diagram, allItems);
     }
 }
 
-function flattenItems(source: ReadonlyArray<string>, diagram: Diagram, allItems: DiagramItem[]) {
+function flattenItems(source: Iterable<string>, diagram: Diagram, allItems: DiagramItem[]) {
     for (const itemOrId of source) {
         let item = diagram.items.get(itemOrId);
 

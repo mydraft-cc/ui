@@ -287,13 +287,13 @@ export class DiagramItem extends Record<Props> implements Shape {
             let cached = this.cachedBounds[cacheId];
 
             if (!cached) {
-                const allShapes = Object.values(DiagramItemSet.createFromDiagram([this.id], diagram).allShapes);
+                const allShapes = DiagramItemSet.createFromDiagram([this.id], diagram).allShapes;
 
-                if (allShapes.length === 0) {
+                if (allShapes.size === 0) {
                     return Transform.ZERO;
                 }
 
-                const transforms = allShapes.map(x => x.transform);
+                const transforms = Array.from(allShapes.values(), x => x.transform);
 
                 this.cachedBounds[cacheId] = cached = Transform.createFromTransformationsAndRotation(transforms, this.rotation);
             }

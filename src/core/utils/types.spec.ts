@@ -60,6 +60,18 @@ describe('Types', () => {
         expect(Types.isObject([])).toBeFalsy();
     });
 
+    it('should make Map check', () => {
+        expect(Types.isMap(new Map())).toBeTruthy();
+
+        expect(Types.isMap({})).toBeFalsy();
+    });
+
+    it('should make Set check', () => {
+        expect(Types.isSet(new Set())).toBeTruthy();
+
+        expect(Types.isSet({})).toBeFalsy();
+    });
+
     it('should make RegExp check', () => {
         expect(Types.isRegExp(/[.*]/)).toBeTruthy();
 
@@ -121,7 +133,17 @@ describe('Types', () => {
 
     it('should compare objects', () => {
         expect(Types.equals({ a: 1, b: 2 }, { a: 2, b: 3 })).toBeFalsy();
-        expect(Types.equals({ a: 1, b: 2 }, { a: 1, b: 2 })).toBeTruthy();
+        expect(Types.equals({ a: 1, b: 2 }, { b: 2, a: 1 })).toBeTruthy();
+    });
+
+    it('should compare maps', () => {
+        expect(Types.equals(new Map([['a', 1], ['b', 2]]), new Map([['a', 1], ['b', 3]]))).toBeFalsy();
+        expect(Types.equals(new Map([['a', 1], ['b', 2]]), new Map([['b', 2], ['a', 1]]))).toBeTruthy();
+    });
+
+    it('should compare sets', () => {
+        expect(Types.equals(new Set([1, 2]), new Set([2, 3]))).toBeFalsy();
+        expect(Types.equals(new Set([1, 2]), new Set([2, 1]))).toBeTruthy();
     });
 
     it('should compare nested objects', () => {

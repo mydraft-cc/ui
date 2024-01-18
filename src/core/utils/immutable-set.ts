@@ -5,112 +5,110 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { Types, without } from './types';
+import { Types } from './types';
 
-type Mutator = {
-    add: (item: string) => void;
+type Mutator<V> = {
+    add: (item: V) => void;
 
-    remove: (item: string) => void;
+    remove: (item: V) => void;
 };
 
-export class ImmutableSet {
-    private static readonly EMPTY = new ImmutableSet({});
+export class ImmutableSet<V> {
+    private static readonly EMPTY = new ImmutableSet(new Set<any>());
 
     public get size() {
-        return Object.keys(this.items).length;
+        return this.items.size;
     }
 
     public get values() {
-        return Object.keys(this.items);
+        return this.items.keys();
     }
 
-    public has(item: string) {
-        return this.items.hasOwnProperty(item);
+    public has(item: V) {
+        return this.items.has(item);
     }
 
     private constructor(
-        private readonly items: { [item: string]: boolean },
+        private readonly items: Set<V>,
     ) {
         Object.freeze(this);
         Object.freeze(items);
     }
 
-    public static empty(): ImmutableSet {
+    public static empty<V>(): ImmutableSet<V> {
         return ImmutableSet.EMPTY;
     }
 
-    public static of(...items: string[]): ImmutableSet {
+    public static of<V>(...items: V[]): ImmutableSet<V> {
         if (!items || items.length === 0) {
             return ImmutableSet.EMPTY;
         } else {
-            const itemMap: Record<string, boolean> = {};
-
-            for (const item of items) {
-                itemMap[item] = true;
-            }
-
-            return new ImmutableSet(itemMap);
+            return new ImmutableSet(new Set(items));
         }
     }
 
-    public add(item: string): ImmutableSet {
+    public add(item: V): ImmutableSet<V> {
         if (!item || this.has(item)) {
             return this;
         }
 
-        const items = { ...this.items, [item]: true };
+        const items = new Set(this.items);
+
+        items.add(item);
 
         return new ImmutableSet(items);
     }
 
-    public remove(item: string): ImmutableSet {
+    public remove(item: V): ImmutableSet<V> {
         if (!item || !this.has(item)) {
             return this;
         }
 
-        const items = without(this.items, item);
+        const items = new Set(this.items);
+
+        items.delete(item);
 
         return new ImmutableSet(items);
     }
 
-    public mutate(updater: (mutator: Mutator) => void) {
-        const items = { ...this.items };
-
-        let updated = false;
+    public mutate(updater: (mutator: Mutator<V>) => void): ImmutableSet<V> {
+        let updatedItems: Set<V> | undefined = undefined;
+        let updateCount = 0;
 
         updater({
             add: (k) => {
                 if (k) {
-                    if (!items.hasOwnProperty(k)) {
-                        updated = true;
+                    updatedItems ||= new Set(this.items);
 
-                        items[k] = true;
+                    if (!updatedItems.has(k)) {
+                        updatedItems.add(k);
+                        updateCount++;
                     }
                 }
             },
             remove: (k) => {
                 if (k) {
-                    if (items.hasOwnProperty(k)) {
-                        updated = true;
+                    updatedItems ||= new Set(this.items);
 
-                        delete items[k];
+                    if (updatedItems.delete(k)) {
+                        updateCount++;
                     }
                 }
             },
         });
 
-        if (!updated) {
+        if (!updatedItems || updateCount === 0) {
             return this;
         }
 
-        return new ImmutableSet(items);
+        return new ImmutableSet(updatedItems);
     }
 
-    public equals(other: ImmutableSet) {
+    public equals(other: ImmutableSet<V>) {
         if (!other) {
             return false;
         }
 
-        return Types.equalsObject(this.items, other.items);
+        return Types.equalsSet(this.items, other.items);
     }
 }

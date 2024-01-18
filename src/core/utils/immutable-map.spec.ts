@@ -11,155 +11,147 @@ import { ImmutableMap } from '@app/core/utils';
 
 describe('ImmutableMap', () => {
     it('should instantiate without arguments', () => {
-        const list = ImmutableMap.empty<number>();
+        const map = ImmutableMap.empty<number>();
 
-        expect(list.size).toBe(0);
+        expect(map.size).toBe(0);
     });
 
     it('should return empty instance if creating map from empty object', () => {
-        const list = ImmutableMap.of({});
+        const map = ImmutableMap.of({});
 
-        expect(list).toBe(ImmutableMap.empty());
+        expect(map).toBe(ImmutableMap.empty());
     });
 
     it('should add items', () => {
-        const set_1 = ImmutableMap.empty<number>();
-        const set_2 = set_1.set('1', 10);
-        const set_3 = set_2.set('1', 10);
-        const set_4 = set_3.set('2', 20);
-        const set_5 = set_4.set('3', 30);
+        const map_1 = ImmutableMap.empty<number>();
+        const map_2 = map_1.set('1', 10);
+        const map_3 = map_2.set('1', 10);
+        const map_4 = map_3.set('2', 20);
+        const map_5 = map_4.set('3', 30);
 
-        expect(set_5.size).toBe(3);
-        expect(set_5.has('1')).toBeTruthy();
-        expect(set_5.has('2')).toBeTruthy();
-        expect(set_5.has('3')).toBeTruthy();
+        expect(map_5.size).toBe(3);
+        expect(map_5.has('1')).toBeTruthy();
+        expect(map_5.has('2')).toBeTruthy();
+        expect(map_5.has('3')).toBeTruthy();
     });
 
-    it('should convert to key array', () => {
-        const set_1 = ImmutableMap.of<number>({ 1: 10, 2: 20 });
+    it('should convert to keys', () => {
+        const map_1 = ImmutableMap.of<number>({ 1: 10, 2: 20 });
 
-        const array = set_1.keys;
-
-        expect(array.length).toBe(2);
-        expect(array).toContain('1');
-        expect(array).toContain('2');
+        expect(map_1.keys).toBeSequence(['1', '2']);
     });
 
-    it('should convert to value array', () => {
-        const set_1 = ImmutableMap.of<number>({ 1: 10, 2: 20 });
+    it('should convert to values', () => {
+        const map_1 = ImmutableMap.of<number>({ 1: 10, 2: 20 });
 
-        const array = set_1.values;
-
-        expect(array.length).toBe(2);
-        expect(array).toContain(10);
-        expect(array).toContain(20);
+        expect(map_1.values).toBeSequence([10, 20]);
     });
 
     it('should return original set when key to add is null', () => {
-        const set_1 = ImmutableMap.empty<number>();
-        const set_2 = set_1.set(null!, 10);
+        const map_1 = ImmutableMap.empty<number>();
+        const map_2 = map_1.set(null!, 10);
 
-        expect(set_2).toBe(set_1);
+        expect(map_2).toBe(map_1);
     });
 
     it('should return original set when item to add already has the same value', () => {
-        const set_1 = ImmutableMap.empty<number>();
-        const set_2 = set_1.set('1', 10);
-        const set_3 = set_2.set('1', 10);
+        const map_1 = ImmutableMap.empty<number>();
+        const map_2 = map_1.set('1', 10);
+        const map_3 = map_2.set('1', 10);
 
-        expect(set_3).toBe(set_2);
+        expect(map_3).toBe(map_2);
     });
 
     it('should update item', () => {
-        const set_1 = ImmutableMap.empty<number>();
-        const set_2 = set_1.set('1', 10);
-        const set_3 = set_2.update('1', x => x * x);
+        const map_1 = ImmutableMap.empty<number>();
+        const map_2 = map_1.set('1', 10);
+        const map_3 = map_2.update('1', x => x * x);
 
-        expect(set_3.get('1')).toEqual(100);
+        expect(map_3.get('1')).toEqual(100);
     });
 
     it('should return original set when item to update is not found', () => {
-        const set_1 = ImmutableMap.empty<number>();
-        const set_2 = set_1.set('1', 10);
-        const set_3 = set_2.update('unknown', x => x * x);
+        const map_1 = ImmutableMap.empty<number>();
+        const map_2 = map_1.set('1', 10);
+        const map_3 = map_2.update('unknown', x => x * x);
 
-        expect(set_3).toBe(set_2);
+        expect(map_3).toBe(map_2);
     });
 
     it('should return original set when update returns same item', () => {
-        const set_1 = ImmutableMap.empty<number>();
-        const set_2 = set_1.set('1', 10);
-        const set_3 = set_2.update('unknown', x => x);
+        const map_1 = ImmutableMap.empty<number>();
+        const map_2 = map_1.set('1', 10);
+        const map_3 = map_2.update('unknown', x => x);
 
-        expect(set_3).toBe(set_2);
+        expect(map_3).toBe(map_2);
     });
 
     it('should update items', () => {
-        const set_1 = ImmutableMap.empty<number>();
-        const set_2 = set_1.set('1', 10);
-        const set_3 = set_2.updateAll(x => x * x);
+        const map_1 = ImmutableMap.empty<number>();
+        const map_2 = map_1.set('1', 10);
+        const map_3 = map_2.updateAll(x => x * x);
 
-        expect(set_3.get('1')).toEqual(100);
+        expect(map_3.get('1')).toEqual(100);
     });
 
     it('should return original set when update returns same items', () => {
-        const set_1 = ImmutableMap.empty<number>();
-        const set_2 = set_1.set('1', 10);
-        const set_3 = set_2.updateAll(x => x);
+        const map_1 = ImmutableMap.empty<number>();
+        const map_2 = map_1.set('1', 10);
+        const map_3 = map_2.updateAll(x => x);
 
-        expect(set_3).toBe(set_2);
+        expect(map_3).toBe(map_2);
     });
 
     it('should remove item', () => {
-        const set_1 = ImmutableMap.empty<number>();
-        const set_2 = set_1.set('1', 10);
-        const set_3 = set_2.remove('1');
+        const map_1 = ImmutableMap.empty<number>();
+        const map_2 = map_1.set('1', 10);
+        const map_3 = map_2.remove('1');
 
-        expect(set_3.size).toBe(0);
+        expect(map_3.size).toBe(0);
     });
 
     it('should return original set when item to remove is not found', () => {
-        const set_1 = ImmutableMap.empty<number>();
-        const set_2 = set_1.set('1', 10);
-        const set_3 = set_2.remove('unknown');
+        const map_1 = ImmutableMap.empty<number>();
+        const map_2 = map_1.set('1', 10);
+        const map_3 = map_2.remove('unknown');
 
-        expect(set_3).toBe(set_2);
+        expect(map_3).toBe(map_2);
     });
 
     it('should remove item', () => {
-        const set_1 = ImmutableMap.of<number>({ 1: 10, 2: 20, 3: 30 });
-        const set_2 = set_1.remove('2');
+        const map_1 = ImmutableMap.of<number>({ 1: 10, 2: 20, 3: 30 });
+        const map_2 = map_1.remove('2');
 
-        expect(set_2.size).toBe(2);
-        expect(set_2.has('1')).toBeTruthy();
-        expect(set_2.has('3')).toBeTruthy();
+        expect(map_2.size).toBe(2);
+        expect(map_2.has('1')).toBeTruthy();
+        expect(map_2.has('3')).toBeTruthy();
     });
 
     it('should return original set when item to remove is null', () => {
-        const set_1 = ImmutableMap.of<number>({ 1: 10, 2: 20 });
-        const set_2 = set_1.remove(null!);
+        const map_1 = ImmutableMap.of<number>({ 1: 10, 2: 20 });
+        const map_2 = map_1.remove(null!);
 
-        expect(set_2).toBe(set_1);
+        expect(map_2).toBe(map_1);
     });
 
-    it('should mutate set', () => {
-        const set_1 = ImmutableMap.of<number>({ 1: 10, 2: 20, 3: 30 });
-        const set_2 = set_1.mutate(m => {
+    it('should mutate map', () => {
+        const map_1 = ImmutableMap.of<number>({ 1: 10, 2: 20, 3: 30 });
+        const map_2 = map_1.mutate(m => {
             m.set('4', 4);
             m.remove('2');
             m.remove('3');
         });
 
-        expect(set_2.size).toBe(2);
-        expect(set_2.has('1')).toBeTruthy();
-        expect(set_2.has('4')).toBeTruthy();
+        expect(map_2.size).toBe(2);
+        expect(map_2.has('1')).toBeTruthy();
+        expect(map_2.has('4')).toBeTruthy();
     });
 
     it('should return orginal set when nothing has been mutated', () => {
-        const set_1 = ImmutableMap.of<number>({ 1: 10, 2: 20, 3: 30 });
-        const set_2 = set_1.mutate(() => false);
+        const map_1 = ImmutableMap.of<number>({ 1: 10, 2: 20, 3: 30 });
+        const map_2 = map_1.mutate(() => false);
 
-        expect(set_2).toBe(set_1);
+        expect(map_2).toBe(map_1);
     });
 
     it('should return true for equals when maps have same values', () => {

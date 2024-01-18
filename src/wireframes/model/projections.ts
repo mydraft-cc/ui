@@ -23,6 +23,7 @@ import { UndoableState } from './undoable-state';
 const EMPTY_STRING_ARRAY: string[] = [];
 const EMPTY_ITEMS_ARRAY: DiagramItem[] = [];
 const EMPTY_CONFIGURABLES: Configurable[] = [];
+const EMPTY_SELECTION_SET = new DiagramItemSet([]);
 
 export const getDiagramId = (state: EditorStateInStore) => state.editor.present.selectedDiagramId;
 export const getDiagrams = (state: EditorStateInStore) => state.editor.present.diagrams;
@@ -94,17 +95,17 @@ export const getMasterDiagram = createSelector(
 
 export const getSelectionSet = createSelector(
     getDiagram,
-    diagram => (diagram ? DiagramItemSet.createFromDiagram(diagram.selectedIds.values, diagram) : null),
+    diagram => diagram ? DiagramItemSet.createFromDiagram(diagram.selectedIds.values, diagram) : EMPTY_SELECTION_SET,
 );
 
 export const getSelectedIds = createSelector(
     getDiagram,
-    diagram => diagram?.selectedIds.values || EMPTY_STRING_ARRAY,
+    diagram => diagram ? Array.from(diagram.selectedIds.values) : EMPTY_STRING_ARRAY,
 );
 
 export const getSelectedItemsWithLocked = createSelector(
     getDiagram,
-    diagram => diagram?.selectedIds.values.map(i => diagram!.items.get(i)).filter(x => !!x) as DiagramItem[] || EMPTY_ITEMS_ARRAY,
+    diagram => diagram ? diagram.findItems(diagram.selectedIds.values) : EMPTY_ITEMS_ARRAY,
 );
 
 export const getSelectedItems = createSelector(
@@ -159,7 +160,7 @@ export const getColors = createSelector(
                     continue;
                 }
                 
-                for (const [key, value] of Object.entries(shape.appearance.raw)) {
+                for (const [key, value] of shape.appearance.entries) {
                     if (key.endsWith('COLOR')) {
                         addColor(value);
                     }

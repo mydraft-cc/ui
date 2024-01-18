@@ -325,7 +325,7 @@ export class SnapManager {
         }
 
         // Compute the bounding boxes once.
-        const bounds = currentDiagram.items.values.filter(x => !ignoreList[x.id]).map(x => x.bounds(currentDiagram).aabb);
+        const bounds = Array.from(currentDiagram.items.values).filter(x => !ignoreList[x.id]).map(x => x.bounds(currentDiagram).aabb);
 
         const grid = this.grid = computeGrid(bounds);
 

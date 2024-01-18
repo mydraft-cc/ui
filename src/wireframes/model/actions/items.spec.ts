@@ -54,7 +54,7 @@ describe('ItemsReducer', () => {
 
         const newDiagram = state_2.diagrams.get(diagram.id)!;
 
-        expect(newDiagram.selectedIds.values).toEqual([groupId]);
+        expect(newDiagram.selectedIds.values).toBeSequence([groupId]);
     });
 
     it('should remove items and all children', () => {
@@ -74,7 +74,7 @@ describe('ItemsReducer', () => {
         const state_1 = EditorState.create().addDiagram(diagram);
         const state_2 = reducer(state_1, action);
 
-        const newShape = state_2.diagrams.get(diagram.id)!.items.get('1')!;
+        const newShape = state_2.diagrams.get(diagram.id)!.items.get(shape1.id)!;
 
         expect(newShape.name).toEqual('Name');
     });
@@ -85,7 +85,7 @@ describe('ItemsReducer', () => {
         const state_1 = EditorState.create().addDiagram(diagram);
         const state_2 = reducer(state_1, action);
 
-        const newShape = state_2.diagrams.get(diagram.id)!.items.get('1')!;
+        const newShape = state_2.diagrams.get(diagram.id)!.items.get(shape1.id)!;
 
         expect(newShape.isLocked).toBeTruthy();
     });
@@ -96,7 +96,7 @@ describe('ItemsReducer', () => {
         const state_1 = EditorState.create().addDiagram(diagram);
         const state_2 = reducer(state_1, action);
 
-        const newShape = state_2.diagrams.get(diagram.id)!.items.get('2')!;
+        const newShape = state_2.diagrams.get(diagram.id)!.items.get(shape2.id)!;
 
         expect(newShape.isLocked).toBeFalsy();
     });
@@ -114,8 +114,7 @@ describe('ItemsReducer', () => {
 
         expect(newShape.id).toBe(shapeId);
         expect(newShape.transform.position).toEqual(new Vec2(150, 35));
-
-        expect(newDiagram.selectedIds.values).toEqual([shapeId]);
+        expect(newDiagram.selectedIds.values).toBeSequence([shapeId]);
     });
 
     it('should add shape with default properties and select this shape', () => {
@@ -133,8 +132,7 @@ describe('ItemsReducer', () => {
         expect(newShape.appearance.get('text1')).toEqual('text1');
         expect(newShape.appearance.get('text2')).toEqual('text2');
         expect(newShape.transform.position).toEqual(new Vec2(150, 35));
-
-        expect(newDiagram.selectedIds.values).toEqual([shapeId]);
+        expect(newDiagram.selectedIds.values).toBeSequence([shapeId]);
     });
 
     it('should paste json and add group and items', () => {
@@ -194,7 +192,7 @@ describe('ItemsReducer', () => {
         expect(itemIds).toEqual([groupId]);
     });
 
-    it('should Select grouped shape when group is selected', () => {
+    it('should select grouped shape when group is selected', () => {
         const selectedDiagram = diagram.selectItems([groupId]);
 
         const itemIds = calculateSelection([shape1], selectedDiagram, true);
@@ -207,7 +205,7 @@ describe('ItemsReducer', () => {
 
         const itemIds = calculateSelection([shape3], selectedDiagram, true, true);
 
-        expect(itemIds).toEqual([shape3.id, groupId]);
+        expect(itemIds).toEqual([groupId, shape3.id]);
     });
 
     it('should remove item from selection list', () => {

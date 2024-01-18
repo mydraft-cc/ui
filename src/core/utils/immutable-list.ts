@@ -15,12 +15,16 @@ export class ImmutableList<T> {
         return this.items.length;
     }
 
-    public get values() {
+    public get values(): Iterable<T> {
         return this.items;
     }
 
     public at(index: number): T | undefined {
         return this.items[index];
+    }
+    
+    public indexOf(item: T) {
+        return this.items.indexOf(item);
     }
 
     constructor(
@@ -104,8 +108,12 @@ export class ImmutableList<T> {
         return this.moveTo(items, 0);
     }
 
-    public moveTo(items: ReadonlyArray<T>, target: number, relative = false) {
-        return this.replace(moveItems(this.items, items, target, relative));
+    public moveTo(items: Iterable<T>, target: number, relative = false) {
+        if (!items) {
+            return this;
+        }
+    
+        return this.replace(moveItems(this.items, [...items], target, relative));
     }
 
     private replace(items: ReadonlyArray<T>): this {

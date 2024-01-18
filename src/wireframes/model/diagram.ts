@@ -20,7 +20,7 @@ type UpdateProps = {
     itemIds: ItemIds;
 
     // The selected ids.
-    selectedIds: ImmutableSet;
+    selectedIds: ImmutableSet<string>;
 };
 
 type Props = {
@@ -37,7 +37,7 @@ type Props = {
     rootIds: ItemIds;
 
     // The selected ids.
-    selectedIds: ImmutableSet;
+    selectedIds: ImmutableSet<string>;
 
     // Set the master diagram.
     master?: string;
@@ -61,7 +61,8 @@ export type InitialDiagramProps = {
 };
 
 export class Diagram extends Record<Props> {
-    private parents: { [id: string]: DiagramItem } = {};
+    private cachedParents?: { [id: string]: DiagramItem };
+    private cachedRootItems?: DiagramItem[];
 
     public get id() {
         return this.get('id');
@@ -88,7 +89,7 @@ export class Diagram extends Record<Props> {
     }
 
     public get rootItems(): ReadonlyArray<DiagramItem> {
-        return this.rootIds.values.map(x => this.items.get(x)).filter(x => !!x) as DiagramItem[];
+        return this.cachedRootItems ||= this.findItems(this.rootIds.values);
     }
 
     public static create(setup: InitialDiagramProps = {}) {
@@ -107,7 +108,21 @@ export class Diagram extends Record<Props> {
     }
 
     public children(item: DiagramItem): ReadonlyArray<DiagramItem> {
-        return item.childIds.values.map(x => this.items.get(x)!).filter(x => !!x)!;
+        return this.findItems(item.childIds.values);
+    }
+
+    public findItems(ids: Iterable<string>) {
+        const result: DiagramItem[] = [];
+
+        for (const id of ids) {
+            const item = this.items.get(id);
+
+            if (item) {
+                result.push(item);
+            }
+        }
+        
+        return result;
     }
 
     public rename(title: string | undefined) {
@@ -135,21 +150,21 @@ export class Diagram extends Record<Props> {
             id = id.id;
         }
 
-        if (!this.parents) {
-            this.parents = {};
+        if (!this.cachedParents) {
+            this.cachedParents = {};
 
             for (const key of this.items.keys) {
                 const item = this.items.get(key);
 
                 if (item?.type === 'Group') {
                     for (const childId of item.childIds.values) {
-                        this.parents[childId] = item;
+                        this.cachedParents[childId] = item;
                     }
                 }
             }
         }
 
-        return this.parents[id];
+        return this.cachedParents[id];
     }
 
     public addShape(shape: DiagramItem) {
@@ -166,7 +181,7 @@ export class Diagram extends Record<Props> {
         });
     }
 
-    public updateItems(ids: ReadonlyArray<string>, updater: (value: DiagramItem) => DiagramItem) {
+    public updateItems(ids: Iterable<string>, updater: (value: DiagramItem) => DiagramItem) {
         return this.arrange(EMPTY_SELECTION, update => {
             update.items = update.items.mutate(mutator => {
                 for (const id of ids) {
@@ -176,13 +191,13 @@ export class Diagram extends Record<Props> {
         });
     }
 
-    public selectItems(ids: ReadonlyArray<string>) {    
+    public selectItems(ids: Iterable<string>) {    
         return this.arrange(ids, update => {
             update.selectedIds = ImmutableSet.of(...ids);
         });
     }
 
-    public moveItems(ids: ReadonlyArray<string>, index: number) {
+    public moveItems(ids: Iterable<string>, index: number) {
         return this.arrange(ids, update => {
             update.itemIds = update.itemIds.moveTo(ids, index);
         }, 'SameParent');
@@ -235,7 +250,7 @@ export class Diagram extends Record<Props> {
 
         return this.arrange(EMPTY_SELECTION, update => {
             update.items = update.items.mutate(mutator => {
-                for (const item of Object.values(set.allItems)) {
+                for (const item of set.allItems.values()) {
                     mutator.set(item.id, item);
                 }
             });
@@ -251,14 +266,14 @@ export class Diagram extends Record<Props> {
 
         return this.arrange(EMPTY_SELECTION, update => {
             update.items = update.items.mutate(m => {
-                for (const item of Object.values(set.allItems)) {
+                for (const item of set.allItems.values()) {
                     m.remove(item.id);
                 }
             });
 
             update.selectedIds = update.selectedIds.mutate(m => {
-                for (const item of Object.values(set.allItems)) {
-                    m.remove(item.id);
+                for (const id of set.allItems.keys()) {
+                    m.remove(id);
                 }
             });
 
@@ -266,7 +281,7 @@ export class Diagram extends Record<Props> {
         });
     }
     
-    private arrange(targetIds: ReadonlyArray<string>, updater: (diagram: UpdateProps) => void, condition?: 'NoCondition' | 'SameParent'): Diagram {
+    private arrange(targetIds: Iterable<string>, updater: (diagram: UpdateProps) => void, condition?: 'NoCondition' | 'SameParent'): Diagram {
         if (!targetIds) {
             return this;
         }

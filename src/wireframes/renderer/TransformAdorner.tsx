@@ -337,7 +337,7 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
     private renderPreview() {
         const items: Record<string, DiagramItem> = {}, selection: Record<string, DiagramItem> = {};
 
-        for (const item of Object.values(this.selectionSet.allItems)) {
+        for (const item of this.selectionSet.allItems.values()) {
             const updated = item.transformByBounds(this.startTransform, this.transform);
 
             if (this.selectedShapes[item.id]) {

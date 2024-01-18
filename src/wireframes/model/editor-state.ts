@@ -72,7 +72,7 @@ export class EditorState extends Record<Props> {
     }
 
     public get orderedDiagrams(): ReadonlyArray<Diagram> {
-        return this.diagramIds.values.map(x => this.diagrams.get(x)).filter(x => !!x) as Diagram[];
+        return this.findDiagrams(this.diagramIds.values);
     }
 
     public static create(setup: InitialEditorProps = {}): EditorState {
@@ -87,6 +87,20 @@ export class EditorState extends Record<Props> {
         };
 
         return new EditorState(props);
+    }
+
+    public findDiagrams(ids: Iterable<string>) {
+        const result: Diagram[] = [];
+
+        for (const id of ids) {
+            const item = this.diagrams.get(id);
+
+            if (item) {
+                result.push(item);
+            }
+        }
+        
+        return result;
     }
 
     public changeSize(size: Vec2) {

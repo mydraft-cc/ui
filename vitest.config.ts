@@ -16,9 +16,15 @@ export default defineConfig({
     test: {
         globals: true,
 
+        setupFiles: [
+            './src/tests/setup.ts',
+        ],
+
         browser: {
-            name: 'chrome', // browser name is required,
+            // Browser name is required,
+            name: 'chrome', 
             
+            // Fixes a bug with build errors in browser mode.
             slowHijackESM: false,
         },
 

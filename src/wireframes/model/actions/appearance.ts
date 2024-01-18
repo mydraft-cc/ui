@@ -40,7 +40,7 @@ export function buildAppearance(builder: ActionReducerMapBuilder<EditorState>) {
                     }
 
                     const appearance = item.appearance.mutate(mutator => {
-                        for (const [key, value] of Object.entries(item.appearance.raw)) {
+                        for (const [key, value] of item.appearance.entries) {
                             if (key.endsWith('COLOR')) {
                                 const parsedColor = Color.fromValue(value);
 
@@ -63,7 +63,7 @@ export function buildAppearance(builder: ActionReducerMapBuilder<EditorState>) {
 
                 const set = DiagramItemSet.createFromDiagram(itemIds, diagram);
 
-                return diagram.updateItems(Object.keys(set.allShapes), item => {
+                return diagram.updateItems(set.allShapes.keys(), item => {
                     const rendererInstance = RendererService.get(item.renderer);
 
                     if (!rendererInstance) {
@@ -87,7 +87,7 @@ export function buildAppearance(builder: ActionReducerMapBuilder<EditorState>) {
 
                 const set = DiagramItemSet.createFromDiagram(itemIds, diagram);
 
-                return diagram.updateItems(Object.keys(set.allItems), item => {
+                return diagram.updateItems(set.allItems.keys(), item => {
                     return item.transformByBounds(boundsOld, boundsNew);
                 });
             });
