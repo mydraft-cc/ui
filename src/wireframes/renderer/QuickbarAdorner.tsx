@@ -8,7 +8,7 @@
 import * as React from 'react';
 import { Rect2, sizeInPx, Subscription, Vec2 } from '@app/core';
 import { ActionButton, useAlignment } from '@app/wireframes/components/actions';
-import { Diagram, DiagramItem } from '@app/wireframes/model';
+import { Diagram, DiagramItemSet } from '@app/wireframes/model';
 import { PreviewEvent } from './preview';
 import './QuickbarAdorner.scss';
 
@@ -23,7 +23,7 @@ export interface QuickbarAdornerProps {
     selectedDiagram: Diagram;
 
     // The selected items.
-    selectedItems: DiagramItem[];
+    selectionSet: DiagramItemSet;
 
     // The preview subscription.
     previewStream: Subscription<PreviewEvent>;
@@ -33,7 +33,7 @@ export const QuickbarAdorner = (props: QuickbarAdornerProps) => {
     const {
         previewStream,
         selectedDiagram,
-        selectedItems,
+        selectionSet,
         zoom,
     } = props;
 
@@ -64,12 +64,12 @@ export const QuickbarAdorner = (props: QuickbarAdornerProps) => {
     }, [previewStream]);
 
     React.useEffect(() => {
-        if (selectedItems.length >= 2) {
-            setSelectionRect(Rect2.fromRects(selectedItems.map(x => x.bounds(selectedDiagram).aabb)));
+        if (selectionSet.selectedItems.length >= 2) {
+            setSelectionRect(Rect2.fromRects(selectionSet.selectedItems.map(x => x.bounds(selectedDiagram).aabb)));
         } else {
             setSelectionRect(undefined);
         }
-    }, [selectedDiagram, selectedItems]);
+    }, [selectedDiagram, selectionSet.selectedItems]);
 
     if (!selectionRect) {
         return null;

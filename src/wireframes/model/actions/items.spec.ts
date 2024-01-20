@@ -54,7 +54,7 @@ describe('ItemsReducer', () => {
 
         const newDiagram = state_2.diagrams.get(diagram.id)!;
 
-        expect(newDiagram.selectedIds.values).toBeSequence([groupId]);
+        expect(newDiagram.selectedIds.values).toEqual([groupId]);
     });
 
     it('should remove items and all children', () => {
@@ -114,7 +114,7 @@ describe('ItemsReducer', () => {
 
         expect(newShape.id).toBe(shapeId);
         expect(newShape.transform.position).toEqual(new Vec2(150, 35));
-        expect(newDiagram.selectedIds.values).toBeSequence([shapeId]);
+        expect(newDiagram.selectedIds.values).toEqual([shapeId]);
     });
 
     it('should add shape with default properties and select this shape', () => {
@@ -132,7 +132,7 @@ describe('ItemsReducer', () => {
         expect(newShape.appearance.get('text1')).toEqual('text1');
         expect(newShape.appearance.get('text2')).toEqual('text2');
         expect(newShape.transform.position).toEqual(new Vec2(150, 35));
-        expect(newDiagram.selectedIds.values).toBeSequence([shapeId]);
+        expect(newDiagram.selectedIds.values).toEqual([shapeId]);
     });
 
     it('should paste json and add group and items', () => {

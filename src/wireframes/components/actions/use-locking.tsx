@@ -10,13 +10,21 @@ import * as React from 'react';
 import { useEventCallback } from '@app/core';
 import { useAppDispatch } from '@app/store';
 import { texts } from '@app/texts';
-import { getDiagramId, getSelectedItemWithLocked, lockItems, unlockItems, useStore } from '@app/wireframes/model';
+import { getDiagramId, getSelection, lockItems, unlockItems, useStore } from '@app/wireframes/model';
 import { UIAction } from './shared';
 
 export function useLocking() {
     const dispatch = useAppDispatch();
     const selectedDiagramId = useStore(getDiagramId);
-    const selectedItem = useStore(getSelectedItemWithLocked);
+    const selectionSet = useStore(getSelection);
+
+    const selectedItem = React.useMemo(() => {
+        if (selectionSet.selection.size === 1) {
+            return selectionSet.selectedItems[0];
+        }
+
+        return null;
+    }, [selectionSet]);
 
     const doToggle = useEventCallback(() => {
         if (selectedDiagramId && selectedItem) {

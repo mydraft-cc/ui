@@ -22,16 +22,16 @@ export class ImmutableMap<V> {
         return this.items.size;
     }
 
-    public get keys() {
-        return this.items.keys();
+    public get keys(): ReadonlyArray<string> {
+        return Array.from(this.items.keys());
     }
 
-    public get values() {
-        return this.items.values();
+    public get values(): ReadonlyArray<V> {
+        return Array.from(this.items.values());
     }
 
-    public get entries(): Iterable<readonly [string, V]> {
-        return this.items;
+    public get entries(): ReadonlyArray<readonly [string, V]> {
+        return Array.from(this.items.entries());
     }
 
     public get(key: string): V | undefined {

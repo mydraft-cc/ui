@@ -16,10 +16,6 @@ export default defineConfig({
     test: {
         globals: true,
 
-        setupFiles: [
-            './src/tests/setup.ts',
-        ],
-
         browser: {
             // Browser name is required,
             name: 'chrome', 

@@ -9,18 +9,18 @@ import * as React from 'react';
 import { useEventCallback } from '@app/core';
 import { useAppDispatch } from '@app/store';
 import { texts } from '@app/texts';
-import { getDiagramId, getSelectedItems, removeItems, useStore } from '@app/wireframes/model';
+import { getDiagramId, getSelection, removeItems, useStore } from '@app/wireframes/model';
 import { UIAction } from './shared';
 
 export function useRemove() {
     const dispatch = useAppDispatch();
     const selectedDiagramId = useStore(getDiagramId);
-    const selectedItems = useStore(getSelectedItems);
-    const canRemove = selectedItems.length > 0;
+    const selectionSet = useStore(getSelection);
+    const canRemove = selectionSet.selectedItems.length > 0;
 
     const doRemove = useEventCallback(() => {
         if (selectedDiagramId) {
-            dispatch(removeItems(selectedDiagramId, selectedItems));
+            dispatch(removeItems(selectedDiagramId, selectionSet.selectedItems));
         }
     });
 

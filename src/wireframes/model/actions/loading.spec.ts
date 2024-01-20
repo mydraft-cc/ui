@@ -50,8 +50,8 @@ describe('LoadingReducer', () => {
         const editorV1 = rootReducer(initial, loadDiagramInternal(JSON.parse(v1), '1')) as UndoableState<EditorState>;
         const editorV2 = rootReducer(initial, loadDiagramInternal(JSON.parse(v2), '2')) as UndoableState<EditorState>;
 
-        expect(editorV1.present.diagrams.values.next().value.items.size).toEqual(10);
-        expect(editorV2.present.diagrams.values.next().value.items.size).toEqual(10);
+        expect(editorV1.present.diagrams.values[0].items.size).toEqual(10);
+        expect(editorV2.present.diagrams.values[0].items.size).toEqual(10);
 
         const diffsV2 = cleanupDiffs(diff(editorV1.present, editorV2.present), []);
 
@@ -64,8 +64,8 @@ describe('LoadingReducer', () => {
         const editorV1 = rootReducer(initial, loadDiagramInternal(JSON.parse(v1), '1')) as UndoableState<EditorState>;
         const editorV3 = rootReducer(initial, loadDiagramInternal(JSON.parse(v3), '2')) as UndoableState<EditorState>;
 
-        expect(editorV1.present.diagrams.values.next().value.items.size).toEqual(10);
-        expect(editorV3.present.diagrams.values.next().value.items.size).toEqual(10);
+        expect(editorV1.present.diagrams.values[0].items.size).toEqual(10);
+        expect(editorV3.present.diagrams.values[0].items.size).toEqual(10);
 
         const diffsV3 = cleanupDiffs(diff(editorV1.present, editorV3.present), []);
 

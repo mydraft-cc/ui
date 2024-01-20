@@ -8,7 +8,7 @@
 import * as svg from '@svgdotjs/svg.js';
 import * as React from 'react';
 import { isModKey, Rect2, Subscription, SVGHelper, Vec2 } from '@app/core';
-import { calculateSelection, Diagram, DiagramItem } from '@app/wireframes/model';
+import { calculateSelection, Diagram, DiagramItem, DiagramItemSet } from '@app/wireframes/model';
 import { InteractionHandler, InteractionService, SvgEvent } from './interaction-service';
 import { PreviewEvent } from './preview';
 
@@ -26,7 +26,7 @@ export interface SelectionAdornerProps {
     selectedDiagram: Diagram;
 
     // The selected items.
-    selectedItems: DiagramItem[];
+    selectionSet: DiagramItemSet;
 
     // The interaction service.
     interactionService: InteractionService;
@@ -35,7 +35,7 @@ export interface SelectionAdornerProps {
     previewStream: Subscription<PreviewEvent>;
 
     // A function to select a set of items.
-    onSelectItems: (diagram: Diagram, itemIds: string[]) => any;
+    onSelectItems: (diagram: Diagram, itemIds: ReadonlyArray<string>) => any;
 }
 
 export class SelectionAdorner extends React.Component<SelectionAdornerProps> implements InteractionHandler {
@@ -49,7 +49,7 @@ export class SelectionAdorner extends React.Component<SelectionAdornerProps> imp
         // Use a stream of preview updates to bypass react for performance reasons.
         this.props.previewStream.subscribe(event => {
             if (event.type === 'Update') {
-                this.markItems(event.selection);
+                this.markItems({});
             } else {
                 this.markItems();
             }
@@ -137,13 +137,13 @@ export class SelectionAdorner extends React.Component<SelectionAdornerProps> imp
         this.dragStart = null;
     }
 
-    private selectMultiple(rect: Rect2, diagram: Diagram): string[] {
+    private selectMultiple(rect: Rect2, diagram: Diagram): ReadonlyArray<string> {
         const selectedItems = diagram.rootItems.filter(i => rect.contains(i.bounds(diagram).aabb));
 
         return calculateSelection(selectedItems, diagram, false);
     }
 
-    private selectSingle(event: SvgEvent, diagram: Diagram): string[] {
+    private selectSingle(event: SvgEvent, diagram: Diagram): ReadonlyArray<string> {
         const isMod = isModKey(event.event);
 
         if (isMod) {
@@ -162,7 +162,7 @@ export class SelectionAdorner extends React.Component<SelectionAdornerProps> imp
             adorner.hide();
         }
 
-        const selection = preview ? Object.values(preview) : this.props.selectedItems;
+        const selection = preview ? Object.values(preview) : Array.from(this.props.selectionSet.selection.values());
 
         // Add more markers if we do not have enough.
         while (this.selectionMarkers.length < selection.length) {

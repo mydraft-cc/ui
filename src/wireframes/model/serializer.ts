@@ -53,13 +53,13 @@ export module Serializer {
     }
 
     export function deserializeSet(input: any): DiagramItemSet {
-        const allItems: DiagramItem[] = [];
+        const allItems = new Map<string, DiagramItem>();
 
         for (const inputVisual of input.visuals) {
             const item = readDiagramItem(inputVisual, 'Shape');
 
             if (item) {
-                allItems.push(item);
+                allItems.set(item.id, item);
             }
         }
 
@@ -67,17 +67,17 @@ export module Serializer {
             const item = readDiagramItem(inputGroup, 'Group');
 
             if (item) {
-                allItems.push(item);
+                allItems.set(item.id, item);
             }
         }
 
-        return new DiagramItemSet(allItems);
+        return new DiagramItemSet(allItems, allItems);
     }
 
     export function serializeSet(set: DiagramItemSet) {
         const output: any = { visuals: [], groups: [] };
 
-        for (const item of set.allItems.values()) {
+        for (const item of set.nested.values()) {
             const serialized = writeDiagramItem(item);
 
             if (item.type === 'Shape') {

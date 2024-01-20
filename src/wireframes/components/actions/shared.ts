@@ -75,18 +75,22 @@ export function useAppearance<T>(selectedDiagramId: RefDiagramId, selectedSet: R
     return useAppearanceCore(selectedDiagramId, selectedSet, key, DEFAULT_CONVERTER, allowUndefined, force);
 }
 
-export function useAppearanceCore<T>(selectedDiagramId: RefDiagramId, selectedSet: RefDiagramItemSet, key: string, converter: UniqueConverter<T>, allowUndefined = false, force = false): Result<T> {
+export function useAppearanceCore<T>(selectedDiagramId: RefDiagramId, selectionSet: RefDiagramItemSet, key: string, converter: UniqueConverter<T>, allowUndefined = false, force = false): Result<T> {
     const dispatch = useAppDispatch();
 
     const value = React.useMemo(() => {
-        if (!selectedSet) {
+        if (!selectionSet) {
             return { empty: true };
         }
 
         let value: T | undefined, empty = true;
 
-        for (const shape of selectedSet.allShapes.values()) {
-            const appearance = shape.appearance.get(key);
+        for (const item of selectionSet.nested.values()) {
+            if (item.type === 'Group') {
+                continue;
+            }
+    
+            const appearance = item.appearance.get(key);
 
             if (!Types.isUndefined(appearance) || allowUndefined) {
                 empty = false;
@@ -102,11 +106,11 @@ export function useAppearanceCore<T>(selectedDiagramId: RefDiagramId, selectedSe
         }
 
         return { value, empty };
-    }, [allowUndefined, converter, key, selectedSet]);
+    }, [allowUndefined, converter, key, selectionSet]);
 
     const doChangeAppearance = useEventCallback((value: T) => {
-        if (selectedDiagramId && selectedSet) {
-            dispatch(changeItemsAppearance(selectedDiagramId, selectedSet.allShapes.values(), key, converter.write(value), force));
+        if (selectedDiagramId && selectionSet) {
+            dispatch(changeItemsAppearance(selectedDiagramId, selectionSet.deepEditableItems, key, converter.write(value), force));
         }
     });
 

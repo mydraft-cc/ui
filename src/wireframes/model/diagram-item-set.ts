@@ -10,52 +10,56 @@ import { Diagram } from './diagram';
 import { DiagramItem } from './diagram-item';
 
 export class DiagramItemSet {
-    public readonly allItems = new Map<string, DiagramItem>();
-    public readonly allShapes = new Map<string, DiagramItem>();
-    public readonly allGroups = new Map<string, DiagramItem>();
+    private cachedSelectedItems?: ReadonlyArray<DiagramItem>;
+    private cachedDeepEditableItems?: ReadonlyArray<DiagramItem>;
+
+    public static EMPTY = new DiagramItemSet(new Map(), new Map());
+
     public readonly rootIds: string[] = [];
+    public readonly isValid: boolean = true;
 
-    public static EMPTY = new DiagramItemSet([]);
+    public get selectedItems() {
+        return this.cachedSelectedItems ||= Array.from(this.selection.values()).filter(x => !x.isLocked);
+    }
 
-    public isValid = true;
+    public get deepEditableItems() {
+        return this.cachedDeepEditableItems ||= Array.from(this.nested.values()).filter(x => !this.selection.has(x.id) || !x.isLocked);
+    }
 
-    constructor(source: DiagramItem[]) {
+    constructor(
+        public readonly nested: Map<string, DiagramItem>,
+        public readonly selection: Map<string, DiagramItem>,
+    ) {
         const parents: { [id: string]: boolean } = {};
 
-        for (const item of source) {
-            this.allItems.set(item.id, item);
-
+        for (const item of nested.values()) {
             if (item.type !== 'Group') {
-                this.allShapes.set(item.id, item);
-            } else {
-                this.allGroups.set(item.id, item);
-                
-                for (const childId of item.childIds.values) {
-                    if (!source.find(i => i.id === childId) || parents[childId]) {
-                        this.isValid = false;
-                    }
-    
-                    parents[childId] = true;
+                continue;
+            }
+
+            for (const childId of item.childIds.values) {
+                if (!nested.get(childId) || parents[childId]) {
+                    this.isValid = false;
                 }
 
+                parents[childId] = true;
             }
         }
 
-        for (const item of source) {
+        for (const item of nested.values()) {
             if (!parents[item.id]) {
                 this.rootIds.push(item.id);
             }
         }
-
-        Object.freeze(this);
     }
 
-    public static createFromDiagram(items: Iterable<string | DiagramItem>, diagram: Diagram): DiagramItemSet {
-        const allItems: DiagramItem[] = [];
+    public static createFromDiagram(items: ReadonlyArray<string | DiagramItem>, diagram: Diagram): DiagramItemSet {
+        const allItems = new Map<string, DiagramItem>();
+        const allSources = new Map<string, DiagramItem>();
 
-        flattenRootItems(items, diagram, allItems);
+        flattenRootItems(items, diagram, allItems, allSources);
 
-        return new DiagramItemSet(allItems);
+        return new DiagramItemSet(allItems, allSources);
     }
 
     public canAdd(diagram: Diagram): boolean {
@@ -63,7 +67,7 @@ export class DiagramItemSet {
             return false;
         }
 
-        for (const item of this.allItems.values()) {
+        for (const item of this.nested.values()) {
             if (diagram.items.has(item.id)) {
                 return false;
             }
@@ -77,7 +81,7 @@ export class DiagramItemSet {
             return false;
         }
 
-        for (const item of this.allItems.values()) {
+        for (const item of this.nested.values()) {
             if (!diagram.items.has(item.id)) {
                 return false;
             }
@@ -89,11 +93,11 @@ export class DiagramItemSet {
 
 type OrderedItems = { item: DiagramItem; orderIndex: number }[];
 
-function flattenRootItems(source: Iterable<string | DiagramItem>, diagram: Diagram, allItems: DiagramItem[]) {
+function flattenRootItems(items: ReadonlyArray<string | DiagramItem>, diagram: Diagram, allItems: Map<string, DiagramItem>, source: Map<string, DiagramItem>) {
     const byRoot: OrderedItems = [];
     const byParents = new Map<string, OrderedItems>();
 
-    for (const itemOrId of source) {
+    for (const itemOrId of items) {
         let item = itemOrId;
 
         if (Types.isString(itemOrId)) {
@@ -102,29 +106,33 @@ function flattenRootItems(source: Iterable<string | DiagramItem>, diagram: Diagr
             item = itemOrId;
         }
 
-        if (item) {
-            const parent = diagram.parent(item);
-
-            if (parent) {
-                let byParent = byParents.get(parent.id);
-    
-                if (!byParent) {
-                    byParent = [];
-                    byParents.set(parent.id, byParent);
-                }
-
-                const orderIndex = parent.childIds.indexOf(item.id);
-
-                byParent.push({ orderIndex, item });                
-            } else {
-                const orderIndex = diagram.rootIds.indexOf(item.id);
-
-                byRoot.push({ orderIndex, item });   
-            }
+        if (!item) {
+            continue;
         }
+
+        const parent = diagram.parent(item);
+
+        if (parent) {
+            let byParent = byParents.get(parent.id);
+
+            if (!byParent) {
+                byParent = [];
+                byParents.set(parent.id, byParent);
+            }
+
+            const orderIndex = parent.childIds.indexOf(item.id);
+
+            byParent.push({ orderIndex, item });                
+        } else {
+            const orderIndex = diagram.rootIds.indexOf(item.id);
+
+            byRoot.push({ orderIndex, item });   
+        }
+
+        source.set(item.id, item);
     }
 
-    function handleParent(byParent: OrderedItems, diagram: Diagram, allItems: DiagramItem[]) {
+    function handleParent(byParent: OrderedItems, diagram: Diagram, allItems: Map<string, DiagramItem>) {
         if (byParent.length === 0) {
             return;
         }
@@ -132,7 +140,7 @@ function flattenRootItems(source: Iterable<string | DiagramItem>, diagram: Diagr
         byParent.sort((a, b) => a.orderIndex - b.orderIndex);
 
         for (const { item } of byParent) {
-            allItems.push(item);
+            allItems.set(item.id, item);
 
             if (item.type === 'Group') {
                 flattenItems(item.childIds.values, diagram, allItems);
@@ -147,7 +155,7 @@ function flattenRootItems(source: Iterable<string | DiagramItem>, diagram: Diagr
     }
 }
 
-function flattenItems(source: Iterable<string>, diagram: Diagram, allItems: DiagramItem[]) {
+function flattenItems(source: ReadonlyArray<string>, diagram: Diagram, allItems: Map<string, DiagramItem>) {
     for (const itemOrId of source) {
         let item = diagram.items.get(itemOrId);
 
@@ -155,7 +163,7 @@ function flattenItems(source: Iterable<string>, diagram: Diagram, allItems: Diag
             continue;
         }
 
-        allItems.push(item);
+        allItems.set(item.id, item);
 
         if (item.type === 'Group') {
             flattenItems(item.childIds.values, diagram, allItems);

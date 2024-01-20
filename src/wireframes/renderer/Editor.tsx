@@ -10,7 +10,7 @@
 import * as svg from '@svgdotjs/svg.js';
 import * as React from 'react';
 import { Color, Rect2, Subscription, SVGHelper, Vec2 } from '@app/core';
-import { Diagram, DiagramItem, Transform } from '@app/wireframes/model';
+import { Diagram, DiagramItem, DiagramItemSet, Transform } from '@app/wireframes/model';
 import { useOverlayContext } from './../contexts/OverlayContext';
 import { CanvasView } from './CanvasView';
 import { NavigateAdorner } from './NavigateAdorner';
@@ -32,10 +32,7 @@ export interface EditorProps {
     masterDiagram?: Diagram;
 
     // The selected items.
-    selectedItems: DiagramItem[];
-
-    // The selected items including locked items.
-    selectedItemsWithLocked: DiagramItem[];
+    selectionSet: DiagramItemSet;
 
     // The zoomed width of the canvas.
     zoomedSize: Vec2;
@@ -59,16 +56,16 @@ export interface EditorProps {
     onRender?: () => void;
 
     // A function to select a set of items.
-    onSelectItems?: (diagram: Diagram, itemIds: string[]) => any;
+    onSelectItems?: (diagram: Diagram, itemIds: ReadonlyArray<string>) => any;
 
     // A function to change the appearance of a visual.
-    onChangeItemsAppearance?: (diagram: Diagram, visuals: DiagramItem[], key: string, val: any) => any;
+    onChangeItemsAppearance?: (diagram: Diagram, visuals: ReadonlyArray<DiagramItem>, key: string, val: any) => any;
 
     // A function that is invoked when the user clicked a link.
     onNavigate?: (item: DiagramItem, link: string) => void;
 
     // A function to transform a set of items.
-    onTransformItems?: (diagram: Diagram, items: DiagramItem[], oldBounds: Transform, newBounds: Transform) => any;
+    onTransformItems?: (diagram: Diagram, items: ReadonlyArray<DiagramItem>, oldBounds: Transform, newBounds: Transform) => any;
 }
 
 export const Editor = React.memo((props: EditorProps) => {
@@ -82,8 +79,7 @@ export const Editor = React.memo((props: EditorProps) => {
         onRender,
         onSelectItems,
         onTransformItems,
-        selectedItems,
-        selectedItemsWithLocked,
+        selectionSet,
         viewBox,
         viewSize,
         zoom,
@@ -183,7 +179,7 @@ export const Editor = React.memo((props: EditorProps) => {
                             overlayManager={overlayContext.overlayManager}
                             previewStream={renderPreview.current}
                             selectedDiagram={diagram}
-                            selectedItems={selectedItems}
+                            selectionSet={selectionSet}
                             snapManager={overlayContext.snapManager}
                             viewSize={viewSize}
                             zoom={zoom}
@@ -197,7 +193,7 @@ export const Editor = React.memo((props: EditorProps) => {
                             onSelectItems={onSelectItems}
                             previewStream={renderPreview.current}
                             selectedDiagram={diagram}
-                            selectedItems={selectedItemsWithLocked}
+                            selectionSet={selectionSet}
                             zoom={zoom}
                         />
                     }
@@ -207,7 +203,7 @@ export const Editor = React.memo((props: EditorProps) => {
                             interactionService={interactionMainService}
                             onChangeItemsAppearance={onChangeItemsAppearance}
                             selectedDiagram={diagram}
-                            selectedItems={selectedItems}
+                            selectionSet={selectionSet}
                             zoom={zoom}
                         />
                     }
@@ -216,7 +212,7 @@ export const Editor = React.memo((props: EditorProps) => {
                         <QuickbarAdorner
                             previewStream={renderPreview.current}
                             selectedDiagram={diagram}
-                            selectedItems={selectedItems}
+                            selectionSet={selectionSet}
                             viewSize={viewSize}
                             zoom={zoom}
                         />

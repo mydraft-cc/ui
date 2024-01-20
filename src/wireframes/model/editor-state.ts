@@ -89,7 +89,7 @@ export class EditorState extends Record<Props> {
         return new EditorState(props);
     }
 
-    public findDiagrams(ids: Iterable<string>) {
+    public findDiagrams(ids: ReadonlyArray<string>) {
         const result: Diagram[] = [];
 
         for (const id of ids) {

@@ -47,7 +47,7 @@ describe('Diagram', () => {
     });
 
     it('should add items to diagram', () => {
-        const diagram_2 = diagram_1.addItems(new DiagramItemSet([shape1, shape2, shape3]));
+        const diagram_2 = diagram_1.addItems(DiagramItemSet.createFromDiagram([shape1, shape2, shape3], diagram_1)!);
 
         expect(diagram_2.items.has(shape1.id)).toBeTruthy();
         expect(diagram_2.items.has(shape2.id)).toBeTruthy();
@@ -56,7 +56,7 @@ describe('Diagram', () => {
 
     it('should remove shape from items', () => {
         const diagram_2 = diagram_1.addShape(shape1);
-        const diagram_3 = diagram_2.removeItems(DiagramItemSet.createFromDiagram([shape1.id], diagram_2)!);
+        const diagram_3 = diagram_2.removeItems(DiagramItemSet.createFromDiagram([shape1], diagram_2)!);
 
         expect(diagram_3.items.has(shape1.id)).toBeFalsy();
     });
@@ -64,7 +64,7 @@ describe('Diagram', () => {
     it('should remove selected shape from items', () => {
         const diagram_2 = diagram_1.addShape(shape1);
         const diagram_3 = diagram_2.selectItems([shape1.id]);
-        const diagram_4 = diagram_3.removeItems(DiagramItemSet.createFromDiagram([shape1.id], diagram_2)!);
+        const diagram_4 = diagram_3.removeItems(DiagramItemSet.createFromDiagram([shape1], diagram_2)!);
 
         expect(diagram_3.selectedIds.has(shape1.id)).toBeTruthy();
         expect(diagram_4.selectedIds.has(shape1.id)).toBeFalsy();

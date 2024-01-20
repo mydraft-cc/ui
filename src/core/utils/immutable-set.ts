@@ -20,8 +20,8 @@ export class ImmutableSet<V> {
         return this.items.size;
     }
 
-    public get values() {
-        return this.items.keys();
+    public get values(): ReadonlyArray<V> {
+        return Array.from(this.items.values());
     }
 
     public has(item: V) {

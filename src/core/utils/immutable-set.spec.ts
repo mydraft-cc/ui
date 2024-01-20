@@ -41,7 +41,7 @@ describe('ImmutableSet', () => {
     it('should convert to values', () => {
         const set_1 = ImmutableSet.of('a', 'b');
 
-        expect(set_1.values).toBeSequence(['a', 'b']);
+        expect(set_1.values).toEqual(['a', 'b']);
     });
 
     it('should return original set when item to add is null', () => {

@@ -111,7 +111,7 @@ export class Diagram extends Record<Props> {
         return this.findItems(item.childIds.values);
     }
 
-    public findItems(ids: Iterable<string>) {
+    public findItems(ids: ReadonlyArray<string>) {
         const result: DiagramItem[] = [];
 
         for (const id of ids) {
@@ -181,7 +181,7 @@ export class Diagram extends Record<Props> {
         });
     }
 
-    public updateItems(ids: Iterable<string>, updater: (value: DiagramItem) => DiagramItem) {
+    public updateItems(ids: ReadonlyArray<string>, updater: (value: DiagramItem) => DiagramItem) {
         return this.arrange(EMPTY_SELECTION, update => {
             update.items = update.items.mutate(mutator => {
                 for (const id of ids) {
@@ -191,13 +191,13 @@ export class Diagram extends Record<Props> {
         });
     }
 
-    public selectItems(ids: Iterable<string>) {    
+    public selectItems(ids: ReadonlyArray<string>) {    
         return this.arrange(ids, update => {
             update.selectedIds = ImmutableSet.of(...ids);
         });
     }
 
-    public moveItems(ids: Iterable<string>, index: number) {
+    public moveItems(ids: ReadonlyArray<string>, index: number) {
         return this.arrange(ids, update => {
             update.itemIds = update.itemIds.moveTo(ids, index);
         }, 'SameParent');
@@ -250,7 +250,7 @@ export class Diagram extends Record<Props> {
 
         return this.arrange(EMPTY_SELECTION, update => {
             update.items = update.items.mutate(mutator => {
-                for (const item of set.allItems.values()) {
+                for (const item of set.nested.values()) {
                     mutator.set(item.id, item);
                 }
             });
@@ -266,13 +266,13 @@ export class Diagram extends Record<Props> {
 
         return this.arrange(EMPTY_SELECTION, update => {
             update.items = update.items.mutate(m => {
-                for (const item of set.allItems.values()) {
+                for (const item of set.nested.values()) {
                     m.remove(item.id);
                 }
             });
 
             update.selectedIds = update.selectedIds.mutate(m => {
-                for (const id of set.allItems.keys()) {
+                for (const id of set.nested.keys()) {
                     m.remove(id);
                 }
             });

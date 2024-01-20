@@ -20,9 +20,6 @@ export type PrevieUpdate = {
 
     // All the items.
     items: { [id: string]: DiagramItem };
-
-    // The selected items.
-    selection: { [id: string]: DiagramItem };
 };
 
 export type PreviewEvent = PreviewStart | PreviewEnd | PrevieUpdate;

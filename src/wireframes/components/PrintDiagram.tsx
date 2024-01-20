@@ -7,7 +7,7 @@
 
 import * as React from 'react';
 import { Color, ImmutableMap, Rect2, useEventCallback, Vec2 } from '@app/core';
-import { Diagram, DiagramItem } from '@app/wireframes/model';
+import { Diagram, DiagramItem, DiagramItemSet } from '@app/wireframes/model';
 import { Editor } from '@app/wireframes/renderer/Editor';
 
 export interface PrintDiagramProps {
@@ -70,8 +70,7 @@ export const PrintDiagram = (props: PrintDiagramProps) => {
                 masterDiagram={diagrams.get(diagram.master!)}
                 onNavigate={onNavigate}
                 onRender={doOnRender}
-                selectedItems={[]}
-                selectedItemsWithLocked={[]}
+                selectionSet={DiagramItemSet.EMPTY}
                 viewBox={bounds}
                 viewSize={size}
                 zoom={1}

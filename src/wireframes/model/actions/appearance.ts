@@ -61,9 +61,7 @@ export function buildAppearance(builder: ActionReducerMapBuilder<EditorState>) {
             return state.updateDiagram(diagramId, diagram => {
                 const { key, value } = appearance;
 
-                const set = DiagramItemSet.createFromDiagram(itemIds, diagram);
-
-                return diagram.updateItems(set.allShapes.keys(), item => {
+                return diagram.updateItems(itemIds, item => {
                     const rendererInstance = RendererService.get(item.renderer);
 
                     if (!rendererInstance) {
@@ -85,9 +83,7 @@ export function buildAppearance(builder: ActionReducerMapBuilder<EditorState>) {
                 const boundsOld = Transform.fromJS(action.payload.oldBounds);
                 const boundsNew = Transform.fromJS(action.payload.newBounds);
 
-                const set = DiagramItemSet.createFromDiagram(itemIds, diagram);
-
-                return diagram.updateItems(set.allItems.keys(), item => {
+                return diagram.updateItems(itemIds, item => {
                     return item.transformByBounds(boundsOld, boundsNew);
                 });
             });

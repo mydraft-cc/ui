@@ -12,7 +12,7 @@ import { Diagram, DiagramItem } from './../internal';
 
 export type DiagramRef = string | Diagram;
 export type ItemRef = string | DiagramItem;
-export type ItemsRef = Iterable<ItemRef>;
+export type ItemsRef = ReadonlyArray<ItemRef>;
 
 interface DiagramAction {
     readonly diagramId: string;

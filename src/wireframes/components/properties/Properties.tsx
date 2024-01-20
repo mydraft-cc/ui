@@ -9,7 +9,7 @@ import { Collapse } from 'antd';
 import { CollapseProps } from 'antd/lib';
 import classNames from 'classnames';
 import { texts } from '@app/texts';
-import { getDiagram, getSelectedItems, useStore } from '@app/wireframes/model';
+import { getDiagram, getSelection, useStore } from '@app/wireframes/model';
 import { Colors } from './Colors';
 import { CustomProperties } from './CustomProperties';
 import { DiagramProperties } from './DiagramProperties';
@@ -61,7 +61,7 @@ const diagramItems: CollapseProps['items'] = [
 ];
 
 export const Properties = () => {
-    const hasSelection = useStore(getSelectedItems).length > 0;
+    const hasSelection = useStore(getSelection).selectedItems.length > 0;
     const hasDiagram = !!useStore(getDiagram);
 
     return (

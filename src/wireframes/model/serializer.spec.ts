@@ -82,7 +82,7 @@ describe('Serializer', () => {
 
         const newValue = Serializer.deserializeSet(Serializer.serializeSet(original));
 
-        expect(newValue.allItems.size).toEqual(3);
+        expect(newValue.nested.size).toEqual(3);
     });
 
     it('should serialize and deserialize editor', () => {
@@ -104,7 +104,7 @@ describe('Serializer', () => {
 
         const newValue = Serializer.deserializeEditor(Serializer.serializeEditor(original));
 
-        expect(newValue.diagrams.values.next().value.items.size).toEqual(3);
+        expect(newValue.diagrams.values[0].items.size).toEqual(3);
     });
 
     function createDiagram(id: string) {
@@ -138,10 +138,10 @@ describe('Serializer', () => {
 
     function compareSets(newValue: DiagramItemSet | undefined, original: DiagramItemSet) {
         expect(newValue).toBeDefined();
-        expect(newValue?.allItems.size).toEqual(original.allItems.size);
+        expect(newValue?.nested.size).toEqual(original.nested.size);
 
-        for (const item of Object.values(original.allItems)) {
-            compareShapes(newValue?.allItems.get(item.id), item);
+        for (const item of Object.values(original.nested)) {
+            compareShapes(newValue?.nested.get(item.id), item);
         }
     }
 

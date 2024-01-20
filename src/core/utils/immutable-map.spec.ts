@@ -38,13 +38,13 @@ describe('ImmutableMap', () => {
     it('should convert to keys', () => {
         const map_1 = ImmutableMap.of<number>({ 1: 10, 2: 20 });
 
-        expect(map_1.keys).toBeSequence(['1', '2']);
+        expect(map_1.keys).toEqual(['1', '2']);
     });
 
     it('should convert to values', () => {
         const map_1 = ImmutableMap.of<number>({ 1: 10, 2: 20 });
 
-        expect(map_1.values).toBeSequence([10, 20]);
+        expect(map_1.values).toEqual([10, 20]);
     });
 
     it('should return original set when key to add is null', () => {

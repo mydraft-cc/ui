@@ -9,17 +9,15 @@ import { Col, InputNumber, Row } from 'antd';
 import * as React from 'react';
 import { Rotation, useEventCallback, Vec2 } from '@app/core';
 import { useAppDispatch } from '@app/store';
-import { DiagramItem, getDiagram, getDiagramId, getSelectionSet, Transform, transformItems, useStore } from '@app/wireframes/model';
-
-const NO_SELECTION: DiagramItem[] = [];
+import { getDiagram, getDiagramId, getSelection, Transform, transformItems, useStore } from '@app/wireframes/model';
 
 export const TransformProperties = () => {
     const dispatch = useAppDispatch();
     const selectedDiagram = useStore(getDiagram)!;
     const selectedDiagramId = useStore(getDiagramId);
     const selectedIds = selectedDiagram?.selectedIds;
-    const selectedSet = useStore(getSelectionSet)!;
-    const selectedItems = selectedSet?.allItems.values() || NO_SELECTION;
+    const selectionSet = useStore(getSelection)!;
+    const selectedItems = selectionSet.selectedItems;
     const [rotation, setRotation] = React.useState(Rotation.ZERO);
 
     const doTransform = useEventCallback((update: (oldBounds: Transform) => Transform) => {

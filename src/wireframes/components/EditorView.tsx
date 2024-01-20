@@ -12,7 +12,7 @@ import { NativeTypes } from 'react-dnd-html5-backend';
 import { findDOMNode } from 'react-dom';
 import { loadImagesToClipboardItems, sizeInPx, useClipboard, useEventCallback } from '@app/core';
 import { useAppDispatch } from '@app/store';
-import { addShape, changeItemsAppearance, Diagram, getDiagram, getDiagramId, getEditor, getMasterDiagram, getSelectedItems, getSelectedItemsWithLocked, RendererService, selectItems, Transform, transformItems, useStore } from '@app/wireframes/model';
+import { addShape, changeItemsAppearance, Diagram, getDiagram, getDiagramId, getEditor, getMasterDiagram, getSelection, RendererService, selectItems, Transform, transformItems, useStore } from '@app/wireframes/model';
 import { Editor } from '@app/wireframes/renderer/Editor';
 import { DiagramRef, ItemsRef } from '../model/actions/utils';
 import { ShapeSource } from './../interface';
@@ -172,8 +172,7 @@ export const EditorViewInner = ({ diagram, spacing }: EditorViewProps & { diagra
                         onChangeItemsAppearance={doChangeItemsAppearance}
                         onSelectItems={doSelectItems}
                         onTransformItems={doTransformItems}
-                        selectedItems={getSelectedItems(state)}
-                        selectedItemsWithLocked={getSelectedItemsWithLocked(state)}
+                        selectionSet={getSelection(state)}
                         viewSize={editor.size}
                         zoom={zoom}
                         zoomedSize={zoomedSize}

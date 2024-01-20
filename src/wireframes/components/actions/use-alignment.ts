@@ -11,26 +11,26 @@ import * as React from 'react';
 import { useEventCallback } from '@app/core';
 import { useAppDispatch } from '@app/store';
 import { texts } from '@app/texts';
-import { alignItems, AlignmentMode, getDiagramId, getSelectedItems, orderItems, OrderMode, useStore } from '@app/wireframes/model';
+import { alignItems, AlignmentMode, getDiagramId, getSelection, orderItems, OrderMode, useStore } from '@app/wireframes/model';
 import { UIAction } from './shared';
 
 export function useAlignment() {
     const dispatch = useAppDispatch();
     const selectedDiagramId = useStore(getDiagramId);
-    const selectedItems = useStore(getSelectedItems);
-    const canAlign = selectedItems.length > 1;
-    const canDistribute = selectedItems.length > 2;
-    const canOrder = selectedItems.length > 0;
+    const selectionSet = useStore(getSelection);
+    const canAlign = selectionSet.selectedItems.length > 1;
+    const canOrder = selectionSet.selectedItems.length > 0;
+    const canDistribute = selectionSet.selectedItems.length > 2;
 
     const doAlign = useEventCallback((mode: AlignmentMode) => {
         if (selectedDiagramId) {
-            dispatch(alignItems(mode, selectedDiagramId, selectedItems));
+            dispatch(alignItems(mode, selectedDiagramId, selectionSet.selectedItems));
         }
     });
 
     const doOrder = useEventCallback((mode: OrderMode) => {
         if (selectedDiagramId) {
-            dispatch(orderItems(mode, selectedDiagramId, selectedItems));
+            dispatch(orderItems(mode, selectedDiagramId, selectionSet.selectedItems));
         }
     });
 
