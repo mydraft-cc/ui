@@ -21,6 +21,8 @@ describe('Diagram Item Set', () => {
             .addShape(child1)
             .addShape(child2)
             .group(groupId, [child1.id, child2.id]);
+        
+    const group = diagram.items.get(groupId)!;
 
     it('should create from root items', () => {
         const set = DiagramItemSet.createFromDiagram([groupId], diagram);
@@ -47,9 +49,15 @@ describe('Diagram Item Set', () => {
     });
 
     it('should keep the order in mixed items intact', () => {
-        const set = DiagramItemSet.createFromDiagram([root2, child2, root2, child1], diagram);
+        const set = DiagramItemSet.createFromDiagram([ child2, child1, root2], diagram);
 
         expect([...set.nested.keys()]).toEqual([root2.id, child1.id, child2.id]);
+    });
+
+    it('should be invalid if group is not complete', () => {
+        const set = new DiagramItemSet(new Map([[group.id, group], [child1.id, child1]]), new Map());
+
+        expect(set.isComplete).toBeFalsy();
     });
 
     it('should calculate selection once', () => {

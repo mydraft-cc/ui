@@ -54,6 +54,21 @@ describe('Diagram', () => {
         expect(diagram_2.items.has(shape3.id)).toBeTruthy();
     });
 
+    it('should not add items if one them is already added', () => {
+        const diagram_2 = diagram_1.addShape(shape1);
+        const diagram_3 = diagram_2.addItems(DiagramItemSet.createFromDiagram([shape1, shape2, shape3], diagram_1)!);
+
+        expect(diagram_3).toBe(diagram_2);
+    });
+
+    it('should not add items set is not complete', () => {
+        const group = DiagramItem.createGroup({ childIds: [shape1.id, shape2.id] });
+
+        const diagram_2 = diagram_1.addItems(new DiagramItemSet(new Map([[ group.id, group ]]), new Map()));
+
+        expect(diagram_2).toBe(diagram_1);
+    });
+
     it('should remove shape from items', () => {
         const diagram_2 = diagram_1.addShape(shape1);
         const diagram_3 = diagram_2.removeItems(DiagramItemSet.createFromDiagram([shape1], diagram_2)!);
@@ -80,6 +95,24 @@ describe('Diagram', () => {
         const diagram_5 = diagram_4.removeItems(DiagramItemSet.createFromDiagram([diagram_4.items.get(groupId)!], diagram_4)!);
 
         expect(diagram_5.items.size).toBe(0);
+    });
+
+    it('should not remove items when one item is not part of set', () => {
+        const diagram_2 = diagram_1.addShape(shape1);
+        const diagram_3 = diagram_2.addItems(new DiagramItemSet(new Map([[ shape1.id, shape1 ], [shape2.id, shape2]]), new Map()));
+
+        expect(diagram_3).toBe(diagram_2);
+    });
+
+    it('should not remove items when set is not complete', () => {
+        const groupId = 'group-1';
+
+        const diagram_2 = diagram_1.addShape(shape1);
+        const diagram_3 = diagram_2.addShape(shape2);
+        const diagram_4 = diagram_3.group(groupId, [shape1.id, shape2.id]);
+        const diagram_5 = diagram_4.addItems(new DiagramItemSet(new Map([[ groupId, diagram_4.items.get(groupId)! ]]), new Map()));
+
+        expect(diagram_5).toBe(diagram_4);
     });
 
     it('should update items', () => {

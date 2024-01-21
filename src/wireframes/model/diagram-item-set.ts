@@ -16,7 +16,7 @@ export class DiagramItemSet {
     public static EMPTY = new DiagramItemSet(new Map(), new Map());
 
     public readonly rootIds: string[] = [];
-    public readonly isValid: boolean = true;
+    public readonly isComplete: boolean = true;
 
     public get selectedItems() {
         return this.cachedSelectedItems ||= Array.from(this.selection.values()).filter(x => !x.isLocked);
@@ -39,7 +39,7 @@ export class DiagramItemSet {
 
             for (const childId of item.childIds.values) {
                 if (!nested.get(childId) || parents[childId]) {
-                    this.isValid = false;
+                    this.isComplete = false;
                 }
 
                 parents[childId] = true;
@@ -63,7 +63,7 @@ export class DiagramItemSet {
     }
 
     public canAdd(diagram: Diagram): boolean {
-        if (!this.isValid) {
+        if (!this.isComplete) {
             return false;
         }
 
@@ -77,7 +77,7 @@ export class DiagramItemSet {
     }
 
     public canRemove(diagram: Diagram): boolean {
-        if (!this.isValid) {
+        if (!this.isComplete) {
             return false;
         }
 
@@ -132,30 +132,30 @@ function flattenRootItems(items: ReadonlyArray<string | DiagramItem>, diagram: D
         source.set(item.id, item);
     }
 
-    function handleParent(byParent: OrderedItems, diagram: Diagram, allItems: Map<string, DiagramItem>) {
-        if (byParent.length === 0) {
-            return;
-        }
-
-        byParent.sort((a, b) => a.orderIndex - b.orderIndex);
-
-        for (const { item } of byParent) {
-            allItems.set(item.id, item);
-
-            if (item.type === 'Group') {
-                flattenItems(item.childIds.values, diagram, allItems);
-            }
-        }
-    }
-
-    handleParent(byRoot, diagram, allItems);
+    unrollParent(byRoot, diagram, allItems);
 
     for (const byParent of byParents.values()) {        
-        handleParent(byParent, diagram, allItems);
+        unrollParent(byParent, diagram, allItems);
     }
 }
 
-function flattenItems(source: ReadonlyArray<string>, diagram: Diagram, allItems: Map<string, DiagramItem>) {
+function unrollParent(byParent: OrderedItems, diagram: Diagram, allItems: Map<string, DiagramItem>) {
+    if (byParent.length === 0) {
+        return;
+    }
+
+    byParent.sort((a, b) => a.orderIndex - b.orderIndex);
+
+    for (const { item } of byParent) {
+        allItems.set(item.id, item);
+
+        if (item.type === 'Group') {
+            unrollItems(item.childIds.values, diagram, allItems);
+        }
+    }
+}
+
+function unrollItems(source: ReadonlyArray<string>, diagram: Diagram, allItems: Map<string, DiagramItem>) {
     for (const itemOrId of source) {
         let item = diagram.items.get(itemOrId);
 
@@ -166,7 +166,7 @@ function flattenItems(source: ReadonlyArray<string>, diagram: Diagram, allItems:
         allItems.set(item.id, item);
 
         if (item.type === 'Group') {
-            flattenItems(item.childIds.values, diagram, allItems);
+            unrollItems(item.childIds.values, diagram, allItems);
         }
     }
 }
