@@ -22,7 +22,7 @@ $size: 24px;
             @include circle($size);
             align-items: center;
             background: $color-white;
-            border: 2px solid $color-border;
+            border: 1px solid $color-input;
             border-radius: $size;
             display: inline-flex;
             justify-content: center;
