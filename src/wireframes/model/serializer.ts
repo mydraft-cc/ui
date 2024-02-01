@@ -53,13 +53,13 @@ export module Serializer {
     }
 
     export function deserializeSet(input: any): DiagramItemSet {
-        const allItems: DiagramItem[] = [];
+        const allItems = new Map<string, DiagramItem>();
 
         for (const inputVisual of input.visuals) {
             const item = readDiagramItem(inputVisual, 'Shape');
 
             if (item) {
-                allItems.push(item);
+                allItems.set(item.id, item);
             }
         }
 
@@ -67,17 +67,17 @@ export module Serializer {
             const item = readDiagramItem(inputGroup, 'Group');
 
             if (item) {
-                allItems.push(item);
+                allItems.set(item.id, item);
             }
         }
 
-        return new DiagramItemSet(allItems);
+        return new DiagramItemSet(allItems, allItems);
     }
 
     export function serializeSet(set: DiagramItemSet) {
         const output: any = { visuals: [], groups: [] };
 
-        for (const item of Object.values(set.allItems)) {
+        for (const item of set.nested.values()) {
             const serialized = writeDiagramItem(item);
 
             if (item.type === 'Shape') {
@@ -187,7 +187,7 @@ const EDITOR_SERIALIZERS: PropertySerializers = {
         set: (source) => source,
     },
     'diagrams': {
-        get: (source: ImmutableMap<Diagram>) => source.values.map(writeDiagram),
+        get: (source: ImmutableMap<Diagram>) => Array.from(source.values, writeDiagram),
         set: (source: any[]) => buildObject(source.map(readDiagram), x => x.id),
     },
     'diagramIds': {
@@ -210,7 +210,7 @@ const DIAGRAM_SERIALIZERS: PropertySerializers = {
         set: (source) => source,
     },
     'items': {
-        get: (source: ImmutableMap<DiagramItem>) => source.values.map(writeDiagramItem),
+        get: (source: ImmutableMap<DiagramItem>) => Array.from(source.values, writeDiagramItem),
         set: (source: any[]) => buildObject(source.map(readDiagramItem), x => x.id),
     },
     'rootIds': {
@@ -225,11 +225,11 @@ const DIAGRAM_SERIALIZERS: PropertySerializers = {
 
 const DIAGRAM_ITEM_SERIALIZERS: PropertySerializers = {
     'appearance': {
-        get: (source: ImmutableMap<any>) => source.raw,
+        get: (source: ImmutableMap<any>) => Object.fromEntries(source.entries),
         set: (source: any) => source,
     },
     'childIds': {
-        get: (source: ImmutableList<string>) => source.values,
+        get: (source: ImmutableList<string>) => Array.from(source.values),
         set: (source) => source,
     },
     'id': {

@@ -18,26 +18,22 @@ export interface PrintRendererProps {
 export const PrintView = (props: PrintRendererProps) => {
     const { onRender } = props;
 
-    const renderedDiagrams = React.useRef<ReadonlyArray<Diagram>>([]);
     const color = useStore(x => x.editor.present.color);
     const diagrams = useStore(x => x.editor.present.diagrams);
     const diagramsOrdered = useStore(x => x.editor.present.orderedDiagrams);
-    const rendered = React.useRef<{ [id: string]: Boolean }>({});
+    const renderTargets = React.useRef<ReadonlyArray<Diagram>>([]);
+    const renderConfirms = React.useRef(new Set<string>());
     const size = useStore(x => x.editor.present.size);
 
     React.useEffect(() => {
-        renderedDiagrams.current = diagramsOrdered;
+        renderTargets.current = diagramsOrdered;
     }, [diagramsOrdered]);
 
     const doRender = useEventCallback((diagram: Diagram) => {
-        if (rendered.current[diagram.id]) {
-            return;
-        }
+        renderConfirms.current.add(diagram.id);
 
-        rendered.current[diagram.id] = true;
-
-        if (Object.keys(rendered.current).length === renderedDiagrams.current.length && onRender) {
-            onRender();
+        if (renderConfirms.current.size === renderTargets.current.length) {
+            onRender?.();
         }
     });
 

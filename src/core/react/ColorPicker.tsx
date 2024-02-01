@@ -5,6 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
+import Icon from '@ant-design/icons';
 import { Button, Popover, Tabs } from 'antd';
 import { TooltipPlacement } from 'antd/lib/tooltip';
 import * as React from 'react';
@@ -121,11 +122,15 @@ export const ColorPicker = React.memo((props: ColorPickerProps) => {
     const placement = popoverPlacement || 'left';
 
     return (
-        <Popover content={content} visible={visible && !disabled} placement={placement} trigger='click' onVisibleChange={setVisible}>
-            <Button disabled={disabled} className='color-picker-button' onClick={doToggle}>
-                <div className='color-picker-color'>
-                    <div className='color-picker-color-inner' style={{ background: colorHex }}></div>
-                </div>
+        <Popover content={content} open={visible && !disabled} placement={placement} trigger='click' onOpenChange={setVisible}>
+            <Button disabled={disabled} className='color-picker-button' onClick={doToggle}
+                icon={
+                    <Icon component={() => 
+                        <div className='color-picker-color'>
+                            <div className='color-picker-color-inner' style={{ background: colorHex }}></div>
+                        </div>
+                    } />
+                }>
             </Button>
         </Popover>
     );

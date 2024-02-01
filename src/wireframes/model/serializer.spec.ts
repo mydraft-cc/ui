@@ -82,7 +82,7 @@ describe('Serializer', () => {
 
         const newValue = Serializer.deserializeSet(Serializer.serializeSet(original));
 
-        expect(newValue.allItems.length).toEqual(3);
+        expect(newValue.nested.size).toEqual(3);
     });
 
     it('should serialize and deserialize editor', () => {
@@ -138,10 +138,10 @@ describe('Serializer', () => {
 
     function compareSets(newValue: DiagramItemSet | undefined, original: DiagramItemSet) {
         expect(newValue).toBeDefined();
-        expect(newValue?.allItems.length).toEqual(original.allItems.length);
+        expect(newValue?.nested.size).toEqual(original.nested.size);
 
-        for (const item of original.allItems) {
-            compareShapes(newValue?.allItems.find(x => x.id === item.id), item);
+        for (const item of Object.values(original.nested)) {
+            compareShapes(newValue?.nested.get(item.id), item);
         }
     }
 

@@ -7,9 +7,9 @@
 
 import { Checkbox, Col, InputNumber, Row, Select } from 'antd';
 import { CheckboxChangeEvent } from 'antd/lib/checkbox';
-import { useDispatch } from 'react-redux';
 import { Color, ColorPalette, ColorPicker, useEventCallback } from '@app/core';
-import { changeItemsAppearance, ColorConfigurable, Configurable, getColors, getDiagramId, getSelectedConfigurables, getSelectedShape, NumberConfigurable, selectColorTab, SelectionConfigurable, SliderConfigurable, TextConfigurable, ToggleConfigurable, useStore } from '@app/wireframes/model';
+import { useAppDispatch } from '@app/store';
+import { changeItemsAppearance, ColorConfigurable, Configurable, getColors, getDiagramId, getSelection, NumberConfigurable, selectColorTab, SelectionConfigurable, SliderConfigurable, TextConfigurable, ToggleConfigurable, useStore } from '@app/wireframes/model';
 import { CustomSlider } from './CustomSlider';
 import { Text } from './Text';
 
@@ -107,30 +107,35 @@ export const CustomProperty = (props: CustomPropertyProps) => {
 };
 
 export const CustomProperties = () => {
-    const dispatch = useDispatch();
+    const dispatch = useAppDispatch();
     const recentColors = useStore(getColors);
     const selectedDiagramId = useStore(getDiagramId);
     const selectedColorTab = useStore(s => s.ui.selectedColorTab);
-    const selectedConfigurables = useStore(getSelectedConfigurables);
-    const selectedShape = useStore(getSelectedShape);
+    const selectionSet = useStore(getSelection);
 
     const doSelectColorTab = useEventCallback((key: string) => {
         dispatch(selectColorTab(key));
     });
 
     const doChange = useEventCallback((key: string, value: any) => {
-        if (selectedDiagramId && selectedShape) {
-            dispatch(changeItemsAppearance(selectedDiagramId, [selectedShape], key, value));
+        if (selectedDiagramId) {
+            dispatch(changeItemsAppearance(selectedDiagramId, selectionSet.selectedItems, key, value));
         }
     });
 
-    if (!selectedShape || !selectedDiagramId) {
+    if (selectionSet.selectedItems.length !== 1 || !selectedDiagramId) {
+        return null;
+    }
+
+    const selectedShape = selectionSet.selectedItems[0];
+
+    if (!selectedShape.configurables) {
         return null;
     }
 
     return (
         <>
-            {selectedDiagramId && selectedConfigurables && selectedConfigurables.map(c =>
+            {selectedShape.configurables.map(c =>
                 <CustomProperty key={c.name}
                     selectedColorTab={selectedColorTab}
                     configurable={c}

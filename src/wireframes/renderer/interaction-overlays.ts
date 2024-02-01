@@ -14,8 +14,8 @@ const COLOR_RED = Color.RED.toString();
 const COLOR_BLUE = Color.RED.toString();
 const COLOR_PURPLE = '#a020f0';
 
-const MIN_VALUE = -1000;
-const MAX_VALUE = 1000;
+const MIN_VALUE = -10000;
+const MAX_VALUE = 10000;
 
 export class InteractionOverlays {
     private readonly lines: svg.Line[] = [];

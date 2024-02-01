@@ -9,8 +9,8 @@
 /* eslint-disable one-var-declaration-per-line */
 
 import * as React from 'react';
-import { useDispatch } from 'react-redux';
 import { Color, Types, useEventCallback } from '@app/core';
+import { useAppDispatch } from '@app/store';
 import { changeItemsAppearance, DiagramItemSet } from '@app/wireframes/model';
 
 export interface UIAction {
@@ -38,6 +38,10 @@ export type UniqueConverter<TInput> = { parse: (value: any) => TInput; write: (v
 
 const DEFAULT_CONVERTER = {
     parse: (value: any) => {
+        if (value === 'undefined') {
+            return undefined!;
+        }
+
         return value;
     },
     write: (value: any) => {
@@ -47,6 +51,10 @@ const DEFAULT_CONVERTER = {
 
 const COLOR_CONVERTER: UniqueConverter<Color> = {
     parse: (value: any) => {
+        if (value === 'undefined') {
+            return undefined!;
+        }
+
         return Color.fromValue(value);
     },
     write: (value: Color) => {
@@ -67,18 +75,22 @@ export function useAppearance<T>(selectedDiagramId: RefDiagramId, selectedSet: R
     return useAppearanceCore(selectedDiagramId, selectedSet, key, DEFAULT_CONVERTER, allowUndefined, force);
 }
 
-export function useAppearanceCore<T>(selectedDiagramId: RefDiagramId, selectedSet: RefDiagramItemSet, key: string, converter: UniqueConverter<T>, allowUndefined = false, force = false): Result<T> {
-    const dispatch = useDispatch();
+export function useAppearanceCore<T>(selectedDiagramId: RefDiagramId, selectionSet: RefDiagramItemSet, key: string, converter: UniqueConverter<T>, allowUndefined = false, force = false): Result<T> {
+    const dispatch = useAppDispatch();
 
     const value = React.useMemo(() => {
-        if (!selectedSet) {
+        if (!selectionSet) {
             return { empty: true };
         }
 
         let value: T | undefined, empty = true;
 
-        for (const shape of selectedSet.allShapes) {
-            const appearance = shape.appearance.get(key);
+        for (const item of selectionSet.nested.values()) {
+            if (item.type === 'Group') {
+                continue;
+            }
+    
+            const appearance = item.appearance.get(key);
 
             if (!Types.isUndefined(appearance) || allowUndefined) {
                 empty = false;
@@ -94,11 +106,11 @@ export function useAppearanceCore<T>(selectedDiagramId: RefDiagramId, selectedSe
         }
 
         return { value, empty };
-    }, [allowUndefined, converter, key, selectedSet]);
+    }, [allowUndefined, converter, key, selectionSet]);
 
     const doChangeAppearance = useEventCallback((value: T) => {
-        if (selectedDiagramId && selectedSet) {
-            dispatch(changeItemsAppearance(selectedDiagramId, selectedSet.allShapes, key, converter.write(value), force));
+        if (selectedDiagramId && selectionSet) {
+            dispatch(changeItemsAppearance(selectedDiagramId, selectionSet.deepEditableItems, key, converter.write(value), force));
         }
     });
 

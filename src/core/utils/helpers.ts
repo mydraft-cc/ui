@@ -17,7 +17,6 @@ export function isModKey(key: KeyboardEvent | MouseEvent) {
     }
 }
 
-
 const escapeTestNoEncode = /[<>"']|&(?!(#\d{1,7}|#[Xx][a-fA-F0-9]{1,6}|\w+);)/;
 const escapeReplaceNoEncode = new RegExp(escapeTestNoEncode.source, 'g');
 const escapeReplacements: Record<string, string> = {

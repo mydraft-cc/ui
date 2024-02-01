@@ -18,6 +18,7 @@ export type PreviewEnd = {
 export type PrevieUpdate = {
     type: 'Update';
 
+    // All the items.
     items: { [id: string]: DiagramItem };
 };
 

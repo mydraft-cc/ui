@@ -6,7 +6,7 @@
 */
 
 import { CaretDownOutlined, CaretRightOutlined, DeleteOutlined, FileOutlined } from '@ant-design/icons';
-import { Col, Dropdown, Input, Menu, Row } from 'antd';
+import { Col, Dropdown, Input, InputRef, MenuProps, Row } from 'antd';
 import classNames from 'classnames';
 import * as React from 'react';
 import { Keys, useEventCallback } from '@app/core';
@@ -45,6 +45,7 @@ export const OutlineItem = (props: OutlineItemProps) => {
         onAction,
     } = props;
 
+    const [isOpen, setIsOpen] = React.useState(false);
     const [editName, setEditName] = React.useState('');
     const [editing, setEditing] = React.useState(false);
     const [expanded, setExpanded] = React.useState(true);
@@ -86,11 +87,58 @@ export const OutlineItem = (props: OutlineItemProps) => {
         }
     });
 
-    const initInput = React.useCallback((event: Input) => {
+    const initInput = React.useCallback((event: InputRef) => {
         event?.focus();
     }, []);
 
     const selected = diagram.selectedIds.has(diagramItem.id);
+
+    const contextMenu: MenuProps =
+        isOpen ? {
+            mode: 'vertical',
+            items: [
+                {
+                    key: 'rename',
+                    onClick: doRenameStart,
+                    label: texts.common.rename,
+                },
+                {
+                    type: 'divider',
+                },
+                {
+                    key: OrderMode.BringToFront,
+                    onClick: doMove,
+                    label: texts.common.bringToFront,
+                    disabled: isLast,
+                },
+                {
+                    key: OrderMode.BringForwards,
+                    onClick: doMove,
+                    label: texts.common.bringForwards,
+                    disabled: isLast,
+                },
+                {
+                    key: OrderMode.SendBackwards,
+                    onClick: doMove,
+                    label: texts.common.sendBackwards,
+                    disabled: isFirst,
+                },
+                {
+                    key: OrderMode.SendToBack,
+                    onClick: doMove,
+                    label: texts.common.sendToBack,
+                    disabled: isFirst,
+                },
+                {
+                    key: 'delete',
+                    onClick: doDelete,
+                    icon: <DeleteOutlined />,
+                    label: texts.common.delete,
+                    disabled: isLast,
+                },
+            ],
+        } : DEFAULT_MENU;
+
 
     return (
         <div className='tree-item'>
@@ -98,41 +146,7 @@ export const OutlineItem = (props: OutlineItemProps) => {
                 {editing ? (
                     <Input value={editName} onChange={setText} onBlur={doRenameCancel} onKeyUp={doEnter} ref={initInput} />
                 ) : (
-                    <Dropdown overlay={
-                        <Menu selectable={false}>
-                            <Menu.Item key='rename' onClick={doRenameStart}>
-                                {texts.common.rename}
-                            </Menu.Item>
-
-                            <Menu.Divider />
-
-                            {level === 0 && 
-                                <>
-                                    <Menu.Item key={OrderMode.BringToFront} onClick={doMove} disabled={isLast}>
-                                        {texts.common.bringToFront}
-                                    </Menu.Item>
-        
-                                    <Menu.Item key={OrderMode.BringForwards} onClick={doMove} disabled={isLast}>
-                                        {texts.common.bringForwards}
-                                    </Menu.Item>
-        
-                                    <Menu.Item key={OrderMode.SendBackwards} onClick={doMove} disabled={isFirst}>
-                                        {texts.common.sendBackwards}
-                                    </Menu.Item>
-        
-                                    <Menu.Item key={OrderMode.SendToBack}onClick={doMove} disabled={isFirst}>
-                                        {texts.common.sendToBack}
-                                    </Menu.Item>
-        
-                                    <Menu.Divider />
-                                </>
-                            }
-
-                            <Menu.Item key='delete' icon={<DeleteOutlined />} onClick={doDelete}>
-                                {texts.common.delete}
-                            </Menu.Item>
-                        </Menu>
-                    } trigger={['contextMenu']}>
+                    <Dropdown menu={contextMenu} trigger={['contextMenu']} onOpenChange={setIsOpen}>
                         <Row className={classNames('tree-item-header', { selected })} wrap={false} style={{ marginLeft: level * 20 }} onDoubleClick={doRenameStart} onClick={doSelect}>
                             <Col flex='none'>
                                 {isGroup ? (
@@ -186,3 +200,5 @@ function renderChildren(props: OutlineItemProps) {
         </div>
     );
 }
+
+const DEFAULT_MENU: MenuProps = { items: [], mode: 'vertical' };

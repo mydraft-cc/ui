@@ -7,44 +7,43 @@
 
 import { Button, Col, Row, Select } from 'antd';
 import * as React from 'react';
-import { useDispatch } from 'react-redux';
 import { ColorPicker, useEventCallback } from '@app/core';
+import { useAppDispatch } from '@app/store';
 import { texts } from '@app/texts';
 import { DefaultAppearance } from '@app/wireframes/interface';
-import { getColors, getDiagramId, getSelectedItems, getSelectionSet, selectColorTab, useStore } from '@app/wireframes/model';
+import { getColors, getDiagramId, getSelection, selectColorTab, useStore } from '@app/wireframes/model';
 import { UniqueValue, useAppearance, useColorAppearance } from './../actions';
 import './VisualProperties.scss';
 
 export const VisualProperties = React.memo(() => {
-    const dispatch = useDispatch();
+    const dispatch = useAppDispatch();
     const recentColors = useStore(getColors);
     const selectedColorTab = useStore(s => s.ui.selectedColorTab as any);
     const selectedDiagramId = useStore(getDiagramId);
-    const selectedItems = useStore(getSelectedItems);
-    const selectedSet = useStore(getSelectionSet);
+    const selectionSet = useStore(getSelection);
 
     const [backgroundColor, setBackgroundColor] =
-        useColorAppearance(selectedDiagramId, selectedSet,
+        useColorAppearance(selectedDiagramId, selectionSet,
             DefaultAppearance.BACKGROUND_COLOR);
 
     const [fontSize, setFontSize] =
-        useAppearance<number>(selectedDiagramId, selectedSet,
+        useAppearance<number>(selectedDiagramId, selectionSet,
             DefaultAppearance.FONT_SIZE);
 
     const [foregroundColor, setForegroundColor] =
-        useColorAppearance(selectedDiagramId, selectedSet,
+        useColorAppearance(selectedDiagramId, selectionSet,
             DefaultAppearance.FOREGROUND_COLOR);
 
     const [strokeColor, setStrokeColor] =
-        useColorAppearance(selectedDiagramId, selectedSet,
+        useColorAppearance(selectedDiagramId, selectionSet,
             DefaultAppearance.STROKE_COLOR);
 
     const [strokeThickness, setStrokeThickness] =
-        useAppearance<number>(selectedDiagramId, selectedSet,
+        useAppearance<number>(selectedDiagramId, selectionSet,
             DefaultAppearance.STROKE_THICKNESS);
 
     const [textAlignment, setTextAlignment] =
-        useAppearance<string>(selectedDiagramId, selectedSet,
+        useAppearance<string>(selectedDiagramId, selectionSet,
             DefaultAppearance.TEXT_ALIGNMENT);
 
     const doSelectColorTab = useEventCallback((key: string) => {
@@ -57,7 +56,7 @@ export const VisualProperties = React.memo(() => {
 
     return (
         <>
-            <div style={{ display: (selectedItems.length > 0 ? 'block' : 'none') }}>
+            <div style={{ display: (selectionSet.selectedItems.length > 0 ? 'block' : 'none') }}>
                 <div className='property-subsection visual-properties'>
                     <Row className='property'>
                         <Col span={12} className='property-label'>{texts.common.fontSize}</Col>

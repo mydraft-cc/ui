@@ -6,14 +6,14 @@
 */
 
 import * as React from 'react';
-import { useDispatch } from 'react-redux';
 import { useEventCallback } from '@app/core';
+import { useAppDispatch } from '@app/store';
 import { texts } from '@app/texts';
 import { redo, undo, useStore } from '@app/wireframes/model';
 import { UIAction } from './shared';
 
 export function useHistory() {
-    const dispatch = useDispatch();
+    const dispatch = useAppDispatch();
     const canRedo = useStore(s => s.editor.canRedo);
     const canUndo = useStore(s => s.editor.canUndo);
 

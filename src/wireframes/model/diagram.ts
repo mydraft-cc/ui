@@ -20,7 +20,7 @@ type UpdateProps = {
     itemIds: ItemIds;
 
     // The selected ids.
-    selectedIds: ImmutableSet;
+    selectedIds: ImmutableSet<string>;
 };
 
 type Props = {
@@ -37,7 +37,7 @@ type Props = {
     rootIds: ItemIds;
 
     // The selected ids.
-    selectedIds: ImmutableSet;
+    selectedIds: ImmutableSet<string>;
 
     // Set the master diagram.
     master?: string;
@@ -61,7 +61,8 @@ export type InitialDiagramProps = {
 };
 
 export class Diagram extends Record<Props> {
-    private parents: { [id: string]: DiagramItem } = {};
+    private cachedParents?: { [id: string]: DiagramItem };
+    private cachedRootItems?: DiagramItem[];
 
     public get id() {
         return this.get('id');
@@ -88,7 +89,7 @@ export class Diagram extends Record<Props> {
     }
 
     public get rootItems(): ReadonlyArray<DiagramItem> {
-        return this.rootIds.values.map(x => this.items.get(x)).filter(x => !!x) as DiagramItem[];
+        return this.cachedRootItems ||= this.findItems(this.rootIds.values);
     }
 
     public static create(setup: InitialDiagramProps = {}) {
@@ -107,7 +108,21 @@ export class Diagram extends Record<Props> {
     }
 
     public children(item: DiagramItem): ReadonlyArray<DiagramItem> {
-        return item.childIds.values.map(x => this.items.get(x)!).filter(x => !!x)!;
+        return this.findItems(item.childIds.values);
+    }
+
+    public findItems(ids: ReadonlyArray<string>) {
+        const result: DiagramItem[] = [];
+
+        for (const id of ids) {
+            const item = this.items.get(id);
+
+            if (item) {
+                result.push(item);
+            }
+        }
+        
+        return result;
     }
 
     public rename(title: string | undefined) {
@@ -135,21 +150,21 @@ export class Diagram extends Record<Props> {
             id = id.id;
         }
 
-        if (!this.parents) {
-            this.parents = {};
+        if (!this.cachedParents) {
+            this.cachedParents = {};
 
             for (const key of this.items.keys) {
                 const item = this.items.get(key);
 
                 if (item?.type === 'Group') {
                     for (const childId of item.childIds.values) {
-                        this.parents[childId] = item;
+                        this.cachedParents[childId] = item;
                     }
                 }
             }
         }
 
-        return this.parents[id];
+        return this.cachedParents[id];
     }
 
     public addShape(shape: DiagramItem) {
@@ -157,7 +172,7 @@ export class Diagram extends Record<Props> {
             return this;
         }
 
-        return this.mutate([], update => {
+        return this.arrange([], update => {
             update.items = update.items.set(shape.id, shape);
 
             if (update.items !== this.items) {
@@ -167,7 +182,7 @@ export class Diagram extends Record<Props> {
     }
 
     public updateItems(ids: ReadonlyArray<string>, updater: (value: DiagramItem) => DiagramItem) {
-        return this.mutate(ids, update => {
+        return this.arrange(EMPTY_SELECTION, update => {
             update.items = update.items.mutate(mutator => {
                 for (const id of ids) {
                     mutator.update(id, updater);
@@ -176,52 +191,54 @@ export class Diagram extends Record<Props> {
         });
     }
 
-    public selectItems(ids: ReadonlyArray<string>) {
-        return this.mutate(ids, update => {
+    public selectItems(ids: ReadonlyArray<string>) {    
+        return this.arrange(ids, update => {
             update.selectedIds = ImmutableSet.of(...ids);
         });
     }
 
     public moveItems(ids: ReadonlyArray<string>, index: number) {
-        return this.mutate(ids, update => {
+        return this.arrange(ids, update => {
             update.itemIds = update.itemIds.moveTo(ids, index);
-        });
+        }, 'SameParent');
     }
 
     public bringToFront(ids: ReadonlyArray<string>) {
-        return this.mutate(ids, update => {
+        return this.arrange(ids, update => {
             update.itemIds = update.itemIds.bringToFront(ids);
-        });
+        }, 'SameParent');
     }
 
     public bringForwards(ids: ReadonlyArray<string>) {
-        return this.mutate(ids, update => {
+        return this.arrange(ids, update => {
             update.itemIds = update.itemIds.bringForwards(ids);
-        });
+        }, 'SameParent');
     }
 
     public sendToBack(ids: ReadonlyArray<string>) {
-        return this.mutate(ids, update => {
+        return this.arrange(ids, update => {
             update.itemIds = update.itemIds.sendToBack(ids);
-        });
+        }, 'SameParent');
     }
 
     public sendBackwards(ids: ReadonlyArray<string>) {
-        return this.mutate(ids, update => {
+        return this.arrange(ids, update => {
             update.itemIds = update.itemIds.sendBackwards(ids);
-        });
+        }, 'SameParent');
     }
 
     public group(groupId: string, ids: ReadonlyArray<string>) {
-        return this.mutate(ids, update => {
+        return this.arrange(ids, update => {
             update.itemIds = update.itemIds.add(groupId).remove(...ids);
             update.items = update.items.set(groupId, DiagramItem.createGroup({ id: groupId, childIds: ids }));
-        });
+        }, 'SameParent');
     }
 
     public ungroup(groupId: string) {
-        return this.mutate([groupId], (update, targetItems) => {
-            update.itemIds = update.itemIds.add(...targetItems[0].childIds?.values).remove(groupId);
+        return this.arrange([groupId], update => {
+            const group = this.items.get(groupId)!;
+
+            update.itemIds = update.itemIds.add(...group.childIds.values).remove(groupId);
             update.items = update.items.remove(groupId);
         });
     }
@@ -231,9 +248,9 @@ export class Diagram extends Record<Props> {
             return this;
         }
 
-        return this.mutate([], update => {
+        return this.arrange(EMPTY_SELECTION, update => {
             update.items = update.items.mutate(mutator => {
-                for (const item of set.allItems) {
+                for (const item of set.nested.values()) {
                     mutator.set(item.id, item);
                 }
             });
@@ -247,30 +264,30 @@ export class Diagram extends Record<Props> {
             return this;
         }
 
-        return this.mutate([], update => {
+        return this.arrange(EMPTY_SELECTION, update => {
             update.items = update.items.mutate(m => {
-                for (const item of set.allItems) {
+                for (const item of set.nested.values()) {
                     m.remove(item.id);
                 }
             });
 
             update.selectedIds = update.selectedIds.mutate(m => {
-                for (const item of set.allItems) {
-                    m.remove(item.id);
+                for (const id of set.nested.keys()) {
+                    m.remove(id);
                 }
             });
 
             update.itemIds = update.itemIds.remove(...set.rootIds);
         });
     }
-
-    private mutate(targetIds: ReadonlyArray<string>, updater: (diagram: UpdateProps, targetItems: DiagramItem[]) => void): Diagram {
+    
+    private arrange(targetIds: Iterable<string>, updater: (diagram: UpdateProps) => void, condition?: 'NoCondition' | 'SameParent'): Diagram {
         if (!targetIds) {
             return this;
         }
 
-        let resultItems: DiagramItem[] = [];
-        let resultParent = this.parent(targetIds[0]);
+        let resultParent: DiagramItem | undefined = undefined;
+        let index = 0;
 
         // All items must have the same parent for the update.
         for (const itemId of targetIds) {
@@ -280,42 +297,43 @@ export class Diagram extends Record<Props> {
                 return this;
             }
 
-            if (this.parent(itemId) !== resultParent) {
-                resultParent == undefined;
+            const parent = this.parent(itemId);
+
+            if (index === 0) {
+                resultParent = parent;
+            } else if (parent !== resultParent && condition === 'SameParent') {
+                return this;
             }
 
-            resultItems.push(item);
+            index++;
         }
 
-        let update: UpdateProps;
-
         if (resultParent) {
-            update = {
+            const update = {
                 items: this.items,
                 itemIds: resultParent.childIds,
                 selectedIds: this.selectedIds, 
             };
 
-            updater(update, resultItems);
+            updater(update);
 
             if (update.itemIds !== resultParent.childIds) {
-                update.items = update.items || this.items;
                 update.items = update.items.update(resultParent.id, p => p.set('childIds', update.itemIds));
             }
+
+            return this.merge({ items: update.items, selectedIds: update.selectedIds });
         } else {
-            update = {
+            const update = {
                 items: this.items,
                 itemIds: this.rootIds,
                 selectedIds: this.selectedIds, 
             };
 
-            updater(update, resultItems);
+            updater(update);
 
-            (update as any)['rootIds'] = update.itemIds;
+            return this.merge({ items: update.items, selectedIds: update.selectedIds, rootIds: update.itemIds });
         }
-
-        delete (update as any).itemIds;
-
-        return this.merge(update);
     }
 }
+
+const EMPTY_SELECTION: ReadonlyArray<string> = [];

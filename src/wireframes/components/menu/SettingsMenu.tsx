@@ -6,8 +6,8 @@
 */
 
 import { ExportOutlined, PrinterOutlined } from '@ant-design/icons';
-import { Button, Dropdown, Menu } from 'antd';
-import MenuItem from 'antd/lib/menu/MenuItem';
+import { Button, Dropdown } from 'antd';
+import { MenuProps } from 'antd/lib';
 import * as React from 'react';
 import { texts } from '@app/texts';
 
@@ -19,16 +19,18 @@ export interface SettingsMenuProps {
 export const SettingsMenu = React.memo((props: SettingsMenuProps) => {
     const { onPrint } = props;
 
-    const exportMenu =
-        <Menu>
-            <MenuItem onClick={onPrint}>
-                <PrinterOutlined /> {texts.common.printDiagrams}
-            </MenuItem>
-        </Menu>;
+    const exportMenuItems: MenuProps['items'] = [
+        {
+            key: 'print',
+            icon: <PrinterOutlined />,
+            label: texts.common.printDiagrams,
+            onClick: onPrint,
+        },
+    ];
 
     return (
         <>
-            <Dropdown overlay={exportMenu} placement='bottomRight'>
+            <Dropdown menu={{ items: exportMenuItems }} placement='bottomRight'>
                 <Button className='menu-item' size='large'>
                     <ExportOutlined />
                 </Button>

@@ -6,8 +6,8 @@
 */
 
 import { createAction, createAsyncThunk, createReducer, Middleware } from '@reduxjs/toolkit';
-import { push } from 'connected-react-router';
 import { saveAs } from 'file-saver';
+import { History } from 'history';
 import { AnyAction, Reducer } from 'redux';
 import { texts } from '@app/texts';
 import { EditorState, EditorStateInStore, LoadingState, LoadingStateInStore, saveRecentDiagrams, Serializer, UndoableState } from './../internal';
@@ -69,7 +69,7 @@ export const saveDiagramToServer =
         }
     });
 
-export function loadingMiddleware(): Middleware {
+export function loadingMiddleware(history: History): Middleware {
     const middleware: Middleware = store => next => action => {        
         if (loadDiagramFromServer.pending.match(action) ||  loadDiagramFromFile.pending.match(action)) {
             store.dispatch(showToast(texts.common.loadingDiagram, 'loading', action.meta.requestId));
@@ -82,11 +82,11 @@ export function loadingMiddleware(): Middleware {
 
             if (newDiagram.match(action) ) {
                 if (action.payload.navigate) {
-                    store.dispatch(push(''));
+                    history.push('');
                 }
             } else if (loadDiagramFromServer.fulfilled.match(action)) {
                 if (action.meta.arg.navigate) {
-                    store.dispatch(push(action.payload.tokenToRead));
+                    history.push(action.payload.tokenToRead);
                 }
                 
                 store.dispatch(loadDiagramInternal(action.payload.stored, action.meta.requestId));
@@ -98,7 +98,7 @@ export function loadingMiddleware(): Middleware {
                 store.dispatch(showToast(texts.common.loadingDiagramDone, 'success', action.payload.requestId));
             } else if (saveDiagramToServer.fulfilled.match(action)) {
                 if (action.meta.arg.navigate) {
-                    store.dispatch(push(action.payload.tokenToRead));
+                    history.push(action.payload.tokenToRead);
                 }
 
                 saveRecentDiagrams((store.getState() as LoadingStateInStore).loading.recentDiagrams);

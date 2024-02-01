@@ -8,7 +8,7 @@
 import * as svg from '@svgdotjs/svg.js';
 import * as React from 'react';
 import { Rotation, Subscription, SVGHelper, Timer, Vec2 } from '@app/core';
-import { Diagram, DiagramItem, SnapManager, SnapMode, Transform } from '@app/wireframes/model';
+import { Diagram, DiagramItem, DiagramItemSet, SnapManager, SnapMode, Transform } from '@app/wireframes/model';
 import { OverlayManager } from './../contexts/OverlayContext';
 import { SVGRenderer2 } from './../shapes/utils/svg-renderer2';
 import { InteractionHandler, InteractionService, SvgEvent } from './interaction-service';
@@ -36,7 +36,7 @@ export interface TransformAdornerProps {
     selectedDiagram: Diagram;
 
     // The selected items.
-    selectedItems: DiagramItem[];
+    selectionSet: DiagramItemSet;
 
     // The interaction service.
     interactionService: InteractionService;
@@ -51,7 +51,7 @@ export interface TransformAdornerProps {
     previewStream: Subscription<PreviewEvent>;
 
     // A function to transform a set of items.
-    onTransformItems: (diagram: Diagram, items: DiagramItem[], oldBounds: Transform, newBounds: Transform) => void;
+    onTransformItems: (diagram: Diagram, items: ReadonlyArray<DiagramItem>, oldBounds: Transform, newBounds: Transform) => void;
 }
 
 const DRAG_SIZE = 12;
@@ -106,18 +106,18 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
     }
 
     private hasSelection(): boolean {
-        return this.props.selectedItems.length > 0;
+        return this.props.selectionSet.selectedItems.length > 0;
     }
 
     private calculateInitializeTransform() {
         let transform: Transform;
 
-        if (this.props.selectedItems.length === 0) {
+        if (this.props.selectionSet.selectedItems.length === 0) {
             transform = Transform.ZERO;
-        } else if (this.props.selectedItems.length === 1) {
-            transform = this.props.selectedItems[0].bounds(this.props.selectedDiagram);
+        } else if (this.props.selectionSet.selectedItems.length === 1) {
+            transform = this.props.selectionSet.selectedItems[0].bounds(this.props.selectedDiagram);
         } else {
-            const bounds = this.props.selectedItems.map(x => x.bounds(this.props.selectedDiagram));
+            const bounds = this.props.selectionSet.selectedItems.map(x => x.bounds(this.props.selectedDiagram));
 
             transform = Transform.createFromTransformationsAndRotation(bounds, this.rotation);
         }
@@ -129,7 +129,7 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
         this.canResizeX = false;
         this.canResizeY = false;
 
-        for (const item of this.props.selectedItems) {
+        for (const item of this.props.selectionSet.selectedItems) {
             if (item.constraint) {
                 if (!item.constraint.calculateSizeX()) {
                     this.canResizeX = true;
@@ -230,7 +230,7 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
 
             this.props.onTransformItems(
                 this.props.selectedDiagram,
-                this.props.selectedItems,
+                this.props.selectionSet.selectedItems,
                 this.startTransform,
                 this.transform);
         } finally {
@@ -322,7 +322,7 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
     private renderPreview() {
         const items: Record<string, DiagramItem> = {};
 
-        for (const item of this.props.selectedItems) {
+        for (const item of this.props.selectionSet.deepEditableItems) {
             items[item.id] = item.transformByBounds(this.startTransform, this.transform);
         }
 
@@ -331,7 +331,7 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
     }
 
     private move(delta: Vec2, snapMode: SnapMode, showOverlay = true) {
-        const snapResult = this.props.snapManager.snapMoving(this.startTransform, delta, snapMode);
+        const snapResult = this.props.snapManager.snapMoving(this.startTransform, delta, snapMode, this.props.selectionSet.deepEditableItems);
 
         this.transform = this.startTransform.moveBy(snapResult.delta);
 
@@ -396,7 +396,8 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
         const snapResult =
             this.props.snapManager.snapResizing(this.startTransform, delta, snapMode,
                 this.manipulationOffset.x,
-                this.manipulationOffset.y);
+                this.manipulationOffset.y,
+                this.props.selectionSet);
 
         return snapResult;
     }
@@ -453,7 +454,7 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
 
             this.props.onTransformItems(
                 this.props.selectedDiagram,
-                this.props.selectedItems,
+                this.props.selectionSet.deepEditableItems,
                 this.startTransform,
                 this.transform);
         } finally {

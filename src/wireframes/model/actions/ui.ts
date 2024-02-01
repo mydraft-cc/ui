@@ -7,7 +7,7 @@
 
 import { createAction, createReducer } from '@reduxjs/toolkit';
 import { message } from 'antd';
-import { NoticeType } from 'antd/lib/message';
+import { NoticeType } from 'antd/lib/message/interface';
 import { AnyAction, Dispatch, Middleware, Reducer } from 'redux';
 import { UIState } from './../internal';
 

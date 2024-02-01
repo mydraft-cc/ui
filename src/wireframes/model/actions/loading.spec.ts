@@ -9,7 +9,7 @@
 
 import { diff } from 'deep-object-diff';
 import { Types } from '@app/core';
-import { EditorState, loadDiagramInternal, RendererService, selectDiagram, selectItems } from '@app/wireframes/model';
+import { EditorState, loadDiagramInternal, RendererService, selectDiagram, selectItems, UndoableState } from '@app/wireframes/model';
 import * as Reducers from '@app/wireframes/model/actions';
 import { Button } from '@app/wireframes/shapes/neutral/button';
 import { AbstractControl } from '@app/wireframes/shapes/utils/abstract-control';
@@ -47,11 +47,11 @@ describe('LoadingReducer', () => {
     it('should load from old and new format V2', () => {
         const initial = undoableReducer(undefined, { type: 'NOOP' });
 
-        const editorV1 = rootReducer(initial, loadDiagramInternal(JSON.parse(v1), '1'));
-        const editorV2 = rootReducer(initial, loadDiagramInternal(JSON.parse(v2), '2'));
+        const editorV1 = rootReducer(initial, loadDiagramInternal(JSON.parse(v1), '1')) as UndoableState<EditorState>;
+        const editorV2 = rootReducer(initial, loadDiagramInternal(JSON.parse(v2), '2')) as UndoableState<EditorState>;
 
-        expect(editorV1.present.diagrams.values[0].items.values.length).toEqual(10);
-        expect(editorV2.present.diagrams.values[0].items.values.length).toEqual(10);
+        expect(editorV1.present.diagrams.values[0].items.size).toEqual(10);
+        expect(editorV2.present.diagrams.values[0].items.size).toEqual(10);
 
         const diffsV2 = cleanupDiffs(diff(editorV1.present, editorV2.present), []);
 
@@ -61,11 +61,11 @@ describe('LoadingReducer', () => {
     it('should load from old and new format V3', () => {
         const initial = undoableReducer(undefined, { type: 'NOOP' });
 
-        const editorV1 = rootReducer(initial, loadDiagramInternal(JSON.parse(v1), '1'));
-        const editorV3 = rootReducer(initial, loadDiagramInternal(JSON.parse(v3), '2'));
+        const editorV1 = rootReducer(initial, loadDiagramInternal(JSON.parse(v1), '1')) as UndoableState<EditorState>;
+        const editorV3 = rootReducer(initial, loadDiagramInternal(JSON.parse(v3), '2')) as UndoableState<EditorState>;
 
-        expect(editorV1.present.diagrams.values[0].items.values.length).toEqual(10);
-        expect(editorV3.present.diagrams.values[0].items.values.length).toEqual(10);
+        expect(editorV1.present.diagrams.values[0].items.size).toEqual(10);
+        expect(editorV3.present.diagrams.values[0].items.size).toEqual(10);
 
         const diffsV3 = cleanupDiffs(diff(editorV1.present, editorV3.present), []);
 

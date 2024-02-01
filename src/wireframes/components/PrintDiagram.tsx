@@ -7,7 +7,7 @@
 
 import * as React from 'react';
 import { Color, ImmutableMap, Rect2, useEventCallback, Vec2 } from '@app/core';
-import { Diagram, DiagramItem } from '@app/wireframes/model';
+import { Diagram, DiagramItem, DiagramItemSet } from '@app/wireframes/model';
 import { Editor } from '@app/wireframes/renderer/Editor';
 
 export interface PrintDiagramProps {
@@ -52,7 +52,7 @@ export const PrintDiagram = (props: PrintDiagramProps) => {
         let bounds: Rect2;
 
         if (useBounds) {
-            const aabbs = diagram.items.values.map(x => x.bounds(diagram).aabb);
+            const aabbs = Array.from(diagram.items.values, x => x.bounds(diagram).aabb);
 
             bounds = Rect2.fromRects(aabbs).inflate(20);
         } else {
@@ -70,8 +70,7 @@ export const PrintDiagram = (props: PrintDiagramProps) => {
                 masterDiagram={diagrams.get(diagram.master!)}
                 onNavigate={onNavigate}
                 onRender={doOnRender}
-                selectedItems={[]}
-                selectedItemsWithLocked={[]}
+                selectionSet={DiagramItemSet.EMPTY}
                 viewBox={bounds}
                 viewSize={size}
                 zoom={1}

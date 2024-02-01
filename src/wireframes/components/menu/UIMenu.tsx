@@ -25,9 +25,7 @@ export const UIMenu = React.memo((props: UIMenuProps) => {
             <ActionMenuButton action={forUI.zoomOut} />
             <ActionMenuButton action={forUI.zoomIn} />
 
-            <Button className='menu-item' size='large' onClick={onPlay}>
-                <PlayCircleOutlined />
-            </Button>
+            <Button className='menu-item' onClick={onPlay} icon={<PlayCircleOutlined />} />
         </>
     );
 });

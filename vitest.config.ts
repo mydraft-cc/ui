@@ -17,8 +17,10 @@ export default defineConfig({
         globals: true,
 
         browser: {
-            name: 'chrome', // browser name is required,
+            // Browser name is required,
+            name: 'chrome', 
             
+            // Fixes a bug with build errors in browser mode.
             slowHijackESM: false,
         },
 

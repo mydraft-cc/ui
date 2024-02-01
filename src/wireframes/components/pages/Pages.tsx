@@ -9,15 +9,15 @@ import { PlusOutlined, SearchOutlined } from '@ant-design/icons';
 import { Button, Col, Input, Row } from 'antd';
 import * as React from 'react';
 import { DragDropContext, Draggable, Droppable, DropResult } from 'react-beautiful-dnd';
-import { useDispatch } from 'react-redux';
 import { useEventCallback } from '@app/core';
+import { useAppDispatch } from '@app/store';
 import { texts } from '@app/texts';
 import { addDiagram, duplicateDiagram, filterDiagrams, getDiagramId, getDiagramsFilter, getFilteredDiagrams, moveDiagram, removeDiagram, renameDiagram, selectDiagram, setDiagramMaster, useStore } from '@app/wireframes/model';
 import { Page, PageAction } from './Page';
 import './Pages.scss';
 
 export const Pages = () => {
-    const dispatch = useDispatch();
+    const dispatch = useAppDispatch();
     const diagramId = useStore(getDiagramId);
     const diagrams = useStore(getFilteredDiagrams);
     const diagramsFilter = useStore(getDiagramsFilter);

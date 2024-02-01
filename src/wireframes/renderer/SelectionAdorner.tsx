@@ -8,7 +8,7 @@
 import * as svg from '@svgdotjs/svg.js';
 import * as React from 'react';
 import { isModKey, Rect2, Subscription, SVGHelper, Vec2 } from '@app/core';
-import { calculateSelection, Diagram, DiagramItem } from '@app/wireframes/model';
+import { calculateSelection, Diagram, DiagramItem, DiagramItemSet } from '@app/wireframes/model';
 import { InteractionHandler, InteractionService, SvgEvent } from './interaction-service';
 import { PreviewEvent } from './preview';
 
@@ -26,7 +26,7 @@ export interface SelectionAdornerProps {
     selectedDiagram: Diagram;
 
     // The selected items.
-    selectedItems: DiagramItem[];
+    selectionSet: DiagramItemSet;
 
     // The interaction service.
     interactionService: InteractionService;
@@ -35,7 +35,7 @@ export interface SelectionAdornerProps {
     previewStream: Subscription<PreviewEvent>;
 
     // A function to select a set of items.
-    onSelectItems: (diagram: Diagram, itemIds: string[]) => any;
+    onSelectItems: (diagram: Diagram, itemIds: ReadonlyArray<string>) => any;
 }
 
 export class SelectionAdorner extends React.Component<SelectionAdornerProps> implements InteractionHandler {
@@ -49,7 +49,7 @@ export class SelectionAdorner extends React.Component<SelectionAdornerProps> imp
         // Use a stream of preview updates to bypass react for performance reasons.
         this.props.previewStream.subscribe(event => {
             if (event.type === 'Update') {
-                this.markItems(event.items);
+                this.markItems({});
             } else {
                 this.markItems();
             }
@@ -137,22 +137,20 @@ export class SelectionAdorner extends React.Component<SelectionAdornerProps> imp
         this.dragStart = null;
     }
 
-    private selectMultiple(rect: Rect2, diagram: Diagram): string[] {
+    private selectMultiple(rect: Rect2, diagram: Diagram): ReadonlyArray<string> {
         const selectedItems = diagram.rootItems.filter(i => rect.contains(i.bounds(diagram).aabb));
 
         return calculateSelection(selectedItems, diagram, false);
     }
 
-    private selectSingle(event: SvgEvent, diagram: Diagram): string[] {
+    private selectSingle(event: SvgEvent, diagram: Diagram): ReadonlyArray<string> {
         const isMod = isModKey(event.event);
 
         if (isMod) {
             event.event.preventDefault();
         }
 
-        const aabb = event.shape?.bounds(diagram).aabb;
-
-        if (aabb?.contains(event.position) && event.shape) {
+        if (event.shape) {
             return calculateSelection([event.shape], diagram, true, isMod);
         } else {
             return [];
@@ -164,7 +162,7 @@ export class SelectionAdorner extends React.Component<SelectionAdornerProps> imp
             adorner.hide();
         }
 
-        const selection = this.props.selectedItems;
+        const selection = preview ? Object.values(preview) : Array.from(this.props.selectionSet.selection.values());
 
         // Add more markers if we do not have enough.
         while (this.selectionMarkers.length < selection.length) {
@@ -176,7 +174,7 @@ export class SelectionAdorner extends React.Component<SelectionAdornerProps> imp
         // Use the inverted zoom level as stroke width.
         const strokeWidth = 1 / this.props.zoom;
 
-        this.props.selectedItems.forEach((item, i) => {
+        selection.forEach((item, i) => {
             const marker = this.selectionMarkers[i];
 
             const color =
@@ -187,7 +185,7 @@ export class SelectionAdorner extends React.Component<SelectionAdornerProps> imp
             // Use the inverted zoom level as stroke width to have a constant stroke style.
             marker.stroke({ color, width: strokeWidth });
             
-            const actualItem = preview?.[item.id] || item;
+            const actualItem = item;
             const actualBounds = actualItem.bounds(this.props.selectedDiagram);
 
             // Also adjust the bounds by the border width, to show the border outside of the shape.

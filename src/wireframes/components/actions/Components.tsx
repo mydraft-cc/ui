@@ -5,9 +5,11 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
+import Icon from '@ant-design/icons';
 import { Button, Dropdown, Menu, MenuItemProps, Tooltip } from 'antd';
 import { ButtonProps } from 'antd/lib/button';
 import { DropdownButtonProps } from 'antd/lib/dropdown';
+import { MenuItemType } from 'antd/lib/menu/hooks/useItems';
 import * as React from 'react';
 import { isMac, Shortcut, Types } from '@app/core';
 import { UIAction } from './shared';
@@ -40,13 +42,15 @@ export const ActionMenuButton = React.memo((props: ActionProps & ButtonProps) =>
         return null;
     }
 
-    const title = buildTitle(shortcut, tooltip);
+    const actualDisplayMode = displayMode || 'Icon';
 
     return (
         <>
-            <Tooltip mouseEnterDelay={1} title={title}>
-                <Button {...other} type={type} className={!type ? 'menu-item' : undefined} size='large' disabled={disabled} onClick={onAction}>
-                    <ButtonContent icon={icon} label={label} displayMode={displayMode || 'Icon'} />
+            <Tooltip mouseEnterDelay={1} title={buildTitle(shortcut, tooltip)}>
+                <Button {...other} type={type} className={!type ? 'menu-item' : undefined} disabled={disabled} onClick={onAction} icon={buildIcon(icon, displayMode)}>
+                    {(actualDisplayMode === 'Label' || actualDisplayMode === 'IconLabel') &&
+                        <>{label}</>
+                    }
                 </Button>
             </Tooltip>
 
@@ -72,18 +76,21 @@ export const ActionDropdownButton = React.memo((props: ActionProps & DropdownBut
         return null;
     }
 
-    const title = buildTitle(shortcut, tooltip);
+    const actualDisplayMode = displayMode || 'IconLabel';
 
     return (
         <>
-            <Dropdown.Button {...other} size='large' disabled={disabled} onClick={onAction}
+            <Dropdown.Button {...other} size='large' disabled={disabled} onClick={onAction} icon={buildIcon(icon, displayMode)}
                 buttonsRender={([leftButton, rightButton]) => [
-                    <Tooltip mouseEnterDelay={1} title={title}>
+                    <Tooltip mouseEnterDelay={1} title={buildTitle(shortcut, tooltip)}>
                         {leftButton}
                     </Tooltip>,
                     React.cloneElement(rightButton as React.ReactElement<any, string>),
                 ]}>
-                <ButtonContent icon={icon} label={label} displayMode={displayMode || 'Icon'} />
+                    
+                {(actualDisplayMode === 'Label' || actualDisplayMode === 'IconLabel') &&
+                    <>{label}</>
+                }
             </Dropdown.Button>
 
             {shortcut &&
@@ -108,18 +115,39 @@ export const ActionButton = React.memo((props: ActionProps & ButtonProps) => {
         return null;
     }
 
-    const title = buildTitle(shortcut, tooltip);
+    const actualDisplayMode = displayMode || 'Icon';
 
     return (
         <>
-            <Tooltip mouseEnterDelay={1} title={title}>
-                <Button {...other} disabled={disabled} onClick={onAction}>
-                    <ButtonContent icon={icon} label={label} displayMode={displayMode || 'Icon'} />
+            <Tooltip mouseEnterDelay={1} title={ buildTitle(shortcut, tooltip)}>
+                <Button {...other} disabled={disabled} onClick={onAction} icon={buildIcon(icon, actualDisplayMode)}>
+                    {(actualDisplayMode === 'Label' || actualDisplayMode === 'IconLabel') &&
+                        <>{label}</>
+                    }
                 </Button>
             </Tooltip>
         </>
     );
 });
+
+export function buildMenuItem(action: UIAction, key: string) {
+    const {
+        disabled,
+        label,
+        onAction,
+        icon,
+    } = action;
+
+    const item: MenuItemType = {
+        key,
+        disabled,
+        label,
+        onClick: onAction,
+        icon: buildIcon(icon),
+    };
+
+    return item;
+}
 
 export const ActionMenuItem = React.memo((props: ActionProps & MenuItemProps) => {
     const { action, displayMode, hideWhenDisabled, ...other } = props;
@@ -130,24 +158,14 @@ export const ActionMenuItem = React.memo((props: ActionProps & MenuItemProps) =>
         icon,
     } = action;
 
-    const actualDisplayMode = displayMode || 'IconLabel';
-
     if (disabled && hideWhenDisabled) {
         return null;
     }
 
-    return (
-        <Menu.Item {...other} key={label} className='force-color' disabled={disabled} onClick={onAction}
-            icon={(actualDisplayMode === 'Icon' || actualDisplayMode === 'IconLabel') ? (
-                <>
-                    {Types.isString(icon) ? (
-                        <span className='anticon'>
-                            <i className={icon} />
-                        </span>
-                    ) : icon}
-                </>
-            ) : undefined}>
+    const actualDisplayMode = displayMode || 'IconLabel';
 
+    return (
+        <Menu.Item {...other} key={label} className='force-color' disabled={disabled} onClick={onAction} icon={buildIcon(icon)}>
             {(actualDisplayMode === 'Label' || actualDisplayMode === 'IconLabel') &&
                 <>{label}</>
             }
@@ -155,23 +173,13 @@ export const ActionMenuItem = React.memo((props: ActionProps & MenuItemProps) =>
     );
 });
 
-const ButtonContent = ({ displayMode, label, icon }: { icon: string | JSX.Element; label: string; displayMode: ActionDisplayMode }) => {
-    return (
-        <>
-            {(displayMode === 'Icon' || displayMode === 'IconLabel') &&
-                <>
-                    {Types.isString(icon) ? (
-                        <i className={icon} />
-                    ) : icon}
-                </>
-            }
+function buildIcon(icon: string | JSX.Element | undefined, displayMode?: ActionDisplayMode) {
+    if (displayMode === 'Label') {
+        return null;
+    }
 
-            {(displayMode === 'Label' || displayMode === 'IconLabel') &&
-                <>&nbsp;{label}</>
-            }
-        </>
-    );
-};
+    return Types.isString(icon) ? (<Icon component={() => <i className={icon} />} />) : icon;
+}
 
 function buildTitle(shortcut: string | undefined, tooltip: string) {
     function getModKey(): string {

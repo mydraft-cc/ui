@@ -77,9 +77,7 @@ describe('GroupingReducer', () => {
 
         const newDiagram = state_2.diagrams.get(diagram.id)!;
 
-        const ids = shapes.keys;
-
-        expect(newDiagram.selectedIds.values).toEqual(ids);
-        expect(newDiagram.rootIds.values).toEqual(ids);
+        expect(newDiagram.selectedIds.values).toEqual(shapes.keys);
+        expect(newDiagram.rootIds.values).toEqual(shapes.keys);
     });
 });

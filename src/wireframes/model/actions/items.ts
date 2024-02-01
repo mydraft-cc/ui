@@ -72,7 +72,7 @@ export function buildItems(builder: ActionReducerMapBuilder<EditorState>) {
             return state.updateDiagram(diagramId, diagram => {
                 const set = DiagramItemSet.createFromDiagram(itemIds, diagram);
 
-                return diagram.updateItems(set.allItems.map(x => x.id), item => {
+                return diagram.updateItems([...set.nested.keys()], item => {
                     return item.lock();
                 });
             });
@@ -83,7 +83,7 @@ export function buildItems(builder: ActionReducerMapBuilder<EditorState>) {
             return state.updateDiagram(diagramId, diagram => {
                 const set = DiagramItemSet.createFromDiagram(itemIds, diagram);
 
-                return diagram.updateItems(set.allItems.map(x => x.id), item => {
+                return diagram.updateItems([...set.nested.keys()], item => {
                     return item.unlock();
                 });
             });
@@ -105,7 +105,7 @@ export function buildItems(builder: ActionReducerMapBuilder<EditorState>) {
 
                 diagram = diagram.addItems(set);
 
-                diagram = diagram.updateItems(set.allShapes.map(x => x.id), item => {
+                diagram = diagram.updateItems([...set.nested.keys()], item => {
                     const boundsOld = item.bounds(diagram);
                     const boundsNew = boundsOld.moveBy(new Vec2(offset, offset));
 
@@ -151,7 +151,7 @@ export function buildItems(builder: ActionReducerMapBuilder<EditorState>) {
         });
 }
 
-export function calculateSelection(items: DiagramItem[], diagram: Diagram, isSingleSelection?: boolean, isCtrl?: boolean): string[] {
+export function calculateSelection(items: ReadonlyArray<DiagramItem>, diagram: Diagram, isSingleSelection?: boolean, isCtrl?: boolean): ReadonlyArray<string> {
     if (!items) {
         return [];
     }
@@ -172,7 +172,7 @@ export function calculateSelection(items: DiagramItem[], diagram: Diagram, isSin
         return item;
     }
 
-    if (isSingleSelection) {
+    if (isSingleSelection) {        
         if (items.length === 1) {
             const single = items[0];
 

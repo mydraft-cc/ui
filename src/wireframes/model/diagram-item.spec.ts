@@ -158,7 +158,7 @@ describe('DiagramItem', () => {
     });
 });
 
-describe('DiagramItem', () => {
+describe('DiagramItem Group', () => {
     const transform: Transform = Transform.ZERO;
 
     const groupId = 'group-1';

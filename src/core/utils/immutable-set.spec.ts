@@ -38,14 +38,10 @@ describe('ImmutableSet', () => {
         expect(set_5.has('3')).toBeTruthy();
     });
 
-    it('should convert to aray', () => {
+    it('should convert to values', () => {
         const set_1 = ImmutableSet.of('a', 'b');
 
-        const array = set_1.values;
-
-        expect(array.length).toBe(2);
-        expect(array).toContain('a');
-        expect(array).toContain('b');
+        expect(set_1.values).toEqual(['a', 'b']);
     });
 
     it('should return original set when item to add is null', () => {
