@@ -5,6 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
+import Icon from '@ant-design/icons';
 import { Button, Popover, Tabs } from 'antd';
 import { TooltipPlacement } from 'antd/lib/tooltip';
 import * as React from 'react';
@@ -14,7 +15,6 @@ import { texts } from '@app/texts';
 import { ColorList } from './ColorList';
 import { useEventCallback } from './hooks';
 import './ColorPicker.scss';
-import Icon from '@ant-design/icons';
 
 type ColorTab = 'palette' | 'advanced';
 
