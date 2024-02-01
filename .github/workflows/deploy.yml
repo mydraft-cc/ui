@@ -1,10 +1,9 @@
-name: PR
+name: Build
 
 on:
-  pull_request:
-    branches: [ master ]
-
-  workflow_dispatch:
+  push:
+    tags:
+      - "*"
 
 jobs:
   build:
@@ -28,6 +27,11 @@ jobs:
       - name: Run Tests again
         run: npm run test:ci
         
+      - name: Upload storybook to Chromatic
+        uses: chromaui/action@v1
+        with:
+          projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
+        
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v3.1.4
         env:
@@ -35,3 +39,10 @@ jobs:
         
       - name: Run Build 
         run: npm run build
+
+      - name: Deploy
+        uses: JamesIves/github-pages-deploy-action@v4.5.0
+        with:
+          branch: gh-pages
+          folder: dist
+          clean: false
