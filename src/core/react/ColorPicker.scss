@@ -1,16 +1,9 @@
 @import '@app/style/mixins';
 @import '@app/style/vars';
 
-$size: 24px;
+$size: 22px;
 
 .color-picker {
-    &-button {
-        &,
-        & button {
-            padding: 2px !important;
-        }
-    }
-
     &-colors {
         @include clearfix;
         max-width: 210px;
@@ -24,9 +17,9 @@ $size: 24px;
             background: $color-white;
             border: 1px solid $color-input;
             border-radius: $size;
+            box-sizing: border-box;
             display: inline-flex;
             justify-content: center;
-            margin: 1px;
         }
 
         &.rect {

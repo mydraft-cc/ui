@@ -6,6 +6,7 @@
 */
 
 import type { Meta, StoryObj } from '@storybook/react';
+import { Button } from 'antd';
 import { ColorPalette } from '@app/core/utils';
 import { ColorPicker } from './ColorPicker';
 
@@ -15,7 +16,11 @@ const meta: Meta<typeof ColorPicker> = {
         const palette = ColorPalette.colors();
 
         return (
-            <ColorPicker palette={palette} {...args} />
+            <>
+                <ColorPicker palette={palette} {...args} />
+                &nbsp;
+                <Button>Button</Button>
+            </>
         );
     },
     argTypes: {

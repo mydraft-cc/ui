@@ -14,6 +14,7 @@ import { texts } from '@app/texts';
 import { ColorList } from './ColorList';
 import { useEventCallback } from './hooks';
 import './ColorPicker.scss';
+import Icon from '@ant-design/icons';
 
 type ColorTab = 'palette' | 'advanced';
 
@@ -122,10 +123,14 @@ export const ColorPicker = React.memo((props: ColorPickerProps) => {
 
     return (
         <Popover content={content} open={visible && !disabled} placement={placement} trigger='click' onOpenChange={setVisible}>
-            <Button disabled={disabled} className='color-picker-button' onClick={doToggle}>
-                <div className='color-picker-color'>
-                    <div className='color-picker-color-inner' style={{ background: colorHex }}></div>
-                </div>
+            <Button disabled={disabled} className='color-picker-button' onClick={doToggle}
+                icon={
+                    <Icon component={() => 
+                        <div className='color-picker-color'>
+                            <div className='color-picker-color-inner' style={{ background: colorHex }}></div>
+                        </div>
+                    } />
+                }>
             </Button>
         </Popover>
     );
