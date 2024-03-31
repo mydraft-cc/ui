@@ -132,7 +132,7 @@ class Factory implements ShapeFactory {
     public textMultiline(config: RendererText, bounds: Rect2, properties?: ShapePropertiesFunc, allowMarkdown?: boolean) {
         return this.new('foreignObject', () => SVGHelper.createText(), p => {
             p.setBackgroundColor('transparent');
-            p.setText(config?.text?.replace(/\n/g, '<br />'), allowMarkdown);
+            p.setText(config?.text, allowMarkdown);
             p.setFontSize(config);
             p.setFontFamily(config);
             p.setAlignment(config);
