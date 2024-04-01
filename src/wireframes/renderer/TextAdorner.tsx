@@ -10,8 +10,7 @@ import { Keys, sizeInPx } from '@app/core';
 import { DefaultAppearance } from '@app/wireframes/interface';
 import { Diagram, DiagramItem, DiagramItemSet } from '@app/wireframes/model';
 import { InteractionHandler, InteractionService, SvgEvent } from './interaction-service';
-import { Input } from 'antd';
-import { TextAreaRef } from 'antd/es/input/TextArea';
+import './TextAdorner.scss';
 
 const MIN_WIDTH = 150;
 const MIN_HEIGHT = 30;
@@ -94,8 +93,8 @@ export class TextAdorner extends React.PureComponent<TextAdornerProps> implement
         }
     }
 
-    private doInitialize = (textarea: TextAreaRef) => {
-        this.textareaElement = textarea?.resizableTextArea?.textArea!;
+    private doInitialize = (textarea: HTMLTextAreaElement) => {
+        this.textareaElement = textarea;
     };
 
     private doHide = () => {
@@ -143,7 +142,8 @@ export class TextAdorner extends React.PureComponent<TextAdornerProps> implement
 
     public render() {
         return (
-            <Input.TextArea className='no-border-radius' style={this.style}
+            <textarea className='ant-input ant-input-outlined ant-input-css-var no-border-radius text-adorner-textarea'
+                style={this.style}
                 ref={this.doInitialize}
                 onBlur={this.doHide}
                 onKeyDown={this.doSubmit} />

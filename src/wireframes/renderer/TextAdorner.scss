@@ -1,0 +1,16 @@
+.text-adorner-textarea {
+    border: 1px solid #d9d9d9;
+    font-size: 14px;
+    font-weight: normal;
+    outline: none;
+    padding: 4px;
+
+    &:active {
+        outline: none;
+    }
+
+    &:focus {
+        box-shadow: 0 0 0 2px rgba(5, 145, 255, 0.1);
+        border-color: #1677ff;
+    }
+}
