@@ -5,10 +5,12 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
+
+
 import Icon from '@ant-design/icons';
 import { Button, Popover, Tabs } from 'antd';
 import { TooltipPlacement } from 'antd/lib/tooltip';
-import * as React from 'react';
+import React, { useState } from 'react';
 import { ColorResult, SketchPicker } from 'react-color';
 import { Color, ColorPalette } from '@app/core/utils';
 import { texts } from '@app/texts';
@@ -58,7 +60,7 @@ export const ColorPicker = React.memo((props: ColorPickerProps) => {
 
     const [color, setColor] = React.useState(Color.BLACK);
     const [colorHex, setColorHex] = React.useState(color.toString());
-    const [visible, setVisible] = React.useState<boolean>(false);
+    const [visible, setVisible] = useState(false);
 
     const selectedPalette = React.useMemo(() => {
         return palette || ColorPalette.colors();
@@ -72,9 +74,9 @@ export const ColorPicker = React.memo((props: ColorPickerProps) => {
         setColor(value ? Color.fromValue(value) : Color.BLACK);
     }, [value]);
 
-    const doToggle = useEventCallback(() => {
-        setVisible(x => !x);
-    });
+    const doToggle = () => {
+        setVisible(!visible);
+    };
 
     const doSelectColorResult = useEventCallback((result: ColorResult) => {
         setColorHex(result.hex);
@@ -135,3 +137,4 @@ export const ColorPicker = React.memo((props: ColorPickerProps) => {
         </Popover>
     );
 });
+
