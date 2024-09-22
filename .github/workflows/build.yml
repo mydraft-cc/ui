@@ -12,7 +12,7 @@ jobs:
           fetch-depth: 0
 
       - name: Setup Node.js environment
-        uses: actions/setup-node@v4.0.3
+        uses: actions/setup-node@v4.0.4
 
       - name: Install Dependencies
         run: npm i
