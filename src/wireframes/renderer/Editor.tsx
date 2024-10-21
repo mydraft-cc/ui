@@ -47,7 +47,7 @@ export interface EditorProps {
     viewSize: Vec2;
 
     // The zoom value of the canvas.
-    zoom: number;
+    zoomLevel: number;
 
     // True, if it is the default view.
     isDefaultView: boolean;
@@ -82,7 +82,7 @@ export const Editor = React.memo((props: EditorProps) => {
         selectionSet,
         viewBox,
         viewSize,
-        zoom,
+        zoomLevel: zoom,
         zoomedSize,
     } = props;
 

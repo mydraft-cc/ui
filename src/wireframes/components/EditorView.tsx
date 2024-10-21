@@ -174,7 +174,7 @@ export const EditorViewInner = ({ diagram, spacing }: EditorViewProps & { diagra
                         onTransformItems={doTransformItems}
                         selectionSet={getSelection(state)}
                         viewSize={editor.size}
-                        zoom={zoom}
+                        zoomLevel={zoom}
                         zoomedSize={zoomedSize}
                         isDefaultView={true}
                     />

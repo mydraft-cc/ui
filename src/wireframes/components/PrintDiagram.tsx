@@ -73,7 +73,7 @@ export const PrintDiagram = (props: PrintDiagramProps) => {
                 selectionSet={DiagramItemSet.EMPTY}
                 viewBox={bounds}
                 viewSize={size}
-                zoom={1}
+                zoomLevel={1}
                 zoomedSize={zoomedSize}
                 isDefaultView={false}
             />
