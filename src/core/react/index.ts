@@ -5,6 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
+export * from './Canvas';
 export * from './ColorList';
 export * from './ColorPicker';
 export * from './Clipboard';

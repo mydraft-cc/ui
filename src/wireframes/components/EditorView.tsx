@@ -10,7 +10,7 @@ import * as React from 'react';
 import { DropTargetMonitor, useDrop } from 'react-dnd';
 import { NativeTypes } from 'react-dnd-html5-backend';
 import { findDOMNode } from 'react-dom';
-import { loadImagesToClipboardItems, sizeInPx, useClipboard, useEventCallback } from '@app/core';
+import { Canvas, loadImagesToClipboardItems, useClipboard, useEventCallback, ViewBox } from '@app/core';
 import { useAppDispatch } from '@app/store';
 import { addShape, changeItemsAppearance, Diagram, getDiagram, getDiagramId, getEditor, getMasterDiagram, getSelection, RendererService, selectItems, Transform, transformItems, useStore } from '@app/wireframes/model';
 import { Editor } from '@app/wireframes/renderer/Editor';
@@ -19,36 +19,34 @@ import { ShapeSource } from './../interface';
 import { useContextMenu } from './context-menu';
 import './EditorView.scss';
 
-export interface EditorViewProps {
-    // The spacing.
-    spacing: number;
-}
-
-export const EditorView = (props: EditorViewProps) => {
+export const EditorView = () => {
     const diagram = useStore(getDiagram);
+    const editor = useStore(getEditor);
 
     if (!diagram) {
         return null;
     }
 
     return (
-        <EditorViewInner {...props} diagram={diagram} />
+        <Canvas
+            contentWidth={editor.size.x}
+            contentHeight={editor.size.y}
+            padding={10}
+            onRender={viewBox => <EditorViewInner viewBox={viewBox} diagram={diagram} />} 
+        />
     );
 };
 
-export const EditorViewInner = ({ diagram, spacing }: EditorViewProps & { diagram: Diagram }) => {
+export const EditorViewInner = ({ diagram, viewBox }: { diagram: Diagram; viewBox: ViewBox }) => {
     const dispatch = useAppDispatch();
     const [menuVisible, setMenuVisible] = React.useState(false);
     const editor = useStore(getEditor);
     const editorColor = editor.color;
-    const editorSize = editor.size;
     const masterDiagram = useStore(getMasterDiagram);
     const renderRef = React.useRef<any>();
     const selectedPoint = React.useRef({ x: 0, y: 0 });
     const selectedDiagramId = useStore(getDiagramId);
     const state = useStore(s => s);
-    const zoom = useStore(s => s.ui.zoom);
-    const zoomedSize = editorSize.mul(zoom);
     const contextMenu = useContextMenu(menuVisible);
 
     const doChangeItemsAppearance = useEventCallback((diagram: DiagramRef, visuals: ItemsRef, key: string, value: any) => {
@@ -120,8 +118,12 @@ export const EditorViewInner = ({ diagram, spacing }: EditorViewProps & { diagra
 
             const componentRect = (findDOMNode(renderRef.current) as HTMLElement)!.getBoundingClientRect();
 
-            let x = ((offset?.x || 0) - spacing - componentRect.left) / zoom;
-            let y = ((offset?.y || 0) - spacing - componentRect.top) / zoom;
+            // Convert to the space of the element
+            const relativeX = (offset?.x || 0) - componentRect.left;
+            const relativeY = (offset?.y || 0) - componentRect.top;
+
+            const x = relativeX / viewBox.zoom + viewBox.minX;
+            const y = relativeY / viewBox.zoom + viewBox.minY;
 
             const itemType = monitor.getItemType();
 
@@ -153,30 +155,21 @@ export const EditorViewInner = ({ diagram, spacing }: EditorViewProps & { diagra
 
     drop(renderRef);
 
-    const zoomedOuterWidth = 2 * spacing + zoomedSize.x;
-    const zoomedOuterHeight = 2 * spacing + zoomedSize.y;
-
-    const w = sizeInPx(zoomedOuterWidth);
-    const h = sizeInPx(zoomedOuterHeight);
-
-    const padding = sizeInPx(spacing);
-
     return (
-        <Dropdown menu={contextMenu} trigger={['contextMenu']} onOpenChange={setMenuVisible}>            
+        <Dropdown rootClassName='editor-dropdown' menu={contextMenu} trigger={['contextMenu']} onOpenChange={setMenuVisible}>            
             <div className='editor-view' onClick={doSetPosition}>
-                <div className='editor-diagram' style={{ width: w, height: h, padding }} ref={renderRef} >
+                <div className='editor-diagram' ref={renderRef} >
                     <Editor
                         color={editorColor}
                         diagram={diagram}
+                        isDefaultView={true}
                         masterDiagram={masterDiagram}
                         onChangeItemsAppearance={doChangeItemsAppearance}
                         onSelectItems={doSelectItems}
                         onTransformItems={doTransformItems}
                         selectionSet={getSelection(state)}
+                        viewBox={viewBox}
                         viewSize={editor.size}
-                        zoomLevel={zoom}
-                        zoomedSize={zoomedSize}
-                        isDefaultView={true}
                     />
                 </div>
             </div>

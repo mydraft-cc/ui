@@ -8,6 +8,11 @@ $size: 22px;
         @include clearfix;
         max-width: 210px;
         min-width: 210px;
+
+        & .color-picker-color {
+            margin-right: 2px;
+            margin-bottom: 2px;
+        }
     }
 
     &-color {
@@ -30,12 +35,11 @@ $size: 22px;
         }
 
         &-inner {
-            @include circle($size - 8px);
-            margin: 1px;
+            @include circle($size - 4px);
         }
 
         &:hover {
-            border-color: $color-border-dark;
+            border-color: #555;
         }
 
         &.selected {

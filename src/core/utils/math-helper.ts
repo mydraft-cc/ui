@@ -31,7 +31,7 @@ export module MathHelper {
     }
 
     export function roundToMultipleOf(value: number, factor: number) {
-        return Math.round(value / factor) * factor;
+        return Math.round((value + Number.EPSILON) / factor) * factor;
     }
 
     export function roundToMultipleOfTwo(value: number) {

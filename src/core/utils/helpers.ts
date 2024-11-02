@@ -9,12 +9,16 @@ export function isMac() {
     return window.navigator?.userAgent?.indexOf('Mac') >= 0;
 }
 
-export function isModKey(key: KeyboardEvent | MouseEvent) {
+export function isModKey(event: KeyboardEvent | MouseEvent) {
     if (isMac()) {
-        return key.metaKey;
+        return event.metaKey;
     } else {
-        return key.ctrlKey;
+        return event.ctrlKey;
     }
+}
+
+export function isMiddleMouse(event: MouseEvent) {
+    return event.button === 1;
 }
 
 const escapeTestNoEncode = /[<>"']|&(?!(#\d{1,7}|#[Xx][a-fA-F0-9]{1,6}|\w+);)/;

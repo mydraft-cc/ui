@@ -9,7 +9,7 @@
 
 import * as svg from '@svgdotjs/svg.js';
 import * as React from 'react';
-import { Color, Rect2, Subscription, SVGHelper, Vec2 } from '@app/core';
+import { Color, Subscription, SVGHelper, Vec2, ViewBox } from '@app/core';
 import { Diagram, DiagramItem, DiagramItemSet, Transform } from '@app/wireframes/model';
 import { useOverlayContext } from './../contexts/OverlayContext';
 import { CanvasView } from './CanvasView';
@@ -34,20 +34,14 @@ export interface EditorProps {
     // The selected items.
     selectionSet: DiagramItemSet;
 
-    // The zoomed width of the canvas.
-    zoomedSize: Vec2;
-
     // The color.
     color: Color;
 
-    // The optional viewbox.
-    viewBox?: Rect2;
+    // The viewbox.
+    viewBox: ViewBox;
 
     // The view size.
     viewSize: Vec2;
-
-    // The zoom value of the canvas.
-    zoomLevel: number;
 
     // True, if it is the default view.
     isDefaultView: boolean;
@@ -82,13 +76,11 @@ export const Editor = React.memo((props: EditorProps) => {
         selectionSet,
         viewBox,
         viewSize,
-        zoomLevel: zoom,
-        zoomedSize,
     } = props;
 
     const adornerSelectLayer = React.useRef<svg.Container>();
     const adornerTransformLayer = React.useRef<svg.Container>();
-    const diagramTools = React.useRef<svg.Element>();
+    const backgroundLayer = React.useRef<svg.Rect>();
     const overlayContext = useOverlayContext();
     const overlayLayer = React.useRef<svg.Container>();
     const renderMainLayer = React.useRef<svg.Container>();
@@ -100,8 +92,13 @@ export const Editor = React.memo((props: EditorProps) => {
     const renderPreview = React.useRef(new Subscription<PreviewEvent>());
 
     const doInit = React.useCallback((doc: svg.Svg) => {
+        // Might be called multiple times in dev mode!
+        if (renderMainLayer.current) {
+            return;
+        }
+
         // Create these layers in the correct order.
-        diagramTools.current = doc.rect().fill('transparent');
+        backgroundLayer.current = doc.rect().id('background').stroke('#efefef').fill(color.toString());
         renderMasterLayer.current = doc.group().id('masterLayer');
         renderMainLayer.current = doc.group().id('parentLayer');
         adornerSelectLayer.current = doc.group().id('selectLayer');
@@ -131,34 +128,33 @@ export const Editor = React.memo((props: EditorProps) => {
         const w = viewSize.x;
         const h = viewSize.y;
 
-        SVGHelper.setSize(diagramTools.current!, w, h);
         SVGHelper.setSize(adornerSelectLayer.current!, w, h);
         SVGHelper.setSize(adornerTransformLayer.current!, w, h);
-        SVGHelper.setSize(diagramTools.current!, 0.5, 0.5);
+        SVGHelper.setSize(backgroundLayer.current!, w, h);
         SVGHelper.setSize(renderMasterLayer.current!, w, h);
         SVGHelper.setSize(renderMainLayer.current!, w, h);
     }, [viewSize, interactionMainService]);
-    
+
+    React.useEffect(() => {
+        backgroundLayer.current?.fill(color.toString());
+    }, [color]);
+
     React.useEffect(() => {
         overlayContext.snapManager.prepare(diagram, viewSize);
     }, [diagram, overlayContext.snapManager, viewSize]);
     
     React.useEffect(() => {
-        (overlayContext.overlayManager as any)['setZoom']?.(zoom);
-    }, [diagram, overlayContext.overlayManager, zoom]);
+        (overlayContext.overlayManager as any)['setZoom']?.(viewBox.zoom);
+    }, [diagram, overlayContext.overlayManager, viewBox.zoom]);
 
     return (
-        <div className='editor' style={{ background: color.toString() }} ref={element => overlayContext.element = element}>
-            <CanvasView
-                onInit={doInit}
-                viewBox={viewBox}
-                viewSize={viewSize}
-                zoom={zoom}
-                zoomedSize={zoomedSize} />
+        <div className='editor' ref={element => overlayContext.element = element}>
+            <CanvasView onInit={doInit} viewBox={viewBox} />
 
             {interactionMainService && diagram && (
                 <>
                     <RenderLayer
+                        background={color}
                         diagram={masterDiagram}
                         diagramLayer={renderMasterLayer.current!}
                         onRender={onRender}
@@ -182,7 +178,7 @@ export const Editor = React.memo((props: EditorProps) => {
                             selectionSet={selectionSet}
                             snapManager={overlayContext.snapManager}
                             viewSize={viewSize}
-                            zoom={zoom}
+                            zoom={viewBox.zoom}
                         />
                     }
 
@@ -194,7 +190,7 @@ export const Editor = React.memo((props: EditorProps) => {
                             previewStream={renderPreview.current}
                             selectedDiagram={diagram}
                             selectionSet={selectionSet}
-                            zoom={zoom}
+                            zoom={viewBox.zoom}
                         />
                     }
 
@@ -204,7 +200,7 @@ export const Editor = React.memo((props: EditorProps) => {
                             onChangeItemsAppearance={onChangeItemsAppearance}
                             selectedDiagram={diagram}
                             selectionSet={selectionSet}
-                            zoom={zoom}
+                            zoom={viewBox.zoom}
                         />
                     }
 
@@ -214,7 +210,7 @@ export const Editor = React.memo((props: EditorProps) => {
                             selectedDiagram={diagram}
                             selectionSet={selectionSet}
                             viewSize={viewSize}
-                            zoom={zoom}
+                            zoom={viewBox.zoom}
                         />
                     }
 

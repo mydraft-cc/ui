@@ -7,20 +7,11 @@
 
 import * as svg from '@svgdotjs/svg.js';
 import * as React from 'react';
-import { Rect2, sizeInPx, Vec2 } from '@app/core';
+import { ViewBox } from '@app/core';
 
 export interface CanvasViewProps {
-    // The zoomed width of the canvas.
-    zoomedSize: Vec2;
-
     // The optional viewbox.
-    viewBox?: Rect2;
-
-    // The view size.
-    viewSize: Vec2;
-
-    // The zoom value of the canvas.
-    zoom: number;
+    viewBox: ViewBox;
 
     // The class name.
     className?: string;
@@ -34,9 +25,6 @@ export const CanvasView = (props: CanvasViewProps) => {
         className,
         onInit,
         viewBox,
-        viewSize,
-        zoom,
-        zoomedSize,
     } = props;
 
     const [document, setDocument] = React.useState<svg.Svg>();
@@ -58,20 +46,10 @@ export const CanvasView = (props: CanvasViewProps) => {
     }, [document, onInit]);
 
     React.useEffect(() => {
-        if (document) {
-            const x = viewBox?.x || 0;
-            const y = viewBox?.y || 0;
-            const w = viewBox ? viewBox.w : viewSize.x;
-            const h = viewBox ? viewBox.h : viewSize.y;
-
-            document.size(zoomedSize.x, zoomedSize.y).viewbox(x, y, w, h);
-        }
-    }, [viewSize, viewBox, zoom, zoomedSize, document]);
-
-    const w = sizeInPx(zoomedSize.x);
-    const h = sizeInPx(zoomedSize.y);
+        document?.viewbox(viewBox.minX, viewBox.minY, viewBox.maxX, viewBox.maxY);
+    }, [document, viewBox.minX, viewBox.minY, viewBox.maxX, viewBox.maxY]);
 
     return (
-        <div className={className} style={{ width: w, height: h }} ref={doInit} />
+        <div className={className} ref={doInit} />
     );
 };

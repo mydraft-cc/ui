@@ -7,11 +7,16 @@
         border: 0;
         border-radius: 0;
         height: 100%;
-        overflow-x: auto;
-        overflow-y: auto;
+        overflow: hidden;
     }
 
     &-diagram {
-        margin: auto;
+        height: 100%;
+    }
+
+    &-content {
+        & > div {
+            height: 100%;
+        }
     }
 }

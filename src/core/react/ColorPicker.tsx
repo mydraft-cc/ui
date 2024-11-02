@@ -122,7 +122,7 @@ export const ColorPicker = React.memo((props: ColorPickerProps) => {
     const placement = popoverPlacement || 'left';
 
     return (
-        <Popover content={content} open={visible && !disabled} placement={placement} trigger='click' onOpenChange={setVisible}>
+        <Popover content={content} open={visible && !disabled} placement={placement} trigger={[]} onOpenChange={setVisible}>
             <Button disabled={disabled} className='color-picker-button' onClick={doToggle}
                 icon={
                     <Icon component={() => 

@@ -7,7 +7,7 @@
 
 import * as svg from '@svgdotjs/svg.js';
 import * as React from 'react';
-import { isModKey, Rect2, Subscription, SVGHelper, Vec2 } from '@app/core';
+import { isMiddleMouse, isModKey, Rect2, Subscription, SVGHelper, Vec2 } from '@app/core';
 import { calculateSelection, Diagram, DiagramItem, DiagramItemSet } from '@app/wireframes/model';
 import { InteractionHandler, InteractionService, SvgEvent } from './interaction-service';
 import { PreviewEvent } from './preview';
@@ -74,6 +74,11 @@ export class SelectionAdorner extends React.Component<SelectionAdornerProps> imp
     }
 
     public onMouseDown(event: SvgEvent) {
+        // The middle mouse button is needed for pan and zoom.
+        if (isMiddleMouse(event.event)) {
+            return;
+        }
+
         if (!event.event.shiftKey) {
             const selection = this.selectSingle(event, this.props.selectedDiagram);
 
@@ -189,7 +194,7 @@ export class SelectionAdorner extends React.Component<SelectionAdornerProps> imp
             const actualBounds = actualItem.bounds(this.props.selectedDiagram);
 
             // Also adjust the bounds by the border width, to show the border outside of the shape.
-            this.transformShape(marker, actualBounds.position.sub(actualBounds.halfSize), actualBounds.size, strokeWidth, actualBounds.rotation.degree);
+            this.transformShape(marker, actualBounds.position.sub(actualBounds.halfSize), actualBounds.size, 0, actualBounds.rotation.degree);
         });
     }
 

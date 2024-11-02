@@ -7,7 +7,7 @@
 
 import * as svg from '@svgdotjs/svg.js';
 import * as React from 'react';
-import { Rotation, Subscription, SVGHelper, Timer, Vec2 } from '@app/core';
+import { isMiddleMouse, Rotation, Subscription, SVGHelper, Timer, Vec2 } from '@app/core';
 import { Diagram, DiagramItem, DiagramItemSet, SnapManager, SnapMode, Transform } from '@app/wireframes/model';
 import { OverlayManager } from './../contexts/OverlayContext';
 import { SVGRenderer2 } from './../shapes/utils/svg-renderer2';
@@ -245,6 +245,12 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
             return;
         }
 
+        // The middle mouse button is needed for pan and zoom.
+        if (isMiddleMouse(event.event)) {
+            next(event);
+            return;
+        }
+
         let hitItem = this.hitTest(event.position);
 
         if (!hitItem) {
@@ -437,7 +443,7 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
         return new Vec2(x, y);
     }
 
-    public onMouseUp(event: SvgEvent, next: (event: SvgEvent) => void) {
+    public onMouseUp(event: SvgEvent, next: (event: SvgEvent) => void) {    
         if (this.manipulationMode === Mode.None) {
             next(event);
             return;
@@ -554,14 +560,14 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
         this.moveShape.show();
 
         SVGHelper.transformBy(this.moveShape, {
-            x: position.x - 0.5 * size.x - stroke.width + 0.5,
-            y: position.y - 0.5 * size.y - stroke.width + 0.5,
-            w: Math.floor(size.x) + stroke.width,
-            h: Math.floor(size.y) + stroke.width,
+            x: position.x - 0.5 * size.x,
+            y: position.y - 0.5 * size.y,
+            w: size.x,
+            h: size.y,
             rx: position.x,
             ry: position.y,
             rotation,
-        }, false, true); // Do not set the position by matrix for bounding box calculation
+        }, true, false); // Do not set the position by matrix for bounding box calculation
     }
 
     private hideShapes() {

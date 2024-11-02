@@ -7,18 +7,12 @@
 
 /* eslint-disable @typescript-eslint/naming-convention */
 
-import { filterDiagrams, selectColorTab, selectTab, setZoom, showToast, toggleLeftSidebar, toggleRightSidebar, ui, UIState } from '@app/wireframes/model';
+import { filterDiagrams, selectColorTab, selectTab, showToast, toggleLeftSidebar, toggleRightSidebar, ui, UIState } from '@app/wireframes/model';
 
 describe('UIReducer', () => {
     const state: UIState = {} as any;
 
     const reducer = ui(state);
-
-    it('should set zoom', () => {
-        const state_1 = reducer(state, setZoom(1.5));
-
-        expect(state_1.zoom).toEqual(1.5);
-    });
 
     it('should toogle left sidebar', () => {
         const state_1 = reducer(state, toggleLeftSidebar());

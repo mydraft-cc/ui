@@ -140,7 +140,7 @@ export const App = () => {
                             <Tabs type='card' activeKey={selectedTab} items={SidebarTabs} onChange={doSelectTab} destroyInactiveTabPane={true} />
                         </Layout.Sider>
                         <Layout.Content className='editor-content'>
-                            <EditorView spacing={40} />
+                            <EditorView />
                         </Layout.Content>
                         <Layout.Sider width={330} className='sidebar-right'
                             collapsed={!showRightSidebar}

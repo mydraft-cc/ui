@@ -7,12 +7,15 @@
 
 import * as svg from '@svgdotjs/svg.js';
 import * as React from 'react';
-import { ImmutableList, Subscription } from '@app/core';
+import { Color, ImmutableList, Subscription } from '@app/core';
 import { Diagram, DiagramItem, RendererService } from '@app/wireframes/model';
 import { PreviewEvent } from './preview';
 import { ShapeRef } from './shape-ref';
 
 export interface RenderLayerProps {
+    // The background color.
+    background?: Color;
+
     // The selected diagram.
     diagram?: Diagram;
 

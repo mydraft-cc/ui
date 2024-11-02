@@ -16,11 +16,6 @@ export const showToast =
         return { payload: { content, type, key, delayed } };
     });
 
-export const setZoom =
-    createAction('ui/zoom', (zoom: number) => {
-        return { payload: { zoom } };
-    });
-
 export const selectColorTab =
     createAction('ui/colorTab', (tab: string) => {
         return { payload: { tab } };
@@ -66,9 +61,6 @@ export function ui(initialState: UIState): Reducer<UIState> {
     return createReducer(initialState, builder => builder
         .addCase(filterDiagrams, (state, action) => {
             state.diagramsFilter = action.payload.filter;
-        })
-        .addCase(setZoom, (state, action) => {
-            state.zoom = action.payload.zoom;
         })
         .addCase(selectTab, (state, action) => {
             state.selectedTab = action.payload.tab;

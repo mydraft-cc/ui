@@ -48,18 +48,27 @@ export const PrintDiagram = (props: PrintDiagramProps) => {
         onRender && onRender(diagram);
     });
 
-    const { bounds, zoomedSize } = React.useMemo(() => {
-        let bounds: Rect2;
-
+    const viewBox = React.useMemo(() => {
         if (useBounds) {
             const aabbs = Array.from(diagram.items.values, x => x.bounds(diagram).aabb);
 
-            bounds = Rect2.fromRects(aabbs).inflate(20);
+            const rect = Rect2.fromRects(aabbs).inflate(20);
+            return {
+                minX: rect.x,
+                minY: rect.y,
+                maxX: size.x,
+                maxY: size.y,
+                zoom: 1,
+            };
         } else {
-            bounds = new Rect2(0, 0, size.x, size.y);
+            return {
+                minX: 0,
+                minY: 0,
+                maxX: size.x,
+                maxY: size.y,
+                zoom: 1,
+            };
         }
-
-        return { bounds, zoomedSize: new Vec2(bounds.w, bounds.h) };
     }, [diagram, size, useBounds]);
 
     return (
@@ -67,15 +76,13 @@ export const PrintDiagram = (props: PrintDiagramProps) => {
             <Editor
                 color={color}
                 diagram={diagram}
+                isDefaultView={false}
                 masterDiagram={diagrams.get(diagram.master!)}
                 onNavigate={onNavigate}
                 onRender={doOnRender}
                 selectionSet={DiagramItemSet.EMPTY}
-                viewBox={bounds}
+                viewBox={viewBox}
                 viewSize={size}
-                zoomLevel={1}
-                zoomedSize={zoomedSize}
-                isDefaultView={false}
             />
         </>
     );
