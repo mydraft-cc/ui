@@ -5,8 +5,9 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { MathHelper, Vec2 } from '@app/core/utils';
+import { MathHelper, TextMeasurer, Vec2 } from '@app/core/utils';
 import { Shape } from '@app/wireframes/interface';
+import { DiagramItem } from './diagram-item';
 
 export interface Constraint {
     updateSize(shape: Shape, size: Vec2, prev?: Shape): Vec2;
@@ -83,6 +84,61 @@ export class TextHeightConstraint implements Constraint {
 
     public calculateSizeX(): boolean {
         return false;
+    }
+
+    public calculateSizeY(): boolean {
+        return true;
+    }
+}
+
+export class TextSizeConstraint implements Constraint {
+    constructor(
+        private readonly measurer: TextMeasurer,
+        private readonly paddingX = 0,
+        private readonly paddingY = 0,
+        private readonly lineHeight = 1.2,
+        private readonly resizeWidth = false,
+        private readonly minWidth = 0,
+    ) { }
+
+    public updateSize(shape: Shape, size: Vec2, prev: DiagramItem): Vec2 {
+        const fontSize = shape.fontSize;
+        const fontFamily = shape.fontFamily;
+
+        let finalWidth = size.x;
+
+        const text = shape.text;
+
+        let prevText = '';
+        let prevFontSize = 0;
+        let prevFontFamily = '';
+
+        if (prev) {
+            prevText = prev.text;
+
+            prevFontSize = prev.fontSize;
+            prevFontFamily = prev.fontFamily;
+        }
+
+        if (prevText !== text || prevFontSize !== fontSize || prevFontFamily !== fontFamily) {
+            let textWidth = this.measurer.getTextWidth(text, fontSize, fontFamily);
+
+            if (textWidth) {
+                textWidth += 2 * this.paddingX;
+
+                if (finalWidth < textWidth || !this.resizeWidth) {
+                    finalWidth = textWidth;
+                }
+
+                finalWidth = Math.max(this.minWidth, finalWidth);
+            }
+        }
+
+        return new Vec2(finalWidth, fontSize * this.lineHeight + this.paddingY * 2).roundToMultipleOfTwo();
+    }
+
+    public calculateSizeX(): boolean {
+        return !this.resizeWidth;
     }
 
     public calculateSizeY(): boolean {

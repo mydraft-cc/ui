@@ -9,9 +9,8 @@
 
 import { Color, Rotation, Vec2 } from '@app/core/utils';
 import { DefaultAppearance } from '@app/wireframes/interface';
-import { buildAppearance, changeColors, changeItemsAppearance, createClassReducer, Diagram, DiagramItem, EditorState, RendererService, Transform, transformItems } from '@app/wireframes/model';
+import { buildAppearance, changeColors, changeItemsAppearance, createClassReducer, Diagram, DiagramItem, EditorState, PluginRegistry, Transform, transformItems } from '@app/wireframes/model';
 import { Button } from '@app/wireframes/shapes/neutral/button';
-import { AbstractControl } from '@app/wireframes/shapes/utils/abstract-control';
 
 describe('AppearanceReducer', () => {
     const shape1 = DiagramItem.createShape({ 
@@ -49,7 +48,7 @@ describe('AppearanceReducer', () => {
         EditorState.create()
             .addDiagram(diagram);
 
-    RendererService.addRenderer(new AbstractControl(new Button()));
+    PluginRegistry.addPlugin(new Button());
 
     const reducer = createClassReducer(state, builder => buildAppearance(builder));
 

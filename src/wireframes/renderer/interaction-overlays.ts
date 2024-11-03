@@ -5,10 +5,9 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import * as svg from '@svgdotjs/svg.js';
-import { Color, sizeInPx, SVGHelper } from '@app/core/utils';
+import { Color, sizeInPx, TextMeasurer } from '@app/core/utils';
+import { EngineLayer, EngineLine, EngineText } from '@app/wireframes/engine';
 import { SnapLine, SnapResult, Transform } from '@app/wireframes/model';
-import { SVGRenderer2 } from './../shapes/utils/svg-renderer2';
 
 const COLOR_RED = Color.RED.toString();
 const COLOR_BLUE = Color.RED.toString();
@@ -18,15 +17,15 @@ const MIN_VALUE = -10000;
 const MAX_VALUE = 10000;
 
 export class InteractionOverlays {
-    private readonly lines: svg.Line[] = [];
-    private readonly labels: svg.G[] = [];
+    private readonly lines: EngineLine[] = [];
+    private readonly labels: EngineText[] = [];
     private readonly textWidthCache: { [fontSize: string]: number } = {};
     private indexLabels = 0;
     private indexLines = 0;
     private zoom = 1;
 
     constructor(
-        private readonly layer: svg.Container,
+        private readonly layer: EngineLayer,
     ) {
     }
 
@@ -108,28 +107,20 @@ export class InteractionOverlays {
             line.show();
         }
 
-        line.plot(x1, y1, x2, y2).stroke({ width, color });
+        line.plot(x1, y1, x2, y2, width);
+        line.color(color);
         this.indexLines++;
     }
 
     private renderLabel(x: number, y: number, text: string, color: string, fontSize = 16, centerX = false, centerY = false, padding = 4) {
-        let labelGroup = this.labels[this.indexLabels];
-        let labelRect: svg.Rect;
-        let labelText: svg.ForeignObject;
+        let label = this.labels[this.indexLabels];
 
         // Reuse the rect and text if it alreadx exists to avoid creating unnecessary DOM elements.
-        if (!labelGroup) {
-            labelGroup = this.layer.group();
-
-            labelRect = new svg.Rect().addTo(labelGroup);
-            labelText = SVGHelper.createText(text, fontSize, 'center', 'middle').attr('color', '#fff').addTo(labelGroup);
-
-            this.labels.push(labelGroup);
+        if (!text) {
+            label = this.layer.text();
+            this.labels.push(label);
         } else {
-            labelGroup.show();
-
-            labelRect = labelGroup.children().at(0) as svg.Rect;
-            labelText = labelGroup.children().at(1) as svg.ForeignObject;
+            label.show();
         }
 
         let characterWidthKey = fontSize.toString();
@@ -137,16 +128,19 @@ export class InteractionOverlays {
 
         if (!characterWidthValue) {
             // We use a monospace, so we can calculate the text width ourself, which saves a lot of performance.
-            characterWidthValue = SVGRenderer2.INSTANCE.getTextWidth('a', fontSize, 'monospace');
+            characterWidthValue = TextMeasurer.DEFAULT.getTextWidth('a', fontSize, 'monospace');
 
             this.textWidthCache[characterWidthKey] = characterWidthValue;
         }
 
+        // The label dimensions needs to be calculated based on the zoom factor.
+        padding /= this.zoom;
+
         // The width is just calculated by the width of a single character (therefore monospace) and the total length.
-        const w = characterWidthValue * text.length / this.zoom;
+        const w = characterWidthValue * text.length / this.zoom + 2 * padding;
 
         // We assume a line height of 1.5 here.
-        const h = fontSize * 1.5 / this.zoom;
+        const h = fontSize * 1.5 / this.zoom + 2 * padding;
 
         if (centerX) {
             x -= 0.5 * w;
@@ -156,32 +150,11 @@ export class InteractionOverlays {
             y -= 0.5 * h;
         }
 
-        const labelContent = labelText.node.children[0] as HTMLDivElement;
-
-        labelContent.style.fontSize = sizeInPx(fontSize / this.zoom);
-        labelContent.style.fontFamily = 'monospace';
-        labelContent.textContent = text;
-        labelRect.fill(color);
-
-        // The label dimensions needs to be calculated based on the zoom factor.
-        padding /= this.zoom;
-
-        SVGHelper.transformBy(labelGroup, {
-            x: x - padding,
-            y: y - padding,
-        });
-
-        SVGHelper.transformBy(labelText, {
-            x: padding,
-            y: padding,
-            w: w,
-            h: h,
-        });
-
-        SVGHelper.transformBy(labelRect, {
-            w: w + 2 * padding,
-            h: h + 2 * padding,
-        });
+        label.fontSize(sizeInPx(fontSize / this.zoom));
+        label.fontFamily('monospace');
+        label.text(text);
+        label.color(color);
+        label.plot(x, y, w, h, padding);
 
         // Increment by one because we create one group per label.
         this.indexLabels += 1;

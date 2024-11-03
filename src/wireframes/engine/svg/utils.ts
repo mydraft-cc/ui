@@ -6,11 +6,22 @@
 */
 
 import * as svg from '@svgdotjs/svg.js';
-import { Color } from './color';
-import { sizeInPx } from './react';
-import { Rect2 } from './rect2';
-import { Types } from './types';
-import { Vec2 } from './vec2';
+import { Color, Rect2, sizeInPx, Types, Vec2 } from '@app/core';
+
+export function linkToSvg(source: any, element: svg.Element) {
+    // Create a reference back to the actual object.
+    (element.node as any)['source'] = source;
+
+    (source as any)['element'] = element;
+}
+
+export function getElement(source: any) {
+    return (source as any)['element'] as svg.Element;
+}
+
+export function getSource(element: svg.Element) {
+    return (element as any)['source'] as any;
+}
 
 export interface MatrixTransform {
     x?: number;

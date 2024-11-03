@@ -7,19 +7,19 @@
 
 import * as svg from '@svgdotjs/svg.js';
 import { Rect2 } from '@app/core/utils';
-import { SVGRenderer2 } from './svg-renderer2';
+import { SvgRenderer } from './renderer';
 
-describe('SVGRenderer2', () => {
-    let renderer: SVGRenderer2;
+describe('SVGRenderer', () => {
+    const bounds = new Rect2(0, 0, 100, 100);
+    let renderer: SvgRenderer;
     let svgGroup: svg.G;
     let svgRoot: svg.Svg;
-    const bounds = new Rect2(0, 0, 100, 100);
 
     beforeEach(() => {
         svgRoot = svg.SVG().addTo(document.body);
         svgGroup = new svg.G().addTo(svgRoot);
 
-        renderer = new SVGRenderer2();
+        renderer = new SvgRenderer();
         renderer.setContainer(svgGroup);
     });
 
@@ -380,7 +380,7 @@ describe('SVGRenderer2', () => {
         });
     });
 
-    function render(action: (renderer: SVGRenderer2) => void) {
+    function render(action: (renderer: SvgRenderer) => void) {
         renderer.setContainer(svgGroup);
         action(renderer);
         renderer.cleanupAll();

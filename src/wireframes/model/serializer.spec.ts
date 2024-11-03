@@ -6,7 +6,7 @@
 */
 
 import { Vec2 } from '@app/core/utils';
-import { Diagram, DiagramItem, DiagramItemSet, EditorState, RendererService, Serializer } from '@app/wireframes/model';
+import { Diagram, DiagramItem, DiagramItemSet, EditorState, PluginRegistry, Serializer } from '@app/wireframes/model';
 import { Checkbox } from '@app/wireframes/shapes/neutral/checkbox';
 import { AbstractControl } from './../shapes/utils/abstract-control';
 
@@ -19,7 +19,7 @@ describe('Serializer', () => {
     const brokenShape = DiagramItem.createShape({ renderer: null! });
 
     beforeEach(() => {
-        RendererService.addRenderer(checkbox);
+        PluginRegistry.addRenderer(checkbox);
     });
 
     it('should serialize and deserialize set', () => {

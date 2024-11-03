@@ -10,13 +10,11 @@
 import * as svg from '@svgdotjs/svg.js';
 import { marked } from 'marked';
 import { Rect } from 'react-measure';
-import { escapeHTML, Rect2, sizeInPx, SVGHelper, Types } from '@app/core/utils';
-import { RendererColor, RendererElement, RendererOpacity, RendererText, RendererWidth, Shape, ShapeFactory, ShapeFactoryFunc, ShapeProperties, ShapePropertiesFunc, TextConfig, TextDecoration } from '@app/wireframes/interface';
-import { AbstractRenderer2 } from './abstract-renderer';
+import { escapeHTML, Rect2, TextMeasurer, Types } from '@app/core/utils';
+import { RendererColor, RendererElement, RendererOpacity, RendererText, RendererWidth, Shape, ShapeProperties, ShapePropertiesFunc, ShapeRenderer, ShapeRendererFunc, TextConfig, TextDecoration } from '@app/wireframes/interface';
+import { SVGHelper } from './utils';
 
-export * from './abstract-renderer';
-
-class Factory implements ShapeFactory {
+export class SvgRenderer implements ShapeRenderer {
     private container: svg.G = null!;
     private containerIndex = 0;
     private clipping = false;
@@ -24,6 +22,10 @@ class Factory implements ShapeFactory {
 
     public getContainer() {
         return this.container;
+    }
+
+    public getTextWidth(text: string, fontSize: number, fontFamily: string) {
+        return TextMeasurer.DEFAULT.getTextWidth(text, fontSize, fontFamily);
     }
 
     public setContainer(container: svg.G, index = 0, clipping = false) {
@@ -150,7 +152,7 @@ class Factory implements ShapeFactory {
         }, properties);
     }
 
-    public group(items: ShapeFactoryFunc, clip?: ShapeFactoryFunc, properties?: ShapePropertiesFunc) {
+    public group(items: ShapeRendererFunc, clip?: ShapeRendererFunc, properties?: ShapePropertiesFunc) {
         return this.new('g', () => new svg.G(), (_, group) => {
             const clipping = this.clipping;
             const container = this.container;
@@ -252,65 +254,6 @@ class Factory implements ShapeFactory {
         if (!this.wasClipped) {
             this.container.unclip();
         }
-    }
-}
-
-export class SVGRenderer2 extends Factory implements AbstractRenderer2 {
-    private readonly measureDiv: HTMLDivElement;
-
-    public static readonly INSTANCE = new SVGRenderer2();
-
-    public constructor() {
-        super();
-
-        this.measureDiv = document.createElement('div');
-        this.measureDiv.style.height = 'auto';
-        this.measureDiv.style.position = 'absolute';
-        this.measureDiv.style.visibility = 'hidden';
-        this.measureDiv.style.width = 'auto';
-        this.measureDiv.style.whiteSpace = 'nowrap';
-
-        document.body.appendChild(this.measureDiv);
-    }
-
-    public getLocalBounds(element: RendererElement): Rect2 {
-        const e = this.getElement(element);
-
-        if (!e.visible()) {
-            return Rect2.EMPTY;
-        }
-
-        const box: svg.Box = e.bbox();
-
-        return SVGHelper.box2Rect(box);
-    }
-
-    public getBounds(element: RendererElement): Rect2 {
-        const e = this.getElement(element);
-
-        if (!e.visible()) {
-            return Rect2.EMPTY;
-        }
-
-        const box = e.bbox().transform(e.matrixify());
-
-        return SVGHelper.box2Rect(box);
-    }
-
-    private getElement(element: RendererElement): svg.Element {
-        if (element.textElement) {
-            return element.textElement;
-        } else {
-            return element;
-        }
-    }
-
-    public getTextWidth(text: string, fontSize: number, fontFamily: string) {
-        this.measureDiv.textContent = text;
-        this.measureDiv.style.fontSize = sizeInPx(fontSize);
-        this.measureDiv.style.fontFamily = fontFamily;
-
-        return this.measureDiv.clientWidth + 1;
     }
 }
 

@@ -9,10 +9,9 @@
 
 import { diff } from 'deep-object-diff';
 import { Types } from '@app/core';
-import { EditorState, loadDiagramInternal, RendererService, selectDiagram, selectItems, UndoableState } from '@app/wireframes/model';
+import { EditorState, loadDiagramInternal, PluginRegistry, selectDiagram, selectItems, UndoableState } from '@app/wireframes/model';
 import * as Reducers from '@app/wireframes/model/actions';
 import { Button } from '@app/wireframes/shapes/neutral/button';
-import { AbstractControl } from '@app/wireframes/shapes/utils/abstract-control';
 import v1 from './diagram_v1.json?raw';
 import v2 from './diagram_v2.json?raw';
 import v3 from './diagram_v3.json?raw';
@@ -20,7 +19,7 @@ import v3 from './diagram_v3.json?raw';
 describe('LoadingReducer', () => {
     const editorState = EditorState.create();
 
-    RendererService.addRenderer(new AbstractControl(new Button()));
+    PluginRegistry.addPlugin(new Button());
 
     const editorReducer = Reducers.createClassReducer(editorState, builder => {
         Reducers.buildAlignment(builder);

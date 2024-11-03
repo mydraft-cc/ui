@@ -7,10 +7,10 @@
 
 import * as svg from '@svgdotjs/svg.js';
 import * as React from 'react';
-import { Rotation, SVGHelper, Vec2 } from '@app/core';
+import { Rotation, Vec2 } from '@app/core';
 import { ShapePlugin } from '@app/wireframes/interface';
-import { DiagramItem, Transform } from '@app/wireframes/model';
-import { AbstractControl, DefaultConstraintFactory } from './utils/abstract-control';
+import { DefaultConstraintFactory, DiagramItem, Transform } from '@app/wireframes/model';
+import { SvgEngine } from '../engine/svg/engine';
 
 interface ShapeRendererProps {
     plugin: ShapePlugin;
@@ -91,11 +91,6 @@ export const ShapeRenderer = React.memo(React.forwardRef<HTMLDivElement, ShapeRe
 
         document.clear();
 
-        const svgControl = new AbstractControl(plugin);
-        const svgGroup = document.group();
-
-        SVGHelper.setPosition(svgGroup, 0.5, 0.5);
-
         const item =
             DiagramItem.createShape({
                 renderer: plugin.identifier(),
@@ -112,13 +107,11 @@ export const ShapeRenderer = React.memo(React.forwardRef<HTMLDivElement, ShapeRe
                 constraint: plugin?.constraint?.(DefaultConstraintFactory.INSTANCE),
             });
 
-        svgControl.setContext(svgGroup);
+        const svgEngine = new SvgEngine(document);
+        const svgLayer = svgEngine.layer(plugin.identifier());
+        const svgItem = svgLayer.item(plugin);
 
-        const newElement: svg.Element = svgControl.render(item, undefined);
-
-        if (!newElement.parent()) {
-            svgGroup.add(newElement);
-        }
+        svgItem.invalidate(item);
     }, [appearance, document, plugin, viewBox]);
 
     return (

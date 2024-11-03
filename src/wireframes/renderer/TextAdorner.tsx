@@ -7,9 +7,9 @@
 
 import * as React from 'react';
 import { Keys, sizeInPx } from '@app/core';
+import { Engine, HitEvent, Listener } from '@app/wireframes/engine';
 import { DefaultAppearance } from '@app/wireframes/interface';
 import { Diagram, DiagramItem, DiagramItemSet } from '@app/wireframes/model';
-import { InteractionHandler, InteractionService, SvgEvent } from './interaction-service';
 import './TextAdorner.scss';
 
 const MIN_WIDTH = 150;
@@ -25,26 +25,32 @@ export interface TextAdornerProps {
     // The selected items.
     selectionSet: DiagramItemSet;
 
-    // The interaction service.
-    interactionService: InteractionService;
+    // The engine.
+    engine: Engine;
+
+    // A helper function to show adorners.
+    showAdorners: () => void;
+
+    // A helper function to hideAdorners adorners.
+    hideAdorners: () => void;
 
     // A function to change the appearance of a visual.
     onChangeItemsAppearance: (diagram: Diagram, visuals: DiagramItem[], key: string, val: any) => any;
 }
 
-export class TextAdorner extends React.PureComponent<TextAdornerProps> implements InteractionHandler {
+export class TextAdorner extends React.PureComponent<TextAdornerProps> implements Listener {
     private readonly style = { display: 'none ' };
     private selectedShape: DiagramItem | null = null;
     private textareaElement: HTMLTextAreaElement = null!;
 
     public componentDidMount() {
-        this.props.interactionService.addHandler(this);
+        this.props.engine.subscribe(this);
 
         window.addEventListener('mousedown', this.handleMouseDown);
     }
 
     public componentWillUnmount() {
-        this.props.interactionService.removeHandler(this);
+        this.props.engine.unsubscribe(this);
 
         window.removeEventListener('mousedown', this.handleMouseDown);
     }
@@ -61,15 +67,15 @@ export class TextAdorner extends React.PureComponent<TextAdornerProps> implement
         }
     };
 
-    public onDoubleClick(event: SvgEvent) {
-        if (event.shape && !event.shape.isLocked && this.textareaElement) {
-            if (event.shape.textDisabled) {
+    public onDoubleClick(event: HitEvent) {
+        if (event.item && !event.item.isLocked && this.textareaElement) {
+            if (event.item.textDisabled) {
                 return;
             }
 
             const zoom = this.props.zoom;
 
-            const transform = event.shape.transform;
+            const transform = event.item.transform;
 
             const x = sizeInPx(zoom * (transform.position.x - 0.5 * transform.size.x) - 2);
             const y = sizeInPx(zoom * (transform.position.y - 0.5 * transform.size.y) - 2);
@@ -77,7 +83,7 @@ export class TextAdorner extends React.PureComponent<TextAdornerProps> implement
             const w = sizeInPx(zoom * (Math.max(transform.size.x, MIN_WIDTH)) + 4);
             const h = sizeInPx(zoom * (Math.max(transform.size.y, MIN_HEIGHT)) + 4);
 
-            this.textareaElement.value = event.shape.text;
+            this.textareaElement.value = event.item.text;
             this.textareaElement.style.top = y;
             this.textareaElement.style.left = x;
             this.textareaElement.style.width = w;
@@ -87,9 +93,8 @@ export class TextAdorner extends React.PureComponent<TextAdornerProps> implement
             this.textareaElement.style.position = 'absolute';
             this.textareaElement.focus();
 
-            this.props.interactionService.hideAdorners();
-
-            this.selectedShape = event.shape;
+            this.props.hideAdorners();
+            this.selectedShape = event.item;
         }
     }
 
@@ -137,16 +142,16 @@ export class TextAdorner extends React.PureComponent<TextAdornerProps> implement
         this.textareaElement.style.width = '0';
         this.textareaElement.style.display = 'none';
 
-        this.props.interactionService.showAdorners();
+        this.props.showAdorners();
     }
 
     public render() {
         return (
             <textarea className='ant-input ant-input-outlined ant-input-css-var no-border-radius text-adorner-textarea'
-                style={this.style}
                 ref={this.doInitialize}
                 onBlur={this.doHide}
-                onKeyDown={this.doSubmit} />
+                onKeyDown={this.doSubmit}
+                style={this.style} />
         );
     }
 }

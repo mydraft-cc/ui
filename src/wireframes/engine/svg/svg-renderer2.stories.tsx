@@ -5,13 +5,14 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { ComponentMeta } from '@storybook/react';
+import { Meta } from '@storybook/react';
 import * as svg from '@svgdotjs/svg.js';
 import * as React from 'react';
-import { Color, Rect2, SVGHelper } from '@app/core';
-import { SVGRenderer2 } from './svg-renderer2';
+import { Color, Rect2 } from '@app/core';
+import { SvgRenderer } from './renderer';
+import { SVGHelper } from './utils';
 
-const RendererHelper = ({ render }: { render: (renderer: SVGRenderer2, width: number, color: string) => void }) => {
+const RendererHelper = ({ render }: { render: (renderer: SvgRenderer, width: number, color: string) => void }) => {
     const [document, setDocument] = React.useState<svg.Svg>();
     const innerRef = React.useRef<SVGSVGElement>(null);
 
@@ -36,7 +37,7 @@ const RendererHelper = ({ render }: { render: (renderer: SVGRenderer2, width: nu
         
         SVGHelper.setSize(document, itemCount * itemHeight, 100);
 
-        const renderer2 = new SVGRenderer2();
+        const renderer2 = new SvgRenderer();
 
         for (let i = 0; i < itemCount; i++) {
             const group = document.group();
@@ -60,7 +61,7 @@ const RendererHelper = ({ render }: { render: (renderer: SVGRenderer2, width: nu
 
 export default {
     component: RendererHelper,
-} as ComponentMeta<typeof RendererHelper>;
+} as Meta<typeof RendererHelper>;
 
 export const Rect = () => {
     return (

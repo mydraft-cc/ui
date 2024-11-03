@@ -12,7 +12,7 @@ import { useStore as useReduxStore } from 'react-redux';
 import { Grid, useEventCallback } from '@app/core';
 import { RootState, useAppDispatch } from '@app/store';
 import { texts } from '@app/texts';
-import { addShape, filterIcons, getDiagramId, getFilteredIcons, getIconSet, getIconSets, getIconsFilter, IconInfo, RendererService, selectIcons, useStore } from '@app/wireframes/model';
+import { addShape, filterIcons, getDiagramId, getFilteredIcons, getIconSet, getIconSets, getIconsFilter, IconInfo, PluginRegistry, selectIcons, useStore } from '@app/wireframes/model';
 import { Icon } from './Icon';
 import './Icons.scss';
 
@@ -33,7 +33,7 @@ export const Icons = React.memo(() => {
             const selectedDiagramId = getDiagramId(store.getState() as any);
 
             if (selectedDiagramId) {
-                const shapes = RendererService.createShapes([{ type: 'Icon', ...icon }]);
+                const shapes = PluginRegistry.createShapes([{ type: 'Icon', ...icon }]);
 
                 for (const { size, appearance, renderer } of shapes) {
                     dispatch(addShape(selectedDiagramId, renderer, { position: { x: 100, y: 100 }, size, appearance }));

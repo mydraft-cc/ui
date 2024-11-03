@@ -12,7 +12,7 @@ import { NativeTypes } from 'react-dnd-html5-backend';
 import { findDOMNode } from 'react-dom';
 import { Canvas, loadImagesToClipboardItems, useClipboard, useEventCallback, ViewBox } from '@app/core';
 import { useAppDispatch } from '@app/store';
-import { addShape, changeItemsAppearance, Diagram, getDiagram, getDiagramId, getEditor, getMasterDiagram, getSelection, RendererService, selectItems, Transform, transformItems, useStore } from '@app/wireframes/model';
+import { addShape, changeItemsAppearance, Diagram, getDiagram, getDiagramId, getEditor, getMasterDiagram, getSelection, PluginRegistry, selectItems, Transform, transformItems, useStore } from '@app/wireframes/model';
 import { Editor } from '@app/wireframes/renderer/Editor';
 import { DiagramRef, ItemsRef } from '../model/actions/utils';
 import { ShapeSource } from './../interface';
@@ -70,7 +70,7 @@ export const EditorViewInner = ({ diagram, viewBox }: { diagram: Diagram; viewBo
             return;
         }
 
-        const shapes = RendererService.createShapes(sources);
+        const shapes = PluginRegistry.createShapes(sources);
 
         for (const { appearance, renderer, size } of shapes) {
             dispatch(addShape(selectedDiagramId, renderer, { position: { x, y }, size, appearance }));

@@ -5,42 +5,41 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { RendererService } from '@app/wireframes/model/renderer.service';
+import { PluginRegistry } from '@app/wireframes/model/registry';
 import { Browser, Button, ButtonBar, Checkbox, ComboBox, Comment, Dropdown, Grid, Heading, HorizontalLine, HorizontalScrollbar, Icon, Image, Label, Link, List, Numeric, Paragraph, Phone, Progress, RadioButton, Raster, Rectangle, Shape, Slider, Tablet, Tabs, TextArea, TextInput, Toggle, VerticalLine, VerticalScrollbar, Window } from './dependencies';
-import { AbstractControl } from './utils/abstract-control';
 
 export function registerRenderers() {
-    RendererService.addRenderer(new AbstractControl(new Browser()));
-    RendererService.addRenderer(new AbstractControl(new Button()));
-    RendererService.addRenderer(new AbstractControl(new ButtonBar()));
-    RendererService.addRenderer(new AbstractControl(new Checkbox()));
-    RendererService.addRenderer(new AbstractControl(new ComboBox()));
-    RendererService.addRenderer(new AbstractControl(new Dropdown()));
-    RendererService.addRenderer(new AbstractControl(new Grid()));
-    RendererService.addRenderer(new AbstractControl(new Heading()));
-    RendererService.addRenderer(new AbstractControl(new HorizontalLine()));
-    RendererService.addRenderer(new AbstractControl(new HorizontalScrollbar()));
-    RendererService.addRenderer(new AbstractControl(new Icon()));
-    RendererService.addRenderer(new AbstractControl(new Image()));
-    RendererService.addRenderer(new AbstractControl(new Label()));
-    RendererService.addRenderer(new AbstractControl(new Link()));
-    RendererService.addRenderer(new AbstractControl(new List()));
-    RendererService.addRenderer(new AbstractControl(new Numeric()));
-    RendererService.addRenderer(new AbstractControl(new Paragraph()));
-    RendererService.addRenderer(new AbstractControl(new Phone()));
-    RendererService.addRenderer(new AbstractControl(new Progress()));
-    RendererService.addRenderer(new AbstractControl(new RadioButton()));
-    RendererService.addRenderer(new AbstractControl(new Raster()));
-    RendererService.addRenderer(new AbstractControl(new Rectangle()));
-    RendererService.addRenderer(new AbstractControl(new Shape()));
-    RendererService.addRenderer(new AbstractControl(new Slider()));
-    RendererService.addRenderer(new AbstractControl(new Tablet()));
-    RendererService.addRenderer(new AbstractControl(new Tabs()));
-    RendererService.addRenderer(new AbstractControl(new TextArea()));
-    RendererService.addRenderer(new AbstractControl(new TextInput()));
-    RendererService.addRenderer(new AbstractControl(new Toggle()));
-    RendererService.addRenderer(new AbstractControl(new VerticalLine()));
-    RendererService.addRenderer(new AbstractControl(new VerticalScrollbar()));
-    RendererService.addRenderer(new AbstractControl(new Window()));
-    RendererService.addRenderer(new AbstractControl(new Comment()));
+    PluginRegistry.addPlugin(new Browser());
+    PluginRegistry.addPlugin(new Button());
+    PluginRegistry.addPlugin(new ButtonBar());
+    PluginRegistry.addPlugin(new Checkbox());
+    PluginRegistry.addPlugin(new ComboBox());
+    PluginRegistry.addPlugin(new Dropdown());
+    PluginRegistry.addPlugin(new Grid());
+    PluginRegistry.addPlugin(new Heading());
+    PluginRegistry.addPlugin(new HorizontalLine());
+    PluginRegistry.addPlugin(new HorizontalScrollbar());
+    PluginRegistry.addPlugin(new Icon());
+    PluginRegistry.addPlugin(new Image());
+    PluginRegistry.addPlugin(new Label());
+    PluginRegistry.addPlugin(new Link());
+    PluginRegistry.addPlugin(new List());
+    PluginRegistry.addPlugin(new Numeric());
+    PluginRegistry.addPlugin(new Paragraph());
+    PluginRegistry.addPlugin(new Phone());
+    PluginRegistry.addPlugin(new Progress());
+    PluginRegistry.addPlugin(new RadioButton());
+    PluginRegistry.addPlugin(new Raster());
+    PluginRegistry.addPlugin(new Rectangle());
+    PluginRegistry.addPlugin(new Shape());
+    PluginRegistry.addPlugin(new Slider());
+    PluginRegistry.addPlugin(new Tablet());
+    PluginRegistry.addPlugin(new Tabs());
+    PluginRegistry.addPlugin(new TextArea());
+    PluginRegistry.addPlugin(new TextInput());
+    PluginRegistry.addPlugin(new Toggle());
+    PluginRegistry.addPlugin(new VerticalLine());
+    PluginRegistry.addPlugin(new VerticalScrollbar());
+    PluginRegistry.addPlugin(new Window());
+    PluginRegistry.addPlugin(new Comment());
 }

@@ -8,29 +8,23 @@
 import { Color, LoadedImage, Rect2, Vec2 } from '@app/core/utils';
 
 export { Color, Rect2, Vec2 } from '@app/core/utils';
-
 export type Appearance = { [key: string]: any };
-export type CreatedShape = { renderer: string; size?: { x: number; y: number }; appearance?: Appearance };
-export type ShapeSourceIcon = { type: 'Icon';  text: string; fontFamily: string };
-export type ShapeSourceImage = { type: 'Image';  image: LoadedImage };
-export type ShapeSourceText = { type: 'Text';  text: string };
-export type ShapeSourceUrl = { type: 'Url'; url: string };
-export type ShapeSource = ShapeSourceIcon | ShapeSourceImage | ShapeSourceText | ShapeSourceUrl;
 export type Configurable = any;
+export type CreatedShape = { renderer: string; size?: { x: number; y: number }; appearance?: Appearance };
+export type RenderContext = { shape: Shape; renderer2: ShapeRenderer; rect: Rect2 };
 export type RendererColor = string | number | Color | Shape;
 export type RendererElement = any;
 export type RendererOpacity = number | Shape;
 export type RendererText = TextConfig | Shape;
 export type RendererWidth = number | Shape;
+export type ShapeSource = ShapeSourceIcon | ShapeSourceImage | ShapeSourceText | ShapeSourceUrl;
+export type ShapeSourceIcon = { type: 'Icon';  text: string; fontFamily: string };
+export type ShapeSourceImage = { type: 'Image';  image: LoadedImage };
+export type ShapeSourceText = { type: 'Text';  text: string };
+export type ShapeSourceUrl = { type: 'Url'; url: string };
 export type Size = { x: number; y: number };
 export type TextConfig = { text: string; fontSize?: number; fontFamily?: string; alignment?: string };
 export type TextDecoration = 'underline' | 'none';
-
-export interface RenderContext {
-    readonly shape: Shape;
-    readonly renderer2: ShapeRenderer2;
-    readonly rect: Rect2;
-}
 
 export interface ShapePlugin {
     identifier(): string;
@@ -75,9 +69,9 @@ export interface ShapeProperties {
 }
 
 export type ShapePropertiesFunc = (properties: ShapeProperties) => void;
-export type ShapeFactoryFunc = (factory: ShapeFactory) => void;
+export type ShapeRendererFunc = (factory: ShapeRenderer) => void;
 
-export interface ShapeFactory {
+export interface ShapeRenderer {
     ellipse(strokeWidth: RendererWidth, bounds: Rect2, properties?: ShapePropertiesFunc): RendererElement;
 
     rectangle(strokeWidth: RendererWidth, radius: number, bounds: Rect2, properties?: ShapePropertiesFunc): RendererElement;
@@ -100,15 +94,9 @@ export interface ShapeFactory {
 
     getOuterBounds(strokeWidth: RendererWidth, bounds: Rect2): Rect2;
 
-    group(items: ShapeFactoryFunc, clip?: ShapeFactoryFunc, properties?: ShapePropertiesFunc): RendererElement;
-}
-
-export interface ShapeRenderer2 extends ShapeFactory {
-    getBounds(element: RendererElement): Rect2;
-
-    getLocalBounds(element: RendererElement): Rect2;
-
     getTextWidth(text: string, fontSize: number, fontFamily: string): number;
+
+    group(items: ShapeRendererFunc, clip?: ShapeRendererFunc, properties?: ShapePropertiesFunc): RendererElement;
 }
 
 export interface Shape {
