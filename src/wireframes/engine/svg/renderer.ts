@@ -12,7 +12,7 @@ import { marked } from 'marked';
 import { Rect } from 'react-measure';
 import { escapeHTML, Rect2, TextMeasurer, Types } from '@app/core/utils';
 import { RendererColor, RendererElement, RendererOpacity, RendererText, RendererWidth, Shape, ShapeProperties, ShapePropertiesFunc, ShapeRenderer, ShapeRendererFunc, TextConfig, TextDecoration } from '@app/wireframes/interface';
-import { SVGHelper } from './utils';
+import { SvgHelper } from './utils';
 
 export class SvgRenderer implements ShapeRenderer {
     private container: svg.G = null!;
@@ -72,7 +72,7 @@ export class SvgRenderer implements ShapeRenderer {
         return this.new('path', () => new svg.Path(), p => {
             p.setBackgroundColor('transparent');
             p.setStrokeWidth(actualStroke);
-            p.setPath(SVGHelper.roundedRectangleLeft(actualBounds, radius));
+            p.setPath(SvgHelper.roundedRectangleLeft(actualBounds, radius));
         }, properties);
     }
 
@@ -83,7 +83,7 @@ export class SvgRenderer implements ShapeRenderer {
         return this.new('path', () => new svg.Path(), p => {
             p.setBackgroundColor('transparent');
             p.setStrokeWidth(actualStroke);
-            p.setPath(SVGHelper.roundedRectangleRight(actualBounds, radius));
+            p.setPath(SvgHelper.roundedRectangleRight(actualBounds, radius));
         }, properties);
     }
 
@@ -94,7 +94,7 @@ export class SvgRenderer implements ShapeRenderer {
         return this.new('path', () => new svg.Path(), p => {
             p.setBackgroundColor('transparent');
             p.setStrokeWidth(actualStroke);
-            p.setPath(SVGHelper.roundedRectangleTop(actualBounds, radius));
+            p.setPath(SvgHelper.roundedRectangleTop(actualBounds, radius));
         }, properties);
     }
 
@@ -105,7 +105,7 @@ export class SvgRenderer implements ShapeRenderer {
         return this.new('path', () => new svg.Path(), p => {
             p.setBackgroundColor('transparent');
             p.setStrokeWidth(actualStroke);
-            p.setPath(SVGHelper.roundedRectangleBottom(actualBounds, radius));
+            p.setPath(SvgHelper.roundedRectangleBottom(actualBounds, radius));
         }, properties);
     }
 
@@ -120,7 +120,7 @@ export class SvgRenderer implements ShapeRenderer {
     }
 
     public text(config: RendererText, bounds: Rect2, properties?: ShapePropertiesFunc, allowMarkdown?: boolean) {
-        return this.new('foreignObject', () => SVGHelper.createText(), p => {
+        return this.new('foreignObject', () => SvgHelper.createText(), p => {
             p.setBackgroundColor('transparent');
             p.setText(config?.text, allowMarkdown);
             p.setFontSize(config);
@@ -132,7 +132,7 @@ export class SvgRenderer implements ShapeRenderer {
     }
 
     public textMultiline(config: RendererText, bounds: Rect2, properties?: ShapePropertiesFunc, allowMarkdown?: boolean) {
-        return this.new('foreignObject', () => SVGHelper.createText(), p => {
+        return this.new('foreignObject', () => SvgHelper.createText(), p => {
             p.setBackgroundColor('transparent');
             p.setText(config?.text, allowMarkdown);
             p.setFontSize(config);
@@ -304,38 +304,38 @@ const PROPERTIES: ReadonlyArray<keyof PropertySet> = [
 class Properties implements ShapeProperties {
     private static readonly SETTERS: Record<keyof PropertySet, (value: any, element: svg.Element) => void> = {
         'color': (value, element) => {
-            SVGHelper.fastSetAttribute(element.node, 'color', value);
+            SvgHelper.fastSetAttribute(element.node, 'color', value);
         },
         'fill': (value, element) => {
-            SVGHelper.setAttribute(element.node, 'fill', value);
+            SvgHelper.setAttribute(element.node, 'fill', value);
         },
         'opacity': (value, element) => {
-            SVGHelper.setAttribute(element.node, 'opacity', value);
+            SvgHelper.setAttribute(element.node, 'opacity', value);
         },
         'preserve-aspect-ratio': (value, element) => {
-            SVGHelper.setAttribute(element.node, 'preserveAspectRatio', value ? 'xMidYMid' : 'none');
+            SvgHelper.setAttribute(element.node, 'preserveAspectRatio', value ? 'xMidYMid' : 'none');
         },
         'stroke': (value, element) => {
-            SVGHelper.setAttribute(element.node, 'stroke', value);
+            SvgHelper.setAttribute(element.node, 'stroke', value);
         },
         'stroke-cap': (value, element) => {
-            SVGHelper.setAttribute(element.node, 'stroke-linecap', value);
+            SvgHelper.setAttribute(element.node, 'stroke-linecap', value);
         },
         'stroke-line-join': (value, element) => {
-            SVGHelper.setAttribute(element.node, 'stroke-linejoin', value);
+            SvgHelper.setAttribute(element.node, 'stroke-linejoin', value);
         },
         'stroke-width': (value, element) => {
-            SVGHelper.setAttribute(element.node, 'stroke-width', value);
+            SvgHelper.setAttribute(element.node, 'stroke-width', value);
         },
         'image': (value, element) => {
-            SVGHelper.setAttribute(element.node, 'href', value);
+            SvgHelper.setAttribute(element.node, 'href', value);
         },
         'path': (value, element) => {
-            SVGHelper.setAttribute(element.node, 'd', value);
+            SvgHelper.setAttribute(element.node, 'd', value);
         },
         'radius': (value, element) => {
-            SVGHelper.setAttribute(element.node, 'rx', value);
-            SVGHelper.setAttribute(element.node, 'ry', value);
+            SvgHelper.setAttribute(element.node, 'rx', value);
+            SvgHelper.setAttribute(element.node, 'ry', value);
         },
         'font-family': (value, element) => {
             const div = element.node.children[0] as HTMLDivElement;
@@ -399,7 +399,7 @@ class Properties implements ShapeProperties {
             }
         },
         'transform': (value, element) => {
-            SVGHelper.transformByRect(element, value, false);
+            SvgHelper.transformByRect(element, value, false);
         },
     };
 
@@ -556,25 +556,25 @@ function getBounds(bounds: Rect2, strokeWidth: number) {
 
 function getBackgroundColor(value: RendererColor | null | undefined) {
     if (isShape(value)) {
-        return SVGHelper.toColor(value.backgroundColor);
+        return SvgHelper.toColor(value.backgroundColor);
     } else {
-        return SVGHelper.toColor(value);
+        return SvgHelper.toColor(value);
     }
 }
 
 function getForegroundColor(value: RendererColor | null | undefined) {
     if (isShape(value)) {
-        return SVGHelper.toColor(value.foregroundColor);
+        return SvgHelper.toColor(value.foregroundColor);
     } else {
-        return SVGHelper.toColor(value);
+        return SvgHelper.toColor(value);
     }
 }
 
 function getStrokeColor(value: RendererColor | null | undefined) {
     if (isShape(value)) {
-        return SVGHelper.toColor(value.strokeColor);
+        return SvgHelper.toColor(value.strokeColor);
     } else {
-        return SVGHelper.toColor(value);
+        return SvgHelper.toColor(value);
     }
 }
 

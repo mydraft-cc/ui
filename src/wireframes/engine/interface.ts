@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { Rect2, Vec2 } from '@app/core';
+import { Vec2 } from '@app/core';
 import { ShapePlugin } from '@app/wireframes/interface';
 import { DiagramItem } from './../model';
 
@@ -34,9 +34,6 @@ export interface Engine {
 
     // Unsubscribe from all events.
     unsubscribe(listener: Listener): void;
-
-    // Calculates the dimensions of an object.
-    getLocalBounds(object: Object): Rect2;
 }
 
 export interface Listener {
@@ -75,11 +72,15 @@ export interface EngineLayer {
 
     // Hides the layer.
     hide(): void;
+
+    // Makes a hit and returns matching elements.
+    hitTest(x: number, y: number): EngineObject[];
 }
 
-export interface EngineRect extends EngineObject {
+export interface EngineRectOrEllipse extends EngineObject {
     // Set the stroke width of the object.
     strokeWidth(width: number): void;
+
     // Set the stroke color of the object.
     strokeColor(color: string): void;
 
@@ -88,6 +89,12 @@ export interface EngineRect extends EngineObject {
 
     // Renders with position, size and rotation.
     plot(x: number, y: number, w: number, h: number, rotation?: number, rx?: number, ry?: number): void;
+}
+
+export interface EngineRect extends EngineRectOrEllipse {
+}
+
+export interface EngineEllipse extends EngineRectOrEllipse {
 }
 
 export interface EngineLine extends EngineObject {
@@ -109,7 +116,6 @@ export interface EngineText extends EngineObject {
     fontSize(value: string): void;
 
     // Sets the font family.
-
     fontFamily(value: string): void;
 
     // Sets the text content.

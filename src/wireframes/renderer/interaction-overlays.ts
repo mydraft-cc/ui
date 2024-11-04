@@ -116,7 +116,7 @@ export class InteractionOverlays {
         let label = this.labels[this.indexLabels];
 
         // Reuse the rect and text if it alreadx exists to avoid creating unnecessary DOM elements.
-        if (!text) {
+        if (!label) {
             label = this.layer.text();
             this.labels.push(label);
         } else {
@@ -150,11 +150,12 @@ export class InteractionOverlays {
             y -= 0.5 * h;
         }
 
-        label.fontSize(sizeInPx(fontSize / this.zoom));
+        label.color('white');
+        label.fill(color);
         label.fontFamily('monospace');
-        label.text(text);
-        label.color(color);
+        label.fontSize(sizeInPx(fontSize / this.zoom));
         label.plot(x, y, w, h, padding);
+        label.text(text);
 
         // Increment by one because we create one group per label.
         this.indexLabels += 1;

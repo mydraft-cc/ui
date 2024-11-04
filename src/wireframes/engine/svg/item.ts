@@ -10,7 +10,7 @@ import { Rect2 } from '@app/core';
 import { ShapePlugin } from '@app/wireframes/interface';
 import { DiagramItem } from '@app/wireframes/model';
 import { SvgRenderer } from './renderer';
-import { linkToSvg, SVGHelper } from './utils';
+import { linkToSvg, SvgHelper } from './utils';
 
 export class SvgItem {
     private readonly container: svg.G;
@@ -51,16 +51,18 @@ export class SvgItem {
     }
 
     public preview(previewShape: DiagramItem | null) {
-        if (this.previewShape !== previewShape) {
-            const shapeToRender = previewShape || this.currentShape;
-
-            if (!shapeToRender) {
-                return;
-            }
-
-            this.renderCore(shapeToRender);
-            this.previewShape = previewShape;
+        if (this.previewShape === previewShape) {
+            return;
         }
+
+        const shapeToRender = previewShape || this.currentShape;
+
+        if (!shapeToRender) {
+            return;
+        }
+
+        this.renderCore(shapeToRender);
+        this.previewShape = previewShape;
     }
 
     public invalidate(shape: DiagramItem) {
@@ -100,7 +102,7 @@ export class SvgItem {
     private arrangeContainer(item: DiagramItem) {
         const to = item.transform;
 
-        SVGHelper.transformBy(this.container, {
+        SvgHelper.transformBy(this.container, {
             x: to.position.x - 0.5 * to.size.x,
             y: to.position.y - 0.5 * to.size.y,
             w: to.size.x,
@@ -124,7 +126,7 @@ export class SvgItem {
             selectionRect = selectionRect.inflate(diffW * 0.5, diffH * 0.5);
         }
 
-        SVGHelper.transformByRect(this.selector, selectionRect);
+        SvgHelper.transformByRect(this.selector, selectionRect);
     }
 }
 

@@ -19,6 +19,8 @@ const RESIZE_MINIMUM = 1;
 export type SnapMode = 'None' | 'Grid' | 'Shapes';
 export type SnapSide = 'Left' | 'Right' | 'Top' | 'Bottom';
 
+const EMPTY_SET = new Set();
+
 export type SnapResult = { 
     snapX?: SnapLine;
     snapY?: SnapLine;
@@ -97,7 +99,7 @@ export class SnapManager {
         }
     }
 
-    public snapResizing(transform: Transform, delta: Vec2, snapMode: SnapMode, xMode = 1, yMode = 1, ignoreList: Record<string, any> = {}): SnapResult {
+    public snapResizing(transform: Transform, delta: Vec2, snapMode: SnapMode, xMode = 1, yMode = 1, ignoreList?: Set<string>): SnapResult {
         const result: SnapResult = { delta };
 
         let dw = delta.x;
@@ -200,7 +202,7 @@ export class SnapManager {
         return result;
     }
 
-    public snapMoving(transform: Transform, delta: Vec2, snapMode: SnapMode, ignoreList: Record<string, any> = {}): SnapResult {
+    public snapMoving(transform: Transform, delta: Vec2, snapMode: SnapMode, ignoreList?: Set<string>): SnapResult {
         const result: SnapResult = { delta };
 
         const aabb = transform.aabb;
@@ -307,7 +309,7 @@ export class SnapManager {
         return result;
     }
 
-    public getSnapLines(ignoreList: Record<string, any>) {
+    public getSnapLines(ignoreList?: Set<string>) {
         if (this.xLines && this.yLines && this.grid) {
             return { xLines: this.xLines, yLines: this.yLines, grid: this.grid };
         }
@@ -324,8 +326,10 @@ export class SnapManager {
             return { xLines, yLines, grid: grid };
         }
 
+        const ignore = ignoreList || EMPTY_SET;
+
         // Compute the bounding boxes once.
-        const bounds = Array.from(currentDiagram.items.values).filter(x => !ignoreList[x.id]).map(x => x.bounds(currentDiagram).aabb);
+        const bounds = Array.from(currentDiagram.items.values).filter(x => !ignore.has(x.id)).map(x => x.bounds(currentDiagram).aabb);
 
         const grid = this.grid = computeGrid(bounds);
 
@@ -388,7 +392,7 @@ export class SnapManager {
         return { xLines, yLines, grid };
     }
 
-    public getDebugLines(ignoreList: Record<string, any> = {}) {
+    public getDebugLines(ignoreList?: Set<string>) {
         const { xLines, yLines } = this.getSnapLines(ignoreList);
 
         if (this.grid) {

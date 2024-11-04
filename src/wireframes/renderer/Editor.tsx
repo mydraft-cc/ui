@@ -105,9 +105,9 @@ export const Editor = React.memo((props: EditorProps) => {
 
         renderMasterLayer.current = engine.layer('masterLayer');
         renderMainLayer.current = engine.layer('parentLayer');
+        overlayLayer.current = engine.layer('overlaysLayer');
         adornerSelectLayer.current = engine.layer('selectLayer');
         adornerTransformLayer.current = engine.layer('transformLayer');
-        overlayLayer.current = engine.layer('overlaysLayer');
 
         engine.setClickLayer(renderMainLayer.current);
 
@@ -207,8 +207,7 @@ export const Editor = React.memo((props: EditorProps) => {
                             previewStream={renderPreview.current}
                             selectedDiagram={diagram}
                             selectionSet={selectionSet}
-                            viewSize={viewSize}
-                            zoom={viewBox.zoom}
+                            viewBox={viewBox}
                         />
                     }
 

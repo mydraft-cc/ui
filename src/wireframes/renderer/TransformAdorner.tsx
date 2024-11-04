@@ -109,7 +109,6 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
 
     private calculateInitializeTransform() {
         let transform: Transform;
-
         if (this.props.selectionSet.selectedItems.length === 0) {
             transform = Transform.ZERO;
         } else if (this.props.selectionSet.selectedItems.length === 1) {
@@ -184,7 +183,6 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
         }
 
         let counter = 1;
-
         this.startManipulation(null!, this.transform);
 
         const run = () => {
@@ -225,7 +223,6 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
             }
 
             this.rotation = this.transform.rotation;
-
             this.props.onTransformItems(
                 this.props.selectedDiagram,
                 this.props.selectionSet.selectedItems,
@@ -250,13 +247,11 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
         }
 
         let hitItem = this.hitTest(event.position);
-
         if (!hitItem) {
             next(event);
         }
 
         hitItem = this.hitTest(event.position);
-
         if (!hitItem) {
             return;
         }
@@ -275,21 +270,7 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
     }
 
     private hitTest(point: Vec2) {
-        if (!this.transform) {
-            return null;
-        }
-
-        const unrotated = Vec2.rotated(point, this.transform.position, this.transform.rotation.negate());
-
-        for (const element of this.allElements) {
-            const box = this.props.engine.getLocalBounds(element);
-
-            if (box.contains(unrotated)) {
-                return element;
-            }
-        }
-
-        return null;
+        return this.props.layer.hitTest(point.x, point.y)[0];
     }
 
     public onMouseDrag(event: HitEvent, next: (event: HitEvent) => void) {
@@ -302,7 +283,6 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
         this.props.overlayManager.reset();
 
         const delta = event.position.sub(this.startPosition);
-
         // If the mouse has not been moved we can just stop here.
         if (delta.lengtSquared === 0) {
             return;
@@ -310,7 +290,6 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
 
         // We have moved the mouse and therefore also updated at least one shape.
         this.manipulated = true;
-
         if (this.manipulationMode === Mode.Move) {
             this.move(delta, getSnapMode(event.event));
         } else if (this.manipulationMode === Mode.Rotate) {
@@ -326,7 +305,7 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
     private renderPreview() {
         const items: Record<string, DiagramItem> = {};
 
-        for (const item of this.props.selectionSet.deepEditableItems) {
+        for (const item of this.props.selectionSet.editableItems) {
             items[item.id] = item.transformByBounds(this.startTransform, this.transform);
         }
 
@@ -335,7 +314,7 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
     }
 
     private move(delta: Vec2, snapMode: SnapMode, showOverlay = true) {
-        const snapResult = this.props.snapManager.snapMoving(this.startTransform, delta, snapMode, this.props.selectionSet.deepEditableItems);
+        const snapResult = this.props.snapManager.snapMoving(this.startTransform, delta, snapMode, this.props.selectionSet.editableIds);
 
         this.transform = this.startTransform.moveBy(snapResult.delta);
 
@@ -401,14 +380,14 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
             this.props.snapManager.snapResizing(this.startTransform, delta, snapMode,
                 this.manipulationOffset.x,
                 this.manipulationOffset.y,
-                this.props.selectionSet);
+                this.props.selectionSet.editableIds);
 
         return snapResult;
     }
 
     private debug() {
         if (DEBUG_SIDES || DEBUG_DISTANCES) {
-            const { xLines, yLines } = this.props.snapManager.getDebugLines(this.startTransform);
+            const { xLines, yLines } = this.props.snapManager.getDebugLines(this.props.selectionSet.editableIds);
     
             for (const line of xLines) {
                 if ((line.positions && DEBUG_DISTANCES) || DEBUG_SIDES) {
@@ -458,7 +437,7 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
 
             this.props.onTransformItems(
                 this.props.selectedDiagram,
-                this.props.selectionSet.deepEditableItems,
+                this.props.selectionSet.editableItems,
                 this.startTransform,
                 this.transform);
         } finally {

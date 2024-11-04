@@ -8,20 +8,17 @@
 import * as svg from '@svgdotjs/svg.js';
 import { EngineRect } from '../interface';
 import { SvgObject } from './object';
-import { linkToSvg, SVGHelper } from './utils';
+import { linkToSvg, SvgHelper } from './utils';
 
-export class SvgRect extends SvgObject implements EngineRect {
-    private readonly shape: svg.Rect;
-
+export class SvgRectOrEllipse extends SvgObject implements EngineRect {
     protected get root() {
         return this.shape;
     }
 
-    constructor(container: svg.Container) {
+    constructor(
+        private readonly shape: svg.Shape,
+    ) {
         super();
-        
-        this.shape = container.rect();
-
         linkToSvg(this, this.shape);
     }
 
@@ -38,7 +35,7 @@ export class SvgRect extends SvgObject implements EngineRect {
     }
 
     public plot(x: number, y: number, w: number, h: number, rotation?: number, rx?: number, ry?: number): void {
-        SVGHelper.transformBy(this.shape, {
+        SvgHelper.transformBy(this.shape, {
             x,
             y,
             w,
@@ -46,6 +43,6 @@ export class SvgRect extends SvgObject implements EngineRect {
             rotation,
             rx,
             ry,
-        });
+        }, false, true);
     }
 }

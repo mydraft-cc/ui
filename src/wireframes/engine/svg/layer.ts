@@ -7,13 +7,13 @@
 
 import * as svg from '@svgdotjs/svg.js';
 import { ShapePlugin } from '@app/wireframes/interface';
-import { EngineItem, EngineLayer, EngineLine, EngineRect, EngineText } from './../interface';
+import { EngineItem, EngineLayer, EngineLine, EngineObject, EngineRect, EngineText } from './../interface';
 import { SvgItem } from './item';
 import { SvgLine } from './line';
-import { SvgRect } from './rect';
+import { SvgRectOrEllipse } from './rect-or-ellipse';
 import { SvgRenderer } from './renderer';
 import { SvgText } from './text';
-import { linkToSvg } from './utils';
+import { getSource, linkToSvg } from './utils';
 
 export class SvgLayer implements EngineLayer {
     constructor(
@@ -24,15 +24,15 @@ export class SvgLayer implements EngineLayer {
     }
 
     public ellipse(): EngineRect {
-        return new SvgRect(this.container);
+        return new SvgRectOrEllipse(this.container.ellipse());
     }
 
     public line(): EngineLine {
-        return new SvgLine(this.container);
+        return new SvgLine(this.container.line());
     }
 
     public rect(): EngineRect {        
-        return new SvgRect(this.container);
+        return new SvgRectOrEllipse(this.container.rect());
     }
     
     public text(): EngineText {        
@@ -53,5 +53,24 @@ export class SvgLayer implements EngineLayer {
 
     public remove(): void {
         this.container.remove();
+    }
+
+    public hitTest(x: number, y: number) {
+        const result: EngineObject[] = [];
+
+        const point = new svg.Point(x, y);
+        for (const element of this.container.children()) {
+            if (!element.visible()) {
+                continue;
+            }
+
+            const hitPoint = point.transform(element.matrix().inverseO());
+
+            if (element.inside(hitPoint.x, hitPoint.y)) {
+                result.push(getSource(element.node));
+            }
+        }
+
+        return result;
     }
 }

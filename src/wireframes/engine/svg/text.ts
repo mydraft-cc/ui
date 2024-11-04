@@ -8,7 +8,7 @@
 import * as svg from '@svgdotjs/svg.js';
 import { EngineText } from '../interface';
 import { SvgObject } from './object';
-import { linkToSvg, SVGHelper } from './utils';
+import { linkToSvg, SvgHelper } from './utils';
 
 export class SvgText extends SvgObject implements EngineText {
     private readonly container: svg.Container;
@@ -27,14 +27,14 @@ export class SvgText extends SvgObject implements EngineText {
 
         this.container = layer.group();
         this.background = this.container.rect();
-        this.textElement = SVGHelper.createText(undefined, undefined, 'center', 'middle').addTo(this.container);
+        this.textElement = SvgHelper.createText(undefined, undefined, 'center', 'middle').addTo(this.container);
         this.textInner = this.textElement.node.children[0] as HTMLDivElement;
 
         linkToSvg(this, this.container);
     }
 
     public color(value: string) {
-        this.textElement.attr('color', value);
+        this.textInner.style.color = value;
     }
 
     public fill(value: string) {
@@ -54,19 +54,19 @@ export class SvgText extends SvgObject implements EngineText {
     }
 
     public plot(x: number, y: number, w: number, h: number, padding: number): void {
-        SVGHelper.transformBy(this.container, {
+        SvgHelper.transformBy(this.container, {
             x,
             y,
         });
 
-        SVGHelper.transformBy(this.textElement, {
-            x: x + padding,
-            y: y + padding,
+        SvgHelper.transformBy(this.textElement, {
+            x: padding,
+            y: padding,
             w: w - 2 * padding,
             h: h - 2 * padding,
         });
 
-        SVGHelper.transformBy(this.background, {
+        SvgHelper.transformBy(this.background, {
             w: w,
             h: h,
         });

@@ -6,7 +6,7 @@
 */
 
 import * as svg from '@svgdotjs/svg.js';
-import { Color, Rect2, sizeInPx, Types, Vec2 } from '@app/core';
+import { Color, Rect2, sizeInPx, Types } from '@app/core';
 
 export function linkToSvg(source: any, element: svg.Element) {
     // Create a reference back to the actual object.
@@ -19,7 +19,7 @@ export function getElement(source: any) {
     return (source as any)['element'] as svg.Element;
 }
 
-export function getSource(element: svg.Element) {
+export function getSource(element: Element) {
     return (element as any)['source'] as any;
 }
 
@@ -36,7 +36,7 @@ export interface MatrixTransform {
     h?: number;
 }
 
-export module SVGHelper {    
+export module SvgHelper {    
     export function roundedRectangleRight(rectangle: Rect2, radius = 10) {
         const rad = Math.min(radius, rectangle.width * 0.5, rectangle.height * 0.5);
 
@@ -104,8 +104,8 @@ export module SVGHelper {
         return transformBy(element, {
             x: rect.x,
             y: rect.y,
-            w: rect.width,
-            h: rect.height,
+            w: rect.w,
+            h: rect.h,
         }, adjust, move);
     }
 
@@ -126,6 +126,27 @@ export module SVGHelper {
         if (adjust && !t.rotation) {
             x = Math.round(x);
             y = Math.round(y);
+        }
+
+        if (w > 0 && h > 0) {
+            if (element.node.nodeName === 'foreignObject') {
+                const text = <HTMLDivElement>element.node.children[0];
+
+                if (text.style.verticalAlign === 'middle') {
+                    text.style.lineHeight = sizeInPx(h);
+                } else {
+                    text.style.lineHeight = '1.5';
+                }
+
+                text.style.height = sizeInPx(h);
+            }
+
+            if (element.node.nodeName === 'ellipse') {
+                fastSetAttribute(element.node, 'rx', w * 0.5);
+                fastSetAttribute(element.node, 'ry', h * 0.5);
+            } else {
+                setSize(element, w, h);
+            }
         }
 
         let matrix = new svg.Matrix();
@@ -149,38 +170,7 @@ export module SVGHelper {
             element.matrix(matrix);
         }
 
-        if (w > 0 && h > 0) {
-            if (element.node.nodeName === 'foreignObject') {
-                const text = <HTMLDivElement>element.node.children[0];
-
-                if (text.style.verticalAlign === 'middle') {
-                    text.style.lineHeight = sizeInPx(h);
-                } else {
-                    text.style.lineHeight = '1.5';
-                }
-
-                text.style.height = sizeInPx(h);
-            }
-
-            if (element.node.nodeName === 'ellipse') {
-                fastSetAttribute(element.node, 'cx', w * 0.5);
-                fastSetAttribute(element.node, 'cy', h * 0.5);
-                fastSetAttribute(element.node, 'rx', w * 0.5);
-                fastSetAttribute(element.node, 'ry', h * 0.5);
-            } else {
-                setSize(element, w, h);
-            }
-        }
-
         return element;
-    }
-
-    export function point2Vec(point: svg.Point): Vec2 {
-        return new Vec2(point.x, point.y);
-    }
-
-    export function box2Rect(box: svg.Box): Rect2 {
-        return new Rect2(box.x, box.y, box.w, box.h);
     }
 
     export function setPosition(element: svg.Element, x: number, y: number) {

@@ -7,19 +7,21 @@
 
 import * as svg from '@svgdotjs/svg.js';
 import * as React from 'react';
-import { ViewBox } from '@app/core';
-import { Engine } from '../../interface';
+import { Vec2, ViewBox } from '@app/core';
 import { SvgEngine } from '../engine';
 
 export interface SvgCanvasProps {
     // The optional viewbox.
     viewBox: ViewBox;
+    
+    // The size.
+    size?: Vec2;
 
     // The class name.
     className?: string;
 
     // The callback when the canvas has been initialized.
-    onInit: (engine: Engine) => any;
+    onInit: (engine: SvgEngine) => any;
 }
 
 export const SvgCanvasView = (props: SvgCanvasProps) => {
@@ -48,7 +50,11 @@ export const SvgCanvasView = (props: SvgCanvasProps) => {
     }, [engine, onInit]);
 
     React.useEffect(() => {
-        engine?.viewBox(viewBox.minX, viewBox.minY, viewBox.maxX, viewBox.maxY);
+        if (!engine) {
+            return;
+        }
+
+        engine.viewBox(viewBox.minX, viewBox.minY, viewBox.maxX, viewBox.maxY);
     }, [engine, viewBox.minX, viewBox.minY, viewBox.maxX, viewBox.maxY]);
 
     return (

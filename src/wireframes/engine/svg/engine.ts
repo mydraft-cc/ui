@@ -6,13 +6,13 @@
 */
 
 import * as svg from '@svgdotjs/svg.js';
-import { MathHelper, Rect2, Types, Vec2 } from '@app/core';
+import { MathHelper, Types, Vec2 } from '@app/core';
 import { DiagramItem } from '@app/wireframes/model';
-import { Engine, EngineLayer, EngineObject, HitEvent, Listener } from '../interface';
+import { Engine, EngineLayer, HitEvent, Listener } from '../interface';
 import { SvgItem } from './item';
 import { SvgLayer } from './layer';
 import { SvgRenderer } from './renderer';
-import { getElement, getSource, SVGHelper } from './utils';
+import { getElement, getSource } from './utils';
 
 const NOOP_HANDLER: (value: any) => void = () => {};
 
@@ -41,7 +41,7 @@ export class SvgEngine implements Engine {
     private onBlur: Function = NOOP_HANDLER;
 
     constructor(
-        private readonly doc: svg.Svg,
+        public readonly doc: svg.Svg,
     ) {
         doc.mousemove((event: MouseEvent) => {
             this.handleMouseMove(event);
@@ -102,18 +102,6 @@ export class SvgEngine implements Engine {
 
     public layer(id: string): EngineLayer {
         return new SvgLayer(this.svgRenderer, this.doc.group().id(id));
-    }   
-    
-    public getLocalBounds(object: EngineObject): Rect2 {
-        const element = getElement(object);
-
-        if (!element.visible()) {
-            return Rect2.EMPTY;
-        }
-
-        const box: svg.Box = element.bbox();
-
-        return SVGHelper.box2Rect(box);
     }
 
     public subscribe(listener: Listener) {
@@ -201,17 +189,17 @@ export class SvgEngine implements Engine {
     }
 
     private handleMouseMove = (event: MouseEvent) => {
-        const element: any = event.target;
+        const cursor = findCursor(event.target);
 
-        if (element && element['cursor']) {
-            document.body.style.cursor = element['cursor'];
+        if (cursor?.cursor) {
+            document.body.style.cursor = cursor.cursor;
             return;
-        } 
+        }
         
-        if (element && Number.isFinite(element['cursorAngle'])) {
-            const rotation = element['cursorAngle'];
+        if (cursor?.angle) {
+            const rotation = cursor.angle;
 
-            const rotationBase = svg.adopt(element).transform().rotate;
+            const rotationBase = svg.adopt(cursor?.target).transform().rotate;
             const rotationTotal = MathHelper.toPositiveDegree((rotationBase || 0) + rotation);
 
             for (const config of ROTATION_CONFIG) {
@@ -228,4 +216,23 @@ export class SvgEngine implements Engine {
 
         document.body.style.cursor = 'default';
     };
+}
+
+function findCursor(element: any) {
+    while (element) {
+        const cursor = element['cursor'];
+
+        if (cursor) {
+            return { cursor };
+        }
+
+        const angle = element['cursorAngle'];
+        if (Number.isFinite(angle)) {
+            return { angle, target: element };
+        }
+
+        element = element.parentNode;
+    }
+
+    return null;
 }

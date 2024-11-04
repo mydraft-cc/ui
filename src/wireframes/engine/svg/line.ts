@@ -11,22 +11,19 @@ import { SvgObject } from './object';
 import { linkToSvg } from './utils';
 
 export class SvgLine extends SvgObject implements EngineLine {
-    private readonly shape: svg.Line;
-
     protected get root() {
         return this.shape;
     }
 
-    constructor(container: svg.Container) {
+    constructor(
+        private readonly shape: svg.Line,
+    ) {
         super();
-
-        this.shape = container.line();
-
         linkToSvg(this, this.shape);
     }
 
     public color(value: string): void {
-        this.shape.fill(value);
+        this.shape.stroke(value);
     }
 
     public plot(x1: number, y1: number, x2: number, y2: number, width: number): void {

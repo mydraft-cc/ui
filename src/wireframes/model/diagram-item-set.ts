@@ -11,7 +11,8 @@ import { DiagramItem } from './diagram-item';
 
 export class DiagramItemSet {
     private cachedSelectedItems?: ReadonlyArray<DiagramItem>;
-    private cachedDeepEditableItems?: ReadonlyArray<DiagramItem>;
+    private cachedEditableItems?: ReadonlyArray<DiagramItem>;
+    private cachedEditableId?: Set<string>;
 
     public static EMPTY = new DiagramItemSet(new Map(), new Map());
 
@@ -22,8 +23,12 @@ export class DiagramItemSet {
         return this.cachedSelectedItems ||= Array.from(this.selection.values()).filter(x => !x.isLocked);
     }
 
-    public get deepEditableItems() {
-        return this.cachedDeepEditableItems ||= Array.from(this.nested.values()).filter(x => !this.selection.has(x.id) || !x.isLocked);
+    public get editableItems() {
+        return this.cachedEditableItems ||= Array.from(this.nested.values()).filter(x => !this.selection.has(x.id) || !x.isLocked);
+    }
+
+    public get editableIds() {
+        return this.cachedEditableId ||= new Set(this.editableItems.map(x => x.id));
     }
 
     constructor(
