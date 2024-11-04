@@ -62,13 +62,13 @@ export function buildAppearance(builder: ActionReducerMapBuilder<EditorState>) {
                 const { key, value } = appearance;
 
                 return diagram.updateItems(itemIds, item => {
-                    const rendererInstance = PluginRegistry.get(item.renderer);
-
-                    if (!rendererInstance) {
+                    const plugin = PluginRegistry.get(item.renderer)?.plugin;
+                    
+                    if (!plugin) {
                         throw new Error(`Cannot find renderer for ${item.renderer}.`);
                     }
 
-                    if (force || !Types.isUndefined(rendererInstance.defaultAppearance()[key])) {
+                    if (force || !Types.isUndefined(plugin.defaultAppearance()[key])) {
                         return item.setAppearance(key, value);
                     }
 

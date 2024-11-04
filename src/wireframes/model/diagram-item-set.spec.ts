@@ -86,7 +86,7 @@ describe('Diagram Item Set', () => {
         const editable1 = set.editableIds;
         const editable2 = set.editableIds;
 
-        expect(editable1).toEqual([root1.id, groupId, child1.id, child2.id]);
+        expect(editable1).toEqual(new Set([root1.id, groupId, child1.id, child2.id]));
         expect(editable1).toBe(editable2);
     });
 });

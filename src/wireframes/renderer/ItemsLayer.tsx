@@ -90,13 +90,13 @@ export const ItemsLayer = React.memo((props: ItemsLayerProps) => {
         // Create missing shapes.
         for (const shape of allShapes) {
             if (!references[shape.id]) {
-                const rendererInstance = PluginRegistry.get(shape.renderer);
-
-                if (!rendererInstance) {
+                const plugin = PluginRegistry.get(shape.renderer)?.plugin;
+                
+                if (!plugin) {
                     throw new Error(`Cannot find renderer for ${shape.renderer}.`);
                 }
 
-                references[shape.id] = diagramLayer.item(rendererInstance.plugin);
+                references[shape.id] = diagramLayer.item(plugin);
             }
         }
 
