@@ -34,7 +34,7 @@ export const ItemsLayer = React.memo((props: ItemsLayerProps) => {
     } = props;
 
     const shapesRendered = React.useRef(onRender);
-    const shapeRefsById = React.useRef<{ [id: string]: EngineItem }>({});
+    const shapeRefsById = React.useRef<Record<string, ItemWithPreview>>({});
 
     const itemIds = diagram?.rootIds;
     const items = diagram?.items;
@@ -91,12 +91,12 @@ export const ItemsLayer = React.memo((props: ItemsLayerProps) => {
         for (const shape of allShapes) {
             if (!references[shape.id]) {
                 const plugin = PluginRegistry.get(shape.renderer)?.plugin;
-                
+
                 if (!plugin) {
                     throw new Error(`Cannot find renderer for ${shape.renderer}.`);
                 }
 
-                references[shape.id] = diagramLayer.item(plugin);
+                references[shape.id] = new ItemWithPreview(diagramLayer.item(plugin));
             }
         }
 
@@ -111,12 +111,12 @@ export const ItemsLayer = React.memo((props: ItemsLayerProps) => {
         // If the index of at least once shape has changed we have to remove them all to render them in the correct order.
         if (hasIdChanged) {
             for (const ref of Object.values(references)) {
-                ref.remove();
+                ref.detach();
             }
         }
 
         for (const shape of allShapes) {
-            references[shape.id].invalidate(shape);
+            references[shape.id].plot(shape);
         }
 
         if (shapesRendered.current) {
@@ -140,3 +140,44 @@ export const ItemsLayer = React.memo((props: ItemsLayerProps) => {
 
     return null;
 });
+
+class ItemWithPreview {
+    private shapePreview: DiagramItem | null = null;
+    private shapeStatic: DiagramItem | null = null;
+    private currentIndex = -1;
+
+    constructor(
+        private readonly engineItem: EngineItem,
+    ) {
+    }
+
+    public plot(shape: DiagramItem) {
+        this.shapeStatic = shape;
+        this.shapePreview = null;
+        this.render();
+    }
+
+    public preview(shape: DiagramItem | null) {
+        this.shapePreview = shape;
+        this.render();
+    }
+
+    public checkIndex(index: number) {
+        const result = this.currentIndex >= 0 && this.currentIndex !== index;
+
+        this.currentIndex = index;
+        return result;
+    }
+
+    public detach() {
+        this.engineItem.detach();
+    }
+    
+    public remove() {
+        this.engineItem.remove();
+    }
+
+    private render() {
+        this.engineItem.plot(this.shapePreview || this.shapeStatic);
+    }
+}

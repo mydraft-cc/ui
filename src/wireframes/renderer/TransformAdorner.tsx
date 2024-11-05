@@ -265,7 +265,7 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
             this.manipulationMode = Mode.Rotate;
         } else {
             this.manipulationMode = Mode.Resize;
-            this.manipulationOffset = hitItem.tag<Vec2>('offset');
+            this.manipulationOffset = (hitItem as any)['offset'] as Vec2;
         }
     }
 
@@ -492,7 +492,7 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
         const adornerHalfSize = adornerSize / 2;
 
         for (const resizeShape of this.resizeShapes) {
-            const offset = resizeShape.tag<Vec2>('offset');
+            const offset = (resizeShape as any)['offset'] as Vec2;
 
             const visible =
                 (offset.x === 0 || this.canResizeX) &&
@@ -505,40 +505,40 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
 
             resizeShape.show();
             resizeShape.strokeWidth(stroke);
-            resizeShape.plot(
-                transformPosition.x - adornerHalfSize + offset.x * (transformSize.x + adornerHalfSize), // x
-                transformPosition.y - adornerHalfSize + offset.y * (transformSize.y + adornerHalfSize), // y
-                adornerSize,            // w
-                adornerSize,            // w
-                transformRotation,      // r
-                transformPosition.x,    // ry
-                transformPosition.y,    // ry
-            );
+            resizeShape.plot({
+                x: transformPosition.x - adornerHalfSize + offset.x * (transformSize.x + adornerHalfSize),
+                y: transformPosition.y - adornerHalfSize + offset.y * (transformSize.y + adornerHalfSize),
+                w: adornerSize,
+                h: adornerSize,
+                rotation: transformRotation,
+                rx: transformPosition.x,
+                ry: transformPosition.y,
+            });
         }
 
         this.rotateShape.show();
         this.rotateShape.strokeWidth(stroke);
-        this.rotateShape.plot(
-            transformPosition.x - adornerHalfSize,                                                // x
-            transformPosition.y - adornerHalfSize - transformSize.y * 0.5 - 30 / this.props.zoom, // y
-            adornerSize,            // w
-            adornerSize,            // w
-            transformRotation,      // r
-            transformPosition.x,    // ry
-            transformPosition.y,    // ry
-        );
+        this.rotateShape.plot({
+            x: transformPosition.x - adornerHalfSize,
+            y: transformPosition.y - adornerHalfSize - transformSize.y * 0.5 - 30 / this.props.zoom,
+            w: adornerSize,
+            h: adornerSize,
+            rotation: transformRotation,
+            rx: transformPosition.x,
+            ry: transformPosition.y,
+        });
 
         this.moveShape.show();
         this.moveShape.strokeWidth(stroke);
-        this.moveShape.plot(
-            transformPosition.x - 0.5 * transformSize.x, // x
-            transformPosition.y - 0.5 * transformSize.y, // y
-            transformSize.x,            // w
-            transformSize.y,            // w
-            transformRotation,      // r
-            transformPosition.x,    // ry
-            transformPosition.y,    // ry
-        );
+        this.moveShape.plot({
+            x: transformPosition.x - 0.5 * transformSize.x,
+            y: transformPosition.y - 0.5 * transformSize.y,
+            w: transformSize.x,
+            h: transformSize.y,        
+            rotation: transformRotation,
+            rx: transformPosition.x,
+            ry: transformPosition.y,
+        });
     }
 
     private hideShapes() {
@@ -570,12 +570,13 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
 
         for (let i = 0; i < xs.length; i++) {
             const resizeShape = this.props.layer.rect();
-            resizeShape.cursorAngle(as[i]);
+            resizeShape.cursor(as[i]);
             resizeShape.fill(TRANSFORMER_FILL_COLOR);
             resizeShape.strokeColor(TRANSFORMER_STROKE_COLOR);
             resizeShape.strokeWidth(1);
-            resizeShape.tag('offset', new Vec2(xs[i], ys[i]));
             this.resizeShapes.push(resizeShape);
+
+            (resizeShape as any)['offset'] = new Vec2(xs[i], ys[i]);
         }
     }
 

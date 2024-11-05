@@ -54,16 +54,16 @@ const HitTest = () => {
         const layer = engine.layer('layer1');
 
         const rect1 = layer.rect();
+        rect1.fill('blue');
         rect1.strokeColor('red');
         rect1.strokeWidth(2);
-        rect1.fill('blue');
-        rect1.plot(100, 150, 300, 200, 45);
+        rect1.plot({ x: 100, y: 150, w: 300, h: 200, rotation: 45 });
 
         const rect2 = layer.rect();
+        rect2.fill('yellow');
         rect2.strokeColor('green');
         rect2.strokeWidth(2);
-        rect2.fill('yellow');
-        rect2.plot(600, 150, 300, 200);
+        rect2.plot({ x: 600, y: 150, w: 300, h: 200 });
 
         const listener: Listener = {
             onMouseMove: (event) => {
@@ -106,10 +106,10 @@ export const Rect = () => {
                 const layer = engine.layer('layer1');
 
                 const rect = layer.rect();
+                rect.fill('blue');
                 rect.strokeColor('red');
                 rect.strokeWidth(2);
-                rect.fill('blue');
-                rect.plot(100, 150, 300, 200);
+                rect.plot({ x: 100, y: 150, w: 300, h: 200 });
             }}
         />
     );
@@ -122,10 +122,10 @@ export const Ellipse = () => {
                 const layer = engine.layer('layer1');
 
                 const ellipse = layer.ellipse();
+                ellipse.fill('blue');
                 ellipse.strokeColor('red');
                 ellipse.strokeWidth(2);
-                ellipse.fill('blue');
-                ellipse.plot(100, 150, 300, 200);
+                ellipse.plot({ x: 100, y: 150, w: 300, h: 200 });
             }}
         />
     );
@@ -139,15 +139,15 @@ export const Line1 = () => {
 
                 const line1 = layer.line();
                 line1.color('red');
-                line1.plot(100, 150, 200, 250, 1);
+                line1.plot({ x1: 100, y1: 150, x2: 200, y2: 250, width: 1 });
 
                 const line2 = layer.line();
                 line2.color('blue');
-                line2.plot(140, 150, 240, 250, 2);
+                line1.plot({ x1: 140, y1: 150, x2: 240, y2: 250, width: 1 });
 
                 const line3 = layer.line();
                 line3.color('green');
-                line3.plot(180, 150, 280, 250, 4);
+                line1.plot({ x1: 180, y1: 150, x2: 280, y2: 250, width: 1 });
             }}
         />
     );
@@ -161,19 +161,19 @@ export const Text = () => {
 
                 const text1 = layer.text();
                 text1.color('white');
+                text1.fill('black');
                 text1.fontFamily('inherit');
                 text1.fontSize('16px');
-                text1.fill('black');
                 text1.text('Hello SVG');
-                text1.plot(50, 100, 200, 60, 20);
+                text1.plot({ x: 50, y: 100, w: 200, h: 60, padding: 20 });
 
                 const text2 = layer.text();
                 text2.color('white');
+                text2.fill('red');
                 text2.fontFamily('inherit');
                 text2.fontSize('16px');
-                text2.fill('red');
                 text2.text('Hello SVG');
-                text2.plot(50, 200, 200, 100, 20);
+                text1.plot({ x: 50, y: 200, w: 200, h: 60, padding: 20 });
             }}
         />
     );
@@ -187,21 +187,21 @@ export const Cursors = () => {
 
                 const move = layer.text();
                 move.color('white');
+                move.cursor('move');
+                move.fill('black');
                 move.fontFamily('inherit');
                 move.fontSize('16px');
-                move.fill('black');
-                move.text('Move');
-                move.cursor('move');
-                move.plot(50, 100, 200, 60, 20);
+                move.text('move');
+                move.plot({ x: 50, y: 100, w: 200, h: 60, padding: 20 });
 
                 const resize = layer.text();
                 resize.color('white');
+                resize.cursor('n-resize');
+                resize.fill('red');
                 resize.fontFamily('inherit');
                 resize.fontSize('16px');
-                resize.fill('red');
                 resize.text('resize');
-                resize.cursor('n-resize');
-                resize.plot(50, 200, 200, 100, 20);
+                resize.plot({ x: 50, y: 200, w: 200, h: 60, padding: 20 });
             }}
         />
     );

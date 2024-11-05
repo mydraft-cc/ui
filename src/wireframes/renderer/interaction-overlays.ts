@@ -107,7 +107,7 @@ export class InteractionOverlays {
             line.show();
         }
 
-        line.plot(x1, y1, x2, y2, width);
+        line.plot({ x1, y1, x2, y2, width });
         line.color(color);
         this.indexLines++;
     }
@@ -154,7 +154,7 @@ export class InteractionOverlays {
         label.fill(color);
         label.fontFamily('monospace');
         label.fontSize(sizeInPx(fontSize / this.zoom));
-        label.plot(x, y, w, h, padding);
+        label.plot({ x, y, w, h, padding });
         label.text(text);
 
         // Increment by one because we create one group per label.

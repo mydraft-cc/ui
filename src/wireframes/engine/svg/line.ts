@@ -26,7 +26,9 @@ export class SvgLine extends SvgObject implements EngineLine {
         this.shape.stroke(value);
     }
 
-    public plot(x1: number, y1: number, x2: number, y2: number, width: number): void {
+    public plot(args: { x1: number; y1: number; x2: number; y2: number; width: number }): void {
+        const { x1, y1, x2, y2, width } = args;
+
         this.shape.plot(x1, y1, x2, y2).stroke({ width });
     }
 

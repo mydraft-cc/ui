@@ -9,16 +9,20 @@ import * as svg from '@svgdotjs/svg.js';
 import { Rect2 } from '@app/core';
 import { ShapePlugin } from '@app/wireframes/interface';
 import { DiagramItem } from '@app/wireframes/model';
+import { EngineItem } from './../interface';
+import { SvgObject } from './object';
 import { SvgRenderer } from './renderer';
 import { linkToSvg, SvgHelper } from './utils';
 
-export class SvgItem {
-    private readonly container: svg.G;
+export class SvgItem extends SvgObject implements EngineItem {
+    private readonly group: svg.G;
     private readonly selector: svg.Rect;
-    private previewShape: DiagramItem | null = null;
     private currentShape: DiagramItem | null = null;
-    private currentIndex = -1;
     private isRendered = false;
+
+    protected get root() {
+        return this.group;
+    }
 
     public get shape() {
         return this.currentShape;
@@ -29,56 +33,34 @@ export class SvgItem {
         public readonly renderer: SvgRenderer,
         public readonly plugin: ShapePlugin,
     ) {
+        super();
         this.selector = new svg.Rect().fill('#ffffff').opacity(0.001);
 
-        this.container = new svg.G();
-        this.container.add(this.selector);
-
-        linkToSvg(this, this.container);
+        this.group = new svg.G();
+        this.group.add(this.selector);
+        linkToSvg(this, this.group);
     }
 
-    public remove() {
-        // Always remove them so we can add the shapes back in the right order.
-        this.container?.remove();
+    public detach() {
+        this.remove();
     }
 
-    public checkIndex(index: number) {
-        const result = this.currentIndex >= 0 && this.currentIndex !== index;
-
-        this.currentIndex = index;
-
-        return result;
-    }
-
-    public preview(previewShape: DiagramItem | null) {
-        if (this.previewShape === previewShape) {
-            return;
-        }
-
-        const shapeToRender = previewShape || this.currentShape;
-
-        if (!shapeToRender) {
-            return;
-        }
-
-        this.renderCore(shapeToRender);
-        this.previewShape = previewShape;
-    }
-
-    public invalidate(shape: DiagramItem) {
+    public plot(shape: DiagramItem) {
         if (this.currentShape === shape && this.isRendered) {
-            this.layer.add(this.container);
+            this.addToLayer();
             return;
         }
     
         this.renderCore(shape);
 
-        // For new elements we might have to add them.
-        if (!this.container.parent()) {
-            this.layer.add(this.container);
-        }
-
+        this.addToLayer();
         this.currentShape = shape;
+    }
+
+    private addToLayer() {
+        if (!this.group.parent()) {
+            this.layer.add(this.group);
+        }
     }
 
     private renderCore(item: DiagramItem) {
@@ -86,7 +68,7 @@ export class SvgItem {
 
         const previousContainer = this.renderer.getContainer();
         try {
-            this.renderer.setContainer(this.container, 1);
+            this.renderer.setContainer(this.group, 1);
 
             this.plugin.render({ renderer2: this.renderer, rect: localRect, shape: item });
 
@@ -102,7 +84,7 @@ export class SvgItem {
     private arrangeContainer(item: DiagramItem) {
         const to = item.transform;
 
-        SvgHelper.transformBy(this.container, {
+        SvgHelper.transformBy(this.group, {
             x: to.position.x - 0.5 * to.size.x,
             y: to.position.y - 0.5 * to.size.y,
             w: to.size.x,
@@ -112,7 +94,7 @@ export class SvgItem {
             rotation: to.rotation.degree,
         });
 
-        this.container.opacity(item.opacity);
+        this.group.opacity(item.opacity);
     }
 
     private arrangeSelector(localRect: Rect2) {

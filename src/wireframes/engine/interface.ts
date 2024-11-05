@@ -88,7 +88,7 @@ export interface EngineRectOrEllipse extends EngineObject {
     fill(value: string): void;
 
     // Renders with position, size and rotation.
-    plot(x: number, y: number, w: number, h: number, rotation?: number, rx?: number, ry?: number): void;
+    plot(args: { x: number; y: number; w: number; h: number; rotation?: number; rx?: number; ry?: number }): void;
 }
 
 export interface EngineRect extends EngineRectOrEllipse {
@@ -101,8 +101,8 @@ export interface EngineLine extends EngineObject {
     // The color of the line.
     color(value: string): void;
 
-    // Renders the line from (x1, y1) to (x2, y2) if the object is a line.
-    plot(x1: number, y1: number, x2: number, y2: number, width: number): void;
+    // Renders the line from (x1, y1) to (x2, y2).
+    plot(args: { x1: number; y1: number; x2: number; y2: number; width: number }): void;
 }
 
 export interface EngineText extends EngineObject {
@@ -122,15 +122,12 @@ export interface EngineText extends EngineObject {
     text(value: string): void;
 
     // Defines the dimensions.
-    plot(x: number, y: number, w: number, h: number, padding: number): void;
+    plot(args: { x: number; y: number; w: number; h: number; padding: number }): void;
 }
 
 export interface EngineObject {
     // Defines the cursor for the object.
-    cursor(value: string): void;
-    
-    // Defines the cursor angle.
-    cursorAngle(value: number): void;
+    cursor(value: string | number): void;
 
     // Removes the element from the parent.
     remove(): void;
@@ -144,26 +141,14 @@ export interface EngineObject {
     // Disable the object.
     disable(): void;
 
-    // Gets the tag by value.
-    tag<T>(key: string): T;
-
-    // Sets the tag by value.
-    tag<T>(key: string, value: T): void;
-
     // Sets or gets the label.
     label(value?: string): string;
 }
 
-export interface EngineItem {
+export interface EngineItem extends EngineObject {
     // Removes the element from the parent.
-    remove(): void;
+    detach(): void;
 
-    // Invalidates the item.
-    invalidate(item: DiagramItem): void;
-    
-    // Checks if the item has the correct index.
-    checkIndex(index: number): boolean;
-
-    // Renders a temporary preview.
-    preview(item: DiagramItem | null): void;
+    // Renders the item.
+    plot(item: DiagramItem | null): void;
 }

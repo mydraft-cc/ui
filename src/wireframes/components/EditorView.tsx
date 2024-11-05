@@ -12,10 +12,10 @@ import { NativeTypes } from 'react-dnd-html5-backend';
 import { findDOMNode } from 'react-dom';
 import { Canvas, loadImagesToClipboardItems, useClipboard, useEventCallback, ViewBox } from '@app/core';
 import { useAppDispatch } from '@app/store';
+import { ShapeSource } from '@app/wireframes/interface';
 import { addShape, changeItemsAppearance, Diagram, getDiagram, getDiagramId, getEditor, getMasterDiagram, getSelection, PluginRegistry, selectItems, Transform, transformItems, useStore } from '@app/wireframes/model';
 import { Editor } from '@app/wireframes/renderer/Editor';
 import { DiagramRef, ItemsRef } from '../model/actions/utils';
-import { ShapeSource } from './../interface';
 import { useContextMenu } from './context-menu';
 import './EditorView.scss';
 

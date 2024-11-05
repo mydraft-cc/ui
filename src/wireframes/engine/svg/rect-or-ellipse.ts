@@ -34,15 +34,7 @@ export class SvgRectOrEllipse extends SvgObject implements EngineRect {
         this.shape.fill(value);
     }
 
-    public plot(x: number, y: number, w: number, h: number, rotation?: number, rx?: number, ry?: number): void {
-        SvgHelper.transformBy(this.shape, {
-            x,
-            y,
-            w,
-            h,
-            rotation,
-            rx,
-            ry,
-        }, false, true);
+    public plot(args: { x: number; y: number; w: number; h: number; rotation?: number; rx?: number; ry?: number }): void {
+        SvgHelper.transformBy(this.shape, args, false, true);
     }
 }

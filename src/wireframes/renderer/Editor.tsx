@@ -119,7 +119,7 @@ export const Editor = React.memo((props: EditorProps) => {
     }, []);
 
     React.useEffect(() => {
-        backgroundRect?.plot(0, 0, viewSize.x, viewSize.y);
+        backgroundRect?.plot({ x: 0, y: 0, w: viewSize.x, h: viewSize.y });
     }, [backgroundRect, viewSize]);
 
     React.useEffect(() => {

@@ -53,11 +53,10 @@ export class SvgText extends SvgObject implements EngineText {
         this.textInner.textContent = value;
     }
 
-    public plot(x: number, y: number, w: number, h: number, padding: number): void {
-        SvgHelper.transformBy(this.container, {
-            x,
-            y,
-        });
+    public plot(args: { x: number; y: number; w: number; h: number; padding: number }): void {
+        const { w, h, padding } = args;
+
+        SvgHelper.transformBy(this.container, args);
 
         SvgHelper.transformBy(this.textElement, {
             x: padding,
@@ -66,9 +65,6 @@ export class SvgText extends SvgObject implements EngineText {
             h: h - 2 * padding,
         });
 
-        SvgHelper.transformBy(this.background, {
-            w: w,
-            h: h,
-        });
+        SvgHelper.transformBy(this.background, { w, h });
     }
 }

@@ -96,7 +96,7 @@ export const ShapeRenderer = React.memo(React.forwardRef<HTMLDivElement, ShapeRe
             item.current = engine.layer(plugin.identifier()).item(plugin);
         }
 
-        item.current.invalidate(shape);
+        item.current.plot(shape);
     }, [appearance, engine, plugin, viewBox]);
 
     return (

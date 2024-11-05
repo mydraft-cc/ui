@@ -200,12 +200,13 @@ export class SelectionAdorner extends React.Component<SelectionAdornerProps> imp
     }
 
     protected transformShape(shape: EngineRect, position: Vec2, size: Vec2, offset: number, rotation = 0) {
-        shape.plot(
-            position.x - 0.5 * offset,
-            position.y - 0.5 * offset,
-            size.x + offset,
-            size.y + offset,
-            rotation);
+        shape.plot({
+            x: position.x - 0.5 * offset,
+            y: position.y - 0.5 * offset,
+            w: size.x + offset,
+            h: size.y + offset,
+            rotation,
+        });
 
         if (size.x > 2 && size.y > 2) {
             shape.show();

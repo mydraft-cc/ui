@@ -6,7 +6,7 @@
 */
 
 import { useDragLayer, XYCoord } from 'react-dnd';
-import { ShapePlugin } from '../interface';
+import { ShapePlugin } from '@app/wireframes/interface';
 import { getViewBox, ShapeRenderer } from '../shapes/ShapeRenderer';
 import './CustomDragLayer.scss';
 
