@@ -339,6 +339,16 @@ describe('SVGRenderer', () => {
             expect((svgGroup.get(0).node.children[0] as HTMLDivElement).style.fontFamily).toEqual('Arial');
         });
 
+        it('should render text decoration', () => {
+            render(r => {
+                r.text({} as any, bounds, p => {
+                    p.setText('Text').setTextDecoration('underline');
+                });
+            });
+
+            expect((svgGroup.get(0).node.children[0] as HTMLDivElement).style.textDecoration).toEqual('underline');
+        });
+
         it('should render opacity', () => {
             render(r => {
                 r.text({} as any, bounds, p => {
@@ -366,7 +376,7 @@ describe('SVGRenderer', () => {
                 });
             });
 
-            expect((svgGroup.get(0).node.children[0]).textContent).toEqual('Text');
+            expect(svgGroup.get(0).node.children[0].textContent).toEqual('Text');
         });
 
         it('should render text from shape', () => {
@@ -376,7 +386,32 @@ describe('SVGRenderer', () => {
                 });
             });
 
-            expect((svgGroup.get(0).node.children[0]).textContent).toEqual('Text');
+            expect(svgGroup.get(0).node.children[0].textContent).toEqual('Text');
+        });
+
+        it('should render text as markdown', () => {
+            render(r => {
+                r.text({} as any, bounds, p => {
+                    p.setText('**Text**', true);
+                });
+            });
+
+            expect(svgGroup.get(0).node.children[0].innerHTML).toEqual('<strong>Text</strong>');
+        });
+    });
+
+    describe('Utils', () => {
+        it('should calculate text size', () => {
+            const size1 = renderer.getTextWidth('Hello World', 16, 'inherit');
+            const size2 = renderer.getTextWidth('Hello World', 18, 'inherit');
+
+            expect(size2).toBeGreaterThan(size1);
+        });
+
+        it('should get outer bounds', () => {
+            const bounds = renderer.getOuterBounds(4, new Rect2(10, 20, 30, 40));
+
+            expect(bounds).toEqual({ x: 12, y: 22, w: 26, h: 36 });
         });
     });
 

@@ -49,8 +49,6 @@ export interface ShapePlugin {
 }
 
 export interface ShapeProperties {
-    readonly shape: any;
-
     setForegroundColor(color: RendererColor): ShapeProperties;
 
     setBackgroundColor(color: RendererColor): ShapeProperties;
@@ -63,7 +61,7 @@ export interface ShapeProperties {
 
     setOpacity(opacity: RendererOpacity): ShapeProperties;
 
-    setText(text: RendererText | string): ShapeProperties;
+    setText(text: RendererText | string, markdown?: boolean): ShapeProperties;
     
     setTextDecoration(decoration: TextDecoration): ShapeProperties;
 }

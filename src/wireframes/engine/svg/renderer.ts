@@ -367,8 +367,16 @@ class Properties implements ShapeProperties {
         'text': (value, element) => {
             const div = element.node.children[0] as HTMLDivElement;
 
+
             if (div?.nodeName === 'DIV') {
-                const textOrHtml = escapeHTML(value);
+                const typed = value as { text: string; markdown?: boolean } | undefined;
+
+                let textOrHtml = '';
+                if (typed?.markdown) {
+                    textOrHtml = marked.parseInline(typed.text) as string;
+                } else if (typed?.text) {
+                    textOrHtml = escapeHTML(typed.text);
+                }
 
                 if (textOrHtml.indexOf('&') >= 0 || textOrHtml.indexOf('<') >= 0) {
                     div.innerHTML = textOrHtml;
@@ -403,13 +411,9 @@ class Properties implements ShapeProperties {
         },
     };
 
-    private element: svg.Element = null!;
     private propertiesNew: PropertySet = {};
     private propertiesOld: PropertySet = {};
-
-    public get shape() {
-        return this.element;
-    }
+    private element: svg.Element = null!;
 
     public static readonly INSTANCE = new Properties();
 
@@ -508,6 +512,12 @@ class Properties implements ShapeProperties {
         return this;
     }
 
+    public setText(text: RendererText | string | null | undefined, markdown?: boolean): ShapeProperties {
+        this.propertiesNew['text'] = { text: getText(text), markdown };
+
+        return this;
+    }
+
     public setStrokeStyle(cap: string, join: string): ShapeProperties {
         this.propertiesNew['stroke-cap'] = cap;
         this.propertiesNew['stroke-line-join'] = join;
@@ -520,16 +530,6 @@ class Properties implements ShapeProperties {
 
         if (Number.isFinite(value)) {
             this.propertiesNew['opacity'] = value;
-        }
-
-        return this;
-    }
-
-    public setText(text: RendererText | string | null | undefined, markdown?: boolean): ShapeProperties {
-        if (markdown) {
-            this.propertiesNew['markdown'] = getText(text);
-        } else {
-            this.propertiesNew['text'] = getText(text);
         }
 
         return this;
