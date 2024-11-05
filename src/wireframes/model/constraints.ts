@@ -101,7 +101,7 @@ export class TextSizeConstraint implements Constraint {
         private readonly minWidth = 0,
     ) { }
 
-    public updateSize(shape: Shape, size: Vec2, prev: DiagramItem): Vec2 {
+    public updateSize(shape: Shape, size: Vec2, prev?: DiagramItem): Vec2 {
         const fontSize = shape.fontSize;
         const fontFamily = shape.fontFamily;
 
