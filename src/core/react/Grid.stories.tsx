@@ -5,12 +5,12 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { ComponentMeta } from '@storybook/react';
+import { Meta } from '@storybook/react';
 import { Grid } from './Grid';
 
 export default {
     component: Grid,
-} as ComponentMeta<typeof Grid>;
+} as Meta<typeof Grid>;
 
 const items: number[] = [];
 

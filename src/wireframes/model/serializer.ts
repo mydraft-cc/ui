@@ -10,7 +10,7 @@ import { Diagram } from './diagram';
 import { DiagramItem } from './diagram-item';
 import { DiagramItemSet } from './diagram-item-set';
 import { EditorState } from './editor-state';
-import { RendererService } from './renderer.service';
+import { PluginRegistry } from './registry';
 import { Transform } from './transform';
 
 type IdMap = { [id: string]: string };
@@ -147,7 +147,7 @@ function readDiagramItem(source: object, type?: any) {
     const raw: any = readObject(source, DIAGRAM_ITEM_SERIALIZERS);
 
     if ((raw.type || type) === 'Shape') {
-        const defaults = RendererService.get(raw.renderer!)?.createDefaultShape();
+        const defaults = PluginRegistry.get(raw.renderer!)?.createDefaultShape();
 
         if (!defaults) {
             return null;

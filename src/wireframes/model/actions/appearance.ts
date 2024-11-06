@@ -7,7 +7,7 @@
 
 import { ActionReducerMapBuilder, createAction } from '@reduxjs/toolkit';
 import { Color, Types } from '@app/core/utils';
-import { EditorState, RendererService, Transform } from './../internal';
+import { EditorState, PluginRegistry, Transform } from './../internal';
 import { createItemsAction, DiagramRef, ItemsRef } from './utils';
 
 export const changeColors =
@@ -62,13 +62,13 @@ export function buildAppearance(builder: ActionReducerMapBuilder<EditorState>) {
                 const { key, value } = appearance;
 
                 return diagram.updateItems(itemIds, item => {
-                    const rendererInstance = RendererService.get(item.renderer);
-
-                    if (!rendererInstance) {
+                    const plugin = PluginRegistry.get(item.renderer)?.plugin;
+                    
+                    if (!plugin) {
                         throw new Error(`Cannot find renderer for ${item.renderer}.`);
                     }
 
-                    if (force || !Types.isUndefined(rendererInstance.defaultAppearance()[key])) {
+                    if (force || !Types.isUndefined(plugin.defaultAppearance()[key])) {
                         return item.setAppearance(key, value);
                     }
 

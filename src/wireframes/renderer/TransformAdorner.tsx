@@ -5,13 +5,11 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import * as svg from '@svgdotjs/svg.js';
 import * as React from 'react';
-import { isMiddleMouse, Rotation, Subscription, SVGHelper, Timer, Vec2 } from '@app/core';
+import { isMiddleMouse, Rotation, Subscription, Timer, Vec2 } from '@app/core';
+import { Engine, EngineLayer, EngineRect, HitEvent, Listener } from '@app/wireframes/engine';
 import { Diagram, DiagramItem, DiagramItemSet, SnapManager, SnapMode, Transform } from '@app/wireframes/model';
 import { OverlayManager } from './../contexts/OverlayContext';
-import { SVGRenderer2 } from './../shapes/utils/svg-renderer2';
-import { InteractionHandler, InteractionService, SvgEvent } from './interaction-service';
 import { PreviewEvent } from './preview';
 
 enum Mode { None, Resize, Move, Rotate }
@@ -29,17 +27,17 @@ export interface TransformAdornerProps {
     // The view size of the editor.
     viewSize: Vec2;
 
+    // The current engine.
+    engine: Engine;
+
     // The adorner scope.
-    adorners: svg.Container;
+    layer: EngineLayer;
 
     // The selected diagram.
     selectedDiagram: Diagram;
 
     // The selected items.
     selectionSet: DiagramItemSet;
-
-    // The interaction service.
-    interactionService: InteractionService;
 
     // The snap manager.
     snapManager: SnapManager;
@@ -56,17 +54,17 @@ export interface TransformAdornerProps {
 
 const DRAG_SIZE = 12;
 
-export class TransformAdorner extends React.PureComponent<TransformAdornerProps> implements InteractionHandler {
-    private allElements: svg.Element[];
+export class TransformAdorner extends React.PureComponent<TransformAdornerProps> implements Listener {
+    private allElements: EngineRect[];
     private canResizeX = false;
     private canResizeY = false;
     private manipulated = false;
     private manipulationMode = Mode.None;
     private manipulationOffset = Vec2.ZERO;
-    private moveShape: svg.Element = null!;
+    private moveShape: EngineRect = null!;
     private moveTimer?: Timer | null;
-    private resizeShapes: svg.Element[] = [];
-    private rotateShape: svg.Element = null!;
+    private resizeShapes: EngineRect[] = [];
+    private rotateShape: EngineRect = null!;
     private rotation = Rotation.ZERO;
     private startPosition = Vec2.ZERO;
     private startTransform = Transform.ZERO;
@@ -81,11 +79,11 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
         this.allElements = [...this.resizeShapes, this.moveShape, this.rotateShape];
         this.hideShapes();
 
-        this.props.interactionService.addHandler(this);
+        this.props.engine.subscribe(this);
     }
 
     public componentWillUnmount() {
-        this.props.interactionService.removeHandler(this);
+        this.props.engine.subscribe(this);
     }
 
     public componentDidUpdate(prevProps: TransformAdornerProps) {
@@ -111,7 +109,6 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
 
     private calculateInitializeTransform() {
         let transform: Transform;
-
         if (this.props.selectionSet.selectedItems.length === 0) {
             transform = Transform.ZERO;
         } else if (this.props.selectionSet.selectedItems.length === 1) {
@@ -186,7 +183,6 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
         }
 
         let counter = 1;
-
         this.startManipulation(null!, this.transform);
 
         const run = () => {
@@ -227,7 +223,6 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
             }
 
             this.rotation = this.transform.rotation;
-
             this.props.onTransformItems(
                 this.props.selectedDiagram,
                 this.props.selectionSet.selectedItems,
@@ -238,7 +233,7 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
         }
     }
 
-    public onMouseDown(event: SvgEvent, next: (event: SvgEvent) => void) {
+    public onMouseDown(event: HitEvent, next: (event: HitEvent) => void) {
         // If the manipulation with the keyboard is still in progress we do not handle the event.
         if (event.event.ctrlKey || this.moveTimer || this.manipulationMode != Mode.None) {
             next(event);
@@ -252,13 +247,11 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
         }
 
         let hitItem = this.hitTest(event.position);
-
         if (!hitItem) {
             next(event);
         }
 
         hitItem = this.hitTest(event.position);
-
         if (!hitItem) {
             return;
         }
@@ -272,29 +265,15 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
             this.manipulationMode = Mode.Rotate;
         } else {
             this.manipulationMode = Mode.Resize;
-            this.manipulationOffset = (hitItem as any)['offset'];
+            this.manipulationOffset = (hitItem as any)['offset'] as Vec2;
         }
     }
 
     private hitTest(point: Vec2) {
-        if (!this.transform) {
-            return null;
-        }
-
-        const unrotated = Vec2.rotated(point, this.transform.position, this.transform.rotation.negate());
-
-        for (const element of this.allElements) {
-            const box = SVGRenderer2.INSTANCE.getLocalBounds(element);
-
-            if (box.contains(unrotated)) {
-                return element;
-            }
-        }
-
-        return null;
+        return this.props.layer.hitTest(point.x, point.y)[0];
     }
 
-    public onMouseDrag(event: SvgEvent, next: (event: SvgEvent) => void) {
+    public onMouseDrag(event: HitEvent, next: (event: HitEvent) => void) {
         if (this.manipulationMode === Mode.None || !this.startPosition) {
             next(event);
             return;
@@ -304,7 +283,6 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
         this.props.overlayManager.reset();
 
         const delta = event.position.sub(this.startPosition);
-
         // If the mouse has not been moved we can just stop here.
         if (delta.lengtSquared === 0) {
             return;
@@ -312,7 +290,6 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
 
         // We have moved the mouse and therefore also updated at least one shape.
         this.manipulated = true;
-
         if (this.manipulationMode === Mode.Move) {
             this.move(delta, getSnapMode(event.event));
         } else if (this.manipulationMode === Mode.Rotate) {
@@ -328,7 +305,7 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
     private renderPreview() {
         const items: Record<string, DiagramItem> = {};
 
-        for (const item of this.props.selectionSet.deepEditableItems) {
+        for (const item of this.props.selectionSet.editableItems) {
             items[item.id] = item.transformByBounds(this.startTransform, this.transform);
         }
 
@@ -337,7 +314,7 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
     }
 
     private move(delta: Vec2, snapMode: SnapMode, showOverlay = true) {
-        const snapResult = this.props.snapManager.snapMoving(this.startTransform, delta, snapMode, this.props.selectionSet.deepEditableItems);
+        const snapResult = this.props.snapManager.snapMoving(this.startTransform, delta, snapMode, this.props.selectionSet.editableIds);
 
         this.transform = this.startTransform.moveBy(snapResult.delta);
 
@@ -353,7 +330,7 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
         this.debug();
     }
 
-    private rotate(event: SvgEvent, snapMode: SnapMode, showOverlay = true) {
+    private rotate(event: HitEvent, snapMode: SnapMode, showOverlay = true) {
         const deltaValue = this.getCummulativeRotation(event);
         const deltaRotation = this.props.snapManager.snapRotating(this.startTransform, deltaValue, snapMode);
 
@@ -364,7 +341,7 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
         }
     }
 
-    private getCummulativeRotation(event: SvgEvent): number {
+    private getCummulativeRotation(event: HitEvent): number {
         const center = this.startTransform.position;
 
         const eventPoint = event.position;
@@ -403,14 +380,14 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
             this.props.snapManager.snapResizing(this.startTransform, delta, snapMode,
                 this.manipulationOffset.x,
                 this.manipulationOffset.y,
-                this.props.selectionSet);
+                this.props.selectionSet.editableIds);
 
         return snapResult;
     }
 
     private debug() {
         if (DEBUG_SIDES || DEBUG_DISTANCES) {
-            const { xLines, yLines } = this.props.snapManager.getDebugLines(this.startTransform);
+            const { xLines, yLines } = this.props.snapManager.getDebugLines(this.props.selectionSet.editableIds);
     
             for (const line of xLines) {
                 if ((line.positions && DEBUG_DISTANCES) || DEBUG_SIDES) {
@@ -443,7 +420,7 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
         return new Vec2(x, y);
     }
 
-    public onMouseUp(event: SvgEvent, next: (event: SvgEvent) => void) {    
+    public onMouseUp(event: HitEvent, next: (event: HitEvent) => void) {    
         if (this.manipulationMode === Mode.None) {
             next(event);
             return;
@@ -460,7 +437,7 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
 
             this.props.onTransformItems(
                 this.props.selectedDiagram,
-                this.props.selectionSet.deepEditableItems,
+                this.props.selectionSet.editableItems,
                 this.startTransform,
                 this.transform);
         } finally {
@@ -507,18 +484,15 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
             return;
         }
 
-        const stroke = { width: 1 / this.props.zoom };
-
-        const size = this.transform.size;
-
-        const rotation = this.transform.rotation.degree;
-        const position = this.transform.position;
-
+        const stroke = 1 / this.props.zoom;
+        const transformSize = this.transform.size;
+        const transformRotation = this.transform.rotation.degree;
+        const transformPosition = this.transform.position;
         const adornerSize = DRAG_SIZE / this.props.zoom;
         const adornerHalfSize = adornerSize / 2;
 
         for (const resizeShape of this.resizeShapes) {
-            const offset = (resizeShape as any)['offset'];
+            const offset = (resizeShape as any)['offset'] as Vec2;
 
             const visible =
                 (offset.x === 0 || this.canResizeX) &&
@@ -529,45 +503,42 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
                 continue;
             }
 
-            SVGHelper.transformBy(resizeShape, {
-                x: position.x - adornerHalfSize + offset.x * (size.x + adornerHalfSize),
-                y: position.y - adornerHalfSize + offset.y * (size.y + adornerHalfSize),
+            resizeShape.show();
+            resizeShape.strokeWidth(stroke);
+            resizeShape.plot({
+                x: transformPosition.x - adornerHalfSize + offset.x * (transformSize.x + adornerHalfSize),
+                y: transformPosition.y - adornerHalfSize + offset.y * (transformSize.y + adornerHalfSize),
                 w: adornerSize,
                 h: adornerSize,
-                rx: position.x,
-                ry: position.y,
-                rotation,
-            }, false, true); // Do not set the position by matrix for bounding box calculation
-
-            resizeShape.stroke(stroke);
-            resizeShape.show();
+                rotation: transformRotation,
+                rx: transformPosition.x,
+                ry: transformPosition.y,
+            });
         }
 
-        this.rotateShape.size(adornerSize, adornerSize);
-        this.rotateShape.stroke(stroke);
         this.rotateShape.show();
+        this.rotateShape.strokeWidth(stroke);
+        this.rotateShape.plot({
+            x: transformPosition.x - adornerHalfSize,
+            y: transformPosition.y - adornerHalfSize - transformSize.y * 0.5 - 30 / this.props.zoom,
+            w: adornerSize,
+            h: adornerSize,
+            rotation: transformRotation,
+            rx: transformPosition.x,
+            ry: transformPosition.y,
+        });
 
-        SVGHelper.setSize(this.rotateShape, adornerSize, adornerSize);
-        SVGHelper.transformBy(this.rotateShape, {
-            x: position.x - adornerHalfSize,
-            y: position.y - adornerHalfSize - size.y * 0.5 - 30 / this.props.zoom,
-            rx: position.x,
-            ry: position.y,
-            rotation,
-        }, false, true); // Do not set the position by matrix for bounding box calculation
-
-        this.moveShape.stroke(stroke);
         this.moveShape.show();
-
-        SVGHelper.transformBy(this.moveShape, {
-            x: position.x - 0.5 * size.x,
-            y: position.y - 0.5 * size.y,
-            w: size.x,
-            h: size.y,
-            rx: position.x,
-            ry: position.y,
-            rotation,
-        }, true, false); // Do not set the position by matrix for bounding box calculation
+        this.moveShape.strokeWidth(stroke);
+        this.moveShape.plot({
+            x: transformPosition.x - 0.5 * transformSize.x,
+            y: transformPosition.y - 0.5 * transformSize.y,
+            w: transformSize.x,
+            h: transformSize.y,        
+            rotation: transformRotation,
+            rx: transformPosition.x,
+            ry: transformPosition.y,
+        });
     }
 
     private hideShapes() {
@@ -575,22 +546,20 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
     }
 
     private createMoveShape() {
-        const moveShape =
-            this.props.adorners.rect(1)
-                .stroke({ color: TRANSFORMER_STROKE_COLOR, width: 1 }).fill('none');
-
-        this.props.interactionService.setCursor(moveShape, 'move');
-
+        const moveShape = this.props.layer.rect();
+        moveShape.cursor('move');
+        moveShape.fill('none');
+        moveShape.strokeColor(TRANSFORMER_STROKE_COLOR);
+        moveShape.strokeWidth(1);
         this.moveShape = moveShape;
     }
 
     private createRotateShape() {
-        const rotateShape =
-            this.props.adorners.ellipse(DRAG_SIZE, DRAG_SIZE)
-                .stroke({ color: TRANSFORMER_STROKE_COLOR, width: 1 }).fill(TRANSFORMER_FILL_COLOR);
-
-        this.props.interactionService.setCursor(rotateShape, 'pointer');
-
+        const rotateShape = this.props.layer.ellipse();
+        rotateShape.cursor('pointer');
+        rotateShape.fill(TRANSFORMER_FILL_COLOR);
+        rotateShape.strokeColor(TRANSFORMER_STROKE_COLOR);
+        rotateShape.strokeWidth(1);
         this.rotateShape = rotateShape;
     }
 
@@ -600,15 +569,14 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
         const as = [315, 0, 45, 270, 90, 215, 180, 135];
 
         for (let i = 0; i < xs.length; i++) {
-            const resizeShape =
-                this.props.adorners.rect(DRAG_SIZE, DRAG_SIZE)
-                    .stroke({ color: TRANSFORMER_STROKE_COLOR, width: 1 }).fill(TRANSFORMER_FILL_COLOR);
+            const resizeShape = this.props.layer.rect();
+            resizeShape.cursor(as[i]);
+            resizeShape.fill(TRANSFORMER_FILL_COLOR);
+            resizeShape.strokeColor(TRANSFORMER_STROKE_COLOR);
+            resizeShape.strokeWidth(1);
+            this.resizeShapes.push(resizeShape);
 
             (resizeShape as any)['offset'] = new Vec2(xs[i], ys[i]);
-
-            this.props.interactionService.setCursorAngle(resizeShape, as[i]);
-
-            this.resizeShapes.push(resizeShape);
         }
     }
 

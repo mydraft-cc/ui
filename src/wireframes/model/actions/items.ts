@@ -10,7 +10,7 @@
 import { ActionReducerMapBuilder, createAction } from '@reduxjs/toolkit';
 import { MathHelper, Rotation, Vec2 } from '@app/core/utils';
 import { Appearance } from '@app/wireframes/interface';
-import { Diagram, DiagramItem, DiagramItemSet, EditorState, RendererService, Serializer, Transform } from './../internal';
+import { Diagram, DiagramItem, DiagramItemSet, EditorState, PluginRegistry, Serializer, Transform } from './../internal';
 import { createDiagramAction, createItemsAction, DiagramRef, ItemsRef } from './utils';
 
 export const addShape =
@@ -121,13 +121,13 @@ export function buildItems(builder: ActionReducerMapBuilder<EditorState>) {
             const { diagramId, appearance, id, position, renderer, size } = action.payload;
 
             return state.updateDiagram(diagramId, diagram => {
-                const rendererInstance = RendererService.get(renderer);
+                const registration = PluginRegistry.get(renderer);
 
-                if (!rendererInstance) {
+                if (!registration) {
                     throw new Error(`Cannot find renderer for ${renderer}.`);
                 }
 
-                const { size: defaultSize, appearance: defaultAppearance, ...other } = rendererInstance.createDefaultShape();
+                const { size: defaultSize, appearance: defaults, ...other } = registration.createDefaultShape();
 
                 const initialSize = size || defaultSize;
                 const initialProps = {
@@ -141,7 +141,7 @@ export function buildItems(builder: ActionReducerMapBuilder<EditorState>) {
                             initialSize.x,
                             initialSize.y), 
                         Rotation.ZERO),
-                    appearance: { ...defaultAppearance || {}, ...appearance },
+                    appearance: { ...defaults || {}, ...appearance },
                 };
 
                 const shape = DiagramItem.createShape(initialProps);

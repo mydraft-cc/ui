@@ -5,10 +5,10 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
+import { ShapePlugin } from '@app/wireframes/interface';
 import { ICONS_FONT_AWESOME } from './../../icons/font_awesome_unified';
 import { ICONS_MATERIAL_DESIGN } from './../../icons/material_icons_unified';
-import { ShapePlugin } from './../interface';
-import { RendererService } from './renderer.service';
+import { PluginRegistry } from './registry';
 
 export interface AssetInfo {
     // The name of the asset.
@@ -56,10 +56,10 @@ export interface AssetsState {
 
 export const createInitialAssetsState: () => AssetsState = () => {
     const allShapes =
-        RendererService.all().filter(x => x[1].plugin().showInGallery?.() !== false)
-            .map(([name, renderer]) => {
+        PluginRegistry.all().filter(x => x[1].plugin.showInGallery?.() !== false)
+            .map(([name, registration]) => {
                 return {
-                    plugin: renderer.plugin(),
+                    plugin: registration.plugin,
                     displayName: name, 
                     displaySearch: name,
                     name,

@@ -7,20 +7,19 @@
 
 /* eslint-disable react-hooks/exhaustive-deps */
 
-import * as svg from '@svgdotjs/svg.js';
 import * as React from 'react';
-import { Color, Subscription, SVGHelper, Vec2, ViewBox } from '@app/core';
+import { Color, Subscription, Vec2, ViewBox } from '@app/core';
+import { Engine, EngineLayer, EngineRect } from '@app/wireframes/engine';
+import { SvgCanvasView } from '@app/wireframes/engine/svg/canvas/SvgCanvas';
 import { Diagram, DiagramItem, DiagramItemSet, Transform } from '@app/wireframes/model';
 import { useOverlayContext } from './../contexts/OverlayContext';
-import { CanvasView } from './CanvasView';
+import { ItemsLayer } from './ItemsLayer';
 import { NavigateAdorner } from './NavigateAdorner';
 import { QuickbarAdorner } from './QuickbarAdorner';
-import { RenderLayer } from './RenderLayer';
 import { SelectionAdorner } from './SelectionAdorner';
 import { TextAdorner } from './TextAdorner';
 import { TransformAdorner } from './TransformAdorner';
 import { InteractionOverlays } from './interaction-overlays'; 
-import { InteractionService } from './interaction-service';
 import { PreviewEvent } from './preview';
 import './Editor.scss';
 
@@ -78,66 +77,54 @@ export const Editor = React.memo((props: EditorProps) => {
         viewSize,
     } = props;
 
-    const adornerSelectLayer = React.useRef<svg.Container>();
-    const adornerTransformLayer = React.useRef<svg.Container>();
-    const backgroundLayer = React.useRef<svg.Rect>();
+    const [engine, setEngine] = React.useState<Engine>();
+    const adornerSelectLayer = React.useRef<EngineLayer>();
+    const adornerTransformLayer = React.useRef<EngineLayer>();
     const overlayContext = useOverlayContext();
-    const overlayLayer = React.useRef<svg.Container>();
-    const renderMainLayer = React.useRef<svg.Container>();
-    const renderMasterLayer = React.useRef<svg.Container>();
-    const [interactionMasterService, setInteractionMasterService] = React.useState<InteractionService>();
-    const [interactionMainService, setInteractionMainService] = React.useState<InteractionService>();
+    const overlayLayer = React.useRef<EngineLayer>();
+    const renderMainLayer = React.useRef<EngineLayer>();
+    const renderMasterLayer = React.useRef<EngineLayer>();
+    const [backgroundRect, setBackgroundRect] = React.useState<EngineRect>();
 
     // Use a stream of preview updates to bypass react for performance reasons.
     const renderPreview = React.useRef(new Subscription<PreviewEvent>());
-
-    const doInit = React.useCallback((doc: svg.Svg) => {
+    
+    const doInit = React.useCallback((engine: Engine) => {
         // Might be called multiple times in dev mode!
-        if (renderMainLayer.current) {
+        if (renderMainLayer.current || !engine) {
             return;
         }
 
         // Create these layers in the correct order.
-        backgroundLayer.current = doc.rect().id('background').stroke('#efefef').fill(color.toString());
-        renderMasterLayer.current = doc.group().id('masterLayer');
-        renderMainLayer.current = doc.group().id('parentLayer');
-        adornerSelectLayer.current = doc.group().id('selectLayer');
-        adornerTransformLayer.current = doc.group().id('transformLayer');
-        overlayLayer.current = doc.group().id('overlaysLayer');
+        const background = engine.layer('background').rect();
+        background.disable();
+        background.fill(color.toString());
+        background.strokeWidth(1);
+        background.strokeColor('#efefef');
+        setBackgroundRect(background);
 
-        setInteractionMainService(new InteractionService([
-            adornerSelectLayer.current,
-            adornerTransformLayer.current],
-        renderMainLayer.current, doc));
+        renderMasterLayer.current = engine.layer('masterLayer');
+        renderMainLayer.current = engine.layer('parentLayer');
+        overlayLayer.current = engine.layer('overlaysLayer');
+        adornerSelectLayer.current = engine.layer('selectLayer');
+        adornerTransformLayer.current = engine.layer('transformLayer');
 
-        setInteractionMasterService(new InteractionService([
-            adornerSelectLayer.current,
-            adornerTransformLayer.current],
-        renderMasterLayer.current, doc));
+        engine.setClickLayer(renderMainLayer.current);
 
         if (isDefaultView) {
             overlayContext.overlayManager = new InteractionOverlays(overlayLayer.current);
         }
+
+        setEngine(engine);
     }, []);
 
     React.useEffect(() => {
-        if (!interactionMainService) {
-            return;
-        }
-
-        const w = viewSize.x;
-        const h = viewSize.y;
-
-        SVGHelper.setSize(adornerSelectLayer.current!, w, h);
-        SVGHelper.setSize(adornerTransformLayer.current!, w, h);
-        SVGHelper.setSize(backgroundLayer.current!, w, h);
-        SVGHelper.setSize(renderMasterLayer.current!, w, h);
-        SVGHelper.setSize(renderMainLayer.current!, w, h);
-    }, [viewSize, interactionMainService]);
+        backgroundRect?.plot({ x: 0, y: 0, w: viewSize.x, h: viewSize.y });
+    }, [backgroundRect, viewSize]);
 
     React.useEffect(() => {
-        backgroundLayer.current?.fill(color.toString());
-    }, [color]);
+        backgroundRect?.fill(color.toString());
+    }, [backgroundRect, color]);
 
     React.useEffect(() => {
         overlayContext.snapManager.prepare(diagram, viewSize);
@@ -147,20 +134,29 @@ export const Editor = React.memo((props: EditorProps) => {
         (overlayContext.overlayManager as any)['setZoom']?.(viewBox.zoom);
     }, [diagram, overlayContext.overlayManager, viewBox.zoom]);
 
+    const showAdorners = React.useCallback(() => {
+        adornerSelectLayer.current?.show();
+        adornerTransformLayer.current?.show();
+    }, []);
+
+    const hideAdorners = React.useCallback(() => {
+        adornerSelectLayer.current?.hide();
+        adornerTransformLayer.current?.hide();
+    }, []);
+
     return (
         <div className='editor' ref={element => overlayContext.element = element}>
-            <CanvasView onInit={doInit} viewBox={viewBox} />
+            <SvgCanvasView onInit={doInit} viewBox={viewBox} />
 
-            {interactionMainService && diagram && (
+            {engine && diagram && (
                 <>
-                    <RenderLayer
-                        background={color}
+                    <ItemsLayer
                         diagram={masterDiagram}
                         diagramLayer={renderMasterLayer.current!}
                         onRender={onRender}
                     />
 
-                    <RenderLayer
+                    <ItemsLayer
                         diagram={diagram}
                         diagramLayer={renderMainLayer.current!}
                         preview={renderPreview.current}
@@ -169,8 +165,8 @@ export const Editor = React.memo((props: EditorProps) => {
 
                     {onTransformItems &&
                         <TransformAdorner
-                            adorners={adornerTransformLayer.current!}
-                            interactionService={interactionMainService}
+                            engine={engine}
+                            layer={adornerTransformLayer.current!}
                             onTransformItems={onTransformItems}
                             overlayManager={overlayContext.overlayManager}
                             previewStream={renderPreview.current}
@@ -184,8 +180,8 @@ export const Editor = React.memo((props: EditorProps) => {
 
                     {onSelectItems &&
                         <SelectionAdorner
-                            adorners={adornerSelectLayer.current!}
-                            interactionService={interactionMainService}
+                            layer={adornerSelectLayer.current!}
+                            engine={engine}
                             onSelectItems={onSelectItems}
                             previewStream={renderPreview.current}
                             selectedDiagram={diagram}
@@ -196,10 +192,12 @@ export const Editor = React.memo((props: EditorProps) => {
 
                     {onChangeItemsAppearance &&
                         <TextAdorner
-                            interactionService={interactionMainService}
+                            engine={engine}
+                            hideAdorners={hideAdorners}
                             onChangeItemsAppearance={onChangeItemsAppearance}
                             selectedDiagram={diagram}
                             selectionSet={selectionSet}
+                            showAdorners={showAdorners}
                             zoom={viewBox.zoom}
                         />
                     }
@@ -209,17 +207,12 @@ export const Editor = React.memo((props: EditorProps) => {
                             previewStream={renderPreview.current}
                             selectedDiagram={diagram}
                             selectionSet={selectionSet}
-                            viewSize={viewSize}
-                            zoom={viewBox.zoom}
+                            viewBox={viewBox}
                         />
                     }
 
                     {onNavigate &&
-                        <NavigateAdorner interactionService={interactionMainService} onNavigate={onNavigate} />
-                    }
-
-                    {onNavigate && interactionMasterService &&
-                        <NavigateAdorner interactionService={interactionMasterService} onNavigate={onNavigate} />
+                        <NavigateAdorner engine={engine} onNavigate={onNavigate} />
                     }
                 </>
             )}

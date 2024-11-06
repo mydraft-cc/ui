@@ -110,7 +110,7 @@ export function useAppearanceCore<T>(selectedDiagramId: RefDiagramId, selectionS
 
     const doChangeAppearance = useEventCallback((value: T) => {
         if (selectedDiagramId && selectionSet) {
-            dispatch(changeItemsAppearance(selectedDiagramId, selectionSet.deepEditableItems, key, converter.write(value), force));
+            dispatch(changeItemsAppearance(selectedDiagramId, selectionSet.editableItems, key, converter.write(value), force));
         }
     });
 

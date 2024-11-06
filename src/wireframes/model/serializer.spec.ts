@@ -6,12 +6,11 @@
 */
 
 import { Vec2 } from '@app/core/utils';
-import { Diagram, DiagramItem, DiagramItemSet, EditorState, RendererService, Serializer } from '@app/wireframes/model';
+import { Diagram, DiagramItem, DiagramItemSet, EditorState, PluginRegistry, Registration, Serializer } from '@app/wireframes/model';
 import { Checkbox } from '@app/wireframes/shapes/neutral/checkbox';
-import { AbstractControl } from './../shapes/utils/abstract-control';
 
 describe('Serializer', () => {
-    const checkbox = new AbstractControl(new Checkbox());
+    const checkbox = new Registration(new Checkbox());
 
     const groupId = 'group-1';
     const oldShape1 = DiagramItem.createShape(checkbox.createDefaultShape()).transformWith(t => t.moveTo(new Vec2(100, 20))).rename('Named');
@@ -19,7 +18,7 @@ describe('Serializer', () => {
     const brokenShape = DiagramItem.createShape({ renderer: null! });
 
     beforeEach(() => {
-        RendererService.addRenderer(checkbox);
+        PluginRegistry.addPlugin(checkbox.plugin);
     });
 
     it('should serialize and deserialize set', () => {

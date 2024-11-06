@@ -8,11 +8,10 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
 import { Vec2 } from '@app/core/utils';
-import { addShape, buildItems, calculateSelection, createClassReducer, Diagram, DiagramItem, DiagramItemSet, EditorState, lockItems, pasteItems, removeItems, renameItems, RendererService, selectItems, Serializer, unlockItems } from '@app/wireframes/model';
+import { addShape, buildItems, calculateSelection, createClassReducer, Diagram, DiagramItem, DiagramItemSet, EditorState, lockItems, pasteItems, PluginRegistry, removeItems, renameItems, selectItems, Serializer, unlockItems } from '@app/wireframes/model';
 import { Button } from '@app/wireframes/shapes/neutral/button';
 import { Icon } from '@app/wireframes/shapes/shared/icon';
 import { Raster } from '@app/wireframes/shapes/shared/raster';
-import { AbstractControl } from '@app/wireframes/shapes/utils/abstract-control';
 
 describe('ItemsReducer', () => {
     const groupId = 'group-1';
@@ -27,9 +26,9 @@ describe('ItemsReducer', () => {
             .addShape(shape3);
     diagram = diagram.group(groupId, [shape1.id, shape2.id]);
 
-    RendererService.addRenderer(new AbstractControl(new Icon()));
-    RendererService.addRenderer(new AbstractControl(new Button()));
-    RendererService.addRenderer(new AbstractControl(new Raster()));
+    PluginRegistry.addPlugin(new Icon());
+    PluginRegistry.addPlugin(new Button());
+    PluginRegistry.addPlugin(new Raster());
 
     const state =
         EditorState.create()

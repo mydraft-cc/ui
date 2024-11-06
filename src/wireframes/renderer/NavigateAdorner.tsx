@@ -6,27 +6,27 @@
 */
 
 import * as React from 'react';
+import { Engine, HitEvent, Listener } from '@app/wireframes/engine';
 import { DiagramItem } from '@app/wireframes/model';
-import { InteractionHandler, InteractionService, SvgEvent } from './interaction-service';
 
 export interface NavigateAdornerProps {
     // The interaction service.
-    interactionService: InteractionService;
+    engine: Engine;
 
     // A function that is invoked when the user clicked a link.
     onNavigate: (item: DiagramItem, link: string) => void;
 }
 
-export class NavigateAdorner extends React.PureComponent<NavigateAdornerProps> implements InteractionHandler {
+export class NavigateAdorner extends React.PureComponent<NavigateAdornerProps> implements Listener {
     public componentDidMount() {
-        this.props.interactionService.addHandler(this);
+        this.props.engine.subscribe(this);
     }
 
     public componentWillUnmount() {
-        this.props.interactionService.removeHandler(this);
+        this.props.engine.unsubscribe(this);
     }
 
-    public onClick(event: SvgEvent, next: (event: SvgEvent) => void) {
+    public onClick(event: HitEvent, next: (event: HitEvent) => void) {
         const target = getShapeWithLink(event);
 
         if (target) {
@@ -38,7 +38,7 @@ export class NavigateAdorner extends React.PureComponent<NavigateAdornerProps> i
         return false;
     }
 
-    public onMouseMove(event: SvgEvent, next: (event: SvgEvent) => void) {
+    public onMouseMove(event: HitEvent, next: (event: HitEvent) => void) {
         if (getShapeWithLink(event)) {
             document.body.style.cursor = 'pointer';
         } else {
@@ -53,11 +53,11 @@ export class NavigateAdorner extends React.PureComponent<NavigateAdornerProps> i
     }
 }
 
-function getShapeWithLink(event: SvgEvent) {
-    const link = event.shape?.link;
+function getShapeWithLink(event: HitEvent) {
+    const link = event.item?.link;
 
     if (link) {
-        return { shape: event.shape, link };
+        return { shape: event.item, link };
     } else {
         return null;
     }

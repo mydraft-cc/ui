@@ -5,13 +5,14 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { ComponentMeta } from '@storybook/react';
+import { Meta } from '@storybook/react';
 import * as svg from '@svgdotjs/svg.js';
 import * as React from 'react';
-import { Color, Rect2, SVGHelper } from '@app/core';
-import { SVGRenderer2 } from './svg-renderer2';
+import { Color, Rect2 } from '@app/core';
+import { SvgRenderer } from './renderer';
+import { SvgHelper } from './utils';
 
-const RendererHelper = ({ render }: { render: (renderer: SVGRenderer2, width: number, color: string) => void }) => {
+const RendererHelper = ({ render }: { render: (renderer: SvgRenderer, width: number, color: string) => void }) => {
     const [document, setDocument] = React.useState<svg.Svg>();
     const innerRef = React.useRef<SVGSVGElement>(null);
 
@@ -31,20 +32,20 @@ const RendererHelper = ({ render }: { render: (renderer: SVGRenderer2, width: nu
         const itemCount = 10;
         const itemHeight = 50;
 
-        document.viewbox(0, 0, itemCount * itemHeight, 100);
+        document.viewbox(0, 0, 100, itemCount * itemHeight);
         document.clear();
         
-        SVGHelper.setSize(document, itemCount * itemHeight, 100);
+        SvgHelper.setSize(document, 100, itemCount * itemHeight);
 
-        const renderer2 = new SVGRenderer2();
+        const renderer2 = new SvgRenderer();
 
         for (let i = 0; i < itemCount; i++) {
             const group = document.group();
 
             const color = Color.fromHsv((360 / itemCount) * i, 1, 0.75);
 
-            SVGHelper.setSize(group, itemHeight, 100);
-            SVGHelper.setPosition(group, 0.5, (i * itemHeight) + 0.5);
+            SvgHelper.setSize(group, 100, itemHeight);
+            SvgHelper.setPosition(group, 0.5, (i * itemHeight) + 0.5);
 
             renderer2.setContainer(group);
             render(renderer2, i, color.toString());
@@ -60,7 +61,7 @@ const RendererHelper = ({ render }: { render: (renderer: SVGRenderer2, width: nu
 
 export default {
     component: RendererHelper,
-} as ComponentMeta<typeof RendererHelper>;
+} as Meta<typeof RendererHelper>;
 
 export const Rect = () => {
     return (
@@ -100,8 +101,6 @@ export const RoundedRectRight = () => {
         />
     );
 };
-
-
 
 export const RoundedRectTop = () => {
     return (

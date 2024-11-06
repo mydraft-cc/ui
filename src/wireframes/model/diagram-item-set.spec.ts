@@ -73,10 +73,20 @@ describe('Diagram Item Set', () => {
     it('should calculate editable once', () => {
         const set = DiagramItemSet.createFromDiagram([root1, root2, groupId], diagram);
 
-        const editable1 = set.deepEditableItems;
-        const editable2 = set.deepEditableItems;
+        const editable1 = set.editableItems;
+        const editable2 = set.editableItems;
 
         expect(editable1.map(x => x.id)).toEqual([root1.id, groupId, child1.id, child2.id]);
+        expect(editable1).toBe(editable2);
+    });
+
+    it('should calculate editable ids once', () => {
+        const set = DiagramItemSet.createFromDiagram([root1, root2, groupId], diagram);
+
+        const editable1 = set.editableIds;
+        const editable2 = set.editableIds;
+
+        expect(editable1).toEqual(new Set([root1.id, groupId, child1.id, child2.id]));
         expect(editable1).toBe(editable2);
     });
 });

@@ -6,18 +6,15 @@
 */
 
 import * as React from 'react';
-import { Rect2, sizeInPx, Subscription, Vec2 } from '@app/core';
+import { Rect2, sizeInPx, Subscription, ViewBox } from '@app/core';
 import { ActionButton, useAlignment } from '@app/wireframes/components/actions';
 import { Diagram, DiagramItemSet } from '@app/wireframes/model';
 import { PreviewEvent } from './preview';
 import './QuickbarAdorner.scss';
 
 export interface QuickbarAdornerProps {
-    // The current zoom value.
-    zoom: number;
-
-    // The size of the view.
-    viewSize: Vec2;
+    // The viewbox.
+    viewBox: ViewBox;
 
     // The selected diagram.
     selectedDiagram: Diagram;
@@ -34,7 +31,7 @@ export const QuickbarAdorner = (props: QuickbarAdornerProps) => {
         previewStream,
         selectedDiagram,
         selectionSet,
-        zoom,
+        viewBox,
     } = props;
 
     const forAlignment = useAlignment();
@@ -75,8 +72,8 @@ export const QuickbarAdorner = (props: QuickbarAdornerProps) => {
         return null;
     }
 
-    const x = sizeInPx(Math.round(zoom * Math.max(0, selectionRect.x)));
-    const y = sizeInPx(Math.round(zoom * selectionRect.y - 100));
+    const x = sizeInPx(-viewBox.minX + Math.round(viewBox.zoom * Math.max(0, selectionRect.x)));
+    const y = sizeInPx(-viewBox.minY + Math.round(viewBox.zoom * selectionRect.y - 100));
 
     return (
         <div ref={toolbarRoot}>

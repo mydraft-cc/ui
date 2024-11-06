@@ -5,12 +5,13 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import * as svg from '@svgdotjs/svg.js';
 import * as React from 'react';
-import { Rotation, SVGHelper, Vec2 } from '@app/core';
-import { ShapePlugin } from '@app/wireframes/interface';
-import { DiagramItem, Transform } from '@app/wireframes/model';
-import { AbstractControl, DefaultConstraintFactory } from './utils/abstract-control';
+import { Rotation, Vec2, ViewBox } from '@app/core';
+import { EngineItem } from '@app/wireframes/engine';
+import { SvgCanvasView } from '@app/wireframes/engine/svg/canvas/SvgCanvas';
+import { SvgEngine } from '@app/wireframes/engine/svg/engine';
+import { ShapePlugin, Size } from '@app/wireframes/interface';
+import { DefaultConstraintFactory, DiagramItem, Transform } from '@app/wireframes/model';
 
 interface ShapeRendererProps {
     plugin: ShapePlugin;
@@ -41,8 +42,8 @@ export const ShapeRenderer = React.memo(React.forwardRef<HTMLDivElement, ShapeRe
         usePreviewSize, 
     } = props;
 
-    const [document, setDocument] = React.useState<svg.Svg>();
-    const innerRef = React.useRef<SVGSVGElement>(null);
+    const [engine, setEngine] = React.useState<SvgEngine>();
+    const item = React.useRef<EngineItem>();
 
     const viewBox = getViewBox(plugin, 
         desiredWidth,
@@ -51,52 +52,31 @@ export const ShapeRenderer = React.memo(React.forwardRef<HTMLDivElement, ShapeRe
         usePreviewOffset);
 
     React.useEffect(() => {
-        if (!innerRef.current) {
-            return;
-        }
-
-        setDocument(svg.SVG(innerRef.current!).css({ overflow: 'visible' }));
-    }, []);
-
-    React.useEffect(() => {
-        if (!document) {
-            return;
-        }
-
-        document.viewbox(viewBox.x, viewBox.y, viewBox.outerSize.x, viewBox.outerSize.y);
-    }, [document, viewBox]);
-
-    React.useEffect(() => {
-        if (!document) {
+        if (!engine) {
             return;
         }
 
         if (desiredWidth && desiredHeight) {
-            let aspectRatio = viewBox.outerSize.x / viewBox.outerSize.y;
+            let aspectRatio = viewBox.maxX / viewBox.minY;
         
             if (aspectRatio > desiredWidth / desiredHeight) {
-                document.width(desiredWidth);
+                engine.doc.width(desiredWidth);
             } else {
-                document.height(desiredHeight);
+                engine.doc.height(desiredHeight);
             }
         } else {
-            document.width(viewBox.outerSize.x).height(viewBox.outerSize.y); 
+            engine.doc.width(viewBox.maxX).height(viewBox.maxY); 
         }
-    }, [desiredHeight, desiredWidth, document, viewBox]);
+    }, [desiredHeight, desiredWidth, engine, viewBox]);
 
     React.useEffect(() => {
-        if (!document) {
+        if (!engine) {
             return;
         }
 
-        document.clear();
+        engine.doc.clear();
 
-        const svgControl = new AbstractControl(plugin);
-        const svgGroup = document.group();
-
-        SVGHelper.setPosition(svgGroup, 0.5, 0.5);
-
-        const item =
+        const shape =
             DiagramItem.createShape({
                 renderer: plugin.identifier(),
                 transform: new Transform(
@@ -112,18 +92,16 @@ export const ShapeRenderer = React.memo(React.forwardRef<HTMLDivElement, ShapeRe
                 constraint: plugin?.constraint?.(DefaultConstraintFactory.INSTANCE),
             });
 
-        svgControl.setContext(svgGroup);
-
-        const newElement: svg.Element = svgControl.render(item, undefined);
-
-        if (!newElement.parent()) {
-            svgGroup.add(newElement);
+        if (!item.current) {
+            item.current = engine.layer(plugin.identifier()).item(plugin);
         }
-    }, [appearance, document, plugin, viewBox]);
+
+        item.current.plot(shape);
+    }, [appearance, engine, plugin, viewBox]);
 
     return (
         <div ref={ref} style={{ lineHeight: 0 }}>
-            <svg ref={innerRef} />
+            <SvgCanvasView viewBox={viewBox} onInit={setEngine} />
         </div>
     );
 }));
@@ -133,7 +111,7 @@ export function getViewBox(
     desiredWidth?: number,
     desiredHeight?: number,
     usePreviewSize?: boolean, 
-    usePreviewOffset?: boolean) {
+    usePreviewOffset?: boolean): ViewBox & { size: Size } {
     let x = 0;
     let y = 0;
 
@@ -158,5 +136,5 @@ export function getViewBox(
         }
     }
 
-    return { x, y, size, outerSize };
+    return { minX: x, minY: y, maxX: outerSize.x, maxY: outerSize.y, size, zoom: 1 };
 }

@@ -10,13 +10,11 @@
 import * as svg from '@svgdotjs/svg.js';
 import { marked } from 'marked';
 import { Rect } from 'react-measure';
-import { escapeHTML, Rect2, sizeInPx, SVGHelper, Types } from '@app/core/utils';
-import { RendererColor, RendererElement, RendererOpacity, RendererText, RendererWidth, Shape, ShapeFactory, ShapeFactoryFunc, ShapeProperties, ShapePropertiesFunc, TextConfig, TextDecoration } from '@app/wireframes/interface';
-import { AbstractRenderer2 } from './abstract-renderer';
+import { escapeHTML, Rect2, TextMeasurer, Types } from '@app/core/utils';
+import { RendererColor, RendererElement, RendererOpacity, RendererText, RendererWidth, Shape, ShapeProperties, ShapePropertiesFunc, ShapeRenderer, ShapeRendererFunc, TextConfig, TextDecoration } from '@app/wireframes/interface';
+import { SvgHelper } from './utils';
 
-export * from './abstract-renderer';
-
-class Factory implements ShapeFactory {
+export class SvgRenderer implements ShapeRenderer {
     private container: svg.G = null!;
     private containerIndex = 0;
     private clipping = false;
@@ -24,6 +22,10 @@ class Factory implements ShapeFactory {
 
     public getContainer() {
         return this.container;
+    }
+
+    public getTextWidth(text: string, fontSize: number, fontFamily: string) {
+        return TextMeasurer.DEFAULT.getTextWidth(text, fontSize, fontFamily);
     }
 
     public setContainer(container: svg.G, index = 0, clipping = false) {
@@ -70,7 +72,7 @@ class Factory implements ShapeFactory {
         return this.new('path', () => new svg.Path(), p => {
             p.setBackgroundColor('transparent');
             p.setStrokeWidth(actualStroke);
-            p.setPath(SVGHelper.roundedRectangleLeft(actualBounds, radius));
+            p.setPath(SvgHelper.roundedRectangleLeft(actualBounds, radius));
         }, properties);
     }
 
@@ -81,7 +83,7 @@ class Factory implements ShapeFactory {
         return this.new('path', () => new svg.Path(), p => {
             p.setBackgroundColor('transparent');
             p.setStrokeWidth(actualStroke);
-            p.setPath(SVGHelper.roundedRectangleRight(actualBounds, radius));
+            p.setPath(SvgHelper.roundedRectangleRight(actualBounds, radius));
         }, properties);
     }
 
@@ -92,7 +94,7 @@ class Factory implements ShapeFactory {
         return this.new('path', () => new svg.Path(), p => {
             p.setBackgroundColor('transparent');
             p.setStrokeWidth(actualStroke);
-            p.setPath(SVGHelper.roundedRectangleTop(actualBounds, radius));
+            p.setPath(SvgHelper.roundedRectangleTop(actualBounds, radius));
         }, properties);
     }
 
@@ -103,7 +105,7 @@ class Factory implements ShapeFactory {
         return this.new('path', () => new svg.Path(), p => {
             p.setBackgroundColor('transparent');
             p.setStrokeWidth(actualStroke);
-            p.setPath(SVGHelper.roundedRectangleBottom(actualBounds, radius));
+            p.setPath(SvgHelper.roundedRectangleBottom(actualBounds, radius));
         }, properties);
     }
 
@@ -118,7 +120,7 @@ class Factory implements ShapeFactory {
     }
 
     public text(config: RendererText, bounds: Rect2, properties?: ShapePropertiesFunc, allowMarkdown?: boolean) {
-        return this.new('foreignObject', () => SVGHelper.createText(), p => {
+        return this.new('foreignObject', () => SvgHelper.createText(), p => {
             p.setBackgroundColor('transparent');
             p.setText(config?.text, allowMarkdown);
             p.setFontSize(config);
@@ -130,7 +132,7 @@ class Factory implements ShapeFactory {
     }
 
     public textMultiline(config: RendererText, bounds: Rect2, properties?: ShapePropertiesFunc, allowMarkdown?: boolean) {
-        return this.new('foreignObject', () => SVGHelper.createText(), p => {
+        return this.new('foreignObject', () => SvgHelper.createText(), p => {
             p.setBackgroundColor('transparent');
             p.setText(config?.text, allowMarkdown);
             p.setFontSize(config);
@@ -150,7 +152,7 @@ class Factory implements ShapeFactory {
         }, properties);
     }
 
-    public group(items: ShapeFactoryFunc, clip?: ShapeFactoryFunc, properties?: ShapePropertiesFunc) {
+    public group(items: ShapeRendererFunc, clip?: ShapeRendererFunc, properties?: ShapePropertiesFunc) {
         return this.new('g', () => new svg.G(), (_, group) => {
             const clipping = this.clipping;
             const container = this.container;
@@ -255,65 +257,6 @@ class Factory implements ShapeFactory {
     }
 }
 
-export class SVGRenderer2 extends Factory implements AbstractRenderer2 {
-    private readonly measureDiv: HTMLDivElement;
-
-    public static readonly INSTANCE = new SVGRenderer2();
-
-    public constructor() {
-        super();
-
-        this.measureDiv = document.createElement('div');
-        this.measureDiv.style.height = 'auto';
-        this.measureDiv.style.position = 'absolute';
-        this.measureDiv.style.visibility = 'hidden';
-        this.measureDiv.style.width = 'auto';
-        this.measureDiv.style.whiteSpace = 'nowrap';
-
-        document.body.appendChild(this.measureDiv);
-    }
-
-    public getLocalBounds(element: RendererElement): Rect2 {
-        const e = this.getElement(element);
-
-        if (!e.visible()) {
-            return Rect2.EMPTY;
-        }
-
-        const box: svg.Box = e.bbox();
-
-        return SVGHelper.box2Rect(box);
-    }
-
-    public getBounds(element: RendererElement): Rect2 {
-        const e = this.getElement(element);
-
-        if (!e.visible()) {
-            return Rect2.EMPTY;
-        }
-
-        const box = e.bbox().transform(e.matrixify());
-
-        return SVGHelper.box2Rect(box);
-    }
-
-    private getElement(element: RendererElement): svg.Element {
-        if (element.textElement) {
-            return element.textElement;
-        } else {
-            return element;
-        }
-    }
-
-    public getTextWidth(text: string, fontSize: number, fontFamily: string) {
-        this.measureDiv.textContent = text;
-        this.measureDiv.style.fontSize = sizeInPx(fontSize);
-        this.measureDiv.style.fontFamily = fontFamily;
-
-        return this.measureDiv.clientWidth + 1;
-    }
-}
-
 type PropertySet = Partial<{
     ['color']: any;
     ['fill']: any;
@@ -361,38 +304,38 @@ const PROPERTIES: ReadonlyArray<keyof PropertySet> = [
 class Properties implements ShapeProperties {
     private static readonly SETTERS: Record<keyof PropertySet, (value: any, element: svg.Element) => void> = {
         'color': (value, element) => {
-            SVGHelper.fastSetAttribute(element.node, 'color', value);
+            SvgHelper.fastSetAttribute(element.node, 'color', value);
         },
         'fill': (value, element) => {
-            SVGHelper.setAttribute(element.node, 'fill', value);
+            SvgHelper.setAttribute(element.node, 'fill', value);
         },
         'opacity': (value, element) => {
-            SVGHelper.setAttribute(element.node, 'opacity', value);
+            SvgHelper.setAttribute(element.node, 'opacity', value);
         },
         'preserve-aspect-ratio': (value, element) => {
-            SVGHelper.setAttribute(element.node, 'preserveAspectRatio', value ? 'xMidYMid' : 'none');
+            SvgHelper.setAttribute(element.node, 'preserveAspectRatio', value ? 'xMidYMid' : 'none');
         },
         'stroke': (value, element) => {
-            SVGHelper.setAttribute(element.node, 'stroke', value);
+            SvgHelper.setAttribute(element.node, 'stroke', value);
         },
         'stroke-cap': (value, element) => {
-            SVGHelper.setAttribute(element.node, 'stroke-linecap', value);
+            SvgHelper.setAttribute(element.node, 'stroke-linecap', value);
         },
         'stroke-line-join': (value, element) => {
-            SVGHelper.setAttribute(element.node, 'stroke-linejoin', value);
+            SvgHelper.setAttribute(element.node, 'stroke-linejoin', value);
         },
         'stroke-width': (value, element) => {
-            SVGHelper.setAttribute(element.node, 'stroke-width', value);
+            SvgHelper.setAttribute(element.node, 'stroke-width', value);
         },
         'image': (value, element) => {
-            SVGHelper.setAttribute(element.node, 'href', value);
+            SvgHelper.setAttribute(element.node, 'href', value);
         },
         'path': (value, element) => {
-            SVGHelper.setAttribute(element.node, 'd', value);
+            SvgHelper.setAttribute(element.node, 'd', value);
         },
         'radius': (value, element) => {
-            SVGHelper.setAttribute(element.node, 'rx', value);
-            SVGHelper.setAttribute(element.node, 'ry', value);
+            SvgHelper.setAttribute(element.node, 'rx', value);
+            SvgHelper.setAttribute(element.node, 'ry', value);
         },
         'font-family': (value, element) => {
             const div = element.node.children[0] as HTMLDivElement;
@@ -424,8 +367,16 @@ class Properties implements ShapeProperties {
         'text': (value, element) => {
             const div = element.node.children[0] as HTMLDivElement;
 
+
             if (div?.nodeName === 'DIV') {
-                const textOrHtml = escapeHTML(value);
+                const typed = value as { text: string; markdown?: boolean } | undefined;
+
+                let textOrHtml = '';
+                if (typed?.markdown) {
+                    textOrHtml = marked.parseInline(typed.text) as string;
+                } else if (typed?.text) {
+                    textOrHtml = escapeHTML(typed.text);
+                }
 
                 if (textOrHtml.indexOf('&') >= 0 || textOrHtml.indexOf('<') >= 0) {
                     div.innerHTML = textOrHtml;
@@ -456,17 +407,13 @@ class Properties implements ShapeProperties {
             }
         },
         'transform': (value, element) => {
-            SVGHelper.transformByRect(element, value, false);
+            SvgHelper.transformByRect(element, value, false);
         },
     };
 
-    private element: svg.Element = null!;
     private propertiesNew: PropertySet = {};
     private propertiesOld: PropertySet = {};
-
-    public get shape() {
-        return this.element;
-    }
+    private element: svg.Element = null!;
 
     public static readonly INSTANCE = new Properties();
 
@@ -565,6 +512,12 @@ class Properties implements ShapeProperties {
         return this;
     }
 
+    public setText(text: RendererText | string | null | undefined, markdown?: boolean): ShapeProperties {
+        this.propertiesNew['text'] = { text: getText(text), markdown };
+
+        return this;
+    }
+
     public setStrokeStyle(cap: string, join: string): ShapeProperties {
         this.propertiesNew['stroke-cap'] = cap;
         this.propertiesNew['stroke-line-join'] = join;
@@ -577,16 +530,6 @@ class Properties implements ShapeProperties {
 
         if (Number.isFinite(value)) {
             this.propertiesNew['opacity'] = value;
-        }
-
-        return this;
-    }
-
-    public setText(text: RendererText | string | null | undefined, markdown?: boolean): ShapeProperties {
-        if (markdown) {
-            this.propertiesNew['markdown'] = getText(text);
-        } else {
-            this.propertiesNew['text'] = getText(text);
         }
 
         return this;
@@ -613,25 +556,25 @@ function getBounds(bounds: Rect2, strokeWidth: number) {
 
 function getBackgroundColor(value: RendererColor | null | undefined) {
     if (isShape(value)) {
-        return SVGHelper.toColor(value.backgroundColor);
+        return SvgHelper.toColor(value.backgroundColor);
     } else {
-        return SVGHelper.toColor(value);
+        return SvgHelper.toColor(value);
     }
 }
 
 function getForegroundColor(value: RendererColor | null | undefined) {
     if (isShape(value)) {
-        return SVGHelper.toColor(value.foregroundColor);
+        return SvgHelper.toColor(value.foregroundColor);
     } else {
-        return SVGHelper.toColor(value);
+        return SvgHelper.toColor(value);
     }
 }
 
 function getStrokeColor(value: RendererColor | null | undefined) {
     if (isShape(value)) {
-        return SVGHelper.toColor(value.strokeColor);
+        return SvgHelper.toColor(value.strokeColor);
     } else {
-        return SVGHelper.toColor(value);
+        return SvgHelper.toColor(value);
     }
 }
 
