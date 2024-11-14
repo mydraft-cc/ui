@@ -35,12 +35,4 @@ export abstract class SvgObject implements EngineObject {
     public remove() {
         this.root.remove();
     }
-
-    public label(value?: string): string {
-        if (value) {
-            this.root.id(value);
-        }
-        
-        return this.root.id();
-    }
 }

@@ -8,51 +8,36 @@
 import { Meta } from '@storybook/react';
 import * as React from 'react';
 import { EngineObject, Listener } from './../interface';
-import { SvgCanvasView } from './canvas/SvgCanvas';
-import { SvgEngine } from './engine';
+import { PixiCanvasView } from './canvas/PixiCanvas';
+import { PixiEngine } from './engine';
 
-const RendererHelper = ({ render }: { render: (engine: SvgEngine) => void }) => {
-    const [engine, setEngine] = React.useState<SvgEngine>();
-    
-    React.useEffect(() => {
-        if (engine) {
-            engine?.doc.size(500, 500);
-        }
-    }, [engine, engine?.doc]);
+const RendererHelper = ({ render }: { render: (engine: PixiEngine) => void }) => {
+    const [engine, setEngine] = React.useState<PixiEngine>();
 
     React.useEffect(() => {
         if (engine) {
-            engine.doc.clear();
             render(engine);
         }
     }, [engine, render]);
 
     return (
         <div style={{ lineHeight: 0 }}>
-            <SvgCanvasView viewBox={{ minX: 0, minY: 0, maxX: 500, maxY: 500, zoom: 1 }} onInit={setEngine} />
+            <PixiCanvasView style={{ height: '500px' }} viewBox={{ minX: 0, minY: 0, maxX: 500, maxY: 500, zoom: 1 }} onInit={setEngine} />
         </div>
     );
 };
 
 const HitTest = () => {
-    const [engine, setEngine] = React.useState<SvgEngine>();
+    const [engine, setEngine] = React.useState<PixiEngine>();
     const [relativeX, setRelativeX] = React.useState(0);
     const [relativeY, setRelativeY] = React.useState(0);
     const [hits, setHits] = React.useState<EngineObject[]>();
-    
-    React.useEffect(() => {
-        if (engine) {
-            engine?.doc.size(500, 500);
-        }
-    }, [engine, engine?.doc]);
 
     React.useEffect(() => {
         if (!engine) {
             return;
         }
 
-        engine.doc.clear();
-    
         const layer = engine.layer('layer1');
 
         const rect1 = layer.rect();
@@ -85,10 +70,10 @@ const HitTest = () => {
     }, [engine]);
 
     return (
-        <div style={{ lineHeight: 0 }}>
+        <div style={{ lineHeight: 1.5 }}>
             Hits: {hits?.length}, X: {relativeX}, Y: {relativeY}
 
-            <SvgCanvasView viewBox={{ minX: 0, minY: 0, maxX: 500, maxY: 500, zoom: 1 }} onInit={setEngine} />
+            <PixiCanvasView viewBox={{ minX: 0, minY: 0, maxX: 500, maxY: 500, zoom: 1 }} onInit={setEngine} />
         </div>
     );
 };
@@ -168,7 +153,7 @@ export const Text = () => {
                 text1.fill('black');
                 text1.fontFamily('inherit');
                 text1.fontSize('16px');
-                text1.text('Hello SVG');
+                text1.text('Hello Pixi');
                 text1.plot({ x: 50, y: 100, w: 200, h: 60, padding: 20 });
 
                 const text2 = layer.text();
@@ -176,7 +161,7 @@ export const Text = () => {
                 text2.fill('red');
                 text2.fontFamily('inherit');
                 text2.fontSize('16px');
-                text2.text('Hello SVG');
+                text2.text('Hello Pixi');
                 text1.plot({ x: 50, y: 200, w: 200, h: 60, padding: 20 });
             }}
         />

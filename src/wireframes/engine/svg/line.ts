@@ -6,7 +6,7 @@
 */
 
 import * as svg from '@svgdotjs/svg.js';
-import { EngineLine } from './../interface';
+import { EngineLine, EngineLinePlotArgs } from './../interface';
 import { SvgObject } from './object';
 import { linkToSvg } from './utils';
 
@@ -26,7 +26,7 @@ export class SvgLine extends SvgObject implements EngineLine {
         this.shape.stroke(value);
     }
 
-    public plot(args: { x1: number; y1: number; x2: number; y2: number; width: number }): void {
+    public plot(args: EngineLinePlotArgs): void {
         const { x1, y1, x2, y2, width } = args;
 
         this.shape.plot(x1, y1, x2, y2).stroke({ width });

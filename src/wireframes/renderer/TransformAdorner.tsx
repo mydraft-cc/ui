@@ -7,7 +7,7 @@
 
 import * as React from 'react';
 import { isMiddleMouse, Rotation, Subscription, Timer, Vec2 } from '@app/core';
-import { Engine, EngineLayer, EngineRect, HitEvent, Listener } from '@app/wireframes/engine';
+import { Engine, EngineLayer, EngineMouseEvent, EngineRect, Listener } from '@app/wireframes/engine';
 import { Diagram, DiagramItem, DiagramItemSet, SnapManager, SnapMode, Transform } from '@app/wireframes/model';
 import { OverlayManager } from './../contexts/OverlayContext';
 import { PreviewEvent } from './preview';
@@ -233,15 +233,15 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
         }
     }
 
-    public onMouseDown(event: HitEvent, next: (event: HitEvent) => void) {
+    public onMouseDown(event: EngineMouseEvent, next: (event: EngineMouseEvent) => void) {
         // If the manipulation with the keyboard is still in progress we do not handle the event.
-        if (event.event.ctrlKey || this.moveTimer || this.manipulationMode != Mode.None) {
+        if (event.source.ctrlKey || this.moveTimer || this.manipulationMode != Mode.None) {
             next(event);
             return;
         }
 
         // The middle mouse button is needed for pan and zoom.
-        if (isMiddleMouse(event.event)) {
+        if (isMiddleMouse(event.source)) {
             next(event);
             return;
         }
@@ -273,7 +273,7 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
         return this.props.layer.hitTest(point.x, point.y)[0];
     }
 
-    public onMouseDrag(event: HitEvent, next: (event: HitEvent) => void) {
+    public onMouseDrag(event: EngineMouseEvent, next: (event: EngineMouseEvent) => void) {
         if (this.manipulationMode === Mode.None || !this.startPosition) {
             next(event);
             return;
@@ -291,11 +291,11 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
         // We have moved the mouse and therefore also updated at least one shape.
         this.manipulated = true;
         if (this.manipulationMode === Mode.Move) {
-            this.move(delta, getSnapMode(event.event));
+            this.move(delta, getSnapMode(event.source));
         } else if (this.manipulationMode === Mode.Rotate) {
-            this.rotate(event, getSnapMode(event.event));
+            this.rotate(event, getSnapMode(event.source));
         } else {
-            this.resize(delta, getSnapMode(event.event));
+            this.resize(delta, getSnapMode(event.source));
         }
 
         this.renderPreview();
@@ -330,7 +330,7 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
         this.debug();
     }
 
-    private rotate(event: HitEvent, snapMode: SnapMode, showOverlay = true) {
+    private rotate(event: EngineMouseEvent, snapMode: SnapMode, showOverlay = true) {
         const deltaValue = this.getCummulativeRotation(event);
         const deltaRotation = this.props.snapManager.snapRotating(this.startTransform, deltaValue, snapMode);
 
@@ -341,7 +341,7 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
         }
     }
 
-    private getCummulativeRotation(event: HitEvent): number {
+    private getCummulativeRotation(event: EngineMouseEvent): number {
         const center = this.startTransform.position;
 
         const eventPoint = event.position;
@@ -420,7 +420,7 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
         return new Vec2(x, y);
     }
 
-    public onMouseUp(event: HitEvent, next: (event: HitEvent) => void) {    
+    public onMouseUp(event: EngineMouseEvent, next: (event: EngineMouseEvent) => void) {    
         if (this.manipulationMode === Mode.None) {
             next(event);
             return;

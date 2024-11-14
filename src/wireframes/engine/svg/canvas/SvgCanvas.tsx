@@ -8,7 +8,7 @@
 import * as svg from '@svgdotjs/svg.js';
 import * as React from 'react';
 import { Vec2, ViewBox } from '@app/core';
-import { SvgEngine } from '../engine';
+import { SvgEngine } from './../engine';
 
 export interface SvgCanvasProps {
     // The optional viewbox.

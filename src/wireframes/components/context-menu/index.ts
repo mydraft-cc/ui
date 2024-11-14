@@ -7,7 +7,7 @@
 
 import { MenuProps } from 'antd/lib';
 import { texts } from '@app/texts';
-import { buildMenuItem, useAlignment, useClipboard, useGrouping, useRemove } from '../actions';
+import { buildMenuItem, useAlignment, useClipboard, useGrouping, useRemove } from './../actions';
 
 export const useContextMenu = (isOpen: boolean) => {
     const forAlignment = useAlignment();

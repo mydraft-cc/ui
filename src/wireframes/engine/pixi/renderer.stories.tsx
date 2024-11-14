@@ -6,63 +6,60 @@
 */
 
 import { Meta } from '@storybook/react';
-import * as svg from '@svgdotjs/svg.js';
 import * as React from 'react';
-import { Color, Rect2 } from '@app/core';
-import { SvgRenderer } from './renderer';
-import { SvgHelper } from './utils';
+import { Color, Rect2, Rotation, Vec2 } from '@app/core';
+import { RenderContext, ShapeRenderer } from '@app/wireframes/interface';
+import { DiagramItem, Transform } from '@app/wireframes/model';
+import { PixiCanvasView } from './canvas/PixiCanvas';
+import { PixiEngine } from './engine';
+
+class DummyPlugin {
+    constructor(
+        private readonly renderer: (renderer: ShapeRenderer, width: number, color: string) => void,
+        private readonly width: number,
+        private readonly color: string,
+    ) {
+    }
+
+    public render(ctx: RenderContext) {
+        this.renderer(ctx.renderer2, this.width, this.color);
+    }
+}
 
 interface RendererHelperProps {
     // The render function.
-    onRender: (renderer: SvgRenderer, width: number, color: string) => void;
+    onRender: (renderer: ShapeRenderer, width: number, color: string) => void;
 
     // The number of iterations.
     iterations?: number;
 }
 
-const RendererHelper = ({ iterations, onRender: render }: RendererHelperProps) => {
-    const [document, setDocument] = React.useState<svg.Svg>();
-    const innerRef = React.useRef<SVGSVGElement>(null);
+const RendererHelper = ({ iterations, onRender }: RendererHelperProps) => {
+    const [engine, setEngine] = React.useState<PixiEngine>();
 
     React.useEffect(() => {
-        if (!innerRef.current) {
-            return;
+        if (engine) {
+            const layer = engine.layer('default');
+            const itemCount = iterations || 10;
+            const itemHeight = 50;
+
+            for (let i = 0; i < itemCount; i++) {    
+                const color = Color.fromHsv((360 / itemCount) * i, 1, 0.75);
+
+                const item = layer.item(new DummyPlugin(onRender, i, color.toString()) as any);
+                item.plot(
+                    DiagramItem.createShape({ 
+                        renderer: 'none',
+                        transform: new Transform(new Vec2(50, i * itemHeight), new Vec2(100, itemHeight), Rotation.ZERO),
+                    }));
+
+            }
         }
-
-        setDocument(svg.SVG(innerRef.current!).css({ overflow: 'visible' }));
-    }, []);
-
-    React.useEffect(() => {
-        if (!document) {
-            return;
-        }
-
-        const itemCount = iterations || 10;
-        const itemHeight = 50;
-
-        document.viewbox(0, 0, 100, itemCount * itemHeight);
-        document.clear();
-        
-        SvgHelper.setSize(document, 100, itemCount * itemHeight);
-
-        const renderer2 = new SvgRenderer();
-
-        for (let i = 0; i < itemCount; i++) {
-            const group = document.group();
-
-            const color = Color.fromHsv((360 / itemCount) * i, 1, 0.75);
-
-            SvgHelper.setSize(group, 95, itemHeight);
-            SvgHelper.setPosition(group, 0.5, (i * itemHeight) + 0.5);
-
-            renderer2.setContainer(group);
-            render(renderer2, i, color.toString());
-        }
-    }, [document, iterations, render]);
+    }, [engine, iterations, onRender]);
 
     return (
         <div style={{ lineHeight: 0 }}>
-            <svg ref={innerRef} />
+            <PixiCanvasView style={{ height: '500px' }} viewBox={{ minX: 0, minY: 0, maxX: 500, maxY: 500, zoom: 1 }} onInit={setEngine} />
         </div>
     );
 };
@@ -149,7 +146,7 @@ export const Ellipse = () => {
     );
 };
 
-export const Text = () => {
+export const TextCenter = () => {
     return (
         <RendererHelper
             iterations={1}
@@ -158,7 +155,45 @@ export const Text = () => {
                     i.rectangle(1, 0, new Rect2(0, 0, 100, 60), p => p
                         .setStrokeColor('black'),
                     );
-                    i.text({ text: 'Hello World' }, new Rect2(0, 0, 100, 60), p => p
+                    i.text({ text: 'Hello World', alignment: 'center' }, new Rect2(0, 0, 100, 60), p => p
+                        .setBackgroundColor('#aaa')
+                        .setStrokeColor(color),
+                    );
+                })
+            }
+        />
+    );
+};
+
+export const TextLeft = () => {
+    return (
+        <RendererHelper
+            iterations={1}
+            onRender={(renderer, color) =>
+                renderer.group(i => {
+                    i.rectangle(1, 0, new Rect2(0, 0, 100, 60), p => p
+                        .setStrokeColor('black'),
+                    );
+                    i.text({ text: 'Hello World', alignment: 'left' }, new Rect2(0, 0, 100, 60), p => p
+                        .setBackgroundColor('#aaa')
+                        .setStrokeColor(color),
+                    );
+                })
+            }
+        />
+    );
+};
+
+export const TextRight = () => {
+    return (
+        <RendererHelper
+            iterations={1}
+            onRender={(renderer, color) =>
+                renderer.group(i => {
+                    i.rectangle(1, 0, new Rect2(0, 0, 100, 60), p => p
+                        .setStrokeColor('black'),
+                    );
+                    i.text({ text: 'Hello World', alignment: 'right' }, new Rect2(0, 0, 100, 60), p => p
                         .setBackgroundColor('#aaa')
                         .setStrokeColor(color),
                     );
@@ -193,10 +228,10 @@ export const MultilineText = () => {
             iterations={1}
             onRender={(renderer, color) =>
                 renderer.group(i => {
-                    i.rectangle(1, 0, new Rect2(0, 0, 110, 60), p => p
+                    i.rectangle(1, 0, new Rect2(0, 0, 100, 60), p => p
                         .setStrokeColor('black'),
                     );
-                    i.textMultiline({ text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.' }, new Rect2(0, 0, 102, 60), p => p
+                    i.textMultiline({ text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.' }, new Rect2(0, 0, 100, 60), p => p
                         .setBackgroundColor('#aaa')
                         .setStrokeColor(color),
                     );
