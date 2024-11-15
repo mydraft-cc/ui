@@ -7,15 +7,12 @@
 
 import { Application } from 'pixi.js';
 import * as React from 'react';
-import { Vec2, ViewBox } from '@app/core';
+import { ViewBox } from '@app/core';
 import { PixiEngine } from './../engine';
 
 export interface PixiCanvasProps {
     // The optional viewbox.
     viewBox: ViewBox;
-    
-    // The size.
-    size?: Vec2;
 
     // The class name.
     className?: string;

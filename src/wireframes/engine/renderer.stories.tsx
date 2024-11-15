@@ -6,12 +6,17 @@
 */
 
 import { Meta } from '@storybook/react';
+import { Card, Col, Row } from 'antd';
 import * as React from 'react';
 import { Color, Rect2, Rotation, Vec2 } from '@app/core';
 import { RenderContext, ShapeRenderer } from '@app/wireframes/interface';
 import { DiagramItem, Transform } from '@app/wireframes/model';
-import { PixiCanvasView } from './canvas/PixiCanvas';
-import { PixiEngine } from './engine';
+import { CanvasProps } from './canvas';
+import { Engine } from './interface';
+import { PixiCanvasView } from './pixi/canvas/PixiCanvas';
+import { SvgCanvasView } from './svg/canvas/SvgCanvas';
+
+const VIEWBOX = { minX: 0, minY: 0, maxX: 600, maxY: 600, zoom: 1 };
 
 class DummyPlugin {
     constructor(
@@ -26,16 +31,20 @@ class DummyPlugin {
     }
 }
 
-interface RendererHelperProps {
+interface EngineProps {
     // The render function.
     onRender: (renderer: ShapeRenderer, width: number, color: string) => void;
+
+    // True to rotate.
+    rotate?: boolean;
 
     // The number of iterations.
     iterations?: number;
 }
 
-const RendererHelper = ({ iterations, onRender }: RendererHelperProps) => {
-    const [engine, setEngine] = React.useState<PixiEngine>();
+const Canvas = (props: EngineProps & { canvasView: React.ComponentType<CanvasProps> }) => {
+    const [engine, setEngine] = React.useState<Engine>();
+    const { iterations, onRender, rotate } = props;
 
     React.useEffect(() => {
         if (engine) {
@@ -50,27 +59,62 @@ const RendererHelper = ({ iterations, onRender }: RendererHelperProps) => {
                 item.plot(
                     DiagramItem.createShape({ 
                         renderer: 'none',
-                        transform: new Transform(new Vec2(50, i * itemHeight), new Vec2(100, itemHeight), Rotation.ZERO),
+                        transform: new Transform(
+                            new Vec2(100, 50 + i * itemHeight), 
+                            new Vec2(100, itemHeight),
+                            rotate ? 
+                                Rotation.fromDegree(i * 10) :
+                                Rotation.ZERO),
                     }));
 
             }
         }
-    }, [engine, iterations, onRender]);
+    }, [engine, iterations, onRender, rotate]);
 
     return (
         <div style={{ lineHeight: 0 }}>
-            <PixiCanvasView style={{ height: '500px' }} viewBox={{ minX: 0, minY: 0, maxX: 500, maxY: 500, zoom: 1 }} onInit={setEngine} />
+            <props.canvasView style={{ height: '600px', width: '600px' }} viewBox={VIEWBOX} onInit={setEngine} />
         </div>
     );
 };
 
+const CompareView = (props: EngineProps) => {
+    return (
+        <Row gutter={8}>
+            <Col span={12}>
+                <Card title='SVG' style={{ overflow: 'hidden' }}>
+                    <Canvas canvasView={SvgCanvasView} {...props} />
+                </Card>
+            </Col>
+            <Col span={12}>
+                <Card title='PIXI' style={{ overflow: 'hidden' }}>
+                    <Canvas canvasView={PixiCanvasView} {...props} />
+                </Card>
+            </Col>
+        </Row>
+    );
+};
+
 export default {
-    component: RendererHelper,
-} as Meta<typeof RendererHelper>;
+    component: CompareView,
+} as Meta<typeof Canvas>;
 
 export const Rect = () => {
     return (
-        <RendererHelper
+        <CompareView
+            onRender={(renderer, strokeWidth, color) =>
+                renderer.rectangle(strokeWidth, 0, new Rect2(0, 0, 100, 60), p => p
+                    .setBackgroundColor('#aaa')
+                    .setStrokeColor(color),
+                )
+            }
+        />
+    );
+};
+export const RotatedRect = () => {
+    return (
+        <CompareView
+            rotate={true}
             onRender={(renderer, strokeWidth, color) =>
                 renderer.rectangle(strokeWidth, 0, new Rect2(0, 0, 100, 60), p => p
                     .setBackgroundColor('#aaa')
@@ -83,7 +127,7 @@ export const Rect = () => {
 
 export const RoundedRectLeft = () => {
     return (
-        <RendererHelper
+        <CompareView
             onRender={(renderer, strokeWidth, color) =>
                 renderer.roundedRectangleLeft(strokeWidth, 20, new Rect2(0, 0, 100, 60), p => p
                     .setBackgroundColor('#aaa')
@@ -96,7 +140,7 @@ export const RoundedRectLeft = () => {
 
 export const RoundedRectRight = () => {
     return (
-        <RendererHelper
+        <CompareView
             onRender={(renderer, strokeWidth, color) =>
                 renderer.roundedRectangleRight(strokeWidth, 20, new Rect2(0, 0, 100, 60), p => p
                     .setBackgroundColor('#aaa')
@@ -109,7 +153,7 @@ export const RoundedRectRight = () => {
 
 export const RoundedRectTop = () => {
     return (
-        <RendererHelper
+        <CompareView
             onRender={(renderer, strokeWidth, color) =>
                 renderer.roundedRectangleTop(strokeWidth, 20, new Rect2(0, 0, 100, 60), p => p
                     .setBackgroundColor('#aaa')
@@ -122,7 +166,7 @@ export const RoundedRectTop = () => {
 
 export const RoundedRectBottom = () => {
     return (
-        <RendererHelper
+        <CompareView
             onRender={(renderer, strokeWidth, color) =>
                 renderer.roundedRectangleBottom(strokeWidth, 20, new Rect2(0, 0, 100, 60), p => p
                     .setBackgroundColor('#aaa')
@@ -135,7 +179,7 @@ export const RoundedRectBottom = () => {
 
 export const Ellipse = () => {
     return (
-        <RendererHelper
+        <CompareView
             onRender={(renderer, strokeWidth, color) =>
                 renderer.ellipse(strokeWidth, new Rect2(0, 0, 100, 60), p => p
                     .setBackgroundColor('#aaa')
@@ -148,14 +192,33 @@ export const Ellipse = () => {
 
 export const TextCenter = () => {
     return (
-        <RendererHelper
+        <CompareView
             iterations={1}
             onRender={(renderer, color) =>
                 renderer.group(i => {
                     i.rectangle(1, 0, new Rect2(0, 0, 100, 60), p => p
                         .setStrokeColor('black'),
                     );
-                    i.text({ text: 'Hello World', alignment: 'center' }, new Rect2(0, 0, 100, 60), p => p
+                    i.text({ text: 'Hello Engine', alignment: 'center' }, new Rect2(0, 0, 100, 60), p => p
+                        .setBackgroundColor('#aaa')
+                        .setStrokeColor(color),
+                    );
+                })
+            }
+        />
+    );
+};
+
+export const TextUnderline = () => {
+    return (
+        <CompareView
+            iterations={1}
+            onRender={(renderer, color) =>
+                renderer.group(i => {
+                    i.rectangle(1, 0, new Rect2(0, 0, 100, 60), p => p
+                        .setStrokeColor('black'),
+                    );
+                    i.text({ text: 'y j g', alignment: 'center' }, new Rect2(0, 0, 100, 60), p => p
                         .setBackgroundColor('#aaa')
                         .setStrokeColor(color),
                     );
@@ -167,14 +230,14 @@ export const TextCenter = () => {
 
 export const TextLeft = () => {
     return (
-        <RendererHelper
+        <CompareView
             iterations={1}
             onRender={(renderer, color) =>
                 renderer.group(i => {
                     i.rectangle(1, 0, new Rect2(0, 0, 100, 60), p => p
                         .setStrokeColor('black'),
                     );
-                    i.text({ text: 'Hello World', alignment: 'left' }, new Rect2(0, 0, 100, 60), p => p
+                    i.text({ text: 'Hello Engine', alignment: 'left' }, new Rect2(0, 0, 100, 60), p => p
                         .setBackgroundColor('#aaa')
                         .setStrokeColor(color),
                     );
@@ -186,14 +249,14 @@ export const TextLeft = () => {
 
 export const TextRight = () => {
     return (
-        <RendererHelper
+        <CompareView
             iterations={1}
             onRender={(renderer, color) =>
                 renderer.group(i => {
                     i.rectangle(1, 0, new Rect2(0, 0, 100, 60), p => p
                         .setStrokeColor('black'),
                     );
-                    i.text({ text: 'Hello World', alignment: 'right' }, new Rect2(0, 0, 100, 60), p => p
+                    i.text({ text: 'Hello Engine', alignment: 'right' }, new Rect2(0, 0, 100, 60), p => p
                         .setBackgroundColor('#aaa')
                         .setStrokeColor(color),
                     );
@@ -205,7 +268,7 @@ export const TextRight = () => {
 
 export const TruncatedText = () => {
     return (
-        <RendererHelper
+        <CompareView
             iterations={1}
             onRender={(renderer, color) =>
                 renderer.group(i => {
@@ -224,7 +287,7 @@ export const TruncatedText = () => {
 
 export const MultilineText = () => {
     return (
-        <RendererHelper
+        <CompareView
             iterations={1}
             onRender={(renderer, color) =>
                 renderer.group(i => {
@@ -237,6 +300,54 @@ export const MultilineText = () => {
                     );
                 })
             }
+        />
+    );
+};
+
+export const Raster = () => {
+    return (
+        <CompareView
+            iterations={1}
+            onRender={(renderer) => 
+                renderer.group(i => {
+                    i.raster('https://picsum.photos/id/58/200/300', new Rect2(0, 0, 100, 100), false);
+                    i.rectangle(1, 0, new Rect2(0, 0, 100, 100), p => p
+                        .setStrokeColor('black'),
+                    );
+                })
+            }
+        />
+    );
+};
+
+export const RasterAspectRatioWidth = () => {
+    return (
+        <CompareView
+            iterations={1}
+            onRender={(renderer) => 
+                renderer.group(i => {
+                    i.raster('https://picsum.photos/id/58/400/100', new Rect2(0, 0, 100, 100), true);
+                    i.rectangle(1, 0, new Rect2(0, 0, 100, 100), p => p
+                        .setStrokeColor('black'),
+                    );
+                })
+            } 
+        />
+    );
+};
+
+export const RasterAspectRatioHeight = () => {
+    return (
+        <CompareView
+            iterations={1}
+            onRender={(renderer) => 
+                renderer.group(i => {
+                    i.raster('https://picsum.photos/id/58/100/400', new Rect2(0, 0, 100, 100), true);
+                    i.rectangle(1, 0, new Rect2(0, 0, 100, 100), p => p
+                        .setStrokeColor('black'),
+                    );
+                })
+            } 
         />
     );
 };

@@ -8,7 +8,7 @@
 /* eslint-disable quote-props */
 
 import { marked } from 'marked';
-import { Assets, Container, ContainerChild, Graphics, GraphicsPath, HTMLText, Sprite, StrokeStyle, TextStyle, ViewContainer } from 'pixi.js';
+import { Assets, Container, ContainerChild, Graphics, GraphicsPath, HTMLText, Sprite, StrokeStyle, TextStyle, Texture, ViewContainer } from 'pixi.js';
 import { Rect2, TextMeasurer, Types } from '@app/core/utils';
 import { RendererColor, RendererOpacity, RendererText, RendererWidth, Shape, ShapeProperties, ShapePropertiesFunc, ShapeRenderer, ShapeRendererFunc, TextConfig } from '@app/wireframes/interface';
 import { getBackgroundColor, getFontFamily, getFontSize, getForegroundColor, getOpacity, getStrokeColor, getStrokeWidth, getText, getTextAlignment } from './../shared';
@@ -17,11 +17,10 @@ import { PixiHelper } from './utils';
 type Properties = {
     fill?: string | null;
     bounds: Rect2;
-    imagePath: string | null;
-    imageRatio: boolean;
     opacity: number;
     path: string | null;
     radius: number;
+    raster: { source: string; keepRatio?: boolean } | null;
     stroke: StrokeStyle;
     textContent: { text?: string; markdown?: boolean };
     textStyle: Partial<TextStyle>;
@@ -265,7 +264,7 @@ export class PixiRenderer implements ShapeRenderer {
     }
 
     public raster(source: string, bounds: Rect2, preserveAspectRatio?: boolean, properties?: ShapePropertiesFunc) {
-        return this.new(FACTORY_SPRITE, IS_SPRITE, { bounds, imagePath: source, imageRatio: preserveAspectRatio }, properties);
+        return this.new(FACTORY_SPRITE, IS_SPRITE, { bounds, raster: { source, keepRatio: preserveAspectRatio } }, properties);
     }
 
     public group(items: ShapeRendererFunc, clip?: ShapeRendererFunc, properties?: ShapePropertiesFunc) {
@@ -307,12 +306,11 @@ export class PixiRenderer implements ShapeRenderer {
         // Create new properties to ensure to unset properties that are not set anymore.
         const properties: Properties = {
             bounds: Rect2.ZERO,
-            fill: null,
-            imagePath: null,
-            imageRatio: false,
+            fill: 'transparent',
             opacity: 1,
             path: null,
             radius: 0,
+            raster: null,
             stroke: { alignment: 1 },
             textContent: {},
             textStyle: {},
@@ -392,15 +390,12 @@ class PropertiesSetter implements ShapeProperties {
                 element.fill(value as any);
             }
         },
-        'imageRatio': () => {
-            // SvgHelper.setAttribute(element.node, 'd', value);
-        },
         'stroke': (value, element) => {
             if (Types.is(element, Graphics)) {
                 element.stroke({ alignment: 1, ...value });
             }
         },
-        'imagePath': (value, element) => {
+        'raster': (value, element) => {
             if (Types.is(element, Sprite)) {
                 (element as any)['source'] = value;
                 if (!value) {
@@ -408,10 +403,41 @@ class PropertiesSetter implements ShapeProperties {
                     return;
                 }
 
-                Assets.load(value).then(texture => {
-                    if ((element as any)['source'] === value) {
-                        element.texture = texture;
+                const loaded = Assets.load({
+                    src: value.source,
+                    loadParser: 'loadTextures',
+                });
+
+                loaded.then((texture: Texture) => {
+                    let lastRequest = (element as any)['source'] as Properties['raster'] | undefined;
+
+                    if (lastRequest?.source !== value.source) {
+                        return;
                     }
+
+                    if (value?.keepRatio && texture) {
+                        const size = element.getSize();
+
+                        const ratioElement = size.width / size.height;
+                        const ratioImage = texture.width / texture.height;
+                        let w = 0;
+                        let h = 0;
+
+                        if (ratioImage > ratioElement) {
+                            w = size.width;
+                            h = size.width / ratioImage;
+                            element.y = (size.height - h) * 0.5;
+                        } else {
+                            w = size.height * ratioImage;
+                            h = size.height;
+                            element.x = (size.width - w) * 0.5;
+                        }
+
+                        element.width = w;
+                        element.height = h;
+                    }
+
+                    element.texture = texture;
                 });
             }
         },
@@ -505,11 +531,6 @@ class PropertiesSetter implements ShapeProperties {
 
     public setStrokeWidth(width: number): ShapeProperties {
         this.properties.stroke.width = width;
-        return this;
-    }
-
-    public setPreserveAspectValue(value: boolean | null | undefined): ShapeProperties {
-        this.properties.imageRatio = value === true;
         return this;
     }
 

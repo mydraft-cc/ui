@@ -95,13 +95,10 @@ export class SvgEngine implements Engine {
 
     private buildMouseEvent = (event: MouseEvent): EngineMouseEvent => {
         const { x, y } = this.doc.point(event.pageX, event.pageY);
-        const relativeX = Math.round(x);
-        const relativeY = Math.round(y);
-
         const engineEvent =
             new EngineMouseEvent(
                 event,
-                new Vec2(relativeX, relativeY));
+                new Vec2(x, y));
 
         return engineEvent;
     };
@@ -126,13 +123,10 @@ export class SvgEngine implements Engine {
         }
 
         const { x, y } = this.doc.point(event.pageX, event.pageY);
-        const relativeX = Math.round(x);
-        const relativeY = Math.round(y);
-
         const engineEvent =
             new EngineHitEvent(
                 event,
-                new Vec2(relativeX, relativeY),
+                new Vec2(x, y),
                 eventObject as any,
                 eventItem);
 

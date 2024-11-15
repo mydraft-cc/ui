@@ -6,53 +6,65 @@
 */
 
 import { Meta } from '@storybook/react';
+import { Card, Col, Row } from 'antd';
 import * as React from 'react';
-import { EngineObject, Listener } from './../interface';
-import { SvgCanvasView } from './canvas/SvgCanvas';
-import { SvgEngine } from './engine';
+import { CanvasProps } from './canvas';
+import { Engine, EngineObject, Listener } from './interface';
+import { PixiCanvasView } from './pixi/canvas/PixiCanvas';
+import { SvgCanvasView } from './svg/canvas/SvgCanvas';
 
-const RendererHelper = ({ render }: { render: (engine: SvgEngine) => void }) => {
-    const [engine, setEngine] = React.useState<SvgEngine>();
-    
+const VIEWBOX = { minX: 0, minY: 0, maxX: 500, maxY: 500, zoom: 1 };
+
+interface EngineProps {
+    // The render function.
+    onRender: (engine: Engine) => void;
+}
+
+const Canvas = (props: EngineProps & { canvasView: React.ComponentType<CanvasProps> }) => {
+    const [engine, setEngine] = React.useState<Engine>();
+    const { onRender } = props;
+
     React.useEffect(() => {
         if (engine) {
-            engine?.doc.size(500, 500);
+            onRender(engine);
         }
-    }, [engine, engine?.doc]);
-
-    React.useEffect(() => {
-        if (engine) {
-            engine.doc.clear();
-            render(engine);
-        }
-    }, [engine, render]);
+    }, [engine, onRender]);
 
     return (
         <div style={{ lineHeight: 0 }}>
-            <SvgCanvasView viewBox={{ minX: 0, minY: 0, maxX: 500, maxY: 500, zoom: 1 }} onInit={setEngine} />
+            <props.canvasView style={{ height: '500px', width: '500px' }} viewBox={VIEWBOX} onInit={setEngine} />
         </div>
     );
 };
 
-const HitTest = () => {
-    const [engine, setEngine] = React.useState<SvgEngine>();
+const CompareView = (props: EngineProps) => {
+    return (
+        <Row gutter={8}>
+            <Col span={12}>
+                <Card title='SVG' style={{ overflow: 'hidden' }}>
+                    <Canvas canvasView={SvgCanvasView} {...props} />
+                </Card>
+            </Col>
+            <Col span={12}>
+                <Card title='PIXI' style={{ overflow: 'hidden' }}>
+                    <Canvas canvasView={PixiCanvasView} {...props} />
+                </Card>
+            </Col>
+        </Row>
+    );
+};
+
+const HitTestForCanvas = (props: { canvasView: React.ComponentType<CanvasProps> }) => {
+    const [engine, setEngine] = React.useState<Engine>();
     const [relativeX, setRelativeX] = React.useState(0);
     const [relativeY, setRelativeY] = React.useState(0);
     const [hits, setHits] = React.useState<EngineObject[]>();
-    
-    React.useEffect(() => {
-        if (engine) {
-            engine?.doc.size(500, 500);
-        }
-    }, [engine, engine?.doc]);
 
     React.useEffect(() => {
         if (!engine) {
             return;
         }
 
-        engine.doc.clear();
-    
         const layer = engine.layer('layer1');
 
         const rect1 = layer.rect();
@@ -60,7 +72,7 @@ const HitTest = () => {
         rect1.strokeColor('red');
         rect1.strokeWidth(2);
         rect1.plot({ x: 100, y: 150, w: 300, h: 200, rotation: 45 });
-
+    
         const rect2 = layer.rect();
         rect2.fill('yellow');
         rect2.strokeColor('green');
@@ -85,17 +97,41 @@ const HitTest = () => {
     }, [engine]);
 
     return (
-        <div style={{ lineHeight: 0 }}>
+        
+        <div style={{ lineHeight: 1.5 }}>
             Hits: {hits?.length}, X: {relativeX}, Y: {relativeY}
 
-            <SvgCanvasView viewBox={{ minX: 0, minY: 0, maxX: 500, maxY: 500, zoom: 1 }} onInit={setEngine} />
+            <props.canvasView style={{ height: '500px', width: '500px' }} viewBox={VIEWBOX} onInit={setEngine} />
         </div>
     );
 };
 
+const HitTest = () => {
+    return (
+        <Row gutter={8}>
+            <Col span={12}>
+                <Card title='SVG' style={{ overflow: 'hidden' }}>
+                    <HitTestForCanvas canvasView={SvgCanvasView} />
+                </Card>
+            </Col>
+            <Col span={12}>
+                <Card title='PIXI' style={{ overflow: 'hidden' }}>
+                    <HitTestForCanvas canvasView={PixiCanvasView} />
+                </Card>
+            </Col>
+        </Row>
+    );
+};
+
+
 export default {
-    component: RendererHelper,
-} as Meta<typeof RendererHelper>;
+    component: CompareView,
+    parameters: {
+        backgrounds: {
+            default: 'Gray',
+        },
+    },
+} as Meta<typeof CompareView>;
 
 export const Hits = () => {
     return (
@@ -105,8 +141,8 @@ export const Hits = () => {
 
 export const Rect = () => {
     return (
-        <RendererHelper
-            render={(engine) => {
+        <CompareView
+            onRender={(engine) => {
                 const layer = engine.layer('layer1');
 
                 const rect = layer.rect();
@@ -121,8 +157,8 @@ export const Rect = () => {
 
 export const Ellipse = () => {
     return (
-        <RendererHelper
-            render={(engine) => {
+        <CompareView
+            onRender={(engine) => {
                 const layer = engine.layer('layer1');
 
                 const ellipse = layer.ellipse();
@@ -137,8 +173,8 @@ export const Ellipse = () => {
 
 export const Line1 = () => {
     return (
-        <RendererHelper
-            render={(engine) => {
+        <CompareView
+            onRender={(engine) => {
                 const layer = engine.layer('layer1');
 
                 const line1 = layer.line();
@@ -159,8 +195,8 @@ export const Line1 = () => {
 
 export const Text = () => {
     return (
-        <RendererHelper
-            render={(engine) => {
+        <CompareView
+            onRender={(engine) => {
                 const layer = engine.layer('layer1');
 
                 const text1 = layer.text();
@@ -168,16 +204,16 @@ export const Text = () => {
                 text1.fill('black');
                 text1.fontFamily('inherit');
                 text1.fontSize('16px');
-                text1.text('Hello SVG');
-                text1.plot({ x: 50, y: 100, w: 200, h: 60, padding: 20 });
+                text1.text('Hello Engine');
+                text1.plot({ x: 50, y: 100, w: 200, h: 60, padding: 8 });
 
                 const text2 = layer.text();
                 text2.color('white');
                 text2.fill('red');
                 text2.fontFamily('inherit');
                 text2.fontSize('16px');
-                text2.text('Hello SVG');
-                text1.plot({ x: 50, y: 200, w: 200, h: 60, padding: 20 });
+                text2.text('Hello Engine');
+                text2.plot({ x: 50, y: 200, w: 200, h: 60, padding: 8 });
             }}
         />
     );
@@ -185,8 +221,8 @@ export const Text = () => {
 
 export const Pivot = () => {
     return (
-        <RendererHelper
-            render={(engine) => {
+        <CompareView
+            onRender={(engine) => {
                 const layer = engine.layer('layer1');
                 const rx = 300;
                 const ry = 300;
@@ -215,8 +251,8 @@ export const Pivot = () => {
 
 export const Cursors = () => {
     return (
-        <RendererHelper
-            render={(engine) => {
+        <CompareView
+            onRender={(engine) => {
                 const layer = engine.layer('layer1');
 
                 const move = layer.text();

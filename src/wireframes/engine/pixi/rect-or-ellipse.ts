@@ -79,7 +79,7 @@ export class PixiRect extends PixiObject implements EngineRect {
             graphics.rect(0, 0, w, h);
         } else {
             const dw = w * 0.5;
-            const dh = w * 0.5;
+            const dh = h * 0.5;
 
             graphics.ellipse(dw, dh, dw, dh);
         }

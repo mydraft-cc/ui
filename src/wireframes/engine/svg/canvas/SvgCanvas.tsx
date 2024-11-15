@@ -20,6 +20,9 @@ export interface SvgCanvasProps {
     // The class name.
     className?: string;
 
+    // The CSS properties.
+    style?: React.CSSProperties;
+
     // The callback when the canvas has been initialized.
     onInit: (engine: SvgEngine) => any;
 }
@@ -28,6 +31,7 @@ export const SvgCanvasView = (props: SvgCanvasProps) => {
     const {
         className,
         onInit,
+        style,
         viewBox,
     } = props;
 
@@ -58,6 +62,6 @@ export const SvgCanvasView = (props: SvgCanvasProps) => {
     }, [engine, viewBox.minX, viewBox.minY, viewBox.maxX, viewBox.maxY]);
 
     return (
-        <div className={className} ref={doInit} />
+        <div style={style} className={className} ref={doInit} />
     );
 };

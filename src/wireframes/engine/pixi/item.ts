@@ -86,14 +86,17 @@ export class PixiItem extends PixiObject implements EngineItem {
 
     private arrangeContainer(item: DiagramItem) {
         const to = item.transform;
-        const pivotX = 0; // 0.5 * to.size.x;
-        const pivotY = 0; // 0.5 * to.size.y;
+        const pivotX = 0.5 * to.size.x;
+        const pivotY = 0.5 * to.size.y;
+
+        const x = to.position.x - 0.5 * to.size.x;
+        const y = to.position.y - 0.5 * to.size.y;
         
         const rotation = to.rotation.radian;
 
         this.root.updateTransform({
-            x: to.position.x + pivotX,
-            y: to.position.y + pivotY,
+            x: x + pivotX,
+            y: y + pivotY,
             rotation,
             pivotX,
             pivotY,
