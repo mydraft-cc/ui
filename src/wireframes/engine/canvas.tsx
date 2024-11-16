@@ -11,7 +11,7 @@ import { Engine } from './interface';
 
 export interface CanvasProps {
     // The optional viewbox.
-    viewBox: ViewBox;
+    viewBox?: ViewBox;
 
     // The class name.
     className?: string;

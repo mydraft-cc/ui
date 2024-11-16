@@ -22,7 +22,7 @@ export class PixiEngine implements Engine {
     private isDragging = false;
 
     constructor(
-        private readonly application: Application,
+        public readonly application: Application,
     ) {
         application.stage.eventMode = 'static';
 
@@ -114,10 +114,8 @@ export class PixiEngine implements Engine {
     private buildHitEvent = (event: MouseEvent): EngineHitEvent => {
         const boundary = new EventBoundary(this.application.stage);
 
-        const bounds = this.application.canvas.getBoundingClientRect();
-        const relativeX = event.clientX - bounds.x;
-        const relativeY = event.clientY - bounds.y;
-        const hit = boundary.hitTest(relativeX, relativeY);
+        const { x, y } = this.getPosition(event);
+        const hit = boundary.hitTest(y, y);
         
         let currentTarget: Container = hit;
         let eventObject: EngineObject | null = null;
@@ -140,7 +138,7 @@ export class PixiEngine implements Engine {
         const engineEvent =
             new EngineHitEvent(
                 event,
-                new Vec2(relativeX, relativeY),
+                new Vec2(x, y),
                 eventObject,
                 eventItem,
                 hit);
@@ -187,6 +185,14 @@ export class PixiEngine implements Engine {
         document.body.style.cursor = 'default';
     };
     
+    private getPosition(event: MouseEvent) {
+        const bounds = this.application.canvas.getBoundingClientRect();
+        const x = event.clientX - bounds.x;
+        const y = event.clientY - bounds.y;
+        
+        return this.application.stage.worldTransform.applyInverse({ x, y });
+    }
+
     private handleMouseDown() {
         this.isDragging = true;
     }

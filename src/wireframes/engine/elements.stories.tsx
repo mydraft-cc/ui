@@ -8,19 +8,21 @@
 import { Meta } from '@storybook/react';
 import { Card, Col, Row } from 'antd';
 import * as React from 'react';
+import { Canvas, ViewBox } from '@app/core';
 import { CanvasProps } from './canvas';
 import { Engine, EngineObject, Listener } from './interface';
 import { PixiCanvasView } from './pixi/canvas/PixiCanvas';
 import { SvgCanvasView } from './svg/canvas/SvgCanvas';
 
-const VIEWBOX = { minX: 0, minY: 0, maxX: 500, maxY: 500, zoom: 1 };
-
 interface EngineProps {
+    // The viewbox.
+    viewBox?: ViewBox;
+
     // The render function.
     onRender: (engine: Engine) => void;
 }
 
-const Canvas = (props: EngineProps & { canvasView: React.ComponentType<CanvasProps> }) => {
+const EngineCanvas = (props: EngineProps & { canvasView: React.ComponentType<CanvasProps> }) => {
     const [engine, setEngine] = React.useState<Engine>();
     const { onRender } = props;
 
@@ -31,23 +33,46 @@ const Canvas = (props: EngineProps & { canvasView: React.ComponentType<CanvasPro
     }, [engine, onRender]);
 
     return (
-        <div style={{ lineHeight: 0 }}>
-            <props.canvasView style={{ height: '500px', width: '500px' }} viewBox={VIEWBOX} onInit={setEngine} />
+        <div style={{ height: '500px', overflow: 'hidden' }}>
+            <props.canvasView style={{ height: '500px', overflow: 'hidden' }} viewBox={props.viewBox} onInit={setEngine} />
         </div>
     );
 };
 
-const CompareView = (props: EngineProps) => {
+const CompareView = (props: Omit<EngineProps, 'viewBox'>) => {
     return (
-        <Row gutter={8}>
+        <Row gutter={16}>
             <Col span={12}>
                 <Card title='SVG' style={{ overflow: 'hidden' }}>
-                    <Canvas canvasView={SvgCanvasView} {...props} />
+                    <EngineCanvas canvasView={SvgCanvasView} {...props} />
                 </Card>
             </Col>
             <Col span={12}>
                 <Card title='PIXI' style={{ overflow: 'hidden' }}>
-                    <Canvas canvasView={PixiCanvasView} {...props} />
+                    <EngineCanvas canvasView={PixiCanvasView as any} {...props} />
+                </Card>
+            </Col>
+        </Row>
+    );
+};
+
+const CompareCanvasViews = (props: Omit<EngineProps, 'viewBox'>) => {
+    return (
+        <Row gutter={16}>
+            <Col span={12}>
+                <Card title='SVG'>
+                    <Canvas padding={0} contentWidth={500} contentHeight={500}
+                        onRender={viewBox => 
+                            <EngineCanvas viewBox={viewBox} canvasView={SvgCanvasView} {...props} />
+                        } />
+                </Card>
+            </Col>
+            <Col span={12}>
+                <Card title='PIXI'>
+                    <Canvas padding={0} contentWidth={500} contentHeight={500}
+                        onRender={viewBox => 
+                            <EngineCanvas viewBox={viewBox} canvasView={PixiCanvasView as any} {...props} />
+                        } />
                 </Card>
             </Col>
         </Row>
@@ -97,18 +122,22 @@ const HitTestForCanvas = (props: { canvasView: React.ComponentType<CanvasProps> 
     }, [engine]);
 
     return (
-        
         <div style={{ lineHeight: 1.5 }}>
             Hits: {hits?.length}, X: {relativeX}, Y: {relativeY}
 
-            <props.canvasView style={{ height: '500px', width: '500px' }} viewBox={VIEWBOX} onInit={setEngine} />
+            <div style={{ height: '500px', overflow: 'hidden' }}>
+                <Canvas padding={0} contentWidth={500} contentHeight={500}
+                    onRender={viewBox => 
+                        <props.canvasView viewBox={viewBox} style={{ height: '500px' }} onInit={setEngine} />
+                    } />
+            </div>
         </div>
     );
 };
 
-const HitTest = () => {
+const CompareHitTests = () => {
     return (
-        <Row gutter={8}>
+        <Row gutter={16}>
             <Col span={12}>
                 <Card title='SVG' style={{ overflow: 'hidden' }}>
                     <HitTestForCanvas canvasView={SvgCanvasView} />
@@ -116,7 +145,7 @@ const HitTest = () => {
             </Col>
             <Col span={12}>
                 <Card title='PIXI' style={{ overflow: 'hidden' }}>
-                    <HitTestForCanvas canvasView={PixiCanvasView} />
+                    <HitTestForCanvas canvasView={PixiCanvasView as any} />
                 </Card>
             </Col>
         </Row>
@@ -135,7 +164,30 @@ export default {
 
 export const Hits = () => {
     return (
-        <HitTest />
+        <CompareHitTests />
+    );
+};
+
+export const Pan = () => {
+    return (
+        <CompareCanvasViews
+            onRender={(engine) => {
+                const layer = engine.layer('layer1');
+
+                const rect = layer.rect();
+                rect.fill('blue');
+                rect.strokeColor('red');
+                rect.strokeWidth(2);
+                rect.plot({ x: 200, y: 250, w: 200, h: 100 });
+
+                const text = layer.text();
+                text.color('white');
+                text.fill('black');
+                text.fontFamily('Arial');
+                text.fontSize(16);
+                text.text('Hello Engine');
+                text.plot({ x: 50, y: 100, w: 200, h: 60, padding: 5 });
+            }} />
     );
 };
 
@@ -202,16 +254,16 @@ export const Text = () => {
                 const text1 = layer.text();
                 text1.color('white');
                 text1.fill('black');
-                text1.fontFamily('inherit');
-                text1.fontSize('16px');
+                text1.fontFamily('Arial');
+                text1.fontSize(16);
                 text1.text('Hello Engine');
-                text1.plot({ x: 50, y: 100, w: 200, h: 60, padding: 8 });
+                text1.plot({ x: 50, y: 100, w: 200, h: 60, padding: 0 });
 
                 const text2 = layer.text();
                 text2.color('white');
                 text2.fill('red');
-                text2.fontFamily('inherit');
-                text2.fontSize('16px');
+                text2.fontFamily('Arial');
+                text2.fontSize(16);
                 text2.text('Hello Engine');
                 text2.plot({ x: 50, y: 200, w: 200, h: 60, padding: 8 });
             }}
@@ -259,8 +311,8 @@ export const Cursors = () => {
                 move.color('white');
                 move.cursor('move');
                 move.fill('black');
-                move.fontFamily('inherit');
-                move.fontSize('16px');
+                move.fontFamily('Arial');
+                move.fontSize(16);
                 move.text('move');
                 move.plot({ x: 50, y: 100, w: 200, h: 60, padding: 20 });
 
@@ -268,8 +320,8 @@ export const Cursors = () => {
                 resize.color('white');
                 resize.cursor('n-resize');
                 resize.fill('red');
-                resize.fontFamily('inherit');
-                resize.fontSize('16px');
+                resize.fontFamily('Arial');
+                resize.fontSize(16);
                 resize.text('resize');
                 resize.plot({ x: 50, y: 200, w: 200, h: 60, padding: 20 });
             }}

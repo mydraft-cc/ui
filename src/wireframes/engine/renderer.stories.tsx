@@ -42,7 +42,7 @@ interface EngineProps {
     iterations?: number;
 }
 
-const Canvas = (props: EngineProps & { canvasView: React.ComponentType<CanvasProps> }) => {
+const EngineCanvas = (props: EngineProps & { canvasView: React.ComponentType<CanvasProps> }) => {
     const [engine, setEngine] = React.useState<Engine>();
     const { iterations, onRender, rotate } = props;
 
@@ -80,15 +80,15 @@ const Canvas = (props: EngineProps & { canvasView: React.ComponentType<CanvasPro
 
 const CompareView = (props: EngineProps) => {
     return (
-        <Row gutter={8}>
+        <Row gutter={16}>
             <Col span={12}>
                 <Card title='SVG' style={{ overflow: 'hidden' }}>
-                    <Canvas canvasView={SvgCanvasView} {...props} />
+                    <EngineCanvas canvasView={SvgCanvasView} {...props} />
                 </Card>
             </Col>
             <Col span={12}>
                 <Card title='PIXI' style={{ overflow: 'hidden' }}>
-                    <Canvas canvasView={PixiCanvasView} {...props} />
+                    <EngineCanvas canvasView={PixiCanvasView as any} {...props} />
                 </Card>
             </Col>
         </Row>
@@ -97,7 +97,7 @@ const CompareView = (props: EngineProps) => {
 
 export default {
     component: CompareView,
-} as Meta<typeof Canvas>;
+} as Meta<typeof EngineCanvas>;
 
 export const Rect = () => {
     return (

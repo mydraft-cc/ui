@@ -89,7 +89,7 @@ export module SvgHelper {
         const div = document.createElement('div');
         div.className = 'no-select';
         div.style.textAlign = alignment || 'center';
-        div.style.fontFamily = 'inherit';
+        div.style.fontFamily = 'Arial';
         div.style.fontSize = sizeInPx(fontSize || 10);
         div.style.overflow = 'hidden';
         div.style.verticalAlign = verticalAlign || 'middle';

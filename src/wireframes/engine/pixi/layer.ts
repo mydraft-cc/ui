@@ -66,8 +66,13 @@ export class PixiLayer implements EngineLayer {
         this.container.removeFromParent();
     }
 
-    public hitTest(clientX: number, clientY: number): EngineObject[] {
+    public hitTest(x: number, y: number): EngineObject[] {
         const boundary = new EventBoundary(this.container);
+
+        const { 
+            x: clientX,
+            y: clientY,
+        } = this.application.stage.worldTransform.apply({ x, y });
         
         const hit = boundary.hitTest(clientX, clientY);
         if (!hit) {

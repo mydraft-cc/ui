@@ -157,6 +157,7 @@ const FACTORY_TEXT = (_: Properties, existing?: HTMLText) => {
 
         const mask = new Graphics();
         existing.mask = mask;
+        existing.resolution = 4;
         existing.addChild(mask);
     }
 

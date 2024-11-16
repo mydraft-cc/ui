@@ -80,7 +80,7 @@ export interface EngineLayer {
     hide(): void;
 
     // Makes a hit and returns matching elements.
-    hitTest(clientX: number, clientY: number): EngineObject[];
+    hitTest(x: number, y: number): EngineObject[];
 }
 
 export type EngineRectOrEllipsePlotArgs = { x: number; y: number; w: number; h: number; rotation?: number; rx?: number; ry?: number };
@@ -125,7 +125,7 @@ export interface EngineText extends EngineObject {
     fill(value: string): void;
 
     // Sets the font size.
-    fontSize(value: string): void;
+    fontSize(value: number): void;
 
     // Sets the font family.
     fontFamily(value: string): void;

@@ -77,10 +77,6 @@ export class SvgEngine implements Engine {
         });
     }
 
-    public viewBox(x: number, y: number, w: number, h: number) {
-        return this.doc.viewbox(x, y, w, h);
-    }
-
     public layer(id: string): EngineLayer {
         return new SvgLayer(this.svgRenderer, this.doc.group().id(id));
     }

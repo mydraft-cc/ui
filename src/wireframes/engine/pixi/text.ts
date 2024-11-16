@@ -14,7 +14,7 @@ type Values = {
     color: string;
     fill: string;
     fontFamily: string;
-    fontSize: string;
+    fontSize: number;
     text: string;
     plot: EngineTextPlotArgs;
 };
@@ -23,7 +23,7 @@ const DEFAULT_ATTRS: Values = {
     color: 'none',
     fill: 'none',
     fontFamily: 'Arial',
-    fontSize: '16',
+    fontSize: 16,
     text: '',
     plot: { x: 0, y: 0, w: 0, h: 0, padding: 0 },
 };
@@ -31,7 +31,7 @@ const DEFAULT_ATTRS: Values = {
 export class PixiText extends PixiObject implements EngineText {
     private readonly container = new Container();
     private readonly textBackground = new Graphics();
-    private readonly textElement = new Text();
+    private readonly textElement = new Text({ resolution: 6, anchor: 0.5 });
     private readonly attrs = { ...DEFAULT_ATTRS };
     private invalid = true;
 
@@ -57,12 +57,12 @@ export class PixiText extends PixiObject implements EngineText {
         this.updateKey('fill', value);
     }
 
-    public fontSize(value: string): void {
+    public fontSize(value: number): void {
         this.updateKey('fontSize', value);
     }
 
     public fontFamily(value: string): void {
-        this.updateKey('fontSize', value);
+        this.updateKey('fontFamily', value);
     }
 
     public text(value: string): void {
@@ -89,16 +89,16 @@ export class PixiText extends PixiObject implements EngineText {
         textBackground.clear();
         textBackground.rect(0, 0, plot.w, plot.h).fill(fill);
 
-        textElement.text = text;
-        textElement.anchor = 0.5;
         textElement.x = 0.5 * plot.w;
         textElement.y = 0.5 * plot.h;
-        textElement.resolution = 2;
+        
+        textElement.text = text;
         textElement.style = {
             align: 'center',
             fill: color,
             fontFamily: fontFamily,
             fontSize: fontSize,
+            lineHeight: fontSize * 1.7,
         };
 
         container.x = attrs.plot.x;

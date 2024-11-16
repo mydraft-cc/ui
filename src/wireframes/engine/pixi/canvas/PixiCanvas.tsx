@@ -7,6 +7,7 @@
 
 import { Application } from 'pixi.js';
 import * as React from 'react';
+import { SizeMeProps, withSize } from 'react-sizeme';
 import { ViewBox } from '@app/core';
 import { PixiEngine } from './../engine';
 
@@ -24,11 +25,12 @@ export interface PixiCanvasProps {
     onInit: (engine: PixiEngine) => any;
 }
 
-export const PixiCanvasView = (props: PixiCanvasProps) => {
+const PixiCanvasViewComponent = (props: PixiCanvasProps & SizeMeProps) => {
     const {
         className,
         onInit,
         style,
+        viewBox,
     } = props;
 
     const [engine, setEngine] = React.useState<PixiEngine>();
@@ -69,12 +71,34 @@ export const PixiCanvasView = (props: PixiCanvasProps) => {
     }, []);
 
     React.useEffect(() => {
-        if (engine && onInit) {
-            onInit(engine);
+        if (!engine || !onInit) {
+            return;
         }
+        
+        onInit(engine);
     }, [engine, onInit]);
+
+    React.useEffect(() => {
+        if (!engine) {
+            return;
+        }
+
+        const root = engine.application.stage;
+        if (viewBox) {
+            root.scale = viewBox.zoom;
+            root.x = -viewBox.minX * viewBox.zoom;
+            root.y = -viewBox.minY * viewBox.zoom;
+        } else {
+            root.scale = 1;
+            root.x = 0;
+            root.y = 0;
+        }
+
+    }, [engine, viewBox]);
 
     return (
         <div style={style} className={className} ref={doInit} />
     );
 };
+
+export const PixiCanvasView = withSize({ monitorWidth: true, monitorHeight: true })(PixiCanvasViewComponent);

@@ -6,6 +6,7 @@
 */
 
 import * as svg from '@svgdotjs/svg.js';
+import { sizeInPx } from '@app/core';
 import { EngineText, EngineTextPlotArgs } from './../interface';
 import { SvgObject } from './object';
 import { linkToSvg, SvgHelper } from './utils';
@@ -41,8 +42,8 @@ export class SvgText extends SvgObject implements EngineText {
         this.background.fill(value);
     }
 
-    public fontSize(value: string) {
-        this.textInner.style.fontSize = value;
+    public fontSize(value: number) {
+        this.textInner.style.fontSize = sizeInPx(value);
     }
 
     public fontFamily(value: string) {
