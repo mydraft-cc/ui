@@ -6,7 +6,7 @@
 */
 
 import { Container, Graphics } from 'pixi.js';
-import { Rect2 } from '@app/core';
+import { Color, Rect2, Types } from '@app/core';
 import { PixiLayer } from './layer';
 import { PixiObject } from './object';
 
@@ -93,5 +93,15 @@ export module PixiHelper {
         g.arcToSvg(rad, rad, 0, 0, 1, l, b - rad);
         g.lineTo(l, t);
         g.closePath();
+    }
+
+    export function toColor(value: string | number | Color | null | undefined): string {
+        if (Types.isString(value)) {
+            return value;
+        } else if (value) {
+            return Color.fromValue(value).toString();
+        } else {
+            return 'black';
+        }
     }
 }

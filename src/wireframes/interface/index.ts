@@ -57,6 +57,8 @@ export interface ShapeProperties {
 
     setStrokeStyle(cap: string, join: string): ShapeProperties;
 
+    setFontSize(fontSize: RendererText | number): ShapeProperties;
+
     setFontFamily(fontFamily: RendererText | string): ShapeProperties;
 
     setOpacity(opacity: RendererOpacity): ShapeProperties;

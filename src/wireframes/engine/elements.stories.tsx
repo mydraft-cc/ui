@@ -56,29 +56,6 @@ const CompareView = (props: Omit<EngineProps, 'viewBox'>) => {
     );
 };
 
-const CompareCanvasViews = (props: Omit<EngineProps, 'viewBox'>) => {
-    return (
-        <Row gutter={16}>
-            <Col span={12}>
-                <Card title='SVG'>
-                    <Canvas padding={0} contentWidth={500} contentHeight={500}
-                        onRender={viewBox => 
-                            <EngineCanvas viewBox={viewBox} canvasView={SvgCanvasView} {...props} />
-                        } />
-                </Card>
-            </Col>
-            <Col span={12}>
-                <Card title='PIXI'>
-                    <Canvas padding={0} contentWidth={500} contentHeight={500}
-                        onRender={viewBox => 
-                            <EngineCanvas viewBox={viewBox} canvasView={PixiCanvasView as any} {...props} />
-                        } />
-                </Card>
-            </Col>
-        </Row>
-    );
-};
-
 const HitTestForCanvas = (props: { canvasView: React.ComponentType<CanvasProps> }) => {
     const [engine, setEngine] = React.useState<Engine>();
     const [relativeX, setRelativeX] = React.useState(0);
@@ -165,29 +142,6 @@ export default {
 export const Hits = () => {
     return (
         <CompareHitTests />
-    );
-};
-
-export const Pan = () => {
-    return (
-        <CompareCanvasViews
-            onRender={(engine) => {
-                const layer = engine.layer('layer1');
-
-                const rect = layer.rect();
-                rect.fill('blue');
-                rect.strokeColor('red');
-                rect.strokeWidth(2);
-                rect.plot({ x: 200, y: 250, w: 200, h: 100 });
-
-                const text = layer.text();
-                text.color('white');
-                text.fill('black');
-                text.fontFamily('Arial');
-                text.fontSize(16);
-                text.text('Hello Engine');
-                text.plot({ x: 50, y: 100, w: 200, h: 60, padding: 5 });
-            }} />
     );
 };
 

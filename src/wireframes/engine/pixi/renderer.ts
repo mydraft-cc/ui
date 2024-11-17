@@ -10,7 +10,7 @@
 import { marked } from 'marked';
 import { Assets, Container, ContainerChild, Graphics, GraphicsPath, HTMLText, Sprite, StrokeStyle, TextStyle, Texture, ViewContainer } from 'pixi.js';
 import { Rect2, TextMeasurer, Types } from '@app/core/utils';
-import { RendererColor, RendererOpacity, RendererText, RendererWidth, Shape, ShapeProperties, ShapePropertiesFunc, ShapeRenderer, ShapeRendererFunc, TextConfig } from '@app/wireframes/interface';
+import { RendererColor, RendererOpacity, RendererText, RendererWidth, Shape, ShapeProperties, ShapePropertiesFunc, ShapeRenderer, ShapeRendererFunc, TextConfig, TextDecoration } from '@app/wireframes/interface';
 import { getBackgroundColor, getFontFamily, getFontSize, getForegroundColor, getOpacity, getStrokeColor, getStrokeWidth, getText, getTextAlignment } from './../shared';
 import { PixiHelper } from './utils';
 
@@ -22,7 +22,7 @@ type Properties = {
     radius: number;
     raster: { source: string; keepRatio?: boolean } | null;
     stroke: StrokeStyle;
-    textContent: { text?: string; markdown?: boolean };
+    textContent: { text?: string; markdown?: boolean; underline?: boolean };
     textStyle: Partial<TextStyle>;
     textMode?: 'Single' | 'Multi';
 };
@@ -157,7 +157,7 @@ const FACTORY_TEXT = (_: Properties, existing?: HTMLText) => {
 
         const mask = new Graphics();
         existing.mask = mask;
-        existing.resolution = 4;
+        existing.resolution = 2;
         existing.addChild(mask);
     }
 
@@ -189,52 +189,64 @@ export class PixiRenderer implements ShapeRenderer {
         return bounds;
     }
 
-    public rectangle(strokeWidth: RendererWidth, radius: number, bounds: Rect2, properties?: ShapePropertiesFunc) {
-        const w = getStrokeWidth(strokeWidth);
-    
-        return this.new(FACTORY_RECTANGLE, IS_GRAPHICS, { bounds, radius, stroke: { width: w } }, properties);
+    public rectangle(strokeWidth: RendererWidth, radius: number, bounds: Rect2, properties?: ShapePropertiesFunc) {    
+        return this.new(IS_GRAPHICS, FACTORY_RECTANGLE, {
+            bounds,
+            radius,
+            stroke: { width: getStrokeWidth(strokeWidth) },
+        }, properties);
     }
 
-    public ellipse(strokeWidth: RendererWidth, bounds: Rect2, properties?: ShapePropertiesFunc) {
-        const w = getStrokeWidth(strokeWidth);
-    
-        return this.new(FACTORY_ELLIPSE, IS_GRAPHICS, { bounds, stroke: { width: w } }, properties);
+    public ellipse(strokeWidth: RendererWidth, bounds: Rect2, properties?: ShapePropertiesFunc) {    
+        return this.new(IS_GRAPHICS, FACTORY_ELLIPSE, {
+            bounds,
+            stroke: { width: getStrokeWidth(strokeWidth) },
+        }, properties);
     }
 
-    public roundedRectangleLeft(strokeWidth: RendererWidth, radius: number, bounds: Rect2, properties?: ShapePropertiesFunc) {
-        const w = getStrokeWidth(strokeWidth);
-    
-        return this.new(FACTORY_ROUNDED_RECTANGLE_LEFT, IS_GRAPHICS, { bounds, radius, stroke: { width: w } }, properties);
+    public roundedRectangleLeft(strokeWidth: RendererWidth, radius: number, bounds: Rect2, properties?: ShapePropertiesFunc) {    
+        return this.new(IS_GRAPHICS, FACTORY_ROUNDED_RECTANGLE_LEFT, {
+            bounds,
+            radius,
+            stroke: { width: getStrokeWidth(strokeWidth) },
+        }, properties);
     }
 
     public roundedRectangleRight(strokeWidth: RendererWidth, radius: number, bounds: Rect2, properties?: ShapePropertiesFunc) {
-        const w = getStrokeWidth(strokeWidth);
-    
-        return this.new(FACTORY_ROUNDED_RECTANGLE_RIGHT, IS_GRAPHICS, { bounds, radius, stroke: { width: w } }, properties);
+        return this.new(IS_GRAPHICS, FACTORY_ROUNDED_RECTANGLE_RIGHT, {
+            bounds,
+            radius,
+            stroke: { width: getStrokeWidth(strokeWidth) },
+        }, properties);
     }
 
     public roundedRectangleTop(strokeWidth: RendererWidth, radius: number, bounds: Rect2, properties?: ShapePropertiesFunc) {
-        const w = getStrokeWidth(strokeWidth);
-    
-        return this.new(FACTORY_ROUNDED_RECTANGLE_TOP, IS_GRAPHICS, { bounds, radius, stroke: { width: w } }, properties);
+        return this.new(IS_GRAPHICS, FACTORY_ROUNDED_RECTANGLE_TOP, {
+            bounds,
+            radius,
+            stroke: { width: getStrokeWidth(strokeWidth) },
+        }, properties);
     }
 
-    public roundedRectangleBottom(strokeWidth: RendererWidth, radius: number, bounds: Rect2, properties?: ShapePropertiesFunc) {
-        const w = getStrokeWidth(strokeWidth);
-    
-        return this.new(FACTORY_ROUNDED_RECTANGLE_BOTTOM, IS_GRAPHICS, { bounds, radius, stroke: { width: w } }, properties);
+    public roundedRectangleBottom(strokeWidth: RendererWidth, radius: number, bounds: Rect2, properties?: ShapePropertiesFunc) {    
+        return this.new(IS_GRAPHICS, FACTORY_ROUNDED_RECTANGLE_BOTTOM, {
+            bounds,
+            radius,
+            stroke: { width: getStrokeWidth(strokeWidth) },
+        }, properties);
     }
 
     public path(strokeWidth: RendererWidth, path: string, properties?: ShapePropertiesFunc) {
-        const w = getStrokeWidth(strokeWidth);
-
-        return this.new(FACTORY_PATH, IS_GRAPHICS, { path, stroke: { width: w } }, properties);
+        return this.new(IS_GRAPHICS, FACTORY_PATH, {
+            path,
+            stroke: { width: getStrokeWidth(strokeWidth) },
+        }, properties);
     }
 
     public text(config: RendererText, bounds: Rect2, properties?: ShapePropertiesFunc, allowMarkdown?: boolean) {
         const fontSize = getFontSize(config);
 
-        return this.new(FACTORY_TEXT, IS_TEXT, { 
+        return this.new(IS_TEXT, FACTORY_TEXT, { 
             bounds,
             textStyle: {
                 align: getTextAlignment(config) as any,
@@ -250,7 +262,7 @@ export class PixiRenderer implements ShapeRenderer {
     public textMultiline(config: RendererText, bounds: Rect2, properties?: ShapePropertiesFunc, allowMarkdown?: boolean) {
         const fontSize = getFontSize(config);
 
-        return this.new(FACTORY_TEXT, IS_TEXT, { 
+        return this.new(IS_TEXT, FACTORY_TEXT, { 
             bounds,
             textStyle: {
                 align: getTextAlignment(config) as any,
@@ -265,11 +277,11 @@ export class PixiRenderer implements ShapeRenderer {
     }
 
     public raster(source: string, bounds: Rect2, preserveAspectRatio?: boolean, properties?: ShapePropertiesFunc) {
-        return this.new(FACTORY_SPRITE, IS_SPRITE, { bounds, raster: { source, keepRatio: preserveAspectRatio } }, properties);
+        return this.new(IS_SPRITE, FACTORY_SPRITE, { bounds, raster: { source, keepRatio: preserveAspectRatio } }, properties);
     }
 
     public group(items: ShapeRendererFunc, clip?: ShapeRendererFunc, properties?: ShapePropertiesFunc) {
-        return this.new(FACTORY_GROUP,  IS_GROUP, {}, properties, group => {
+        return this.new( IS_GROUP, FACTORY_GROUP, {}, properties, group => {
             const prevClipping = this.clipping;
             const prevContainer = this.currentContainer;
             const prevIndex = this.currentIndex;
@@ -295,7 +307,7 @@ export class PixiRenderer implements ShapeRenderer {
         });
     }
 
-    private new<T extends ContainerChild>(factory: Factory<T>, test: Test, initialProperties: Partial<Properties>,
+    private new<T extends ContainerChild>(test: Test, factory: Factory<T>, initialProperties: Partial<Properties>,
         customProperties?: ShapePropertiesFunc,
         customInitializer?: (element: T) => void) {
         if (this.wasClipped) {
@@ -312,7 +324,7 @@ export class PixiRenderer implements ShapeRenderer {
             path: null,
             radius: 0,
             raster: null,
-            stroke: { alignment: 1 },
+            stroke: {},
             textContent: {},
             textStyle: {},
         };
@@ -334,16 +346,6 @@ export class PixiRenderer implements ShapeRenderer {
         if (existing && !test(existing)) {
             existing?.removeFromParent();
             existing = undefined;
-        }
-        
-        const oldProperties = (existing as any)?.['properties'];
-
-        const invalid = !oldProperties || Types.equals(properties, oldProperties);
-        if (!invalid) {
-            if (!this.clipping) {
-                this.currentIndex++;
-            }
-            return;
         }
 
         const element = factory(properties, existing as T);
@@ -383,20 +385,20 @@ type Setters<T> = {
 
 class PropertiesSetter implements ShapeProperties {
     private static readonly SETTERS: Setters<Properties> = {
-        'opacity': (value, element) => {
+        opacity: (value, element) => {
             element.alpha = value;
         },
-        'fill': (value, element) => {
+        fill: (value, element) => {
             if (Types.is(element, Graphics)) {
                 element.fill(value as any);
             }
         },
-        'stroke': (value, element) => {
+        stroke: (value, element) => {
             if (Types.is(element, Graphics)) {
                 element.stroke({ alignment: 1, ...value });
             }
         },
-        'raster': (value, element) => {
+        raster: (value, element, p) => {
             if (Types.is(element, Sprite)) {
                 (element as any)['source'] = value;
                 if (!value) {
@@ -427,11 +429,11 @@ class PropertiesSetter implements ShapeProperties {
                         if (ratioImage > ratioElement) {
                             w = size.width;
                             h = size.width / ratioImage;
-                            element.y = (size.height - h) * 0.5;
+                            element.y = p.bounds.y + (size.height - h) * 0.5;
                         } else {
                             w = size.height * ratioImage;
                             h = size.height;
-                            element.x = (size.width - w) * 0.5;
+                            element.x = p.bounds.x + (size.width - w) * 0.5;
                         }
 
                         element.width = w;
@@ -442,51 +444,44 @@ class PropertiesSetter implements ShapeProperties {
                 });
             }
         },
-        'textContent': (value, element) => {
+        textContent: (value, element) => {
             if (Types.is(element, HTMLText)) {
                 let textOrHtml = value.text;
                 if (value.markdown && textOrHtml) {
                     textOrHtml = marked.parseInline(textOrHtml) as string;
                 }
 
+                if (value.underline && textOrHtml) {
+                    textOrHtml = `<span style="text-decoration: underline">${textOrHtml}</span>`;
+                }
+
                 element.text = textOrHtml || '';
             }
         },
-        'textStyle': (value, element, p) => {
+        textStyle: (value, element) => {
             if (Types.is(element, HTMLText)) {
                 element.style = { padding: 10, ...value };
-
-                const { bounds } = p;
-
-                const mask = element.mask as Graphics;
-                mask?.clear();
-                mask?.rect(bounds.x, bounds.y, bounds.w - 0.25 * element.style.fontSize, bounds.h).fill(0xffffff);
-
-                const size = element.getSize();
-                const x = Math.max((bounds.w - size.width) * 0.5, 0.25 * element.style.fontSize);
-                const y = Math.max((bounds.h - size.height) * 0.5, 0);
-                element.position = { x, y };
             }
         },
-        'textMode': (value, element, p) => {
+        textMode: (value, element, p) => {
             if (Types.is(element, HTMLText)) {
                 const { bounds } = p;
 
                 const mask = element.mask as Graphics;
                 mask?.clear();
-                mask?.rect(bounds.x, bounds.y, bounds.w, bounds.h).fill(0xffffff);
+                mask?.rect(0, 0, bounds.w, bounds.h).fill(0xffffff);
 
                 const size = element.getSize();
-                let x = 0;
-                let y = 0;
+                let x = bounds.x;
+                let y = bounds.y;
                 if (value === 'Single') {
-                    y = Math.max((bounds.h - size.height) * 0.5, 0);
+                    y += Math.max((bounds.h - size.height) * 0.5, 0);
                 }
 
                 if (element.style.align === 'center') {
-                    x = Math.max((bounds.w - size.width) * 0.5, 0);
+                    x += Math.max((bounds.w - size.width) * 0.5, 0);
                 } else if (element.style.align === 'right') {
-                    x = bounds.w - size.width;
+                    x += bounds.w - size.width;
                 }
 
                 element.position = { x, y };
@@ -500,33 +495,40 @@ class PropertiesSetter implements ShapeProperties {
     public static readonly INSTANCE = new PropertiesSetter();
 
     public apply(element: ContainerChild) {
+        const oldProperties = (element as any)['properties'] || {} as any;
+
         for (const [property, setter] of PropertiesSetter.SETTERS_ENTRIES) {
             const value = (this.properties as any)[property];
 
-            setter(value as never, element, this.properties);
+            if (!Types.equals(value, oldProperties[property])) {
+                setter(value as never, element, this.properties);
+            }
         }
+
+        (element as any)['properties'] = this.properties;
     }
 
     public setProperties(properties: Properties) {
         this.properties = properties;
     }
 
-    public setTextDecoration(): ShapeProperties {
+    public setTextDecoration(decoration: TextDecoration): ShapeProperties {
+        this.properties.textContent.underline = decoration === 'underline';
         return this;
     }
 
     public setBackgroundColor(color: RendererColor | null | undefined): ShapeProperties {
-        this.properties.fill =  getBackgroundColor(color)?.toString();
+        this.properties.fill = PixiHelper.toColor(getBackgroundColor(color));
         return this;
     }
 
     public setForegroundColor(color: RendererColor | null | undefined): ShapeProperties {
-        this.properties.textStyle.fill = getForegroundColor(color)?.toString()!;
+        this.properties.textStyle.fill = PixiHelper.toColor(getForegroundColor(color));
         return this;
     }
 
     public setStrokeColor(color: RendererColor | null | undefined): ShapeProperties {
-        this.properties.stroke.color = getStrokeColor(color)?.toString();
+        this.properties.stroke.color = PixiHelper.toColor(getStrokeColor(color));
         return this;
     }
 

@@ -18,48 +18,6 @@ export const ROTATION_CONFIG = [
     { angle: 315, cursor: 'nw-resize' },
 ];
 
-export type PropertySet<T = any> = Partial<{
-    ['color']: T;
-    ['fill']: T;
-    ['font-family']: T;
-    ['font-size']: T;
-    ['image']: T;
-    ['markdown']: T;
-    ['opacity']: T;
-    ['preserve-aspect-ratio']: T;
-    ['radius']: T;
-    ['path']: T;
-    ['stroke']: T;
-    ['stroke-style']: T;
-    ['stroke-width']: T;
-    ['text']: T;
-    ['text-alignment']: T;
-    ['text-decoration']: T;
-    ['transform']: T;
-    ['vertical-alignment']: T;
-}>;
-
-export const PROPERTIES: ReadonlyArray<keyof PropertySet> = [
-    'color',
-    'fill',
-    'font-family',
-    'font-size',
-    'image',
-    'markdown',
-    'opacity',
-    'path',
-    'preserve-aspect-ratio',
-    'radius',
-    'stroke-style',
-    'stroke-width',
-    'stroke',
-    'text-alignment',
-    'text-decoration',
-    'text',
-    'transform',
-    'vertical-alignment',
-];
-
 export function getBackgroundColor(value: RendererColor | null | undefined) {
     if (isShape(value)) {
         return value.backgroundColor;

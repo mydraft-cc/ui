@@ -10,7 +10,8 @@ import { Card, Col, Row } from 'antd';
 import * as React from 'react';
 import { Color, Rect2, Rotation, Vec2 } from '@app/core';
 import { RenderContext, ShapeRenderer } from '@app/wireframes/interface';
-import { DiagramItem, Transform } from '@app/wireframes/model';
+import { DefaultConstraintFactory, DiagramItem, Transform } from '@app/wireframes/model';
+import { Checkbox } from '../shapes/dependencies';
 import { CanvasProps } from './canvas';
 import { Engine } from './interface';
 import { PixiCanvasView } from './pixi/canvas/PixiCanvas';
@@ -78,6 +79,38 @@ const EngineCanvas = (props: EngineProps & { canvasView: React.ComponentType<Can
     );
 };
 
+const CheckboxCanvas = (props: { canvasView: React.ComponentType<CanvasProps> }) => {
+    const [engine, setEngine] = React.useState<Engine>();
+
+    React.useEffect(() => {
+        if (engine) {
+            const plugin = new Checkbox();
+
+            const item = engine.layer('default').item(plugin);
+            const size = plugin.defaultSize();
+            const shape =
+                DiagramItem.createShape({
+                    renderer: plugin.identifier(),
+                    transform: new Transform(
+                        new Vec2(0.5 * size.x, 0.5 * size.y),
+                        new Vec2(size.x, size.y),
+                        Rotation.ZERO),
+                    appearance: { ...plugin.defaultAppearance(), STATE: 'Checked' },
+                    configurables: [],
+                    constraint: plugin?.constraint?.(DefaultConstraintFactory.INSTANCE),
+                });
+
+            item.plot(shape);
+        }
+    }, [engine]);
+
+    return (
+        <div style={{ lineHeight: 0 }}>
+            <props.canvasView style={{ height: '600px', width: '600px' }} viewBox={VIEWBOX} onInit={setEngine} />
+        </div>
+    );
+};
+
 const CompareView = (props: EngineProps) => {
     return (
         <Row gutter={16}>
@@ -95,9 +128,32 @@ const CompareView = (props: EngineProps) => {
     );
 };
 
+const CheckboxCompareView = () => {
+    return (
+        <Row gutter={16}>
+            <Col span={12}>
+                <Card title='SVG' style={{ overflow: 'hidden' }}>
+                    <CheckboxCanvas canvasView={SvgCanvasView} />
+                </Card>
+            </Col>
+            <Col span={12}>
+                <Card title='PIXI' style={{ overflow: 'hidden' }}>
+                    <CheckboxCanvas canvasView={PixiCanvasView as any} />
+                </Card>
+            </Col>
+        </Row>
+    );
+};
+
 export default {
     component: CompareView,
 } as Meta<typeof EngineCanvas>;
+
+export const Complex = () => {
+    return (
+        <CheckboxCompareView />
+    );
+};
 
 export const Rect = () => {
     return (
@@ -111,6 +167,7 @@ export const Rect = () => {
         />
     );
 };
+
 export const RotatedRect = () => {
     return (
         <CompareView
@@ -209,6 +266,25 @@ export const TextCenter = () => {
     );
 };
 
+export const TextCenterOffset = () => {
+    return (
+        <CompareView
+            iterations={1}
+            onRender={(renderer, color) =>
+                renderer.group(i => {
+                    i.rectangle(1, 0, new Rect2(50, 50, 100, 60), p => p
+                        .setStrokeColor('black'),
+                    );
+                    i.text({ text: 'Hello Engine', alignment: 'center' }, new Rect2(50, 50, 100, 60), p => p
+                        .setBackgroundColor('#aaa')
+                        .setStrokeColor(color),
+                    );
+                })
+            }
+        />
+    );
+};
+
 export const TextUnderline = () => {
     return (
         <CompareView
@@ -218,9 +294,30 @@ export const TextUnderline = () => {
                     i.rectangle(1, 0, new Rect2(0, 0, 100, 60), p => p
                         .setStrokeColor('black'),
                     );
-                    i.text({ text: 'y j g', alignment: 'center' }, new Rect2(0, 0, 100, 60), p => p
+                    i.text({ text: 'Link', alignment: 'center' }, new Rect2(0, 0, 100, 60), p => p
+                        .setBackgroundColor('#aaa')
+                        .setStrokeColor(color)
+                        .setTextDecoration('underline'),
+                    );
+                })
+            }
+        />
+    );
+};
+
+export const TextMarkdown = () => {
+    return (
+        <CompareView
+            iterations={1}
+            onRender={(renderer, color) =>
+                renderer.group(i => {
+                    i.rectangle(1, 0, new Rect2(0, 0, 100, 60), p => p
+                        .setStrokeColor('black'),
+                    );
+                    i.text({ text: 'This is **bold**', alignment: 'center' }, new Rect2(0, 0, 100, 60), p => p
                         .setBackgroundColor('#aaa')
                         .setStrokeColor(color),
+                    true,
                     );
                 })
             }

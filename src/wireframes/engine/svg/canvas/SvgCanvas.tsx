@@ -10,7 +10,7 @@ import * as React from 'react';
 import { CanvasProps } from '../../canvas';
 import { SvgEngine } from './../engine';
 
-export const SvgCanvasView = (props: CanvasProps) => {
+export const SvgCanvasView = (props: CanvasProps<SvgEngine>) => {
     const {
         className,
         onInit,

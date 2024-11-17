@@ -8,24 +8,10 @@
 import { Application } from 'pixi.js';
 import * as React from 'react';
 import { SizeMeProps, withSize } from 'react-sizeme';
-import { ViewBox } from '@app/core';
+import { CanvasProps } from './../../canvas';
 import { PixiEngine } from './../engine';
 
-export interface PixiCanvasProps {
-    // The optional viewbox.
-    viewBox: ViewBox;
-
-    // The class name.
-    className?: string;
-
-    // The CSS properties.
-    style?: React.CSSProperties;
-
-    // The callback when the canvas has been initialized.
-    onInit: (engine: PixiEngine) => any;
-}
-
-const PixiCanvasViewComponent = (props: PixiCanvasProps & SizeMeProps) => {
+const PixiCanvasViewComponent = (props: CanvasProps<PixiEngine> & SizeMeProps) => {
     const {
         className,
         onInit,

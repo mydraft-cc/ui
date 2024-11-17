@@ -18,6 +18,7 @@ export class SvgItem extends SvgObject implements EngineItem {
     private readonly group: svg.G;
     private readonly selector: svg.Rect;
     private currentShape: DiagramItem | null = null;
+    private currentRect: Rect2 | null = null;
     private isRendered = false;
 
     protected get root() {
@@ -63,18 +64,26 @@ export class SvgItem extends SvgObject implements EngineItem {
         }
     }
 
-    private renderCore(item: DiagramItem) {
-        const localRect = new Rect2(0, 0, item.transform.size.x, item.transform.size.y);
+    private renderCore(shape: DiagramItem) {
+        const localRect = new Rect2(0, 0, shape.transform.size.x, shape.transform.size.y);
+
+        if (this.currentRect && 
+            this.currentRect.equals(localRect) && 
+            this.currentShape?.appearance === shape.appearance) {
+            this.arrangeContainer(shape);
+            return;
+        }
 
         const previousContainer = this.renderer.getContainer();
         try {
             this.renderer.setContainer(this.group, 1);
 
-            this.plugin.render({ renderer2: this.renderer, rect: localRect, shape: item });
+            this.plugin.render({ renderer2: this.renderer, rect: localRect, shape: shape });
 
             this.arrangeSelector(localRect);
-            this.arrangeContainer(item);
+            this.arrangeContainer(shape);
         } finally {
+            this.currentRect = localRect;
             this.renderer.cleanupAll();
             this.renderer.setContainer(previousContainer);
             this.isRendered = true;

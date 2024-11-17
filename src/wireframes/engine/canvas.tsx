@@ -9,7 +9,7 @@ import * as React from 'react';
 import { ViewBox } from '@app/core';
 import { Engine } from './interface';
 
-export interface CanvasProps {
+export interface CanvasProps<T = Engine> {
     // The optional viewbox.
     viewBox?: ViewBox;
 
@@ -20,5 +20,5 @@ export interface CanvasProps {
     style?: React.CSSProperties;
 
     // The callback when the canvas has been initialized.
-    onInit: (engine: Engine) => any;
+    onInit: (engine: T) => any;
 }

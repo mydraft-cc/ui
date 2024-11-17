@@ -84,7 +84,7 @@ export module SvgHelper {
         return `M${r},${t} L${r},${b - rad} a${rad},${rad} 0 0 1 -${rad},${rad} L${l + rad},${b} a${rad},${rad} 0 0 1 -${rad},-${rad} L${l},${t}z`;
     }
 
-    export function createText(whitespace: string, text?: string, fontSize?: number, alignment?: string, verticalAlign?: string) {
+    export function createText(whitespace?: string, text?: string, fontSize?: number, alignment?: string, verticalAlign?: string) {
         const element = new svg.ForeignObject();
         const div = document.createElement('div');
         div.className = 'no-select';
@@ -93,7 +93,7 @@ export module SvgHelper {
         div.style.fontSize = sizeInPx(fontSize || 10);
         div.style.overflow = 'hidden';
         div.style.verticalAlign = verticalAlign || 'middle';
-        div.style.whiteSpace = whitespace;
+        div.style.whiteSpace = whitespace || 'normal';
         div.textContent = text || null;
 
         element.node.appendChild(div);
