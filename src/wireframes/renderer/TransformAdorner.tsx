@@ -7,7 +7,7 @@
 
 import * as React from 'react';
 import { isMiddleMouse, Rotation, Subscription, Timer, Vec2 } from '@app/core';
-import { Engine, EngineLayer, EngineMouseEvent, EngineRect, Listener } from '@app/wireframes/engine';
+import { Engine, EngineHitEvent, EngineLayer, EngineMouseEvent, EngineRect, Listener } from '@app/wireframes/engine';
 import { Diagram, DiagramItem, DiagramItemSet, SnapManager, SnapMode, Transform } from '@app/wireframes/model';
 import { OverlayManager } from './../contexts/OverlayContext';
 import { PreviewEvent } from './preview';
@@ -233,7 +233,7 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
         }
     }
 
-    public onMouseDown(event: EngineMouseEvent, next: (event: EngineMouseEvent) => void) {
+    public onMouseDown(event: EngineHitEvent, next: (event: EngineHitEvent) => void) {
         // If the manipulation with the keyboard is still in progress we do not handle the event.
         if (event.source.ctrlKey || this.moveTimer || this.manipulationMode != Mode.None) {
             next(event);

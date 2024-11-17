@@ -7,7 +7,7 @@
 
 import * as React from 'react';
 import { Keys, sizeInPx } from '@app/core';
-import { Engine, HitEvent, Listener } from '@app/wireframes/engine';
+import { Engine, EngineHitEvent, Listener } from '@app/wireframes/engine';
 import { DefaultAppearance } from '@app/wireframes/interface';
 import { Diagram, DiagramItem, DiagramItemSet } from '@app/wireframes/model';
 import './TextAdorner.scss';
@@ -67,7 +67,7 @@ export class TextAdorner extends React.PureComponent<TextAdornerProps> implement
         }
     };
 
-    public onDoubleClick(event: HitEvent) {
+    public onDoubleClick(event: EngineHitEvent) {
         if (event.item && !event.item.isLocked && this.textareaElement) {
             if (event.item.textDisabled) {
                 return;

@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { Color, sizeInPx, TextMeasurer } from '@app/core/utils';
+import { Color, TextMeasurer } from '@app/core/utils';
 import { EngineLayer, EngineLine, EngineText } from '@app/wireframes/engine';
 import { SnapLine, SnapResult, Transform } from '@app/wireframes/model';
 
@@ -112,7 +112,7 @@ export class InteractionOverlays {
         this.indexLines++;
     }
 
-    private renderLabel(x: number, y: number, text: string, color: string, fontSize = 16, centerX = false, centerY = false, padding = 4) {
+    private renderLabel(x: number, y: number, text: string, color: string, fontSize = 12, centerX = false, centerY = false, padding = 3) {
         let label = this.labels[this.indexLabels];
 
         // Reuse the rect and text if it alreadx exists to avoid creating unnecessary DOM elements.
@@ -153,7 +153,7 @@ export class InteractionOverlays {
         label.color('white');
         label.fill(color);
         label.fontFamily('monospace');
-        label.fontSize(sizeInPx(fontSize / this.zoom));
+        label.fontSize(fontSize / this.zoom);
         label.plot({ x, y, w, h, padding });
         label.text(text);
 
