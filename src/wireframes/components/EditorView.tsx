@@ -44,8 +44,8 @@ export const EditorViewInner = ({ diagram, viewBox }: { diagram: Diagram; viewBo
     const editorColor = editor.color;
     const masterDiagram = useStore(getMasterDiagram);
     const renderRef = React.useRef<any>();
-    const selectedPoint = React.useRef({ x: 0, y: 0 });
     const selectedDiagramId = useStore(getDiagramId);
+    const selectedPoint = React.useRef({ x: 0, y: 0 });
     const state = useStore(s => s);
     const contextMenu = useContextMenu(menuVisible);
 
@@ -168,6 +168,7 @@ export const EditorViewInner = ({ diagram, viewBox }: { diagram: Diagram; viewBo
                         onSelectItems={doSelectItems}
                         onTransformItems={doTransformItems}
                         selectionSet={getSelection(state)}
+                        useWebGL={state.ui.useWebGL}
                         viewBox={viewBox}
                         viewSize={editor.size}
                     />

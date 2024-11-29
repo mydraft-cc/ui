@@ -8,7 +8,7 @@
 import { Container, Graphics } from 'pixi.js';
 import { EngineLine, EngineLinePlotArgs } from './../interface';
 import { PixiObject } from './object';
-import { linkToPixi } from './utils';
+import { linkToPixi, PixiHelper } from './utils';
 
 type Values = {
     color: string;
@@ -37,7 +37,7 @@ export class PixiLine extends PixiObject implements EngineLine {
     }
     
     public color(value: string): void {
-        this.updateKey('color', value);
+        this.updateKey('color', PixiHelper.toColor(value));
     }
 
     public plot(args: EngineLinePlotArgs): void {

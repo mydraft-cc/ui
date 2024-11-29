@@ -6,9 +6,6 @@
 */
 
 export interface UIState {
-    // The current zoom level.
-    zoom: number;
-
     // The error toast from any loading operation.
     errorToast?: string;
 
@@ -27,8 +24,34 @@ export interface UIState {
     // The color tab.
     selectedColorTab: string;
 
+    // Indicates if WebGL should be used for rendering.
+    useWebGL: boolean;
+
     // The filter for the diagram.
     diagramsFilter?: string;
+}
+
+const WEBGL_KEY = 'webgl';
+
+export function loadWebGLState() {
+    try {
+        const value = localStorage.getItem(WEBGL_KEY);
+
+        return !!value;
+    } catch {
+        return false;
+    }
+}
+
+export function saveWebGLState(value: boolean) {
+    try {
+        if (value) {
+            localStorage.setItem(WEBGL_KEY, 'true');
+        } else {
+            localStorage.removeItem(WEBGL_KEY);
+        }
+    } catch {
+    }
 }
 
 export interface UIStateInStore {
@@ -37,10 +60,10 @@ export interface UIStateInStore {
 
 export const createInitialUIState: () => UIState = () => {
     return {
-        zoom: 1,
         selectedTab: 'shapes',
         showLeftSidebar: true,
         showRightSidebar: true,
         selectedColorTab: 'palette',
+        useWebGL: loadWebGLState(),
     };
 };

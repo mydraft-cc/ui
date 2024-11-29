@@ -34,7 +34,10 @@ const EngineCanvas = (props: EngineProps & { canvasView: React.ComponentType<Can
 
     return (
         <div style={{ height: '500px', overflow: 'hidden' }}>
-            <props.canvasView style={{ height: '500px', overflow: 'hidden' }} viewBox={props.viewBox} onInit={setEngine} />
+            <Canvas padding={0} contentWidth={500} contentHeight={500}
+                onRender={viewBox => 
+                    <props.canvasView style={{ height: '500px', overflow: 'hidden' }} viewBox={viewBox} onInit={setEngine} />
+                } />
         </div>
     );
 };
@@ -234,22 +237,23 @@ export const Pivot = () => {
                 const ry = 300;
                 const size = 40;
 
-                const renderCircle = (dx: number, dy: number, fill: string) => {
+                const renderCircle = (dx: number, dy: number, angle: number, fill: string) => {
                     const hs = 0.5 * size;
 
                     const circle = layer.ellipse();
                     circle.fill(fill);
                     circle.strokeColor('black');
                     circle.strokeWidth(2);
+                    circle.cursor(angle);
                     circle.plot({ x: rx - hs + dx, y: ry - hs + dy, w: size, h: size, rx, ry, rotation: 30 });
                 };
 
-                renderCircle(0, 0, 'blue');
+                renderCircle(0, 0, 0, 'blue');
 
-                renderCircle(-100, -100, 'orange');
-                renderCircle(+100, -100, 'purple');
-                renderCircle(+100, +100, 'green');
-                renderCircle(-100, +100, 'red');
+                renderCircle(-100, -100, 315, 'orange');
+                renderCircle(+100, -100, 45, 'purple');
+                renderCircle(+100, +100, 135, 'green');
+                renderCircle(-100, +100, 225, 'red');
             }}
         />
     );

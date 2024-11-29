@@ -10,6 +10,7 @@
 import * as React from 'react';
 import { Color, Subscription, Vec2, ViewBox } from '@app/core';
 import { Engine, EngineLayer, EngineRect } from '@app/wireframes/engine';
+import { PixiCanvasView } from '@app/wireframes/engine/pixi/canvas/PixiCanvas';
 import { SvgCanvasView } from '@app/wireframes/engine/svg/canvas/SvgCanvas';
 import { Diagram, DiagramItem, DiagramItemSet, Transform } from '@app/wireframes/model';
 import { useOverlayContext } from './../contexts/OverlayContext';
@@ -41,6 +42,9 @@ export interface EditorProps {
 
     // The view size.
     viewSize: Vec2;
+
+    // Use WebGL renderer.
+    useWebGL: boolean;
 
     // True, if it is the default view.
     isDefaultView: boolean;
@@ -75,11 +79,13 @@ export const Editor = React.memo((props: EditorProps) => {
         selectionSet,
         viewBox,
         viewSize,
+        useWebGL,
     } = props;
 
     const [engine, setEngine] = React.useState<Engine>();
     const adornerSelectLayer = React.useRef<EngineLayer>();
     const adornerTransformLayer = React.useRef<EngineLayer>();
+    const initialWebGL = React.useRef(useWebGL);
     const overlayContext = useOverlayContext();
     const overlayLayer = React.useRef<EngineLayer>();
     const renderMainLayer = React.useRef<EngineLayer>();
@@ -146,7 +152,13 @@ export const Editor = React.memo((props: EditorProps) => {
 
     return (
         <div className='editor' ref={element => overlayContext.element = element}>
-            <SvgCanvasView onInit={doInit} viewBox={viewBox} />
+            {initialWebGL.current ? (
+                <div className='pixi'>
+                    <PixiCanvasView onInit={doInit} viewBox={viewBox} background='#f0f2f5' />
+                </div>
+            ) : (
+                <SvgCanvasView onInit={doInit} viewBox={viewBox} />
+            )}
 
             {engine && diagram && (
                 <>

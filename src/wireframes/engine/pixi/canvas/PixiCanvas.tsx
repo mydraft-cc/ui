@@ -11,7 +11,7 @@ import { SizeMeProps, withSize } from 'react-sizeme';
 import { CanvasProps } from './../../canvas';
 import { PixiEngine } from './../engine';
 
-const PixiCanvasViewComponent = (props: CanvasProps<PixiEngine> & SizeMeProps) => {
+const PixiCanvasViewComponent = (props: CanvasProps<PixiEngine> & { background?: string } & SizeMeProps) => {
     const {
         className,
         onInit,
@@ -19,6 +19,7 @@ const PixiCanvasViewComponent = (props: CanvasProps<PixiEngine> & SizeMeProps) =
         viewBox,
     } = props;
 
+    const background = props.background || 'white';
     const [engine, setEngine] = React.useState<PixiEngine>();
 
     const doInit = React.useCallback((ref: HTMLDivElement) => {
@@ -36,11 +37,12 @@ const PixiCanvasViewComponent = (props: CanvasProps<PixiEngine> & SizeMeProps) =
             await application.init({ 
                 antialias: true,
                 autoDensity: true,
-                background: 'white',
-                resolution: window.devicePixelRatio,
+                background,
                 eventFeatures: {
                     move: true,
                 },
+                resizeTo: ref,
+                resolution: window.devicePixelRatio,
             });
 
             setEngine(new PixiEngine(application));
@@ -54,6 +56,7 @@ const PixiCanvasViewComponent = (props: CanvasProps<PixiEngine> & SizeMeProps) =
             application.destroy();
             application.canvas.remove();
         };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     React.useEffect(() => {
@@ -63,6 +66,14 @@ const PixiCanvasViewComponent = (props: CanvasProps<PixiEngine> & SizeMeProps) =
         
         onInit(engine);
     }, [engine, onInit]);
+
+    React.useEffect(() => {
+        if (!engine) {
+            return;
+        }
+        
+        engine.application.renderer.background.color = background;
+    }, []);
 
     React.useEffect(() => {
         if (!engine) {

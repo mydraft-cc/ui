@@ -17,8 +17,9 @@ import { PixiHelper } from './utils';
 type Properties = {
     fill?: string | null;
     bounds: Rect2;
+    graphicsPath: string | null;
+    graphicsShape: 'Rect' | 'Ellipse' | 'RoundedRectangleLeft' | 'RoundedRectangleRight' | 'RoundedRectangleTop' | 'RoundedRectangleBottom' | 'Path' | null;
     opacity: number;
-    path: string | null;
     radius: number;
     raster: { source: string; keepRatio?: boolean } | null;
     stroke: StrokeStyle;
@@ -47,85 +48,12 @@ const IS_TEXT: Test = (existing?: ContainerChild) => {
 
 type Factory<T> = (p: Properties, existing?: T) => T;
 
-const FACTORY_RECTANGLE: Factory<Graphics> = (p: Properties, existing?: Graphics) => {
-    existing?.clear();
-    existing ??= new Graphics();
-
-    const { bounds, radius } = p;
-    if (radius > 0) {
-        existing.roundRect(bounds.x, bounds.y, bounds.w, bounds.h, radius);
-    } else {
-        existing.rect(bounds.x, bounds.y, bounds.w, bounds.h);
-    }
-    return existing;
+const FACTORY_GRAPHICS = (_: Properties, existing?: Graphics) => {
+    return existing ??= new Graphics();
 };
 
-const FACTORY_ELLIPSE = (p: Properties, existing?: Graphics) => {
-    existing?.clear();
-    existing ??= new Graphics();
-
-    const { bounds } = p;
-    const rx = bounds.w * 0.5;
-    const ry = bounds.h * 0.5;
-    const cx = bounds.x + rx;
-    const cy = bounds.y + ry;
-    existing.ellipse(cx, cy, rx, ry);
-    return existing;
-};
-
-const FACTORY_ROUNDED_RECTANGLE_LEFT = (p: Properties, existing?: Graphics) => {
-    if (!existing) {
-        existing = new Graphics();
-    } else {
-        existing.clear();
-    }
-
-    PixiHelper.roundedRectangleLeft(existing, p.bounds, p.radius);
-    return existing;
-};
-
-const FACTORY_ROUNDED_RECTANGLE_RIGHT = (p: Properties, existing?: Graphics) => {
-    if (!existing) {
-        existing = new Graphics();
-    } else {
-        existing.clear();
-    }
-
-    PixiHelper.roundedRectangleRight(existing, p.bounds, p.radius);
-    return existing;
-};
-
-const FACTORY_ROUNDED_RECTANGLE_TOP = (p: Properties, existing?: Graphics) => {
-    if (!existing) {
-        existing = new Graphics();
-    } else {
-        existing.clear();
-    }
-
-    PixiHelper.roundedRectangleTop(existing, p.bounds, p.radius);
-    return existing;
-};
-
-const FACTORY_ROUNDED_RECTANGLE_BOTTOM = (p: Properties, existing?: Graphics) => {
-    if (!existing) {
-        existing = new Graphics();
-    } else {
-        existing.clear();
-    }
-
-    PixiHelper.roundedRectangleBottom(existing, p.bounds, p.radius);
-    return existing;
-};
-
-const FACTORY_PATH = (p: Properties, existing?: Graphics) => {
-    if (!existing) {
-        existing = new Graphics();
-    } else {
-        existing.clear();
-    }
-
-    existing.path(new GraphicsPath(p.path!));
-    return existing;
+const FACTORY_SPRITE = (_: Properties, existing?: Sprite) => {
+    return existing ??= new Sprite();
 };
 
 const FACTORY_GROUP = (_: Properties, existing?: Container) => {
@@ -138,18 +66,6 @@ const FACTORY_GROUP = (_: Properties, existing?: Container) => {
     return existing;
 };
 
-const FACTORY_SPRITE = (p: Properties, existing?: Sprite) => {
-    if (!existing) {
-        existing = new Sprite();
-    } else {
-        existing.removeChildren();
-    }
-
-    const { bounds } = p;
-    existing.width = bounds.w;
-    existing.height = bounds.h;
-    return existing;
-};
 
 const FACTORY_TEXT = (_: Properties, existing?: HTMLText) => {
     if (!existing) {
@@ -190,55 +106,62 @@ export class PixiRenderer implements ShapeRenderer {
     }
 
     public rectangle(strokeWidth: RendererWidth, radius: number, bounds: Rect2, properties?: ShapePropertiesFunc) {    
-        return this.new(IS_GRAPHICS, FACTORY_RECTANGLE, {
+        return this.new(IS_GRAPHICS, FACTORY_GRAPHICS, {
             bounds,
+            graphicsShape: 'Rect',
             radius,
             stroke: { width: getStrokeWidth(strokeWidth) },
         }, properties);
     }
 
     public ellipse(strokeWidth: RendererWidth, bounds: Rect2, properties?: ShapePropertiesFunc) {    
-        return this.new(IS_GRAPHICS, FACTORY_ELLIPSE, {
+        return this.new(IS_GRAPHICS, FACTORY_GRAPHICS, {
             bounds,
+            graphicsShape: 'Ellipse',
             stroke: { width: getStrokeWidth(strokeWidth) },
         }, properties);
     }
 
     public roundedRectangleLeft(strokeWidth: RendererWidth, radius: number, bounds: Rect2, properties?: ShapePropertiesFunc) {    
-        return this.new(IS_GRAPHICS, FACTORY_ROUNDED_RECTANGLE_LEFT, {
+        return this.new(IS_GRAPHICS, FACTORY_GRAPHICS, {
             bounds,
+            graphicsShape: 'RoundedRectangleLeft',
             radius,
             stroke: { width: getStrokeWidth(strokeWidth) },
         }, properties);
     }
 
     public roundedRectangleRight(strokeWidth: RendererWidth, radius: number, bounds: Rect2, properties?: ShapePropertiesFunc) {
-        return this.new(IS_GRAPHICS, FACTORY_ROUNDED_RECTANGLE_RIGHT, {
+        return this.new(IS_GRAPHICS, FACTORY_GRAPHICS, {
             bounds,
+            graphicsShape: 'RoundedRectangleRight',
             radius,
             stroke: { width: getStrokeWidth(strokeWidth) },
         }, properties);
     }
 
     public roundedRectangleTop(strokeWidth: RendererWidth, radius: number, bounds: Rect2, properties?: ShapePropertiesFunc) {
-        return this.new(IS_GRAPHICS, FACTORY_ROUNDED_RECTANGLE_TOP, {
+        return this.new(IS_GRAPHICS, FACTORY_GRAPHICS, {
             bounds,
+            graphicsShape: 'RoundedRectangleTop',
             radius,
             stroke: { width: getStrokeWidth(strokeWidth) },
         }, properties);
     }
 
     public roundedRectangleBottom(strokeWidth: RendererWidth, radius: number, bounds: Rect2, properties?: ShapePropertiesFunc) {    
-        return this.new(IS_GRAPHICS, FACTORY_ROUNDED_RECTANGLE_BOTTOM, {
+        return this.new(IS_GRAPHICS, FACTORY_GRAPHICS, {
             bounds,
+            graphicsShape: 'RoundedRectangleBottom',
             radius,
             stroke: { width: getStrokeWidth(strokeWidth) },
         }, properties);
     }
 
     public path(strokeWidth: RendererWidth, path: string, properties?: ShapePropertiesFunc) {
-        return this.new(IS_GRAPHICS, FACTORY_PATH, {
-            path,
+        return this.new(IS_GRAPHICS, FACTORY_GRAPHICS, {
+            graphicsPath: path,
+            graphicsShape: 'Path',
             stroke: { width: getStrokeWidth(strokeWidth) },
         }, properties);
     }
@@ -320,8 +243,9 @@ export class PixiRenderer implements ShapeRenderer {
         const properties: Properties = {
             bounds: Rect2.ZERO,
             fill: 'transparent',
+            graphicsPath: null,
+            graphicsShape: null,
             opacity: 1,
-            path: null,
             radius: 0,
             raster: null,
             stroke: {},
@@ -388,104 +312,153 @@ class PropertiesSetter implements ShapeProperties {
         opacity: (value, element) => {
             element.alpha = value;
         },
-        fill: (value, element) => {
-            if (Types.is(element, Graphics)) {
-                element.fill(value as any);
+        graphicsShape: (value, element, p) => {
+            if (!value || !Types.is(element, Graphics)) {
+                return;
             }
+
+            const { bounds, graphicsPath: path, graphicsShape: shape, radius } = p;
+            if (shape === 'Rect' && radius > 0) {
+                element.roundRect(bounds.x, bounds.y, bounds.w, bounds.h, radius);
+            } else if (shape === 'Rect') {
+                element.rect(bounds.x, bounds.y, bounds.w, bounds.h);
+            } else if (shape === 'Path' && path) {
+                element.path(new GraphicsPath(path));
+            } else if (shape === 'RoundedRectangleLeft') {
+                PixiHelper.roundedRectangleLeft(element, bounds, radius);
+            } else if (shape === 'RoundedRectangleRight') {
+                PixiHelper.roundedRectangleRight(element, bounds, radius);
+            } else if (shape === 'RoundedRectangleTop') {
+                PixiHelper.roundedRectangleTop(element, bounds, radius);
+            } else if (shape === 'RoundedRectangleBottom') {
+                PixiHelper.roundedRectangleBottom(element, bounds, radius);
+            } else {
+                const rx = bounds.w * 0.5;
+                const ry = bounds.h * 0.5;
+                const cx = bounds.x + rx;
+                const cy = bounds.y + ry;
+                element.ellipse(cx, cy, rx, ry);
+            }
+
+        },
+        fill: (value, element) => {
+            if (!Types.is(element, Graphics)) {
+                return;
+            }
+
+            element.fill(value as any);
         },
         stroke: (value, element) => {
-            if (Types.is(element, Graphics)) {
-                element.stroke({ alignment: 1, ...value });
+            if (!Types.is(element, Graphics)) {
+                return;
             }
+
+            element.stroke({ alignment: 1, ...value });
+        },
+        bounds: (value, element) => {
+            if (!Types.is(element, Sprite)) {
+                return;
+            }
+
+            element.width = value.w;
+            element.height = value.h;
         },
         raster: (value, element, p) => {
-            if (Types.is(element, Sprite)) {
-                (element as any)['source'] = value;
-                if (!value) {
-                    element.texture = null!;
+            if (!Types.is(element, Sprite)) {
+                return;
+            }
+
+            (element as any)['source'] = value;
+            if (!value) {
+                element.texture = null!;
+                return;
+            }
+
+            const loaded = Assets.load({
+                src: value.source,
+                loadParser: 'loadTextures',
+            });
+
+            loaded.then((texture: Texture) => {
+                let lastRequest = (element as any)['source'] as Properties['raster'] | undefined;
+
+                if (lastRequest?.source !== value.source) {
                     return;
                 }
 
-                const loaded = Assets.load({
-                    src: value.source,
-                    loadParser: 'loadTextures',
-                });
+                if (value?.keepRatio && texture) {
+                    const size = element.getSize();
 
-                loaded.then((texture: Texture) => {
-                    let lastRequest = (element as any)['source'] as Properties['raster'] | undefined;
+                    const ratioElement = size.width / size.height;
+                    const ratioImage = texture.width / texture.height;
+                    let w = 0;
+                    let h = 0;
 
-                    if (lastRequest?.source !== value.source) {
-                        return;
+                    if (ratioImage > ratioElement) {
+                        w = size.width;
+                        h = size.width / ratioImage;
+                        element.y = p.bounds.y + (size.height - h) * 0.5;
+                    } else {
+                        w = size.height * ratioImage;
+                        h = size.height;
+                        element.x = p.bounds.x + (size.width - w) * 0.5;
                     }
 
-                    if (value?.keepRatio && texture) {
-                        const size = element.getSize();
+                    element.width = w;
+                    element.height = h;
+                }
 
-                        const ratioElement = size.width / size.height;
-                        const ratioImage = texture.width / texture.height;
-                        let w = 0;
-                        let h = 0;
-
-                        if (ratioImage > ratioElement) {
-                            w = size.width;
-                            h = size.width / ratioImage;
-                            element.y = p.bounds.y + (size.height - h) * 0.5;
-                        } else {
-                            w = size.height * ratioImage;
-                            h = size.height;
-                            element.x = p.bounds.x + (size.width - w) * 0.5;
-                        }
-
-                        element.width = w;
-                        element.height = h;
-                    }
-
-                    element.texture = texture;
-                });
-            }
+                element.texture = texture;
+            });
         },
         textContent: (value, element) => {
-            if (Types.is(element, HTMLText)) {
-                let textOrHtml = value.text;
-                if (value.markdown && textOrHtml) {
-                    textOrHtml = marked.parseInline(textOrHtml) as string;
-                }
-
-                if (value.underline && textOrHtml) {
-                    textOrHtml = `<span style="text-decoration: underline">${textOrHtml}</span>`;
-                }
-
-                element.text = textOrHtml || '';
+            if (!Types.is(element, HTMLText)) {
+                return;
             }
+
+            let textOrHtml = value.text;
+            if (value.markdown && textOrHtml) {
+                textOrHtml = marked.parseInline(textOrHtml) as string;
+            }
+
+            if (value.underline && textOrHtml) {
+                textOrHtml = `<span style="text-decoration: underline">${textOrHtml}</span>`;
+            }
+
+            element.text = textOrHtml || '';
         },
         textStyle: (value, element) => {
-            if (Types.is(element, HTMLText)) {
-                element.style = { padding: 10, ...value };
+            if (!Types.is(element, HTMLText)) {
+                return;
             }
+            
+            element.style = { padding: 10, ...value };
         },
         textMode: (value, element, p) => {
-            if (Types.is(element, HTMLText)) {
-                const { bounds } = p;
-
-                const mask = element.mask as Graphics;
-                mask?.clear();
-                mask?.rect(0, 0, bounds.w, bounds.h).fill(0xffffff);
-
-                const size = element.getSize();
-                let x = bounds.x;
-                let y = bounds.y;
-                if (value === 'Single') {
-                    y += Math.max((bounds.h - size.height) * 0.5, 0);
-                }
-
-                if (element.style.align === 'center') {
-                    x += Math.max((bounds.w - size.width) * 0.5, 0);
-                } else if (element.style.align === 'right') {
-                    x += bounds.w - size.width;
-                }
-
-                element.position = { x, y };
+            if (!Types.is(element, HTMLText)) {
+                return;
             }
+
+            const { bounds } = p;
+
+            const mask = element.mask as Graphics;
+            mask?.clear();
+            mask?.rect(0, 0, bounds.w, bounds.h).fill(0xffffff);
+
+            const size = element.getSize();
+            let x = bounds.x;
+            let y = bounds.y;
+            if (value === 'Single') {
+                y += Math.max((bounds.h - size.height) * 0.5, 0);
+            }
+
+            if (element.style.align === 'center') {
+                x += Math.max((bounds.w - size.width) * 0.5, 0);
+            } else if (element.style.align === 'right') {
+                x += bounds.w - size.width;
+            }
+
+            element.position = { x, y };
         },
     };
 
@@ -497,11 +470,24 @@ class PropertiesSetter implements ShapeProperties {
     public apply(element: ContainerChild) {
         const oldProperties = (element as any)['properties'] || {} as any;
 
-        for (const [property, setter] of PropertiesSetter.SETTERS_ENTRIES) {
-            const value = (this.properties as any)[property];
+        if (Types.is(element, Graphics)) {
+            if (Types.equals(this.properties, oldProperties)) {
+                return;
+            }
 
-            if (!Types.equals(value, oldProperties[property])) {
+            element.clear();
+            for (const [property, setter] of PropertiesSetter.SETTERS_ENTRIES) {
+                const value = (this.properties as any)[property];
+    
                 setter(value as never, element, this.properties);
+            }
+        } else {
+            for (const [property, setter] of PropertiesSetter.SETTERS_ENTRIES) {
+                const value = (this.properties as any)[property];
+    
+                if (!Types.equals(value, oldProperties[property])) {
+                    setter(value as never, element, this.properties);
+                }
             }
         }
 

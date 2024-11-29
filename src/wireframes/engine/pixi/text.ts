@@ -8,7 +8,7 @@
 import { Container, Graphics, Text } from 'pixi.js';
 import { EngineText, EngineTextPlotArgs } from './../interface';
 import { PixiObject } from './object';
-import { linkToPixi } from './utils';
+import { linkToPixi, PixiHelper } from './utils';
 
 type Values = {
     color: string;
@@ -50,11 +50,11 @@ export class PixiText extends PixiObject implements EngineText {
     }
 
     public color(value: string): void {
-        this.updateKey('color', value);
+        this.updateKey('color', PixiHelper.toColor(value));
     }
 
     public fill(value: string): void {
-        this.updateKey('fill', value);
+        this.updateKey('fill', PixiHelper.toColor(value));
     }
 
     public fontSize(value: number): void {

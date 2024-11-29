@@ -4,10 +4,15 @@
 .editor {
     & {
         position: relative;
+        height: 100%;
     }
 
-    canvas {
+    .pixi {
         @include absolute(0, 0, 0, 0);
+
+        & > div {
+            height: 100%;
+        }
     }
 
     &-adorners {

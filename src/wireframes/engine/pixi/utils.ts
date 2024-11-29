@@ -96,6 +96,10 @@ export module PixiHelper {
     }
 
     export function toColor(value: string | number | Color | null | undefined): string {
+        if (value === 'none') {
+            return 'transparent';
+        }
+        
         if (Types.isString(value)) {
             return value;
         } else if (value) {

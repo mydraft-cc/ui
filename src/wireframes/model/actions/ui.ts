@@ -9,7 +9,7 @@ import { createAction, createReducer } from '@reduxjs/toolkit';
 import { message } from 'antd';
 import { NoticeType } from 'antd/lib/message/interface';
 import { AnyAction, Dispatch, Middleware, Reducer } from 'redux';
-import { UIState } from './../internal';
+import { saveWebGLState, UIState } from './../internal';
 
 export const showToast =
     createAction('ui/infoToast', (content: string, type?: NoticeType, key?: string, delayed = 1000) => {
@@ -41,6 +41,11 @@ export const toggleRightSidebar =
         return { payload: { } };
     });
 
+export const toggleWebGL =
+    createAction('ui/webgl', (value: boolean) => {
+        return { payload: { value: value } };
+    });
+
 export function toastMiddleware() {
     const middleware: Middleware = () => (next: Dispatch<AnyAction>) => (action: any) => {
         if (showToast.match(action)) {
@@ -49,6 +54,8 @@ export function toastMiddleware() {
             setTimeout(() => {
                 message.open({ content, key, type: type || 'info' });
             }, delayed);
+        } else if (toggleWebGL.match(action)) {
+            saveWebGLState(action.payload.value);
         }
 
         return next(action);
@@ -73,5 +80,8 @@ export function ui(initialState: UIState): Reducer<UIState> {
         })
         .addCase(toggleRightSidebar, (state) => {
             state.showRightSidebar = !state.showRightSidebar;
+        })
+        .addCase(toggleWebGL, (state) => {
+            state.useWebGL = !state.useWebGL;
         }));
 }

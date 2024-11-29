@@ -9,7 +9,7 @@ import { Container, Graphics } from 'pixi.js';
 import { MathHelper, Types } from '@app/core';
 import { EngineRect, EngineRectOrEllipsePlotArgs } from './../interface';
 import { PixiObject } from './object';
-import { linkToPixi } from './utils';
+import { linkToPixi, PixiHelper } from './utils';
 
 type Values = {
     fill: string;
@@ -45,11 +45,11 @@ export class PixiRect extends PixiObject implements EngineRect {
     }
 
     public fill(value: string) {
-        this.updateKey('fill', value);
+        this.updateKey('fill', PixiHelper.toColor(value));
     }
 
     public strokeColor(value: string) {
-        this.updateKey('strokeColor', value);
+        this.updateKey('strokeColor', PixiHelper.toColor(value));
     }
     
     public strokeWidth(value: number) {
@@ -57,9 +57,10 @@ export class PixiRect extends PixiObject implements EngineRect {
     }
     
     public plot(args: EngineRectOrEllipsePlotArgs): void {
-        this.attrs.plot = args;
+        const prevPlot = this.attrs.plot;
 
-        if (args.w !== this.attrs.plot.w || args.h !== this.attrs.plot.h) {
+        this.attrs.plot = args;
+        if (args.w !== prevPlot.w || args.h !== prevPlot.h) {
             this.invalid = true;
             return;
         }
@@ -75,6 +76,7 @@ export class PixiRect extends PixiObject implements EngineRect {
         const { attrs, graphics } = this;
         const { w, h } = attrs.plot;
 
+        graphics.clear();
         if (this.rectangle) {
             graphics.rect(0, 0, w, h);
         } else {

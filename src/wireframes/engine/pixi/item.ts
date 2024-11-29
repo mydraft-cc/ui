@@ -40,6 +40,7 @@ export class PixiItem extends PixiObject implements EngineItem {
         this.selector = new Graphics();
 
         this.container = new Container();
+        this.container.eventMode = 'static';
         this.container.addChild(this.selector);
         linkToPixi(this, this.container);
 

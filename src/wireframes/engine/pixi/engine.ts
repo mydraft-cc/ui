@@ -98,15 +98,12 @@ export class PixiEngine implements Engine {
     }
 
     private buildMouseEvent = (event: MouseEvent): EngineMouseEvent => {
-        const bounds = this.application.canvas.getBoundingClientRect();
-
-        const relativeX = event.clientX - bounds.x;
-        const relativeY = event.clientY - bounds.y;
+        const { x, y } = this.getPosition(event);
 
         const engineEvent =
             new EngineMouseEvent(
                 event,
-                new Vec2(relativeX, relativeY));
+                new Vec2(x, y));
 
         return engineEvent;
     };
@@ -115,7 +112,7 @@ export class PixiEngine implements Engine {
         const boundary = new EventBoundary(this.application.stage);
 
         const { x, y } = this.getPosition(event);
-        const hit = boundary.hitTest(y, y);
+        const hit = boundary.hitTest(event.offsetX, event.offsetY);
         
         let currentTarget: Container = hit;
         let eventObject: EngineObject | null = null;
@@ -147,7 +144,8 @@ export class PixiEngine implements Engine {
     };
 
     private handleMouseMove = (event: EngineHitEvent) => {
-        if (!event.item) {
+        if (!event.target) {
+            document.body.style.cursor = 'default';
             return;
         }
     
@@ -168,7 +166,8 @@ export class PixiEngine implements Engine {
             };
 
             const rotationBase = cursor.target!.worldTransform.decompose(defaultTransform);
-            const rotationTotal = MathHelper.toPositiveDegree(rotationBase.rotation);
+            const rotationDegree = MathHelper.toDegree(rotationBase.rotation);
+            const rotationTotal = MathHelper.toPositiveDegree(rotationDegree + cursor.angle);
 
             for (const config of ROTATION_CONFIG) {
                 if (rotationTotal > config.angle - 22.5 &&
