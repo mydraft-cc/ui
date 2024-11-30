@@ -97,6 +97,7 @@ export const texts = {
         zoomIn: 'Zoom In',
         zoomOut: 'Zoom Out',
         webGL: 'Web GL',
-        webGLHints: 'Use WebGL as alternative renderer. Requires restart',
+        webGLHints1: 'Use WebGL as alternative renderer.',
+        webGLHints2: 'Require manual refresh (F5)',
     },
 };

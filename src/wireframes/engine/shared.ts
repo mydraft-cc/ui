@@ -136,3 +136,16 @@ export function getOpacity(value: RendererWidth | null | undefined) {
 function isShape(element: any): element is Shape {
     return Types.isFunction(element?.getAppearance);
 }
+
+export function setValue<T>(element: any, key: string, value: T) {
+    (element as any)[key] = value;
+}
+
+export function getValue<T>(element: any, key: string, factory?: () => T) {
+    let value = (element as any)[key];
+    if (!value && factory) {
+        value = factory();
+    }
+
+    return value;
+}

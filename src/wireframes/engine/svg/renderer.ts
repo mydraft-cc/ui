@@ -11,7 +11,7 @@ import * as svg from '@svgdotjs/svg.js';
 import { marked } from 'marked';
 import { escapeHTML, Rect2, TextMeasurer, Types } from '@app/core/utils';
 import { RendererColor, RendererOpacity, RendererText, RendererWidth, ShapeProperties, ShapePropertiesFunc, ShapeRenderer, ShapeRendererFunc, TextConfig, TextDecoration } from '@app/wireframes/interface';
-import { getBackgroundColor, getFontFamily, getFontSize, getForegroundColor, getOpacity, getStrokeColor, getStrokeWidth, getText, getTextAlignment } from './../shared';
+import { getBackgroundColor, getFontFamily, getFontSize, getForegroundColor, getOpacity, getStrokeColor, getStrokeWidth, getText, getTextAlignment, getValue, setValue } from './../shared';
 import { SvgHelper } from './utils';
 
 const FACTORY_ELLIPSE = () => {
@@ -31,13 +31,13 @@ const FACTORY_TEXT = () => {
 };
 
 export class SvgRenderer implements ShapeRenderer {
-    private containerItem: svg.G = null!;
-    private containerIndex = 0;
+    private currentContainer: svg.G = null!;
+    private currentIndex = 0;
     private clipping = false;
     private wasClipped = false;
 
     public getContainer() {
-        return this.containerItem;
+        return this.currentContainer;
     }
 
     public getTextWidth(text: string, fontSize: number, fontFamily: string) {
@@ -46,8 +46,8 @@ export class SvgRenderer implements ShapeRenderer {
 
     public setContainer(container: svg.G, index = 0, clipping = false) {
         this.clipping = clipping;
-        this.containerItem = container;
-        this.containerIndex = index;
+        this.currentContainer = container;
+        this.currentIndex = index;
         this.wasClipped = false;
     }
 
@@ -161,12 +161,12 @@ export class SvgRenderer implements ShapeRenderer {
     public group(items: ShapeRendererFunc, clip?: ShapeRendererFunc, properties?: ShapePropertiesFunc) {
         return this.new('g', () => new svg.G(), {}, properties, group => {
             const clipping = this.clipping;
-            const container = this.containerItem;
-            const containerIndex = this.containerIndex;
+            const container = this.currentContainer;
+            const containerIndex = this.currentIndex;
             const wasClipped = this.wasClipped;
 
-            this.containerItem = group;
-            this.containerIndex = 0;
+            this.currentContainer = group;
+            this.currentIndex = 0;
 
             if (items) {
                 items(this);
@@ -180,8 +180,8 @@ export class SvgRenderer implements ShapeRenderer {
 
             this.cleanupAll();
             this.clipping = clipping;
-            this.containerItem = container;
-            this.containerIndex = containerIndex;
+            this.currentContainer = container;
+            this.currentIndex = containerIndex;
             this.wasClipped = wasClipped;
         });
     }
@@ -197,26 +197,24 @@ export class SvgRenderer implements ShapeRenderer {
         }
 
         if (this.clipping) {
-            element = this.containerItem.clipper()?.get(0) as T;
+            element = this.currentContainer.clipper()?.get(0) as T;
 
             if (!element || element.node.tagName !== name) {
                 element = factory();
 
                 const clipPath = new svg.ClipPath();
-
                 clipPath.add(element);
-
-                this.containerItem.add(clipPath);
-                this.containerItem.clipWith(clipPath);
+                this.currentContainer.add(clipPath);
+                this.currentContainer.clipWith(clipPath);
             }
 
             this.wasClipped = true;
         } else {
-            element = this.containerItem.get(this.containerIndex) as T;
+            element = this.currentContainer.get(this.currentIndex) as T;
 
             if (!element) {
                 element = factory();
-                element.addTo(this.containerItem);
+                element.addTo(this.currentContainer);
             } else if (element.node.tagName !== name) {
                 const previous = element;
 
@@ -226,7 +224,7 @@ export class SvgRenderer implements ShapeRenderer {
                 previous.remove();
             }
 
-            this.containerIndex++;
+            this.currentIndex++;
         }
 
         customInitializer?.(element);
@@ -243,10 +241,10 @@ export class SvgRenderer implements ShapeRenderer {
     }
 
     public cleanupAll() {
-        const childNodes = this.containerItem.node.childNodes;
+        const childNodes = this.currentContainer.node.childNodes;
         const childrenSize = childNodes.length;
 
-        for (let i = childrenSize - 1; i >= this.containerIndex; i--) {
+        for (let i = childrenSize - 1; i >= this.currentIndex; i--) {
             const last = childNodes[i];
 
             if (last.nodeName === 'clipPath' && this.wasClipped) {
@@ -257,7 +255,7 @@ export class SvgRenderer implements ShapeRenderer {
         }
 
         if (!this.wasClipped) {
-            this.containerItem.unclip();
+            this.currentContainer.unclip();
         }
     }
 }
@@ -295,11 +293,11 @@ const DEFAULT_PROPERTIES: Properties = {
 };
 
 type Setters<T> = {
-    [P in keyof T]?: (value: T[P], element: svg.Element, all: T) => void;
+    [P in keyof T]?: (value: T[P], element: svg.Element) => void;
 };
 
 class PropertiesSetter implements ShapeProperties {
-    private static readonly SETTER_MAP: Setters<Properties> = {
+    private static readonly SETTERS = Object.entries({
         color: (value, element) => {
             SvgHelper.fastSetAttribute(element.node, 'color', value);
         },
@@ -397,11 +395,9 @@ class PropertiesSetter implements ShapeProperties {
                 SvgHelper.transformByRect(element, value, false);
             }
         },
-    };
+    } as Setters<Properties>);
 
-    public static readonly SETTERS = Object.entries(this.SETTER_MAP);
     public static readonly INSTANCE = new PropertiesSetter();
-
     private properties!: Properties;
 
     public prepare(defaults: Partial<Properties>) {
@@ -412,17 +408,18 @@ class PropertiesSetter implements ShapeProperties {
     }
 
     public apply(element: svg.Element) {
-        const oldProperties = (element.node as any)['properties'] || {} as any;
+        const oldProperties = getValue(element, 'properties', () => ({} as Record<string, any>));
 
+        const properties = this.properties as Record<string, any>;
         for (const [property, setter] of PropertiesSetter.SETTERS) {
-            const value = (this.properties as any)[property];
+            const value = properties[property];
 
             if (!Types.equals(value, oldProperties[property])) {
-                setter(value as never, element, this.properties);
+                setter(value as never, element);
             }
         }
 
-        (element.node as any)['properties'] = this.properties;
+        setValue(element, 'properties', properties);
     }
 
     public setBackgroundColor(color: RendererColor | null | undefined): ShapeProperties {

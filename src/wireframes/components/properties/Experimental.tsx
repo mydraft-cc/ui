@@ -21,14 +21,19 @@ export const Experimental = () => {
     }, [dispatch]);
 
     return (
-        <Row className='property'>
-            <Col span={12} className='property-label'>{texts.common.webGL}</Col>
-            <Col span={12} className='property-value'>
-                <Checkbox checked={useWebGL}
-                    onChange={doChangeWebGL} />
+        <>
+            <Row className='property'>
+                <div>{texts.common.webGLHints1}</div>
+                <div>{texts.common.webGLHints2}</div>
+            </Row>
 
-                <div>{texts.common.webGLHints}</div>
-            </Col>
-        </Row>
+            <Row className='property'>
+                <Col span={6} className='property-label'>{texts.common.webGL}</Col>
+                <Col span={18} className='property-value'>
+                    <Checkbox checked={useWebGL}
+                        onChange={doChangeWebGL} />
+                </Col>
+            </Row>
+        </>
     );
 };

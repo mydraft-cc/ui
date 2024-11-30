@@ -364,10 +364,11 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
         if (showOverlay) {
             this.props.overlayManager.showSnapAdorners(deltaSize);
 
-            const w = Math.floor(this.transform.size.x);
-            const h = Math.floor(this.transform.size.y);
+            const w = this.transform.size.x;
+            const h = this.transform.size.y;
+            const x = this.transform.aabb.x;
 
-            this.props.overlayManager.showInfo(this.transform, `Width: ${w}, Height: ${h}`);
+            this.props.overlayManager.showInfo(this.transform, `Width: ${w}, Height: ${h}, X: ${x}`);
         }
 
         this.debug();

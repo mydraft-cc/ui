@@ -94,7 +94,7 @@ export class SvgEngine implements Engine {
         const engineEvent =
             new EngineMouseEvent(
                 event,
-                new Vec2(x, y));
+                new Vec2(Math.round(x), Math.round(y)));
 
         return engineEvent;
     };
@@ -122,7 +122,7 @@ export class SvgEngine implements Engine {
         const engineEvent =
             new EngineHitEvent(
                 event,
-                new Vec2(x, y),
+                new Vec2(Math.round(x), Math.round(y)),
                 eventObject as any,
                 eventItem);
 
