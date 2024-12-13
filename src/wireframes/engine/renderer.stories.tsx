@@ -19,6 +19,9 @@ import { SvgCanvasView } from './svg/canvas/SvgCanvas';
 
 const VIEWBOX = { minX: 0, minY: 0, maxX: 600, maxY: 600, zoom: 1 };
 
+const LOREM_IPSUM = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.';
+const LOREM_SHORT = 'Lorem ipsum';
+
 class DummyPlugin {
     constructor(
         private readonly renderer: (renderer: ShapeRenderer, width: number, color: string) => void,
@@ -256,7 +259,7 @@ export const TextCenter = () => {
                     i.rectangle(1, 0, new Rect2(0, 0, 100, 60), p => p
                         .setStrokeColor('black'),
                     );
-                    i.text({ text: 'Hello Engine', alignment: 'center' }, new Rect2(0, 0, 100, 60), p => p
+                    i.text({ text: LOREM_SHORT, alignment: 'center' }, new Rect2(0, 0, 100, 60), p => p
                         .setBackgroundColor('#aaa')
                         .setStrokeColor(color),
                     );
@@ -275,8 +278,28 @@ export const TextCenterOffset = () => {
                     i.rectangle(1, 0, new Rect2(50, 50, 100, 60), p => p
                         .setStrokeColor('black'),
                     );
-                    i.text({ text: 'Hello Engine', alignment: 'center' }, new Rect2(50, 50, 100, 60), p => p
+                    i.text({ text: LOREM_SHORT, alignment: 'center' }, new Rect2(50, 50, 100, 60), p => p
                         .setBackgroundColor('#aaa')
+                        .setStrokeColor(color),
+                    );
+                })
+            }
+        />
+    );
+};
+
+export const TextColored = () => {
+    return (
+        <CompareView
+            iterations={1}
+            onRender={(renderer, color) =>
+                renderer.group(i => {
+                    i.rectangle(1, 0, new Rect2(0, 0, 100, 60), p => p
+                        .setStrokeColor('black'),
+                    );
+                    i.text({ text: LOREM_SHORT, alignment: 'center' }, new Rect2(0, 0, 100, 60), p => p
+                        .setBackgroundColor('#aaa')
+                        .setForegroundColor('red')
                         .setStrokeColor(color),
                     );
                 })
@@ -334,7 +357,7 @@ export const TextLeft = () => {
                     i.rectangle(1, 0, new Rect2(0, 0, 100, 60), p => p
                         .setStrokeColor('black'),
                     );
-                    i.text({ text: 'Hello Engine', alignment: 'left' }, new Rect2(0, 0, 100, 60), p => p
+                    i.text({ text: LOREM_SHORT, alignment: 'left' }, new Rect2(0, 0, 100, 60), p => p
                         .setBackgroundColor('#aaa')
                         .setStrokeColor(color),
                     );
@@ -353,7 +376,7 @@ export const TextRight = () => {
                     i.rectangle(1, 0, new Rect2(0, 0, 100, 60), p => p
                         .setStrokeColor('black'),
                     );
-                    i.text({ text: 'Hello Engine', alignment: 'right' }, new Rect2(0, 0, 100, 60), p => p
+                    i.text({ text: LOREM_SHORT, alignment: 'right' }, new Rect2(0, 0, 100, 60), p => p
                         .setBackgroundColor('#aaa')
                         .setStrokeColor(color),
                     );
@@ -372,7 +395,26 @@ export const TruncatedText = () => {
                     i.rectangle(1, 0, new Rect2(0, 0, 100, 60), p => p
                         .setStrokeColor('black'),
                     );
-                    i.text({ text: 'Lorem ipsum dolor sit amet' }, new Rect2(0, 0, 100, 60), p => p
+                    i.text({ text: LOREM_IPSUM }, new Rect2(0, 0, 100, 60), p => p
+                        .setBackgroundColor('#aaa')
+                        .setStrokeColor(color),
+                    );
+                })
+            }
+        />
+    );
+};
+
+export const TruncatedTextRight = () => {
+    return (
+        <CompareView
+            iterations={1}
+            onRender={(renderer, color) =>
+                renderer.group(i => {
+                    i.rectangle(1, 0, new Rect2(0, 0, 100, 60), p => p
+                        .setStrokeColor('black'),
+                    );
+                    i.text({ text: LOREM_IPSUM, alignment: 'right' }, new Rect2(0, 0, 100, 60), p => p
                         .setBackgroundColor('#aaa')
                         .setStrokeColor(color),
                     );
@@ -391,7 +433,64 @@ export const MultilineText = () => {
                     i.rectangle(1, 0, new Rect2(0, 0, 100, 60), p => p
                         .setStrokeColor('black'),
                     );
-                    i.textMultiline({ text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.' }, new Rect2(0, 0, 100, 60), p => p
+                    i.textMultiline({ text: LOREM_IPSUM }, new Rect2(0, 0, 100, 60), p => p
+                        .setBackgroundColor('#aaa')
+                        .setStrokeColor(color),
+                    );
+                })
+            }
+        />
+    );
+};
+
+export const MultilineTextWide = () => {
+    return (
+        <CompareView
+            iterations={1}
+            onRender={(renderer, color) =>
+                renderer.group(i => {
+                    i.rectangle(1, 0, new Rect2(0, 0, 300, 60), p => p
+                        .setStrokeColor('black'),
+                    );
+                    i.textMultiline({ text: LOREM_IPSUM }, new Rect2(0, 0, 300, 60), p => p
+                        .setBackgroundColor('#aaa')
+                        .setStrokeColor(color),
+                    );
+                })
+            }
+        />
+    );
+};
+
+export const MultilineTextRight = () => {
+    return (
+        <CompareView
+            iterations={1}
+            onRender={(renderer, color) =>
+                renderer.group(i => {
+                    i.rectangle(1, 0, new Rect2(0, 0, 300, 60), p => p
+                        .setStrokeColor('black'),
+                    );
+                    i.textMultiline({ text: LOREM_IPSUM, alignment: 'right' }, new Rect2(0, 0, 300, 60), p => p
+                        .setBackgroundColor('#aaa')
+                        .setStrokeColor(color),
+                    );
+                })
+            }
+        />
+    );
+};
+
+export const MultilineTextRightShort = () => {
+    return (
+        <CompareView
+            iterations={1}
+            onRender={(renderer, color) =>
+                renderer.group(i => {
+                    i.rectangle(1, 0, new Rect2(0, 0, 300, 60), p => p
+                        .setStrokeColor('black'),
+                    );
+                    i.textMultiline({ text: LOREM_SHORT, alignment: 'right' }, new Rect2(0, 0, 300, 60), p => p
                         .setBackgroundColor('#aaa')
                         .setStrokeColor(color),
                     );

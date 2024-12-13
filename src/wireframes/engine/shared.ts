@@ -141,10 +141,11 @@ export function setValue<T>(element: any, key: string, value: T) {
     (element as any)[key] = value;
 }
 
-export function getValue<T>(element: any, key: string, factory?: () => T) {
+export function getValue<T>(element: any, key: string, factory?: () => T): T {
     let value = (element as any)[key];
     if (!value && factory) {
         value = factory();
+        (element as any)[key] = value;
     }
 
     return value;

@@ -33,6 +33,8 @@ export class Paragraph implements ShapePlugin {
     }
 
     public render(ctx: RenderContext) {
-        ctx.renderer2.textMultiline(ctx.shape, ctx.rect, undefined, true);
+        ctx.renderer2.textMultiline(ctx.shape, ctx.rect, p => {
+            p.setForegroundColor(ctx.shape);
+        }, true);
     }
 }

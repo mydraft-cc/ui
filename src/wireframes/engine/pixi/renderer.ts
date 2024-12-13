@@ -49,21 +49,6 @@ type Properties = {
     textStyle?: Partial<TextStyle>;
 };
 
-/*
-type Properties = {
-    fill?: string | null;
-    bounds: Rect2;
-    graphicsPath: string | null;
-    graphicsShape: 'Rect' | 'Ellipse' | 'RoundedRectangleLeft' | 'RoundedRectangleRight' | 'RoundedRectangleTop' | 'RoundedRectangleBottom' | 'Path' | null;
-    opacity: number;
-    radius: number;
-    raster: { source: string; keepRatio?: boolean } | null;
-    stroke: StrokeStyle;
-    textContent: { text?: string; markdown?: boolean; underline?: boolean };
-    textStyle: Partial<TextStyle>;
-    textMode?: 'Single' | 'Multi';
-};*/
-
 type Test = (existing: ContainerChild) => boolean;
 
 const IS_GRAPHICS: Test = (existing?: ContainerChild) => {
@@ -79,7 +64,7 @@ const IS_SPRITE: Test = (existing?: ContainerChild) => {
 };
 
 const IS_TEXT: Test = (existing?: ContainerChild) => {
-    return Types.is(existing, HTMLText);
+    return Types.is(existing, Container) && Types.is(existing.getChildAt(1), HTMLText);
 };
 
 type Factory<T> = (p: Properties, existing?: T) => T;
@@ -103,14 +88,17 @@ const FACTORY_GROUP = (_: Properties, existing?: Container) => {
 };
 
 
-const FACTORY_TEXT = (_: Properties, existing?: HTMLText) => {
+const FACTORY_TEXT = (_: Properties, existing?: Container) => {
     if (!existing) {
-        existing = new HTMLText();
+        existing = new Container();
 
         const mask = new Graphics();
         existing.mask = mask;
-        existing.resolution = 2;
         existing.addChild(mask);
+
+        const text = new HTMLText();
+        text.resolution = 2;
+        existing.addChild(text);
     }
 
     return existing;
@@ -264,6 +252,7 @@ export class PixiRenderer implements ShapeRenderer {
                 fontSize,
                 lineHeight: fontSize * 1.5,
                 wordWrap: true,
+                wordWrapWidth: bounds.w,
             },
         }, properties); 
     }
@@ -477,7 +466,7 @@ class PropertiesSetter implements ShapeProperties {
             align(element, bounds, ratio);
         },
         textContent: (value, element) => {
-            if (!value || !Types.is(element, HTMLText)) {
+            if (!value || !Types.is(element, Container)) {
                 return;
             }
 
@@ -490,42 +479,61 @@ class PropertiesSetter implements ShapeProperties {
                 textOrHtml = `<span style="text-decoration: underline">${textOrHtml}</span>`;
             }
 
-            element.text = textOrHtml || '';
+            const text = element.getChildAt(1) as HTMLText;
+            text.text = textOrHtml || '';
             setValue(element, 'size', null);
         },
         textStyle: (value, element) => {       
-            if (!value || !Types.is(element, HTMLText)) {
+            if (!value || !Types.is(element, Container)) {
                 return;
             }
                  
-            element.style = { padding: 10, ...value };
-            setValue(element, 'size', null);
+            const text = element.getChildAt(1) as HTMLText;
+            text.style = { ...value };
+            setValue(text, 'size', null);
         },
         textAlign: (value, element) => {
-            if (!value || !Types.is(element, HTMLText)) {
+            if (!value || !Types.is(element, Container)) {
                 return;
             }
 
+
             const { align, bounds, type } = value;
+            element.position = { x: bounds.x, y: bounds.y };
 
-            const mask = element.mask as Graphics;
+            const mask = element.getChildAt(0) as Graphics;
             mask?.clear();
-            mask?.rect(0, 0, bounds.w, bounds.h).fill(0xffffff);
+            mask?.rect(0, 0, bounds.w, bounds.h).fill('red');
 
-            const size = getValue(element, 'size', () => element.getSize());
-            let x = bounds.x;
-            let y = bounds.y;
+            const text = element.getChildAt(1) as HTMLText;
+            let ax = 0;
+            let ay = 0;
+            let px = 0;
+            let py = 0;
+
             if (type === 'Single') {
-                y += Math.max((bounds.h - size.height) * 0.5, 0);
+                ay = 0.5;
+                py = 0.5 * bounds.h;
             }
 
             if (align === 'center') {
-                x += Math.max((bounds.w - size.width) * 0.5, 0);
+                ax = 0.5;
+                px = 0.5 * bounds.w;
             } else if (align === 'right') {
-                x += bounds.w - size.width;
+                ax = 1;
+                px = bounds.w;
+            }
+                
+            if (type === 'Single') {
+                const size = getValue(element, 'size', () => text.getSize());
+                if (size.width > bounds.w) {
+                    ax = 0;
+                    px = 0;
+                }
             }
 
-            element.position = { x, y };
+            text.anchor = { x: ax, y: ay };
+            text.position = { x: px, y: py };
         },
     } as Setters<Properties, ContainerChild>);
 

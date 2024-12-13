@@ -97,7 +97,7 @@ export const Editor = React.memo((props: EditorProps) => {
     
     const doInit = React.useCallback((engine: Engine) => {
         // Might be called multiple times in dev mode!
-        if (renderMainLayer.current || !engine) {
+        if (!engine) {
             return;
         }
 

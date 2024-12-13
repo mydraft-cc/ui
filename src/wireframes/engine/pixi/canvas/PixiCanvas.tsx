@@ -73,7 +73,7 @@ const PixiCanvasViewComponent = (props: CanvasProps<PixiEngine> & { background?:
         }
         
         engine.application.renderer.background.color = background;
-    }, []);
+    }, [background, engine]);
 
     React.useEffect(() => {
         if (!engine) {
