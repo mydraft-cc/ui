@@ -82,11 +82,17 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
         this.props.engine.subscribe(this);
     }
 
-    public componentWillUnmount() {
-        this.props.engine.subscribe(this);
-    }
-
     public componentDidUpdate(prevProps: TransformAdornerProps) {
+        if (this.props.engine !== prevProps.engine) {
+            if (prevProps.engine) {
+                prevProps.engine.unsubscribe(this);
+            }
+    
+            if (this.props.engine) {
+                this.props.engine.subscribe(this);
+            }
+        }
+
         if (this.props.selectedDiagram.selectedIds !== prevProps.selectedDiagram.selectedIds) {
             this.rotation = Rotation.ZERO;
         }
@@ -100,6 +106,12 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
             this.renderShapes();
         } else {
             this.hideShapes();
+        }
+    }
+
+    public componentWillUnmount() {
+        if (this.props.engine) {
+            this.props.engine.unsubscribe(this);
         }
     }
 

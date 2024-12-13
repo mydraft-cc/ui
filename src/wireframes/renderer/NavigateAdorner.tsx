@@ -18,12 +18,22 @@ export interface NavigateAdornerProps {
 }
 
 export class NavigateAdorner extends React.PureComponent<NavigateAdornerProps> implements Listener {
-    public componentDidMount() {
-        this.props.engine.subscribe(this);
+    public componentDidUpdate(prevProps: NavigateAdornerProps) {
+        if (this.props.engine !== prevProps.engine) {
+            if (prevProps.engine) {
+                prevProps.engine.unsubscribe(this);
+            }
+    
+            if (this.props.engine) {
+                this.props.engine.subscribe(this);
+            }
+        }
     }
 
     public componentWillUnmount() {
-        this.props.engine.unsubscribe(this);
+        if (this.props.engine) {
+            this.props.engine.unsubscribe(this);
+        }
     }
 
     public onClick(event: EngineHitEvent, next: (event: EngineHitEvent) => void) {
