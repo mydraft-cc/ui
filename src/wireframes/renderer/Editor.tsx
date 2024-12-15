@@ -44,7 +44,7 @@ export interface EditorProps {
     viewSize: Vec2;
 
     // Use WebGL renderer.
-    useWebGL: boolean;
+    useWebGL?: boolean;
 
     // True, if it is the default view.
     isDefaultView: boolean;
