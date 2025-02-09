@@ -12,7 +12,7 @@ jobs:
           fetch-depth: 0
 
       - name: Setup Node.js environment
-        uses: actions/setup-node@v4.1.0
+        uses: actions/setup-node@v4.2.0
 
       - name: Install Dependencies
         run: npm i
@@ -32,7 +32,7 @@ jobs:
           projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
         
       - name: Upload coverage reports to Codecov
-        uses: codecov/codecov-action@v5.1.1
+        uses: codecov/codecov-action@v5.3.1
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         
