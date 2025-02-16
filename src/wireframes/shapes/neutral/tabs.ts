@@ -131,7 +131,8 @@ export class Tabs implements ShapePlugin {
     }
 
     private parseText(ctx: RenderContext, fontFamily: string, fontSize: number, strokeThickness: number) {
-        const key = `${ctx.shape.text}_${fontFamily}_${fontSize}_${strokeThickness}`;
+        const isRight = ctx.shape.getAppearance(TAB_ALIGNMENT) === TAB_ALIGNMENT_RIGHT;
+        const key = `${ctx.shape.text}_${fontFamily}_${fontSize}_${strokeThickness}_${isRight}`;
 
         let result = ctx.shape.renderCache['PARSED'] as { key: string; parsed: Parsed };
 
@@ -159,8 +160,6 @@ export class Tabs implements ShapePlugin {
 
                 x += width - strokeThickness;
             }
-
-            const isRight = ctx.shape.getAppearance(TAB_ALIGNMENT) === TAB_ALIGNMENT_RIGHT;
 
             let offset = PADDING;
 
