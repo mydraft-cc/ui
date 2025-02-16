@@ -25,5 +25,12 @@
         "**/*.gitattributes": true,
         ".vs:": true,
         ".vscode:": true
+    },
+
+    "[typescript]": {
+        "editor.defaultFormatter": "dbaeumer.vscode-eslint"
+    },
+    "[typescriptreact]": {
+        "editor.defaultFormatter": "dbaeumer.vscode-eslint"
     }
 }
