@@ -5,13 +5,13 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import * as React from 'react';
 import { Rotation, Vec2, ViewBox } from '@app/core';
 import { EngineItem } from '@app/wireframes/engine';
 import { SvgCanvasView } from '@app/wireframes/engine/svg/canvas/SvgCanvas';
 import { SvgEngine } from '@app/wireframes/engine/svg/engine';
 import { ShapePlugin, Size } from '@app/wireframes/interface';
 import { DefaultConstraintFactory, DiagramItem, Transform } from '@app/wireframes/model';
+import * as React from 'react';
 
 interface ShapeRendererProps {
     plugin: ShapePlugin;
@@ -57,7 +57,7 @@ export const ShapeRenderer = React.memo(React.forwardRef<HTMLDivElement, ShapeRe
         }
 
         if (desiredWidth && desiredHeight) {
-            let aspectRatio = viewBox.maxX / viewBox.minY;
+            let aspectRatio = (viewBox.maxX - viewBox.minX) / (viewBox.maxY - viewBox.minY);
         
             if (aspectRatio > desiredWidth / desiredHeight) {
                 engine.doc.width(desiredWidth);
