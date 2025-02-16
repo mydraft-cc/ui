@@ -9,7 +9,7 @@ import { CreatedShape, ShapePlugin, ShapeSource, Size } from '@app/wireframes/in
 import { InitialShapeProps } from './diagram-item';
 import { DefaultConfigurableFactory, DefaultConstraintFactory } from './factories';
 
-type DefaultProps = Omit<Omit<InitialShapeProps, 'transform'>, 'id'> & { size: Size };
+type DefaultProps = Omit<InitialShapeProps, 'transform' | 'id'> & { size: Size };
 
 export class Registration {
     constructor(
