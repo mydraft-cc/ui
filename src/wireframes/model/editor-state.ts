@@ -79,10 +79,10 @@ export class EditorState extends Record<Props> {
         const { color, diagrams, diagramIds, size } = setup;
 
         const props: Props = {
+            id: MathHelper.guid(),
             color: color || Color.WHITE,
             diagrams: ImmutableMap.of(diagrams),
             diagramIds: ImmutableList.of(diagramIds),
-            id: MathHelper.guid(),
             size: size || new Vec2(1000, 1000),
         };
 

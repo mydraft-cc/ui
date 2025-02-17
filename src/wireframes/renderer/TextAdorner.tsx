@@ -7,7 +7,7 @@
 
 import * as React from 'react';
 import { Keys, sizeInPx } from '@app/core';
-import { Engine, HitEvent, Listener } from '@app/wireframes/engine';
+import { Engine, EngineHitEvent, Listener } from '@app/wireframes/engine';
 import { DefaultAppearance } from '@app/wireframes/interface';
 import { Diagram, DiagramItem, DiagramItemSet } from '@app/wireframes/model';
 import './TextAdorner.scss';
@@ -44,21 +44,31 @@ export class TextAdorner extends React.PureComponent<TextAdornerProps> implement
     private textareaElement: HTMLTextAreaElement = null!;
 
     public componentDidMount() {
-        this.props.engine.subscribe(this);
-
         window.addEventListener('mousedown', this.handleMouseDown);
     }
 
-    public componentWillUnmount() {
-        this.props.engine.unsubscribe(this);
-
-        window.removeEventListener('mousedown', this.handleMouseDown);
-    }
-
     public componentDidUpdate(prevProps: TextAdornerProps) {
+        if (this.props.engine !== prevProps.engine) {
+            if (prevProps.engine) {
+                prevProps.engine.unsubscribe(this);
+            }
+    
+            if (this.props.engine) {
+                this.props.engine.subscribe(this);
+            }
+        }
+
         if (this.props.selectionSet !== prevProps.selectionSet) {
             this.updateText();
         }
+    }
+
+    public componentWillUnmount() {
+        if (this.props.engine) {
+            this.props.engine.unsubscribe(this);
+        }
+
+        window.removeEventListener('mousedown', this.handleMouseDown);
     }
 
     private handleMouseDown = (e: MouseEvent) => {
@@ -67,7 +77,7 @@ export class TextAdorner extends React.PureComponent<TextAdornerProps> implement
         }
     };
 
-    public onDoubleClick(event: HitEvent) {
+    public onDoubleClick(event: EngineHitEvent) {
         if (event.item && !event.item.isLocked && this.textareaElement) {
             if (event.item.textDisabled) {
                 return;
@@ -110,12 +120,9 @@ export class TextAdorner extends React.PureComponent<TextAdornerProps> implement
         if ((Keys.isEnter(event) && !event.shiftKey) || Keys.isEscape(event)) {
             if (Keys.isEnter(event)) {
                 this.updateText();
-            } else {
-                this.hide();
             }
 
             this.hide();
-
             event.preventDefault();
             event.stopPropagation();
         }
@@ -126,11 +133,11 @@ export class TextAdorner extends React.PureComponent<TextAdornerProps> implement
             return;
         }
 
-        const newText = this.textareaElement.value;
-        const oldText = this.selectedShape.text;
+        const textNew = this.textareaElement.value;
+        const textOld = this.selectedShape.text;
 
-        if (newText !== oldText) {
-            this.props.onChangeItemsAppearance(this.props.selectedDiagram, [this.selectedShape], DefaultAppearance.TEXT, newText);
+        if (textNew !== textOld) {
+            this.props.onChangeItemsAppearance(this.props.selectedDiagram, [this.selectedShape], DefaultAppearance.TEXT, textNew);
         }
 
         this.hide();

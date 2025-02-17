@@ -32,6 +32,7 @@ export const texts = {
         distributeHorizontally: 'Distribute Horizontally',
         distributeVertically: 'Distribute Vertically',
         duplicate: 'Duplicate',
+        experimental: 'Experimental',
         findIcon: 'Find Icon',
         findPage: 'Find Page',
         findShape: 'Find Shape',
@@ -95,5 +96,8 @@ export const texts = {
         width: 'Width',
         zoomIn: 'Zoom In',
         zoomOut: 'Zoom Out',
+        webGL: 'Web GL',
+        webGLHints1: 'Use WebGL as alternative renderer.',
+        webGLHints2: 'Require manual refresh (F5)',
     },
 };

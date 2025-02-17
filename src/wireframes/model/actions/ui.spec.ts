@@ -7,7 +7,7 @@
 
 /* eslint-disable @typescript-eslint/naming-convention */
 
-import { filterDiagrams, selectColorTab, selectTab, showToast, toggleLeftSidebar, toggleRightSidebar, ui, UIState } from '@app/wireframes/model';
+import { filterDiagrams, selectColorTab, selectTab, showToast, toggleLeftSidebar, toggleRightSidebar, toggleWebGL, ui, UIState } from '@app/wireframes/model';
 
 describe('UIReducer', () => {
     const state: UIState = {} as any;
@@ -48,5 +48,11 @@ describe('UIReducer', () => {
         const state_1 = reducer(state, showToast('My Toast'));
 
         expect(state_1).toBe(state);
+    });
+
+    it('should toggle webGL', () => {
+        const state_1 = reducer(state, toggleWebGL(true));
+
+        expect(state_1.useWebGL).toBeTruthy();
     });
 });

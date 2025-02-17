@@ -6,7 +6,7 @@
 */
 
 import * as svg from '@svgdotjs/svg.js';
-import { EngineRect } from '../interface';
+import { EngineRect, EngineRectOrEllipsePlotArgs } from './../interface';
 import { SvgObject } from './object';
 import { linkToSvg, SvgHelper } from './utils';
 
@@ -34,7 +34,7 @@ export class SvgRectOrEllipse extends SvgObject implements EngineRect {
         this.shape.fill(value);
     }
 
-    public plot(args: { x: number; y: number; w: number; h: number; rotation?: number; rx?: number; ry?: number }): void {
+    public plot(args: EngineRectOrEllipsePlotArgs): void {
         SvgHelper.transformBy(this.shape, args, false, true);
     }
 }

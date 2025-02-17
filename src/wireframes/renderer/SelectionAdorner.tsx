@@ -7,7 +7,7 @@
 
 import * as React from 'react';
 import { isMiddleMouse, isModKey, Rect2, Subscription, Vec2 } from '@app/core';
-import { Engine, EngineLayer, EngineRect, HitEvent, Listener } from '@app/wireframes/engine';
+import { Engine, EngineHitEvent, EngineLayer, EngineMouseEvent, EngineRect, Listener } from '@app/wireframes/engine';
 import { calculateSelection, Diagram, DiagramItem, DiagramItemSet } from '@app/wireframes/model';
 import { PreviewEvent } from './preview';
 
@@ -72,13 +72,13 @@ export class SelectionAdorner extends React.Component<SelectionAdornerProps> imp
         this.markItems();
     }
 
-    public onMouseDown(event: HitEvent) {     
+    public onMouseDown(event: EngineHitEvent) {     
         // The middle mouse button is needed for pan and zoom.
-        if (isMiddleMouse(event.event)) {
+        if (isMiddleMouse(event.source)) {
             return;
         }
 
-        if (!event.event.shiftKey) {
+        if (!event.source.shiftKey) {
             const selection = this.selectSingle(event, this.props.selectedDiagram);
 
             this.props.onSelectItems(this.props.selectedDiagram, selection);
@@ -89,7 +89,7 @@ export class SelectionAdorner extends React.Component<SelectionAdornerProps> imp
         }
     }
 
-    public onMouseDrag(event: HitEvent, next: (event: HitEvent) => void) {
+    public onMouseDrag(event: EngineMouseEvent, next: (event: EngineMouseEvent) => void) {
         if (!this.dragStart) {
             next(event);
             return;
@@ -103,7 +103,7 @@ export class SelectionAdorner extends React.Component<SelectionAdornerProps> imp
         this.selectionShape.strokeWidth(1 / this.props.zoom);
     }
 
-    public onMouseUp(event: HitEvent, next: (event: HitEvent) => void) {
+    public onMouseUp(event: EngineMouseEvent, next: (event: EngineMouseEvent) => void) {
         if (!this.dragStart) {
             next(event);
             return;
@@ -147,11 +147,11 @@ export class SelectionAdorner extends React.Component<SelectionAdornerProps> imp
         return calculateSelection(selectedItems, diagram, false);
     }
 
-    private selectSingle(event: HitEvent, diagram: Diagram): ReadonlyArray<string> {
-        const isMod = isModKey(event.event);
+    private selectSingle(event: EngineHitEvent, diagram: Diagram): ReadonlyArray<string> {
+        const isMod = isModKey(event.source);
 
         if (isMod) {
-            event.event.preventDefault();
+            event.source.preventDefault();
         }
 
         if (event.item) {

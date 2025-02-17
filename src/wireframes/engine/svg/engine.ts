@@ -8,74 +8,55 @@
 import * as svg from '@svgdotjs/svg.js';
 import { MathHelper, Types, Vec2 } from '@app/core';
 import { DiagramItem } from '@app/wireframes/model';
-import { Engine, EngineLayer, HitEvent, Listener } from '../interface';
+import { Engine, EngineHitEvent, EngineLayer, EngineMouseEvent, Listener } from './../interface';
+import { InteractionPipeline } from './../pipeline';
+import { ROTATION_CONFIG } from './../shared';
 import { SvgItem } from './item';
 import { SvgLayer } from './layer';
 import { SvgRenderer } from './renderer';
 import { getElement, getSource } from './utils';
 
-const NOOP_HANDLER: (value: any) => void = () => {};
-
-const ROTATION_CONFIG = [
-    { angle: 45, cursor: 'ne-resize' },
-    { angle: 90, cursor: 'e-resize' },
-    { angle: 135, cursor: 'se-resize' },
-    { angle: 180, cursor: 's-resize' },
-    { angle: 215, cursor: 'sw-resize' },
-    { angle: 270, cursor: 'w-resize' },
-    { angle: 315, cursor: 'nw-resize' },
-];
-
 export class SvgEngine implements Engine {
-    private readonly listeners: Listener[] = [];
+    private readonly pipeline = new InteractionPipeline();
     private readonly svgRenderer = new SvgRenderer();
     private isDragging = false;
-    private onClick: Function = NOOP_HANDLER;
-    private onKeyUp: Function = NOOP_HANDLER;
-    private onKeyDown: Function = NOOP_HANDLER;
-    private onDoubleClick: Function = NOOP_HANDLER;
-    private onMouseDown: Function = NOOP_HANDLER;
-    private onMouseDrag: Function = NOOP_HANDLER;
-    private onMouseMove: Function = NOOP_HANDLER;
-    private onMouseUp: Function = NOOP_HANDLER;
-    private onBlur: Function = NOOP_HANDLER;
 
     constructor(
         public readonly doc: svg.Svg,
     ) {
         doc.mousemove((event: MouseEvent) => {
             this.handleMouseMove(event);
-            this.onMouseMove(event);
+            this.pipeline.emitMouseMove(this.buildMouseEvent(event));
         });
 
         doc.mousedown((event: MouseEvent) => {
             this.handleMouseDown();
-            this.onMouseDown(event);
+            this.pipeline.emitMouseDown(() => this.buildHitEvent(event));
         });
 
         window.addEventListener('blur', (event: FocusEvent) => {
-            this.onBlur(event);
+            this.pipeline.emitBlur(event);
         });
 
         window.document.addEventListener('keyup', (event: KeyboardEvent) => {
-            this.onKeyUp(event);
+            this.pipeline.emitKeyUp(event);
         });
 
         window.document.addEventListener('keydown', (event: KeyboardEvent) => {
-            this.onKeyDown(event);
+            this.pipeline.emitKeyDown(event);
         });
 
         window.document.addEventListener('mousemove', (event: MouseEvent) => {
             if (this.isDragging) {
                 this.isDragging = true;
-                this.onMouseDrag(event);
+                this.pipeline.emitMouseDrag(this.buildMouseEvent(event));
             }
         });
 
         window.document.addEventListener('mouseup', (event: MouseEvent) => {
             if (this.isDragging) {
                 this.isDragging = false;
-                this.onMouseUp(event);
+                this.pipeline.emitMouseUp(this.buildMouseEvent(event));
             }
         });
     }
@@ -88,16 +69,12 @@ export class SvgEngine implements Engine {
         const element = getElement(layer);
 
         element.dblclick((event: MouseEvent) => {
-            this.onDoubleClick(event);
+            this.pipeline.emitDoubleClick(() => this.buildHitEvent(event));
         });
 
         element.click((event: MouseEvent) => {
-            this.onClick(event);
+            this.pipeline.emitClick(() => this.buildHitEvent(event));
         });
-    }
-
-    public viewBox(x: number, y: number, w: number, h: number) {
-        return this.doc.viewbox(x, y, w, h);
     }
 
     public layer(id: string): EngineLayer {
@@ -105,88 +82,52 @@ export class SvgEngine implements Engine {
     }
 
     public subscribe(listener: Listener) {
-        this.listeners.push(listener);
-        this.rebuild();
+        this.pipeline.subscribe(listener);
     }
 
     public unsubscribe(listener: Listener) {
-        this.listeners.splice(this.listeners.indexOf(listener), 1);
-        this.rebuild();
+        this.pipeline.unsubscribe(listener);
     }
 
-    private rebuild() {
-        this.onBlur = this.buildEvent(h => h?.onBlur?.bind(h));
-        this.onClick = this.buildMouseEvent(h => h?.onClick?.bind(h));
-        this.onKeyUp = this.buildEvent(h => h.onKeyUp?.bind(h));
-        this.onKeyDown = this.buildEvent(h => h.onKeyDown?.bind(h));
-        this.onDoubleClick = this.buildMouseEvent(h => h?.onDoubleClick?.bind(h));
-        this.onMouseMove = this.buildMouseEvent(h => h?.onMouseMove?.bind(h));
-        this.onMouseDown = this.buildMouseEvent(h => h?.onMouseDown?.bind(h));
-        this.onMouseDrag = this.buildMouseEvent(h => h?.onMouseDrag?.bind(h));
-        this.onMouseUp = this.buildMouseEvent(h => h?.onMouseUp?.bind(h));
-    }
+    private buildMouseEvent = (event: MouseEvent): EngineMouseEvent => {
+        const { x, y } = this.doc.point(event.pageX, event.pageY);
+        const engineEvent =
+            new EngineMouseEvent(
+                event,
+                new Vec2(Math.round(x), Math.round(y)));
 
-    private buildEvent(actionProvider: (listener: Listener) => Function | undefined) {
-        let result = NOOP_HANDLER;
-        for (let i = this.listeners.length - 1; i >= 0; i--) {
-            const handler = actionProvider(this.listeners[i]);
+        return engineEvent;
+    };
 
-            if (handler) {
-                const next = result;
-
-                result = event => handler(event, next);
-            }
-        }
-
-        return result;
-    }
-
-    private buildMouseEvent(actionProvider: (listener: Listener) => Function | undefined) {
-        const inner = this.buildEvent(actionProvider);
+    private buildHitEvent = (event: MouseEvent) => {
+        let currentTarget: any = event.target;
+        let eventObject: Object | null = null;
+        let eventItem: DiagramItem | null = null; 
         
-        if (inner === NOOP_HANDLER) {
-            return NOOP_HANDLER;
-        }
+        while (currentTarget) {
+            const source = getSource(currentTarget);
 
-        const result = (event: MouseEvent) => {
-            let currentTarget: any = event.target;
-            let eventLayer: EngineLayer | null = null;
-            let eventObject: Object | null = null;
-            let eventItem: DiagramItem | null = null; 
-            
-            while (currentTarget) {
-                const source = getSource(currentTarget);
-
-                if (!eventObject && !Types.is(source, SvgLayer)) {
-                    eventObject = source;
-                }
-
-                if (!eventLayer && !Types.is(source, SvgLayer)) {
-                    eventLayer = source;
-                }
-
-                if (!eventItem && Types.is(source, SvgItem)) {
-                    eventItem = source.shape;
-                }
-
-                currentTarget = currentTarget.parentNode;
+            if (!eventObject && !Types.is(source, SvgLayer)) {
+                eventObject = source;
             }
 
-            const { x, y } = this.doc.point(event.pageX, event.pageY);
+            if (!eventItem && Types.is(source, SvgItem)) {
+                eventItem = source.shape;
+            }
 
-            const svgEvent =
-                new HitEvent(
-                    event, 
-                    new Vec2(Math.round(x), Math.round(y)),
-                    eventLayer!,
-                    eventObject as any,
-                    eventItem);
+            currentTarget = currentTarget.parentNode;
+        }
 
-            inner(svgEvent);
-        };
+        const { x, y } = this.doc.point(event.pageX, event.pageY);
+        const engineEvent =
+            new EngineHitEvent(
+                event,
+                new Vec2(Math.round(x), Math.round(y)),
+                eventObject as any,
+                eventItem);
 
-        return result;
-    }
+        return engineEvent;
+    };
 
     private handleMouseMove = (event: MouseEvent) => {
         const cursor = findCursor(event.target);

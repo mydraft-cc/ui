@@ -7,27 +7,14 @@
 
 import * as svg from '@svgdotjs/svg.js';
 import * as React from 'react';
-import { Vec2, ViewBox } from '@app/core';
-import { SvgEngine } from '../engine';
+import { CanvasProps } from '../../canvas';
+import { SvgEngine } from './../engine';
 
-export interface SvgCanvasProps {
-    // The optional viewbox.
-    viewBox: ViewBox;
-    
-    // The size.
-    size?: Vec2;
-
-    // The class name.
-    className?: string;
-
-    // The callback when the canvas has been initialized.
-    onInit: (engine: SvgEngine) => any;
-}
-
-export const SvgCanvasView = (props: SvgCanvasProps) => {
+export const SvgCanvasView = (props: CanvasProps<SvgEngine>) => {
     const {
         className,
         onInit,
+        style,
         viewBox,
     } = props;
 
@@ -54,10 +41,15 @@ export const SvgCanvasView = (props: SvgCanvasProps) => {
             return;
         }
 
-        engine.viewBox(viewBox.minX, viewBox.minY, viewBox.maxX, viewBox.maxY);
-    }, [engine, viewBox.minX, viewBox.minY, viewBox.maxX, viewBox.maxY]);
+        if (viewBox) {
+            engine.doc.viewbox(viewBox.minX, viewBox.minY, viewBox.maxX, viewBox.maxY);
+        } else {
+            engine.doc.viewbox(null!);
+        }
+
+    }, [engine, viewBox]);
 
     return (
-        <div className={className} ref={doInit} />
+        <div style={style} className={className} ref={doInit} />
     );
 };

@@ -5,20 +5,26 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { Vec2 } from '@app/core';
-import { ShapePlugin } from '@app/wireframes/interface';
+import { ShapePlugin, Vec2 } from '@app/wireframes/interface';
 import { DiagramItem } from './../model';
 
 export type NextListener<T> = (event: T) => void;
 
-export class HitEvent {
+export class EngineMouseEvent {
     constructor(
-        public readonly event: MouseEvent,
+        public readonly source: MouseEvent,
         public readonly position: Vec2,
-        public readonly layer: EngineLayer,
-        public readonly object?: EngineObject | null,
-        public readonly item?: DiagramItem | null,
     ) {
+    }
+}
+
+export class EngineHitEvent extends EngineMouseEvent {
+    constructor(source: MouseEvent, position: Vec2,
+        public readonly object: EngineObject | null,
+        public readonly item?: DiagramItem | null,
+        public readonly target?: any,
+    ) {
+        super(source, position);
     }
 }
 
@@ -38,12 +44,12 @@ export interface Engine {
 
 export interface Listener {
     onBlur?(event: FocusEvent, next: NextListener<FocusEvent>): void;
-    onDoubleClick?(event: HitEvent, next: NextListener<HitEvent>): void;
-    onClick?(event: HitEvent, next: NextListener<HitEvent>): boolean;
-    onMouseDown?(event: HitEvent, next: NextListener<HitEvent>): void;
-    onMouseDrag?(event: HitEvent, next: NextListener<HitEvent>): void;
-    onMouseMove?(event: HitEvent, next: NextListener<HitEvent>): void;
-    onMouseUp?(event: HitEvent, next: NextListener<HitEvent>): void;
+    onDoubleClick?(event: EngineHitEvent, next: NextListener<EngineHitEvent>): void;
+    onClick?(event: EngineHitEvent, next: NextListener<EngineHitEvent>): boolean;
+    onMouseDown?(event: EngineHitEvent, next: NextListener<EngineHitEvent>): void;
+    onMouseDrag?(event: EngineMouseEvent, next: NextListener<EngineMouseEvent>): void;
+    onMouseMove?(event: EngineMouseEvent, next: NextListener<EngineMouseEvent>): void;
+    onMouseUp?(event: EngineMouseEvent, next: NextListener<EngineMouseEvent>): void;
     onKeyDown?(event: KeyboardEvent, next: (event: KeyboardEvent) => void): void;
     onKeyUp?(event: KeyboardEvent, next: (event: KeyboardEvent) => void): void;
 }
@@ -77,18 +83,20 @@ export interface EngineLayer {
     hitTest(x: number, y: number): EngineObject[];
 }
 
+export type EngineRectOrEllipsePlotArgs = { x: number; y: number; w: number; h: number; rotation?: number; rx?: number; ry?: number };
+
 export interface EngineRectOrEllipse extends EngineObject {
     // Set the stroke width of the object.
-    strokeWidth(width: number): void;
+    strokeWidth(value: number): void;
 
     // Set the stroke color of the object.
-    strokeColor(color: string): void;
+    strokeColor(value: string): void;
 
     // Sets the fill color.
     fill(value: string): void;
 
     // Renders with position, size and rotation.
-    plot(args: { x: number; y: number; w: number; h: number; rotation?: number; rx?: number; ry?: number }): void;
+    plot(args: EngineRectOrEllipsePlotArgs): void;
 }
 
 export interface EngineRect extends EngineRectOrEllipse {
@@ -97,13 +105,17 @@ export interface EngineRect extends EngineRectOrEllipse {
 export interface EngineEllipse extends EngineRectOrEllipse {
 }
 
+export type EngineLinePlotArgs = { x1: number; y1: number; x2: number; y2: number; width: number };
+
 export interface EngineLine extends EngineObject {
     // The color of the line.
     color(value: string): void;
 
     // Renders the line from (x1, y1) to (x2, y2).
-    plot(args: { x1: number; y1: number; x2: number; y2: number; width: number }): void;
+    plot(args: EngineLinePlotArgs): void;
 }
+
+export type EngineTextPlotArgs = { x: number; y: number; w: number; h: number; padding: number };
 
 export interface EngineText extends EngineObject {
     // Sets the text color.
@@ -113,7 +125,7 @@ export interface EngineText extends EngineObject {
     fill(value: string): void;
 
     // Sets the font size.
-    fontSize(value: string): void;
+    fontSize(value: number): void;
 
     // Sets the font family.
     fontFamily(value: string): void;
@@ -140,9 +152,6 @@ export interface EngineObject {
 
     // Disable the object.
     disable(): void;
-
-    // Sets or gets the label.
-    label(value?: string): string;
 }
 
 export interface EngineItem extends EngineObject {
