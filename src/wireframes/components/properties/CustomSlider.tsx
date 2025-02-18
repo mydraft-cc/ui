@@ -23,18 +23,11 @@ interface CustomSliderProps {
 }
 
 export const CustomSlider = React.memo(({ max, min, onChange, value }: CustomSliderProps) => {
-    const [sliderValue, setSliderValue] = React.useState<number>(value);
-
-    React.useEffect(() => {
-        setSliderValue(value);
-    }, [value]);
-
     return (
         <Slider
-            value={sliderValue}
+            value={value}
             min={min}
             max={max}
-            onChange={setSliderValue}
-            onAfterChange={onChange} />
+            onChange={onChange} />
     );
 });
