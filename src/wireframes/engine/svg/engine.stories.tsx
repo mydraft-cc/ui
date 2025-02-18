@@ -163,7 +163,7 @@ export const Text = () => {
                 text1.color('white');
                 text1.fill('black');
                 text1.fontFamily('inherit');
-                text1.fontSize('16px');
+                text1.fontSize(16);
                 text1.text('Hello SVG');
                 text1.plot({ x: 50, y: 100, w: 200, h: 60, padding: 20 });
 
@@ -171,7 +171,7 @@ export const Text = () => {
                 text2.color('white');
                 text2.fill('red');
                 text2.fontFamily('inherit');
-                text2.fontSize('16px');
+                text2.fontSize(16);
                 text2.text('Hello SVG');
                 text1.plot({ x: 50, y: 200, w: 200, h: 60, padding: 20 });
             }}
@@ -190,7 +190,7 @@ export const Cursors = () => {
                 move.cursor('move');
                 move.fill('black');
                 move.fontFamily('inherit');
-                move.fontSize('16px');
+                move.fontSize(16);
                 move.text('move');
                 move.plot({ x: 50, y: 100, w: 200, h: 60, padding: 20 });
 
@@ -199,7 +199,7 @@ export const Cursors = () => {
                 resize.cursor('n-resize');
                 resize.fill('red');
                 resize.fontFamily('inherit');
-                resize.fontSize('16px');
+                resize.fontSize(16);
                 resize.text('resize');
                 resize.plot({ x: 50, y: 200, w: 200, h: 60, padding: 20 });
             }}

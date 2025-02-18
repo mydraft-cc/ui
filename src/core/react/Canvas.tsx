@@ -97,7 +97,7 @@ const CanvasComponent = React.memo((props: SizeMeProps & CanvasProps) => {
             minY: round(-transform.y / zoom),
             maxX: round(w / zoom),
             maxY: round(h / zoom),
-            zoom: round(zoom),
+            zoom: zoom,
         };
     }, [transform, size]);
 

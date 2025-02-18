@@ -10,6 +10,7 @@
 import * as React from 'react';
 import { Color, Subscription, Vec2, ViewBox } from '@app/core';
 import { Engine, EngineLayer, EngineRect } from '@app/wireframes/engine';
+import { PixiCanvasView } from '@app/wireframes/engine/pixi/canvas/PixiCanvas';
 import { SvgCanvasView } from '@app/wireframes/engine/svg/canvas/SvgCanvas';
 import { Diagram, DiagramItem, DiagramItemSet, Transform } from '@app/wireframes/model';
 import { useOverlayContext } from './../contexts/OverlayContext';
@@ -42,6 +43,9 @@ export interface EditorProps {
     // The view size.
     viewSize: Vec2;
 
+    // Use WebGL renderer.
+    useWebGL?: boolean;
+
     // True, if it is the default view.
     isDefaultView: boolean;
 
@@ -61,6 +65,16 @@ export interface EditorProps {
     onTransformItems?: (diagram: Diagram, items: ReadonlyArray<DiagramItem>, oldBounds: Transform, newBounds: Transform) => any;
 }
 
+type Layers = {
+    adornerSelectLayer: EngineLayer;
+    adornerTransformLayer: EngineLayer;
+    backgroundRect: EngineRect;
+    engine: Engine;
+    overlayLayer: EngineLayer;
+    renderMainLayer: EngineLayer;
+    renderMasterLayer: EngineLayer;
+};
+
 export const Editor = React.memo((props: EditorProps) => {
     const {
         color,
@@ -75,56 +89,57 @@ export const Editor = React.memo((props: EditorProps) => {
         selectionSet,
         viewBox,
         viewSize,
+        useWebGL,
     } = props;
 
-    const [engine, setEngine] = React.useState<Engine>();
-    const adornerSelectLayer = React.useRef<EngineLayer>();
-    const adornerTransformLayer = React.useRef<EngineLayer>();
-    const overlayContext = useOverlayContext();
-    const overlayLayer = React.useRef<EngineLayer>();
-    const renderMainLayer = React.useRef<EngineLayer>();
-    const renderMasterLayer = React.useRef<EngineLayer>();
-    const [backgroundRect, setBackgroundRect] = React.useState<EngineRect>();
-
-    // Use a stream of preview updates to bypass react for performance reasons.
+    const [layers, setLayers] = React.useState<Layers>();
+    const renderWebGL = React.useRef(useWebGL);
     const renderPreview = React.useRef(new Subscription<PreviewEvent>());
+    const overlayContext = useOverlayContext();
     
     const doInit = React.useCallback((engine: Engine) => {
         // Might be called multiple times in dev mode!
-        if (renderMainLayer.current || !engine) {
+        if (!engine) {
             return;
         }
 
         // Create these layers in the correct order.
-        const background = engine.layer('background').rect();
-        background.disable();
-        background.fill(color.toString());
-        background.strokeWidth(1);
-        background.strokeColor('#efefef');
-        setBackgroundRect(background);
+        const backgroundRect = engine.layer('background').rect();
+        backgroundRect.disable();
+        backgroundRect.fill(color.toString());
+        backgroundRect.strokeWidth(1);
+        backgroundRect.strokeColor('#efefef');
 
-        renderMasterLayer.current = engine.layer('masterLayer');
-        renderMainLayer.current = engine.layer('parentLayer');
-        overlayLayer.current = engine.layer('overlaysLayer');
-        adornerSelectLayer.current = engine.layer('selectLayer');
-        adornerTransformLayer.current = engine.layer('transformLayer');
+        const renderMasterLayer = engine.layer('masterLayer');
+        const renderMainLayer = engine.layer('parentLayer');
+        const overlayLayer = engine.layer('overlaysLayer');
+        const adornerSelectLayer = engine.layer('selectLayer');
+        const adornerTransformLayer = engine.layer('transformLayer');
 
-        engine.setClickLayer(renderMainLayer.current);
+        engine.setClickLayer(renderMainLayer);
 
         if (isDefaultView) {
-            overlayContext.overlayManager = new InteractionOverlays(overlayLayer.current);
+            overlayContext.overlayManager = new InteractionOverlays(overlayLayer);
         }
 
-        setEngine(engine);
+        setLayers({
+            adornerSelectLayer,
+            adornerTransformLayer,
+            backgroundRect,
+            engine,
+            overlayLayer,
+            renderMainLayer,
+            renderMasterLayer,
+        });
     }, []);
 
     React.useEffect(() => {
-        backgroundRect?.plot({ x: 0, y: 0, w: viewSize.x, h: viewSize.y });
-    }, [backgroundRect, viewSize]);
+        layers?.backgroundRect?.plot({ x: 0, y: 0, w: viewSize.x, h: viewSize.y });
+    }, [layers, viewSize]);
 
     React.useEffect(() => {
-        backgroundRect?.fill(color.toString());
-    }, [backgroundRect, color]);
+        layers?.backgroundRect?.fill(color.toString());
+    }, [layers, color]);
 
     React.useEffect(() => {
         overlayContext.snapManager.prepare(diagram, viewSize);
@@ -135,38 +150,44 @@ export const Editor = React.memo((props: EditorProps) => {
     }, [diagram, overlayContext.overlayManager, viewBox.zoom]);
 
     const showAdorners = React.useCallback(() => {
-        adornerSelectLayer.current?.show();
-        adornerTransformLayer.current?.show();
+        layers?.adornerSelectLayer.show();
+        layers?.adornerTransformLayer.show();
     }, []);
 
     const hideAdorners = React.useCallback(() => {
-        adornerSelectLayer.current?.hide();
-        adornerTransformLayer.current?.hide();
+        layers?.adornerSelectLayer.hide();
+        layers?.adornerTransformLayer.hide();
     }, []);
 
     return (
         <div className='editor' ref={element => overlayContext.element = element}>
-            <SvgCanvasView onInit={doInit} viewBox={viewBox} />
+            {renderWebGL.current ? (
+                <div className='pixi'>
+                    <PixiCanvasView onInit={doInit} viewBox={viewBox} background='#f0f2f5' />
+                </div>
+            ) : (
+                <SvgCanvasView onInit={doInit} viewBox={viewBox} />
+            )}
 
-            {engine && diagram && (
+            {diagram && layers && (
                 <>
                     <ItemsLayer
                         diagram={masterDiagram}
-                        diagramLayer={renderMasterLayer.current!}
+                        diagramLayer={layers.renderMasterLayer}
                         onRender={onRender}
                     />
 
                     <ItemsLayer
                         diagram={diagram}
-                        diagramLayer={renderMainLayer.current!}
+                        diagramLayer={layers.renderMainLayer}
                         preview={renderPreview.current}
                         onRender={onRender}
                     />
 
                     {onTransformItems &&
                         <TransformAdorner
-                            engine={engine}
-                            layer={adornerTransformLayer.current!}
+                            engine={layers.engine}
+                            layer={layers.adornerTransformLayer}
                             onTransformItems={onTransformItems}
                             overlayManager={overlayContext.overlayManager}
                             previewStream={renderPreview.current}
@@ -180,8 +201,8 @@ export const Editor = React.memo((props: EditorProps) => {
 
                     {onSelectItems &&
                         <SelectionAdorner
-                            layer={adornerSelectLayer.current!}
-                            engine={engine}
+                            engine={layers.engine}
+                            layer={layers.adornerSelectLayer}
                             onSelectItems={onSelectItems}
                             previewStream={renderPreview.current}
                             selectedDiagram={diagram}
@@ -192,7 +213,7 @@ export const Editor = React.memo((props: EditorProps) => {
 
                     {onChangeItemsAppearance &&
                         <TextAdorner
-                            engine={engine}
+                            engine={layers.engine}
                             hideAdorners={hideAdorners}
                             onChangeItemsAppearance={onChangeItemsAppearance}
                             selectedDiagram={diagram}
@@ -212,7 +233,7 @@ export const Editor = React.memo((props: EditorProps) => {
                     }
 
                     {onNavigate &&
-                        <NavigateAdorner engine={engine} onNavigate={onNavigate} />
+                        <NavigateAdorner engine={layers.engine} onNavigate={onNavigate} />
                     }
                 </>
             )}

@@ -6,7 +6,8 @@
 */
 
 import * as svg from '@svgdotjs/svg.js';
-import { EngineText } from '../interface';
+import { sizeInPx } from '@app/core';
+import { EngineText, EngineTextPlotArgs } from './../interface';
 import { SvgObject } from './object';
 import { linkToSvg, SvgHelper } from './utils';
 
@@ -27,7 +28,7 @@ export class SvgText extends SvgObject implements EngineText {
 
         this.container = layer.group();
         this.background = this.container.rect();
-        this.textElement = SvgHelper.createText(undefined, undefined, 'center', 'middle').addTo(this.container);
+        this.textElement = SvgHelper.createText('nowrap', undefined, undefined, 'center', 'middle').addTo(this.container);
         this.textInner = this.textElement.node.children[0] as HTMLDivElement;
 
         linkToSvg(this, this.container);
@@ -41,8 +42,8 @@ export class SvgText extends SvgObject implements EngineText {
         this.background.fill(value);
     }
 
-    public fontSize(value: string) {
-        this.textInner.style.fontSize = value;
+    public fontSize(value: number) {
+        this.textInner.style.fontSize = sizeInPx(value);
     }
 
     public fontFamily(value: string) {
@@ -53,7 +54,7 @@ export class SvgText extends SvgObject implements EngineText {
         this.textInner.textContent = value;
     }
 
-    public plot(args: { x: number; y: number; w: number; h: number; padding: number }): void {
+    public plot(args: EngineTextPlotArgs): void {
         const { w, h, padding } = args;
 
         SvgHelper.transformBy(this.container, args);

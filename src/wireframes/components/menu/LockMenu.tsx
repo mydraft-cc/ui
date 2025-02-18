@@ -6,7 +6,7 @@
 */
 
 import * as React from 'react';
-import { ActionMenuButton, useLocking } from '../actions';
+import { ActionMenuButton, useLocking } from './../actions';
 
 export const LockMenu = React.memo(() => {
     const forLocking = useLocking();

@@ -67,7 +67,7 @@ export class SvgLayer implements EngineLayer {
             const hitPoint = point.transform(element.matrix().inverseO());
 
             if (element.inside(hitPoint.x, hitPoint.y)) {
-                result.push(getSource(element.node));
+                result.push(getSource(element.node) as EngineObject);
             }
         }
 

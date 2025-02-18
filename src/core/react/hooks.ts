@@ -200,3 +200,13 @@ export const useEventCallback = <A extends any[], R>(fn: Fn<A, R>): Fn<A, R> => 
         return ref.current(...args);
     }, []);
 };
+
+export const useCurrentRef = <T>(value: T) => {
+    let ref = React.useRef<T>(value);
+
+    React.useLayoutEffect(() => {
+        ref.current = value;
+    });
+
+    return ref;
+};

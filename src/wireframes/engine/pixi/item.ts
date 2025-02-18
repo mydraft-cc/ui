@@ -1,3 +1,4 @@
+
 /*
  * mydraft.cc
  *
@@ -5,24 +6,24 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import * as svg from '@svgdotjs/svg.js';
-import { Rect2 } from '@app/core';
+import { Container, Graphics } from 'pixi.js';
+import { Rect2, Types } from '@app/core';
 import { ShapePlugin } from '@app/wireframes/interface';
 import { DiagramItem } from '@app/wireframes/model';
 import { EngineItem } from './../interface';
-import { SvgObject } from './object';
-import { SvgRenderer } from './renderer';
-import { linkToSvg, SvgHelper } from './utils';
+import { PixiObject } from './object';
+import { PixiRenderer } from './renderer';
+import { linkToPixi } from './utils';
 
-export class SvgItem extends SvgObject implements EngineItem {
-    private readonly group: svg.G;
-    private readonly selector: svg.Rect;
+export class PixiItem extends PixiObject implements EngineItem {
+    private readonly container: Container;
+    private readonly selector: Graphics;
     private currentShape: DiagramItem | null = null;
     private currentRect: Rect2 | null = null;
     private isRendered = false;
 
     protected get root() {
-        return this.group;
+        return this.container;
     }
 
     public get shape() {
@@ -30,16 +31,20 @@ export class SvgItem extends SvgObject implements EngineItem {
     }
 
     constructor(
-        public readonly layer: svg.Container,
-        public readonly renderer: SvgRenderer,
+        public readonly layer: Container,
+        public readonly renderer: PixiRenderer,
         public readonly plugin: ShapePlugin,
     ) {
         super();
-        this.selector = new svg.Rect().fill('#ffffff').opacity(0.001);
 
-        this.group = new svg.G();
-        this.group.add(this.selector);
-        linkToSvg(this, this.group);
+        this.selector = new Graphics();
+
+        this.container = new Container();
+        this.container.eventMode = 'static';
+        this.container.addChild(this.selector);
+        linkToPixi(this, this.container);
+
+        layer.addChild(this.container);
     }
 
     public detach() {
@@ -59,8 +64,8 @@ export class SvgItem extends SvgObject implements EngineItem {
     }
 
     private addToLayer() {
-        if (!this.group.parent()) {
-            this.layer.add(this.group);
+        if (!this.container.parent) {
+            this.layer.addChild(this.container);
         }
     }
 
@@ -76,8 +81,7 @@ export class SvgItem extends SvgObject implements EngineItem {
 
         const previousContainer = this.renderer.getContainer();
         try {
-            this.renderer.setContainer(this.group, 1);
-
+            this.renderer.setContainer(this.container, 1);
             this.plugin.render({ renderer2: this.renderer, rect: localRect, shape: shape });
 
             this.arrangeSelector(localRect);
@@ -92,18 +96,25 @@ export class SvgItem extends SvgObject implements EngineItem {
 
     private arrangeContainer(item: DiagramItem) {
         const to = item.transform;
+        const pivotX = 0.5 * to.size.x;
+        const pivotY = 0.5 * to.size.y;
 
-        SvgHelper.transformBy(this.group, {
-            x: to.position.x - 0.5 * to.size.x,
-            y: to.position.y - 0.5 * to.size.y,
-            w: to.size.x,
-            h: to.size.y,
-            rx: to.position.x,
-            ry: to.position.y,
-            rotation: to.rotation.degree,
+        const x = to.position.x - 0.5 * to.size.x;
+        const y = to.position.y - 0.5 * to.size.y;
+        
+        const rotation = to.rotation.radian;
+
+        this.root.updateTransform({
+            x: x + pivotX,
+            y: y + pivotY,
+            rotation,
+            pivotX,
+            pivotY,
         });
 
-        this.group.opacity(item.opacity);
+        if (Types.isNumber(item.opacity)) {
+            this.container.alpha = item.opacity;
+        }
     }
 
     private arrangeSelector(localRect: Rect2) {
@@ -117,7 +128,12 @@ export class SvgItem extends SvgObject implements EngineItem {
             selectionRect = selectionRect.inflate(diffW * 0.5, diffH * 0.5);
         }
 
-        SvgHelper.transformByRect(this.selector, selectionRect);
+        this.selector.rect(0, 0, selectionRect.w, selectionRect.y).fill('#fff');
+        this.selector.alpha = 0.00001;
+    }
+
+    public invalidate() {
+        return;
     }
 }
 

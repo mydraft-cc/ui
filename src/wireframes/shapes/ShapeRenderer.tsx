@@ -57,7 +57,7 @@ export const ShapeRenderer = React.memo(React.forwardRef<HTMLDivElement, ShapeRe
         }
 
         if (desiredWidth && desiredHeight) {
-            let aspectRatio = (viewBox.maxX - viewBox.minX) / (viewBox.maxY - viewBox.minY);
+            let aspectRatio = viewBox.maxX / viewBox.maxY;
         
             if (aspectRatio > desiredWidth / desiredHeight) {
                 engine.doc.width(desiredWidth);

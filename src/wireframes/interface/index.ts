@@ -8,6 +8,7 @@
 import { Color, LoadedImage, Rect2, Vec2 } from '@app/core/utils';
 
 export { Color, Rect2, Vec2 } from '@app/core/utils';
+export type Size = { x: number; y: number };
 export type Appearance = { [key: string]: any };
 export type Configurable = any;
 export type CreatedShape = { renderer: string; size?: { x: number; y: number }; appearance?: Appearance };
@@ -22,7 +23,6 @@ export type ShapeSourceIcon = { type: 'Icon';  text: string; fontFamily: string 
 export type ShapeSourceImage = { type: 'Image';  image: LoadedImage };
 export type ShapeSourceText = { type: 'Text';  text: string };
 export type ShapeSourceUrl = { type: 'Url'; url: string };
-export type Size = { x: number; y: number };
 export type TextConfig = { text: string; fontSize?: number; fontFamily?: string; alignment?: string };
 export type TextDecoration = 'underline' | 'none';
 
@@ -56,6 +56,8 @@ export interface ShapeProperties {
     setStrokeColor(color: RendererColor): ShapeProperties;
 
     setStrokeStyle(cap: string, join: string): ShapeProperties;
+
+    setFontSize(fontSize: RendererText | number): ShapeProperties;
 
     setFontFamily(fontFamily: RendererText | string): ShapeProperties;
 

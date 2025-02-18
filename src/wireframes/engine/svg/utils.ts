@@ -7,11 +7,14 @@
 
 import * as svg from '@svgdotjs/svg.js';
 import { Color, Rect2, sizeInPx, Types } from '@app/core';
+import { SvgLayer } from './layer';
+import { SvgObject } from './object';
 
-export function linkToSvg(source: any, element: svg.Element) {
+export function linkToSvg(source: SvgObject | SvgLayer, element: svg.Element) {
     // Create a reference back to the actual object.
     (element.node as any)['source'] = source;
 
+    // And a link back to the element.
     (source as any)['element'] = element;
 }
 
@@ -20,7 +23,7 @@ export function getElement(source: any) {
 }
 
 export function getSource(element: Element) {
-    return (element as any)['source'] as any;
+    return (element as any)['source'] as SvgObject | SvgLayer;
 }
 
 export interface MatrixTransform {
@@ -81,18 +84,16 @@ export module SvgHelper {
         return `M${r},${t} L${r},${b - rad} a${rad},${rad} 0 0 1 -${rad},${rad} L${l + rad},${b} a${rad},${rad} 0 0 1 -${rad},-${rad} L${l},${t}z`;
     }
 
-    export function createText(text?: string, fontSize?: number, alignment?: string, verticalAlign?: string) {
-        fontSize = fontSize || 10;
-
+    export function createText(whitespace?: string, text?: string, fontSize?: number, alignment?: string, verticalAlign?: string) {
         const element = new svg.ForeignObject();
-
         const div = document.createElement('div');
         div.className = 'no-select';
         div.style.textAlign = alignment || 'center';
-        div.style.fontFamily = 'inherit';
-        div.style.fontSize = fontSize ? sizeInPx(fontSize) : '10px';
+        div.style.fontFamily = 'Arial';
+        div.style.fontSize = sizeInPx(fontSize || 10);
         div.style.overflow = 'hidden';
         div.style.verticalAlign = verticalAlign || 'middle';
+        div.style.whiteSpace = whitespace || 'normal';
         div.textContent = text || null;
 
         element.node.appendChild(div);
@@ -142,6 +143,8 @@ export module SvgHelper {
             }
 
             if (element.node.nodeName === 'ellipse') {
+                fastSetAttribute(element.node, 'cx', w * 0.5);
+                fastSetAttribute(element.node, 'cy', h * 0.5);
                 fastSetAttribute(element.node, 'rx', w * 0.5);
                 fastSetAttribute(element.node, 'ry', h * 0.5);
             } else {

@@ -13,6 +13,7 @@ import { getDiagram, getSelection, useStore } from '@app/wireframes/model';
 import { Colors } from './Colors';
 import { CustomProperties } from './CustomProperties';
 import { DiagramProperties } from './DiagramProperties';
+import { Experimental } from './Experimental';
 import { LayoutProperties } from './LayoutProperties';
 import { MoreProperties } from './MoreProperties';
 import { TransformProperties } from './TransformProperties';
@@ -57,6 +58,11 @@ const diagramItems: CollapseProps['items'] = [
         key: 'colors',
         label: texts.common.colors,
         children: <Colors />,
+    },
+    {
+        key: 'experimental',
+        label: texts.common.experimental,
+        children: <Experimental />,
     },
 ];
 
