@@ -42,7 +42,7 @@ export class VerticalScrollbar implements ShapePlugin {
         return [
             factory.color(THUMB_COLOR, 'Thumb Color'),
             factory.slider(THUMB_SIZE, 'Thumb Size', 0, 100),
-            factory.slider(THUMB_SIZE, 'Thumb Position', 0, 100),
+            factory.slider(THUMB_POSITION, 'Thumb Position', 0, 100),
             factory.color(ARROW_COLOR, 'Arrow Color'),
         ];
     }
