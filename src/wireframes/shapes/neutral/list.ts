@@ -9,9 +9,13 @@ import { ConfigurableFactory, DefaultAppearance, Rect2, RenderContext, Shape, Sh
 import { CommonTheme } from './_theme';
 
 const ACCENT_COLOR = 'ACCENT_COLOR';
+const ITEM_SIZE_FIXED = 'ITEM_SIZE_FIXED';
+const FIXED_ITEM_GAP = 'FIXED_ITEM_GAP';
 
 const DEFAULT_APPEARANCE = {
     [ACCENT_COLOR]: 0x2171b5,
+    [ITEM_SIZE_FIXED]: false,
+    [FIXED_ITEM_GAP]: 4,
     [DefaultAppearance.BACKGROUND_COLOR]: 0xffffff,
     [DefaultAppearance.FONT_SIZE]: CommonTheme.CONTROL_FONT_SIZE,
     [DefaultAppearance.FOREGROUND_COLOR]: CommonTheme.CONTROL_TEXT_COLOR,
@@ -37,6 +41,8 @@ export class List implements ShapePlugin {
     public configurables(factory: ConfigurableFactory) {
         return [
             factory.color(ACCENT_COLOR, 'Accent Color'),
+            factory.toggle(ITEM_SIZE_FIXED, 'Item Size Fixed'),
+            factory.number(FIXED_ITEM_GAP, 'Fixed Item Gap', 0, 48),
         ];
     }
 
@@ -51,22 +57,29 @@ export class List implements ShapePlugin {
         let y = CommonTheme.CONTROL_BORDER_RADIUS;
 
         const itemsHeight = h - 2 * CommonTheme.CONTROL_BORDER_RADIUS;
-        const itemHeight = itemsHeight / parts.length;
+        const itemSizeFixed: boolean = ctx.shape.getAppearance(ITEM_SIZE_FIXED);
+        const fixedItemGap: number = ctx.shape.getAppearance(FIXED_ITEM_GAP);
 
-        for (let i = 0; i < parts.length; i++) {
-            const part = parts[i];
+        const itemHeight = itemSizeFixed ? ctx.shape.fontSize + fixedItemGap : itemsHeight / parts.length;
 
-            const rect = new Rect2(0, y, w, itemHeight);
+        ctx.renderer2.group(contentRenderer=>{
+            const contentCtx = { ...ctx, renderer2:contentRenderer };
 
-            if (part.selected) {
-                this.createSelection(ctx, rect);
-                this.createText(ctx, rect.deflate(10, 0), 0xffffff, part.text);
-            } else {
-                this.createText(ctx, rect.deflate(10, 0), ctx.shape, part.text);
+            for (let i = 0; i < parts.length; i++) {
+                const part = parts[i];
+
+                const rect = new Rect2(0, y, w, itemHeight);
+
+                if (part.selected) {
+                    this.createSelection(contentCtx, rect);
+                    this.createText(contentCtx, rect.deflate(10, 0), 0xffffff, part.text);
+                } else {
+                    this.createText(contentCtx, rect.deflate(10, 0), ctx.shape, part.text);
+                }
+
+                y += itemHeight;
             }
-
-            y += itemHeight;
-        }
+        }, clip=>clip.rectangle(0, 0, ctx.rect));
     }
 
     private createSelection(ctx: RenderContext, rect: Rect2) {
