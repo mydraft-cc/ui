@@ -51,7 +51,7 @@ type ShapeProps = {
     // The id of the renderer.
     renderer: string;
 
-    // Cachhe for the rendering process.
+    // Cache for the rendering process.
     renderCache: object;
 
     // The appearance.

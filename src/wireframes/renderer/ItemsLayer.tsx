@@ -6,14 +6,14 @@
 */
 
 import * as React from 'react';
-import { ImmutableList, Subscription } from '@app/core';
+import { ImmutableList,  Subscription } from '@app/core';
 import { EngineItem, EngineLayer } from '@app/wireframes/engine';
 import { Diagram, DiagramItem, PluginRegistry } from '@app/wireframes/model';
 import { PreviewEvent } from './preview';
 
 export interface ItemsLayerProps {
     // The selected diagram.
-    diagram?: Diagram;
+    diagrams: Diagram[];
 
     // The container to render on.
     diagramLayer: EngineLayer;
@@ -27,7 +27,7 @@ export interface ItemsLayerProps {
 
 export const ItemsLayer = React.memo((props: ItemsLayerProps) => {
     const {
-        diagram,
+        diagrams,
         diagramLayer,
         onRender,
         preview,
@@ -36,8 +36,10 @@ export const ItemsLayer = React.memo((props: ItemsLayerProps) => {
     const shapesRendered = React.useRef(onRender);
     const shapeRefsById = React.useRef<Record<string, ItemWithPreview>>({});
 
-    const itemIds = diagram?.rootIds;
-    const items = diagram?.items;
+    const nestedRootIds = diagrams.map(d=>d.rootIds);
+    const itemIds =  React.useMemo(()=> new ImmutableList<string>(nestedRootIds.flatMap(x=>x.values)), [nestedRootIds]);
+    const itemMaps = diagrams.map(d=>d.items);
+    const items = React.useMemo(()=> new Map<string, DiagramItem>(itemMaps.flatMap(map=>map.entries)), [itemMaps]);
 
     const orderedShapes = React.useMemo(() => {
         const flattenShapes: DiagramItem[] = [];

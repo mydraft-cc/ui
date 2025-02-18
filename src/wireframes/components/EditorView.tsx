@@ -10,10 +10,10 @@ import * as React from 'react';
 import { DropTargetMonitor, useDrop } from 'react-dnd';
 import { NativeTypes } from 'react-dnd-html5-backend';
 import { findDOMNode } from 'react-dom';
-import { Canvas, loadImagesToClipboardItems, useClipboard, useEventCallback, ViewBox } from '@app/core';
+import { Canvas, ImmutableMap, loadImagesToClipboardItems, useClipboard, useEventCallback, ViewBox } from '@app/core';
 import { useAppDispatch } from '@app/store';
 import { ShapeSource } from '@app/wireframes/interface';
-import { addShape, changeItemsAppearance, Diagram, getDiagram, getDiagramId, getEditor, getMasterDiagram, getSelection, PluginRegistry, selectItems, Transform, transformItems, useStore } from '@app/wireframes/model';
+import { addShape, changeItemsAppearance, Diagram, getDiagram, getDiagramId, getDiagrams, getEditor, getMasterDiagram, getSelection, PluginRegistry, selectItems, Transform, transformItems, useStore } from '@app/wireframes/model';
 import { Editor } from '@app/wireframes/renderer/Editor';
 import { DiagramRef, ItemsRef } from './../model/actions/utils';
 import { useContextMenu } from './context-menu';
@@ -21,7 +21,9 @@ import './EditorView.scss';
 
 export const EditorView = () => {
     const diagram = useStore(getDiagram);
+    const diagrams = useStore(getDiagrams);
     const editor = useStore(getEditor);
+
 
     if (!diagram) {
         return null;
@@ -32,17 +34,16 @@ export const EditorView = () => {
             contentWidth={editor.size.x}
             contentHeight={editor.size.y}
             padding={10}
-            onRender={viewBox => <EditorViewInner viewBox={viewBox} diagram={diagram} />} 
+            onRender={viewBox => <EditorViewInner viewBox={viewBox} diagram={diagram} diagrams={diagrams}/>} 
         />
     );
 };
 
-export const EditorViewInner = ({ diagram, viewBox }: { diagram: Diagram; viewBox: ViewBox }) => {
+export const EditorViewInner = ({ diagram, viewBox }: { diagram: Diagram; viewBox: ViewBox; diagrams: ImmutableMap<Diagram> }) => {
     const dispatch = useAppDispatch();
     const [menuVisible, setMenuVisible] = React.useState(false);
     const editor = useStore(getEditor);
     const editorColor = editor.color;
-    const masterDiagram = useStore(getMasterDiagram);
     const renderRef = React.useRef<any>();
     const selectedDiagramId = useStore(getDiagramId);
     const selectedPoint = React.useRef({ x: 0, y: 0 });
@@ -162,8 +163,8 @@ export const EditorViewInner = ({ diagram, viewBox }: { diagram: Diagram; viewBo
                     <Editor
                         color={editorColor}
                         diagram={diagram}
+                        diagrams={editor.diagrams}
                         isDefaultView={true}
-                        masterDiagram={masterDiagram}
                         onChangeItemsAppearance={doChangeItemsAppearance}
                         onSelectItems={doSelectItems}
                         onTransformItems={doTransformItems}

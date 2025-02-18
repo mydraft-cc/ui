@@ -8,7 +8,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 
 import * as React from 'react';
-import { Color, Subscription, Vec2, ViewBox } from '@app/core';
+import { Color, ImmutableMap, Subscription, Vec2, ViewBox } from '@app/core';
 import { Engine, EngineLayer, EngineRect } from '@app/wireframes/engine';
 import { PixiCanvasView } from '@app/wireframes/engine/pixi/canvas/PixiCanvas';
 import { SvgCanvasView } from '@app/wireframes/engine/svg/canvas/SvgCanvas';
@@ -28,8 +28,8 @@ export interface EditorProps {
     // The selected diagram.
     diagram: Diagram;
 
-    // The master diagram.
-    masterDiagram?: Diagram;
+    // All diagrams.
+    diagrams: ImmutableMap<Diagram>;
 
     // The selected items.
     selectionSet: DiagramItemSet;
@@ -79,8 +79,8 @@ export const Editor = React.memo((props: EditorProps) => {
     const {
         color,
         diagram,
+        diagrams,
         isDefaultView,
-        masterDiagram,
         onChangeItemsAppearance,
         onNavigate,
         onRender,
@@ -96,6 +96,20 @@ export const Editor = React.memo((props: EditorProps) => {
     const renderWebGL = React.useRef(useWebGL);
     const renderPreview = React.useRef(new Subscription<PreviewEvent>());
     const overlayContext = useOverlayContext();
+    const masterDiagrams = React.useMemo(()=>{
+        const seenLayers = new Set<string>([diagram.id]);
+        const result:Diagram[] = [];
+        let masterId = diagram.master;
+        while (masterId !== undefined && !seenLayers.has(masterId)){
+            const master = diagrams.get(masterId);
+            if (master == undefined)
+                break;
+            result.unshift(master);
+            seenLayers.add(masterId);
+            masterId = master.master;
+        }
+        return result;
+    }, [diagram]);
     
     const doInit = React.useCallback((engine: Engine) => {
         // Might be called multiple times in dev mode!
@@ -172,13 +186,13 @@ export const Editor = React.memo((props: EditorProps) => {
             {diagram && layers && (
                 <>
                     <ItemsLayer
-                        diagram={masterDiagram}
+                        diagrams={masterDiagrams}
                         diagramLayer={layers.renderMasterLayer}
                         onRender={onRender}
                     />
 
                     <ItemsLayer
-                        diagram={diagram}
+                        diagrams={[diagram]}
                         diagramLayer={layers.renderMainLayer}
                         preview={renderPreview.current}
                         onRender={onRender}
