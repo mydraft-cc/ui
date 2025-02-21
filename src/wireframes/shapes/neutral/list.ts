@@ -10,12 +10,12 @@ import { CommonTheme } from './_theme';
 
 const ACCENT_COLOR = 'ACCENT_COLOR';
 const ITEM_SIZE_FIXED = 'ITEM_SIZE_FIXED';
-const FIXED_ITEM_GAP = 'FIXED_ITEM_GAP';
+const ITEM_SIZE_FIXED_GAP = 'ITEM_SIZE_FIXED_GAP';
 
 const DEFAULT_APPEARANCE = {
     [ACCENT_COLOR]: 0x2171b5,
     [ITEM_SIZE_FIXED]: false,
-    [FIXED_ITEM_GAP]: 4,
+    [ITEM_SIZE_FIXED_GAP]: 4,
     [DefaultAppearance.BACKGROUND_COLOR]: 0xffffff,
     [DefaultAppearance.FONT_SIZE]: CommonTheme.CONTROL_FONT_SIZE,
     [DefaultAppearance.FOREGROUND_COLOR]: CommonTheme.CONTROL_TEXT_COLOR,
@@ -42,7 +42,7 @@ export class List implements ShapePlugin {
         return [
             factory.color(ACCENT_COLOR, 'Accent Color'),
             factory.toggle(ITEM_SIZE_FIXED, 'Item Size Fixed'),
-            factory.number(FIXED_ITEM_GAP, 'Fixed Item Gap', 0, 48),
+            factory.number(ITEM_SIZE_FIXED_GAP, 'Item Size Fixed Gap', 0, 48),
         ];
     }
 
@@ -58,7 +58,7 @@ export class List implements ShapePlugin {
 
         const itemsHeight = h - 2 * CommonTheme.CONTROL_BORDER_RADIUS;
         const itemSizeFixed: boolean = ctx.shape.getAppearance(ITEM_SIZE_FIXED);
-        const fixedItemGap: number = ctx.shape.getAppearance(FIXED_ITEM_GAP);
+        const fixedItemGap: number = ctx.shape.getAppearance(ITEM_SIZE_FIXED_GAP);
 
         const itemHeight = itemSizeFixed ? ctx.shape.fontSize + fixedItemGap : itemsHeight / parts.length;
 
