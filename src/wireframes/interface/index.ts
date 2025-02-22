@@ -170,8 +170,13 @@ export interface ConstraintFactory {
     textSize(paddingX?: number, paddingY?: number, lineHeight?: number, resizeWidth?: false, minWidth?: number): Constraint;
 }
 
+export interface SelectionConfiguration {
+    // if present, the selection can be cleared and null is used as value
+    allowClear?: boolean;
+}
+
 export interface ConfigurableFactory {
-    selection(name: string, label: string, options: string[]): Configurable;
+    selection(name: string, label: string, options: string[] | ((shape: Shape) => string[]), config?: SelectionConfiguration): Configurable;
 
     slider(name: string, label: string, min: number, max: number): Configurable;
 
