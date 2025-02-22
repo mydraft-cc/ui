@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { Color, ConfigurableFactory, DefaultAppearance, Rect2, RenderContext, ShapePlugin, ShapeProperties } from '@app/wireframes/interface';
+import { Color, ConfigurableFactory, DefaultAppearance, Rect2, RenderContext, Shape, ShapePlugin, ShapeProperties } from '@app/wireframes/interface';
 import { CommonTheme } from './_theme';
 
 const TAB_COLOR = 'TAB_COLOR';
@@ -15,6 +15,7 @@ const TAB_ALIGNMENT_RIGHT = 'Right';
 const TAB_POSITION = 'TAB_POSITION';
 const TAB_POSITION_TOP = 'Top';
 const TAB_POSITION_BOTTOM = 'Bottom';
+const TAB_SELECTED = 'TAB_SELECTED';
 
 const DEFAULT_APPEARANCE = {
     [DefaultAppearance.FOREGROUND_COLOR]: CommonTheme.CONTROL_TEXT_COLOR,
@@ -27,6 +28,7 @@ const DEFAULT_APPEARANCE = {
     [TAB_COLOR]: CommonTheme.CONTROL_BACKGROUND_COLOR,
     [TAB_ALIGNMENT]: TAB_ALIGNMENT_LEFT,
     [TAB_POSITION]: TAB_POSITION_TOP,
+    [TAB_SELECTED]: null,
 };
 
 export class Tabs implements ShapePlugin {
@@ -53,6 +55,7 @@ export class Tabs implements ShapePlugin {
                 TAB_POSITION_BOTTOM,
             ]),
             factory.color(TAB_COLOR, 'Tab Color'),
+            factory.selection(TAB_SELECTED, 'Selected', shape => this.parseLines(shape).map(x => x.text), { allowClear: true }),
         ];
     }
 
@@ -64,7 +67,7 @@ export class Tabs implements ShapePlugin {
         const fontSize: number = ctx.shape.fontSize;
         const fontFamily: string = ctx.shape.fontFamily;
 
-        const parts = this.parseText(ctx, fontFamily, fontSize, strokeThickness);
+        const parts = this.arrangeLines(ctx, fontFamily, fontSize, strokeThickness);
 
         const padding = fontSize * 0.5;
 
@@ -91,7 +94,7 @@ export class Tabs implements ShapePlugin {
         });
     }
 
-    private createHeader(ctx: RenderContext, parts: Parsed, heightHeader: number, isBottom: boolean) {
+    private createHeader(ctx: RenderContext, parts: ArrangedLines, heightHeader: number, isBottom: boolean) {
         const h = heightHeader;
         const y = isBottom ? ctx.rect.height - heightHeader : 0;
 
@@ -130,26 +133,48 @@ export class Tabs implements ShapePlugin {
         p.setStrokeColor(ctx.shape);
     }
 
-    private parseText(ctx: RenderContext, fontFamily: string, fontSize: number, strokeThickness: number) {
-        const isRight = ctx.shape.getAppearance(TAB_ALIGNMENT) === TAB_ALIGNMENT_RIGHT;
-        const key = `${ctx.shape.text}_${fontFamily}_${fontSize}_${strokeThickness}_${isRight}`;
+    private parseLines(shape: Shape) {
+        const key = `${ shape.text}`;
 
-        let result = ctx.shape.renderCache['PARSED'] as { key: string; parsed: Parsed };
+        let result = shape.renderCache['PARSED_TEXT'] as { key: string; parts: ParsedLines };
 
         if (!result || result.key !== key) {
-            const w = ctx.rect.width - 2 * PADDING;
+            const parts: ParsedLines = [];
 
-            const parsed: Parsed = [];
-
-            let x = 0;
-
-            for (let text of ctx.shape.text.split(',')) {
+            for (let text of shape.text.split(',')) {
                 const selected = text.endsWith('*');
 
                 if (selected) {
                     text = text.substring(0, text.length - 1).trim();
                 }
 
+                parts.push({ text, selected });
+            }
+
+            result = { key, parts };
+            shape.renderCache['PARSED_TEXT'] = result;
+        }
+
+        return result.parts;
+    }
+
+    private arrangeLines(ctx: RenderContext, fontFamily: string, fontSize: number, strokeThickness: number) {
+        const isRight = ctx.shape.getAppearance(TAB_ALIGNMENT) === TAB_ALIGNMENT_RIGHT;
+        const selectedFromAppearance = ctx.shape.getAppearance(TAB_SELECTED) as string | null;
+        console.log(selectedFromAppearance, selectedFromAppearance === null);
+        const key = `${ctx.shape.text}_${fontFamily}_${fontSize}_${strokeThickness}_${isRight}_${selectedFromAppearance}`;
+
+        let result = ctx.shape.renderCache['PARSED'] as { key: string; parsed: ArrangedLines };
+
+        if (!result || result.key !== key) {
+            const w = ctx.rect.width - 2 * PADDING;
+
+            const parsed: ArrangedLines = [];
+
+            let x = 0;
+
+            for (let { text, selected } of this.parseLines(ctx.shape)) {
+                selected ||= text == selectedFromAppearance;
                 const width = ctx.renderer2.getTextWidth(text, fontSize, fontFamily) + fontSize;
 
                 if (x + width > w) {
@@ -184,4 +209,5 @@ export class Tabs implements ShapePlugin {
 
 const PADDING = 20;
 
-type Parsed = { text: string; selected?: boolean; x: number; width: number }[];
+type ParsedLines = { text: string; selected: boolean }[];
+type ArrangedLines = (ParsedLines[0] & { x: number; width: number })[];

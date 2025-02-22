@@ -45,6 +45,7 @@ export class TextAdorner extends React.PureComponent<TextAdornerProps> implement
 
     public componentDidMount() {
         window.addEventListener('mousedown', this.handleMouseDown);
+        this.props.engine.subscribe(this);
     }
 
     public componentDidUpdate(prevProps: TextAdornerProps) {
