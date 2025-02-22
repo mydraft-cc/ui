@@ -13,7 +13,7 @@ import { findDOMNode } from 'react-dom';
 import { Canvas, ImmutableMap, loadImagesToClipboardItems, useClipboard, useEventCallback, ViewBox } from '@app/core';
 import { useAppDispatch } from '@app/store';
 import { ShapeSource } from '@app/wireframes/interface';
-import { addShape, changeItemsAppearance, Diagram, getDiagram, getDiagramId, getDiagrams, getEditor, getMasterDiagram, getSelection, PluginRegistry, selectItems, Transform, transformItems, useStore } from '@app/wireframes/model';
+import { addShape, changeItemsAppearance, Diagram, getDiagram, getDiagramId, getDiagrams, getEditor, getSelection, PluginRegistry, selectItems, Transform, transformItems, useStore } from '@app/wireframes/model';
 import { Editor } from '@app/wireframes/renderer/Editor';
 import { DiagramRef, ItemsRef } from './../model/actions/utils';
 import { useContextMenu } from './context-menu';

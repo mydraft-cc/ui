@@ -96,20 +96,7 @@ export const Editor = React.memo((props: EditorProps) => {
     const renderWebGL = React.useRef(useWebGL);
     const renderPreview = React.useRef(new Subscription<PreviewEvent>());
     const overlayContext = useOverlayContext();
-    const masterDiagrams = React.useMemo(()=>{
-        const seenLayers = new Set<string>([diagram.id]);
-        const result:Diagram[] = [];
-        let masterId = diagram.master;
-        while (masterId !== undefined && !seenLayers.has(masterId)){
-            const master = diagrams.get(masterId);
-            if (master == undefined)
-                break;
-            result.unshift(master);
-            seenLayers.add(masterId);
-            masterId = master.master;
-        }
-        return result;
-    }, [diagram]);
+    const masterDiagrams = React.useMemo(() => diagram.masterDiagrams(diagrams), [diagram, diagrams]);
     
     const doInit = React.useCallback((engine: Engine) => {
         // Might be called multiple times in dev mode!

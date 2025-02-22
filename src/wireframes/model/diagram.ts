@@ -121,7 +121,7 @@ export class Diagram extends Record<Props> {
                 result.push(item);
             }
         }
-        
+
         return result;
     }
 
@@ -191,7 +191,7 @@ export class Diagram extends Record<Props> {
         });
     }
 
-    public selectItems(ids: ReadonlyArray<string>) {    
+    public selectItems(ids: ReadonlyArray<string>) {
         return this.arrange(ids, update => {
             update.selectedIds = ImmutableSet.of(...ids);
         });
@@ -280,7 +280,23 @@ export class Diagram extends Record<Props> {
             update.itemIds = update.itemIds.remove(...set.rootIds);
         });
     }
-    
+
+    public masterDiagrams(diagrams: ImmutableMap<Diagram>): Diagram[] {
+        const seenDiagrams = new Set<string>([this.id]);
+        const result: Diagram[] = [];
+        let masterId = this.master;
+        while (masterId !== undefined && !seenDiagrams.has(masterId)) {
+            const master = diagrams.get(masterId);
+            if (!master) {
+                break;
+            }
+            result.unshift(master);
+            seenDiagrams.add(masterId);
+            masterId = master.master;
+        }
+        return result;
+    }
+
     private arrange(targetIds: Iterable<string>, updater: (diagram: UpdateProps) => void, condition?: 'NoCondition' | 'SameParent'): Diagram {
         if (!targetIds) {
             return this;
@@ -312,7 +328,7 @@ export class Diagram extends Record<Props> {
             const update = {
                 items: this.items,
                 itemIds: resultParent.childIds,
-                selectedIds: this.selectedIds, 
+                selectedIds: this.selectedIds,
             };
 
             updater(update);
@@ -326,7 +342,7 @@ export class Diagram extends Record<Props> {
             const update = {
                 items: this.items,
                 itemIds: this.rootIds,
-                selectedIds: this.selectedIds, 
+                selectedIds: this.selectedIds,
             };
 
             updater(update);

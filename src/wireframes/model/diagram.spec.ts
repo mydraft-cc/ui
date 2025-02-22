@@ -5,6 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
+import { ImmutableMap } from '@app/core';
 import { Diagram, DiagramItem, DiagramItemSet } from '@app/wireframes/model';
 
 /* eslint-disable @typescript-eslint/naming-convention */
@@ -308,4 +309,48 @@ describe('Diagram', () => {
 
         expect(diagram_3.rootIds.values).toEqual([shape1.id, shape3.id, shape2.id]);
     });
+
+    it('should send items backwards', () => {
+        const diagram_2 = diagram_1.addShape(shape1).addShape(shape2).addShape(shape3);
+        const diagram_3 = diagram_2.sendBackwards([shape3.id]);
+
+        expect(diagram_3.rootIds.values).toEqual([shape1.id, shape3.id, shape2.id]);
+    });
+
+    describe('masterDiagrams', () => {
+        const diagram_2 = Diagram.create({ id: '2' }).setMaster('1');
+        const diagram_3 = Diagram.create({ id: '3' }).setMaster('2');
+        const diagram_4 = Diagram.create({ id: '4' }).setMaster('4');
+
+        const diagrams = ImmutableMap.of<Diagram>({
+            '1': diagram_1,
+            '2': diagram_2,
+            '3': diagram_3,
+            '4': diagram_4,
+        });
+
+        it('should handle diagram without master', () => {
+            expect(diagram_1.masterDiagrams(diagrams)).toEqual([]);
+        });
+
+        it('should handle diagram with terminal master', () => {
+            expect(diagram_2.masterDiagrams(diagrams)).toEqual([diagram_1]);
+        });
+
+        it('should handle diagram with transitive master', () => {
+            expect(diagram_3.masterDiagrams(diagrams)).toEqual([diagram_1, diagram_2]);
+        });
+
+        it('should handle diagram with itself as master', () => {
+            expect(diagram_4.masterDiagrams(diagrams)).toEqual([]);
+        });
+
+        it('should handle diagram with nested recursive master', () => {
+            const modifiedDiagram_1 =  diagram_1.setMaster('3');
+            expect(diagram_3.masterDiagrams(diagrams.set('1', modifiedDiagram_1)))
+                .toEqual([modifiedDiagram_1, diagram_2]);
+        });
+
+    });
+
 });

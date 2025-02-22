@@ -36,25 +36,18 @@ export const ItemsLayer = React.memo((props: ItemsLayerProps) => {
     const shapesRendered = React.useRef(onRender);
     const shapeRefsById = React.useRef<Record<string, ItemWithPreview>>({});
 
-    const nestedRootIds = diagrams.map(d=>d.rootIds);
-    const itemIds =  React.useMemo(()=> new ImmutableList<string>(nestedRootIds.flatMap(x=>x.values)), [nestedRootIds]);
-    const itemMaps = diagrams.map(d=>d.items);
-    const items = React.useMemo(()=> new Map<string, DiagramItem>(itemMaps.flatMap(map=>map.entries)), [itemMaps]);
-
     const orderedShapes = React.useMemo(() => {
-        const flattenShapes: DiagramItem[] = [];
+        const result: DiagramItem[] = [];
 
-        if (items && itemIds) {
-            let handleContainer: (itemIds: ImmutableList<string>) => any;
-
-            // eslint-disable-next-line prefer-const
-            handleContainer = itemIds => {
+        for (const diagram of diagrams) {
+            const handleContainer: (itemIds: ImmutableList<string>) => void 
+            = itemIds => {
                 for (const id of itemIds.values) {
-                    const item = items.get(id);
+                    const item = diagram.items.get(id);
 
                     if (item) {
                         if (item.type === 'Shape') {
-                            flattenShapes.push(item);
+                            result.push(item);
                         }
 
                         if (item.type === 'Group') {
@@ -64,11 +57,11 @@ export const ItemsLayer = React.memo((props: ItemsLayerProps) => {
                 }
             };
 
-            handleContainer(itemIds);
+            handleContainer(diagram.rootIds);
         }
 
-        return flattenShapes;
-    }, [itemIds, items]);
+        return result;
+    }, [diagrams]);
 
     React.useEffect(() => {
         const allShapesById: { [id: string]: boolean } = {};
