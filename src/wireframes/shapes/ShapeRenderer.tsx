@@ -92,10 +92,7 @@ export const ShapeRenderer = React.memo(React.forwardRef<HTMLDivElement, ShapeRe
                 constraint: plugin?.constraint?.(DefaultConstraintFactory.INSTANCE),
             });
 
-        if (!item.current) {
-            item.current = engine.layer(plugin.identifier()).item(plugin);
-        }
-
+        item.current = engine.layer(plugin.identifier()).item(plugin);
         item.current.plot(shape);
     }, [appearance, engine, plugin, viewBox]);
 
