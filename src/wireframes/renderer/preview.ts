@@ -15,11 +15,11 @@ export type PreviewEnd = {
     type: 'End';
 };
 
-export type PrevieUpdate = {
+export type PreviewUpdate = {
     type: 'Update';
 
     // All the items.
     items: { [id: string]: DiagramItem };
 };
 
-export type PreviewEvent = PreviewStart | PreviewEnd | PrevieUpdate;
+export type PreviewEvent = PreviewStart | PreviewEnd | PreviewUpdate;

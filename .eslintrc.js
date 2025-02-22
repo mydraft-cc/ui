@@ -17,6 +17,7 @@ module.exports = {
         "eslint-plugin-import",
         "sort-keys-fix",
         "@typescript-eslint",
+        "@stylistic",
     ],
     "rules": {
         "@typescript-eslint/space-before-blocks": "off",
@@ -73,6 +74,12 @@ module.exports = {
             "error",
             "always"
         ],
+        "@stylistic/arrow-spacing": "error",
+        "@stylistic/block-spacing": "error",
+        "@stylistic/space-before-blocks": "error",
+        "@stylistic/function-call-spacing": "error",
+        "@stylistic/space-in-parens": "error",
+        "curly": "error",
         "class-methods-use-this": "off",
         "import/export": "off",
         "import/extensions": "off",

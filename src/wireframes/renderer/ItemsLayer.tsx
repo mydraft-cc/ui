@@ -6,14 +6,14 @@
 */
 
 import * as React from 'react';
-import { ImmutableList, Subscription } from '@app/core';
+import { ImmutableList,  Subscription } from '@app/core';
 import { EngineItem, EngineLayer } from '@app/wireframes/engine';
 import { Diagram, DiagramItem, PluginRegistry } from '@app/wireframes/model';
 import { PreviewEvent } from './preview';
 
 export interface ItemsLayerProps {
     // The selected diagram.
-    diagram?: Diagram;
+    diagrams: Diagram[];
 
     // The container to render on.
     diagramLayer: EngineLayer;
@@ -27,7 +27,7 @@ export interface ItemsLayerProps {
 
 export const ItemsLayer = React.memo((props: ItemsLayerProps) => {
     const {
-        diagram,
+        diagrams,
         diagramLayer,
         onRender,
         preview,
@@ -36,23 +36,18 @@ export const ItemsLayer = React.memo((props: ItemsLayerProps) => {
     const shapesRendered = React.useRef(onRender);
     const shapeRefsById = React.useRef<Record<string, ItemWithPreview>>({});
 
-    const itemIds = diagram?.rootIds;
-    const items = diagram?.items;
-
     const orderedShapes = React.useMemo(() => {
-        const flattenShapes: DiagramItem[] = [];
+        const result: DiagramItem[] = [];
 
-        if (items && itemIds) {
-            let handleContainer: (itemIds: ImmutableList<string>) => any;
-
-            // eslint-disable-next-line prefer-const
-            handleContainer = itemIds => {
+        for (const diagram of diagrams) {
+            const handleContainer: (itemIds: ImmutableList<string>) => void 
+            = itemIds => {
                 for (const id of itemIds.values) {
-                    const item = items.get(id);
+                    const item = diagram.items.get(id);
 
                     if (item) {
                         if (item.type === 'Shape') {
-                            flattenShapes.push(item);
+                            result.push(item);
                         }
 
                         if (item.type === 'Group') {
@@ -62,11 +57,11 @@ export const ItemsLayer = React.memo((props: ItemsLayerProps) => {
                 }
             };
 
-            handleContainer(itemIds);
+            handleContainer(diagram.rootIds);
         }
 
-        return flattenShapes;
-    }, [itemIds, items]);
+        return result;
+    }, [diagrams]);
 
     React.useEffect(() => {
         const allShapesById: { [id: string]: boolean } = {};
