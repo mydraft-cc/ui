@@ -76,8 +76,8 @@ export const PrintDiagram = (props: PrintDiagramProps) => {
             <Editor
                 color={color}
                 diagram={diagram}
+                diagrams={diagrams}
                 isDefaultView={false}
-                masterDiagram={diagrams.get(diagram.master!)}
                 onNavigate={onNavigate}
                 onRender={doOnRender}
                 selectionSet={DiagramItemSet.EMPTY}
