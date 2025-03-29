@@ -9,10 +9,18 @@ import Icon from '@ant-design/icons';
 import { Button, Dropdown, Menu, MenuItemProps, Tooltip } from 'antd';
 import { ButtonProps } from 'antd/lib/button';
 import { DropdownButtonProps } from 'antd/lib/dropdown';
-import { MenuItemType } from 'antd/lib/menu/hooks/useItems';
 import * as React from 'react';
 import { isMac, Shortcut, Types } from '@app/core';
 import { UIAction } from './shared';
+
+// Define MenuItemType locally to match what's used in the component
+interface MenuItemType {
+    key: React.Key;
+    disabled?: boolean;
+    label?: React.ReactNode;
+    onClick?: () => void;
+    icon?: React.ReactNode;
+}
 
 type ActionDisplayMode = 'Icon' | 'IconLabel' | 'Label';
 

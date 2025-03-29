@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { LeftOutlined, RightOutlined } from '@ant-design/icons';
+import { LeftOutlined as LeftOutlinedBase, RightOutlined as RightOutlinedBase } from '@ant-design/icons';
 import { Button, Layout, Tabs, TabsProps } from 'antd';
 import classNames from 'classnames';
 import * as React from 'react';
@@ -149,17 +149,21 @@ export const App = () => {
                             <Properties />
                         </Layout.Sider>
 
-                        <Button icon={showLeftSidebar ? <LeftOutlined /> : <RightOutlined />}
+                        <Button 
                             className={classNames('toggle-button-left', { visible: showLeftSidebar })}
                             size='small'
                             shape='circle'
-                            onClick={doToggleLeftSidebar} />
+                            onClick={doToggleLeftSidebar}>
+                            {showLeftSidebar ? <LeftOutlinedBase /> : <RightOutlinedBase />}
+                        </Button>
 
-                        <Button icon={showRightSidebar ? <RightOutlined /> : <LeftOutlined />}
+                        <Button 
                             className={classNames('toggle-button-right', { visible: showRightSidebar })}
                             size='small'
                             shape='circle'
-                            onClick={doToggleRightSidebar} />
+                            onClick={doToggleRightSidebar}>
+                            {showRightSidebar ? <RightOutlinedBase /> : <LeftOutlinedBase />}
+                        </Button>
                     </Layout>
                 </Layout>
 

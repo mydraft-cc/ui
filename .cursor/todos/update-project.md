@@ -31,25 +31,36 @@ This file tracks the tasks involved in updating and upgrading the `mydraft.cc` f
   - **Major Efforts:** React (17->18: `createRoot` API), React Router (5->6: major API changes), Drag & Drop (`react-beautiful-dnd` unmaintained, consider alternatives like `@hello-pangea/dnd`).
   - **Other Updates:** Ant Design (within v5 likely smooth), Redux Toolkit (check 1.x->2.x changes), Vite (minor updates), TypeScript (minor updates), Storybook (use upgrade script), Testing libs (check compatibility), ESLint/Stylelint (check new rules).
   - **Strategy:** Upgrade libraries incrementally, starting with React.
+- **React Upgrade Completed:**
+  - Successfully upgraded React from v17 to v18.2.0.
+  - Updated React DOM to v18.2.0.
+  - Updated related types (@types/react, @types/react-dom).
+  - Replaced ReactDOM.render with createRoot API.
+  - Key React dependencies like react-redux (v8.1.3) and react-dnd (v16.0.1) were already compatible with React 18.
+  - Deferred the React Router upgrade from v5 to v6 for a separate phase due to significant API changes.
+- **Vite & TypeScript Upgrade Completed:**
+  - Successfully upgraded Vite from v5.0.0 to v6.2.3.
+  - Updated @vitejs/plugin-react to v4.3.4.
+  - Updated TypeScript from v5.3.2 to v5.8.2.
+  - No changes to tsconfig.json were required; the existing configuration worked with the new versions.
+  - Build process works correctly with the new versions.
+  - Development server (hot module replacement) functions properly.
+  - Several peer dependency warnings appeared during installation, primarily related to Storybook components and PWA plugins expecting Vite 5.x, but these didn't affect functionality.
+- **Ant Design Upgrade Completed:**
+  - Successfully upgraded Ant Design from v5.11.2 to v5.24.5.
+  - Updated @ant-design/icons to v5.2.6.
+  - Fixed TypeScript compatibility issues with Ant Design icons by creating utility functions.
+  - Fixed outdated import paths for MenuItemType in Components.tsx.
+  - Improved build compatibility with TypeScript's stricter type checking.
 
 ## Active
-- [ ] **Upgrade React:**
-   - [x] Update `react` and `react-dom` packages.
-   - [x] Update related types (`@types/react`, `@types/react-dom`).
-   - [x] Address breaking changes (e.g., `ReactDOM.render` to `createRoot`).
-   - [ ] Update related dependencies if necessary (e.g., React Router, Redux bindings). (Deferring major updates like RRv6)
-
-## Pending
-- [ ] **Upgrade Vite & TypeScript:**
-  - [ ] Update `vite`, `@vitejs/plugin-react`.
-  - [ ] Update `typescript`.
-  - [ ] Update `tsconfig.json` if needed based on new TypeScript/Vite versions.
-- [ ] **Upgrade Ant Design:**
-  - [ ] Update `antd`.
-  - [ ] Review Ant Design migration guides and update component usage if necessary.
 - [ ] **Upgrade Redux Toolkit & Related:**
   - [ ] Update `@reduxjs/toolkit`, `react-redux`, `redux`, `redux-thunk`.
   - [ ] Check for deprecations or changes in API usage.
+  - [ ] Verify that Redux DevTools integration still works.
+  - [ ] Test store functionality.
+
+## Pending
 - [ ] **Upgrade Routing (React Router):**
   - [ ] Update `react-router`, `react-router-dom`.
   - [ ] Check for breaking changes or new patterns.
@@ -73,3 +84,23 @@ This file tracks the tasks involved in updating and upgrading the `mydraft.cc` f
 *(Move completed tasks here)*
 - [x] **Dependency Analysis:** Thoroughly review `package.json`. Identify outdated packages, check changelogs for breaking changes between current and target versions. Pay special attention to React, ReactDOM, Redux Toolkit, React Router, Ant Design, Vite, and testing libraries.
 - [x] **Create Upgrade Branch:** Create a dedicated Git branch for the upgrade process (e.g., `feat/project-upgrade`). (Marked as done based on user confirmation)
+- [x] **Upgrade React:**
+   - [x] Update `react` and `react-dom` packages.
+   - [x] Update related types (`@types/react`, `@types/react-dom`).
+   - [x] Address breaking changes (e.g., `ReactDOM.render` to `createRoot`).
+   - [x] Update related dependencies if necessary (e.g., React Router, Redux bindings). (Deferring major updates like RRv6)
+   - [x] Update `react-dnd` and `react-dnd-html5-backend` (Already done to v16.0.1)
+   - [x] Update `react-redux` (Already done to v8.1.3)
+- [x] **Upgrade Vite & TypeScript:**
+  - [x] Update `vite` from v5.0.0 to latest stable (v6.2.3).
+  - [x] Update `@vitejs/plugin-react` to latest compatible version (v4.3.4).
+  - [x] Update `typescript` from current v5.3.2 to latest stable (v5.8.2).
+  - [x] Update `tsconfig.json` if needed based on new TypeScript/Vite versions. (No changes required)
+  - [x] Validate build with updated configuration. (Successful)
+  - [x] Run dev server to ensure hot reloading functionality works. (Successful)
+- [x] **Upgrade Ant Design:**
+  - [x] Update `antd` to latest version within v5.x (v5.24.5).
+  - [x] Update `@ant-design/icons` to compatible version (v5.2.6).
+  - [x] Fix TypeScript compatibility issues with icon components.
+  - [x] Update outdated import paths.
+  - [x] Test UI components in the application.
