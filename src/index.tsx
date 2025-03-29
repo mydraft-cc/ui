@@ -9,7 +9,7 @@
 
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
-import * as ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import { Provider } from 'react-redux';
 import { Route, Router } from 'react-router';
 import { App } from './App';
@@ -29,4 +29,8 @@ const Root = (
 
 registerServiceWorker(store);
 
-ReactDOM.render(Root, document.getElementById('root-layout') as HTMLElement);
+const container = document.getElementById('root-layout');
+if (container) { // Ensure container is not null
+    const root = createRoot(container);
+    root.render(Root);
+}

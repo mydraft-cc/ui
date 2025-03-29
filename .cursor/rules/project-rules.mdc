@@ -1,0 +1,83 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+## Project Context Management
+- ALWAYS read and consider [context.md](mdc:.cursor/context.md) before making any changes
+- If the user references any .cursor/todos/*.md ALWAYS read and consider them before making changes
+- AUTOMATICALLY update [context.md](mdc:.cursor/context.md) when:
+  - New dependencies are added or removed
+  - Project structure changes
+  - Features are implemented or modified
+  - Architecture decisions are made (e.g., adopting Bun APIs)
+  - Development status changes (e.g., progress on Bun migration)
+- AUTOMATICALLY update relevant todo files in .cursor/todos/ when:
+  - Tasks are completed or change status
+  - New tasks are identified
+  - Implementation status changes
+  - Technical debt is discovered
+- MAINTAIN separate todo files for different tasks. Currently, only `.cursor/todos/update-project.md` exists. Consider creating files like `example.md`, `new-feature.md`, or `refactoring.md` as needed, following the template below.
+
+## Context Files
+.cursor/context.md - Project context and documentation
+- Current project state
+- Architecture decisions
+- Technology stack details
+- Implementation status
+- Package relationships
+- Development workflow
+
+.cursor/todos/[{task_name}].md - Task management and tracking
+
+Each todo file should follow the format:
+```md
+# [Category] Todo List
+
+## Description
+Detailed description of this todo category's purpose, including:
+- ALWAYS USE CHECKBOXES
+- What types of tasks belong here
+- How tasks should be tracked
+- When and how to update this file
+- How this category relates to the project
+- Any specific guidelines or requirements
+- Any relevant context about the status of the tasks implementation
+- No pseudo code or implementations. Only detailed steps on how to acheive such things.
+
+## Memory Section Guidelines
+- ALWAYS maintain the Memory section in each todo file
+- UPDATE the Memory section when:
+  - Making significant implementation decisions
+  - Overcoming technical challenges
+  - Discovering future considerations
+  - Gaining new technical insights
+  - Adding or modifying dependencies
+- ENSURE the Memory section:
+  - Provides clear context for future development
+  - Documents rationale behind decisions
+  - Tracks evolution of implementation
+  - Records lessons learned
+  - Notes potential improvements
+- USE the Memory section to:
+  - Aid in knowledge transfer
+  - Support maintenance decisions
+  - Guide future enhancements
+  - Prevent repeated mistakes
+  - Maintain implementation context
+
+## Active
+- [ ] High priority tasks
+- [ ] Current sprint tasks
+- [ ] In-progress items
+
+## Pending
+- [ ] Upcoming tasks
+- [ ] Planned improvements
+- [ ] Future considerations
+
+## Completed
+- [x] Finished tasks (with completion date)
+- [x] Resolved items
+- [x] Implemented features
+```
