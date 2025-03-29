@@ -2,6 +2,7 @@ import path from 'path';
 import react from '@vitejs/plugin-react';
 import { defineConfig } from 'vite';
 import { VitePWA } from 'vite-plugin-pwa';
+import favicons from '@peterek/vite-plugin-favicons';
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -21,6 +22,14 @@ export default defineConfig({
                 VitePWA({
                     injectRegister: null,
                 }),
+                favicons('public/logo-square.svg', {
+                  appName: 'mydraft',
+                  appDescription: 'Open Source Wireframing Tool',
+                  developerName: 'Sebastian Stehle',
+                  developerURL: 'https://suquidex.io',
+                  start_url: '/',
+                  theme_color: '#fda100',
+                })
             ] : []),
         react({}),
     ],

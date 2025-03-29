@@ -51,6 +51,7 @@
     "tslib": "2.6.2"
   },
   "devDependencies": {
+    "@peterek/vite-plugin-favicons": "^2.1.0",
     "@storybook/addon-actions": "^8.6.11",
     "@storybook/addon-essentials": "^8.6.11",
     "@storybook/addon-interactions": "^8.6.11",
