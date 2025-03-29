@@ -1,6 +1,9 @@
 import path from 'path';
 import { defineConfig } from 'vite';
 
+// Detect CI environment
+const isCI = !!process.env.CI || process.argv.includes('--coverage');
+
 // https://vitejs.dev/config/
 export default defineConfig({
     resolve: {
@@ -15,17 +18,27 @@ export default defineConfig({
 
     test: {
         globals: true,
-
+        
+        // Use jsdom for CI, browser for local development
+        environment: isCI ? 'jsdom' : 'browser',
+        
+        // Browser configuration for local tests
         browser: {
-            // Browser name is required,
-            name: 'chrome', 
-            
-            // Fixes a bug with build errors in browser mode.
+            enabled: !isCI,
+            // Update to use instances array instead of deprecated name field
+            instances: [
+                { browser: 'chrome' }
+            ],
+            // Fixes a bug with build errors in browser mode
             slowHijackESM: false,
         },
 
         coverage: {
             provider: 'istanbul',
         },
+        
+        // Increase timeouts for tests
+        testTimeout: 30000,
+        hookTimeout: 30000,
     },
 } as any);
