@@ -4,28 +4,29 @@
 `mydraft.cc` is an open-source wireframing tool designed as a free alternative to commercial options. It allows users to create diagrams and wireframes. The project is developed using React and TypeScript. You can test it live at https://mydraft.cc/.
 
 ## Architecture
-- **Frontend Framework:** React 17
+- **Frontend Framework:** React 18
 - **Language:** TypeScript
-- **Build Tool:** Vite
-- **State Management:** Redux Toolkit
-- **Routing:** React Router v5
+- **Build Tool:** Vite 6
+- **State Management:** Redux Toolkit 2
+- **Routing:** React Router v6
 - **UI Library:** Ant Design v5
 - **Core Diagramming:** Pixi.js, SVG.js, d3 for rendering and interaction.
 - **Styling:** Sass/SCSS (indicated by `index.scss` and `sass` dev dependency)
-- **Component Development:** Storybook
+- **Component Development:** Storybook 8
 - **Testing:** Vitest (unit/integration), Playwright (end-to-end browser testing), React Testing Library (likely, via Vitest integration)
 
 The application follows a component-based architecture, likely separating concerns into core logic, UI components, state management, and specific feature modules (e.g., `wireframes`).
 
 ## Technology Stack
-- **Core:** React 17, TypeScript, Vite, Redux Toolkit, React Router 5
-- **UI:** Ant Design 5, React Beautiful DnD, React Color
+- **Core:** React 18, TypeScript 5.8, Vite 6, Redux Toolkit 2, React Router 6
+- **UI:** Ant Design 5.24, React Beautiful DnD, React Color
 - **Graphics:** Pixi.js, SVG.js, d3-selection, d3-zoom
 - **Utilities:** classnames, date-fns, deep-object-diff, marked (for markdown), mousetrap (for keyboard shortcuts)
 - **Development:** Node.js, npm
 - **Linting/Formatting:** ESLint (based on Airbnb TypeScript config with modifications), Stylelint
 - **Testing:** Vitest, Playwright, @vitest/coverage-v8 (for coverage)
-- **CI/CD:** GitHub Actions (implied by `.github/`), Codecov, Chromatic (for visual testing)
+- **Component Documentation:** Storybook 8, Chromatic (for visual testing)
+- **CI/CD:** GitHub Actions (implied by `.github/`), Codecov
 - **Containerization:** Docker (Dockerfile.build exists)
 - **PWA:** Configured via `vite-plugin-pwa`
 

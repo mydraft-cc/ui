@@ -11,18 +11,20 @@ import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { createRoot } from 'react-dom/client';
 import { Provider } from 'react-redux';
-import { Route, Router } from 'react-router';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { App } from './App';
 import { registerServiceWorker } from './registerServiceWorker';
 import './index.scss';
-import { history, store } from './store';
+import { store } from './store';
 
 const Root = (
     <DndProvider backend={HTML5Backend}>
         <Provider store={store}>
-            <Router history={history}>
-                <Route path='/:token?' component={App} />
-            </Router>
+            <BrowserRouter>
+                <Routes>
+                    <Route path='/:token?' element={<App />} />
+                </Routes>
+            </BrowserRouter>
         </Provider>
     </DndProvider>
 );

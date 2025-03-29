@@ -52,18 +52,33 @@ This file tracks the tasks involved in updating and upgrading the `mydraft.cc` f
   - Fixed TypeScript compatibility issues with Ant Design icons by creating utility functions.
   - Fixed outdated import paths for MenuItemType in Components.tsx.
   - Improved build compatibility with TypeScript's stricter type checking.
+- **Redux Toolkit & Related Upgrade Progress:**
+  - Updated @reduxjs/toolkit from v1.9.7 to v2.6.1.
+  - Kept react-redux at v8.1.3 which is already compatible.
+  - Kept redux at v4.2.1 and redux-thunk at v2.4.2 to maintain compatibility.
+  - Fortunately, store.ts already uses the callback form for middleware configuration, which is now required in RTK 2.x.
+  - Project doesn't use the object syntax for createSlice.extraReducers, primarily uses createAction/createReducer.
+  - Successfully resolved middleware typing issues with Redux Toolkit 2.x.
+- **React Router Upgrade Completed:**
+  - Updated react-router from v5.2.0 to v6 and react-router-dom from v5.2.0 to v6.
+  - Replaced `<Router history={history}>` with `<BrowserRouter>` in index.tsx.
+  - Replaced `<Route component={Component}>` with `<Route element={<Component />}>` pattern.
+  - Updated routing structure to use `<Routes>` component instead of direct Route components.
+  - Replaced `useRouteMatch` with `useParams` in App.tsx.
+  - Removed direct history API usage, implemented navigation with `useNavigate` hook.
+  - Updated the loadingMiddleware to no longer require history, instead relying on React Router's hooks.
+  - Added an effect to handle URL navigation based on state changes.
+- **Storybook & PWA Plugin Upgrades Completed:**
+  - Successfully upgraded Storybook from v7.5.3 to v8.6.11 to support Vite 6.
+  - Updated Storybook configuration files (main.js and preview.js) to use the new module format with TypeScript types.
+  - Upgraded vite-plugin-pwa from v0.17.0 to v1.0.0 which added support for Vite 6.
+  - Resolved peer dependency conflicts that were requiring --legacy-peer-deps.
+  - Build process works successfully with the updated dependencies.
 
 ## Active
-- [ ] **Upgrade Redux Toolkit & Related:**
-  - [ ] Update `@reduxjs/toolkit`, `react-redux`, `redux`, `redux-thunk`.
-  - [ ] Check for deprecations or changes in API usage.
-  - [ ] Verify that Redux DevTools integration still works.
-  - [ ] Test store functionality.
+// No active tasks currently
 
 ## Pending
-- [ ] **Upgrade Routing (React Router):**
-  - [ ] Update `react-router`, `react-router-dom`.
-  - [ ] Check for breaking changes or new patterns.
 - [ ] **Upgrade Testing Libraries:**
   - [ ] Update `vitest`, `@vitest/browser`, `@vitest/coverage-*`, `playwright`.
   - [ ] Update test setup and assertions if necessary.
@@ -104,3 +119,23 @@ This file tracks the tasks involved in updating and upgrading the `mydraft.cc` f
   - [x] Fix TypeScript compatibility issues with icon components.
   - [x] Update outdated import paths.
   - [x] Test UI components in the application.
+- [x] **Upgrade Redux Toolkit & Related:**
+  - [x] Update `@reduxjs/toolkit` to v2.6.1.
+  - [x] Verify compatibility with existing react-redux, redux, redux-thunk versions.
+  - [x] Check for usage of deprecated APIs (object syntax in createReducer/createSlice).
+  - [x] Fixed middleware typing issues for TypeScript compatibility.
+  - [x] Verified that application builds successfully.
+  - [x] Verified Redux store functionality by testing the application.
+- [x] **Upgrade Routing (React Router):**
+  - [x] Update `react-router`, `react-router-dom` to v6.
+  - [x] Replace `Router` with `BrowserRouter` in index.tsx.
+  - [x] Update route definitions to use new v6 syntax.
+  - [x] Replace `useRouteMatch` with `useParams` in App.tsx.
+  - [x] Implement navigation with useNavigate hook.
+  - [x] Remove history dependency injection in middleware.
+- [x] **Resolve Peer Dependency Issues:**
+  - [x] Identify dependencies requiring `--legacy-peer-deps`.
+  - [x] Update Storybook from v7.5.3 to v8.6.11 for compatibility with Vite 6.
+  - [x] Update Storybook configuration files for v8 format.
+  - [x] Update vite-plugin-pwa from v0.17.0 to v1.0.0 for Vite 6 support.
+  - [x] Verify build process works with updated dependencies.
