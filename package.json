@@ -26,6 +26,7 @@
     "d3-zoom": "^3.0.0",
     "date-fns": "^2.30.0",
     "deep-object-diff": "^1.1.9",
+    "esbuild": "^0.25.1",
     "file-saver": "^2.0.5",
     "history": "4.7.2",
     "marked": "^10.0.0",
@@ -46,6 +47,7 @@
     "redux": "^4.2.1",
     "redux-thunk": "^2.4.2",
     "reselect": "4.1.8",
+    "sharp": "^0.33.5",
     "tslib": "2.6.2"
   },
   "devDependencies": {
@@ -77,9 +79,9 @@
     "@typescript-eslint/eslint-plugin": "^6.12.0",
     "@typescript-eslint/parser": "^6.12.0",
     "@vitejs/plugin-react": "^4.3.4",
-    "@vitest/browser": "^0.34.6",
-    "@vitest/coverage-istanbul": "^0.34.6",
-    "@vitest/coverage-v8": "^0.34.6",
+    "@vitest/browser": "^3.0.9",
+    "@vitest/coverage-istanbul": "^3.0.9",
+    "@vitest/coverage-v8": "^3.0.9",
     "chromatic": "^9.1.0",
     "eslint": "^8.54.0",
     "eslint-config-airbnb-typescript": "^17.1.0",
@@ -93,9 +95,8 @@
     "storybook": "^8.6.11",
     "typescript": "^5.8.2",
     "vite": "^6.2.3",
-    "vite-plugin-favicon": "^1.0.8",
     "vite-plugin-pwa": "^1.0.0",
-    "vitest": "^0.34.6",
-    "webdriverio": "^8.23.3"
+    "vitest": "^3.0.9",
+    "webdriverio": "^9.12.2"
   }
 }
