@@ -35,7 +35,7 @@ const undoableReducer = undoable(
         ],
     });
 
-// Define RootState and AppDispatch before configureStore
+// Define AppState and AppDispatch before configureStore
 const rootReducer = {
     // Contains the store for the left sidebar.
     assets: assets(createInitialAssetsState()),
@@ -47,18 +47,18 @@ const rootReducer = {
     ui: ui(createInitialUIState()),
 };
 
-// Define temporary store to infer RootState type
+// Define temporary store to infer AppState type
 const tempStore = configureStore({ reducer: rootReducer, middleware: (getDefaultMiddleware) => getDefaultMiddleware({ serializableCheck: false }) });
-export type RootState = ReturnType<typeof tempStore.getState>;
+export type AppState = ReturnType<typeof tempStore.getState>;
 export type AppDispatch = typeof tempStore.dispatch;
 
 export const store = configureStore({
     reducer: rootReducer,
     middleware: (getDefaultMiddleware) => getDefaultMiddleware({ serializableCheck: false }).concat(
-        toastMiddleware() as Middleware<{}, RootState, AppDispatch>,
-        loadingMiddleware() as Middleware<{}, RootState, AppDispatch>
+        toastMiddleware() as Middleware<{}, AppState, AppDispatch>,
+        loadingMiddleware() as Middleware<{}, AppState, AppDispatch>
     ),
 });
 
 export const useAppDispatch: () => AppDispatch = useDispatch;
-export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
+export const useAppSelector: TypedUseSelectorHook<AppState> = useSelector;
