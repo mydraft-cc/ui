@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { LeftOutlined as LeftOutlinedBase, RightOutlined as RightOutlinedBase } from '@ant-design/icons';
+import { LeftOutlined, RightOutlined } from '@ant-design/icons';
 import { Button, Layout, Tabs, TabsProps } from 'antd';
 import classNames from 'classnames';
 import * as React from 'react';
@@ -166,7 +166,7 @@ export const App = () => {
                             size='small'
                             shape='circle'
                             onClick={doToggleLeftSidebar}>
-                            {showLeftSidebar ? <LeftOutlinedBase /> : <RightOutlinedBase />}
+                            {showLeftSidebar ? <LeftOutlined /> : <RightOutlined />}
                         </Button>
 
                         <Button 
@@ -174,7 +174,7 @@ export const App = () => {
                             size='small'
                             shape='circle'
                             onClick={doToggleRightSidebar}>
-                            {showRightSidebar ? <RightOutlinedBase /> : <LeftOutlinedBase />}
+                            {showRightSidebar ? <RightOutlined /> : <LeftOutlined />}
                         </Button>
                     </Layout>
                 </Layout>
