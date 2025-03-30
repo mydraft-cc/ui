@@ -162,20 +162,19 @@ export const App = () => {
                         </Layout.Sider>
 
                         <Button 
-                            className={classNames('toggle-button-left', { visible: showLeftSidebar })}
-                            size='small'
-                            shape='circle'
-                            onClick={doToggleLeftSidebar}>
-                            {showLeftSidebar ? <LeftOutlined /> : <RightOutlined />}
-                        </Button>
+                          icon={showLeftSidebar ? <LeftOutlined /> : <RightOutlined />}
+                          className={classNames('toggle-button-left', { visible: showLeftSidebar })}
+                          size='small'
+                          shape='circle'
+                          onClick={doToggleLeftSidebar}
+                        />
 
                         <Button 
-                            className={classNames('toggle-button-right', { visible: showRightSidebar })}
-                            size='small'
-                            shape='circle'
-                            onClick={doToggleRightSidebar}>
-                            {showRightSidebar ? <RightOutlined /> : <LeftOutlined />}
-                        </Button>
+                          icon={showRightSidebar ? <LeftOutlined /> : <RightOutlined />}
+                          className={classNames('toggle-button-right', { visible: showRightSidebar })}
+                          size='small'
+                          shape='circle'
+                          onClick={doToggleRightSidebar} />
                     </Layout>
                 </Layout>
 
