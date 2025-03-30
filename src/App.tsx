@@ -160,6 +160,7 @@ export const App = () => {
 
                             <Properties />
                         </Layout.Sider>
+                        
                         <Button icon={showLeftSidebar ? <LeftOutlined /> : <RightOutlined />}
                             className={classNames('toggle-button-left', { visible: showLeftSidebar })}
                             size='small'
