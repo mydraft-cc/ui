@@ -1,9 +1,8 @@
 import { ConfigProvider, theme } from 'antd';
 import * as React from 'react';
-import { useEventCallback } from '@app/core';
 import { updateSystemPreference, selectEffectiveTheme } from '../model/actions';
-import { useAppDispatch, useAppSelector } from '../../store';
-import { forceTriggerThemeChange, updateCurrentTheme } from '../shapes/neutral/ThemeShapeUtils';
+import { useAppDispatch, useAppSelector } from '@app/store';
+import { forceTriggerThemeChange } from '../shapes/neutral/ThemeShapeUtils';
 
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const dispatch = useAppDispatch();
@@ -18,10 +17,6 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         if (effectiveTheme === 'dark') {
             document.body.classList.add('dark-theme');
         }
-        
-        // Update the theme for shape components
-        // The updateCurrentTheme function will return true if theme actually changed
-        const themeChanged = updateCurrentTheme(effectiveTheme);
         
         // Force a theme notification 50ms after the theme change to ensure all components are updated
         // This helps with any race conditions in the rendering cycle
@@ -41,20 +36,12 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         
         // Add listener for changes
         const handleChange = (e: MediaQueryListEvent) => {
-            dispatch(updateSystemPreference(e.matches));
+          dispatch(updateSystemPreference(e.matches));
         };
         
-        // Use the appropriate event listener method based on browser support
         if (mediaQuery.addEventListener) {
-            mediaQuery.addEventListener('change', handleChange);
-            return () => mediaQuery.removeEventListener('change', handleChange);
-        } else {
-            // @ts-ignore - For older browsers
-            mediaQuery.addListener(handleChange);
-            return () => {
-                // @ts-ignore - For older browsers
-                mediaQuery.removeListener(handleChange);
-            };
+          mediaQuery.addEventListener('change', handleChange);
+          return () => mediaQuery.removeEventListener('change', handleChange);
         }
     }, [dispatch]);
     
