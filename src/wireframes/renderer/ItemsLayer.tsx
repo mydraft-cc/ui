@@ -186,8 +186,7 @@ export const ItemsLayer = React.memo((props: ItemsLayerProps) => {
         forceRerenderAllShapes();
         
         // Also set up a listener for theme changes that might happen outside React's flow
-        const unsubscribe = addThemeChangeListener((theme) => {
-            // When theme changes through ThemeShapeUtils, force re-render
+        const unsubscribe = addThemeChangeListener(() => {
             forceRerenderAllShapes();
         });
         

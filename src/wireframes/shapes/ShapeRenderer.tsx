@@ -12,7 +12,7 @@ import { SvgCanvasView } from '@app/wireframes/engine/svg/canvas/SvgCanvas';
 import { SvgEngine } from '@app/wireframes/engine/svg/engine';
 import { ShapePlugin, Size } from '@app/wireframes/interface';
 import { DefaultConstraintFactory, DiagramItem, Transform } from '@app/wireframes/model';
-import { addThemeChangeListener, getCurrentTheme } from '@app/wireframes/shapes/neutral/ThemeShapeUtils';
+import { addThemeChangeListener } from '@app/wireframes/shapes/neutral/ThemeShapeUtils';
 import { selectEffectiveTheme } from '@app/wireframes/model/actions';
 import { useAppSelector } from '@app/store';
 

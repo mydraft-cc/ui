@@ -11,11 +11,10 @@ import { DropTargetMonitor, useDrop } from 'react-dnd';
 import { NativeTypes } from 'react-dnd-html5-backend';
 import { findDOMNode } from 'react-dom';
 import { Canvas, ImmutableMap, loadImagesToClipboardItems, useClipboard, useEventCallback, ViewBox } from '@app/core';
-import { useAppDispatch } from '@app/store';
+import { useAppDispatch, useAppSelector } from '@app/store';
 import { ShapeSource } from '@app/wireframes/interface';
 import { addShape, changeItemsAppearance, Diagram, getDiagram, getDiagramId, getDiagrams, getEditor, getSelection, PluginRegistry, selectItems, Transform, transformItems, useStore } from '@app/wireframes/model';
 import { Editor } from '@app/wireframes/renderer/Editor';
-import { createSelector } from 'reselect';
 import { DiagramRef, ItemsRef } from './../model/actions/utils';
 import { UIStateInStore } from '../model/ui-state';
 import { useContextMenu } from './context-menu';
@@ -47,13 +46,12 @@ export const EditorViewInner = ({ diagram, viewBox }: { diagram: Diagram; viewBo
     const dispatch = useAppDispatch();
     const [menuVisible, setMenuVisible] = React.useState(false);
     const editor = useStore(getEditor);
-    const editorColor = editor.color;
-    const renderRef = React.useRef<any>();
     const selectedDiagramId = useStore(getDiagramId);
     const selectedPoint = React.useRef({ x: 0, y: 0 });
     const selectionSet = useStore(getSelection);
-    const useWebGL = useStore(selectUseWebGL);
+    const useWebGL = useAppSelector(selectUseWebGL);
     const contextMenu = useContextMenu(menuVisible);
+    const renderRef = React.useRef<HTMLDivElement>(null);
 
     const doChangeItemsAppearance = useEventCallback((diagram: DiagramRef, visuals: ItemsRef, key: string, value: any) => {
         dispatch(changeItemsAppearance(diagram, visuals, key, value));
@@ -166,7 +164,6 @@ export const EditorViewInner = ({ diagram, viewBox }: { diagram: Diagram; viewBo
             <div className='editor-view' onClick={doSetPosition}>
                 <div className='editor-diagram' ref={renderRef} >
                     <Editor
-                        color={editorColor}
                         diagram={diagram}
                         diagrams={editor.diagrams}
                         isDefaultView={true}

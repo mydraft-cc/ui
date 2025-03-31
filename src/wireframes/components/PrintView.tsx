@@ -18,7 +18,6 @@ export interface PrintRendererProps {
 export const PrintView = (props: PrintRendererProps) => {
     const { onRender } = props;
 
-    const color = useStore(x => x.editor.present.color);
     const diagrams = useStore(x => x.editor.present.diagrams);
     const diagramsOrdered = useStore(x => x.editor.present.orderedDiagrams);
     const renderTargets = React.useRef<ReadonlyArray<Diagram>>([]);
@@ -42,7 +41,6 @@ export const PrintView = (props: PrintRendererProps) => {
             {diagramsOrdered.map((d, i) =>
                 <div className='print-diagram' key={i}>
                     <PrintDiagram
-                        color={color}
                         diagram={d}
                         diagrams={diagrams}
                         onRender={doRender}

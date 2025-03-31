@@ -6,7 +6,6 @@
 */
 
 import { ConstraintFactory, DefaultAppearance, RenderContext, ShapePlugin } from '@app/wireframes/interface';
-import { CommonTheme } from './_theme';
 import { SHAPE_TEXT_COLOR, getCurrentTheme } from './ThemeShapeUtils';
 
 const DEFAULT_APPEARANCE = {

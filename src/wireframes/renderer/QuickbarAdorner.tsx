@@ -23,9 +23,6 @@ export interface QuickbarAdornerProps {
     // The selected items.
     selectionSet: DiagramItemSet;
 
-    // The theme state.
-    isDarkMode?: boolean;
-
     // The preview subscription.
     previewStream: Subscription<PreviewEvent>;
 }
@@ -36,7 +33,6 @@ export const QuickbarAdorner = (props: QuickbarAdornerProps) => {
         selectedDiagram,
         selectionSet,
         viewBox,
-        isDarkMode,
     } = props;
 
     const forAlignment = useAlignment();

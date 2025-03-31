@@ -8,7 +8,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 
 import * as React from 'react';
-import { Color, ImmutableMap, Subscription, Vec2, ViewBox } from '@app/core';
+import { ImmutableMap, Subscription, Vec2, ViewBox } from '@app/core';
 import { useAppSelector } from '../../store';
 import { Engine, EngineLayer, EngineRect } from '@app/wireframes/engine';
 import { PixiCanvasView } from '@app/wireframes/engine/pixi/canvas/PixiCanvas';
@@ -36,9 +36,6 @@ export interface EditorProps {
 
     // The selected items.
     selectionSet: DiagramItemSet;
-
-    // The color.
-    color: Color;
 
     // The viewbox.
     viewBox: ViewBox;
@@ -80,7 +77,6 @@ type Layers = {
 
 export const Editor = React.memo((props: EditorProps) => {
     const {
-        color,
         diagram,
         diagrams,
         isDefaultView,
@@ -299,7 +295,6 @@ export const Editor = React.memo((props: EditorProps) => {
 
                     {onTransformItems &&
                         <QuickbarAdorner
-                            isDarkMode={isDarkMode}
                             previewStream={renderPreview.current}
                             selectedDiagram={diagram}
                             selectionSet={selectionSet}

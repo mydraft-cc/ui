@@ -11,7 +11,7 @@ import classNames from 'classnames';
 import * as React from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ClipboardContainer, useEventCallback, usePrinter } from '@app/core';
-import { ArrangeMenu, ClipboardMenu, EditorView, HistoryMenu, Icons, LoadingMenu, LockMenu, Outline, Pages, PrintView, Properties, Recent, SettingsMenu, Shapes, ThemeToggle, UIMenu } from '@app/wireframes/components';
+import { ArrangeMenu, ClipboardMenu, EditorView, HistoryMenu, Icons, LoadingMenu, LockMenu, Outline, Pages, PrintView, Properties, Recent, SettingsMenu, Shapes, UIMenu } from '@app/wireframes/components';
 import { loadDiagramFromServer, newDiagram, selectTab, showToast, toggleLeftSidebar, toggleRightSidebar, useStore } from '@app/wireframes/model';
 import { useAppDispatch, useAppSelector } from './store';
 import { texts } from './texts';
