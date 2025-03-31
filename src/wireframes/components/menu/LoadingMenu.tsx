@@ -14,6 +14,7 @@ import text from '@app/legal.html?raw';
 import { texts } from '@app/texts';
 import { useStore } from '@app/wireframes/model';
 import { ActionDropdownButton, ActionMenuButton, buildMenuItem, useLoading } from './../actions';
+import { ThemeToggle } from '../ThemeToggle';
 
 export const LoadingMenu = React.memo(() => {
     const forLoading = useLoading();
@@ -86,6 +87,7 @@ export const LoadingMenu = React.memo(() => {
             <Button className='menu-item' href='https://github.com/mydraft-cc/ui' target='_blank'
                 icon={<GithubOutlined />} />
 
+            <ThemeToggle />
             <MarkerButton />
 
             <Modal title={texts.common.about} open={isOpen} onCancel={doToggleInfoDialog} onOk={doToggleInfoDialog}>

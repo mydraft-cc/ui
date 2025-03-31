@@ -116,7 +116,7 @@ export const App = () => {
         <OverlayContainer>
             <ClipboardContainer>
                 <Layout className='screen-mode'>
-                    <Layout.Header>
+                    <Layout.Header className='top-menu-wrapper'>
                         <div className='top-menu'>
                             <img className='logo' src='logo.svg' alt='mydraft.cc' />
 
@@ -140,8 +140,6 @@ export const App = () => {
                             </div>
 
                             <div>
-                                <ThemeToggle />
-                                <span className='menu-separator' />
                                 <LoadingMenu />
                             </div>
                         </div>

@@ -301,18 +301,31 @@ header {
     .ant-btn {
         color: $color-text;
         
-        &:hover {
-            color: $color-theme-blue;
+        &:hover:not(:disabled) {
+            color: $color-theme-blue-dark;
+            
+            svg, .anticon, i {
+                color: $color-theme-blue-dark;
+                fill: currentColor;
+            }
         }
         
         svg {
             fill: currentColor;
+        }
+
+        .ant-btn-icon {
+          font-size: 1rem;
         }
     }
     
     .anticon {
         color: $color-text;
     }
+}
+
+.top-menu-wrapper {
+  align-content: center;
 }
 
 .top-menu {
@@ -383,6 +396,106 @@ header {
             opacity: .4;
         }
     }
+}
+
+
+// Handle menu color
+.ant-menu-item-selected {
+  background-color: rgba($color-theme-blue, 0.1) !important;
+  color: $color-theme-blue !important;
+}
+
+// Fix dropdown
+.ant-dropdown-menu {
+  background-color: $color-toolbar-background;
+  border: 1px solid $color-border;
+  
+  .ant-dropdown-menu-item {
+      color: $color-text;
+      
+      &:hover {
+          background-color: $color-theme-blue;
+      }
+      
+      &.ant-dropdown-menu-item-selected {
+          background-color: rgba($color-theme-blue, 0.1);
+          color: $color-theme-blue;
+      }
+  }
+}
+
+.menu-dropdown.save-button {
+  .ant-btn, .ant-dropdown-trigger {
+      border-radius: 8px !important;
+      border: none !important;
+      box-shadow: none !important;
+  }
+  
+  .ant-btn:first-child {
+      border-radius: 8px 0 0 8px !important;
+  }
+  
+  .ant-dropdown-trigger {
+      border-radius: 0 8px 8px 0 !important;
+      position: relative;
+      
+      &::before {
+          content: '';
+          position: absolute;
+          top: 20%;
+          left: 0;
+          height: 60%;
+          width: 1px;
+          background-color: rgba(white, .2) !important;
+          z-index: 5;
+          pointer-events: none;
+      }
+  }
+  
+  .ant-btn:not(:disabled), 
+  .ant-dropdown-trigger:not(:disabled) {
+      background-color: $color-theme-blue-dark !important;
+      color: $color-white !important;
+      
+      i, svg {
+          color: $color-white !important;
+      }
+  }
+  
+  .ant-btn:hover:not(:disabled), 
+  .ant-dropdown-trigger:hover:not(:disabled) {
+      background-color: $color-theme-blue !important;
+  }
+  
+  .ant-btn:active:not(:disabled), 
+  .ant-dropdown-trigger:active:not(:disabled) {
+      background-color: $color-theme-blue !important;
+  }
+  
+  .ant-btn:disabled, 
+  .ant-dropdown-trigger:disabled {
+      background-color: $color-toolbar-background !important; 
+      color: $color-border !important;
+
+      border: 1px solid $color-border !important;
+      
+      i, svg {
+          color: $color-border !important;
+      }
+  }
+}
+
+body.dark-theme .menu-dropdown.save-button,
+.dark-theme .menu-dropdown.save-button {
+  .ant-btn:disabled, 
+  .ant-dropdown-trigger:disabled {
+      background-color: $color-toolbar-background !important; 
+      color: $color-border !important;
+      
+      i, svg {
+          color: $color-border !important;
+      }
+  }
 }
 
 //
@@ -459,13 +572,63 @@ header {
 .ant-tabs {
     .ant-tabs-nav {
         margin-bottom: 0;
+        
+        &::before {
+            display: none !important; /* Remove the bottom border */
+        }
 
         .ant-tabs-tab {
-            &.ant-tabs-tab-active {
+            border-top-left-radius: 8px !important;
+            border-top-right-radius: 8px !important;
+            border: 1px solid transparent !important;
+            padding: 8px 16px !important;
+            margin: 0 4px 0 0 !important;
+            transition: all 0.2s ease;
+            
+            &:hover:not(.ant-tabs-tab-active) {
+                background-color: rgba($color-theme-blue, 0.05) !important;
+                
                 .ant-tabs-tab-btn {
-                    color: $color-theme-blue;
+                    color: $color-theme-blue-dark !important;
                 }
             }
+            
+            &.ant-tabs-tab-active {
+                border-bottom-color: transparent !important;
+                background-color: white !important;
+                border-color: $color-border !important;
+                border-bottom-color: white !important;
+                
+                .ant-tabs-tab-btn {
+                    color: $color-theme-blue !important;
+                    font-weight: 500;
+                }
+            }
+        }
+        
+        .ant-tabs-ink-bar {
+            display: none !important; /* Hide the ink bar as we're using borders */
+        }
+    }
+    
+    .ant-tabs-content-holder {
+        border-top: 1px solid $color-border !important;
+    }
+}
+
+// For dark theme
+body.dark-theme,
+.dark-theme {
+    .ant-tabs {
+        .ant-tabs-tab {
+            &.ant-tabs-tab-active {
+                background-color: $color-toolbar-background !important;
+                border-bottom-color: $color-toolbar-background !important;
+            }
+        }
+        
+        .ant-tabs-content-holder {
+            border-top-color: $color-border !important;
         }
     }
 }
@@ -478,89 +641,5 @@ header {
 
     .ant-collapse-content {
         background-color: transparent;
-    }
-}
-
-// Handle menu color
-.ant-menu-item-selected {
-    background-color: rgba($color-theme-blue, 0.1) !important;
-    color: $color-theme-blue !important;
-}
-
-// Fix dropdown
-.ant-dropdown-menu {
-    background-color: $color-toolbar-background;
-    border: 1px solid $color-border;
-    
-    .ant-dropdown-menu-item {
-        color: $color-text;
-        
-        &:hover {
-            background-color: $color-theme-secondary;
-        }
-        
-        &.ant-dropdown-menu-item-selected {
-            background-color: rgba($color-theme-blue, 0.1);
-            color: $color-theme-blue;
-        }
-    }
-}
-
-.menu-dropdown.save-button {
-    .ant-btn, .ant-dropdown-trigger {
-        border-radius: 8px !important;
-        border: none !important;
-        box-shadow: none !important;
-    }
-    
-    .ant-btn:first-child {
-        border-radius: 8px 0 0 8px !important;
-    }
-    
-    .ant-dropdown-trigger {
-        border-radius: 0 8px 8px 0 !important;
-    }
-    
-    .ant-btn:not(:disabled), 
-    .ant-dropdown-trigger:not(:disabled) {
-        background-color: #1890ff !important;
-        color: #ffffff !important;
-        
-        i, svg {
-            color: #ffffff !important;
-        }
-    }
-    
-    .ant-btn:hover:not(:disabled), 
-    .ant-dropdown-trigger:hover:not(:disabled) {
-        background-color: #40a9ff !important;
-    }
-    
-    .ant-btn:active:not(:disabled), 
-    .ant-dropdown-trigger:active:not(:disabled) {
-        background-color: #096dd9 !important;
-    }
-    
-    .ant-btn:disabled, 
-    .ant-dropdown-trigger:disabled {
-        background-color: #f0f0f0 !important; 
-        color: #bfbfbf !important;
-        
-        i, svg {
-            color: #bfbfbf !important;
-        }
-    }
-}
-
-body.dark-theme .menu-dropdown.save-button,
-.dark-theme .menu-dropdown.save-button {
-    .ant-btn:disabled, 
-    .ant-dropdown-trigger:disabled {
-        background-color: #333333 !important; 
-        color: #707070 !important;
-        
-        i, svg {
-            color: #707070 !important;
-        }
     }
 }
