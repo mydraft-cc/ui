@@ -12,6 +12,15 @@ import { Diagram, DiagramItem, PluginRegistry } from '@app/wireframes/model';
 import { addThemeChangeListener } from '../shapes/neutral/ThemeShapeUtils';
 import { PreviewEvent } from './preview';
 
+// Helper function for debouncing - defined outside of component
+function debounced(fn: Function, delay: number) {
+    let timeoutId: NodeJS.Timeout;
+    return (...args: any[]) => {
+        clearTimeout(timeoutId);
+        timeoutId = setTimeout(() => fn(...args), delay);
+    };
+}
+
 export interface ItemsLayerProps {
     // The selected diagram.
     diagrams: Diagram[];
@@ -40,6 +49,7 @@ export const ItemsLayer = React.memo((props: ItemsLayerProps) => {
 
     const shapesRendered = React.useRef(onRender);
     const shapeRefsById = React.useRef<Record<string, ItemWithPreview>>({});
+    const debouncerRef = React.useRef<ReturnType<typeof debounced> | null>(null);
 
     const orderedShapes = React.useMemo(() => {
         const result: DiagramItem[] = [];
@@ -124,27 +134,56 @@ export const ItemsLayer = React.memo((props: ItemsLayerProps) => {
         }
     }, [diagramLayer, orderedShapes]);
     
+    // Create a function to force re-render all shapes without using hooks inside
+    const forceRerenderAllShapes = React.useCallback(() => {
+        const references = shapeRefsById.current;
+        console.debug(`ItemsLayer: Re-rendering ${orderedShapes.length} shapes due to theme change`);
+        
+        // Create the debounced function if not exists
+        if (!debouncerRef.current) {
+            debouncerRef.current = debounced((shapes: DiagramItem[]) => {
+                // Use batched updates to prevent excessive repaints
+                let count = 0;
+                const batchSize = 10; // Number of shapes to update in each animation frame
+                const totalShapes = shapes.length;
+                
+                const processBatch = () => {
+                    const startIdx = count;
+                    const endIdx = Math.min(count + batchSize, totalShapes);
+                    
+                    // Process a batch of shapes
+                    for (let i = startIdx; i < endIdx; i++) {
+                        const shape = shapes[i];
+                        if (references[shape.id]) {
+                            references[shape.id].forceRerender(shape);
+                        }
+                    }
+                    
+                    count += batchSize;
+                    
+                    // If more batches need processing, schedule next batch
+                    if (count < totalShapes) {
+                        requestAnimationFrame(processBatch);
+                    } else {
+                        // All shapes processed, notify render complete
+                        if (shapesRendered.current) {
+                            shapesRendered.current();
+                        }
+                    }
+                };
+                
+                // Start batch processing
+                processBatch();
+            }, 100);
+        }
+        
+        // Call the debounced function with current shapes
+        debouncerRef.current(orderedShapes);
+    }, [orderedShapes]);
+    
     // Add a separate effect specifically for theme changes to force re-render of all shapes
     React.useEffect(() => {
         // When isDarkMode changes directly through prop, force an immediate re-render
-        const references = shapeRefsById.current;
-        
-        // Create a function to force re-render all shapes
-        const forceRerenderAllShapes = () => {
-            console.debug(`ItemsLayer: Re-rendering ${orderedShapes.length} shapes due to theme change`);
-            
-            for (const shape of orderedShapes) {
-                if (references[shape.id]) {
-                    references[shape.id].forceRerender(shape);
-                }
-            }
-            
-            if (shapesRendered.current) {
-                shapesRendered.current();
-            }
-        };
-        
-        // Execute immediately for prop changes
         forceRerenderAllShapes();
         
         // Also set up a listener for theme changes that might happen outside React's flow
@@ -155,7 +194,7 @@ export const ItemsLayer = React.memo((props: ItemsLayerProps) => {
         });
         
         return unsubscribe;
-    }, [isDarkMode, orderedShapes]);
+    }, [isDarkMode, forceRerenderAllShapes]);
 
     React.useEffect(() => {
         return preview?.subscribe(event => {

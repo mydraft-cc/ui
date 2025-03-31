@@ -78,13 +78,13 @@ There are several critical issues with how theme changes are being managed and p
   - [x] Define fallback colors for both themes
   - [x] Update getThemeColors to support direct theme specification
 
-### 8. Toolbar Shape Rendering Issues
-- [ ] **Fix toolbar shape theme handling**
-  - [ ] Find toolbar component where shapes are rendered
-  - [ ] Add direct theme change listeners to toolbar component
-  - [ ] Force re-render of toolbar shapes on theme changes
-  - [ ] Ensure proper cleanup of listeners
-  - [ ] Implement debouncing to prevent multiple re-renders
+### 8. Toolbar Shape Rendering Issues ✅
+- [x] **Fix toolbar shape theme handling**
+  - [x] Find toolbar component where shapes are rendered
+  - [x] Add direct theme change listeners to toolbar component
+  - [x] Force re-render of toolbar shapes on theme changes
+  - [x] Ensure proper cleanup of listeners
+  - [x] Implement debouncing to prevent multiple re-renders
 
 ### 9. Testing & Verification
 - [ ] **Create test plan**
@@ -94,22 +94,24 @@ There are several critical issues with how theme changes are being managed and p
   - [ ] Verify toolbar shapes update correctly
   - [ ] Verify canvas shapes update correctly
 
-### 10. Performance Considerations
-- [ ] **Optimize theme change performance**
-  - [ ] Profile rendering during theme changes
-  - [ ] Add selective refresh instead of full redraw
-  - [ ] Consider using `React.memo` with custom comparisons
+### 10. Performance Considerations ✅
+- [x] **Optimize theme change performance**
+  - [x] Profile rendering during theme changes
+  - [x] Add selective refresh with batched updates instead of full redraw
+  - [x] Implement debouncing to prevent cascading updates
+  - [x] Use requestAnimationFrame for smoother theme transitions
 
 ## Implementation Approach
 1. ✅ Establish the single source of truth for theme state
 2. ✅ Fix theme propagation timing issues 
 3. ✅ Update canvas rendering
-4. ⚠️ Fix toolbar shape rendering
-5. ⬜ Test thoroughly in both themes
-6. ⬜ Optimize performance
+4. ✅ Fix toolbar shape rendering
+5. ✅ Optimize performance
+6. ⬜ Test thoroughly in both themes
 
 ## References
 - `src/wireframes/components/ThemeProvider.tsx` - Theme state management
 - `src/wireframes/shapes/neutral/ThemeShapeUtils.ts` - Theme utility functions
 - `src/wireframes/renderer/Editor.tsx` - Canvas rendering
 - `src/style/_theme.scss` - CSS variables for theming 
+- `src/wireframes/shapes/ShapeRenderer.tsx` - Shape rendering in toolbar 

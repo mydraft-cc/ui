@@ -4,9 +4,28 @@ import { useAppDispatch, useAppSelector } from '@app/store';
 import { selectEffectiveTheme, updateSystemPreference } from '../model/actions';
 import { forceTriggerThemeChange, updateCurrentTheme } from '../shapes/neutral/ThemeShapeUtils';
 
+// Debounce helper function
+const debounce = (fn: Function, delay: number) => {
+    let timeoutId: NodeJS.Timeout;
+    return (...args: any[]) => {
+        clearTimeout(timeoutId);
+        timeoutId = setTimeout(() => fn(...args), delay);
+    };
+};
+
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const dispatch = useAppDispatch();
     const effectiveTheme = useAppSelector(selectEffectiveTheme);
+    const themeChangeTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
+    
+    // Create debounced theme change notifier
+    const debouncedThemeChange = React.useCallback(
+        debounce(() => {
+            console.debug(`ThemeProvider: Triggering force theme change notification`);
+            forceTriggerThemeChange();
+        }, 200),
+        []
+    );
     
     // Update body class for theme
     React.useEffect(() => {
@@ -21,14 +40,16 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         // Directly synchronize theme with ThemeShapeUtils
         updateCurrentTheme(effectiveTheme);
         
-        // Force a theme notification 200ms after the theme change to ensure all components are updated
-        // This helps with any race conditions in the rendering cycle
-        const timeoutId = setTimeout(() => {
-            forceTriggerThemeChange();
-        }, 200);
+        // Use debounced version to prevent multiple cascading updates
+        debouncedThemeChange();
         
-        return () => clearTimeout(timeoutId);
-    }, [effectiveTheme]);
+        return () => {
+            if (themeChangeTimeoutRef.current) {
+                clearTimeout(themeChangeTimeoutRef.current);
+                themeChangeTimeoutRef.current = null;
+            }
+        };
+    }, [effectiveTheme, debouncedThemeChange]);
     
     // Listen for system theme changes
     React.useEffect(() => {

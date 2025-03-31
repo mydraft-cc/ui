@@ -16,6 +16,15 @@ import { addThemeChangeListener, getCurrentTheme } from '@app/wireframes/shapes/
 import { selectEffectiveTheme } from '@app/wireframes/model/actions';
 import { useAppSelector } from '@app/store';
 
+// Debounce helper function
+const debounce = (fn: Function, delay: number) => {
+    let timeoutId: NodeJS.Timeout;
+    return (...args: any[]) => {
+        clearTimeout(timeoutId);
+        timeoutId = setTimeout(() => fn(...args), delay);
+    };
+};
+
 interface ShapeRendererProps {
     plugin: ShapePlugin;
 
@@ -52,6 +61,7 @@ export const ShapeRenderer = React.memo(React.forwardRef<HTMLDivElement, ShapeRe
     const [engine, setEngine] = React.useState<SvgEngine>();
     const item = React.useRef<EngineItem>();
     const [forceRender, setForceRender] = React.useState(0);
+    const renderPending = React.useRef(false);
 
     const viewBox = getViewBox(plugin, 
         desiredWidth,
@@ -77,37 +87,37 @@ export const ShapeRenderer = React.memo(React.forwardRef<HTMLDivElement, ShapeRe
         }
     }, [desiredHeight, desiredWidth, engine, viewBox]);
 
+    // Create a debounced version of the render function
+    const debouncedRerender = React.useCallback(
+        debounce(() => {
+            if (item.current && !renderPending.current) {
+                renderPending.current = true;
+                requestAnimationFrame(() => {
+                    renderShape();
+                    renderPending.current = false;
+                });
+            }
+        }, 50), 
+    []);
+
     // Force re-render when effective theme changes
     React.useEffect(() => {
         if (engine && item.current) {
-            // Schedule a re-render on the next frame to ensure theme has propagated
-            requestAnimationFrame(() => {
-                if (item.current) {
-                    // Force a replot with the same shape data
-                    renderShape();
-                }
-            });
+            debouncedRerender();
         }
-    }, [isDarkMode]);
+    }, [isDarkMode, debouncedRerender, engine]);
 
     // Add direct theme change listener as backup
     React.useEffect(() => {
         // Function to trigger a re-render from outside React's flow
         const triggerRerender = () => {
-            console.debug('ShapeRenderer: Theme changed, forcing re-render');
+            console.debug('ShapeRenderer: Theme changed, triggering debounced re-render');
             setForceRender(prev => prev + 1);
-            
-            // Schedule a re-render on the next frame
-            requestAnimationFrame(() => {
-                if (item.current) {
-                    // Force a replot with the same shape data
-                    renderShape();
-                }
-            });
+            debouncedRerender();
         };
         
         return addThemeChangeListener(triggerRerender);
-    }, []);
+    }, [debouncedRerender]);
 
     // Extract the shape rendering logic into a separate function
     const renderShape = React.useCallback(() => {
@@ -145,7 +155,9 @@ export const ShapeRenderer = React.memo(React.forwardRef<HTMLDivElement, ShapeRe
 
     // Call renderShape whenever dependencies change or forceRender changes
     React.useEffect(() => {
-        renderShape();
+        if (!renderPending.current) {
+            renderShape();
+        }
     }, [renderShape, forceRender]);
 
     return (
