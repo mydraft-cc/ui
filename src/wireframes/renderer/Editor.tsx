@@ -96,7 +96,6 @@ export const Editor = React.memo((props: EditorProps) => {
 
     const effectiveTheme = useAppSelector(selectEffectiveTheme);
     const isDarkMode = effectiveTheme === 'dark';
-    const canvasBackground = isDarkMode ? 'var(--color-canvas-background)' : 'var(--color-canvas-background)';
     
     const [layers, setLayers] = React.useState<Layers>();
     const renderWebGL = React.useRef(useWebGL);
@@ -106,7 +105,7 @@ export const Editor = React.memo((props: EditorProps) => {
     
     const doInit = React.useCallback((engine: Engine) => {
         // Might be called multiple times in dev mode!
-        if (!engine) {
+        if (!engine || layers) {
             return;
         }
 
@@ -114,10 +113,10 @@ export const Editor = React.memo((props: EditorProps) => {
         const backgroundRect = engine.layer('background').rect();
         backgroundRect.disable();
         
-        // Use the theme-aware background color
-        backgroundRect.fill(canvasBackground);
+        // Initial setup - theme-specific colors will be applied in useEffect
+        backgroundRect.fill('var(--color-canvas-background)'); 
         backgroundRect.strokeWidth(2);
-        backgroundRect.strokeColor(isDarkMode ? 'var(--color-border-dark)' : 'var(--color-border-dark)');
+        backgroundRect.strokeColor('var(--color-border-dark)');
 
         const renderMasterLayer = engine.layer('masterLayer');
         const renderMainLayer = engine.layer('parentLayer');
@@ -140,19 +139,25 @@ export const Editor = React.memo((props: EditorProps) => {
             renderMainLayer,
             renderMasterLayer,
         });
-    }, [canvasBackground, isDarkMode]);
+    }, [isDefaultView, overlayContext]);
 
     React.useEffect(() => {
         layers?.backgroundRect?.plot({ x: 0, y: 0, w: viewSize.x, h: viewSize.y });
     }, [layers, viewSize]);
 
+    // Effect to handle theme changes: Update background
     React.useEffect(() => {
-        // Update the background fill when the color changes
-        if (layers?.backgroundRect) {
-            layers.backgroundRect.fill(canvasBackground);
-            layers.backgroundRect.strokeColor(isDarkMode ? 'var(--color-border-dark)' : 'var(--color-border-dark)');
+        if (layers) {
+            // Determine the correct colors based *directly* on isDarkMode state
+            const canvasBgColor = isDarkMode ? '#252525' : '#ffffff'; 
+            const borderDarkColor = isDarkMode ? '#404040' : '#b8b8b8'; 
+
+            layers.backgroundRect?.fill(canvasBgColor);
+            layers.backgroundRect?.strokeColor(borderDarkColor);
+
+            // Invalidation calls removed as they don't exist on the layer type
         }
-    }, [layers, canvasBackground, isDarkMode]);
+    }, [isDarkMode, layers]); // Run when theme or layers change
 
     React.useEffect(() => {
         overlayContext.snapManager.prepare(diagram, viewSize);
@@ -176,7 +181,7 @@ export const Editor = React.memo((props: EditorProps) => {
         <div className='editor' ref={element => overlayContext.element = element}>
             {renderWebGL.current ? (
                 <div className='pixi'>
-                    <PixiCanvasView onInit={doInit} viewBox={viewBox} background={canvasBackground} />
+                    <PixiCanvasView onInit={doInit} viewBox={viewBox} />
                 </div>
             ) : (
                 <SvgCanvasView onInit={doInit} viewBox={viewBox} />
@@ -184,13 +189,17 @@ export const Editor = React.memo((props: EditorProps) => {
 
             {diagram && layers && (
                 <>
+                    {/* Re-added key prop to force remount on theme change */}
                     <ItemsLayer
+                        key={`master-${isDarkMode}`}
                         diagrams={masterDiagrams}
                         diagramLayer={layers.renderMasterLayer}
                         onRender={onRender}
                     />
 
+                    {/* Re-added key prop to force remount on theme change */}
                     <ItemsLayer
+                        key={`main-${isDarkMode}`}
                         diagrams={[diagram]}
                         diagramLayer={layers.renderMainLayer}
                         preview={renderPreview.current}
