@@ -7,7 +7,6 @@
 
 import { ConfigurableFactory, DefaultAppearance, Rect2, RenderContext, Shape, ShapePlugin } from '@app/wireframes/interface';
 import { CommonTheme } from './_theme';
-import { SHAPE_BACKGROUND_COLOR, SHAPE_TEXT_COLOR, getCurrentTheme } from './ThemeShapeUtils';
 
 const HEADER_BACKGROUND_COLOR = 'HEADER_BACKGROUND_COLOR';
 const HEADER_FOREGROUND_COLOR = 'HEADER_FOREGROUND_COLOR';
@@ -63,17 +62,9 @@ export class Grid implements ShapePlugin {
     }
 
     private createTexts(rows: string[][], cellWidth: number, cellHeight: number, ctx: RenderContext) {
-        const appearance = ctx.shape;
-        const isDark = getCurrentTheme() === 'dark';
-        const textColor = isDark ? SHAPE_TEXT_COLOR.DARK : CommonTheme.CONTROL_TEXT_COLOR;
-        const headerForegroundDefault = isDark ? 0xe0e0e0 : CommonTheme.CONTROL_TEXT_COLOR;
         let y = 0;
 
-        // Get header foreground color accounting for dark mode
-        let headerForeground = appearance.getAppearance(HEADER_FOREGROUND_COLOR);
-        if (headerForeground === CommonTheme.CONTROL_TEXT_COLOR) {
-            headerForeground = headerForegroundDefault;
-        }
+        const headerForeground = ctx.shape.getAppearance(HEADER_FOREGROUND_COLOR);
 
         for (const row of rows) {
             let x = 0;
@@ -89,11 +80,7 @@ export class Grid implements ShapePlugin {
                     if (isFirstRow) {
                         p.setForegroundColor(headerForeground);
                     } else {
-                        if (appearance.getAppearance(DefaultAppearance.FOREGROUND_COLOR) === CommonTheme.CONTROL_TEXT_COLOR) {
-                            p.setForegroundColor(textColor);
-                        } else {
-                            p.setForegroundColor(ctx.shape);
-                        }
+                        p.setForegroundColor(ctx.shape);
                     }
                 });
 
@@ -105,15 +92,7 @@ export class Grid implements ShapePlugin {
     }
 
     private createBorders(ctx: RenderContext, columnCount: number, cellWidth: number, h: number, rows: string[][], cellHeight: number, w: number) {
-        const appearance = ctx.shape;
-        const isDark = getCurrentTheme() === 'dark';
-        const borderDefault = isDark ? 0x505050 : CommonTheme.CONTROL_BORDER_COLOR;
-        
-        let stokeColor = appearance.getAppearance(DefaultAppearance.STROKE_COLOR);
-        if (stokeColor === CommonTheme.CONTROL_BORDER_COLOR) {
-            stokeColor = borderDefault;
-        }
-        
+        const stokeColor = ctx.shape.getAppearance(DefaultAppearance.STROKE_COLOR);
         const strokeWidth = ctx.shape.getAppearance(DefaultAppearance.STROKE_THICKNESS);
         const strokeHalf = strokeWidth * 0.5;
 
@@ -139,48 +118,21 @@ export class Grid implements ShapePlugin {
     }
 
     private createHeader(ctx: RenderContext, height: number) {
-        const appearance = ctx.shape;
-        const isDark = getCurrentTheme() === 'dark';
-        const borderDefault = isDark ? 0x505050 : CommonTheme.CONTROL_BORDER_COLOR;
-        const headerBgDefault = isDark ? 0x333333 : CommonTheme.CONTROL_BACKGROUND_COLOR;
         const rect = new Rect2(ctx.rect.x, ctx.rect.y, ctx.rect.w, height);
 
         ctx.renderer2.roundedRectangleTop(ctx.shape, CommonTheme.CONTROL_BORDER_RADIUS, rect, p => {
             if (!ctx.shape.getAppearance(HEADER_HIDDEN)) {
-                const headerBg = appearance.getAppearance(HEADER_BACKGROUND_COLOR);
-                if (headerBg === CommonTheme.CONTROL_BACKGROUND_COLOR) {
-                    p.setBackgroundColor(headerBgDefault);
-                } else {
-                    p.setBackgroundColor(headerBg);
-                }
+                p.setBackgroundColor(ctx.shape.getAppearance(HEADER_BACKGROUND_COLOR));
             }
 
-            if (appearance.getAppearance(DefaultAppearance.STROKE_COLOR) === CommonTheme.CONTROL_BORDER_COLOR) {
-                p.setStrokeColor(borderDefault);
-            } else {
-                p.setStrokeColor(ctx.shape);
-            }
+            p.setStrokeColor(ctx.shape);
         });
     }
 
     private createFrame(ctx: RenderContext) {
-        const appearance = ctx.shape;
-        const isDark = getCurrentTheme() === 'dark';
-        const bgColor = isDark ? SHAPE_BACKGROUND_COLOR.DARK : 0xffffff;
-        const borderDefault = isDark ? 0x505050 : CommonTheme.CONTROL_BORDER_COLOR;
-        
         ctx.renderer2.rectangle(ctx.shape, CommonTheme.CONTROL_BORDER_RADIUS, ctx.rect, p => {
-            if (appearance.getAppearance(DefaultAppearance.BACKGROUND_COLOR) === '#fff') {
-                p.setBackgroundColor(bgColor);
-            } else {
-                p.setBackgroundColor(ctx.shape);
-            }
-            
-            if (appearance.getAppearance(DefaultAppearance.STROKE_COLOR) === CommonTheme.CONTROL_BORDER_COLOR) {
-                p.setStrokeColor(borderDefault);
-            } else {
-                p.setStrokeColor(ctx.shape);
-            }
+            p.setBackgroundColor(ctx.shape);
+            p.setStrokeColor(ctx.shape);
         });
     }
 

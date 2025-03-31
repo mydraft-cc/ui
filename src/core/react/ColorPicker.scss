@@ -19,8 +19,8 @@ $size: 22px;
         & {
             @include circle($size);
             align-items: center;
-            background: $color-background;
-            border: 1px solid $color-border;
+            background: $color-white;
+            border: 1px solid $color-input;
             border-radius: $size;
             box-sizing: border-box;
             display: inline-flex;
@@ -39,7 +39,7 @@ $size: 22px;
         }
 
         &:hover {
-            border-color: $color-theme-blue;
+            border-color: #555;
         }
 
         &.selected {
@@ -55,25 +55,11 @@ $size: 22px;
 }
 
 .sketch-picker {
-    background: $color-background !important;
+    background: 'none' !important;
     border: 0 !important;
     border-radius: 0 !important;
     box-shadow: none !important;
     padding: 0 !important;
-    
-    input {
-        background-color: $color-background !important;
-        color: $color-text !important;
-        border-color: $color-border !important;
-        
-        &:focus {
-            border-color: $color-theme-blue !important;
-        }
-    }
-    
-    label {
-        color: $color-text !important;
-    }
 }
 
 span {

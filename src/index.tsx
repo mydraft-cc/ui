@@ -16,18 +16,15 @@ import { App } from './App';
 import { registerServiceWorker } from './registerServiceWorker';
 import './index.scss';
 import { store } from './store';
-import { ThemeProvider } from './wireframes/components/ThemeProvider';
 
 const Root = (
     <DndProvider backend={HTML5Backend}>
         <Provider store={store}>
-            <ThemeProvider>
-                <BrowserRouter>
-                    <Routes>
-                        <Route path='/:token?' element={<App />} />
-                    </Routes>
-                </BrowserRouter>
-            </ThemeProvider>
+            <BrowserRouter>
+                <Routes>
+                    <Route path='/:token?' element={<App />} />
+                </Routes>
+            </BrowserRouter>
         </Provider>
     </DndProvider>
 );

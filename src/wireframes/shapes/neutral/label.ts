@@ -6,11 +6,10 @@
 */
 import { ConstraintFactory, DefaultAppearance, RenderContext, ShapePlugin, ShapeSource } from '@app/wireframes/interface';
 import { CommonTheme } from './_theme';
-import { SHAPE_TEXT_COLOR, getCurrentTheme } from './ThemeShapeUtils';
 
 const DEFAULT_APPEARANCE = {
     [DefaultAppearance.FONT_SIZE]: CommonTheme.CONTROL_FONT_SIZE,
-    [DefaultAppearance.FOREGROUND_COLOR]: SHAPE_TEXT_COLOR.LIGHT,
+    [DefaultAppearance.FOREGROUND_COLOR]: CommonTheme.CONTROL_TEXT_COLOR,
     [DefaultAppearance.TEXT]: 'Label',
 };
 
@@ -47,17 +46,8 @@ export class Label implements ShapePlugin {
     }
 
     public render(ctx: RenderContext) {
-        const appearance = ctx.shape;
-        const isDark = getCurrentTheme() === 'dark';
-        const textColor = isDark ? SHAPE_TEXT_COLOR.DARK : SHAPE_TEXT_COLOR.LIGHT;
-        
         ctx.renderer2.text(ctx.shape, ctx.rect, p => {
-            // Use theme-aware text color if the shape has default color
-            if (appearance.getAppearance(DefaultAppearance.FOREGROUND_COLOR) === SHAPE_TEXT_COLOR.LIGHT) {
-                p.setForegroundColor(textColor);
-            } else {
-                p.setForegroundColor(ctx.shape);
-            }
+            p.setForegroundColor(ctx.shape);
         }, true);
     }
 }

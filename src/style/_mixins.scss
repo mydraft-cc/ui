@@ -8,21 +8,7 @@
 
     &:hover,
     &:focus {
-        @if $color == $color-theme-blue {
-            color: $color-theme-blue-darker;
-        } @else if $color == $color-theme-green {
-            color: $color-theme-green-darker;
-        } @else if $color == $color-theme-orange {
-            color: $color-theme-orange-darker;
-        } @else if $color == $color-theme-error {
-            color: $color-theme-error-darker;
-        } @else if $color == $color-theme-info {
-            color: $color-theme-info-dark;
-        } @else if $color == $color-theme-secondary {
-            color: $color-theme-secondary-dark;
-        } @else {
-            opacity: 0.8;
-        }
+        color: darken($color, 10%);
     }
 }
 
@@ -47,30 +33,16 @@
 
     &:focus,
     &.focus {
-        box-shadow: 0 0 0 $btn-focus-width $color-focus-shadow;
+        box-shadow: 0 0 0 $btn-focus-width rgba($color, .5);
     }
 
     &:active,
     &:hover {
-        @if $color == $color-theme-blue {
-            color: $color-theme-blue-darker;
-        } @else if $color == $color-theme-green {
-            color: $color-theme-green-darker;
-        } @else if $color == $color-theme-orange {
-            color: $color-theme-orange-darker;
-        } @else if $color == $color-theme-error {
-            color: $color-theme-error-darker;
-        } @else if $color == $color-theme-info {
-            color: $color-theme-info-dark;
-        } @else if $color == $color-theme-secondary {
-            color: $color-theme-secondary-dark;
-        } @else {
-            opacity: 0.8;
-        }
+        color: darken($color, 15%);
     }
 }
 
-@mixin scrollbars($size, $foreground-color, $background-color: transparent) {
+@mixin scrollbars($size, $foreground-color, $background-color: mix($foreground-color, white, 50%)) {
     &::-webkit-scrollbar {
         height: $size;
         width:  $size;
@@ -208,20 +180,12 @@
     }
 }
 
-@mixin box-shadow-outer($x-axis: 0, $y-axis: 1px, $blur: 2px, $alpha: null) {
-    @if $alpha == null {
-        box-shadow: $x-axis $y-axis $blur $color-shadow-outer;
-    } @else {
-        box-shadow: $x-axis $y-axis $blur rgba(0, 0, 0, $alpha);
-    }
+@mixin box-shadow-outer($x-axis: 0, $y-axis: 1px, $blur: 2px, $alpha: .1) {
+    box-shadow: $x-axis $y-axis $blur rgba(0, 0, 0, $alpha);
 }
 
-@mixin box-shadow-inner($x-axis: 0, $y-axis: 1px, $blur: 2px, $alpha: null) {
-    @if $alpha == null {
-        box-shadow: inset $x-axis $y-axis $blur $color-shadow-inner;
-    } @else {
-        box-shadow: inset $x-axis $y-axis $blur rgba(0, 0, 0, $alpha);
-    }
+@mixin box-shadow-inner($x-axis: 0, $y-axis: 1px, $blur: 2px, $alpha: .1) {
+    box-shadow: inset $x-axis $y-axis $blur rgba(0, 0, 0, $alpha);
 }
 
 @mixin border-radius ($radius: 4px) {

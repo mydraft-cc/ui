@@ -6,12 +6,12 @@
 */
 
 import { DefaultAppearance, Rect2, RenderContext, ShapePlugin } from '@app/wireframes/interface';
-import { SHAPE_BACKGROUND_COLOR, getCurrentTheme } from './ThemeShapeUtils';
+import { CommonTheme } from './_theme';
 
 const OFFSET = { left: 2, top: 30, right: 2, bottom: 1 };
 
 const DEFAULT_APPEARANCE = {
-    [DefaultAppearance.BACKGROUND_COLOR]: SHAPE_BACKGROUND_COLOR.LIGHT,
+    [DefaultAppearance.BACKGROUND_COLOR]: 0xFFFFFF,
     [DefaultAppearance.TEXT_DISABLED]: true,
 };
 
@@ -25,7 +25,7 @@ export class Window implements ShapePlugin {
     }
 
     public defaultSize() {
-        return { x: 320, y: 240 };
+        return { x: 800, y: 600 };
     }
 
     public previewSize() {
@@ -38,48 +38,39 @@ export class Window implements ShapePlugin {
 
     public render(ctx: RenderContext) {
         this.createWindow(ctx);
-        this.createHeader(ctx);
-        this.createButtons(ctx);
+
+        if (ctx.rect.width >= 50 && ctx.rect.height > 200) {
+            this.createInner(ctx);            
+            this.createButtons(ctx);           
+        }
     }
 
     private createWindow(ctx: RenderContext) {
         const windowRect = new Rect2(-OFFSET.left, -OFFSET.top, ctx.rect.width + OFFSET.left + OFFSET.right, ctx.rect.height + OFFSET.top + OFFSET.bottom);
-        const isDark = getCurrentTheme() === 'dark';
-        const bgColor = isDark ? SHAPE_BACKGROUND_COLOR.DARK : SHAPE_BACKGROUND_COLOR.LIGHT;
-        const borderColor = isDark ? 0x505050 : 0xC0C0C0;
 
         ctx.renderer2.rectangle(1, 0, windowRect, p => {
-            if (ctx.shape.getAppearance(DefaultAppearance.BACKGROUND_COLOR) === SHAPE_BACKGROUND_COLOR.LIGHT) {
-                p.setBackgroundColor(bgColor);
-            } else {
-                p.setBackgroundColor(ctx.shape);
-            }
-            p.setStrokeColor(borderColor);
+            p.setBackgroundColor(CommonTheme.CONTROL_BACKGROUND_COLOR);
+            p.setStrokeColor(CommonTheme.CONTROL_BORDER_COLOR);
         });
     }
 
-    private createHeader(ctx: RenderContext) {
-        const headerRect = new Rect2(-OFFSET.left, -OFFSET.top, ctx.rect.width + OFFSET.left + OFFSET.right, OFFSET.top);
-        const isDark = getCurrentTheme() === 'dark';
-        const headerColor = isDark ? 0x202020 : 0x303030;
-
-        ctx.renderer2.rectangle(0, 0, headerRect, p => {
-            p.setBackgroundColor(headerColor);
+    private createInner(ctx: RenderContext) {
+        ctx.renderer2.rectangle(0, 0, ctx.rect, p => {
+            p.setBackgroundColor(ctx.shape);
         });
-    }
+    }    
 
     private createButtons(ctx: RenderContext) {
-        const buttonSize = 12;
-        const buttonOffset = 6;
-        const buttonMargin = 8;
+        ctx.renderer2.ellipse(0, new Rect2(10, -20, 12, 12), p => {
+            p.setBackgroundColor(0xff0000);
+        });
 
-        for (let i = 0; i < 3; i++) {
-            const colorOffset = (i * 40);
-            const buttonRect = new Rect2(-OFFSET.left + buttonMargin + (i * (buttonSize + buttonOffset)), -OFFSET.top + (OFFSET.top - buttonSize) * 0.5 - 1, buttonSize, buttonSize);
+        ctx.renderer2.ellipse(0, new Rect2(30, -20, 12, 12), p => {
+            p.setBackgroundColor(0xffff00);
+        });
 
-            ctx.renderer2.ellipse(0, buttonRect, p => {
-                p.setBackgroundColor(0xE05030 + colorOffset);
-            });
-        }
+        ctx.renderer2.ellipse(0, new Rect2(50, -20, 12, 12), p => {
+            p.setBackgroundColor(0x00ff00);
+        });
     }
 }

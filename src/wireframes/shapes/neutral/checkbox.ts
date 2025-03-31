@@ -7,7 +7,6 @@
 
 import { ConfigurableFactory, ConstraintFactory, DefaultAppearance, Rect2, RenderContext, ShapePlugin } from '@app/wireframes/interface';
 import { CommonTheme } from './_theme';
-import { SHAPE_TEXT_COLOR, getCurrentTheme } from './ThemeShapeUtils';
 
 const STATE = 'STATE';
 const STATE_NORMAL = 'Normal';
@@ -64,27 +63,12 @@ export class Checkbox implements ShapePlugin {
         const s = BOX_SIZE;
         const x = BOX_MARGIN;
         const y = (ctx.rect.height - s) * 0.5;
-        const appearance = ctx.shape;
+
         const bounds = new Rect2(x, y, s, s);
-        const isDark = getCurrentTheme() === 'dark';
-        
-        // Get theme-aware colors
-        const controlBg = isDark ? 0x333333 : CommonTheme.CONTROL_BACKGROUND_COLOR;
-        const controlBorder = isDark ? 0x505050 : CommonTheme.CONTROL_BORDER_COLOR;
 
         ctx.renderer2.rectangle(ctx.shape, 0, bounds, p => {
-            // Use theme-aware colors if the shape has default colors
-            if (appearance.getAppearance(DefaultAppearance.BACKGROUND_COLOR) === CommonTheme.CONTROL_BACKGROUND_COLOR) {
-                p.setBackgroundColor(controlBg);
-            } else {
-                p.setBackgroundColor(ctx.shape);
-            }
-            
-            if (appearance.getAppearance(DefaultAppearance.STROKE_COLOR) === CommonTheme.CONTROL_BORDER_COLOR) {
-                p.setStrokeColor(controlBorder);
-            } else {
-                p.setStrokeColor(ctx.shape);
-            }
+            p.setStrokeColor(ctx.shape);
+            p.setBackgroundColor(ctx.shape);
         });
 
         const state = ctx.shape.getAppearance(STATE);
@@ -106,17 +90,7 @@ export class Checkbox implements ShapePlugin {
     private createText(ctx: RenderContext) {
         const w = ctx.rect.width - TEXT_POSITION_X;
         const h = ctx.rect.height;
-        const appearance = ctx.shape;
-        const isDark = getCurrentTheme() === 'dark';
-        const textColor = isDark ? 0xe0e0e0 : CommonTheme.CONTROL_TEXT_COLOR;
 
-        ctx.renderer2.text(ctx.shape, new Rect2(TEXT_POSITION_X, 0, w, h), p => {
-            // Use theme-aware text color if the shape has default color
-            if (appearance.getAppearance(DefaultAppearance.FOREGROUND_COLOR) === CommonTheme.CONTROL_TEXT_COLOR) {
-                p.setForegroundColor(textColor);
-            } else {
-                p.setForegroundColor(ctx.shape);
-            }
-        });
+        ctx.renderer2.text(ctx.shape, new Rect2(TEXT_POSITION_X, 0, w, h));
     }
 }

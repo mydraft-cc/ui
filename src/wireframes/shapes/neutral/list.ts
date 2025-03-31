@@ -7,7 +7,6 @@
 
 import { ConfigurableFactory, DefaultAppearance, Rect2, RenderContext, Shape, ShapePlugin } from '@app/wireframes/interface';
 import { CommonTheme } from './_theme';
-import { SHAPE_BACKGROUND_COLOR, SHAPE_TEXT_COLOR, getCurrentTheme } from './ThemeShapeUtils';
 
 const ACCENT_COLOR = 'ACCENT_COLOR';
 const ITEM_SIZE_FIXED = 'ITEM_SIZE_FIXED';
@@ -84,55 +83,23 @@ export class List implements ShapePlugin {
     }
 
     private createSelection(ctx: RenderContext, rect: Rect2) {
-        const appearance = ctx.shape;
-        const isDark = getCurrentTheme() === 'dark';
-        
-        // Adjust accent color for dark theme
-        let accentColorValue = appearance.getAppearance(ACCENT_COLOR);
-        if (isDark && accentColorValue === 0x2171b5) {
-            accentColorValue = 0x3182bd; // Slightly brighter blue for dark theme
-        }
-        
         ctx.renderer2.rectangle(ctx.shape, 0, rect, p => {
-            p.setBackgroundColor(accentColorValue);
-            p.setStrokeColor(accentColorValue);
+            p.setBackgroundColor(ctx.shape.getAppearance(ACCENT_COLOR));
+            p.setStrokeColor(ctx.shape.getAppearance(ACCENT_COLOR));
         });
     }
 
     private createText(ctx: RenderContext, rect: Rect2, color: any, text: string) {
-        const appearance = ctx.shape;
-        const isDark = getCurrentTheme() === 'dark';
-        const textColor = isDark ? SHAPE_TEXT_COLOR.DARK : CommonTheme.CONTROL_TEXT_COLOR;
-        
         ctx.renderer2.text(ctx.shape, rect, p => {
-            // If this is not a selected item and using default text color
-            if (color !== 0xffffff && appearance.getAppearance(DefaultAppearance.FOREGROUND_COLOR) === CommonTheme.CONTROL_TEXT_COLOR) {
-                p.setForegroundColor(textColor);
-            } else {
-                p.setForegroundColor(color);
-            }
+            p.setForegroundColor(color);
             p.setText(text);
         });
     }
 
     private createBorder(ctx: RenderContext) {
-        const appearance = ctx.shape;
-        const isDark = getCurrentTheme() === 'dark';
-        const bgColor = isDark ? SHAPE_BACKGROUND_COLOR.DARK : 0xffffff;
-        const controlBorder = isDark ? 0x505050 : CommonTheme.CONTROL_BORDER_COLOR;
-        
         ctx.renderer2.rectangle(ctx.shape, CommonTheme.CONTROL_BORDER_RADIUS, ctx.rect, p => {
-            if (appearance.getAppearance(DefaultAppearance.STROKE_COLOR) === CommonTheme.CONTROL_BORDER_COLOR) {
-                p.setStrokeColor(controlBorder);
-            } else {
-                p.setStrokeColor(ctx.shape);
-            }
-            
-            if (appearance.getAppearance(DefaultAppearance.BACKGROUND_COLOR) === 0xffffff) {
-                p.setBackgroundColor(bgColor);
-            } else {
-                p.setBackgroundColor(ctx.shape);
-            }
+            p.setStrokeColor(ctx.shape);
+            p.setBackgroundColor(ctx.shape);
         });
     }
 

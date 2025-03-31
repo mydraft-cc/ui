@@ -7,7 +7,6 @@
 
 import { DefaultAppearance, RenderContext, ShapePlugin } from '@app/wireframes/interface';
 import { CommonTheme } from './_theme';
-import { SHAPE_BACKGROUND_COLOR, SHAPE_TEXT_COLOR, getCurrentTheme } from './ThemeShapeUtils';
 
 const DEFAULT_APPEARANCE = {
     [DefaultAppearance.BACKGROUND_COLOR]: CommonTheme.CONTROL_BACKGROUND_COLOR,
@@ -33,48 +32,20 @@ export class Button implements ShapePlugin {
     }
 
     public render(ctx: RenderContext) {
-        // Get current theme state
-        const isDark = getCurrentTheme() === 'dark';
-        
-        // Get theme-aware colors
-        const controlBg = isDark ? 0x333333 : CommonTheme.CONTROL_BACKGROUND_COLOR;
-        const controlBorder = isDark ? 0x505050 : CommonTheme.CONTROL_BORDER_COLOR;
-        const textColor = isDark ? 0xe0e0e0 : CommonTheme.CONTROL_TEXT_COLOR;
-        const borderRadius = CommonTheme.CONTROL_BORDER_RADIUS;
-        
-        this.createBorder(ctx, controlBg, controlBorder, borderRadius);
-        this.createText(ctx, textColor);
+        this.createBorder(ctx);
+        this.createText(ctx);
     }
 
-    private createBorder(ctx: RenderContext, controlBg: number, controlBorder: number, borderRadius: number) {
-        const appearance = ctx.shape;
-        
-        ctx.renderer2.rectangle(ctx.shape, borderRadius, ctx.rect, p => {
-            // Use theme-aware colors if the shape has default colors
-            if (appearance.getAppearance(DefaultAppearance.BACKGROUND_COLOR) === CommonTheme.CONTROL_BACKGROUND_COLOR) {
-                p.setBackgroundColor(controlBg);
-            } else {
-                p.setBackgroundColor(ctx.shape);
-            }
-            
-            if (appearance.getAppearance(DefaultAppearance.STROKE_COLOR) === CommonTheme.CONTROL_BORDER_COLOR) {
-                p.setStrokeColor(controlBorder);
-            } else {
-                p.setStrokeColor(ctx.shape);
-            }
+    private createBorder(ctx: RenderContext) {
+        ctx.renderer2.rectangle(ctx.shape, CommonTheme.CONTROL_BORDER_RADIUS, ctx.rect, p => {
+            p.setBackgroundColor(ctx.shape);
+            p.setStrokeColor(ctx.shape);
         });
     }
 
-    private createText(ctx: RenderContext, textColor: number) {
-        const appearance = ctx.shape;
-        
+    private createText(ctx: RenderContext) {
         ctx.renderer2.text(ctx.shape, ctx.rect.deflate(14, 4), p => {
-            // Use theme-aware colors if the shape has default colors
-            if (appearance.getAppearance(DefaultAppearance.FOREGROUND_COLOR) === CommonTheme.CONTROL_TEXT_COLOR) {
-                p.setForegroundColor(textColor);
-            } else {
-                p.setForegroundColor(ctx.shape);
-            }
+            p.setForegroundColor(ctx.shape);
         });
     }
 }

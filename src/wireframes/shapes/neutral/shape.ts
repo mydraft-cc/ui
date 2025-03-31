@@ -7,7 +7,6 @@
 
 import { ConfigurableFactory, DefaultAppearance, RenderContext, ShapePlugin, ShapeProperties } from '@app/wireframes/interface';
 import { CommonTheme } from './_theme';
-import { SHAPE_BACKGROUND_COLOR, SHAPE_TEXT_COLOR, getCurrentTheme } from './ThemeShapeUtils';
 
 const SHAPE = 'SHAPE';
 const SHAPE_RECTANGLE = 'Rectangle';
@@ -90,35 +89,13 @@ export class Shape implements ShapePlugin {
     }
 
     private styleShape(ctx: RenderContext, p: ShapeProperties) {
-        const appearance = ctx.shape;
-        const isDark = getCurrentTheme() === 'dark';
-        const bgColor = isDark ? SHAPE_BACKGROUND_COLOR.DARK : 0xFFFFFF;
-        const controlBorder = isDark ? 0x505050 : CommonTheme.CONTROL_BORDER_COLOR;
-        
-        if (appearance.getAppearance(DefaultAppearance.STROKE_COLOR) === CommonTheme.CONTROL_BORDER_COLOR) {
-            p.setStrokeColor(controlBorder);
-        } else {
-            p.setStrokeColor(ctx.shape);
-        }
-        
-        if (appearance.getAppearance(DefaultAppearance.BACKGROUND_COLOR) === 0xFFFFFF) {
-            p.setBackgroundColor(bgColor);
-        } else {
-            p.setBackgroundColor(ctx.shape);
-        }
+        p.setStrokeColor(ctx.shape);
+        p.setBackgroundColor(ctx.shape);
     }
 
     private createText(ctx: RenderContext) {
-        const appearance = ctx.shape;
-        const isDark = getCurrentTheme() === 'dark';
-        const textColor = isDark ? SHAPE_TEXT_COLOR.DARK : 0;
-        
         ctx.renderer2.text(ctx.shape, ctx.rect.deflate(10, 10), p => {
-            if (appearance.getAppearance(DefaultAppearance.FOREGROUND_COLOR) === 0) {
-                p.setForegroundColor(textColor);
-            } else {
-                p.setForegroundColor(ctx.shape);
-            }
+            p.setForegroundColor(ctx.shape);
         }, true);
     }
 }

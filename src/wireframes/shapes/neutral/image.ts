@@ -7,7 +7,6 @@
 
 import { ConfigurableFactory, DefaultAppearance, RenderContext, ShapePlugin } from '@app/wireframes/interface';
 import { CommonTheme } from './_theme';
-import { SHAPE_BACKGROUND_COLOR, getCurrentTheme } from './ThemeShapeUtils';
 
 const IMAGE_URL = 'URL';
 const IMAGE_ASPECT_RATIO = 'ASPECT_RATIO';
@@ -55,9 +54,6 @@ export class Image implements ShapePlugin {
     }
 
     private createCross(ctx: RenderContext) {
-        const appearance = ctx.shape;
-        const isDark = getCurrentTheme() === 'dark';
-        const controlBorder = isDark ? 0x505050 : CommonTheme.CONTROL_BORDER_COLOR;
         const l = ctx.rect.left + 0.5;
         const r = ctx.rect.right - 0.5;
         const t = ctx.rect.top + 0.5;
@@ -66,33 +62,15 @@ export class Image implements ShapePlugin {
         const path = `M${l},${t} L${r},${b} M${l},${b} L${r},${t}`;
 
         ctx.renderer2.path(ctx.shape, path, p => {
-            if (appearance.getAppearance(DefaultAppearance.STROKE_COLOR) === CommonTheme.CONTROL_BORDER_COLOR) {
-                p.setStrokeColor(controlBorder);
-            } else {
-                p.setStrokeColor(ctx.shape);
-            }
+            p.setStrokeColor(ctx.shape);
             p.setStrokeStyle('butt', 'butt');
         });
     }
 
     private createBorder(ctx: RenderContext) {
-        const appearance = ctx.shape;
-        const isDark = getCurrentTheme() === 'dark';
-        const bgColor = isDark ? SHAPE_BACKGROUND_COLOR.DARK : 0xFFFFFF;
-        const controlBorder = isDark ? 0x505050 : CommonTheme.CONTROL_BORDER_COLOR;
-        
         ctx.renderer2.rectangle(ctx.shape, 0, ctx.rect, p => {
-            if (appearance.getAppearance(DefaultAppearance.BACKGROUND_COLOR) === 0xFFFFFF) {
-                p.setBackgroundColor(bgColor);
-            } else {
-                p.setBackgroundColor(ctx.shape);
-            }
-            
-            if (appearance.getAppearance(DefaultAppearance.STROKE_COLOR) === CommonTheme.CONTROL_BORDER_COLOR) {
-                p.setStrokeColor(controlBorder);
-            } else {
-                p.setStrokeColor(ctx.shape);
-            }
+            p.setBackgroundColor(ctx.shape);
+            p.setStrokeColor(ctx.shape);
         });
     }
 }

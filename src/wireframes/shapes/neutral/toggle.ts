@@ -8,7 +8,6 @@
 // tslint:disable: prefer-const
 
 import { ConfigurableFactory, DefaultAppearance, Rect2, RenderContext, ShapePlugin, Vec2 } from '@app/wireframes/interface';
-import { getCurrentTheme } from './ThemeShapeUtils';
 
 const STATE = 'STATE';
 const STATE_NORMAL = 'Normal';
@@ -46,41 +45,28 @@ export class Toggle implements ShapePlugin {
     }
 
     public render(ctx: RenderContext) {
-        const appearance = ctx.shape;
-        const isDark = getCurrentTheme() === 'dark';
         const border = ctx.shape.strokeThickness;
+
         const radius = Math.min(ctx.rect.width, ctx.rect.height) * 0.5;
+
         const isUnchecked = ctx.shape.getAppearance(STATE) === STATE_NORMAL;
+
         const circleY = ctx.rect.height * 0.5;
         const circleX = isUnchecked ? radius : ctx.rect.width - radius;
+
         const circleCenter = new Vec2(circleX, circleY);
         const circleSize = radius - border;
-        
-        // Theme-aware colors
-        const toggleBgNormal = isDark ? 0x555555 : 0xbdbdbd;
-        const toggleFgActive = isDark ? 0x32a35a : 0x238b45;
-        const toggleCircle = isDark ? 0xe0e0e0 : 0xffffff;
-        
-        // Use theme-aware colors if default values are used
-        const bgColor = appearance.getAppearance(DefaultAppearance.BACKGROUND_COLOR) === 0xbdbdbd ? 
-            toggleBgNormal : appearance.getAppearance(DefaultAppearance.BACKGROUND_COLOR);
-            
-        const fgColor = appearance.getAppearance(DefaultAppearance.FOREGROUND_COLOR) === 0x238b45 ? 
-            toggleFgActive : appearance.getAppearance(DefaultAppearance.FOREGROUND_COLOR);
-            
-        const strokeColor = appearance.getAppearance(DefaultAppearance.STROKE_COLOR) === 0xffffff ? 
-            toggleCircle : appearance.getAppearance(DefaultAppearance.STROKE_COLOR);
 
-        const barColor = isUnchecked ? bgColor : fgColor;
+        const barColor = isUnchecked ? ctx.shape : ctx.shape.foregroundColor;
 
         // Pill
         ctx.renderer2.rectangle(0, radius, ctx.rect, p => {
             p.setBackgroundColor(barColor);
         });
 
-        // Circle
+        // Circle.
         ctx.renderer2.ellipse(0, Rect2.fromCenter(circleCenter, circleSize), p => {
-            p.setBackgroundColor(strokeColor);
+            p.setBackgroundColor(ctx.shape.strokeColor);
         });
     }
 }

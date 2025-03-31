@@ -7,7 +7,6 @@
 
 import { Constraint, DefaultAppearance, RenderContext, Shape, ShapePlugin, Vec2 } from '@app/wireframes/interface';
 import { CommonTheme } from './_theme';
-import { getCurrentTheme } from './ThemeShapeUtils';
 
 const DEFAULT_APPEARANCE = {
     [DefaultAppearance.STROKE_COLOR]: CommonTheme.CONTROL_BORDER_COLOR,
@@ -55,17 +54,8 @@ export class HorizontalLine implements ShapePlugin {
     }
 
     public render(ctx: RenderContext) {
-        const appearance = ctx.shape;
-        const isDark = getCurrentTheme() === 'dark';
-        const borderColor = isDark ? 0x505050 : CommonTheme.CONTROL_BORDER_COLOR;
-        
         ctx.renderer2.rectangle(0, 0, ctx.rect, p => {
-            // Use theme-aware border color if the shape has default color
-            if (appearance.getAppearance(DefaultAppearance.STROKE_COLOR) === CommonTheme.CONTROL_BORDER_COLOR) {
-                p.setBackgroundColor(borderColor);
-            } else {
-                p.setBackgroundColor(ctx.shape.strokeColor);
-            }
+            p.setBackgroundColor(ctx.shape.strokeColor);
         });
     }
 }

@@ -7,7 +7,6 @@
 
 import { Color, ConfigurableFactory, DefaultAppearance, Rect2, RenderContext, Shape, ShapePlugin, ShapeProperties } from '@app/wireframes/interface';
 import { CommonTheme } from './_theme';
-import { SHAPE_TEXT_COLOR, getCurrentTheme } from './ThemeShapeUtils';
 
 const ACCENT_COLOR = 'ACCENT_COLOR';
 
@@ -42,18 +41,6 @@ export class ButtonBar implements ShapePlugin {
     }
 
     public render(ctx: RenderContext) {
-        const appearance = ctx.shape;
-        const isDark = getCurrentTheme() === 'dark';
-        const controlBg = isDark ? 0x333333 : CommonTheme.CONTROL_BACKGROUND_COLOR;
-        const controlBorder = isDark ? 0x505050 : CommonTheme.CONTROL_BORDER_COLOR;
-        const textColor = isDark ? SHAPE_TEXT_COLOR.DARK : CommonTheme.CONTROL_TEXT_COLOR;
-        
-        // Adjust accent color for dark theme
-        let accentColorValue = appearance.getAppearance(ACCENT_COLOR);
-        if (isDark && accentColorValue === 0x2171b5) {
-            accentColorValue = 0x3182bd; // Slightly brighter blue for dark theme
-        }
-        
         const w = ctx.rect.width;
         const h = ctx.rect.height;
 
@@ -62,7 +49,7 @@ export class ButtonBar implements ShapePlugin {
         const itemWidth = Math.floor(w / parts.length);
         const itemHeight = h;
 
-        const accentColor = Color.fromValue(accentColorValue);
+        const accentColor = Color.fromValue(ctx.shape.getAppearance(ACCENT_COLOR));
 
         const renderButtons = (selected: boolean) => {
             let x = 0;
@@ -80,19 +67,19 @@ export class ButtonBar implements ShapePlugin {
 
                     if (parts.length === 1) {
                         ctx.renderer2.rectangle(ctx.shape, CommonTheme.CONTROL_BORDER_RADIUS, bounds, p => {
-                            this.stylePart(part, ctx, accentColor, p, controlBg, controlBorder);
+                            this.stylePart(part, ctx, accentColor, p);
                         });
                     } else if (isFirst) {
                         ctx.renderer2.roundedRectangleLeft(ctx.shape, CommonTheme.CONTROL_BORDER_RADIUS, bounds, p => {
-                            this.stylePart(part, ctx, accentColor, p, controlBg, controlBorder);
+                            this.stylePart(part, ctx, accentColor, p);
                         });
                     } else if (isLast) {
                         ctx.renderer2.roundedRectangleRight(ctx.shape, CommonTheme.CONTROL_BORDER_RADIUS, bounds, p => {
-                            this.stylePart(part, ctx, accentColor, p, controlBg, controlBorder);
+                            this.stylePart(part, ctx, accentColor, p);
                         });
                     } else {
                         ctx.renderer2.rectangle(ctx.shape, 0, bounds, p => {
-                            this.stylePart(part, ctx, accentColor, p, controlBg, controlBorder);
+                            this.stylePart(part, ctx, accentColor, p);
                         });
                     }
 
@@ -105,11 +92,7 @@ export class ButtonBar implements ShapePlugin {
                                 p.setForegroundColor(0xffffff);
                             }
                         } else {
-                            if (appearance.getAppearance(DefaultAppearance.FOREGROUND_COLOR) === CommonTheme.CONTROL_TEXT_COLOR) {
-                                p.setForegroundColor(textColor);
-                            } else {
-                                p.setForegroundColor(ctx.shape);
-                            }
+                            p.setForegroundColor(ctx.shape);
                         }
 
                         p.setText(part.text);
@@ -124,24 +107,13 @@ export class ButtonBar implements ShapePlugin {
         renderButtons(true);
     }
 
-    private stylePart(part: Parsed, ctx: RenderContext, accentColor: Color, p: ShapeProperties, controlBg: number, controlBorder: number) {
-        const appearance = ctx.shape;
-        
+    private stylePart(part: Parsed, ctx: RenderContext, accentColor: Color, p: ShapeProperties) {
         if (part.selected) {
             p.setBackgroundColor(accentColor);
             p.setStrokeColor(accentColor);
         } else {
-            if (appearance.getAppearance(DefaultAppearance.BACKGROUND_COLOR) === CommonTheme.CONTROL_BACKGROUND_COLOR) {
-                p.setBackgroundColor(controlBg);
-            } else {
-                p.setBackgroundColor(ctx.shape);
-            }
-            
-            if (appearance.getAppearance(DefaultAppearance.STROKE_COLOR) === CommonTheme.CONTROL_BORDER_COLOR) {
-                p.setStrokeColor(controlBorder);
-            } else {
-                p.setStrokeColor(ctx.shape);
-            }
+            p.setBackgroundColor(ctx.shape);
+            p.setStrokeColor(ctx.shape);
         }
     }
 
