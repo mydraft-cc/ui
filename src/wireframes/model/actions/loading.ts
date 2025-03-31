@@ -79,7 +79,11 @@ export function loadingMiddleware(): Middleware {
         try {
             const result = next(action);
 
-            if (loadDiagramFromServer.fulfilled.match(action)) {
+            if (newDiagram.match(action) ) {
+                // Navigation is now handled by React Router
+            } else if (loadDiagramFromServer.fulfilled.match(action)) {
+                // Navigation is now handled by React Router
+                
                 store.dispatch(loadDiagramInternal(action.payload.stored, action.meta.requestId));
             } else if (loadDiagramFromFile.fulfilled.match(action)) {
                 store.dispatch(loadDiagramInternal(action.payload.stored, action.meta.requestId));
@@ -88,6 +92,8 @@ export function loadingMiddleware(): Middleware {
             } else if (loadDiagramInternal.match(action)) {
                 store.dispatch(showToast(texts.common.loadingDiagramDone, 'success', action.payload.requestId));
             } else if (saveDiagramToServer.fulfilled.match(action)) {
+                // Navigation is now handled by React Router
+
                 saveRecentDiagrams((store.getState() as LoadingStateInStore).loading.recentDiagrams);
 
                 const content = action.payload.update ? 

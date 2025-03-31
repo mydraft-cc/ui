@@ -234,6 +234,7 @@ describe('SVGRenderer', () => {
         });
 
         it('should render text', () => {
+            // Skip in jsdom environment
             if (isJsdom) {
                 return;
             }
@@ -379,6 +380,7 @@ describe('SVGRenderer', () => {
         });
 
         it('should render text from shape', () => {
+            // Skip in jsdom environment
             if (isJsdom) {
                 return;
             }
@@ -405,6 +407,7 @@ describe('SVGRenderer', () => {
 
     describe('Utils', () => {
         it('should calculate text size', () => {
+            // Skip in jsdom environment
             if (isJsdom) {
                 return;
             }

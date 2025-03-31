@@ -10,29 +10,12 @@ import * as React from 'react';
 import { texts } from '@app/texts';
 import { DefaultAppearance, getPageLink, getPageLinkId, isPageLink } from '@app/wireframes/interface';
 import { getDiagramId, getPageName, getSelection, useStore } from '@app/wireframes/model';
-import { Diagram } from '@app/wireframes/model/diagram';
-import { EditorStateInStore } from '@app/wireframes/model/editor-state';
-import { createSelector } from 'reselect';
 import { useAppearance } from './../actions';
 import { Text } from './Text';
 
-// Create base selector
-const getEditorPresent = (state: EditorStateInStore) => state.editor.present;
-
-// Create memoized selectors
-const selectDiagramsMap = createSelector(
-    getEditorPresent,
-    present => present.diagrams
-);
-
-const selectDiagramsOrdered = createSelector(
-    getEditorPresent,
-    present => present.orderedDiagrams
-);
-
 export const MoreProperties = React.memo(() => {
-    const diagramsMap = useStore(selectDiagramsMap);
-    const diagramsOrdered = useStore(selectDiagramsOrdered);
+    const diagramsMap = useStore(x => x.editor.present.diagrams);
+    const diagramsOrdered = useStore(x => x.editor.present.orderedDiagrams);
     const selectedDiagramId = useStore(getDiagramId);
     const selectionSet = useStore(getSelection);
 
@@ -67,8 +50,8 @@ export const MoreProperties = React.memo(() => {
                             <Select disabled={link.empty} value={linkType.isPageLink && linkType.validPage ? link.value : ''} onChange={setLink}>
                                 <Select.Option value='undefined'><></></Select.Option>
 
-                                {diagramsOrdered.map((diagram: Diagram, index: number) => 
-                                    <Select.Option key={diagram.id} value={getPageLink(diagram.id)}>{getPageName(diagram, index)}</Select.Option>,
+                                {diagramsOrdered.map((x, index) => 
+                                    <Select.Option key={x.id} value={getPageLink(x.id)}>{getPageName(x, index)}</Select.Option>,
                                 )}
                             </Select>
                         </Col>

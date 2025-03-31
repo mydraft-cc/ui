@@ -5,8 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { useMemo } from 'react';
-import { useSelector } from 'react-redux';
+import {  useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
 import { Color, ColorPalette, Types } from '@app/core/utils';
 import { texts } from '@app/texts';
@@ -180,9 +179,5 @@ export function getPageName(diagram: Diagram | string, index: number): string {
 type State = AssetsStateInStore & EditorStateInStore & UIStateInStore & LoadingStateInStore;
 
 export function useStore<T>(selector: ((state: State) => T)) {
-    // Create a stable reference to the selector
-    const stableSelector = useMemo(() => selector, [selector]);
-
-    // Use the selector directly with useSelector
-    return useSelector<State, T>(stableSelector);
+    return useSelector<State, T>(p => selector(p));
 }
