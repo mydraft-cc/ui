@@ -160,4 +160,7 @@ export interface EngineItem extends EngineObject {
 
     // Renders the item.
     plot(item: DiagramItem | null): void;
+    
+    // Forces a complete re-rendering of the item, ignoring caching
+    forceReplot(item: DiagramItem | null): void;
 }

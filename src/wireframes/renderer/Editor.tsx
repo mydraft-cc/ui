@@ -16,6 +16,7 @@ import { Diagram, DiagramItem, DiagramItemSet, Transform } from '@app/wireframes
 import { useOverlayContext } from './../contexts/OverlayContext';
 import { selectEffectiveTheme } from '../model/actions';
 import { useAppSelector } from '../../store';
+import { addThemeChangeListener } from '../shapes/neutral/ThemeShapeUtils';
 import { ItemsLayer } from './ItemsLayer';
 import { NavigateAdorner } from './NavigateAdorner';
 import { QuickbarAdorner } from './QuickbarAdorner';
@@ -154,10 +155,24 @@ export const Editor = React.memo((props: EditorProps) => {
 
             layers.backgroundRect?.fill(canvasBgColor);
             layers.backgroundRect?.strokeColor(borderDarkColor);
-
-            // Invalidation calls removed as they don't exist on the layer type
         }
     }, [isDarkMode, layers]); // Run when theme or layers change
+
+    // Add effect to handle theme changes outside of React's flow
+    React.useEffect(() => {
+        // This will only run once when the component mounts
+        return addThemeChangeListener((theme) => {
+            if (layers && layers.backgroundRect) {
+                // Update UI based on theme when the theme changes directly
+                const isDark = theme === 'dark';
+                const canvasBgColor = isDark ? '#252525' : '#ffffff'; 
+                const borderDarkColor = isDark ? '#404040' : '#b8b8b8'; 
+
+                layers.backgroundRect.fill(canvasBgColor);
+                layers.backgroundRect.strokeColor(borderDarkColor);
+            }
+        });
+    }, [layers]);
 
     React.useEffect(() => {
         overlayContext.snapManager.prepare(diagram, viewSize);
@@ -189,17 +204,15 @@ export const Editor = React.memo((props: EditorProps) => {
 
             {diagram && layers && (
                 <>
-                    {/* Re-added key prop to force remount on theme change */}
                     <ItemsLayer
-                        key={`master-${isDarkMode}`}
+                        isDarkMode={isDarkMode}
                         diagrams={masterDiagrams}
                         diagramLayer={layers.renderMasterLayer}
                         onRender={onRender}
                     />
 
-                    {/* Re-added key prop to force remount on theme change */}
                     <ItemsLayer
-                        key={`main-${isDarkMode}`}
+                        isDarkMode={isDarkMode}
                         diagrams={[diagram]}
                         diagramLayer={layers.renderMainLayer}
                         preview={renderPreview.current}
@@ -247,6 +260,7 @@ export const Editor = React.memo((props: EditorProps) => {
 
                     {onTransformItems &&
                         <QuickbarAdorner
+                            isDarkMode={isDarkMode}
                             previewStream={renderPreview.current}
                             selectedDiagram={diagram}
                             selectionSet={selectionSet}

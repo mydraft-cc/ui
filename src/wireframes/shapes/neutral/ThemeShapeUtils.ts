@@ -11,9 +11,38 @@ export type Theme = 'light' | 'dark';
 // Default to light theme initially
 let currentTheme: Theme = 'light';
 
+// Listener collection to notify when theme changes
+type ThemeChangeListener = (theme: Theme) => void;
+const themeChangeListeners: ThemeChangeListener[] = [];
+
 // Function to update the current theme (called by app on initialization/changes)
 export const updateCurrentTheme = (theme: Theme) => {
+    const previousTheme = currentTheme;
     currentTheme = theme;
+    
+    // If theme changed, notify listeners
+    if (previousTheme !== theme) {
+        themeChangeListeners.forEach(listener => listener(theme));
+        return true;
+    }
+    
+    return false;
+};
+
+// Add a listener for theme changes
+export const addThemeChangeListener = (listener: ThemeChangeListener) => {
+    themeChangeListeners.push(listener);
+    
+    // Immediately invoke with current theme to ensure the listener is up-to-date
+    listener(currentTheme);
+    
+    // Return unsubscribe function
+    return () => {
+        const index = themeChangeListeners.indexOf(listener);
+        if (index !== -1) {
+            themeChangeListeners.splice(index, 1);
+        }
+    };
 };
 
 // Get the current effective theme value
@@ -61,4 +90,11 @@ export const getShapeBackgroundColor = (): number => {
 export const getShapeTextColor = (): number => {
     const isDark = getCurrentTheme() === 'dark';
     return isDark ? SHAPE_TEXT_COLOR.DARK : SHAPE_TEXT_COLOR.LIGHT;
+};
+
+// Force a theme change notification without changing the theme
+// This is useful for debugging or forcing a re-render
+export const forceTriggerThemeChange = () => {
+    // Notify all listeners with the current theme 
+    themeChangeListeners.forEach(listener => listener(currentTheme));
 }; 

@@ -4,6 +4,7 @@ import * as React from 'react';
 import { useEventCallback } from '@app/core';
 import { selectEffectiveTheme, setThemeMode, ThemeMode } from '../model/actions';
 import { useAppDispatch, useAppSelector } from '../../store';
+import { forceTriggerThemeChange } from '../shapes/neutral/ThemeShapeUtils';
 import { texts } from '../../texts';
 
 export const ThemeToggle = () => {
@@ -13,6 +14,11 @@ export const ThemeToggle = () => {
     
     const handleSetTheme = useEventCallback((mode: ThemeMode) => {
         dispatch(setThemeMode(mode));
+        
+        // Force immediate theme update after toggling
+        setTimeout(() => {
+            forceTriggerThemeChange();
+        }, 0);
     });
     
     const items: MenuProps['items'] = [

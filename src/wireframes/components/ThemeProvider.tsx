@@ -3,7 +3,7 @@ import * as React from 'react';
 import { useEventCallback } from '@app/core';
 import { updateSystemPreference, selectEffectiveTheme } from '../model/actions';
 import { useAppDispatch, useAppSelector } from '../../store';
-import { updateCurrentTheme } from '../shapes/neutral/ThemeShapeUtils';
+import { forceTriggerThemeChange, updateCurrentTheme } from '../shapes/neutral/ThemeShapeUtils';
 
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const dispatch = useAppDispatch();
@@ -20,7 +20,16 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         }
         
         // Update the theme for shape components
-        updateCurrentTheme(effectiveTheme);
+        // The updateCurrentTheme function will return true if theme actually changed
+        const themeChanged = updateCurrentTheme(effectiveTheme);
+        
+        // Force a theme notification 50ms after the theme change to ensure all components are updated
+        // This helps with any race conditions in the rendering cycle
+        const timeoutId = setTimeout(() => {
+            forceTriggerThemeChange();
+        }, 50);
+        
+        return () => clearTimeout(timeoutId);
     }, [effectiveTheme]);
     
     // Listen for system theme changes

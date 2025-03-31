@@ -58,6 +58,24 @@ export class SvgItem extends SvgObject implements EngineItem {
         this.currentShape = shape;
     }
 
+    public forceReplot(shape: DiagramItem) {
+        // Clear the rendered flag to force a complete re-render
+        this.isRendered = false;
+        
+        // Also reset currentShape to ensure we don't skip due to identity check
+        this.currentShape = null;
+        
+        // Clear children except selector
+        this.group.children().forEach(child => {
+            if (child !== this.selector) {
+                child.remove();
+            }
+        });
+        
+        // Now call plot with the shape to trigger a full render
+        this.plot(shape);
+    }
+
     private addToLayer() {
         if (!this.group.parent()) {
             this.layer.add(this.group);

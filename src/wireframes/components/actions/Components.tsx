@@ -108,7 +108,7 @@ export const ActionDropdownButton = React.memo((props: ActionProps & DropdownBut
     );
 });
 
-export const ActionButton = React.memo((props: ActionProps & ButtonProps) => {
+export const ActionButton = ((props: ActionProps & ButtonProps) => {
     const { action, displayMode, hideWhenDisabled, ...other } = props;
     const {
         disabled,

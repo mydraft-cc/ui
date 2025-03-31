@@ -1,4 +1,3 @@
-
 /*
  * mydraft.cc
  *
@@ -61,6 +60,25 @@ export class PixiItem extends PixiObject implements EngineItem {
 
         this.addToLayer();
         this.currentShape = shape;
+    }
+
+    public forceReplot(shape: DiagramItem) {
+        // Clear the rendered flag to force a complete re-render
+        this.isRendered = false;
+        
+        // Also reset currentShape to ensure we don't skip due to identity check
+        this.currentShape = null;
+        
+        // Remove all children except the selector
+        for (let i = this.container.children.length - 1; i >= 0; i--) {
+            const child = this.container.children[i];
+            if (child !== this.selector) {
+                this.container.removeChild(child);
+            }
+        }
+        
+        // Now call plot with the shape to trigger a full render
+        this.plot(shape);
     }
 
     private addToLayer() {

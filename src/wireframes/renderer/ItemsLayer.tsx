@@ -9,6 +9,7 @@ import * as React from 'react';
 import { ImmutableList,  Subscription } from '@app/core';
 import { EngineItem, EngineLayer } from '@app/wireframes/engine';
 import { Diagram, DiagramItem, PluginRegistry } from '@app/wireframes/model';
+import { addThemeChangeListener } from '../shapes/neutral/ThemeShapeUtils';
 import { PreviewEvent } from './preview';
 
 export interface ItemsLayerProps {
@@ -17,6 +18,9 @@ export interface ItemsLayerProps {
 
     // The container to render on.
     diagramLayer: EngineLayer;
+
+    // The theme state.
+    isDarkMode?: boolean;
 
     // The preview subscription.
     preview?: Subscription<PreviewEvent>;
@@ -31,6 +35,7 @@ export const ItemsLayer = React.memo((props: ItemsLayerProps) => {
         diagramLayer,
         onRender,
         preview,
+        isDarkMode,
     } = props;
 
     const shapesRendered = React.useRef(onRender);
@@ -118,6 +123,36 @@ export const ItemsLayer = React.memo((props: ItemsLayerProps) => {
             shapesRendered.current();
         }
     }, [diagramLayer, orderedShapes]);
+    
+    // Add a separate effect specifically for theme changes to force re-render of all shapes
+    React.useEffect(() => {
+        // When isDarkMode changes directly through prop, force an immediate re-render
+        const references = shapeRefsById.current;
+        
+        // Create a function to force re-render all shapes
+        const forceRerenderAllShapes = () => {
+            for (const shape of orderedShapes) {
+                if (references[shape.id]) {
+                    references[shape.id].forceRerender(shape);
+                }
+            }
+            
+            if (shapesRendered.current) {
+                shapesRendered.current();
+            }
+        };
+        
+        // Execute immediately for prop changes
+        forceRerenderAllShapes();
+        
+        // Also set up a listener for theme changes that might happen outside React's flow
+        const unsubscribe = addThemeChangeListener(() => {
+            // When theme changes through ThemeShapeUtils, force re-render
+            forceRerenderAllShapes();
+        });
+        
+        return unsubscribe;
+    }, [isDarkMode, orderedShapes]);
 
     React.useEffect(() => {
         return preview?.subscribe(event => {
@@ -170,6 +205,11 @@ class ItemWithPreview {
     
     public remove() {
         this.engineItem.remove();
+    }
+
+    public forceRerender(shape: DiagramItem) {
+        // Use the proper interface method to force replotting
+        this.engineItem.forceReplot(shape);
     }
 
     private render() {
