@@ -72,7 +72,13 @@ export const LoadingMenu = React.memo(() => {
             <ActionMenuButton displayMode='IconLabel' action={forLoading.newDiagram} />
             <ActionMenuButton displayMode='Icon' action={forLoading.openDiagramAction} />
 
-            <ActionDropdownButton className='menu-dropdown' displayMode='IconLabel' action={forLoading.saveDiagram} type='primary' menu={{ items: saveMenuItems }} />
+            <ActionDropdownButton 
+                className='menu-dropdown save-button' 
+                displayMode='IconLabel' 
+                action={forLoading.saveDiagram} 
+                type='primary' 
+                menu={{ items: saveMenuItems }}
+            />
 
             <Button className='menu-item' onClick={doToggleInfoDialog}
                 icon={<QuestionCircleOutlined />} />

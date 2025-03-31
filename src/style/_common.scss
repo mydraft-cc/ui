@@ -339,7 +339,6 @@ header {
         font-size: 1.1rem;
         font-weight: bold;
         height: 40px;
-        filter: brightness(1.2);
     }
 }
 
@@ -503,6 +502,65 @@ header {
         &.ant-dropdown-menu-item-selected {
             background-color: rgba($color-theme-blue, 0.1);
             color: $color-theme-blue;
+        }
+    }
+}
+
+.menu-dropdown.save-button {
+    .ant-btn, .ant-dropdown-trigger {
+        border-radius: 8px !important;
+        border: none !important;
+        box-shadow: none !important;
+    }
+    
+    .ant-btn:first-child {
+        border-radius: 8px 0 0 8px !important;
+    }
+    
+    .ant-dropdown-trigger {
+        border-radius: 0 8px 8px 0 !important;
+    }
+    
+    .ant-btn:not(:disabled), 
+    .ant-dropdown-trigger:not(:disabled) {
+        background-color: #1890ff !important;
+        color: #ffffff !important;
+        
+        i, svg {
+            color: #ffffff !important;
+        }
+    }
+    
+    .ant-btn:hover:not(:disabled), 
+    .ant-dropdown-trigger:hover:not(:disabled) {
+        background-color: #40a9ff !important;
+    }
+    
+    .ant-btn:active:not(:disabled), 
+    .ant-dropdown-trigger:active:not(:disabled) {
+        background-color: #096dd9 !important;
+    }
+    
+    .ant-btn:disabled, 
+    .ant-dropdown-trigger:disabled {
+        background-color: #f0f0f0 !important; 
+        color: #bfbfbf !important;
+        
+        i, svg {
+            color: #bfbfbf !important;
+        }
+    }
+}
+
+body.dark-theme .menu-dropdown.save-button,
+.dark-theme .menu-dropdown.save-button {
+    .ant-btn:disabled, 
+    .ant-dropdown-trigger:disabled {
+        background-color: #333333 !important; 
+        color: #707070 !important;
+        
+        i, svg {
+            color: #707070 !important;
         }
     }
 }
