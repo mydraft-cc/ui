@@ -9,14 +9,14 @@
 
 import * as React from 'react';
 import { Color, ImmutableMap, Subscription, Vec2, ViewBox } from '@app/core';
+import { useAppSelector } from '../../store';
 import { Engine, EngineLayer, EngineRect } from '@app/wireframes/engine';
 import { PixiCanvasView } from '@app/wireframes/engine/pixi/canvas/PixiCanvas';
 import { SvgCanvasView } from '@app/wireframes/engine/svg/canvas/SvgCanvas';
 import { Diagram, DiagramItem, DiagramItemSet, Transform } from '@app/wireframes/model';
-import { useOverlayContext } from './../contexts/OverlayContext';
 import { selectEffectiveTheme } from '../model/actions';
-import { useAppSelector } from '../../store';
 import { addThemeChangeListener } from '../shapes/neutral/ThemeShapeUtils';
+import { useOverlayContext } from './../contexts/OverlayContext';
 import { ItemsLayer } from './ItemsLayer';
 import { NavigateAdorner } from './NavigateAdorner';
 import { QuickbarAdorner } from './QuickbarAdorner';
@@ -152,9 +152,18 @@ export const Editor = React.memo((props: EditorProps) => {
             // Determine the correct colors based *directly* on isDarkMode state
             const canvasBgColor = isDarkMode ? '#252525' : '#ffffff'; 
             const borderDarkColor = isDarkMode ? '#404040' : '#b8b8b8'; 
+            const gridColor = isDarkMode ? '#333333' : '#e0e0e0';
 
             layers.backgroundRect?.fill(canvasBgColor);
             layers.backgroundRect?.strokeColor(borderDarkColor);
+            
+            // Update any grid-related elements if they exist
+            if (layers.engine && typeof layers.engine.updateGridColor === 'function') {
+                layers.engine.updateGridColor(gridColor);
+            }
+            
+            // Force a redraw of the canvas to ensure immediate updates
+            layers.engine?.invalidate?.();
         }
     }, [isDarkMode, layers]); // Run when theme or layers change
 
@@ -167,9 +176,18 @@ export const Editor = React.memo((props: EditorProps) => {
                 const isDark = theme === 'dark';
                 const canvasBgColor = isDark ? '#252525' : '#ffffff'; 
                 const borderDarkColor = isDark ? '#404040' : '#b8b8b8'; 
+                const gridColor = isDark ? '#333333' : '#e0e0e0';
 
                 layers.backgroundRect.fill(canvasBgColor);
                 layers.backgroundRect.strokeColor(borderDarkColor);
+                
+                // Update any grid-related elements if they exist
+                if (layers.engine && typeof layers.engine.updateGridColor === 'function') {
+                    layers.engine.updateGridColor(gridColor);
+                }
+                
+                // Force a redraw of the canvas to ensure immediate updates
+                layers.engine?.invalidate?.();
             }
         });
     }, [layers]);

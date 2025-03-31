@@ -40,6 +40,12 @@ export interface Engine {
 
     // Unsubscribe from all events.
     unsubscribe(listener: Listener): void;
+    
+    // Update the grid color for theme changes
+    updateGridColor?(color: string): void;
+    
+    // Force a redraw of the entire canvas
+    invalidate?(): void;
 }
 
 export interface Listener {

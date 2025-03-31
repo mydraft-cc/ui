@@ -12,6 +12,9 @@ import { SvgCanvasView } from '@app/wireframes/engine/svg/canvas/SvgCanvas';
 import { SvgEngine } from '@app/wireframes/engine/svg/engine';
 import { ShapePlugin, Size } from '@app/wireframes/interface';
 import { DefaultConstraintFactory, DiagramItem, Transform } from '@app/wireframes/model';
+import { addThemeChangeListener, getCurrentTheme } from '@app/wireframes/shapes/neutral/ThemeShapeUtils';
+import { selectEffectiveTheme } from '@app/wireframes/model/actions';
+import { useAppSelector } from '@app/store';
 
 interface ShapeRendererProps {
     plugin: ShapePlugin;
@@ -42,8 +45,13 @@ export const ShapeRenderer = React.memo(React.forwardRef<HTMLDivElement, ShapeRe
         usePreviewSize, 
     } = props;
 
+    // Use the Redux theme state to trigger re-renders
+    const effectiveTheme = useAppSelector(selectEffectiveTheme);
+    const isDarkMode = effectiveTheme === 'dark';
+
     const [engine, setEngine] = React.useState<SvgEngine>();
     const item = React.useRef<EngineItem>();
+    const [forceRender, setForceRender] = React.useState(0);
 
     const viewBox = getViewBox(plugin, 
         desiredWidth,
@@ -69,12 +77,43 @@ export const ShapeRenderer = React.memo(React.forwardRef<HTMLDivElement, ShapeRe
         }
     }, [desiredHeight, desiredWidth, engine, viewBox]);
 
+    // Force re-render when effective theme changes
     React.useEffect(() => {
+        if (engine && item.current) {
+            // Schedule a re-render on the next frame to ensure theme has propagated
+            requestAnimationFrame(() => {
+                if (item.current) {
+                    // Force a replot with the same shape data
+                    renderShape();
+                }
+            });
+        }
+    }, [isDarkMode]);
+
+    // Add direct theme change listener as backup
+    React.useEffect(() => {
+        // Function to trigger a re-render from outside React's flow
+        const triggerRerender = () => {
+            console.debug('ShapeRenderer: Theme changed, forcing re-render');
+            setForceRender(prev => prev + 1);
+            
+            // Schedule a re-render on the next frame
+            requestAnimationFrame(() => {
+                if (item.current) {
+                    // Force a replot with the same shape data
+                    renderShape();
+                }
+            });
+        };
+        
+        return addThemeChangeListener(triggerRerender);
+    }, []);
+
+    // Extract the shape rendering logic into a separate function
+    const renderShape = React.useCallback(() => {
         if (!engine) {
             return;
         }
-
-        engine.doc.clear();
 
         const shape =
             DiagramItem.createShape({
@@ -96,8 +135,18 @@ export const ShapeRenderer = React.memo(React.forwardRef<HTMLDivElement, ShapeRe
             item.current = engine.layer(plugin.identifier()).item(plugin);
         }
 
-        item.current.plot(shape);
+        // Use forceReplot if available for better theme sensitivity
+        if (item.current && typeof item.current.forceReplot === 'function') {
+            item.current.forceReplot(shape);
+        } else {
+            item.current.plot(shape);
+        }
     }, [appearance, engine, plugin, viewBox]);
+
+    // Call renderShape whenever dependencies change or forceRender changes
+    React.useEffect(() => {
+        renderShape();
+    }, [renderShape, forceRender]);
 
     return (
         <div ref={ref} style={{ lineHeight: 0 }}>

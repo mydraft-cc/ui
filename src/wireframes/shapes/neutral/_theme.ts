@@ -19,8 +19,9 @@ export const CommonTheme = {
 };
 
 // Get theme-aware colors based on dark mode
-export const getThemeColors = () => {
-    const isDark = getCurrentTheme() === 'dark';
+export const getThemeColors = (isDarkParam?: boolean) => {
+    // Use provided isDark parameter if specified, otherwise determine from current theme
+    const isDark = isDarkParam !== undefined ? isDarkParam : getCurrentTheme() === 'dark';
     
     return {
         CONTROL_FONT_SIZE: 16,

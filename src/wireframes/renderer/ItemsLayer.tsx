@@ -131,6 +131,8 @@ export const ItemsLayer = React.memo((props: ItemsLayerProps) => {
         
         // Create a function to force re-render all shapes
         const forceRerenderAllShapes = () => {
+            console.debug(`ItemsLayer: Re-rendering ${orderedShapes.length} shapes due to theme change`);
+            
             for (const shape of orderedShapes) {
                 if (references[shape.id]) {
                     references[shape.id].forceRerender(shape);
@@ -146,8 +148,9 @@ export const ItemsLayer = React.memo((props: ItemsLayerProps) => {
         forceRerenderAllShapes();
         
         // Also set up a listener for theme changes that might happen outside React's flow
-        const unsubscribe = addThemeChangeListener(() => {
+        const unsubscribe = addThemeChangeListener((theme) => {
             // When theme changes through ThemeShapeUtils, force re-render
+            console.debug(`ItemsLayer: Theme changed to ${theme}, triggering shape re-render`);
             forceRerenderAllShapes();
         });
         
@@ -209,7 +212,14 @@ class ItemWithPreview {
 
     public forceRerender(shape: DiagramItem) {
         // Use the proper interface method to force replotting
-        this.engineItem.forceReplot(shape);
+        if (this.engineItem && typeof this.engineItem.forceReplot === 'function') {
+            this.engineItem.forceReplot(shape);
+            return true;
+        }
+        
+        // Fallback to standard plot if forceReplot is not available
+        this.plot(shape);
+        return false;
     }
 
     private render() {
