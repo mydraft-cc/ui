@@ -2,11 +2,11 @@ import { MoonOutlined, SunOutlined, SettingOutlined } from '@ant-design/icons';
 import { Button, Dropdown, MenuProps, Tooltip } from 'antd';
 import * as React from 'react';
 import { useEventCallback } from '@app/core';
-import { selectEffectiveTheme, setThemeMode, ThemeMode } from '../model/actions';
+import { setThemeMode, ThemeMode } from '../model/actions';
 import { useAppDispatch, useAppSelector } from '../../store';
 import { forceTriggerThemeChange } from '../shapes/neutral/ThemeShapeUtils';
 import { texts } from '../../texts';
-
+import { selectEffectiveTheme } from '../model/selectors/themeSelectors';
 export const ThemeToggle = () => {
     const dispatch = useAppDispatch();
     const effectiveTheme = useAppSelector(selectEffectiveTheme);

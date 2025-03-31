@@ -1,9 +1,9 @@
 import { ConfigProvider, theme } from 'antd';
 import * as React from 'react';
 import { useAppDispatch, useAppSelector } from '@app/store';
-import { selectEffectiveTheme, updateSystemPreference } from '../model/actions';
+import { updateSystemPreference } from '../model/actions';
 import { forceTriggerThemeChange, updateCurrentTheme } from '../shapes/neutral/ThemeShapeUtils';
-
+import { selectEffectiveTheme } from '../model/selectors/themeSelectors';
 // Debounce helper function
 const debounce = (fn: Function, delay: number) => {
     let timeoutId: NodeJS.Timeout;

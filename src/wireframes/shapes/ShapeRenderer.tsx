@@ -13,7 +13,7 @@ import { SvgEngine } from '@app/wireframes/engine/svg/engine';
 import { ShapePlugin, Size } from '@app/wireframes/interface';
 import { DefaultConstraintFactory, DiagramItem, Transform } from '@app/wireframes/model';
 import { addThemeChangeListener } from '@app/wireframes/shapes/neutral/ThemeShapeUtils';
-import { selectEffectiveTheme } from '@app/wireframes/model/actions';
+import { selectEffectiveTheme } from '@app/wireframes/model/selectors/themeSelectors';
 import { useAppSelector } from '@app/store';
 
 // Debounce helper function

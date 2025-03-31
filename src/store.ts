@@ -7,10 +7,11 @@
 
 import { Middleware, configureStore } from '@reduxjs/toolkit';
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
-import { assets, buildAlignment, buildAppearance, buildDiagrams, buildGrouping, buildItems, buildOrdering, createClassReducer, loading, loadingMiddleware, mergeAction, rootLoading, selectDiagram, selectItems, theme, toastMiddleware, ui, undoable } from './wireframes/model/actions';
+import { assets, buildAlignment, buildAppearance, buildDiagrams, buildGrouping, buildItems, buildOrdering, createClassReducer, loading, loadingMiddleware, mergeAction, rootLoading, selectDiagram, selectItems, toastMiddleware, ui, undoable } from './wireframes/model/actions';
 import { EditorState } from './wireframes/model/editor-state';
 import { createInitialAssetsState, createInitialLoadingState, createInitialUIState } from './wireframes/model/internal';
 import { registerRenderers } from './wireframes/shapes';
+import { theme } from './wireframes/model/actions/theme';
 
 registerRenderers();
 
