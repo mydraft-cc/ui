@@ -20,3 +20,4 @@ export * from './menu/UIMenu';
 export * from './pages/Pages';
 export * from './recent/Recent';
 export * from './properties/Properties';
+export * from './ThemeToggle';

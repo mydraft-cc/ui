@@ -1,0 +1,49 @@
+@import '@app/style/mixins';
+@import '@app/style/vars';
+
+.diagram {
+    &-toolbar {
+        @include flex-horizontal;
+        font-size: $font-size;
+        margin-bottom: .625rem;
+    }
+
+    &-info {
+        flex-grow: 1;
+        margin-left: 1.25rem;
+    }
+
+    &-title {
+        color: $color-text;
+        font-size: $font-xl;
+        font-weight: normal;
+        margin: 0;
+        margin-bottom: .25rem;
+    }
+
+    &-text {
+        color: $color-text-secondary;
+        margin: 0;
+    }
+
+    &-right {
+        margin-left: auto;
+    }
+
+    &-content {
+        background: $color-background;
+        border-radius: .25rem;
+        border: 1px solid $color-border;
+        height: 100%;
+        padding: 1rem;
+        position: relative;
+    }
+
+    &-view {
+        height: 100%;
+    }
+    
+    &-editor {
+        height: 100%;
+    }
+} 

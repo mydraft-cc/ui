@@ -7,6 +7,7 @@
 
 import { Color, ConfigurableFactory, DefaultAppearance, Rect2, RenderContext, ShapePlugin, ShapeProperties } from '@app/wireframes/interface';
 import { CommonTheme } from './_theme';
+import { SHAPE_BACKGROUND_COLOR, SHAPE_TEXT_COLOR, getCurrentTheme } from './ThemeShapeUtils';
 
 const TAB_COLOR = 'TAB_COLOR';
 const TAB_ALIGNMENT = 'TAB_ALIGNMENT';
@@ -79,6 +80,11 @@ export class Tabs implements ShapePlugin {
     }
 
     private createContent(ctx: RenderContext, heightHeader: number, strokeThickness: number, isBottom: boolean) {
+        const appearance = ctx.shape;
+        const isDark = getCurrentTheme() === 'dark';
+        const bgColor = isDark ? SHAPE_BACKGROUND_COLOR.DARK : 0xffffff;
+        const controlBorder = isDark ? 0x505050 : CommonTheme.CONTROL_BORDER_COLOR;
+        
         const w = ctx.rect.width;
         const h = ctx.rect.height - heightHeader + strokeThickness;
         const y = isBottom ? 0 : heightHeader - strokeThickness;
@@ -86,16 +92,36 @@ export class Tabs implements ShapePlugin {
         const bounds = new Rect2(0, y, w, h);
 
         ctx.renderer2.rectangle(ctx.shape, CommonTheme.CONTROL_BORDER_RADIUS, bounds, p => {
-            p.setBackgroundColor(ctx.shape);
-            p.setStrokeColor(ctx.shape);
+            if (appearance.getAppearance(DefaultAppearance.BACKGROUND_COLOR) === 0xffffff) {
+                p.setBackgroundColor(bgColor);
+            } else {
+                p.setBackgroundColor(ctx.shape);
+            }
+            
+            if (appearance.getAppearance(DefaultAppearance.STROKE_COLOR) === CommonTheme.CONTROL_BORDER_COLOR) {
+                p.setStrokeColor(controlBorder);
+            } else {
+                p.setStrokeColor(ctx.shape);
+            }
         });
     }
 
     private createHeader(ctx: RenderContext, parts: Parsed, heightHeader: number, isBottom: boolean) {
+        const appearance = ctx.shape;
+        const isDark = getCurrentTheme() === 'dark';
+        const controlBorder = isDark ? 0x505050 : CommonTheme.CONTROL_BORDER_COLOR;
+        const textColor = isDark ? SHAPE_TEXT_COLOR.DARK : CommonTheme.CONTROL_TEXT_COLOR;
+        
         const h = heightHeader;
         const y = isBottom ? ctx.rect.height - heightHeader : 0;
 
-        const tabColor = Color.fromValue(ctx.shape.getAppearance(TAB_COLOR));
+        // Get tab color accounting for dark mode
+        let tabColorValue = appearance.getAppearance(TAB_COLOR);
+        if (tabColorValue === CommonTheme.CONTROL_BACKGROUND_COLOR && isDark) {
+            tabColorValue = 0x333333; // Dark mode control background
+        }
+        
+        const tabColor = Color.fromValue(tabColorValue);
 
         for (const part of parts) {
             const bounds = new Rect2(part.x, y, part.width, h);
@@ -103,31 +129,47 @@ export class Tabs implements ShapePlugin {
             if (isBottom) {
                 // Bar button
                 ctx.renderer2.roundedRectangleBottom(ctx.shape, CommonTheme.CONTROL_BORDER_RADIUS, bounds, p => {
-                    this.stylePart(part, ctx, tabColor, p);
+                    this.stylePart(part, ctx, tabColor, p, controlBorder);
                 });
             } else {
                 // Bar button
                 ctx.renderer2.roundedRectangleTop(ctx.shape, CommonTheme.CONTROL_BORDER_RADIUS, bounds, p => {
-                    this.stylePart(part, ctx, tabColor, p);
+                    this.stylePart(part, ctx, tabColor, p, controlBorder);
                 });
             }
 
             // Bar button text.
             ctx.renderer2.text(ctx.shape, bounds.deflate(4), p => {
-                p.setForegroundColor(ctx.shape);
+                if (appearance.getAppearance(DefaultAppearance.FOREGROUND_COLOR) === CommonTheme.CONTROL_TEXT_COLOR) {
+                    p.setForegroundColor(textColor);
+                } else {
+                    p.setForegroundColor(ctx.shape);
+                }
                 p.setText(part.text);
             });
         }
     }
 
-    private stylePart(part: { text: string; selected?: boolean }, ctx: RenderContext, tabColor: Color, p: ShapeProperties) {
+    private stylePart(part: { text: string; selected?: boolean }, ctx: RenderContext, tabColor: Color, p: ShapeProperties, controlBorder: number) {
+        const appearance = ctx.shape;
+        const isDark = getCurrentTheme() === 'dark';
+        const bgColor = isDark ? SHAPE_BACKGROUND_COLOR.DARK : 0xffffff;
+        
         if (part.selected) {
-            p.setBackgroundColor(ctx.shape);
+            if (appearance.getAppearance(DefaultAppearance.BACKGROUND_COLOR) === 0xffffff) {
+                p.setBackgroundColor(bgColor);
+            } else {
+                p.setBackgroundColor(ctx.shape);
+            }
         } else {
             p.setBackgroundColor(tabColor);
         }
 
-        p.setStrokeColor(ctx.shape);
+        if (appearance.getAppearance(DefaultAppearance.STROKE_COLOR) === CommonTheme.CONTROL_BORDER_COLOR) {
+            p.setStrokeColor(controlBorder);
+        } else {
+            p.setStrokeColor(ctx.shape);
+        }
     }
 
     private parseText(ctx: RenderContext, fontFamily: string, fontSize: number, strokeThickness: number) {

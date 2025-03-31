@@ -14,6 +14,8 @@ import { PixiCanvasView } from '@app/wireframes/engine/pixi/canvas/PixiCanvas';
 import { SvgCanvasView } from '@app/wireframes/engine/svg/canvas/SvgCanvas';
 import { Diagram, DiagramItem, DiagramItemSet, Transform } from '@app/wireframes/model';
 import { useOverlayContext } from './../contexts/OverlayContext';
+import { selectEffectiveTheme } from '../model/actions';
+import { useAppSelector } from '../../store';
 import { ItemsLayer } from './ItemsLayer';
 import { NavigateAdorner } from './NavigateAdorner';
 import { QuickbarAdorner } from './QuickbarAdorner';
@@ -92,6 +94,10 @@ export const Editor = React.memo((props: EditorProps) => {
         useWebGL,
     } = props;
 
+    const effectiveTheme = useAppSelector(selectEffectiveTheme);
+    const isDarkMode = effectiveTheme === 'dark';
+    const canvasBackground = isDarkMode ? 'var(--color-canvas-background)' : 'var(--color-canvas-background)';
+    
     const [layers, setLayers] = React.useState<Layers>();
     const renderWebGL = React.useRef(useWebGL);
     const renderPreview = React.useRef(new Subscription<PreviewEvent>());
@@ -107,9 +113,11 @@ export const Editor = React.memo((props: EditorProps) => {
         // Create these layers in the correct order.
         const backgroundRect = engine.layer('background').rect();
         backgroundRect.disable();
-        backgroundRect.fill(color.toString());
-        backgroundRect.strokeWidth(1);
-        backgroundRect.strokeColor('#efefef');
+        
+        // Use the theme-aware background color
+        backgroundRect.fill(canvasBackground);
+        backgroundRect.strokeWidth(2);
+        backgroundRect.strokeColor(isDarkMode ? 'var(--color-border-dark)' : 'var(--color-border-dark)');
 
         const renderMasterLayer = engine.layer('masterLayer');
         const renderMainLayer = engine.layer('parentLayer');
@@ -132,15 +140,19 @@ export const Editor = React.memo((props: EditorProps) => {
             renderMainLayer,
             renderMasterLayer,
         });
-    }, []);
+    }, [canvasBackground, isDarkMode]);
 
     React.useEffect(() => {
         layers?.backgroundRect?.plot({ x: 0, y: 0, w: viewSize.x, h: viewSize.y });
     }, [layers, viewSize]);
 
     React.useEffect(() => {
-        layers?.backgroundRect?.fill(color.toString());
-    }, [layers, color]);
+        // Update the background fill when the color changes
+        if (layers?.backgroundRect) {
+            layers.backgroundRect.fill(canvasBackground);
+            layers.backgroundRect.strokeColor(isDarkMode ? 'var(--color-border-dark)' : 'var(--color-border-dark)');
+        }
+    }, [layers, canvasBackground, isDarkMode]);
 
     React.useEffect(() => {
         overlayContext.snapManager.prepare(diagram, viewSize);
@@ -164,7 +176,7 @@ export const Editor = React.memo((props: EditorProps) => {
         <div className='editor' ref={element => overlayContext.element = element}>
             {renderWebGL.current ? (
                 <div className='pixi'>
-                    <PixiCanvasView onInit={doInit} viewBox={viewBox} background='#f0f2f5' />
+                    <PixiCanvasView onInit={doInit} viewBox={viewBox} background={canvasBackground} />
                 </div>
             ) : (
                 <SvgCanvasView onInit={doInit} viewBox={viewBox} />

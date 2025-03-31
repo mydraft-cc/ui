@@ -7,6 +7,7 @@
 
 import { ConfigurableFactory, ConstraintFactory, DefaultAppearance, Rect2, RenderContext, ShapePlugin, Vec2 } from '@app/wireframes/interface';
 import { CommonTheme } from './_theme';
+import { SHAPE_TEXT_COLOR, getCurrentTheme } from './ThemeShapeUtils';
 
 const STATE = 'STATE';
 const STATE_NORMAL = 'Normal';
@@ -60,12 +61,25 @@ export class RadioButton implements ShapePlugin {
     }
 
     private createCircle(ctx: RenderContext) {
+        const appearance = ctx.shape;
+        const isDark = getCurrentTheme() === 'dark';
+        const controlBg = isDark ? 0x333333 : CommonTheme.CONTROL_BACKGROUND_COLOR;
+        const controlBorder = isDark ? 0x505050 : CommonTheme.CONTROL_BORDER_COLOR;
         const y = 0.5 * ctx.rect.h;
 
         // Circle
         ctx.renderer2.ellipse(ctx.shape, Rect2.fromCenter(new Vec2(CIRCLE_POSITION_X, y), CIRCLE_RADIUS), p => {
-            p.setStrokeColor(ctx.shape);
-            p.setBackgroundColor(ctx.shape);
+            if (appearance.getAppearance(DefaultAppearance.STROKE_COLOR) === CommonTheme.CONTROL_BORDER_COLOR) {
+                p.setStrokeColor(controlBorder);
+            } else {
+                p.setStrokeColor(ctx.shape);
+            }
+            
+            if (appearance.getAppearance(DefaultAppearance.BACKGROUND_COLOR) === CommonTheme.CONTROL_BACKGROUND_COLOR) {
+                p.setBackgroundColor(controlBg);
+            } else {
+                p.setBackgroundColor(ctx.shape);
+            }
         });
 
         const state = ctx.shape.getAppearance(STATE);
@@ -73,17 +87,29 @@ export class RadioButton implements ShapePlugin {
         if (state === STATE_CHECKED) {
             // Checked circle
             ctx.renderer2.ellipse(0, Rect2.fromCenter(new Vec2(CIRCLE_POSITION_X, y), CIRCLE_CHECK_RADIUS), p => {
-                p.setBackgroundColor(ctx.shape.strokeColor);
+                if (appearance.getAppearance(DefaultAppearance.STROKE_COLOR) === CommonTheme.CONTROL_BORDER_COLOR) {
+                    p.setBackgroundColor(controlBorder);
+                } else {
+                    p.setBackgroundColor(ctx.shape.strokeColor);
+                }
             });
         }
     }
 
     private createText(ctx: RenderContext) {
+        const appearance = ctx.shape;
+        const isDark = getCurrentTheme() === 'dark';
+        const textColor = isDark ? SHAPE_TEXT_COLOR.DARK : CommonTheme.CONTROL_TEXT_COLOR;
         const w = ctx.rect.width - TEXT_POSITION_X;
         const h = ctx.rect.height;
-
         const textRect = new Rect2(TEXT_POSITION_X, 0, w, h);
 
-        ctx.renderer2.text(ctx.shape, textRect);
+        ctx.renderer2.text(ctx.shape, textRect, p => {
+            if (appearance.getAppearance(DefaultAppearance.FOREGROUND_COLOR) === CommonTheme.CONTROL_TEXT_COLOR) {
+                p.setForegroundColor(textColor);
+            } else {
+                p.setForegroundColor(ctx.shape);
+            }
+        });
     }
 }

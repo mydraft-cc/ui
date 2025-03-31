@@ -7,6 +7,7 @@
 
 import { ConfigurableFactory, ConstraintFactory, DefaultAppearance, Rect2, RenderContext, ShapePlugin, Vec2 } from '@app/wireframes/interface';
 import { CommonTheme } from './_theme';
+import { getCurrentTheme } from './ThemeShapeUtils';
 
 const THUMB_COLOR = 'ACCENT_COLOR';
 const THUMB_VALUE = 'VALUE';
@@ -60,28 +61,55 @@ export class Slider implements ShapePlugin {
     }
 
     private createThumb(ctx: RenderContext, relative: number) {
+        const appearance = ctx.shape;
+        const isDark = getCurrentTheme() === 'dark';
+        const thumbBg = isDark ? 0xe0e0e0 : 0xffffff;
+        const controlBorder = isDark ? 0x505050 : CommonTheme.CONTROL_BORDER_COLOR;
         const thumbCenter = new Vec2(ctx.rect.x + ctx.rect.width * relative, 0.5 * HEIGHT_TOTAL);
 
         ctx.renderer2.ellipse(ctx.shape, Rect2.fromCenter(thumbCenter, 0.5 * HEIGHT_TOTAL), p => {
-            p.setStrokeColor(ctx.shape);
-            p.setBackgroundColor(ctx.shape.foregroundColor);
+            if (appearance.getAppearance(DefaultAppearance.STROKE_COLOR) === CommonTheme.CONTROL_BORDER_COLOR) {
+                p.setStrokeColor(controlBorder);
+            } else {
+                p.setStrokeColor(ctx.shape);
+            }
+            
+            if (appearance.getAppearance(DefaultAppearance.FOREGROUND_COLOR) === 0xffffff) {
+                p.setBackgroundColor(thumbBg);
+            } else {
+                p.setBackgroundColor(ctx.shape.foregroundColor);
+            }
         });
     }
 
     private createBackground(ctx: RenderContext, bounds: Rect2, relative: number) {
+        const appearance = ctx.shape;
+        const isDark = getCurrentTheme() === 'dark';
+        const controlBg = isDark ? 0x333333 : CommonTheme.CONTROL_BACKGROUND_COLOR;
+        
+        // Adjust accent color for dark theme
+        let accentColorValue = appearance.getAppearance(THUMB_COLOR);
+        if (isDark && accentColorValue === 0x2171b5) {
+            accentColorValue = 0x3182bd; // Slightly brighter blue for dark theme
+        }
+        
         ctx.renderer2.group(items => {
             const activeRect = new Rect2(bounds.x, bounds.y, bounds.width * relative, bounds.height);
 
             // Active item.
             items.rectangle(0, 0, activeRect, p => {
-                p.setBackgroundColor(ctx.shape.getAppearance(THUMB_COLOR));
+                p.setBackgroundColor(accentColorValue);
             });
 
             const inactiveRect = new Rect2(bounds.x + bounds.width * relative, bounds.top, bounds.width * (1 - relative), bounds.height);
 
             // Inactive item
             ctx.renderer2.rectangle(0, 0, inactiveRect, p => {
-                p.setBackgroundColor(ctx.shape);
+                if (appearance.getAppearance(DefaultAppearance.BACKGROUND_COLOR) === CommonTheme.CONTROL_BACKGROUND_COLOR) {
+                    p.setBackgroundColor(controlBg);
+                } else {
+                    p.setBackgroundColor(ctx.shape);
+                }
             });
         }, clip => {
             clip.rectangle(0, bounds.height * 0.5, bounds);
@@ -89,8 +117,16 @@ export class Slider implements ShapePlugin {
     }
 
     private createBorder(ctx: RenderContext, bounds: Rect2) {
+        const appearance = ctx.shape;
+        const isDark = getCurrentTheme() === 'dark';
+        const controlBorder = isDark ? 0x505050 : CommonTheme.CONTROL_BORDER_COLOR;
+        
         ctx.renderer2.rectangle(ctx.shape, bounds.height * 0.5, bounds, p => {
-            p.setStrokeColor(ctx.shape);
+            if (appearance.getAppearance(DefaultAppearance.STROKE_COLOR) === CommonTheme.CONTROL_BORDER_COLOR) {
+                p.setStrokeColor(controlBorder);
+            } else {
+                p.setStrokeColor(ctx.shape);
+            }
         });
     }
 }

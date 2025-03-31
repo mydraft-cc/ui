@@ -10,6 +10,8 @@ body {
     font-weight: inherit;
     font-family: -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,'Noto Sans',sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol','Noto Color Emoji';
     overflow: hidden;
+    background-color: $color-background;
+    color: $color-text;
 
     &.sb-main-padded {
         overflow: inherit;
@@ -17,7 +19,7 @@ body {
 }
 
 * {
-    @include scrollbars(8px, darken($color-border, 15%), transparent);
+    @include scrollbars(8px, $color-border-darker, transparent);
 }
 
 .hidden {
@@ -33,14 +35,16 @@ body {
 }
 
 .ant-layout {
+    background-color: $color-background;
+    
     &-header {
-        @include box-shadow-outer(0, 2px, 2px, .1);
-        background-color: white;
+        background-color: $color-toolbar-background;
         padding: 0 10px;
         overflow-x: hidden;
         overflow-y: hidden;
         text-align: center;
         z-index: 1000;
+        border-bottom: 1px solid $color-border;
 
         @media (max-width: 1000px) {
             text-align: left;
@@ -60,7 +64,7 @@ svg {
 
 hr {
     border: 0;
-    border-top: 1px solid #ddd;
+    border-top: 1px solid $color-border;
     margin: 30px 0;
 }
 
@@ -82,7 +86,7 @@ ul {
 //
 .sidebar-left,
 .sidebar-right {
-    background: $color-white !important;
+    background-color: $color-toolbar-background !important;
     border: 0;
     border-left: 1px solid $color-border;
     overflow-x: hidden;
@@ -91,7 +95,7 @@ ul {
 
 .sidebar-left {
     & {
-        background: $color-white;
+        background-color: $color-toolbar-background;
         border: 0;
         border-right: 1px solid $color-border;
         padding-top: 10px;
@@ -119,6 +123,15 @@ ul {
     .ant-tabs-tabpane {
         flex-shrink: 1 !important;
     }
+
+    .ant-tabs-tab {
+        background-color: transparent !important;
+        border-color: $color-border !important;
+        
+        &.ant-tabs-tab-active {
+            border-bottom-color: transparent !important;
+        }
+    }
 }
 
 .sidebar-right {
@@ -136,6 +149,14 @@ $sidebar-size: 320px;
     .toggle-button-left {
         & {
             @include absolute($toggle-button-top, auto, auto, $toggle-button-offset-left);
+            background-color: $color-toolbar-background !important;
+            border: 1px solid $color-border !important;
+            color: $color-text !important;
+            
+            &:hover {
+                color: $color-theme-blue !important;
+                border-color: $color-theme-blue !important;
+            }
         }
 
         &.visible {
@@ -146,6 +167,14 @@ $sidebar-size: 320px;
     .toggle-button-right {
         & {
             @include absolute($toggle-button-top, $toggle-button-offset-right, auto, auto);
+            background-color: $color-toolbar-background !important;
+            border: 1px solid $color-border !important;
+            color: $color-text !important;
+            
+            &:hover {
+                color: $color-theme-blue !important;
+                border-color: $color-theme-blue !important;
+            }
         }
 
         &.visible {
@@ -155,41 +184,43 @@ $sidebar-size: 320px;
 }
 
 .force-color {
-    color: rgba(0, 0, 0, 85%) !important;
+    color: var(--color-force-text) !important;
 
     &:hover {
-        color: rgba(0, 0, 0, 85%) !important;
+        color: var(--color-force-text) !important;
     }
 
     &:hover {
-        background-color: #eee;
+        background-color: var(--color-force-hover-bg);
     }
 
     .ant-menu-title-content {
-        color: rgba(0, 0, 0, 85%) !important;
+        color: var(--color-force-text) !important;
     }
 
     &.ant-menu-item-disabled {
-        color: rgba(0, 0, 0, 25%) !important;
+        color: var(--color-force-text-disabled) !important;
 
         .ant-menu-title-content {
-            color: rgba(0, 0, 0, 25%) !important;
+            color: var(--color-force-text-disabled) !important;
         }
     }
 }
 
 .ant-menu-item-disabled {
     .force-color {
-        color: rgba(0, 0, 0, 25%) rgba(0, 0, 0, 85%);
+        color: var(--color-force-text-disabled) !important;
     }
 }
 
 .context-menu {
     border: 1px solid $color-border;
+    background-color: $color-toolbar-background;
 }
 
 .ant-menu {
     box-shadow: none;
+    background-color: $color-toolbar-background;
 
     &.ant-menu-root,
     &.ant-menu-submenu {
@@ -266,6 +297,22 @@ header {
         margin-left: 15px !important;
         margin-right: 15px !important;
     }
+
+    .ant-btn {
+        color: $color-text;
+        
+        &:hover {
+            color: $color-theme-blue;
+        }
+        
+        svg {
+            fill: currentColor;
+        }
+    }
+    
+    .anticon {
+        color: $color-text;
+    }
 }
 
 .top-menu {
@@ -288,21 +335,23 @@ header {
     }
 
     .logo {
-        color: $color-white;
+        color: $color-text;
         font-size: 1.1rem;
         font-weight: bold;
         height: 40px;
+        filter: brightness(1.2);
     }
 }
 
 .menu {
     &-separator {
-        background: $color-border-dark;
+        background: $color-border;
         display: inline-block;
         height: 1rem;
         margin-left: .5rem !important;
         margin-right: .5rem !important;
         width: 1px;
+        opacity: 0.8;
     }
 
     &-dropdown {
@@ -322,11 +371,13 @@ header {
             border: 0;
             border-radius: 0;
             box-shadow: none;
-            opacity: .8;
+            opacity: .9;
+            color: $color-text;
         }
 
         &:hover {
             opacity: 1;
+            filter: brightness(1.2);
         }
 
         &:disabled {
@@ -400,5 +451,58 @@ header {
 
     #crowd-shortcut {
         display: none;
+    }
+}
+
+//
+// Tabs
+//
+.ant-tabs {
+    .ant-tabs-nav {
+        margin-bottom: 0;
+
+        .ant-tabs-tab {
+            &.ant-tabs-tab-active {
+                .ant-tabs-tab-btn {
+                    color: $color-theme-blue;
+                }
+            }
+        }
+    }
+}
+
+// Fix collapsible styles for dark theme
+.ant-collapse {
+    .ant-collapse-header {
+        color: $color-text !important;
+    }
+
+    .ant-collapse-content {
+        background-color: transparent;
+    }
+}
+
+// Handle menu color
+.ant-menu-item-selected {
+    background-color: rgba($color-theme-blue, 0.1) !important;
+    color: $color-theme-blue !important;
+}
+
+// Fix dropdown
+.ant-dropdown-menu {
+    background-color: $color-toolbar-background;
+    border: 1px solid $color-border;
+    
+    .ant-dropdown-menu-item {
+        color: $color-text;
+        
+        &:hover {
+            background-color: $color-theme-secondary;
+        }
+        
+        &.ant-dropdown-menu-item-selected {
+            background-color: rgba($color-theme-blue, 0.1);
+            color: $color-theme-blue;
+        }
     }
 }

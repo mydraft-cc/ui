@@ -15,6 +15,7 @@ export * from './loading';
 export * from './merger';
 export * from './obsolete';
 export * from './ordering';
+export * from './theme';
 export * from './ui';
 export * from './undoable';
 export * from './utils';

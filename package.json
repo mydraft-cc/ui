@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "start": "vite",
+    "start": "vite --host",
     "start-local": "vite --mode local-server",
     "lint": "eslint src/**/*.ts[x]",
     "lint:fix": "eslint src/**/*.ts[x] --fix",

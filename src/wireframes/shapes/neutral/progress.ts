@@ -7,6 +7,7 @@
 
 import { ConfigurableFactory, ConstraintFactory, DefaultAppearance, Rect2, RenderContext, ShapePlugin } from '@app/wireframes/interface';
 import { CommonTheme } from './_theme';
+import { getCurrentTheme } from './ThemeShapeUtils';
 
 const BAR_COLOR = 'ACCENT_COLOR';
 const BAR_VALUE = 'VALUE';
@@ -54,6 +55,16 @@ export class Progress implements ShapePlugin {
     }
 
     private createBackground(ctx: RenderContext) {
+        const appearance = ctx.shape;
+        const isDark = getCurrentTheme() === 'dark';
+        const controlBg = isDark ? 0x333333 : CommonTheme.CONTROL_BACKGROUND_COLOR;
+        
+        // Adjust accent color for dark theme
+        let accentColorValue = appearance.getAppearance(BAR_COLOR);
+        if (isDark && accentColorValue === 0x2171b5) {
+            accentColorValue = 0x3182bd; // Slightly brighter blue for dark theme
+        }
+        
         const relative = ctx.shape.getAppearance(BAR_VALUE) / 100;
 
         ctx.renderer2.group(items => {
@@ -61,14 +72,18 @@ export class Progress implements ShapePlugin {
 
             // Active area
             ctx.renderer2.rectangle(0, 0, activeBounds, p => {
-                p.setBackgroundColor(ctx.shape.getAppearance(BAR_COLOR));
+                p.setBackgroundColor(accentColorValue);
             });
 
             const inactiveBounds = new Rect2(ctx.rect.width * relative, ctx.rect.top, ctx.rect.width * (1 - relative), ctx.rect.height);
 
             // Inactive area.
             items.rectangle(0, 0, inactiveBounds, p => {
-                p.setBackgroundColor(ctx.shape);
+                if (appearance.getAppearance(DefaultAppearance.BACKGROUND_COLOR) === CommonTheme.CONTROL_BACKGROUND_COLOR) {
+                    p.setBackgroundColor(controlBg);
+                } else {
+                    p.setBackgroundColor(ctx.shape);
+                }
             });
         }, clip => {
             clip.rectangle(0, ctx.rect.height * 0.5, ctx.rect);
@@ -76,8 +91,16 @@ export class Progress implements ShapePlugin {
     }
 
     private createBorder(ctx: RenderContext) {
+        const appearance = ctx.shape;
+        const isDark = getCurrentTheme() === 'dark';
+        const controlBorder = isDark ? 0x505050 : CommonTheme.CONTROL_BORDER_COLOR;
+        
         ctx.renderer2.rectangle(ctx.shape, ctx.rect.height * 0.5, ctx.rect, p => {
-            p.setStrokeColor(ctx.shape);
+            if (appearance.getAppearance(DefaultAppearance.STROKE_COLOR) === CommonTheme.CONTROL_BORDER_COLOR) {
+                p.setStrokeColor(controlBorder);
+            } else {
+                p.setStrokeColor(ctx.shape);
+            }
         });
     }
 }

@@ -6,6 +6,7 @@
 */
 
 import { DefaultAppearance, Rect2, RenderContext, ShapePlugin } from '@app/wireframes/interface';
+import { SHAPE_BACKGROUND_COLOR, getCurrentTheme } from './ThemeShapeUtils';
 
 const OFFSET = { left: 15, top: 50, right: 15, bottom: 25 };
 
@@ -53,16 +54,26 @@ export class Tablet implements ShapePlugin {
     }
 
     private createScreen(ctx: RenderContext) {
+        const appearance = ctx.shape;
+        const isDark = getCurrentTheme() === 'dark';
+        const bgColor = isDark ? SHAPE_BACKGROUND_COLOR.DARK : 0xFFFFFF;
+        
         ctx.renderer2.rectangle(0, 0, ctx.rect, p => {
-            p.setBackgroundColor(ctx.shape);
+            if (appearance.getAppearance(DefaultAppearance.BACKGROUND_COLOR) === 0xFFFFFF) {
+                p.setBackgroundColor(bgColor);
+            } else {
+                p.setBackgroundColor(ctx.shape);
+            }
         });
     }
 
     private createSpeaker(ctx: RenderContext) {
+        const isDark = getCurrentTheme() === 'dark';
+        const speakerColor = isDark ? 0x555555 : 0x333333;
         const speakerRect = new Rect2((ctx.rect.width - 50) * 0.5, -25, 50, 4);
 
         ctx.renderer2.rectangle(0, 2, speakerRect, p => {
-            p.setBackgroundColor(0x333333);
+            p.setBackgroundColor(speakerColor);
         });
     }
 }
