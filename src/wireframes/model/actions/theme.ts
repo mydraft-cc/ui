@@ -1,5 +1,6 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction, createSelector } from '@reduxjs/toolkit';
 import { useAppSelector } from '../../../store';
+import type { AppState } from '../../../store';
 import { getThemeColors } from '../../shapes/neutral/_theme';
 
 export type ThemeMode = 'light' | 'dark' | 'system';
@@ -49,19 +50,24 @@ export const themeSlice = createSlice({
 
 export const { setThemeMode, toggleTheme, updateSystemPreference } = themeSlice.actions;
 
-// Create selector for effective theme (considering system preference)
-export const selectEffectiveTheme = (state: { theme: ThemeState }) => {
-    if (state.theme.mode === 'system') {
-        return state.theme.systemPrefersDark ? 'dark' : 'light';
+// Create base selector for theme state
+const selectThemeState = (state: AppState) => state.theme;
+
+// Create memoized selector for effective theme
+export const selectEffectiveTheme = createSelector(
+    selectThemeState,
+    (theme): 'light' | 'dark' => {
+        if (theme.mode === 'system') {
+            return theme.systemPrefersDark ? 'dark' : 'light';
+        }
+        return theme.mode === 'dark' ? 'dark' : 'light';
     }
-    return state.theme.mode;
-};
+);
 
 // Hook to get theme-aware control colors
 export const useThemeColors = () => {
-    const effectiveTheme = useAppSelector(selectEffectiveTheme);
-    const isDark = effectiveTheme === 'dark';
-    return getThemeColors(isDark);
+    const theme = useAppSelector(selectEffectiveTheme);
+    return getThemeColors(theme === 'dark');
 };
 
 export const theme = themeSlice.reducer; 

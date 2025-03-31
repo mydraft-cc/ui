@@ -15,15 +15,19 @@ import { useAppDispatch } from '@app/store';
 import { ShapeSource } from '@app/wireframes/interface';
 import { addShape, changeItemsAppearance, Diagram, getDiagram, getDiagramId, getDiagrams, getEditor, getSelection, PluginRegistry, selectItems, Transform, transformItems, useStore } from '@app/wireframes/model';
 import { Editor } from '@app/wireframes/renderer/Editor';
+import { createSelector } from 'reselect';
 import { DiagramRef, ItemsRef } from './../model/actions/utils';
+import { UIStateInStore } from '../model/ui-state';
 import { useContextMenu } from './context-menu';
 import './EditorView.scss';
+
+// Create selectors for UI state
+const selectUseWebGL = (state: UIStateInStore) => state.ui.useWebGL;
 
 export const EditorView = () => {
     const diagram = useStore(getDiagram);
     const diagrams = useStore(getDiagrams);
     const editor = useStore(getEditor);
-
 
     if (!diagram) {
         return null;
@@ -47,7 +51,8 @@ export const EditorViewInner = ({ diagram, viewBox }: { diagram: Diagram; viewBo
     const renderRef = React.useRef<any>();
     const selectedDiagramId = useStore(getDiagramId);
     const selectedPoint = React.useRef({ x: 0, y: 0 });
-    const state = useStore(s => s);
+    const selectionSet = useStore(getSelection);
+    const useWebGL = useStore(selectUseWebGL);
     const contextMenu = useContextMenu(menuVisible);
 
     const doChangeItemsAppearance = useEventCallback((diagram: DiagramRef, visuals: ItemsRef, key: string, value: any) => {
@@ -168,8 +173,8 @@ export const EditorViewInner = ({ diagram, viewBox }: { diagram: Diagram; viewBo
                         onChangeItemsAppearance={doChangeItemsAppearance}
                         onSelectItems={doSelectItems}
                         onTransformItems={doTransformItems}
-                        selectionSet={getSelection(state)}
-                        useWebGL={state.ui.useWebGL}
+                        selectionSet={selectionSet}
+                        useWebGL={useWebGL}
                         viewBox={viewBox}
                         viewSize={editor.size}
                     />
