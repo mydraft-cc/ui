@@ -21,7 +21,6 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     // Create debounced theme change notifier
     const debouncedThemeChange = React.useCallback(
         debounce(() => {
-            console.debug(`ThemeProvider: Triggering force theme change notification`);
             forceTriggerThemeChange();
         }, 200),
         []

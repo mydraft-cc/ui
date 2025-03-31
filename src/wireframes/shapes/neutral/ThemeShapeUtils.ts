@@ -17,7 +17,6 @@ const themeChangeListeners: ThemeChangeListener[] = [];
 
 // Function to update the current theme (called by app on initialization/changes)
 export const updateCurrentTheme = (theme: Theme) => {
-    console.debug(`Theme changing from ${currentTheme} to ${theme}`);
     const previousTheme = currentTheme;
     currentTheme = theme;
     
@@ -96,7 +95,6 @@ export const getShapeTextColor = (): number => {
 // Force a theme change notification without changing the theme
 // This is useful for debugging or forcing a re-render
 export const forceTriggerThemeChange = () => {
-    console.debug(`Force triggering theme change notification for current theme: ${currentTheme}`);
     // Notify all listeners with the current theme 
     themeChangeListeners.forEach(listener => listener(currentTheme));
 };

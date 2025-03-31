@@ -111,7 +111,6 @@ export const ShapeRenderer = React.memo(React.forwardRef<HTMLDivElement, ShapeRe
     React.useEffect(() => {
         // Function to trigger a re-render from outside React's flow
         const triggerRerender = () => {
-            console.debug('ShapeRenderer: Theme changed, triggering debounced re-render');
             setForceRender(prev => prev + 1);
             debouncedRerender();
         };

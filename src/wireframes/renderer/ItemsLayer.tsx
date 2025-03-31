@@ -137,7 +137,6 @@ export const ItemsLayer = React.memo((props: ItemsLayerProps) => {
     // Create a function to force re-render all shapes without using hooks inside
     const forceRerenderAllShapes = React.useCallback(() => {
         const references = shapeRefsById.current;
-        console.debug(`ItemsLayer: Re-rendering ${orderedShapes.length} shapes due to theme change`);
         
         // Create the debounced function if not exists
         if (!debouncerRef.current) {
@@ -189,7 +188,6 @@ export const ItemsLayer = React.memo((props: ItemsLayerProps) => {
         // Also set up a listener for theme changes that might happen outside React's flow
         const unsubscribe = addThemeChangeListener((theme) => {
             // When theme changes through ThemeShapeUtils, force re-render
-            console.debug(`ItemsLayer: Theme changed to ${theme}, triggering shape re-render`);
             forceRerenderAllShapes();
         });
         
