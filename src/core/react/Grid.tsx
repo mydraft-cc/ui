@@ -6,9 +6,9 @@
 */
 
 import * as React from 'react';
-import { SizeMeProps, withSize } from 'react-sizeme';
 import { sizeInPx } from '@app/core/utils';
 import { useEventCallback } from './hooks';
+import useResizeObserver from '../../hooks/useResizeObserver';
 
 interface GridProps {
     // The items to render.
@@ -27,24 +27,21 @@ interface GridProps {
     keyBuilder: (item: any) => string;
 }
 
-interface GridState {
-    // The first index to render.
-    indexFirst: number;
-
-    // The last index to render.
-    indexLast: number;
-
-    // The height of all items.
-    height: number;
-
-    // The size of each cell.
+// Define layout properties type
+interface GridLayoutParams {
     cellSize: number;
+    indexFirst: number;
+    indexLast: number;
+    height: number;
 }
 
 const cache: { [key: string]: JSX.Element } = {};
 
-export const GridList = React.memo((props: GridProps & GridState) => {
+// Update GridList props type to include GridLayoutParams
+// export const GridList = React.memo((props: GridProps) => {
+export const GridList = React.memo((props: GridProps & GridLayoutParams) => {
     const {
+        // Destructure all necessary props including layout ones
         cellSize,
         indexFirst,
         indexLast,
@@ -58,6 +55,8 @@ export const GridList = React.memo((props: GridProps & GridState) => {
     const cells = [];
 
     if (renderer) {
+        // Use indexFirst and indexLast from props for virtual rendering
+        // for (let index = 0; index < items.length; index++) {
         for (let index = indexFirst; index < indexLast; index++) {
             const item = items[index];
 
@@ -72,9 +71,13 @@ export const GridList = React.memo((props: GridProps & GridState) => {
                     cache[itemKey] = cell;
                 }
 
+                // Use destructured cellSize
+                // const col = sizeInPx(props.cellSize * Math.floor(index % columns));
+                // const row = sizeInPx(props.cellSize * Math.floor(index / columns));
                 const col = sizeInPx(cellSize * Math.floor(index % columns));
                 const row = sizeInPx(cellSize * Math.floor(index / columns));
 
+                // const cellPx = sizeInPx(props.cellSize);
                 const cellPx = sizeInPx(cellSize);
 
                 cell = (
@@ -88,6 +91,9 @@ export const GridList = React.memo((props: GridProps & GridState) => {
         }
     }
 
+    // Use destructured height
+    // return (
+    //     <div style={{ height: sizeInPx(props.height), position: 'relative' }}>
     return (
         <div style={{ height: sizeInPx(height), position: 'relative' }}>
             {cells}
@@ -95,16 +101,17 @@ export const GridList = React.memo((props: GridProps & GridState) => {
     );
 });
 
-const GridComponent = (props: SizeMeProps & GridProps) => {
+const GridComponent = (props: GridProps) => {
     const {
         className,
         columns,
         items,
-        size,
     } = props;
 
+    const gridRef = React.useRef<HTMLDivElement>(null);
+    const { width, height } = useResizeObserver(gridRef);
+
     const [scrollTop, setScrollTop] = React.useState(0);
-    const [scrollContainer, setScrollContainer] = React.useState<HTMLDivElement | null>();
 
     const doScroll = useEventCallback((event: React.UIEvent<HTMLDivElement>) => {
         const div = event.target as HTMLDivElement;
@@ -113,38 +120,36 @@ const GridComponent = (props: SizeMeProps & GridProps) => {
     });
 
     const layout = React.useMemo(() => {
-        if (!scrollContainer || !size || size.height === null) {
+        if (width === undefined || height === undefined) {
             return { cellSize: 0, indexFirst: 0, indexLast: 0, height: 0 };
         }
 
-        let width = scrollContainer.clientWidth;
+        let containerWidth = width;
 
-        if (width === 0 && size.width) {
-            width = size.width;
-        }
-
-        if (width === 0) {
+        if (containerWidth === 0) {
             return { cellSize: 0, indexFirst: 0, indexLast: 0, height: 0 };
         }
 
-        width -= 1;
+        containerWidth -= 1;
 
-        const cellSize = Math.floor(width / columns);
+        const cellSize = Math.floor(containerWidth / columns);
 
-        const scrollHeight = cellSize * items.length / columns;
-        const scrollBottom = size.height + scrollTop;
+        const numRows = columns > 0 ? Math.ceil(items.length / columns) : 0;
+        const scrollContentHeight = cellSize * numRows;
 
-        const indexFirst = Math.floor(scrollTop / cellSize) * columns;
-        const indexLast = Math.floor(scrollBottom / cellSize) * columns + columns * 2;
+        const scrollBottom = height + scrollTop;
 
-        return { cellSize, indexFirst, indexLast, height: scrollHeight };
-    }, [columns, items.length, scrollTop, scrollContainer, size]);
+        const indexFirst = cellSize > 0 ? Math.floor(scrollTop / cellSize) * columns : 0;
+        const indexLast = cellSize > 0 ? Math.floor(scrollBottom / cellSize) * columns + columns * 2 : 0;
+
+        return { cellSize, indexFirst, indexLast, height: scrollContentHeight };
+    }, [columns, items.length, scrollTop, width, height]);
 
     return (
-        <div className={className} onScroll={doScroll} ref={setScrollContainer}>
+        <div className={className} onScroll={doScroll} ref={gridRef}>
             <GridList {...props} {...layout} />
         </div>
     );
 };
 
-export const Grid = withSize({ monitorHeight: true })(GridComponent);
+export const Grid = GridComponent;
