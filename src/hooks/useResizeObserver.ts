@@ -5,12 +5,6 @@ interface Size {
   height: number | undefined;
 }
 
-// Remove unused type guard
-// // Type guard to check if the target is an Element
-// function isElement(target: EventTarget | null): target is Element {
-//   return target instanceof Element;
-// }
-
 function useResizeObserver<T extends HTMLElement>(targetRef: RefObject<T>): Size {
   const [size, setSize] = useState<Size>({
     width: undefined,
