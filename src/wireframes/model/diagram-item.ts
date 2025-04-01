@@ -240,7 +240,7 @@ export class DiagramItem extends Record<Props> implements Shape {
     }
 
     public unlock() {
-        return this.set('isLocked', undefined);
+        return this.set('isLocked', false);
     }
 
     public rename(name: string) {
