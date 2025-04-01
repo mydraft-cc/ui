@@ -36,7 +36,7 @@ const PixiCanvasViewComponent = (props: CanvasProps<PixiEngine> & { background?:
         // Define application variable here to be accessible in cleanup
         let application: Application | null = new Application();
 
-        async function setup(containerElement: HTMLDivElement) { // Pass non-null ref
+        async function setup(containerElement: HTMLDivElement) {
             // Initialize application (application should not be null here)
             await application!.init({ 
                 antialias: true,
@@ -45,31 +45,26 @@ const PixiCanvasViewComponent = (props: CanvasProps<PixiEngine> & { background?:
                 eventFeatures: {
                     move: true,
                 },
-                resizeTo: containerElement, // Use the guaranteed non-null element
+                resizeTo: containerElement,
                 resolution: window.devicePixelRatio,
             });
 
             setEngine(new PixiEngine(application!));
 
-            // Append canvas (containerElement is guaranteed non-null here)
             containerElement.appendChild(application!.canvas);
         }
 
         // Call setup only if ref is valid
-        setup(ref).catch(console.error); // Added error handling for setup
+        setup(ref).catch(console.error);
 
-        // Return cleanup function directly from useEffect
         return () => {
-            // Check if app exists and destroy
-            if (application && application.stage) { 
-                // Simplify destroy call
-                // application.destroy(true, { children: true, texture: true, baseTexture: true });
-                application.destroy(true, true); // Destroy view=true, stageOptions=true (covers children, texture, baseTexture)
+            if (application && application.stage) {
+                application.destroy(true, true);
             }
-            application = null; // Clear the variable
-            setEngine(undefined); // Clear engine state
+            application = null;
+            setEngine(undefined);
         };
-    }, [background]); // Ref itself changing doesn't need to be a dependency
+    }, [background]);
 
     React.useEffect(() => {
         if (!engine || !onInit) {

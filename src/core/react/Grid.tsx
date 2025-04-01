@@ -38,7 +38,6 @@ interface GridLayoutParams {
 const cache: { [key: string]: JSX.Element } = {};
 
 // Update GridList props type to include GridLayoutParams
-// export const GridList = React.memo((props: GridProps) => {
 export const GridList = React.memo((props: GridProps & GridLayoutParams) => {
     const {
         // Destructure all necessary props including layout ones
@@ -56,7 +55,6 @@ export const GridList = React.memo((props: GridProps & GridLayoutParams) => {
 
     if (renderer) {
         // Use indexFirst and indexLast from props for virtual rendering
-        // for (let index = 0; index < items.length; index++) {
         for (let index = indexFirst; index < indexLast; index++) {
             const item = items[index];
 
@@ -71,13 +69,9 @@ export const GridList = React.memo((props: GridProps & GridLayoutParams) => {
                     cache[itemKey] = cell;
                 }
 
-                // Use destructured cellSize
-                // const col = sizeInPx(props.cellSize * Math.floor(index % columns));
-                // const row = sizeInPx(props.cellSize * Math.floor(index / columns));
                 const col = sizeInPx(cellSize * Math.floor(index % columns));
                 const row = sizeInPx(cellSize * Math.floor(index / columns));
 
-                // const cellPx = sizeInPx(props.cellSize);
                 const cellPx = sizeInPx(cellSize);
 
                 cell = (
@@ -91,9 +85,6 @@ export const GridList = React.memo((props: GridProps & GridLayoutParams) => {
         }
     }
 
-    // Use destructured height
-    // return (
-    //     <div style={{ height: sizeInPx(props.height), position: 'relative' }}>
     return (
         <div style={{ height: sizeInPx(height), position: 'relative' }}>
             {cells}

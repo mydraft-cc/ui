@@ -32,7 +32,7 @@ const Root = (
 registerServiceWorker(store);
 
 const container = document.getElementById('root-layout');
-if (container) { // Ensure container is not null
+if (container) {
     const root = createRoot(container);
     root.render(Root);
 }
