@@ -335,9 +335,11 @@ export class SnapManager {
 
         xLines.push({ value: 0 });
         xLines.push({ value: currentView.x });
+        xLines.push({ value: currentView.x * 0.5, isCenter: true });
 
         yLines.push({ value: 0 });
         yLines.push({ value: currentView.y });
+        yLines.push({ value: currentView.y * 0.5, isCenter: true });
 
         for (const aabb of bounds) {
             xLines.push({ value: aabb.left, side: 'Left' });

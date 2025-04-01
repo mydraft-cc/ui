@@ -579,11 +579,11 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
     private createResizeShapes() {
         const ys = [-0.5, -0.5, -0.5,  0.0, 0.0,  0.5, 0.5, 0.5];
         const xs = [-0.5,  0.0,  0.5, -0.5, 0.5, -0.5, 0.0, 0.5];
-        const as = [315, 0, 45, 270, 90, 215, 180, 135];
+        const cursors = ['nw-resize', 'n-resize', 'ne-resize', 'w-resize', 'e-resize', 'sw-resize', 's-resize', 'se-resize'];
 
         for (let i = 0; i < xs.length; i++) {
             const resizeShape = this.props.layer.rect();
-            resizeShape.cursor(as[i]);
+            resizeShape.cursor(cursors[i]);
             resizeShape.fill(TRANSFORMER_FILL_COLOR);
             resizeShape.strokeColor(TRANSFORMER_STROKE_COLOR);
             resizeShape.strokeWidth(1);
