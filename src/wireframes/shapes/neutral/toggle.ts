@@ -8,7 +8,6 @@
 // tslint:disable: prefer-const
 
 import { ConfigurableFactory, DefaultAppearance, Rect2, RenderContext, ShapePlugin, Vec2 } from '@app/wireframes/interface';
-import { getCurrentTheme } from './ThemeShapeUtils';
 
 const STATE = 'STATE';
 const STATE_NORMAL = 'Normal';
@@ -47,7 +46,7 @@ export class Toggle implements ShapePlugin {
 
     public render(ctx: RenderContext) {
         const appearance = ctx.shape;
-        const isDark = getCurrentTheme() === 'dark';
+        const isDark = ctx.designThemeMode === 'dark';
         const border = ctx.shape.strokeThickness;
         const radius = Math.min(ctx.rect.width, ctx.rect.height) * 0.5;
         const isUnchecked = ctx.shape.getAppearance(STATE) === STATE_NORMAL;

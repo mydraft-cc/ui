@@ -7,7 +7,6 @@
 
 import { ConfigurableFactory, ConstraintFactory, DefaultAppearance, Rect2, RenderContext, ShapePlugin } from '@app/wireframes/interface';
 import { CommonTheme } from './_theme';
-import { getCurrentTheme } from './ThemeShapeUtils';
 
 const BAR_COLOR = 'ACCENT_COLOR';
 const BAR_VALUE = 'VALUE';
@@ -56,7 +55,7 @@ export class Progress implements ShapePlugin {
 
     private createBackground(ctx: RenderContext) {
         const appearance = ctx.shape;
-        const isDark = getCurrentTheme() === 'dark';
+        const isDark = ctx.designThemeMode === 'dark';
         const controlBg = isDark ? 0x333333 : CommonTheme.CONTROL_BACKGROUND_COLOR;
         
         // Adjust accent color for dark theme
@@ -92,7 +91,7 @@ export class Progress implements ShapePlugin {
 
     private createBorder(ctx: RenderContext) {
         const appearance = ctx.shape;
-        const isDark = getCurrentTheme() === 'dark';
+        const isDark = ctx.designThemeMode === 'dark';
         const controlBorder = isDark ? 0x505050 : CommonTheme.CONTROL_BORDER_COLOR;
         
         ctx.renderer2.rectangle(ctx.shape, ctx.rect.height * 0.5, ctx.rect, p => {

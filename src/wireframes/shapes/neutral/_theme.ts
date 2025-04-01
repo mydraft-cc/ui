@@ -5,8 +5,6 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { getCurrentTheme } from './ThemeShapeUtils';
-
 // Common theme constants without dark mode adjustments - these will be overridden based on theme
 export const CommonTheme = {
     CONTROL_FONT_SIZE: 16,
@@ -19,10 +17,7 @@ export const CommonTheme = {
 };
 
 // Get theme-aware colors based on dark mode
-export const getThemeColors = (isDarkParam?: boolean) => {
-    // Use provided isDark parameter if specified, otherwise determine from current theme
-    const isDark = isDarkParam !== undefined ? isDarkParam : getCurrentTheme() === 'dark';
-    
+export const getThemeColors = (isDark: boolean) => {
     return {
         CONTROL_FONT_SIZE: 16,
         CONTROL_BACKGROUND_COLOR: isDark ? 0x333333 : 0xF0F0F0,

@@ -7,7 +7,7 @@
 
 import { ConfigurableFactory, DefaultAppearance, Rect2, RenderContext, Shape, ShapePlugin } from '@app/wireframes/interface';
 import { CommonTheme } from './_theme';
-import { SHAPE_BACKGROUND_COLOR, SHAPE_TEXT_COLOR, getCurrentTheme } from './ThemeShapeUtils';
+import { SHAPE_BACKGROUND_COLOR, SHAPE_TEXT_COLOR } from './ThemeShapeUtils';
 
 const ACCENT_COLOR = 'ACCENT_COLOR';
 const ITEM_SIZE_FIXED = 'ITEM_SIZE_FIXED';
@@ -85,7 +85,7 @@ export class List implements ShapePlugin {
 
     private createSelection(ctx: RenderContext, rect: Rect2) {
         const appearance = ctx.shape;
-        const isDark = getCurrentTheme() === 'dark';
+        const isDark = ctx.designThemeMode === 'dark';
         
         // Adjust accent color for dark theme
         let accentColorValue = appearance.getAppearance(ACCENT_COLOR);
@@ -101,7 +101,7 @@ export class List implements ShapePlugin {
 
     private createText(ctx: RenderContext, rect: Rect2, color: any, text: string) {
         const appearance = ctx.shape;
-        const isDark = getCurrentTheme() === 'dark';
+        const isDark = ctx.designThemeMode === 'dark';
         const textColor = isDark ? SHAPE_TEXT_COLOR.DARK : CommonTheme.CONTROL_TEXT_COLOR;
         
         ctx.renderer2.text(ctx.shape, rect, p => {
@@ -117,7 +117,7 @@ export class List implements ShapePlugin {
 
     private createBorder(ctx: RenderContext) {
         const appearance = ctx.shape;
-        const isDark = getCurrentTheme() === 'dark';
+        const isDark = ctx.designThemeMode === 'dark';
         const bgColor = isDark ? SHAPE_BACKGROUND_COLOR.DARK : 0xffffff;
         const controlBorder = isDark ? 0x505050 : CommonTheme.CONTROL_BORDER_COLOR;
         

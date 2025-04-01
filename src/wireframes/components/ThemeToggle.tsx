@@ -4,9 +4,9 @@ import * as React from 'react';
 import { useEventCallback } from '@app/core';
 import { setThemeMode, ThemeMode } from '../model/actions';
 import { useAppDispatch, useAppSelector } from '../../store';
-import { forceTriggerThemeChange } from '../shapes/neutral/ThemeShapeUtils';
 import { texts } from '../../texts';
 import { selectEffectiveTheme } from '../model/selectors/themeSelectors';
+
 export const ThemeToggle = () => {
     const dispatch = useAppDispatch();
     const effectiveTheme = useAppSelector(selectEffectiveTheme);
@@ -16,11 +16,6 @@ export const ThemeToggle = () => {
     
     const handleSetTheme = useEventCallback((mode: ThemeMode) => {
         dispatch(setThemeMode(mode));
-        
-        // Force immediate theme update after toggling
-        setTimeout(() => {
-            forceTriggerThemeChange();
-        }, 0);
     });
     
     // Hide tooltip when dropdown is clicked

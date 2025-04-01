@@ -30,6 +30,7 @@ export const texts = {
         delete: 'Delete',
         deleteDiagramConfirm: 'Do you really want to delete the diagram?',
         diagram: 'Diagram',
+        designTheme: 'Design Theme',
         distributeHorizontally: 'Distribute Horizontally',
         distributeVertically: 'Distribute Vertically',
         duplicate: 'Duplicate',

@@ -7,7 +7,6 @@ import { texts } from '@app/texts';
 import { useAppDispatch, useAppSelector } from '@app/store';
 import { setThemeMode, ThemeMode } from '../../model/actions';
 import { selectEffectiveTheme } from '../../model/selectors/themeSelectors';
-import { forceTriggerThemeChange } from '../../shapes/neutral/ThemeShapeUtils';
 import './MiscMenu.scss';
 
 // Component for larger menu icons with consistent styling
@@ -23,11 +22,6 @@ export const MiscMenu = React.memo(() => {
 
     const handleSetTheme = useEventCallback((mode: ThemeMode) => {
         dispatch(setThemeMode(mode));
-        
-        // Force immediate theme update after toggling
-        setTimeout(() => {
-            forceTriggerThemeChange();
-        }, 0);
     });
 
     const doToggleInfoDialog = useEventCallback(() => {

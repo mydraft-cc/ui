@@ -12,6 +12,7 @@ import { useAppDispatch, useAppSelector } from '@app/store';
 import { texts } from '@app/texts';
 import { changeColor, changeSize, getColors, getEditor, useStore } from '@app/wireframes/model';
 import { selectEffectiveTheme } from '@app/wireframes/model/selectors/themeSelectors';
+import { DesignThemeSelector } from '../DesignThemeSelector';
 
 // Define default theme colors as Color objects
 const LIGHT_DEFAULT_COLOR = Color.WHITE;
@@ -67,6 +68,13 @@ export const DiagramProperties = React.memo(() => {
                 <Col span={12} className='property-label'>{texts.common.backgroundColor}</Col>
                 <Col span={12} className='property-value'>
                     <ColorPicker value={displayColor} onChange={doChangeColor} recentColors={recentColors} />
+                </Col>
+            </Row>
+
+            <Row className='property'>
+                <Col span={12} className='property-label'>{texts.common.designTheme}</Col>
+                <Col span={12} className='property-value'>
+                    <DesignThemeSelector />
                 </Col>
             </Row>
         </>

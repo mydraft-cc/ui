@@ -7,7 +7,6 @@
 
 import { ConfigurableFactory, ConstraintFactory, DefaultAppearance, Rect2, RenderContext, ShapePlugin, Vec2 } from '@app/wireframes/interface';
 import { CommonTheme } from './_theme';
-import { getCurrentTheme } from './ThemeShapeUtils';
 
 const THUMB_COLOR = 'ACCENT_COLOR';
 const THUMB_VALUE = 'VALUE';
@@ -62,7 +61,7 @@ export class Slider implements ShapePlugin {
 
     private createThumb(ctx: RenderContext, relative: number) {
         const appearance = ctx.shape;
-        const isDark = getCurrentTheme() === 'dark';
+        const isDark = ctx.designThemeMode === 'dark';
         const thumbBg = isDark ? 0xe0e0e0 : 0xffffff;
         const controlBorder = isDark ? 0x505050 : CommonTheme.CONTROL_BORDER_COLOR;
         const thumbCenter = new Vec2(ctx.rect.x + ctx.rect.width * relative, 0.5 * HEIGHT_TOTAL);
@@ -84,7 +83,7 @@ export class Slider implements ShapePlugin {
 
     private createBackground(ctx: RenderContext, bounds: Rect2, relative: number) {
         const appearance = ctx.shape;
-        const isDark = getCurrentTheme() === 'dark';
+        const isDark = ctx.designThemeMode === 'dark';
         const controlBg = isDark ? 0x333333 : CommonTheme.CONTROL_BACKGROUND_COLOR;
         
         // Adjust accent color for dark theme
@@ -118,7 +117,7 @@ export class Slider implements ShapePlugin {
 
     private createBorder(ctx: RenderContext, bounds: Rect2) {
         const appearance = ctx.shape;
-        const isDark = getCurrentTheme() === 'dark';
+        const isDark = ctx.designThemeMode === 'dark';
         const controlBorder = isDark ? 0x505050 : CommonTheme.CONTROL_BORDER_COLOR;
         
         ctx.renderer2.rectangle(ctx.shape, bounds.height * 0.5, bounds, p => {

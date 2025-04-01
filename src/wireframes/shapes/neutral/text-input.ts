@@ -7,7 +7,7 @@
 
 import { DefaultAppearance, RenderContext, ShapePlugin } from '@app/wireframes/interface';
 import { CommonTheme } from './_theme';
-import { SHAPE_BACKGROUND_COLOR, SHAPE_TEXT_COLOR, getCurrentTheme } from './ThemeShapeUtils';
+import { SHAPE_BACKGROUND_COLOR, SHAPE_TEXT_COLOR } from './ThemeShapeUtils';
 
 const DEFAULT_APPEARANCE = {
     [DefaultAppearance.BACKGROUND_COLOR]: SHAPE_BACKGROUND_COLOR.LIGHT,
@@ -39,7 +39,7 @@ export class TextInput implements ShapePlugin {
 
     private createBorder(ctx: RenderContext) {
         const appearance = ctx.shape;
-        const isDark = getCurrentTheme() === 'dark';
+        const isDark = ctx.designThemeMode === 'dark';
         const bgColor = isDark ? SHAPE_BACKGROUND_COLOR.DARK : SHAPE_BACKGROUND_COLOR.LIGHT;
         const borderColor = isDark ? 0x505050 : CommonTheme.CONTROL_BORDER_COLOR;
         
@@ -62,7 +62,7 @@ export class TextInput implements ShapePlugin {
 
     private createText(ctx: RenderContext) {
         const appearance = ctx.shape;
-        const isDark = getCurrentTheme() === 'dark';
+        const isDark = ctx.designThemeMode === 'dark';
         const textColor = isDark ? SHAPE_TEXT_COLOR.DARK : SHAPE_TEXT_COLOR.LIGHT;
         
         ctx.renderer2.text(ctx.shape, ctx.rect.deflate(14, 4), p => {

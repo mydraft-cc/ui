@@ -7,7 +7,6 @@
 
 import { ConfigurableFactory, ConstraintFactory, DefaultAppearance, Rect2, RenderContext, ShapePlugin } from '@app/wireframes/interface';
 import { CommonTheme } from './_theme';
-import { getCurrentTheme } from './ThemeShapeUtils';
 
 const STATE = 'STATE';
 const STATE_NORMAL = 'Normal';
@@ -66,7 +65,7 @@ export class Checkbox implements ShapePlugin {
         const y = (ctx.rect.height - s) * 0.5;
         const appearance = ctx.shape;
         const bounds = new Rect2(x, y, s, s);
-        const isDark = getCurrentTheme() === 'dark';
+        const isDark = ctx.designThemeMode === 'dark';
         
         // Get theme-aware colors
         const controlBg = isDark ? 0x333333 : CommonTheme.CONTROL_BACKGROUND_COLOR;
@@ -107,7 +106,7 @@ export class Checkbox implements ShapePlugin {
         const w = ctx.rect.width - TEXT_POSITION_X;
         const h = ctx.rect.height;
         const appearance = ctx.shape;
-        const isDark = getCurrentTheme() === 'dark';
+        const isDark = ctx.designThemeMode === 'dark';
         const textColor = isDark ? 0xe0e0e0 : CommonTheme.CONTROL_TEXT_COLOR;
 
         ctx.renderer2.text(ctx.shape, new Rect2(TEXT_POSITION_X, 0, w, h), p => {

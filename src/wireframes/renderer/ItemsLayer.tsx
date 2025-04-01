@@ -9,7 +9,6 @@ import * as React from 'react';
 import { ImmutableList,  Subscription } from '@app/core';
 import { EngineItem, EngineLayer } from '@app/wireframes/engine';
 import { Diagram, DiagramItem, PluginRegistry } from '@app/wireframes/model';
-import { addThemeChangeListener } from '../shapes/neutral/ThemeShapeUtils';
 import { PreviewEvent } from './preview';
 
 // Helper function for debouncing - defined outside of component
@@ -28,8 +27,8 @@ export interface ItemsLayerProps {
     // The container to render on.
     diagramLayer: EngineLayer;
 
-    // The theme state.
-    isDarkMode?: boolean;
+    // The DESIGN theme state.
+    designThemeMode: 'light' | 'dark';
 
     // The preview subscription.
     preview?: Subscription<PreviewEvent>;
@@ -44,7 +43,7 @@ export const ItemsLayer = React.memo((props: ItemsLayerProps) => {
         diagramLayer,
         onRender,
         preview,
-        isDarkMode,
+        designThemeMode,
     } = props;
 
     const shapesRendered = React.useRef(onRender);
@@ -108,6 +107,8 @@ export const ItemsLayer = React.memo((props: ItemsLayerProps) => {
 
                 references[shape.id] = new ItemWithPreview(diagramLayer.item(plugin));
             }
+            // ** Update the theme mode for the item **
+            references[shape.id].updateThemeMode(designThemeMode);
         }
 
         let hasIdChanged = false;
@@ -132,7 +133,7 @@ export const ItemsLayer = React.memo((props: ItemsLayerProps) => {
         if (shapesRendered.current) {
             shapesRendered.current();
         }
-    }, [diagramLayer, orderedShapes]);
+    }, [diagramLayer, orderedShapes, designThemeMode]);
     
     // Create a function to force re-render all shapes without using hooks inside
     const forceRerenderAllShapes = React.useCallback(() => {
@@ -140,7 +141,7 @@ export const ItemsLayer = React.memo((props: ItemsLayerProps) => {
         
         // Create the debounced function if not exists
         if (!debouncerRef.current) {
-            debouncerRef.current = debounced((shapes: DiagramItem[]) => {
+            debouncerRef.current = debounced((shapes: DiagramItem[], currentDesignTheme: 'light' | 'dark') => {
                 // Use batched updates to prevent excessive repaints
                 let count = 0;
                 const batchSize = 10; // Number of shapes to update in each animation frame
@@ -154,7 +155,8 @@ export const ItemsLayer = React.memo((props: ItemsLayerProps) => {
                     for (let i = startIdx; i < endIdx; i++) {
                         const shape = shapes[i];
                         if (references[shape.id]) {
-                            references[shape.id].forceRerender(shape);
+                            // ** Pass theme to forceRerender **
+                            references[shape.id].forceRerender(shape, currentDesignTheme);
                         }
                     }
                     
@@ -176,22 +178,27 @@ export const ItemsLayer = React.memo((props: ItemsLayerProps) => {
             }, 100);
         }
         
-        // Call the debounced function with current shapes
-        debouncerRef.current(orderedShapes);
-    }, [orderedShapes]);
+        // ** Pass current theme to debounced function **
+        debouncerRef.current(orderedShapes, designThemeMode);
+    }, [orderedShapes, designThemeMode]);
     
     // Add a separate effect specifically for theme changes to force re-render of all shapes
     React.useEffect(() => {
-        // When isDarkMode changes directly through prop, force an immediate re-render
+        // When designThemeMode changes directly through prop, force an immediate re-render
         forceRerenderAllShapes();
-        
+
+        // --- Remove listener logic --- 
         // Also set up a listener for theme changes that might happen outside React's flow
-        const unsubscribe = addThemeChangeListener(() => {
-            forceRerenderAllShapes();
-        });
-        
-        return unsubscribe;
-    }, [isDarkMode, forceRerenderAllShapes]);
+        // NOTE: This external listener might become redundant or need adjustment
+        // after ThemeShapeUtils is refactored in Phase 4, but leave it for now.
+        // const unsubscribe = addThemeChangeListener(() => {
+        //     forceRerenderAllShapes();
+        // });
+        //
+        // return unsubscribe;
+        // --- End remove listener logic ---
+
+    }, [designThemeMode, forceRerenderAllShapes]);
 
     React.useEffect(() => {
         return preview?.subscribe(event => {
@@ -214,10 +221,16 @@ class ItemWithPreview {
     private shapePreview: DiagramItem | null = null;
     private shapeStatic: DiagramItem | null = null;
     private currentIndex = -1;
+    private currentDesignThemeMode: 'light' | 'dark' = 'light'; // Store the theme
 
     constructor(
         private readonly engineItem: EngineItem,
     ) {
+    }
+
+    // Method to update the theme
+    public updateThemeMode(mode: 'light' | 'dark') {
+        this.currentDesignThemeMode = mode;
     }
 
     public plot(shape: DiagramItem) {
@@ -246,19 +259,27 @@ class ItemWithPreview {
         this.engineItem.remove();
     }
 
-    public forceRerender(shape: DiagramItem) {
-        // Use the proper interface method to force replotting
+    public forceRerender(shape: DiagramItem, designThemeMode: 'light' | 'dark') {
+        this.currentDesignThemeMode = designThemeMode; // Update stored theme
+        const context = { designThemeMode: this.currentDesignThemeMode }; // Prepare context
+
         if (this.engineItem && typeof this.engineItem.forceReplot === 'function') {
-            this.engineItem.forceReplot(shape);
+            // Pass context as second argument
+            this.engineItem.forceReplot(shape, context);
             return true;
         }
         
-        // Fallback to standard plot if forceReplot is not available
+        // Fallback to standard plot
         this.plot(shape);
         return false;
     }
 
     private render() {
-        this.engineItem.plot(this.shapePreview || this.shapeStatic);
+        const shapeToRender = this.shapePreview || this.shapeStatic;
+        if (shapeToRender) {
+            const context = { designThemeMode: this.currentDesignThemeMode }; // Prepare context
+            // Pass context as second argument
+            this.engineItem.plot(shapeToRender, context);
+        }
     }
 }

@@ -4,9 +4,12 @@
  * @license
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
-import { ConstraintFactory, DefaultAppearance, RenderContext, ShapePlugin, ShapeSource } from '@app/wireframes/interface';
+import { ConstraintFactory, DefaultAppearance, RenderContext, ShapePlugin, ShapeSource, Shape } from '@app/wireframes/interface';
 import { CommonTheme } from './_theme';
-import { SHAPE_TEXT_COLOR, getCurrentTheme } from './ThemeShapeUtils';
+import { Rect2, Vec2 } from '@app/core';
+import { TextMeasurer } from '@app/core';
+import { Color } from '@app/core';
+import { SHAPE_TEXT_COLOR } from './ThemeShapeUtils';
 
 const DEFAULT_APPEARANCE = {
     [DefaultAppearance.FONT_SIZE]: CommonTheme.CONTROL_FONT_SIZE,
@@ -24,17 +27,15 @@ export class Label implements ShapePlugin {
     }
 
     public defaultSize() {
-        return { x: 46, y: 30 };
+        return { x: 80, y: 30 };
     }
 
     public create(source: ShapeSource) {
         if (source.type == 'Text') {
-            const { text } = source;
-
             return {
                 renderer: this.identifier(),
-                appearance: {
-                    [DefaultAppearance.TEXT]: text,
+                appearance: { 
+                    [DefaultAppearance.TEXT]: source.text,
                 },
             };
         }
@@ -42,17 +43,25 @@ export class Label implements ShapePlugin {
         return null;
     }
 
-    public constraint(factory: ConstraintFactory) {
-        return factory.textSize(5, 5);
+    public constraint() {
+        return {
+            updateSize: (shape: Shape, size: Vec2) => {
+                const fontSize = shape.getAppearance(DefaultAppearance.FONT_SIZE);
+                const fontFamily = shape.getAppearance(DefaultAppearance.FONT_FAMILY);
+                const width = TextMeasurer.DEFAULT.getTextWidth(shape.text, fontSize, fontFamily);
+                return new Vec2(width, size.y);
+            },
+            calculateSizeX: () => false,
+            calculateSizeY: () => true,
+        };
     }
 
     public render(ctx: RenderContext) {
         const appearance = ctx.shape;
-        const isDark = getCurrentTheme() === 'dark';
+        const isDark = ctx.designThemeMode === 'dark';
         const textColor = isDark ? SHAPE_TEXT_COLOR.DARK : SHAPE_TEXT_COLOR.LIGHT;
         
         ctx.renderer2.text(ctx.shape, ctx.rect, p => {
-            // Use theme-aware text color if the shape has default color
             if (appearance.getAppearance(DefaultAppearance.FOREGROUND_COLOR) === SHAPE_TEXT_COLOR.LIGHT) {
                 p.setForegroundColor(textColor);
             } else {

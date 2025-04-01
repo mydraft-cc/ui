@@ -7,7 +7,7 @@
 
 import { Color, ConfigurableFactory, DefaultAppearance, Rect2, RenderContext, ShapePlugin, ShapeProperties } from '@app/wireframes/interface';
 import { CommonTheme } from './_theme';
-import { SHAPE_BACKGROUND_COLOR, SHAPE_TEXT_COLOR, getCurrentTheme } from './ThemeShapeUtils';
+import { SHAPE_BACKGROUND_COLOR, SHAPE_TEXT_COLOR } from './ThemeShapeUtils';
 
 const TAB_COLOR = 'TAB_COLOR';
 const TAB_ALIGNMENT = 'TAB_ALIGNMENT';
@@ -81,7 +81,7 @@ export class Tabs implements ShapePlugin {
 
     private createContent(ctx: RenderContext, heightHeader: number, strokeThickness: number, isBottom: boolean) {
         const appearance = ctx.shape;
-        const isDark = getCurrentTheme() === 'dark';
+        const isDark = ctx.designThemeMode === 'dark';
         const bgColor = isDark ? SHAPE_BACKGROUND_COLOR.DARK : 0xffffff;
         const controlBorder = isDark ? 0x505050 : CommonTheme.CONTROL_BORDER_COLOR;
         
@@ -108,7 +108,7 @@ export class Tabs implements ShapePlugin {
 
     private createHeader(ctx: RenderContext, parts: Parsed, heightHeader: number, isBottom: boolean) {
         const appearance = ctx.shape;
-        const isDark = getCurrentTheme() === 'dark';
+        const isDark = ctx.designThemeMode === 'dark';
         const controlBorder = isDark ? 0x505050 : CommonTheme.CONTROL_BORDER_COLOR;
         const textColor = isDark ? SHAPE_TEXT_COLOR.DARK : CommonTheme.CONTROL_TEXT_COLOR;
         
@@ -152,7 +152,7 @@ export class Tabs implements ShapePlugin {
 
     private stylePart(part: { text: string; selected?: boolean }, ctx: RenderContext, tabColor: Color, p: ShapeProperties, controlBorder: number) {
         const appearance = ctx.shape;
-        const isDark = getCurrentTheme() === 'dark';
+        const isDark = ctx.designThemeMode === 'dark';
         const bgColor = isDark ? SHAPE_BACKGROUND_COLOR.DARK : 0xffffff;
         
         if (part.selected) {

@@ -12,6 +12,7 @@ import { EditorState } from './wireframes/model/editor-state';
 import { createInitialAssetsState, createInitialLoadingState, createInitialUIState } from './wireframes/model/internal';
 import { registerRenderers } from './wireframes/shapes';
 import { theme } from './wireframes/model/actions/theme';
+import { designThemeReducer } from './wireframes/model/actions/designThemeSlice';
 
 registerRenderers();
 
@@ -44,8 +45,10 @@ const rootReducer = {
     editor: rootLoading(undoableReducer, editorReducer),
     // Loading state, e.g. when something has been loaded.
     loading: loading(createInitialLoadingState()),
-    // Theme settings for light/dark mode
+    // App theme settings for light/dark mode
     theme,
+    // Design theme settings for canvas/shapes
+    designTheme: designThemeReducer,
     // General UI behavior.
     ui: ui(createInitialUIState()),
 };

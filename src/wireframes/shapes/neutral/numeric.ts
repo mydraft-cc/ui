@@ -7,7 +7,7 @@
 
 import { DefaultAppearance, Rect2, RenderContext, ShapePlugin } from '@app/wireframes/interface';
 import { CommonTheme } from './_theme';
-import { SHAPE_BACKGROUND_COLOR, SHAPE_TEXT_COLOR, getCurrentTheme } from './ThemeShapeUtils';
+import { SHAPE_BACKGROUND_COLOR, SHAPE_TEXT_COLOR } from './ThemeShapeUtils';
 
 const DEFAULT_APPEARANCE = {
     [DefaultAppearance.BACKGROUND_COLOR]: CommonTheme.CONTROL_BACKGROUND_COLOR,
@@ -44,7 +44,7 @@ export class Numeric implements ShapePlugin {
 
     private createClickArea(ctx: RenderContext, clickSize: number) {
         const appearance = ctx.shape;
-        const isDark = getCurrentTheme() === 'dark';
+        const isDark = ctx.designThemeMode === 'dark';
         const controlBg = isDark ? 0x333333 : CommonTheme.CONTROL_BACKGROUND_COLOR;
         const controlBorder = isDark ? 0x505050 : CommonTheme.CONTROL_BORDER_COLOR;
         const clickAreaRect = new Rect2(ctx.rect.right - clickSize, 0, clickSize, ctx.rect.height);
@@ -66,7 +66,7 @@ export class Numeric implements ShapePlugin {
 
     private createIncrementer(ctx: RenderContext, clickSize: number) {
         const appearance = ctx.shape;
-        const isDark = getCurrentTheme() === 'dark';
+        const isDark = ctx.designThemeMode === 'dark';
         const controlBorder = isDark ? 0x505050 : CommonTheme.CONTROL_BORDER_COLOR;
         const y = ctx.rect.height * 0.35;
         const x = ctx.rect.right - 0.5 * clickSize;
@@ -86,7 +86,7 @@ export class Numeric implements ShapePlugin {
 
     private createDecrementer(ctx: RenderContext, clickSize: number) {
         const appearance = ctx.shape;
-        const isDark = getCurrentTheme() === 'dark';
+        const isDark = ctx.designThemeMode === 'dark';
         const controlBorder = isDark ? 0x505050 : CommonTheme.CONTROL_BORDER_COLOR;
         const y = ctx.rect.height * 0.65;
         const x = ctx.rect.right - 0.5 * clickSize;
@@ -106,7 +106,7 @@ export class Numeric implements ShapePlugin {
 
     private createInputArea(ctx: RenderContext, clickSize: number) {
         const appearance = ctx.shape;
-        const isDark = getCurrentTheme() === 'dark';
+        const isDark = ctx.designThemeMode === 'dark';
         const inputBg = isDark ? SHAPE_BACKGROUND_COLOR.DARK : 0xffffff;
         const controlBorder = isDark ? 0x505050 : CommonTheme.CONTROL_BORDER_COLOR;
         const inputAreaRect = new Rect2(0, 0, ctx.rect.width - clickSize + 1, ctx.rect.height);
@@ -123,7 +123,7 @@ export class Numeric implements ShapePlugin {
 
     private createText(ctx: RenderContext, clickSize: number) {
         const appearance = ctx.shape;
-        const isDark = getCurrentTheme() === 'dark';
+        const isDark = ctx.designThemeMode === 'dark';
         const textColor = isDark ? SHAPE_TEXT_COLOR.DARK : CommonTheme.CONTROL_TEXT_COLOR;
         const textRect =
             new Rect2(14, 4,

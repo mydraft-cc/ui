@@ -7,7 +7,7 @@
 
 import { ConfigurableFactory, DefaultAppearance, Rect2, RenderContext, Shape, ShapePlugin } from '@app/wireframes/interface';
 import { CommonTheme } from './_theme';
-import { SHAPE_BACKGROUND_COLOR, SHAPE_TEXT_COLOR, getCurrentTheme } from './ThemeShapeUtils';
+import { SHAPE_BACKGROUND_COLOR, SHAPE_TEXT_COLOR } from './ThemeShapeUtils';
 
 const HEADER_BACKGROUND_COLOR = 'HEADER_BACKGROUND_COLOR';
 const HEADER_FOREGROUND_COLOR = 'HEADER_FOREGROUND_COLOR';
@@ -64,7 +64,7 @@ export class Grid implements ShapePlugin {
 
     private createTexts(rows: string[][], cellWidth: number, cellHeight: number, ctx: RenderContext) {
         const appearance = ctx.shape;
-        const isDark = getCurrentTheme() === 'dark';
+        const isDark = ctx.designThemeMode === 'dark';
         const textColor = isDark ? SHAPE_TEXT_COLOR.DARK : CommonTheme.CONTROL_TEXT_COLOR;
         const headerForegroundDefault = isDark ? 0xe0e0e0 : CommonTheme.CONTROL_TEXT_COLOR;
         let y = 0;
@@ -106,7 +106,7 @@ export class Grid implements ShapePlugin {
 
     private createBorders(ctx: RenderContext, columnCount: number, cellWidth: number, h: number, rows: string[][], cellHeight: number, w: number) {
         const appearance = ctx.shape;
-        const isDark = getCurrentTheme() === 'dark';
+        const isDark = ctx.designThemeMode === 'dark';
         const borderDefault = isDark ? 0x505050 : CommonTheme.CONTROL_BORDER_COLOR;
         
         let stokeColor = appearance.getAppearance(DefaultAppearance.STROKE_COLOR);
@@ -140,7 +140,7 @@ export class Grid implements ShapePlugin {
 
     private createHeader(ctx: RenderContext, height: number) {
         const appearance = ctx.shape;
-        const isDark = getCurrentTheme() === 'dark';
+        const isDark = ctx.designThemeMode === 'dark';
         const borderDefault = isDark ? 0x505050 : CommonTheme.CONTROL_BORDER_COLOR;
         const headerBgDefault = isDark ? 0x333333 : CommonTheme.CONTROL_BACKGROUND_COLOR;
         const rect = new Rect2(ctx.rect.x, ctx.rect.y, ctx.rect.w, height);
@@ -165,7 +165,7 @@ export class Grid implements ShapePlugin {
 
     private createFrame(ctx: RenderContext) {
         const appearance = ctx.shape;
-        const isDark = getCurrentTheme() === 'dark';
+        const isDark = ctx.designThemeMode === 'dark';
         const bgColor = isDark ? SHAPE_BACKGROUND_COLOR.DARK : 0xffffff;
         const borderDefault = isDark ? 0x505050 : CommonTheme.CONTROL_BORDER_COLOR;
         

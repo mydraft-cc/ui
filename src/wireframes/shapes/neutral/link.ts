@@ -7,7 +7,6 @@
 
 import { ConstraintFactory, DefaultAppearance, RenderContext, ShapePlugin, ShapeSource } from '@app/wireframes/interface';
 import { CommonTheme } from './_theme';
-import { getCurrentTheme } from './ThemeShapeUtils';
 
 // Theme-aware link colors
 const LINK_COLOR = {
@@ -59,7 +58,7 @@ export class Link implements ShapePlugin {
 
     public render(ctx: RenderContext) {
         const appearance = ctx.shape;
-        const isDark = getCurrentTheme() === 'dark';
+        const isDark = ctx.designThemeMode === 'dark';
         const linkColor = isDark ? LINK_COLOR.DARK : LINK_COLOR.LIGHT;
         
         ctx.renderer2.text(ctx.shape, ctx.rect, p => {

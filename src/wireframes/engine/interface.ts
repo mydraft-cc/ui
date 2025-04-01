@@ -7,6 +7,7 @@
 
 import { ShapePlugin, Vec2 } from '@app/wireframes/interface';
 import { DiagramItem } from './../model';
+import { DesignTheme } from './../shapes/neutral/ThemeShapeUtils';
 
 export type NextListener<T> = (event: T) => void;
 
@@ -160,13 +161,17 @@ export interface EngineObject {
     disable(): void;
 }
 
+export interface RenderContext {
+    designThemeMode: DesignTheme;
+}
+
 export interface EngineItem extends EngineObject {
     // Removes the element from the parent.
     detach(): void;
 
-    // Renders the item.
-    plot(item: DiagramItem | null): void;
-    
-    // Forces a complete re-rendering of the item, ignoring caching
-    forceReplot(item: DiagramItem | null): void;
+    // Renders the item. Accepts optional context.
+    plot(item: DiagramItem | null, context?: RenderContext): void;
+
+    // Forces a complete re-rendering of the item, ignoring caching. Accepts optional context.
+    forceReplot(item: DiagramItem | null, context?: RenderContext): void;
 }

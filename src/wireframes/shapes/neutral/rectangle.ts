@@ -7,7 +7,7 @@
 
 import { ConfigurableFactory, DefaultAppearance, RenderContext, ShapePlugin } from '@app/wireframes/interface';
 import { CommonTheme } from './_theme';
-import { SHAPE_BACKGROUND_COLOR, SHAPE_TEXT_COLOR, getCurrentTheme } from './ThemeShapeUtils';
+import { SHAPE_BACKGROUND_COLOR, SHAPE_TEXT_COLOR } from './ThemeShapeUtils';
 
 const BORDER_RADIUS = 'BORDER_RADIUS';
 const PADDING_HORIZONTAL = 'PADDING_HORIZONTAL2';
@@ -55,7 +55,7 @@ export class Rectangle implements ShapePlugin {
         const padV = appearance.getAppearance(PADDING_VERTICAL);
         
         // Get current theme state
-        const isDark = getCurrentTheme() === 'dark';
+        const isDark = ctx.designThemeMode === 'dark';
         
         // Get theme-aware colors for background and text
         const bgColor = isDark ? SHAPE_BACKGROUND_COLOR.DARK : SHAPE_BACKGROUND_COLOR.LIGHT;

@@ -7,7 +7,6 @@
 
 import { ConfigurableFactory, DefaultAppearance, Rect2, RenderContext, ShapePlugin } from '@app/wireframes/interface';
 import { CommonTheme } from './_theme';
-import { getCurrentTheme } from './ThemeShapeUtils';
 
 const ARROW_COLOR = 'ARROW_COLOR';
 const THUMB_COLOR = 'BAR_COLOR';
@@ -59,7 +58,7 @@ export class HorizontalScrollbar implements ShapePlugin {
 
     private createBackground(ctx: RenderContext, clickSize: number) {
         const appearance = ctx.shape;
-        const isDark = getCurrentTheme() === 'dark';
+        const isDark = ctx.designThemeMode === 'dark';
         const controlBg = isDark ? 0x333333 : CommonTheme.CONTROL_BACKGROUND_COLOR;
         
         // Adjust colors for dark theme
@@ -95,7 +94,7 @@ export class HorizontalScrollbar implements ShapePlugin {
 
     private createBorder(ctx: RenderContext) {
         const appearance = ctx.shape;
-        const isDark = getCurrentTheme() === 'dark';
+        const isDark = ctx.designThemeMode === 'dark';
         const controlBg = isDark ? 0x333333 : CommonTheme.CONTROL_BACKGROUND_COLOR;
         
         ctx.renderer2.rectangle(ctx.shape, 0, ctx.rect, p => {
@@ -109,7 +108,7 @@ export class HorizontalScrollbar implements ShapePlugin {
 
     private createRightTriangle(ctx: RenderContext, clickSize: number) {
         const appearance = ctx.shape;
-        const isDark = getCurrentTheme() === 'dark';
+        const isDark = ctx.designThemeMode === 'dark';
         
         // Adjust colors for dark theme
         const arrowDefault = isDark ? 0x666666 : 0xbdbdbd;
@@ -132,7 +131,7 @@ export class HorizontalScrollbar implements ShapePlugin {
 
     private createLeftTriangle(ctx: RenderContext, clickSize: number) {
         const appearance = ctx.shape;
-        const isDark = getCurrentTheme() === 'dark';
+        const isDark = ctx.designThemeMode === 'dark';
         
         // Adjust colors for dark theme
         const arrowDefault = isDark ? 0x666666 : 0xbdbdbd;

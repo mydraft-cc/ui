@@ -12,7 +12,6 @@ import { SvgCanvasView } from '@app/wireframes/engine/svg/canvas/SvgCanvas';
 import { SvgEngine } from '@app/wireframes/engine/svg/engine';
 import { ShapePlugin, Size } from '@app/wireframes/interface';
 import { DefaultConstraintFactory, DiagramItem, Transform } from '@app/wireframes/model';
-import { addThemeChangeListener } from '@app/wireframes/shapes/neutral/ThemeShapeUtils';
 import { selectEffectiveTheme } from '@app/wireframes/model/selectors/themeSelectors';
 import { useAppSelector } from '@app/store';
 
@@ -106,17 +105,6 @@ export const ShapeRenderer = React.memo(React.forwardRef<HTMLDivElement, ShapeRe
             debouncedRerender();
         }
     }, [isDarkMode, debouncedRerender, engine]);
-
-    // Add direct theme change listener as backup
-    React.useEffect(() => {
-        // Function to trigger a re-render from outside React's flow
-        const triggerRerender = () => {
-            setForceRender(prev => prev + 1);
-            debouncedRerender();
-        };
-        
-        return addThemeChangeListener(triggerRerender);
-    }, [debouncedRerender]);
 
     // Extract the shape rendering logic into a separate function
     const renderShape = React.useCallback(() => {

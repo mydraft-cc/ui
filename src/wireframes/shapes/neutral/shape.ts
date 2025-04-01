@@ -7,7 +7,7 @@
 
 import { ConfigurableFactory, DefaultAppearance, RenderContext, ShapePlugin, ShapeProperties } from '@app/wireframes/interface';
 import { CommonTheme } from './_theme';
-import { SHAPE_BACKGROUND_COLOR, SHAPE_TEXT_COLOR, getCurrentTheme } from './ThemeShapeUtils';
+import { SHAPE_BACKGROUND_COLOR, SHAPE_TEXT_COLOR } from './ThemeShapeUtils';
 
 const SHAPE = 'SHAPE';
 const SHAPE_RECTANGLE = 'Rectangle';
@@ -91,7 +91,7 @@ export class Shape implements ShapePlugin {
 
     private styleShape(ctx: RenderContext, p: ShapeProperties) {
         const appearance = ctx.shape;
-        const isDark = getCurrentTheme() === 'dark';
+        const isDark = ctx.designThemeMode === 'dark';
         const bgColor = isDark ? SHAPE_BACKGROUND_COLOR.DARK : 0xFFFFFF;
         const controlBorder = isDark ? 0x505050 : CommonTheme.CONTROL_BORDER_COLOR;
         
@@ -110,7 +110,7 @@ export class Shape implements ShapePlugin {
 
     private createText(ctx: RenderContext) {
         const appearance = ctx.shape;
-        const isDark = getCurrentTheme() === 'dark';
+        const isDark = ctx.designThemeMode === 'dark';
         const textColor = isDark ? SHAPE_TEXT_COLOR.DARK : 0;
         
         ctx.renderer2.text(ctx.shape, ctx.rect.deflate(10, 10), p => {

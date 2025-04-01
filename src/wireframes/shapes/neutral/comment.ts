@@ -7,7 +7,7 @@
 
 import { DefaultAppearance, RenderContext, ShapePlugin } from '@app/wireframes/interface';
 import { CommonTheme } from './_theme';
-import { SHAPE_TEXT_COLOR, getCurrentTheme } from './ThemeShapeUtils';
+import { SHAPE_TEXT_COLOR } from './ThemeShapeUtils';
 
 const DEFAULT_APPEARANCE = {
     [DefaultAppearance.FONT_SIZE]: CommonTheme.CONTROL_FONT_SIZE,
@@ -38,7 +38,7 @@ export class Comment implements ShapePlugin {
     }
 
     private createBorder(ctx: RenderContext, c: number) {
-        const isDark = getCurrentTheme() === 'dark';
+        const isDark = ctx.designThemeMode === 'dark';
         const commentBg = isDark ? 0x786e34 : 0xfff9b7;
         const commentBorder = isDark ? 0x555555 : 0x000000;
         const outerBounds = ctx.renderer2.getOuterBounds(ctx.shape, ctx.rect);
@@ -59,7 +59,7 @@ export class Comment implements ShapePlugin {
 
     private createText(ctx: RenderContext) {
         const appearance = ctx.shape;
-        const isDark = getCurrentTheme() === 'dark';
+        const isDark = ctx.designThemeMode === 'dark';
         const textColor = isDark ? SHAPE_TEXT_COLOR.DARK : 0x000000;
         
         ctx.renderer2.textMultiline(ctx.shape, ctx.rect.deflate(10, 20), p => {

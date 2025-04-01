@@ -7,7 +7,7 @@
 
 import { ConfigurableFactory, DefaultAppearance, RenderContext, ShapePlugin } from '@app/wireframes/interface';
 import { CommonTheme } from './_theme';
-import { SHAPE_BACKGROUND_COLOR, getCurrentTheme } from './ThemeShapeUtils';
+import { SHAPE_BACKGROUND_COLOR } from './ThemeShapeUtils';
 
 const IMAGE_URL = 'URL';
 const IMAGE_ASPECT_RATIO = 'ASPECT_RATIO';
@@ -56,7 +56,7 @@ export class Image implements ShapePlugin {
 
     private createCross(ctx: RenderContext) {
         const appearance = ctx.shape;
-        const isDark = getCurrentTheme() === 'dark';
+        const isDark = ctx.designThemeMode === 'dark';
         const controlBorder = isDark ? 0x505050 : CommonTheme.CONTROL_BORDER_COLOR;
         const l = ctx.rect.left + 0.5;
         const r = ctx.rect.right - 0.5;
@@ -77,7 +77,7 @@ export class Image implements ShapePlugin {
 
     private createBorder(ctx: RenderContext) {
         const appearance = ctx.shape;
-        const isDark = getCurrentTheme() === 'dark';
+        const isDark = ctx.designThemeMode === 'dark';
         const bgColor = isDark ? SHAPE_BACKGROUND_COLOR.DARK : 0xFFFFFF;
         const controlBorder = isDark ? 0x505050 : CommonTheme.CONTROL_BORDER_COLOR;
         

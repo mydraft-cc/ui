@@ -15,7 +15,7 @@ import { PixiCanvasView } from '@app/wireframes/engine/pixi/canvas/PixiCanvas';
 import { SvgCanvasView } from '@app/wireframes/engine/svg/canvas/SvgCanvas';
 import { Diagram, DiagramItem, DiagramItemSet, Transform } from '@app/wireframes/model';
 import { selectEffectiveTheme } from '@app/wireframes/model/selectors/themeSelectors';
-import { addThemeChangeListener } from '@app/wireframes/shapes/neutral/ThemeShapeUtils';
+import { selectDesignThemeMode } from '@app/wireframes/model/actions/designThemeSlice';
 import { useStore, getEditor } from '@app/wireframes/model';
 import { useOverlayContext } from './../contexts/OverlayContext';
 import { ItemsLayer } from './ItemsLayer';
@@ -96,8 +96,10 @@ export const Editor = React.memo((props: EditorProps) => {
     const editor = useStore(getEditor);
     const userDefinedColor = editor.color; 
 
-    const effectiveTheme = useAppSelector(selectEffectiveTheme);
-    const isDarkMode = effectiveTheme === 'dark';
+    const effectiveAppTheme = useAppSelector(selectEffectiveTheme);
+    const isAppDarkMode = effectiveAppTheme === 'dark';
+
+    const designThemeMode = useAppSelector(selectDesignThemeMode);
     
     const [layers, setLayers] = React.useState<Layers>();
     const renderWebGL = React.useRef(useWebGL);
@@ -161,18 +163,21 @@ export const Editor = React.memo((props: EditorProps) => {
         if (layers) {
             // Use a debounced function to update canvas theme
             const updateCanvasTheme = debounce(() => {
-                // Determine theme-based defaults first
-                const themeCanvasBgColor = isDarkMode ? '#252525' : '#ffffff';
-                const borderDarkColor = isDarkMode ? '#404040' : '#b8b8b8';
-                const gridColor = isDarkMode ? '#333333' : '#e0e0e0';
+                // Determine theme-based defaults
+                // ** Design Theme Default Background **
+                const designThemeDefaultBgColor = designThemeMode === 'dark' ? '#252525' : '#ffffff';
 
-                // Use userDefinedColor if available, otherwise use theme default
-                const finalCanvasBgColor = userDefinedColor ? userDefinedColor.toString() : themeCanvasBgColor;
+                // ** App Theme Chrome Colors **
+                const borderDarkColor = isAppDarkMode ? '#404040' : '#b8b8b8';
+                const gridColor = isAppDarkMode ? '#333333' : '#e0e0e0';
+
+                // Use userDefinedColor if available, otherwise use design theme default
+                const finalCanvasBgColor = userDefinedColor ? userDefinedColor.toString() : designThemeDefaultBgColor;
 
                 layers.backgroundRect?.fill(finalCanvasBgColor); // Use final color
-                layers.backgroundRect?.strokeColor(borderDarkColor);
+                layers.backgroundRect?.strokeColor(borderDarkColor); // Use app theme for border
                 
-                // Update any grid-related elements if they exist
+                // Update any grid-related elements if they exist (using app theme color)
                 if (layers.engine && typeof layers.engine.updateGridColor === 'function') {
                     layers.engine.updateGridColor(gridColor);
                 }
@@ -183,7 +188,8 @@ export const Editor = React.memo((props: EditorProps) => {
             
             updateCanvasTheme();
         }
-    }, [isDarkMode, layers, userDefinedColor]); // Run when theme, layers, or user color change
+        // Add designThemeMode to dependencies
+    }, [isAppDarkMode, layers, userDefinedColor, designThemeMode]); 
 
     React.useEffect(() => {
         overlayContext.snapManager.prepare(diagram, viewSize);
@@ -216,14 +222,14 @@ export const Editor = React.memo((props: EditorProps) => {
             {diagram && layers && (
                 <>
                     <ItemsLayer
-                        isDarkMode={isDarkMode}
+                        designThemeMode={designThemeMode}
                         diagrams={masterDiagrams}
                         diagramLayer={layers.renderMasterLayer}
                         onRender={onRender}
                     />
 
                     <ItemsLayer
-                        isDarkMode={isDarkMode}
+                        designThemeMode={designThemeMode}
                         diagrams={[diagram]}
                         diagramLayer={layers.renderMainLayer}
                         preview={renderPreview.current}

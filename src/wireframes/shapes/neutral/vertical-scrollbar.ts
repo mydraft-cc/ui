@@ -7,7 +7,6 @@
 
 import { ConfigurableFactory, DefaultAppearance, Rect2, RenderContext, ShapePlugin } from '@app/wireframes/interface';
 import { CommonTheme } from './_theme';
-import { getCurrentTheme } from './ThemeShapeUtils';
 
 const ARROW_COLOR = 'ARROW_COLOR';
 const THUMB_COLOR = 'BAR_COLOR';
@@ -59,7 +58,8 @@ export class VerticalScrollbar implements ShapePlugin {
 
     private createBackground(ctx: RenderContext, clickSize: number) {
         const appearance = ctx.shape;
-        const isDark = getCurrentTheme() === 'dark';
+        // Use context theme
+        const isDark = ctx.designThemeMode === 'dark';
         const controlBg = isDark ? 0x333333 : CommonTheme.CONTROL_BACKGROUND_COLOR;
         
         // Adjust colors for dark theme
@@ -72,15 +72,16 @@ export class VerticalScrollbar implements ShapePlugin {
         ctx.renderer2.group(items => {
             // Rail
             items.rectangle(0, 0, ctx.rect, p => {
-                if (appearance.getAppearance(DefaultAppearance.BACKGROUND_COLOR) === CommonTheme.CONTROL_BACKGROUND_COLOR) {
-                    p.setBackgroundColor(controlBg);
-                } else {
+                 // Use appearance background if set, otherwise use theme default
+                if (appearance.getAppearance(DefaultAppearance.BACKGROUND_COLOR) != null && appearance.getAppearance(DefaultAppearance.BACKGROUND_COLOR) !== CommonTheme.CONTROL_BACKGROUND_COLOR) {
                     p.setBackgroundColor(ctx.shape);
+                } else {
+                    p.setBackgroundColor(controlBg);
                 }
             });
 
-            const barHeight = ctx.shape.getAppearance(THUMB_SIZE) / 100;
-            const barOffset = ctx.shape.getAppearance(THUMB_POSITION) / 100 * (ctx.rect.height - 2 * clickSize) * (1 - barHeight);
+            const barHeight = appearance.getAppearance(THUMB_SIZE) / 100;
+            const barOffset = appearance.getAppearance(THUMB_POSITION) / 100 * (ctx.rect.height - 2 * clickSize) * (1 - barHeight);
             
             const barRect = new Rect2(ctx.rect.x, ctx.rect.y + clickSize + barOffset, ctx.rect.width, (ctx.rect.height - 2 * clickSize) * barHeight);
 
@@ -95,21 +96,24 @@ export class VerticalScrollbar implements ShapePlugin {
 
     private createBorder(ctx: RenderContext) {
         const appearance = ctx.shape;
-        const isDark = getCurrentTheme() === 'dark';
-        const controlBg = isDark ? 0x333333 : CommonTheme.CONTROL_BACKGROUND_COLOR;
+        // Use context theme
+        const isDark = ctx.designThemeMode === 'dark'; 
+        const controlBorder = isDark ? 0x505050 : CommonTheme.CONTROL_BORDER_COLOR;
         
         ctx.renderer2.rectangle(ctx.shape, 0, ctx.rect, p => {
-            if (appearance.getAppearance(DefaultAppearance.STROKE_COLOR) === CommonTheme.CONTROL_BACKGROUND_COLOR) {
-                p.setStrokeColor(controlBg);
-            } else {
+            // Use appearance stroke if set, otherwise use theme default
+            if (appearance.getAppearance(DefaultAppearance.STROKE_COLOR) != null && appearance.getAppearance(DefaultAppearance.STROKE_COLOR) !== CommonTheme.CONTROL_BORDER_COLOR) {
                 p.setStrokeColor(ctx.shape);
+            } else {
+                p.setStrokeColor(controlBorder);
             }
         });
     }
 
     private createBottomTriangle(ctx: RenderContext, clickSize: number) {
         const appearance = ctx.shape;
-        const isDark = getCurrentTheme() === 'dark';
+        // Use context theme
+        const isDark = ctx.designThemeMode === 'dark';
         
         // Adjust colors for dark theme
         const arrowDefault = isDark ? 0x666666 : 0xbdbdbd;
@@ -130,7 +134,8 @@ export class VerticalScrollbar implements ShapePlugin {
 
     private createTopTriangle(ctx: RenderContext, clickSize: number) {
         const appearance = ctx.shape;
-        const isDark = getCurrentTheme() === 'dark';
+        // Use context theme
+        const isDark = ctx.designThemeMode === 'dark';
         
         // Adjust colors for dark theme
         const arrowDefault = isDark ? 0x666666 : 0xbdbdbd;

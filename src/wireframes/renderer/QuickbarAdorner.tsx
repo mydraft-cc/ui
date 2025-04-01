@@ -9,7 +9,6 @@ import * as React from 'react';
 import { Rect2, sizeInPx, Subscription, ViewBox } from '@app/core';
 import { ActionButton, useAlignment } from '@app/wireframes/components/actions';
 import { Diagram, DiagramItemSet } from '@app/wireframes/model';
-import { addThemeChangeListener } from '../shapes/neutral/ThemeShapeUtils';
 import { PreviewEvent } from './preview';
 import './QuickbarAdorner.scss';
 
@@ -68,16 +67,6 @@ export const QuickbarAdorner = (props: QuickbarAdornerProps) => {
             setSelectionRect(undefined);
         }
     }, [selectedDiagram, selectionSet.selectedItems]);
-
-    React.useEffect(() => {
-        // If the theme changes directly through ThemeShapeUtils, this will trigger
-        return addThemeChangeListener(() => {
-            // Force a re-render when theme changes by creating a new selection rect with the same properties
-            if (selectionRect) {
-                setSelectionRect(Rect2.fromRects(selectionSet.selectedItems.map(x => x.bounds(selectedDiagram).aabb)));
-            }
-        });
-    }, [selectedDiagram, selectionSet, selectionRect]);
 
     if (!selectionRect) {
         return null;

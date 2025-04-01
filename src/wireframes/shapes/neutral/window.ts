@@ -6,7 +6,7 @@
 */
 
 import { DefaultAppearance, Rect2, RenderContext, ShapePlugin } from '@app/wireframes/interface';
-import { SHAPE_BACKGROUND_COLOR, getCurrentTheme } from './ThemeShapeUtils';
+import { SHAPE_BACKGROUND_COLOR } from './ThemeShapeUtils';
 
 const OFFSET = { left: 2, top: 30, right: 2, bottom: 1 };
 
@@ -44,7 +44,7 @@ export class Window implements ShapePlugin {
 
     private createWindow(ctx: RenderContext) {
         const windowRect = new Rect2(-OFFSET.left, -OFFSET.top, ctx.rect.width + OFFSET.left + OFFSET.right, ctx.rect.height + OFFSET.top + OFFSET.bottom);
-        const isDark = getCurrentTheme() === 'dark';
+        const isDark = ctx.designThemeMode === 'dark';
         const bgColor = isDark ? SHAPE_BACKGROUND_COLOR.DARK : SHAPE_BACKGROUND_COLOR.LIGHT;
         const borderColor = isDark ? 0x505050 : 0xC0C0C0;
 
@@ -60,7 +60,7 @@ export class Window implements ShapePlugin {
 
     private createHeader(ctx: RenderContext) {
         const headerRect = new Rect2(-OFFSET.left, -OFFSET.top, ctx.rect.width + OFFSET.left + OFFSET.right, OFFSET.top);
-        const isDark = getCurrentTheme() === 'dark';
+        const isDark = ctx.designThemeMode === 'dark';
         const headerColor = isDark ? 0x202020 : 0x303030;
 
         ctx.renderer2.rectangle(0, 0, headerRect, p => {

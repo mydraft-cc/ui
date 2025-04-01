@@ -6,54 +6,12 @@
 */
 
 // Define a theme type for clarity
-export type Theme = 'light' | 'dark';
+export type DesignTheme = 'light' | 'dark'; // Renamed for clarity
 
-// Default to light theme initially
-let currentTheme: Theme = 'light';
+// Get theme-aware colors for shape rendering, now accepting theme mode
+export const getShapeThemeColors = (designThemeMode: DesignTheme) => {
+    const isDark = designThemeMode === 'dark'; // Use passed parameter
 
-// Listener collection to notify when theme changes
-type ThemeChangeListener = (theme: Theme) => void;
-const themeChangeListeners: ThemeChangeListener[] = [];
-
-// Function to update the current theme (called by app on initialization/changes)
-export const updateCurrentTheme = (theme: Theme) => {
-    const previousTheme = currentTheme;
-    currentTheme = theme;
-    
-    // If theme changed, notify listeners
-    if (previousTheme !== theme) {
-        themeChangeListeners.forEach(listener => listener(theme));
-        return true;
-    }
-    
-    return false;
-};
-
-// Add a listener for theme changes
-export const addThemeChangeListener = (listener: ThemeChangeListener) => {
-    themeChangeListeners.push(listener);
-    
-    // Immediately invoke with current theme to ensure the listener is up-to-date
-    listener(currentTheme);
-    
-    // Return unsubscribe function
-    return () => {
-        const index = themeChangeListeners.indexOf(listener);
-        if (index !== -1) {
-            themeChangeListeners.splice(index, 1);
-        }
-    };
-};
-
-// Get the current effective theme value
-export const getCurrentTheme = (): Theme => {
-    return currentTheme;
-};
-
-// Get theme-aware colors for shape rendering
-export const getShapeThemeColors = () => {
-    const isDark = getCurrentTheme() === 'dark';
-    
     return {
         CONTROL_FONT_SIZE: 16,
         CONTROL_BACKGROUND_COLOR: isDark ? 0x333333 : 0xF0F0F0,
@@ -64,9 +22,9 @@ export const getShapeThemeColors = () => {
     };
 };
 
-// Get a theme-aware color value for a specific element
-export const getThemeAwareColor = (lightColor: number, darkColor: number): number => {
-    const isDark = getCurrentTheme() === 'dark';
+// Get a theme-aware color value for a specific element, now accepting theme mode
+export const getThemeAwareColor = (designThemeMode: DesignTheme, lightColor: number, darkColor: number): number => {
+    const isDark = designThemeMode === 'dark'; // Use passed parameter
     return isDark ? darkColor : lightColor;
 };
 
@@ -82,24 +40,22 @@ export const SHAPE_TEXT_COLOR = {
 };
 
 // Use static values for initial render, will be updated at runtime
-export const getShapeBackgroundColor = (): number => {
-    const isDark = getCurrentTheme() === 'dark';
+// Now accepting theme mode
+export const getShapeBackgroundColor = (designThemeMode: DesignTheme): number => {
+    const isDark = designThemeMode === 'dark'; // Use passed parameter
     return isDark ? SHAPE_BACKGROUND_COLOR.DARK : SHAPE_BACKGROUND_COLOR.LIGHT;
 };
 
-export const getShapeTextColor = (): number => {
-    const isDark = getCurrentTheme() === 'dark';
+// Now accepting theme mode
+export const getShapeTextColor = (designThemeMode: DesignTheme): number => {
+    const isDark = designThemeMode === 'dark'; // Use passed parameter
     return isDark ? SHAPE_TEXT_COLOR.DARK : SHAPE_TEXT_COLOR.LIGHT;
 };
 
-// Force a theme change notification without changing the theme
-// This is useful for debugging or forcing a re-render
-export const forceTriggerThemeChange = () => {
-    // Notify all listeners with the current theme 
-    themeChangeListeners.forEach(listener => listener(currentTheme));
-};
-
 // Force a repaint of a specific shape with current theme values
+// NOTE: This function might need adjustment depending on how shapes consume the theme.
+// For now, it remains, but its direct theme dependency is removed.
+// It's assumed the `shape` object passed to forceReplot contains the necessary theme info.
 export const forceRepaintShape = (shape: any, engineItem: any) => {
     if (shape && engineItem && typeof engineItem.forceReplot === 'function') {
         engineItem.forceReplot(shape);

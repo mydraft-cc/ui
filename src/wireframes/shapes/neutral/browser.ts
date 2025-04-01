@@ -5,17 +5,12 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { DefaultAppearance, Rect2, RenderContext, ShapePlugin } from '@app/wireframes/interface';
+import { Rect2 } from '@app/core';
+import { DefaultAppearance, RenderContext, ShapePlugin } from '@app/wireframes/interface';
 import { CommonTheme } from './_theme';
-import { SHAPE_BACKGROUND_COLOR, getCurrentTheme } from './ThemeShapeUtils';
 
 const OFFSET = { left: 4, top: 70, right: 4, bottom: 15 };
-
-const DEFAULT_APPEARANCE = {
-    [DefaultAppearance.BACKGROUND_COLOR]: 0xFFFFFF,
-    [DefaultAppearance.TEXT_DISABLED]: true,
-};
-
+const ADDRESS_CODE = String.fromCharCode(0xf0c1);
 const REFRESH_CODE = String.fromCharCode(0xf021);
 
 export class Browser implements ShapePlugin {
@@ -24,19 +19,15 @@ export class Browser implements ShapePlugin {
     }
 
     public defaultAppearance() {
-        return DEFAULT_APPEARANCE;
+        return { 
+            [DefaultAppearance.BACKGROUND_COLOR]: 0xFFFFFF,
+            [DefaultAppearance.STROKE_COLOR]: CommonTheme.CONTROL_BORDER_COLOR,
+            [DefaultAppearance.STROKE_THICKNESS]: CommonTheme.CONTROL_BORDER_THICKNESS,
+        };
     }
 
     public defaultSize() {
-        return { x: 800, y: 600 };
-    }
-
-    public previewSize() {
-        return { x: 400, y: 300 };
-    }
-
-    public previewOffset() {
-        return OFFSET;
+        return { x: 600, y: 400 };
     }
 
     public render(ctx: RenderContext) {
@@ -51,7 +42,7 @@ export class Browser implements ShapePlugin {
     }
 
     private createWindow(ctx: RenderContext) {
-        const isDark = getCurrentTheme() === 'dark';
+        const isDark = ctx.designThemeMode === 'dark'; 
         const controlBg = isDark ? 0x333333 : CommonTheme.CONTROL_BACKGROUND_COLOR;
         const controlBorder = isDark ? 0x505050 : CommonTheme.CONTROL_BORDER_COLOR;
         const windowRect = new Rect2(-OFFSET.left, -OFFSET.top, ctx.rect.width + OFFSET.left + OFFSET.right, ctx.rect.height + OFFSET.top + OFFSET.bottom);
@@ -64,20 +55,20 @@ export class Browser implements ShapePlugin {
 
     private createInner(ctx: RenderContext) {
         const appearance = ctx.shape;
-        const isDark = getCurrentTheme() === 'dark';
-        const bgColor = isDark ? SHAPE_BACKGROUND_COLOR.DARK : 0xFFFFFF;
+        const isDark = ctx.designThemeMode === 'dark';
+        const bgColor = isDark ? 0x2A2A2A : 0xFFFFFF;
         
         ctx.renderer2.rectangle(0, 0, ctx.rect, p => {
-            if (appearance.getAppearance(DefaultAppearance.BACKGROUND_COLOR) === 0xFFFFFF) {
-                p.setBackgroundColor(bgColor);
-            } else {
+            if (appearance.getAppearance(DefaultAppearance.BACKGROUND_COLOR) != null) { 
                 p.setBackgroundColor(ctx.shape);
+            } else {
+                p.setBackgroundColor(bgColor);
             }
         });
     }
 
     private createSearch(ctx: RenderContext) {
-        const isDark = getCurrentTheme() === 'dark';
+        const isDark = ctx.designThemeMode === 'dark';
         const controlBorder = isDark ? 0x505050 : CommonTheme.CONTROL_BORDER_COLOR;
         const searchBg = isDark ? 0x222222 : 0xffffff;
         const searchRect = new Rect2(50, -34, ctx.rect.width - 50, 30);
@@ -89,7 +80,7 @@ export class Browser implements ShapePlugin {
     }
 
     private createIcon(ctx: RenderContext) {
-        const isDark = getCurrentTheme() === 'dark';
+        const isDark = ctx.designThemeMode === 'dark';
         const iconColor = isDark ? 0xaaaaaa : 0x555555;
         const iconRect = new Rect2(5, -34, 30, 30);
 

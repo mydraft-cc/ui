@@ -2,7 +2,6 @@ import { ConfigProvider, theme } from 'antd';
 import * as React from 'react';
 import { useAppDispatch, useAppSelector } from '@app/store';
 import { updateSystemPreference } from '../model/actions';
-import { forceTriggerThemeChange, updateCurrentTheme } from '../shapes/neutral/ThemeShapeUtils';
 import { selectEffectiveTheme } from '../model/selectors/themeSelectors';
 // Debounce helper function
 const debounce = (fn: Function, delay: number) => {
@@ -18,14 +17,6 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const effectiveTheme = useAppSelector(selectEffectiveTheme);
     const themeChangeTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
     
-    // Create debounced theme change notifier
-    const debouncedThemeChange = React.useCallback(
-        debounce(() => {
-            forceTriggerThemeChange();
-        }, 200),
-        []
-    );
-    
     // Update body class for theme
     React.useEffect(() => {
         // Remove any existing theme classes
@@ -36,19 +27,13 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             document.body.classList.add('dark-theme');
         }
         
-        // Directly synchronize theme with ThemeShapeUtils
-        updateCurrentTheme(effectiveTheme);
-        
-        // Use debounced version to prevent multiple cascading updates
-        debouncedThemeChange();
-        
         return () => {
             if (themeChangeTimeoutRef.current) {
                 clearTimeout(themeChangeTimeoutRef.current);
                 themeChangeTimeoutRef.current = null;
             }
         };
-    }, [effectiveTheme, debouncedThemeChange]);
+    }, [effectiveTheme]);
     
     // Listen for system theme changes
     React.useEffect(() => {

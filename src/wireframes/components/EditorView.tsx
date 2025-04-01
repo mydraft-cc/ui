@@ -10,7 +10,7 @@ import * as React from 'react';
 import { DropTargetMonitor, useDrop } from 'react-dnd';
 import { NativeTypes } from 'react-dnd-html5-backend';
 import { Canvas, ImmutableMap, loadImagesToClipboardItems, useClipboard, useEventCallback, ViewBox } from '@app/core';
-import { useAppDispatch } from '@app/store';
+import { useAppDispatch, useAppSelector } from '@app/store';
 import { ShapeSource } from '@app/wireframes/interface';
 import { addShape, changeItemsAppearance, Diagram, getDiagram, getDiagramId, getDiagrams, getEditor, getSelection, PluginRegistry, selectItems, Transform, transformItems, useStore } from '@app/wireframes/model';
 import { Editor } from '@app/wireframes/renderer/Editor';
@@ -45,7 +45,8 @@ export const EditorViewInner = ({ diagram, viewBox }: { diagram: Diagram; viewBo
     const renderRef = React.useRef<any>();
     const selectedDiagramId = useStore(getDiagramId);
     const selectedPoint = React.useRef({ x: 0, y: 0 });
-    const state = useStore(s => s);
+    const useWebGL = useAppSelector(state => state.ui.useWebGL);
+    const selectionSet = useStore(getSelection);
     const contextMenu = useContextMenu(menuVisible);
 
     const doChangeItemsAppearance = useEventCallback((diagram: DiagramRef, visuals: ItemsRef, key: string, value: any) => {
@@ -165,8 +166,8 @@ export const EditorViewInner = ({ diagram, viewBox }: { diagram: Diagram; viewBo
                         onChangeItemsAppearance={doChangeItemsAppearance}
                         onSelectItems={doSelectItems}
                         onTransformItems={doTransformItems}
-                        selectionSet={getSelection(state)}
-                        useWebGL={state.ui.useWebGL}
+                        selectionSet={selectionSet}
+                        useWebGL={useWebGL}
                         viewBox={viewBox}
                         viewSize={editor.size}
                     />
