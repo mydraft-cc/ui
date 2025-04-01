@@ -7,11 +7,10 @@
 
 import { Application } from 'pixi.js';
 import * as React from 'react';
-import { SizeMeProps, withSize } from 'react-sizeme';
 import { CanvasProps } from './../../canvas';
 import { PixiEngine } from './../engine';
 
-const PixiCanvasViewComponent = (props: CanvasProps<PixiEngine> & { background?: string } & SizeMeProps) => {
+const PixiCanvasViewComponent = (props: CanvasProps<PixiEngine> & { background?: string }) => {
     const {
         className,
         onInit,
@@ -21,43 +20,56 @@ const PixiCanvasViewComponent = (props: CanvasProps<PixiEngine> & { background?:
 
     const background = props.background || 'white';
     const [engine, setEngine] = React.useState<PixiEngine>();
+    const canvasContainerRef = React.useRef<HTMLDivElement>(null);
 
-    const doInit = React.useCallback((ref: HTMLDivElement) => {
+    React.useEffect(() => {
+        const ref = canvasContainerRef.current;
         if (!ref) {
             return;
         }
 
-        for (const child of ref.childNodes) {
-            child.remove();
+        // Clear previous PIXI canvas if any (important for HMR or re-renders)
+        while (ref.firstChild) {
+            ref.removeChild(ref.firstChild);
         }
+        
+        // Define application variable here to be accessible in cleanup
+        let application: Application | null = new Application();
 
-        const application = new Application();
-
-        async function setup() {
-            await application.init({ 
+        async function setup(containerElement: HTMLDivElement) { // Pass non-null ref
+            // Initialize application (application should not be null here)
+            await application!.init({ 
                 antialias: true,
                 autoDensity: true,
                 background,
                 eventFeatures: {
                     move: true,
                 },
-                resizeTo: ref,
+                resizeTo: containerElement, // Use the guaranteed non-null element
                 resolution: window.devicePixelRatio,
             });
 
-            setEngine(new PixiEngine(application));
+            setEngine(new PixiEngine(application!));
 
-            ref.appendChild(application.canvas);
+            // Append canvas (containerElement is guaranteed non-null here)
+            containerElement.appendChild(application!.canvas);
         }
 
-        setup();
+        // Call setup only if ref is valid
+        setup(ref).catch(console.error); // Added error handling for setup
 
+        // Return cleanup function directly from useEffect
         return () => {
-            application.destroy();
-            application.canvas.remove();
+            // Check if app exists and destroy
+            if (application && application.stage) { 
+                // Simplify destroy call
+                // application.destroy(true, { children: true, texture: true, baseTexture: true });
+                application.destroy(true, true); // Destroy view=true, stageOptions=true (covers children, texture, baseTexture)
+            }
+            application = null; // Clear the variable
+            setEngine(undefined); // Clear engine state
         };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [background]); // Ref itself changing doesn't need to be a dependency
 
     React.useEffect(() => {
         if (!engine || !onInit) {
@@ -94,8 +106,8 @@ const PixiCanvasViewComponent = (props: CanvasProps<PixiEngine> & { background?:
     }, [engine, viewBox]);
 
     return (
-        <div style={style} className={className} ref={doInit} />
+        <div style={style} className={className} ref={canvasContainerRef} />
     );
 };
 
-export const PixiCanvasView = withSize({ monitorWidth: true, monitorHeight: true })(PixiCanvasViewComponent);
+export const PixiCanvasView = PixiCanvasViewComponent;
