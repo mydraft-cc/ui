@@ -101,9 +101,13 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
         this.manipulated = false;
 
         if (this.hasSelection()) {
-            this.calculateInitializeTransform();
-            this.calculateResizeRestrictions();
-            this.renderShapes();
+            if (this.isSelectionLocked()) {
+                this.hideShapes();
+            } else {
+                this.calculateInitializeTransform();
+                this.calculateResizeRestrictions();
+                this.renderShapes();
+            }
         } else {
             this.hideShapes();
         }
@@ -113,6 +117,10 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
         if (this.props.engine) {
             this.props.engine.unsubscribe(this);
         }
+    }
+
+    private isSelectionLocked(): boolean {
+        return this.props.selectionSet.selectedItems.some(item => item.isLocked);
     }
 
     private hasSelection(): boolean {
@@ -156,7 +164,8 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
 
     public onKeyDown(event: KeyboardEvent, next: (event: KeyboardEvent) => void) {
         // If the manipulation with the mouse is still in progress we do not handle the event.
-        if (isInputFocused() || !this.hasSelection() || this.manipulationMode != Mode.None) {
+
+        if (isInputFocused() || !this.hasSelection() || this.isSelectionLocked() || this.manipulationMode != Mode.None) {
             next(event);
             return;
         }
@@ -246,8 +255,8 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
     }
 
     public onMouseDown(event: EngineHitEvent, next: (event: EngineHitEvent) => void) {
-        // If the manipulation with the keyboard is still in progress we do not handle the event.
-        if (event.source.ctrlKey || this.moveTimer || this.manipulationMode != Mode.None) {
+      // If the manipulation with the keyboard is still in progress we do not handle the event.
+        if (event.source.ctrlKey || this.moveTimer || this.manipulationMode != Mode.None || this.isSelectionLocked()) {
             next(event);
             return;
         }
@@ -468,7 +477,7 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
     }
 
     private startManipulation(position: Vec2, transform: Transform) {
-        // Use a stream of preview updates to bypass react for performance reasons.
+      // Use a stream of preview updates to bypass react for performance reasons.
         this.props.previewStream.next({ type: 'Start' });
 
         this.moveTimer?.destroy();
@@ -482,7 +491,7 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
     }
 
     private stopTransform() {
-        // Use a stream of preview updates to bypass react for performance reasons.
+      // Use a stream of preview updates to bypass react for performance reasons.
         this.props.previewStream.next({ type: 'End' });
 
         this.moveTimer?.destroy();

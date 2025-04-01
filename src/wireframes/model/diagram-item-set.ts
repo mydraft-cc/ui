@@ -20,7 +20,7 @@ export class DiagramItemSet {
     public readonly isComplete: boolean = true;
 
     public get selectedItems() {
-        return this.cachedSelectedItems ||= Array.from(this.selection.values()).filter(x => !x.isLocked);
+        return this.cachedSelectedItems ||= Array.from(this.selection.values());
     }
 
     public get editableItems() {
