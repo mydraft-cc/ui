@@ -44,7 +44,7 @@ export const TransformProperties = () => {
             // Move by the delta between new and old position, because we move relative to the bounding box.
             return oldBounds.moveBy(new Vec2(dx, 0));
         });
-    }, 0, 0);
+    }, 0, 50);
 
     const [y, setY] = useDebounceCallback(value => {
         doTransform(oldBounds => {
@@ -53,7 +53,7 @@ export const TransformProperties = () => {
             // Move by the delta between new and old position, because we move relative to the bounding box.
             return oldBounds.moveBy(new Vec2(0, dy));
         });
-    }, 0, 0);
+    }, 0, 50);
 
     const [w, setW] = useDebounceCallback(value => {
         doTransform(oldBounds => {
@@ -62,7 +62,7 @@ export const TransformProperties = () => {
             // Size by keeping the left top corner sticky.
             return oldBounds.resizeTopLeft(size);
         });
-    }, 0, 0);
+    }, 0, 50);
 
     const [h, setH] = useDebounceCallback(value => {
         doTransform(oldBounds => {
@@ -71,7 +71,7 @@ export const TransformProperties = () => {
             // Size by keeping the left top corner sticky.
             return oldBounds.resizeTopLeft(size);
         });
-    }, 0, 0);
+    }, 0, 50);
 
     const [r, setR] = useDebounceCallback(value => {
         doTransform(oldBounds => {
@@ -80,7 +80,7 @@ export const TransformProperties = () => {
             // Rotate to the value.
             return oldBounds.rotateTo(rotation);
         });
-    }, 0, 0);
+    }, 0, 30);
 
     React.useEffect(() => {
         setRotation(Rotation.ZERO);
