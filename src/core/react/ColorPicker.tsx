@@ -109,7 +109,7 @@ export const ColorPicker = React.memo((props: ColorPickerProps) => {
                         <div>
                             <h4>{texts.common.recent}</h4>
 
-                            <ColorList color={color} colors={recentColors} onClick={doSelectColor} />
+                            <ColorList color={color} colors={recentColors} onClick={doSelectColor} alignment='left' />
                         </div>
                     }
                 </div>

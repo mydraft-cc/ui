@@ -6,12 +6,20 @@ $size: 22px;
 .color-picker {
     &-colors {
         @include clearfix;
-        max-width: 210px;
-        min-width: 210px;
+        width: 210px;
+        margin: 0 auto;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 2px;
+
+        &.left-aligned {
+            margin: 0 0 0 10px;
+            justify-content: flex-start;
+        }
 
         & .color-picker-color {
-            margin-right: 2px;
-            margin-bottom: 2px;
+            margin: 0;
         }
     }
 
@@ -48,15 +56,31 @@ $size: 22px;
     }
 
     &-tabs {
-        margin-top: -10px;
+        margin-top: 0;
+        min-height: 200px;
+
+        :global(.ant-tabs-nav) {
+            margin-bottom: 12px !important;
+        }
     }
 
     &-palette-tab {
-        // Palette tab will only be as tall as it needs to be
+        padding: 8px;
+
+        h4 {
+            font-size: 0.9em;
+            font-weight: 600;
+            color: $color-text-decent;
+            margin-top: 12px;
+            margin-bottom: 6px;
+        }
     }
 
     &-advanced-tab {
-        // Advanced tab has more content and requires more space
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        padding: 8px;
     }
 }
 
@@ -85,5 +109,24 @@ $size: 22px;
 span {
     &.color-picker-button {
         padding: 0 !important;
+    }
+}
+
+.ant-popover {
+    border-radius: .5rem;
+
+    .ant-popover-inner {
+        border-radius: .5rem;
+        background-color: $color-background !important;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+        border: 1px solid $color-border;
+    }
+}
+
+// Specific styles for light mode (when body doesn't have .dark-theme)
+body:not(.dark-theme) {
+    .ant-popover-inner {
+        // Override background to white for better contrast in light mode
+        background-color: $color-white !important; 
     }
 }
