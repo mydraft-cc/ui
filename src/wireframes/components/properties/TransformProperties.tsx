@@ -44,7 +44,7 @@ export const TransformProperties = () => {
             // Move by the delta between new and old position, because we move relative to the bounding box.
             return oldBounds.moveBy(new Vec2(dx, 0));
         });
-    }, 0);
+    }, 0, 0);
 
     const [y, setY] = useDebounceCallback(value => {
         doTransform(oldBounds => {
@@ -53,7 +53,7 @@ export const TransformProperties = () => {
             // Move by the delta between new and old position, because we move relative to the bounding box.
             return oldBounds.moveBy(new Vec2(0, dy));
         });
-    }, 0);
+    }, 0, 0);
 
     const [w, setW] = useDebounceCallback(value => {
         doTransform(oldBounds => {
@@ -62,7 +62,7 @@ export const TransformProperties = () => {
             // Size by keeping the left top corner sticky.
             return oldBounds.resizeTopLeft(size);
         });
-    }, 0);
+    }, 0, 0);
 
     const [h, setH] = useDebounceCallback(value => {
         doTransform(oldBounds => {
@@ -71,7 +71,7 @@ export const TransformProperties = () => {
             // Size by keeping the left top corner sticky.
             return oldBounds.resizeTopLeft(size);
         });
-    }, 0);
+    }, 0, 0);
 
     const [r, setR] = useDebounceCallback(value => {
         doTransform(oldBounds => {
@@ -80,7 +80,7 @@ export const TransformProperties = () => {
             // Rotate to the value.
             return oldBounds.rotateTo(rotation);
         });
-    }, 0);
+    }, 0, 0);
 
     React.useEffect(() => {
         setRotation(Rotation.ZERO);
@@ -148,7 +148,7 @@ export const TransformProperties = () => {
     );
 };
 
-function useDebounceCallback<T>(callback: ((value: T) => void), initial: T): [T, (value: T) => void] {
+function useDebounceCallback<T>(callback: ((value: T) => void), initial: T, delay = 500): [T, (value: T) => void] {
     const [state, setState] = React.useState<T>(initial);
 
     const callbackHook = useEventCallback(callback);
@@ -158,7 +158,7 @@ function useDebounceCallback<T>(callback: ((value: T) => void), initial: T): [T,
 
         const timer = setTimeout(() => {
             callbackHook(currentState);
-        }, 500);
+        }, delay);
 
         return () => {
             clearTimeout(timer);

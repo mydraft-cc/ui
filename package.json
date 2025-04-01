@@ -2,6 +2,7 @@
   "name": "mydraft.cc",
   "version": "1.0.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "start": "vite --host",
     "start-local": "vite --mode local-server",
