@@ -90,7 +90,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
                         colorItemBgSelected: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.05)',
                     },
                     Layout: {
-                        colorBgHeader: isDark ? '#0a0a0a' : '#fff',
+                        headerBg: isDark ? '#0a0a0a' : '#fff',
                     },
                     Card: {
                         colorBgContainer: isDark ? '#1e1e1e' : '#fff',
