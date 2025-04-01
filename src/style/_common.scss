@@ -1,3 +1,5 @@
+@use 'sass:color';
+
 @import '@app/style/mixins';
 @import '@app/style/vars';
 
@@ -443,13 +445,17 @@ header {
       &::before {
           content: '';
           position: absolute;
-          top: 20%;
+          top: 0;
           left: 0;
-          height: 60%;
+          height: 100%;
           width: 1px;
-          background-color: rgba(white, .2) !important;
+          background-color: $color-theme-blue-lighter !important;
           z-index: 5;
           pointer-events: none;
+      }
+
+      &:disabled::before {
+        background-color: $color-border !important;
       }
   }
   
@@ -465,12 +471,12 @@ header {
   
   .ant-btn:hover:not(:disabled), 
   .ant-dropdown-trigger:hover:not(:disabled) {
-      background-color: $color-theme-blue !important;
+      background-color: $color-theme-blue-lighter !important;
   }
   
   .ant-btn:active:not(:disabled), 
   .ant-dropdown-trigger:active:not(:disabled) {
-      background-color: $color-theme-blue !important;
+      background-color: $color-theme-blue-lighter !important;
   }
   
   .ant-btn:disabled, 
