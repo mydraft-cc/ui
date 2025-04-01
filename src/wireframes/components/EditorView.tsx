@@ -5,11 +5,10 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { Dropdown } from 'antd';
+import { Dropdown, MenuProps } from 'antd';
 import * as React from 'react';
 import { DropTargetMonitor, useDrop } from 'react-dnd';
 import { NativeTypes } from 'react-dnd-html5-backend';
-import { findDOMNode } from 'react-dom';
 import { Canvas, ImmutableMap, loadImagesToClipboardItems, useClipboard, useEventCallback, ViewBox } from '@app/core';
 import { useAppDispatch } from '@app/store';
 import { ShapeSource } from '@app/wireframes/interface';
@@ -117,7 +116,7 @@ export const EditorViewInner = ({ diagram, viewBox }: { diagram: Diagram; viewBo
                 return;
             }
 
-            const componentRect = (findDOMNode(renderRef.current) as HTMLElement)!.getBoundingClientRect();
+            const componentRect = renderRef.current!.getBoundingClientRect();
 
             // Convert to the space of the element
             const relativeX = (offset?.x || 0) - componentRect.left;
