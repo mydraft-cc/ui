@@ -6,6 +6,7 @@
 */
 
 import { DefaultAppearance, RenderContext, ShapePlugin, ShapeSource } from '@app/wireframes/interface';
+import { getCurrentTheme } from '@app/wireframes/shapes/neutral/ThemeShapeUtils';
 
 const DEFAULT_APPEARANCE = {
     [DefaultAppearance.FOREGROUND_COLOR]: 0,
@@ -47,11 +48,25 @@ export class Icon implements ShapePlugin {
 
     public render(ctx: RenderContext) {
         const fontSize = Math.min(ctx.rect.w, ctx.rect.h) - 10;
-
         const config = { fontSize, text: ctx.shape.text, alignment: 'center' };
+        const isDark = getCurrentTheme() === 'dark';
+        const foregroundColor = ctx.shape.getAppearance(DefaultAppearance.FOREGROUND_COLOR);
 
         ctx.renderer2.text(config, ctx.rect, p => {
-            p.setForegroundColor(ctx.shape);
+            // If the color hasn't been customized by the user (still at 0)
+            if (foregroundColor === 0) {
+                if (isDark) {
+                    p.setForegroundColor(0xe0e0e0);
+                    p.setOpacity(0.85);
+                } else {
+                    p.setForegroundColor(0x373a3c);
+                    p.setOpacity(0.88);
+                }
+            } else {
+                // User has customized the color
+                p.setForegroundColor(ctx.shape);
+            }
+            
             p.setFontFamily(ctx.shape.getAppearance(DefaultAppearance.ICON_FONT_FAMILY) || 'FontAwesome');
         });
     }
