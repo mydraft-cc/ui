@@ -1,0 +1,112 @@
+/*
+ * mydraft.cc
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
+@use 'sass:color';
+
+@import '@app/style/vars';
+
+.misc-menu-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.menu-large-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 12px;
+    
+    .anticon {
+        font-size: 24px;
+    }
+}
+
+.ant-dropdown {
+    .ant-dropdown-menu {
+        background-color: $color-toolbar-background;
+        border: 1px solid $color-border;
+        padding: 4px;
+    }
+
+    .menu-item-with-icon {
+        &:hover {
+            background-color: var(--ant-color-primary-bg-hover, $color-theme-blue-lightest);
+        }
+
+        .ant-dropdown-menu-title-content {
+            display: flex;
+            align-items: center;
+        }
+    }
+}
+
+.dropdown-theme-toggle {
+    padding: 5px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    
+    .dropdown-section-title {
+        font-weight: 500;
+        color: var(--ant-color-text, $color-text);
+        margin-bottom: 8px;
+    }
+    
+    .theme-segmented.ant-segmented {
+        width: 100%;
+        border-radius: 6px;
+        padding: 2px;
+        background-color: var(--ant-color-bg-layout, $color-toolbar-background);
+        border: 1px solid var(--ant-color-border, $color-border);
+        
+        .ant-segmented-item {
+            min-width: unset;
+            flex: 1;
+            height: 36px;
+            border-radius: 4px;
+            margin: 0 2px;
+            transition: all 0.2s ease;
+            border: none;
+            
+            &:hover:not(.ant-segmented-item-selected) {
+                background-color: var(--ant-color-bg-elevated, $color-toolbar-background);
+            }
+            
+            &.ant-segmented-item-selected {
+                span:not(.anticon) {
+                    font-weight: 500;
+                }
+            }
+            
+            .ant-segmented-item-label {
+                padding: 0 8px;
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                justify-content: center;
+                gap: 8px;
+                height: 100%;
+                
+                .anticon {
+                    font-size: 18px;
+                }
+                
+                @media (max-width: 350px) {
+                    span:not(.anticon) {
+                        display: none;
+                    }
+                }
+            }
+        }
+    }
+}
+
+body.dark-theme .dropdown-theme-toggle .theme-segmented.ant-segmented .ant-segmented-item {
+    &:hover:not(.ant-segmented-item-selected) {
+         background-color: var(--ant-color-bg-elevated, $color-toolbar-background);
+    }
+} 

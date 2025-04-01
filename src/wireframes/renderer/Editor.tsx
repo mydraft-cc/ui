@@ -16,6 +16,7 @@ import { SvgCanvasView } from '@app/wireframes/engine/svg/canvas/SvgCanvas';
 import { Diagram, DiagramItem, DiagramItemSet, Transform } from '@app/wireframes/model';
 import { selectEffectiveTheme } from '@app/wireframes/model/selectors/themeSelectors';
 import { addThemeChangeListener } from '@app/wireframes/shapes/neutral/ThemeShapeUtils';
+import { useStore, getEditor } from '@app/wireframes/model';
 import { useOverlayContext } from './../contexts/OverlayContext';
 import { ItemsLayer } from './ItemsLayer';
 import { NavigateAdorner } from './NavigateAdorner';
@@ -91,6 +92,10 @@ export const Editor = React.memo((props: EditorProps) => {
         useWebGL,
     } = props;
 
+    // Get editor state, including user-defined color
+    const editor = useStore(getEditor);
+    const userDefinedColor = editor.color; 
+
     const effectiveTheme = useAppSelector(selectEffectiveTheme);
     const isDarkMode = effectiveTheme === 'dark';
     
@@ -99,6 +104,15 @@ export const Editor = React.memo((props: EditorProps) => {
     const renderPreview = React.useRef(new Subscription<PreviewEvent>());
     const overlayContext = useOverlayContext();
     const masterDiagrams = React.useMemo(() => diagram.masterDiagrams(diagrams), [diagram, diagrams]);
+    
+    // Helper function for debouncing
+    function debounce(fn: Function, delay: number) {
+        let timeoutId: NodeJS.Timeout;
+        return (...args: any[]) => {
+            clearTimeout(timeoutId);
+            timeoutId = setTimeout(() => fn(...args), delay);
+        };
+    }
     
     const doInit = React.useCallback((engine: Engine) => {
         // Might be called multiple times in dev mode!
@@ -147,12 +161,15 @@ export const Editor = React.memo((props: EditorProps) => {
         if (layers) {
             // Use a debounced function to update canvas theme
             const updateCanvasTheme = debounce(() => {
-                // Determine the correct colors based *directly* on isDarkMode state
-                const canvasBgColor = isDarkMode ? '#252525' : '#ffffff'; 
-                const borderDarkColor = isDarkMode ? '#404040' : '#b8b8b8'; 
+                // Determine theme-based defaults first
+                const themeCanvasBgColor = isDarkMode ? '#252525' : '#ffffff';
+                const borderDarkColor = isDarkMode ? '#404040' : '#b8b8b8';
                 const gridColor = isDarkMode ? '#333333' : '#e0e0e0';
 
-                layers.backgroundRect?.fill(canvasBgColor);
+                // Use userDefinedColor if available, otherwise use theme default
+                const finalCanvasBgColor = userDefinedColor ? userDefinedColor.toString() : themeCanvasBgColor;
+
+                layers.backgroundRect?.fill(finalCanvasBgColor); // Use final color
                 layers.backgroundRect?.strokeColor(borderDarkColor);
                 
                 // Update any grid-related elements if they exist
@@ -166,48 +183,7 @@ export const Editor = React.memo((props: EditorProps) => {
             
             updateCanvasTheme();
         }
-    }, [isDarkMode, layers]); // Run when theme or layers change
-
-    // Add effect to handle theme changes outside of React's flow
-    React.useEffect(() => {
-        // This will only run once when the component mounts
-        const unsubscribe = addThemeChangeListener((theme) => {
-            if (layers && layers.backgroundRect) {
-                // Update UI based on theme when the theme changes directly
-                // Use a debounced function to prevent multiple updates
-                const updateCanvasTheme = debounce(() => {
-                    const isDark = theme === 'dark';
-                    const canvasBgColor = isDark ? '#252525' : '#ffffff'; 
-                    const borderDarkColor = isDark ? '#404040' : '#b8b8b8'; 
-                    const gridColor = isDark ? '#333333' : '#e0e0e0';
-
-                    layers.backgroundRect.fill(canvasBgColor);
-                    layers.backgroundRect.strokeColor(borderDarkColor);
-                    
-                    // Update any grid-related elements if they exist
-                    if (layers.engine && typeof layers.engine.updateGridColor === 'function') {
-                        layers.engine.updateGridColor(gridColor);
-                    }
-                    
-                    // Force a redraw of the canvas to ensure immediate updates
-                    layers.engine?.invalidate?.();
-                }, 50);
-                
-                updateCanvasTheme();
-            }
-        });
-        
-        return unsubscribe;
-    }, [layers]);
-    
-    // Helper function for debouncing
-    function debounce(fn: Function, delay: number) {
-        let timeoutId: NodeJS.Timeout;
-        return (...args: any[]) => {
-            clearTimeout(timeoutId);
-            timeoutId = setTimeout(() => fn(...args), delay);
-        };
-    }
+    }, [isDarkMode, layers, userDefinedColor]); // Run when theme, layers, or user color change
 
     React.useEffect(() => {
         overlayContext.snapManager.prepare(diagram, viewSize);

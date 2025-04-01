@@ -73,8 +73,8 @@ export const ColorPicker = React.memo((props: ColorPickerProps) => {
         setColor(value ? Color.fromValue(value) : Color.BLACK);
     }, [value]);
 
-    const doToggle = useEventCallback(() => {
-        setVisible(x => !x);
+    const doHandleVisibleChange = useEventCallback((isVisible: boolean) => {
+        setVisible(isVisible);
     });
 
     const doSelectColorResult = useEventCallback((result: ColorResult) => {
@@ -102,7 +102,7 @@ export const ColorPicker = React.memo((props: ColorPickerProps) => {
             key: 'palette',
             label: texts.common.palette,
             children: (
-                <>
+                <div className="color-picker-palette-tab">
                     <ColorList color={color} colors={selectedPalette} onClick={doSelectColor} />
 
                     {recentColors &&
@@ -112,20 +112,20 @@ export const ColorPicker = React.memo((props: ColorPickerProps) => {
                             <ColorList color={color} colors={recentColors} onClick={doSelectColor} />
                         </div>
                     }
-                </>
+                </div>
             ),
         },
         {
             key: 'advanced',
             label: texts.common.advanced,
             children: (
-                <>
+                <div className="color-picker-advanced-tab">
                     <SketchPicker color={colorHex} onChange={doSelectColorResult} disableAlpha={true} width='210px' />
 
                     <Button onClick={doConfirmColor}>
                         {texts.common.apply}
                     </Button>
-                </>
+                </div>
             ),
         },
     ];
@@ -137,8 +137,14 @@ export const ColorPicker = React.memo((props: ColorPickerProps) => {
     const placement = popoverPlacement || 'left';
 
     return (
-        <Popover content={content} open={visible && !disabled} placement={placement} trigger={[]} onOpenChange={setVisible}>
-            <Button disabled={disabled} className='color-picker-button' onClick={doToggle}
+        <Popover 
+            content={content} 
+            open={visible && !disabled} 
+            placement={placement}
+            trigger="click"
+            onOpenChange={doHandleVisibleChange}
+        >
+            <Button disabled={disabled} className='color-picker-button'
                 icon={
                     <Icon component={() => 
                         <div className='color-picker-color'>

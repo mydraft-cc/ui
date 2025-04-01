@@ -15,6 +15,7 @@ export * from './menu/ClipboardMenu';
 export * from './menu/HistoryMenu';
 export * from './menu/LoadingMenu';
 export * from './menu/LockMenu';
+export * from './menu/MiscMenu';
 export * from './menu/SettingsMenu';
 export * from './menu/UIMenu';
 export * from './pages/Pages';

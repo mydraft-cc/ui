@@ -337,12 +337,19 @@ header {
     flex-grow: 1;
     justify-content: space-between;
     padding: 10px 0;
+    position: relative;
 
     & > div {
         align-items: center;
         display: flex;
         flex-direction: row;
         flex-wrap: nowrap;
+    }
+
+    & > div:nth-child(2) {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
     }
 
     .ant-space-compact-block {

@@ -47,13 +47,14 @@ export const PrintDiagram = (props: PrintDiagramProps) => {
     const viewBox = React.useMemo(() => {
         if (useBounds) {
             const aabbs = Array.from(diagram.items.values, x => x.bounds(diagram).aabb);
-
             const rect = Rect2.fromRects(aabbs).inflate(20);
+            const width = rect.width;
+            const height = rect.height;
             return {
                 minX: rect.x,
                 minY: rect.y,
-                maxX: size.x,
-                maxY: size.y,
+                maxX: rect.x + width,
+                maxY: rect.y + height,
                 zoom: 1,
             };
         } else {

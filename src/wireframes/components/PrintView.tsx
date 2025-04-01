@@ -45,6 +45,7 @@ export const PrintView = (props: PrintRendererProps) => {
                         diagrams={diagrams}
                         onRender={doRender}
                         size={size}
+                        useBounds={true}
                     />
                 </div>,
             )}

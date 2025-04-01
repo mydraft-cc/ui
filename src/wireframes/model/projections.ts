@@ -112,7 +112,10 @@ export const getColors = createSelector(
             }
         };
 
-        addColor(editor.present.color.toNumber());
+        // Only add the editor background color if it's not null
+        if (editor.present.color) {
+            addColor(editor.present.color.toNumber());
+        }
 
         for (const diagram of editor.present.diagrams.values) {
             for (const shape of diagram.items.values) {

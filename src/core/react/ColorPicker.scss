@@ -49,8 +49,14 @@ $size: 22px;
 
     &-tabs {
         margin-top: -10px;
-        max-height: 400px;
-        min-height: 400px;
+    }
+
+    &-palette-tab {
+        // Palette tab will only be as tall as it needs to be
+    }
+
+    &-advanced-tab {
+        // Advanced tab has more content and requires more space
     }
 }
 

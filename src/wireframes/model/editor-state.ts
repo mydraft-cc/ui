@@ -28,8 +28,8 @@ type Props = {
     // The id of the state.
     id: string;
 
-    // The color for all diagrams.
-    color: Color;
+    // The color for all diagrams. Allow null.
+    color: Color | null;
 };
 
 export type InitialEditorProps = {
@@ -80,7 +80,7 @@ export class EditorState extends Record<Props> {
 
         const props: Props = {
             id: MathHelper.guid(),
-            color: color || Color.WHITE,
+            color: color || null,
             diagrams: ImmutableMap.of(diagrams),
             diagramIds: ImmutableList.of(diagramIds),
             size: size || new Vec2(1000, 1000),

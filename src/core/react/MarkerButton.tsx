@@ -7,10 +7,11 @@
 
 import { SmileOutlined } from '@ant-design/icons';
 import markerSDK, { MarkerSdk } from '@marker.io/browser';
-import { Button } from 'antd';
+import { Button, ButtonProps } from 'antd';
 import * as React from 'react';
 
-export const MarkerButton = () => {
+// Custom hook to manage marker SDK
+export const useMarkerSDK = () => {
     const [widget, setWidget] = React.useState<MarkerSdk>();
 
     React.useEffect(() => {
@@ -26,10 +27,30 @@ export const MarkerButton = () => {
 
         loadMarker();
     }, []);
+
+    const captureMarker = React.useCallback(() => {
+        widget?.capture('advanced');
+    }, [widget]);
+
+    return { captureMarker };
+};
+
+export interface MarkerButtonProps extends ButtonProps {
+    // Any additional props specific to MarkerButton
+    children?: React.ReactNode;
+}
+
+export const MarkerButton = ({ children, ...buttonProps }: MarkerButtonProps) => {
+    const { captureMarker } = useMarkerSDK();
     
     return (
-        <Button className='menu-item' onClick={() => widget?.capture('advanced')}>
-            <SmileOutlined />
+        <Button 
+            className='menu-item' 
+            onClick={captureMarker} 
+            icon={!children && <SmileOutlined style={{ fontSize: '24px' }} />}
+            {...buttonProps}
+        >
+            {children}
         </Button>
     );
 };

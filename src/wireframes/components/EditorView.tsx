@@ -5,28 +5,24 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { Dropdown } from 'antd';
+import { Dropdown, MenuProps } from 'antd';
 import * as React from 'react';
 import { DropTargetMonitor, useDrop } from 'react-dnd';
 import { NativeTypes } from 'react-dnd-html5-backend';
-import { findDOMNode } from 'react-dom';
 import { Canvas, ImmutableMap, loadImagesToClipboardItems, useClipboard, useEventCallback, ViewBox } from '@app/core';
-import { useAppDispatch, useAppSelector } from '@app/store';
+import { useAppDispatch } from '@app/store';
 import { ShapeSource } from '@app/wireframes/interface';
 import { addShape, changeItemsAppearance, Diagram, getDiagram, getDiagramId, getDiagrams, getEditor, getSelection, PluginRegistry, selectItems, Transform, transformItems, useStore } from '@app/wireframes/model';
 import { Editor } from '@app/wireframes/renderer/Editor';
 import { DiagramRef, ItemsRef } from './../model/actions/utils';
-import { UIStateInStore } from '../model/ui-state';
 import { useContextMenu } from './context-menu';
 import './EditorView.scss';
-
-// Create selectors for UI state
-const selectUseWebGL = (state: UIStateInStore) => state.ui.useWebGL;
 
 export const EditorView = () => {
     const diagram = useStore(getDiagram);
     const diagrams = useStore(getDiagrams);
     const editor = useStore(getEditor);
+
 
     if (!diagram) {
         return null;
@@ -46,12 +42,11 @@ export const EditorViewInner = ({ diagram, viewBox }: { diagram: Diagram; viewBo
     const dispatch = useAppDispatch();
     const [menuVisible, setMenuVisible] = React.useState(false);
     const editor = useStore(getEditor);
+    const renderRef = React.useRef<any>();
     const selectedDiagramId = useStore(getDiagramId);
     const selectedPoint = React.useRef({ x: 0, y: 0 });
-    const selectionSet = useStore(getSelection);
-    const useWebGL = useAppSelector(selectUseWebGL);
+    const state = useStore(s => s);
     const contextMenu = useContextMenu(menuVisible);
-    const renderRef = React.useRef<HTMLDivElement>(null);
 
     const doChangeItemsAppearance = useEventCallback((diagram: DiagramRef, visuals: ItemsRef, key: string, value: any) => {
         dispatch(changeItemsAppearance(diagram, visuals, key, value));
@@ -120,7 +115,7 @@ export const EditorViewInner = ({ diagram, viewBox }: { diagram: Diagram; viewBo
                 return;
             }
 
-            const componentRect = (findDOMNode(renderRef.current) as HTMLElement)!.getBoundingClientRect();
+            const componentRect = renderRef.current!.getBoundingClientRect();
 
             // Convert to the space of the element
             const relativeX = (offset?.x || 0) - componentRect.left;
@@ -170,8 +165,8 @@ export const EditorViewInner = ({ diagram, viewBox }: { diagram: Diagram; viewBo
                         onChangeItemsAppearance={doChangeItemsAppearance}
                         onSelectItems={doSelectItems}
                         onTransformItems={doTransformItems}
-                        selectionSet={selectionSet}
-                        useWebGL={useWebGL}
+                        selectionSet={getSelection(state)}
+                        useWebGL={state.ui.useWebGL}
                         viewBox={viewBox}
                         viewSize={editor.size}
                     />
