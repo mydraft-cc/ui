@@ -11,10 +11,6 @@ export default defineConfig({
         },
     },
 
-    define: {
-        __REACT_DEVTOOLS_GLOBAL_HOOK__: { isDisabled: true },
-    },
-
     test: {
         globals: true,
         
