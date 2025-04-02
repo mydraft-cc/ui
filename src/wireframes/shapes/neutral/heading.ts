@@ -24,7 +24,7 @@ export class Heading implements ShapePlugin {
     }
 
     public defaultSize() {
-        return { x: 90, y: 35 };
+        return { x: 110, y: 50 };
     }
 
     public constraint(factory: ConstraintFactory) {

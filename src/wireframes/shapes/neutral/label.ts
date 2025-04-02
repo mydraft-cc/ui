@@ -26,7 +26,7 @@ export class Label implements ShapePlugin {
     }
 
     public defaultSize() {
-        return { x: 80, y: 30 };
+        return { x: 50, y: 50 };
     }
 
     public create(source: ShapeSource) {

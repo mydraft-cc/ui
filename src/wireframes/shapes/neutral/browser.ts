@@ -10,7 +10,7 @@ import { DefaultAppearance, RenderContext, ShapePlugin } from '@app/wireframes/i
 import { CommonTheme } from './_theme';
 import { DiagramItem } from '@app/wireframes/model';
 
-const OFFSET = { left: 4, top: 70, right: 4, bottom: 15 };
+const OFFSET = { left: 4, top: 55, right: 4, bottom: 15 };
 const REFRESH_CODE = String.fromCharCode(0xf021);
 
 export class Browser implements ShapePlugin {
@@ -85,9 +85,9 @@ export class Browser implements ShapePlugin {
         const isDark = ctx.designThemeMode === 'dark';
         const controlBorder = isDark ? 0x555555 : CommonTheme.CONTROL_BORDER_COLOR;
         const searchBg = isDark ? 0x505050 : 0xffffff;
-        const searchRect = new Rect2(50, -34, ctx.rect.width - 50, 30);
+        const searchRect = new Rect2(50, -28, ctx.rect.width - 50 - 4, 24);
 
-        ctx.renderer2.rectangle(1, 15, searchRect, p => {
+        ctx.renderer2.rectangle(1, 12, searchRect, p => {
             p.setBackgroundColor(searchBg);
             p.setStrokeColor(controlBorder);
         });
@@ -96,24 +96,26 @@ export class Browser implements ShapePlugin {
     private createIcon(ctx: RenderContext) {
         const isDark = ctx.designThemeMode === 'dark';
         const iconColor = isDark ? 0xaaaaaa : 0x555555;
-        const iconRect = new Rect2(5, -34, 30, 30);
+        const iconRect = new Rect2(12, -28, 24, 24);
 
-        ctx.renderer2.text({ fontSize: 20, text: REFRESH_CODE, alignment: 'center' }, iconRect, p => {
+        ctx.renderer2.text({ fontSize: 16, text: REFRESH_CODE, alignment: 'center' }, iconRect, p => {
             p.setForegroundColor(iconColor);
             p.setFontFamily('FontAwesome');
         });
     }
 
     private createButtons(ctx: RenderContext) {
-        ctx.renderer2.ellipse(0, new Rect2(10, -50, 12, 12), p => {
+        const buttonY = -44;
+        const buttonSize = 10;
+        ctx.renderer2.ellipse(0, new Rect2(10, buttonY, buttonSize, buttonSize), p => {
             p.setBackgroundColor(0xff0000);
         });
 
-        ctx.renderer2.ellipse(0, new Rect2(30, -50, 12, 12), p => {
+        ctx.renderer2.ellipse(0, new Rect2(28, buttonY, buttonSize, buttonSize), p => {
             p.setBackgroundColor(0xffff00);
         });
 
-        ctx.renderer2.ellipse(0, new Rect2(50, -50, 12, 12), p => {
+        ctx.renderer2.ellipse(0, new Rect2(46, buttonY, buttonSize, buttonSize), p => {
             p.setBackgroundColor(0x00ff00);
         });
     }

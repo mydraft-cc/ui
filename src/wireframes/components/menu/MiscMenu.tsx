@@ -9,7 +9,6 @@ import { setThemeMode } from '../../model/actions';
 import './MiscMenu.scss';
 import { AppTheme } from '@app/wireframes/interface';
 
-// Component for larger menu icons with consistent styling
 const MenuIcon = ({ icon }: { icon: React.ReactNode }) => (
     <span className="menu-large-icon">{icon}</span>
 );
@@ -66,9 +65,9 @@ export const MiscMenu = React.memo(() => {
                     <div className="theme-segment-container">
                         <Segmented<AppTheme>
                             options={[
-                                { value: 'light',  label: <Space><SunOutlined /> {texts.common.lightTheme}</Space> },
-                                { value: 'dark',   label: <Space><MoonOutlined /> {texts.common.darkTheme}</Space> },
-                                { value: 'system', label: <Space><SettingOutlined /> {texts.common.systemTheme}</Space> },
+                                { value: 'light',  label: <Space><SunOutlined />{texts.common.lightTheme}</Space> },
+                                { value: 'dark',   label: <Space><MoonOutlined />{texts.common.darkTheme}</Space> },
+                                { value: 'system', label: <Space><SettingOutlined />{texts.common.systemTheme}</Space> },
                             ]}
                             value={themeMode}
                             onChange={handleSetTheme}
@@ -86,10 +85,10 @@ export const MiscMenu = React.memo(() => {
     return (
         <>
             <Dropdown menu={{ items: menuItems }} trigger={['click']} placement="bottomRight">
-                <Button className='menu-item' icon={<EllipsisOutlined style={{ fontSize: '20px' }} />} />
+                <Button className='menu-item' icon={<EllipsisOutlined className='misc-menu-icon' />} />
             </Dropdown>
 
-            <Modal title={texts.common.about} open={isInfoOpen} onCancel={doToggleInfoDialog} onOk={doToggleInfoDialog}>
+            <Modal className='misc-menu-modal' title={texts.common.about} open={isInfoOpen} onCancel={doToggleInfoDialog} onOk={doToggleInfoDialog}>
                 <div dangerouslySetInnerHTML={{ __html: text }} />
             </Modal>
         </>

@@ -148,8 +148,7 @@ export const Editor = React.memo((props: EditorProps) => {
         
         // Initial setup - theme-specific colors will be applied in useEffect
         backgroundRect.fill('var(--color-canvas-background)'); 
-        backgroundRect.strokeWidth(2);
-        backgroundRect.strokeColor('var(--color-border-dark)');
+        backgroundRect.strokeWidth(0);
 
         const renderMasterLayer = engine.layer('masterLayer');
         const renderMainLayer = engine.layer('parentLayer');

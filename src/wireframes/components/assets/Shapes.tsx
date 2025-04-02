@@ -93,7 +93,7 @@ export const Shapes = () => {
                 <Input value={shapesFilter} onChange={doFilterShapes}
                     placeholder={texts.common.findShape}
                     prefix={
-                        <SearchOutlined style={{ color: 'rgba(0,0,0,.25)' }} />
+                        <SearchOutlined />
                     } />
             </div>
 

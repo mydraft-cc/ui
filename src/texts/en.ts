@@ -92,7 +92,7 @@ export const texts = {
         strokeThickness: 'Stroke Thickness',
         systemTheme: 'System',
         textAlignment: 'Text Alignment',
-        toggleTheme: 'Toggle Theme',
+        toggleTheme: 'Theme',
         undo: 'Undo',
         ungroup: 'Ungroup',
         ungroupTooltip: 'Ungroup Items',

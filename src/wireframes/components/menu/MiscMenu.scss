@@ -14,21 +14,48 @@
     gap: 8px;
 }
 
+.misc-menu-icon {
+    font-size: 20px;
+}
+
+.misc-menu-modal {
+    max-width: 800px;
+    width: 100%;
+}
+
 .theme-segment-title {
     color: $color-text;
+    padding-left: .5rem;
 }
 
 .menu-item-no-hover {
-  cursor: pointer !important;
+    cursor: pointer !important;
+    background: transparent !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
+
+    .theme-segment-container {
+        padding: 4px 0;
+        
+        .ant-segmented {
+            width: 100%;
+            min-width: 280px;
+        }
+    }
+
+    &:hover, &:active {
+        background: transparent !important;
+        color: inherit !important;
+    }
 }
 
 // Add hover styles for theme segment
 .menu-item-no-hover:hover {
-  .theme-segment-title,
-  .anticon,
-  .ant-segmented-item-label {
-    color: $color-theme-blue;
-  }
+    .ant-segmented-item-label {
+        color: $color-theme-blue;
+    }
 }
 
 .menu-large-icon {
@@ -38,7 +65,7 @@
     margin-right: 12px;
     
     .anticon {
-        font-size: 24px;
+        font-size: 18px;
     }
 }
 
