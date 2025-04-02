@@ -15,6 +15,8 @@ import { texts } from '@app/texts';
 import { addShape, filterShapes, getDiagramId, getFilteredShapes, getShapesFilter, ShapeInfo, useStore } from '@app/wireframes/model';
 import { selectEffectiveAppTheme } from '@app/wireframes/model/selectors/themeSelectors';
 import { ShapeImage } from './ShapeImage';
+import { useDrag } from 'react-dnd';
+import { getEmptyImage } from 'react-dnd-html5-backend';
 import './Shapes.scss';
 
 const keyBuilder = (shape: ShapeInfo) => {
@@ -26,7 +28,6 @@ export const Shapes = () => {
     const shapesFiltered = useStore(getFilteredShapes);
     const shapesFilter = useStore(getShapesFilter);
     const store = useReduxStore<AppState>();
-
     const appTheme = useAppSelector(selectEffectiveAppTheme);
 
     const cellRenderer = React.useCallback((shape: ShapeInfo) => {
@@ -38,9 +39,26 @@ export const Shapes = () => {
             }
         };
 
+        const [, drag, connectDragPreview] = useDrag({
+            item: shape,
+            previewOptions: {
+                anchorX: 0,
+                anchorY: 0,
+            },
+            type: 'DND_ASSET',
+        });
+
+        React.useEffect(() => {    
+            connectDragPreview(getEmptyImage(), {
+                anchorX: 0,
+                anchorY: 0,
+                captureDraggingState: true,
+            });
+        }, [connectDragPreview]);
+
         return (
-            <div className='asset-shape'>
-                <div className='asset-shape-image-row' onDoubleClick={doAdd}>
+            <div className='asset-shape' ref={drag} onDoubleClick={doAdd}>
+                <div className='asset-shape-image-row'>
                     <ShapeImage shape={shape} appTheme={appTheme} />
                 </div>
                 <div className='asset-shape-title'>{shape.displayName}</div>
