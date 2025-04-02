@@ -303,7 +303,6 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
         this.props.overlayManager.reset();
 
         const delta = event.position.sub(this.startPosition);
-
         // If the mouse has not been moved we can just stop here.
         if (delta.lengtSquared === 0) {
             return;
@@ -380,6 +379,7 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
         const deltaSize = this.getResizeDeltaSize(startRotation, delta, snapMode);
         const deltaMove = this.getResizeDeltaPosition(startRotation, deltaSize.delta);
 
+        // A resize is very often also a movement, because the center is in the middle.
         this.transform = this.startTransform.resizeAndMoveBy(deltaSize.delta, deltaMove);
 
         if (showOverlay) {
@@ -628,4 +628,3 @@ function getSnapMode(event: KeyboardEvent | MouseEvent) {
         return 'Shapes';
     }
 }
-
