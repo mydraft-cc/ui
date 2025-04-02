@@ -17,6 +17,7 @@ import { EditorState, EditorStateInStore } from './editor-state';
 import { LoadingStateInStore } from './loading-state';
 import { UIStateInStore } from './ui-state';
 import { UndoableState } from './undoable-state';
+import React from 'react';
 
 const EMPTY_SELECTION_SET = DiagramItemSet.EMPTY;
 
@@ -182,5 +183,12 @@ export function getPageName(diagram: Diagram | string, index: number): string {
 type State = AssetsStateInStore & EditorStateInStore & UIStateInStore & LoadingStateInStore;
 
 export function useStore<T>(selector: ((state: State) => T)) {
-    return useSelector<State, T>(p => selector(p));
+    const memoizedSelector = React.useMemo(
+        () => createSelector(
+            [(state: State) => state],
+            selector
+        ),
+        [selector]
+    );
+    return useSelector(memoizedSelector);
 }

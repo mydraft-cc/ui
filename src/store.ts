@@ -12,6 +12,7 @@ import { EditorState } from './wireframes/model/editor-state';
 import { createInitialAssetsState, createInitialLoadingState, createInitialUIState } from './wireframes/model/internal';
 import { registerRenderers } from './wireframes/shapes';
 import { theme } from './wireframes/model/actions/theme';
+import { designTheme } from './wireframes/model/actions/designTheme';
 import { designThemeReducer } from './wireframes/model/actions/designThemeSlice';
 
 registerRenderers();
@@ -48,7 +49,7 @@ const rootReducer = {
     // App theme settings for light/dark mode
     theme,
     // Design theme settings for canvas/shapes
-    designTheme: designThemeReducer,
+    designTheme,
     // General UI behavior.
     ui: ui(createInitialUIState()),
 };

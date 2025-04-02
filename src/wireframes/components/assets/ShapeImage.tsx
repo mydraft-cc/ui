@@ -14,13 +14,16 @@ import { ShapeRenderer } from '@app/wireframes/shapes/ShapeRenderer';
 interface ShapeImageProps {
     // The shape data.
     shape: ShapeInfo;
+
+    // The current app theme ('light' | 'dark') to handle text contrast in toolbar.
+    appTheme: 'light' | 'dark';
 }
 
 const DESIRED_WIDTH = 120;
 const DESIRED_HEIGHT = 72;
 
 export const ShapeImage = React.memo((props: ShapeImageProps) => {
-    const { shape } = props;
+    const { appTheme, shape } = props;
 
     const [, drag, connectDragPreview] = useDrag({
         item: shape,
@@ -42,6 +45,7 @@ export const ShapeImage = React.memo((props: ShapeImageProps) => {
     return (
         <div className='asset-shape-image'>
             <ShapeRenderer ref={drag}
+                appTheme={appTheme}
                 desiredHeight={DESIRED_HEIGHT} 
                 desiredWidth={DESIRED_WIDTH} 
                 plugin={shape.plugin}

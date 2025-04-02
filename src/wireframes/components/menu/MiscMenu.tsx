@@ -20,8 +20,9 @@ export const MiscMenu = React.memo(() => {
     const dispatch = useAppDispatch();
     const themeMode = useAppSelector(state => state.theme.mode);
 
-    const handleSetTheme = useEventCallback((mode: ThemeMode) => {
-        dispatch(setThemeMode(mode));
+    const handleSetTheme = useEventCallback((mode: string | number) => {
+        // Segmented onChange provides string | number, cast to ThemeMode
+        dispatch(setThemeMode(mode as ThemeMode));
     });
 
     const doToggleInfoDialog = useEventCallback(() => {
@@ -58,45 +59,28 @@ export const MiscMenu = React.memo(() => {
             type: 'divider'
         },
         {
-            key: 'themeTitle',
-            label: <div className="dropdown-section-title">{texts.common.toggleTheme}</div>,
-            type: 'group',
-        },
-        {
-            key: 'lightTheme',
-            icon: <MenuIcon icon={<SunOutlined />} />,
+            key: 'themeSegment',
             label: (
-                <Space>
-                    {texts.common.lightTheme}
-                    {themeMode === 'light' && <CheckOutlined />}
-                </Space>
+                <>
+                    <div className="dropdown-section-title">{texts.common.toggleTheme}</div>
+                    <div className="theme-segment-container">
+                        <Segmented<ThemeMode> // Explicitly type the Segmented component
+                            options={[
+                                { value: 'light',  label: <Space><SunOutlined /> {texts.common.lightTheme}</Space> },
+                                { value: 'dark',   label: <Space><MoonOutlined /> {texts.common.darkTheme}</Space> },
+                                { value: 'system', label: <Space><SettingOutlined /> {texts.common.systemTheme}</Space> },
+                            ]}
+                            value={themeMode}
+                            onChange={handleSetTheme}
+                            block // Make the segmented control take full width within its container
+                            aria-label={texts.common.toggleTheme} // Keep aria-label for accessibility
+                        />
+                    </div>
+                </>
             ),
-            onClick: () => handleSetTheme('light'),
-            className: 'menu-item-with-icon',
-        },
-        {
-            key: 'darkTheme',
-            icon: <MenuIcon icon={<MoonOutlined />} />,
-            label: (
-                 <Space>
-                    {texts.common.darkTheme}
-                    {themeMode === 'dark' && <CheckOutlined />}
-                </Space>
-            ),
-            onClick: () => handleSetTheme('dark'),
-            className: 'menu-item-with-icon',
-        },
-        {
-            key: 'systemTheme',
-            icon: <MenuIcon icon={<SettingOutlined />} />,
-            label: (
-                <Space>
-                    {texts.common.systemTheme}
-                    {themeMode === 'system' && <CheckOutlined />}
-                </Space>
-            ),
-            onClick: () => handleSetTheme('system'),
-            className: 'menu-item-with-icon',
+            // Make this item non-interactive as the Segmented control handles interaction
+            disabled: true, 
+            className: 'menu-item-no-hover', // Add class to remove hover effects if needed
         },
     ];
 

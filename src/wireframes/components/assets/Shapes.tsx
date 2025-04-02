@@ -10,9 +10,10 @@ import { Input } from 'antd';
 import * as React from 'react';
 import { useStore as useReduxStore } from 'react-redux';
 import { Grid, useEventCallback } from '@app/core';
-import { AppState, useAppDispatch } from '@app/store';
+import { AppState, useAppDispatch, useAppSelector } from '@app/store';
 import { texts } from '@app/texts';
 import { addShape, filterShapes, getDiagramId, getFilteredShapes, getShapesFilter, ShapeInfo, useStore } from '@app/wireframes/model';
+import { selectEffectiveTheme } from '@app/wireframes/model/selectors/themeSelectors';
 import { ShapeImage } from './ShapeImage';
 import './Shapes.scss';
 
@@ -26,6 +27,8 @@ export const Shapes = () => {
     const shapesFilter = useStore(getShapesFilter);
     const store = useReduxStore<AppState>();
 
+    const appTheme = useAppSelector(selectEffectiveTheme);
+
     const cellRenderer = React.useCallback((shape: ShapeInfo) => {
         const doAdd = () => {
             const selectedDiagramId = getDiagramId(store.getState());
@@ -38,13 +41,12 @@ export const Shapes = () => {
         return (
             <div className='asset-shape'>
                 <div className='asset-shape-image-row' onDoubleClick={doAdd}>
-                    <ShapeImage shape={shape} />
+                    <ShapeImage shape={shape} appTheme={appTheme} />
                 </div>
-
                 <div className='asset-shape-title'>{shape.displayName}</div>
             </div>
         );
-    }, [dispatch, store]);
+    }, [dispatch, store, appTheme]);
 
     const doFilterShapes = useEventCallback((event: React.ChangeEvent<HTMLInputElement>) => {
         dispatch(filterShapes(event.target.value));

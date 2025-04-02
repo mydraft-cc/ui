@@ -23,7 +23,6 @@ export const EditorView = () => {
     const diagrams = useStore(getDiagrams);
     const editor = useStore(getEditor);
 
-
     if (!diagram) {
         return null;
     }

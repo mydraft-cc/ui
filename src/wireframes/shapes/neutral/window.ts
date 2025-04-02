@@ -7,6 +7,7 @@
 
 import { DefaultAppearance, Rect2, RenderContext, ShapePlugin } from '@app/wireframes/interface';
 import { SHAPE_BACKGROUND_COLOR } from './ThemeShapeUtils';
+import { CommonTheme } from './_theme';
 
 const OFFSET = { left: 2, top: 30, right: 2, bottom: 1 };
 
@@ -46,7 +47,7 @@ export class Window implements ShapePlugin {
         const windowRect = new Rect2(-OFFSET.left, -OFFSET.top, ctx.rect.width + OFFSET.left + OFFSET.right, ctx.rect.height + OFFSET.top + OFFSET.bottom);
         const isDark = ctx.designThemeMode === 'dark';
         const bgColor = isDark ? SHAPE_BACKGROUND_COLOR.DARK : SHAPE_BACKGROUND_COLOR.LIGHT;
-        const borderColor = isDark ? 0x505050 : 0xC0C0C0;
+        const borderColor = isDark ? 0x555555 : 0xC0C0C0;
 
         ctx.renderer2.rectangle(1, 0, windowRect, p => {
             if (ctx.shape.getAppearance(DefaultAppearance.BACKGROUND_COLOR) === SHAPE_BACKGROUND_COLOR.LIGHT) {
@@ -61,7 +62,7 @@ export class Window implements ShapePlugin {
     private createHeader(ctx: RenderContext) {
         const headerRect = new Rect2(-OFFSET.left, -OFFSET.top, ctx.rect.width + OFFSET.left + OFFSET.right, OFFSET.top);
         const isDark = ctx.designThemeMode === 'dark';
-        const headerColor = isDark ? 0x202020 : 0x303030;
+        const headerColor = isDark ? 0x404040 : CommonTheme.CONTROL_BACKGROUND_COLOR;
 
         ctx.renderer2.rectangle(0, 0, headerRect, p => {
             p.setBackgroundColor(headerColor);
