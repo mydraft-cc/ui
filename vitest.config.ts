@@ -35,5 +35,8 @@ export default defineConfig({
         // Increase timeouts for tests
         testTimeout: 30000,
         hookTimeout: 30000,
+
+        // Add setup file
+        setupFiles: ['./src/test/setup.ts'],
     },
 } as any);
