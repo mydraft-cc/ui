@@ -24,12 +24,7 @@ export class DiagramItemSet {
     }
 
     public get editableItems() {
-        return this.cachedEditableItems ||= Array.from(this.nested.values()).filter(x => {
-            if (this.rootIds.includes(x.id)) {
-                return !x.isLocked;
-            }
-            return true;
-        });
+      return this.cachedEditableItems ||= Array.from(this.nested.values()).filter(x => !this.selection.has(x.id) || !x.isLocked);
     }
 
     public get editableIds() {
