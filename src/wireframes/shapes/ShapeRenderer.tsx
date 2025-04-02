@@ -6,24 +6,15 @@
 */
 
 import * as React from 'react';
-import { Rotation, Vec2, ViewBox } from '@app/core';
+import { Rotation, Types, Vec2, ViewBox, debounce } from '@app/core';
 import { EngineItem } from '@app/wireframes/engine';
 import { SvgCanvasView } from '@app/wireframes/engine/svg/canvas/SvgCanvas';
 import { SvgEngine } from '@app/wireframes/engine/svg/engine';
-import { DefaultAppearance, ShapePlugin, Size } from '@app/wireframes/interface';
+import { DefaultAppearance, ShapePlugin, Size, AppTheme } from '@app/wireframes/interface';
 import { DefaultConstraintFactory, DiagramItem, Transform } from '@app/wireframes/model';
-import { selectEffectiveTheme } from '@app/wireframes/model/selectors/themeSelectors';
+import { selectEffectiveAppTheme } from '@app/wireframes/model/selectors/themeSelectors';
 import { selectDesignThemeMode } from '@app/wireframes/model/actions/designThemeSlice';
 import { useAppSelector } from '@app/store';
-
-// Debounce helper function
-const debounce = (fn: Function, delay: number) => {
-    let timeoutId: NodeJS.Timeout;
-    return (...args: any[]) => {
-        clearTimeout(timeoutId);
-        timeoutId = setTimeout(() => fn(...args), delay);
-    };
-};
 
 // List of shapes where text color should be overridden in conflicting theme toolbar previews
 const TEXT_OVERRIDE_TARGETS = new Set([
@@ -53,7 +44,7 @@ interface ShapeRendererProps {
     usePreviewOffset?: boolean;
 
     // The current app theme, passed down for toolbar previews.
-    appTheme?: 'light' | 'dark';
+    appTheme?: AppTheme;
 }
 
 export const ShapeRenderer = React.memo(React.forwardRef<HTMLDivElement, ShapeRendererProps>((props, ref) => {
@@ -69,13 +60,12 @@ export const ShapeRenderer = React.memo(React.forwardRef<HTMLDivElement, ShapeRe
 
     const designTheme = useAppSelector(selectDesignThemeMode);
 
-    // Use the Redux theme state to trigger re-renders
-    const effectiveTheme = useAppSelector(selectEffectiveTheme);
-    const isDarkMode = effectiveTheme === 'dark';
+    const effectiveAppTheme = useAppSelector(selectEffectiveAppTheme);
+    const isDarkMode = effectiveAppTheme === 'dark';
 
     const [engine, setEngine] = React.useState<SvgEngine | null>(null);
     const item = React.useRef<EngineItem | null>(null);
-    const [forceRender, setForceRender] = React.useState(0);
+    const [forceRender, _setForceRender] = React.useState(0);
     const renderPending = React.useRef(false);
 
     const viewBox = getViewBox(plugin, 
@@ -102,7 +92,6 @@ export const ShapeRenderer = React.memo(React.forwardRef<HTMLDivElement, ShapeRe
         }
     }, [desiredHeight, desiredWidth, engine, viewBox]);
 
-    // Create a debounced version of the render function
     const debouncedRerender = React.useCallback(
         debounce(() => {
             if (item.current && !renderPending.current) {
@@ -172,7 +161,7 @@ export const ShapeRenderer = React.memo(React.forwardRef<HTMLDivElement, ShapeRe
 
         const renderContext = { designThemeMode: designTheme };
 
-        if (item.current && typeof item.current.forceReplot === 'function') {
+        if (item.current && Types.isFunction(item.current.forceReplot)) {
             item.current.forceReplot(shape, renderContext);
         } else {
             item.current.plot(shape, renderContext);

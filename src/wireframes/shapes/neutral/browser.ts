@@ -11,7 +11,6 @@ import { CommonTheme } from './_theme';
 import { DiagramItem } from '@app/wireframes/model';
 
 const OFFSET = { left: 4, top: 70, right: 4, bottom: 15 };
-const ADDRESS_CODE = String.fromCharCode(0xf0c1);
 const REFRESH_CODE = String.fromCharCode(0xf021);
 
 export class Browser implements ShapePlugin {

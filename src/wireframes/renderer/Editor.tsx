@@ -8,13 +8,13 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 
 import * as React from 'react';
-import { ImmutableMap, Subscription, Vec2, ViewBox } from '@app/core';
+import { ImmutableMap, Subscription, Vec2, ViewBox, debounce } from '@app/core';
 import { useAppSelector } from '../../store';
 import { Engine, EngineLayer, EngineRect } from '@app/wireframes/engine';
 import { PixiCanvasView } from '@app/wireframes/engine/pixi/canvas/PixiCanvas';
 import { SvgCanvasView } from '@app/wireframes/engine/svg/canvas/SvgCanvas';
 import { Diagram, DiagramItem, DiagramItemSet, Transform } from '@app/wireframes/model';
-import { selectEffectiveTheme } from '@app/wireframes/model/selectors/themeSelectors';
+import { selectEffectiveAppTheme } from '@app/wireframes/model/selectors/themeSelectors';
 import { selectDesignThemeMode } from '@app/wireframes/model/actions/designThemeSlice';
 import { useStore, getEditor } from '@app/wireframes/model';
 import { useOverlayContext } from './../contexts/OverlayContext';
@@ -96,7 +96,7 @@ export const Editor = React.memo((props: EditorProps) => {
     const editor = useStore(getEditor);
     const userDefinedColor = editor.color; 
 
-    const effectiveAppTheme = useAppSelector(selectEffectiveTheme);
+    const effectiveAppTheme = useAppSelector(selectEffectiveAppTheme);
     const isAppDarkMode = effectiveAppTheme === 'dark';
 
     const designThemeMode = useAppSelector(selectDesignThemeMode);
@@ -107,15 +107,35 @@ export const Editor = React.memo((props: EditorProps) => {
     const overlayContext = useOverlayContext();
     const masterDiagrams = React.useMemo(() => diagram.masterDiagrams(diagrams), [diagram, diagrams]);
     
-    // Helper function for debouncing
-    function debounce(fn: Function, delay: number) {
-        let timeoutId: NodeJS.Timeout;
-        return (...args: any[]) => {
-            clearTimeout(timeoutId);
-            timeoutId = setTimeout(() => fn(...args), delay);
-        };
-    }
-    
+    const updateCanvasTheme = React.useCallback(
+        debounce(() => {
+            if (!layers) {
+                return;
+            }
+
+            // Determine theme-based defaults
+            const designThemeDefaultBgColor = designThemeMode === 'dark' ? '#252525' : '#ffffff';
+
+            const borderDarkColor = isAppDarkMode ? '#404040' : '#b8b8b8';
+            const gridColor = isAppDarkMode ? '#333333' : '#e0e0e0';
+
+            // Use userDefinedColor if available, otherwise use design theme default
+            const finalCanvasBgColor = userDefinedColor ? userDefinedColor.toString() : designThemeDefaultBgColor;
+
+            layers.backgroundRect?.fill(finalCanvasBgColor); // Use final color
+            layers.backgroundRect?.strokeColor(borderDarkColor); // Use app theme for border
+            
+            // Update any grid-related elements if they exist (using app theme color)
+            if (layers.engine && typeof layers.engine.updateGridColor === 'function') {
+                layers.engine.updateGridColor(gridColor);
+            }
+            
+            // Force a redraw of the canvas to ensure immediate updates
+            layers.engine?.invalidate?.();
+        }, 50),
+        [layers, isAppDarkMode, userDefinedColor, designThemeMode]
+    );
+
     const doInit = React.useCallback((engine: Engine) => {
         // Might be called multiple times in dev mode!
         if (!engine || layers) {
@@ -161,35 +181,10 @@ export const Editor = React.memo((props: EditorProps) => {
     // Effect to handle theme changes: Update background
     React.useEffect(() => {
         if (layers) {
-            // Use a debounced function to update canvas theme
-            const updateCanvasTheme = debounce(() => {
-                // Determine theme-based defaults
-                // ** Design Theme Default Background **
-                const designThemeDefaultBgColor = designThemeMode === 'dark' ? '#252525' : '#ffffff';
-
-                // ** App Theme Chrome Colors **
-                const borderDarkColor = isAppDarkMode ? '#404040' : '#b8b8b8';
-                const gridColor = isAppDarkMode ? '#333333' : '#e0e0e0';
-
-                // Use userDefinedColor if available, otherwise use design theme default
-                const finalCanvasBgColor = userDefinedColor ? userDefinedColor.toString() : designThemeDefaultBgColor;
-
-                layers.backgroundRect?.fill(finalCanvasBgColor); // Use final color
-                layers.backgroundRect?.strokeColor(borderDarkColor); // Use app theme for border
-                
-                // Update any grid-related elements if they exist (using app theme color)
-                if (layers.engine && typeof layers.engine.updateGridColor === 'function') {
-                    layers.engine.updateGridColor(gridColor);
-                }
-                
-                // Force a redraw of the canvas to ensure immediate updates
-                layers.engine?.invalidate?.();
-            }, 50);
-            
             updateCanvasTheme();
         }
         // Add designThemeMode to dependencies
-    }, [isAppDarkMode, layers, userDefinedColor, designThemeMode]); 
+    }, [isAppDarkMode, layers, userDefinedColor, designThemeMode, updateCanvasTheme]); 
 
     React.useEffect(() => {
         overlayContext.snapManager.prepare(diagram, viewSize);

@@ -2,27 +2,17 @@ import { ConfigProvider, theme } from 'antd';
 import * as React from 'react';
 import { useAppDispatch, useAppSelector } from '@app/store';
 import { updateSystemPreference } from '../model/actions';
-import { selectEffectiveTheme } from '../model/selectors/themeSelectors';
-// Debounce helper function
-const debounce = (fn: Function, delay: number) => {
-    let timeoutId: NodeJS.Timeout;
-    return (...args: any[]) => {
-        clearTimeout(timeoutId);
-        timeoutId = setTimeout(() => fn(...args), delay);
-    };
-};
+import { selectEffectiveAppTheme } from '../model/selectors/themeSelectors';
 
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const dispatch = useAppDispatch();
-    const effectiveTheme = useAppSelector(selectEffectiveTheme);
+    const effectiveTheme = useAppSelector(selectEffectiveAppTheme);
     const themeChangeTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
     
     // Update body class for theme
     React.useEffect(() => {
-        // Remove any existing theme classes
         document.body.classList.remove('dark-theme');
         
-        // Add the appropriate class based on effective theme
         if (effectiveTheme === 'dark') {
             document.body.classList.add('dark-theme');
         }
@@ -39,10 +29,8 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     React.useEffect(() => {
         const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
         
-        // Initial check
         dispatch(updateSystemPreference(mediaQuery.matches));
         
-        // Add listener for changes
         const handleChange = (e: MediaQueryListEvent) => {
           dispatch(updateSystemPreference(e.matches));
         };

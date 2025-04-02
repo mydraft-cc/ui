@@ -2,19 +2,19 @@ import { MoonOutlined, SunOutlined, SettingOutlined } from '@ant-design/icons';
 import { Button, Dropdown, MenuProps, Tooltip } from 'antd';
 import * as React from 'react';
 import { useEventCallback } from '@app/core';
-import { setThemeMode, ThemeMode } from '../model/actions';
+import { setThemeMode } from '../model/actions';
 import { useAppDispatch, useAppSelector } from '../../store';
 import { texts } from '../../texts';
-import { selectEffectiveTheme } from '../model/selectors/themeSelectors';
+import { selectEffectiveAppTheme } from '../model/selectors/themeSelectors';
+import { AppTheme } from '@app/wireframes/interface';
 
 export const ThemeToggle = () => {
     const dispatch = useAppDispatch();
-    const effectiveTheme = useAppSelector(selectEffectiveTheme);
-    const themeMode = useAppSelector(state => state.theme.mode);
-    const isDarkMode = effectiveTheme === 'dark';
+    const effectiveAppTheme = useAppSelector(selectEffectiveAppTheme);
+    const isDarkMode = effectiveAppTheme === 'dark';
     const [tooltipVisible, setTooltipVisible] = React.useState(false);
     
-    const handleSetTheme = useEventCallback((mode: ThemeMode) => {
+    const handleSetTheme = useEventCallback((mode: AppTheme) => {
         dispatch(setThemeMode(mode));
     });
     
@@ -27,7 +27,7 @@ export const ThemeToggle = () => {
     
     // Get current icon based on mode and effective theme
     const getCurrentIcon = () => {
-        switch (themeMode) {
+        switch (effectiveAppTheme) {
             case 'light':
                 return <SunOutlined />;
             case 'dark':
@@ -62,7 +62,7 @@ export const ThemeToggle = () => {
     
     return (
         <Dropdown 
-            menu={{ items, selectedKeys: [themeMode] }} 
+            menu={{ items, selectedKeys: [effectiveAppTheme] }} 
             trigger={['click']} 
             placement="bottomRight"
             onOpenChange={handleDropdownVisibleChange}

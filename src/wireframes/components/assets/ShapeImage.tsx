@@ -10,13 +10,12 @@ import { useDrag } from 'react-dnd';
 import { getEmptyImage } from 'react-dnd-html5-backend';
 import { ShapeInfo } from '@app/wireframes/model';
 import { ShapeRenderer } from '@app/wireframes/shapes/ShapeRenderer';
-
+import { AppTheme } from '@app/wireframes/interface';
 interface ShapeImageProps {
     // The shape data.
     shape: ShapeInfo;
 
-    // The current app theme ('light' | 'dark') to handle text contrast in toolbar.
-    appTheme: 'light' | 'dark';
+    appTheme: AppTheme;
 }
 
 const DESIRED_WIDTH = 120;

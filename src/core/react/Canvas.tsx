@@ -76,9 +76,8 @@ const CanvasComponent = React.memo((props: CanvasProps) => {
 
         const newZoomBehavior = zoom<HTMLDivElement, unknown>()
             .scaleExtent([0.5, 4])
-            .filter(event => {
-                const e = event as WheelEvent | MouseEvent;
-                return e.button === 1 || e.type === 'wheel';
+            .filter((event: WheelEvent | MouseEvent) => {
+                return event.button === 1 || event.type === 'wheel';
             })
             .on('zoom', ({ transform: d3Transform }: { transform: ZoomTransform }) => {
                 const newTransform: Transform = { k: d3Transform.k, x: d3Transform.x, y: d3Transform.y };

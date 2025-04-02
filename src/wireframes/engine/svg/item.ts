@@ -18,7 +18,6 @@ export class SvgItem extends SvgObject implements EngineItem {
     private readonly group: svg.G;
     private readonly selector: svg.Rect;
     private currentShape: DiagramItem | null = null;
-    private currentRect: Rect2 | null = null;
     private isRendered = false;
     private currentContext: RenderContext = { designThemeMode: 'light' };
 
@@ -112,7 +111,6 @@ export class SvgItem extends SvgObject implements EngineItem {
             this.arrangeSelector(localRect);
             this.arrangeContainer(shape);
         } finally {
-            this.currentRect = localRect;
             this.renderer.cleanupAll();
             this.renderer.setContainer(previousContainer);
             this.isRendered = true;

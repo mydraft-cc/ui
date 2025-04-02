@@ -1,12 +1,13 @@
-import { EllipsisOutlined, GithubOutlined, QuestionCircleOutlined, MoonOutlined, SunOutlined, SettingOutlined, SmileOutlined, CheckOutlined } from '@ant-design/icons';
+import { EllipsisOutlined, GithubOutlined, QuestionCircleOutlined, MoonOutlined, SunOutlined, SettingOutlined, SmileOutlined } from '@ant-design/icons';
 import { Button, Dropdown, MenuProps, Modal, Space, Segmented } from 'antd';
 import * as React from 'react';
 import { useEventCallback, useMarkerSDK } from '@app/core';
 import text from '@app/legal.html?raw';
 import { texts } from '@app/texts';
 import { useAppDispatch, useAppSelector } from '@app/store';
-import { setThemeMode, ThemeMode } from '../../model/actions';
+import { setThemeMode } from '../../model/actions';
 import './MiscMenu.scss';
+import { AppTheme } from '@app/wireframes/interface';
 
 // Component for larger menu icons with consistent styling
 const MenuIcon = ({ icon }: { icon: React.ReactNode }) => (
@@ -21,7 +22,7 @@ export const MiscMenu = React.memo(() => {
 
     const handleSetTheme = useEventCallback((mode: string | number) => {
         // Segmented onChange provides string | number, cast to ThemeMode
-        dispatch(setThemeMode(mode as ThemeMode));
+        dispatch(setThemeMode(mode as AppTheme));
     });
 
     const doToggleInfoDialog = useEventCallback(() => {
@@ -63,7 +64,7 @@ export const MiscMenu = React.memo(() => {
                 <>
                     <div className="theme-segment-title">{texts.common.toggleTheme}</div>
                     <div className="theme-segment-container">
-                        <Segmented<ThemeMode>
+                        <Segmented<AppTheme>
                             options={[
                                 { value: 'light',  label: <Space><SunOutlined /> {texts.common.lightTheme}</Space> },
                                 { value: 'dark',   label: <Space><MoonOutlined /> {texts.common.darkTheme}</Space> },

@@ -2,15 +2,16 @@ import { createSelector } from '@reduxjs/toolkit';
 import type { AppState } from '@app/store';
 import type { ThemeState } from '../actions/theme';
 import type { DesignThemeState } from '../actions/designTheme';
+import { AppTheme, DesignTheme } from '@app/wireframes/interface';
 
 // Create base selectors for theme states
 const selectThemeState = (state: AppState): ThemeState => state.theme;
 const selectDesignThemeState = (state: AppState): DesignThemeState => state.designTheme;
 
 // Create memoized selector for effective app theme
-export const selectEffectiveTheme = createSelector(
+export const selectEffectiveAppTheme = createSelector(
     selectThemeState,
-    (theme): 'light' | 'dark' => {
+    (theme): AppTheme => {
         if (theme.mode === 'system') {
             return theme.systemPrefersDark ? 'dark' : 'light';
         }
@@ -21,5 +22,5 @@ export const selectEffectiveTheme = createSelector(
 // Create memoized selector for effective design theme
 export const selectEffectiveDesignTheme = createSelector(
     selectDesignThemeState,
-    (theme): 'light' | 'dark' => theme.mode
+    (theme): DesignTheme => theme.mode
 );

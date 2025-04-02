@@ -13,7 +13,7 @@ import { Grid, useEventCallback } from '@app/core';
 import { AppState, useAppDispatch, useAppSelector } from '@app/store';
 import { texts } from '@app/texts';
 import { addShape, filterShapes, getDiagramId, getFilteredShapes, getShapesFilter, ShapeInfo, useStore } from '@app/wireframes/model';
-import { selectEffectiveTheme } from '@app/wireframes/model/selectors/themeSelectors';
+import { selectEffectiveAppTheme } from '@app/wireframes/model/selectors/themeSelectors';
 import { ShapeImage } from './ShapeImage';
 import './Shapes.scss';
 
@@ -27,7 +27,7 @@ export const Shapes = () => {
     const shapesFilter = useStore(getShapesFilter);
     const store = useReduxStore<AppState>();
 
-    const appTheme = useAppSelector(selectEffectiveTheme);
+    const appTheme = useAppSelector(selectEffectiveAppTheme);
 
     const cellRenderer = React.useCallback((shape: ShapeInfo) => {
         const doAdd = () => {

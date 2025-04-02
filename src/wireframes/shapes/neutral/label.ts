@@ -4,11 +4,10 @@
  * @license
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
-import { ConstraintFactory, DefaultAppearance, RenderContext, ShapePlugin, ShapeSource, Shape } from '@app/wireframes/interface';
+import { DefaultAppearance, RenderContext, ShapePlugin, ShapeSource, Shape } from '@app/wireframes/interface';
 import { CommonTheme } from './_theme';
-import { Rect2, Vec2 } from '@app/core';
+import { Vec2 } from '@app/core';
 import { TextMeasurer } from '@app/core';
-import { Color } from '@app/core';
 import { SHAPE_TEXT_COLOR } from './ThemeShapeUtils';
 
 const DEFAULT_APPEARANCE = {

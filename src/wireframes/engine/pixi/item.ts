@@ -18,7 +18,6 @@ export class PixiItem extends PixiObject implements EngineItem {
     private readonly container: Container;
     private readonly selector: Graphics;
     private currentShape: DiagramItem | null = null;
-    private currentRect: Rect2 | null = null;
     private isRendered = false;
     private currentContext: RenderContext = { designThemeMode: 'light' };
 
@@ -117,7 +116,6 @@ export class PixiItem extends PixiObject implements EngineItem {
             this.arrangeSelector(localRect);
             this.arrangeContainer(shape);
         } finally {
-            this.currentRect = localRect;
             this.renderer.cleanupAll();
             this.renderer.setContainer(previousContainer);
             this.isRendered = true;

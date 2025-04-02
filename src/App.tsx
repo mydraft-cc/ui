@@ -18,11 +18,7 @@ import { texts } from './texts';
 import { CustomDragLayer } from './wireframes/components/CustomDragLayer';
 import { PresentationView } from './wireframes/components/PresentationView';
 import { OverlayContainer } from './wireframes/contexts/OverlayContext';
-import { EditorState } from './wireframes/model/editor-state';
-import { createInitialAssetsState, createInitialLoadingState, createInitialUIState } from './wireframes/model/internal';
 import { registerRenderers } from './wireframes/shapes';
-import { theme } from './wireframes/model/actions/theme';
-import { designThemeReducer } from './wireframes/model/actions/designThemeSlice';
 
 const SidebarTabs: TabsProps['items'] = [
     {

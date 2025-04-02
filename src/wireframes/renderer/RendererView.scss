@@ -21,12 +21,9 @@
     }
 
     &-zoom {
-        bottom: 0;
-        right: 0;
-        position: absolute;
-        z-index: 1000;
-
         @include hidden();
+        @include absolute(null, null, 0, 0);
+        z-index: 1000;
     }
 
     &:hover {

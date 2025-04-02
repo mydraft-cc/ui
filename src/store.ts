@@ -13,7 +13,6 @@ import { createInitialAssetsState, createInitialLoadingState, createInitialUISta
 import { registerRenderers } from './wireframes/shapes';
 import { theme } from './wireframes/model/actions/theme';
 import { designTheme } from './wireframes/model/actions/designTheme';
-import { designThemeReducer } from './wireframes/model/actions/designThemeSlice';
 
 registerRenderers();
 

@@ -11,7 +11,7 @@ import { Color, ColorPicker, useEventCallback } from '@app/core';
 import { useAppDispatch, useAppSelector } from '@app/store';
 import { texts } from '@app/texts';
 import { changeColor, changeSize, getColors, getEditor, useStore } from '@app/wireframes/model';
-import { selectEffectiveTheme } from '@app/wireframes/model/selectors/themeSelectors';
+import { selectEffectiveAppTheme } from '@app/wireframes/model/selectors/themeSelectors';
 import { DesignThemeSelector } from '../DesignThemeSelector';
 
 // Define default theme colors as Color objects
@@ -28,8 +28,8 @@ export const DiagramProperties = React.memo(() => {
     const [sizeHeight, setHeight] = React.useState(0);
 
     // Get the effective theme to determine the default display color
-    const effectiveTheme = useAppSelector(selectEffectiveTheme);
-    const isDarkMode = effectiveTheme === 'dark';
+    const effectiveAppTheme = useAppSelector(selectEffectiveAppTheme);
+    const isDarkMode = effectiveAppTheme === 'dark';
 
     React.useEffect(() => {
         setWidth(editorSize.x);

@@ -6,11 +6,12 @@
 */
 
 import { Color, LoadedImage, Rect2, Vec2 } from '@app/core/utils';
-import { DesignTheme } from './../shapes/neutral/ThemeShapeUtils';
 
 export { Color, Rect2, Vec2 } from '@app/core/utils';
 export type Size = { x: number; y: number };
 export type Appearance = { [key: string]: any };
+export type AppTheme = 'light' | 'dark' | 'system';
+export type DesignTheme = 'light' | 'dark';
 export type Configurable = any;
 export type CreatedShape = { renderer: string; size?: { x: number; y: number }; appearance?: Appearance };
 export type RenderContext = { shape: Shape; renderer2: ShapeRenderer; rect: Rect2; designThemeMode: DesignTheme };
