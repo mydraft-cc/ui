@@ -27,7 +27,6 @@ interface GridProps {
     keyBuilder: (item: any) => string;
 }
 
-// Define layout properties type
 interface GridLayoutParams {
     cellSize: number;
     indexFirst: number;
@@ -37,10 +36,8 @@ interface GridLayoutParams {
 
 const cache: { [key: string]: JSX.Element } = {};
 
-// Update GridList props type to include GridLayoutParams
 export const GridList = React.memo((props: GridProps & GridLayoutParams) => {
     const {
-        // Destructure all necessary props including layout ones
         cellSize,
         indexFirst,
         indexLast,

@@ -181,7 +181,6 @@ describe('Transform', () => {
         const center = new Vec2(300, 150);
         const baseSize = new Vec2(100, 40);
         
-        // Test with 0, 45, 90, and 180 degree rotations
         const rotations = [0, 45, 90, 180].map(d => Rotation.fromDegree(d));
         
         for (const rotation of rotations) {
@@ -194,7 +193,6 @@ describe('Transform', () => {
 
             const actual = Transform.createFromTransformationsAndRotation([transformation1, transformation2], rotation);
             
-            // Verify the result is reasonable
             expect(actual.rotation.degree).toBe(rotation.degree);
             expect(actual.size.x).toBeGreaterThan(0);
             expect(actual.size.y).toBeGreaterThan(0);
@@ -234,7 +232,6 @@ describe('Transform', () => {
             rotation
         );
         
-        // Verify the result is reasonable
         expect(actual.rotation.degree).toBe(45);
         expect(actual.size.x).toBeGreaterThan(0);
         expect(actual.size.y).toBeGreaterThan(0);

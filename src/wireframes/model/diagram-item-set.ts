@@ -139,7 +139,6 @@ function flattenRootItems(items: ReadonlyArray<string | DiagramItem>, diagram: D
             byRoot.push({ orderIndex, item });   
         }
 
-        // Add all items to selection, regardless of locked state
         source.set(item.id, item);
     }
 

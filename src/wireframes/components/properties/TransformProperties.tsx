@@ -80,7 +80,7 @@ export const TransformProperties = () => {
             // Rotate to the value.
             return oldBounds.rotateTo(rotation);
         });
-    }, 0, 30);
+    }, 0, 50);
 
     React.useEffect(() => {
         setRotation(Rotation.ZERO);

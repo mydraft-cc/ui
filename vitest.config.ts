@@ -1,7 +1,6 @@
 import path from 'path';
 import { defineConfig } from 'vite';
 
-// Detect CI environment
 const isCI = !!process.env.CI || process.argv.includes('--coverage');
 
 // https://vitejs.dev/config/

@@ -163,6 +163,7 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
     }
 
     public onKeyDown(event: KeyboardEvent, next: (event: KeyboardEvent) => void) {
+        // If the manipulation with the mouse is still in progress we do not handle the event.
         if (isInputFocused() || !this.hasSelection() || this.isSelectionLocked() || this.manipulationMode != Mode.None) {
             next(event);
             return;
@@ -171,6 +172,7 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
         let xd = 0;
         let yd = 0;
 
+        // Calculate the movement direction from the keys.
         switch (event.key) {
             case 'ArrowLeft':
                 xd = -1;
@@ -186,6 +188,7 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
                 break;
         }
 
+        // If the wrong keys are pressed, we just stop here.
         if (xd === 0 && yd === 0) {
             next(event);
             return;
@@ -193,6 +196,7 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
 
         stopEvent(event);
 
+        // If the manipulation with the mouse is still in progress we do not handle the event.
         if (this.moveTimer) {
             next(event);
             return;
@@ -204,13 +208,16 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
         const run = () => {
             const delta = new Vec2(xd * counter, yd * counter);
 
+            // Reset the overlay to show all markers.
             this.props.overlayManager.reset();
 
+            // Show the overlay after a few movements, not the first click.
             this.move(delta, 'None', false);
 
             this.renderPreview();
             this.renderShapes();
 
+            // We have kept the keyboard pressed and therefore also updated at least one shape.
             this.manipulated = true;
     
             counter++;
@@ -230,6 +237,7 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
         try {
             this.props.overlayManager.reset();
 
+            // If none the timer has never been triggered we have not moved the shape and we can just stop here.
             if (!this.manipulated) {
                 return;
             }
@@ -246,11 +254,13 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
     }
 
     public onMouseDown(event: EngineHitEvent, next: (event: EngineHitEvent) => void) {
+        // If the manipulation with the keyboard is still in progress we do not handle the event.
         if (event.source.ctrlKey || this.moveTimer || this.manipulationMode != Mode.None || this.isSelectionLocked()) {
             next(event);
             return;
         }
 
+        // The middle mouse button is needed for pan and zoom.
         if (isMiddleMouse(event.source)) {
             next(event);
             return;
@@ -266,6 +276,7 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
             return;
         }
 
+        // Reset the flag to indicate whether something has been manipulated.
         this.startManipulation(event.position!, this.transform);
 
         if (hitItem === this.moveShape) {
@@ -288,13 +299,17 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
             return;
         }
 
+        // Reset the overlay to show all markers.
         this.props.overlayManager.reset();
 
         const delta = event.position.sub(this.startPosition);
+
+        // If the mouse has not been moved we can just stop here.
         if (delta.lengtSquared === 0) {
             return;
         }
 
+        // We have moved the mouse and therefore also updated at least one shape.
         this.manipulated = true;
         if (this.manipulationMode === Mode.Move) {
             this.move(delta, getSnapMode(event.source));
@@ -315,12 +330,14 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
             items[item.id] = item.transformByBounds(this.startTransform, this.transform);
         }
 
+        // Use a stream of preview updates to bypass react for performance reasons.
         this.props.previewStream.next({ type: 'Update', items });
     }
 
     private move(delta: Vec2, snapMode: SnapMode, showOverlay = true) {
         const snapResult = this.props.snapManager.snapMoving(this.startTransform, delta, snapMode, this.props.selectionSet.editableIds);
 
+        // A resize is very often also a movement, because the center is in the middle.
         this.transform = this.startTransform.moveBy(snapResult.delta);
 
         if (showOverlay) {
@@ -460,6 +477,7 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
     }
 
     private startManipulation(position: Vec2, transform: Transform) {
+        // Use a stream of preview updates to bypass react for performance reasons.
         this.props.previewStream.next({ type: 'Start' });
 
         this.moveTimer?.destroy();
@@ -473,6 +491,7 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
     }
 
     private stopTransform() {
+        // Use a stream of preview updates to bypass react for performance reasons.
         this.props.previewStream.next({ type: 'End' });
 
         this.moveTimer?.destroy();
