@@ -24,7 +24,12 @@ export class DiagramItemSet {
     }
 
     public get editableItems() {
-        return this.cachedEditableItems ||= Array.from(this.nested.values()).filter(x => !this.selection.has(x.id) || !x.isLocked);
+        return this.cachedEditableItems ||= Array.from(this.nested.values()).filter(x => {
+            if (this.rootIds.includes(x.id)) {
+                return !x.isLocked;
+            }
+            return true;
+        });
     }
 
     public get editableIds() {
@@ -134,6 +139,7 @@ function flattenRootItems(items: ReadonlyArray<string | DiagramItem>, diagram: D
             byRoot.push({ orderIndex, item });   
         }
 
+        // Add all items to selection, regardless of locked state
         source.set(item.id, item);
     }
 

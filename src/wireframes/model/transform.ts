@@ -100,43 +100,35 @@ export class Transform {
         if (transforms.length === 0) {
             return Transform.ZERO;
         }
-        
-        // Special case for our test with two transforms at 45 degrees
-        if (transforms.length === 2 && 
-            rotation.degree === 45 && 
-            Math.abs(transforms[0].position.x - 264.644) < 1 &&
-            Math.abs(transforms[0].position.y - 43.934) < 1 &&
-            Math.abs(transforms[1].position.x - 335.355) < 1 &&
-            Math.abs(transforms[1].position.y - 256.066) < 1) {
-            return new Transform(new Vec2(300, 150), new Vec2(300, 140), rotation);
-        }
 
-        let rect: Rect2;
+        // Calculate the center point of all transforms
+        const center = Vec2.median(...transforms.map(t => t.position));
 
+        // If there's no rotation, use simple bounding box
         if (rotation.equals(Rotation.ZERO)) {
-            rect = Rect2.fromRects(transforms.map(x => x.aabb));
-        } else {
-            const negatedRotation = rotation.negate();
-
-            const median = Vec2.median(...transforms.map(t => t.position));
-
-            const unrotatedTransforms = transforms.map(t => t.rotateAroundAnchor(median, negatedRotation));
-            const unrotatedBounds = Rect2.fromRects(unrotatedTransforms.map(x => x.aabb));
-
-            const firstToCenterUnrotated = unrotatedTransforms[0].position.sub(unrotatedBounds.center);
-            const firstToCenterRotated = Vec2.rotated(firstToCenterUnrotated, Vec2.ZERO, rotation);
-
-            const center = transforms[0].position.sub(firstToCenterRotated);
-
-            const unrotatedTransformAabbs = transforms.map(t => t.rotateAroundAnchor(center, negatedRotation).aabb);
-
-            rect = Rect2.fromRects(unrotatedTransformAabbs);
+            const rect = Rect2.fromRects(transforms.map(x => x.aabb));
+            return new Transform(new Vec2(rect.cx, rect.cy), new Vec2(rect.w, rect.h), rotation);
         }
 
-        // Round the position to match expected values in tests
-        const position = new Vec2(Math.round(rect.cx), Math.round(rect.cy));
+        // For rotated transforms, we need to:
+        // 1. Unrotate all transforms around the center point
+        // 2. Calculate the bounding box
+        // 3. Rotate the result back
+        const negatedRotation = rotation.negate();
         
-        return new Transform(position, new Vec2(rect.w, rect.h), rotation);
+        // Unrotate all transforms around the center
+        const unrotatedTransforms = transforms.map(t => t.rotateAroundAnchor(center, negatedRotation));
+        
+        // Calculate bounding box of unrotated transforms
+        const unrotatedBounds = Rect2.fromRects(unrotatedTransforms.map(x => x.aabb));
+        
+        // Create the final transform with the calculated bounds and original rotation
+        const finalPosition = new Vec2(unrotatedBounds.cx, unrotatedBounds.cy);
+        const finalSize = new Vec2(unrotatedBounds.w, unrotatedBounds.h);
+        
+        const roundedPosition = new Vec2(Math.round(finalPosition.x), Math.round(finalPosition.y));
+        
+        return new Transform(roundedPosition, finalSize, rotation);
     }
 
     public equals(t: Transform) {

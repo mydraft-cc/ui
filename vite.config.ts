@@ -23,12 +23,12 @@ export default defineConfig({
                     injectRegister: null,
                 }),
                 favicons('public/logo-square.svg', {
-                  appName: 'mydraft',
-                  appDescription: 'Open Source Wireframing Tool',
-                  developerName: 'Sebastian Stehle',
-                  developerURL: 'https://suquidex.io',
-                  start_url: '/',
-                  theme_color: '#fda100',
+                    appName: 'mydraft',
+                    appDescription: 'Open Source Wireframing Tool',
+                    developerName: 'Sebastian Stehle',
+                    developerURL: 'https://suquidex.io',
+                    start_url: '/',
+                    theme_color: '#fda100',
                 })
             ] : []),
         react({}),
