@@ -136,18 +136,21 @@ export const ShapeRenderer = React.memo(React.forwardRef<HTMLDivElement, ShapeRe
         // Check if the shape is one that needs text color override
         const needsOverride = TEXT_OVERRIDE_TARGETS.has(plugin.identifier());
 
+
         // Handle App Dark / Design Light conflict
-        if (needsOverride && appTheme === 'dark' && designTheme === 'light') {
+        if (needsOverride && isDarkMode && designTheme === 'light') {
+          console.log('needsOverride dark - light', needsOverride, appTheme, designTheme);
             effectiveAppearance = {
                 ...baseAppearance,
                 [DefaultAppearance.FOREGROUND_COLOR]: 0xE0E0E0, // Light Grey for dark app bg
             };
         } 
         // Handle App Light / Design Dark conflict
-        else if (needsOverride && appTheme === 'light' && designTheme === 'dark') {
+        else if (needsOverride && !isDarkMode && designTheme === 'dark') {
+          console.log('needsOverride light - dark', needsOverride, appTheme, designTheme);
             effectiveAppearance = {
                 ...baseAppearance,
-                [DefaultAppearance.FOREGROUND_COLOR]: CommonTheme.CONTROL_TEXT_COLOR, // Dark Grey (0x252525) for light app bg
+                [DefaultAppearance.FOREGROUND_COLOR]: 0x373A3C,
             };
         }
 
