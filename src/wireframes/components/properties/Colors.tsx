@@ -22,8 +22,8 @@ export const Colors = () => {
         <div>
             {recentColors.colors.map(c =>
                 <span key={c.toString()} className='mr-2 mb-2'>
-                    <ColorPicker value={c} onChange={color => doChangeColor(c, color)} />,
-                </span>,
+                    <ColorPicker value={c} onChange={color => doChangeColor(c, color)} />
+                </span>
             )}
         </div>
     );

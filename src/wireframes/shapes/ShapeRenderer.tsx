@@ -15,7 +15,6 @@ import { DefaultConstraintFactory, DiagramItem, Transform } from '@app/wireframe
 import { selectEffectiveTheme } from '@app/wireframes/model/selectors/themeSelectors';
 import { selectDesignThemeMode } from '@app/wireframes/model/actions/designThemeSlice';
 import { useAppSelector } from '@app/store';
-import { CommonTheme } from './neutral/_theme'; // Import CommonTheme for text color
 
 // Debounce helper function
 const debounce = (fn: Function, delay: number) => {
@@ -136,18 +135,15 @@ export const ShapeRenderer = React.memo(React.forwardRef<HTMLDivElement, ShapeRe
         // Check if the shape is one that needs text color override
         const needsOverride = TEXT_OVERRIDE_TARGETS.has(plugin.identifier());
 
-
         // Handle App Dark / Design Light conflict
         if (needsOverride && isDarkMode && designTheme === 'light') {
-          console.log('needsOverride dark - light', needsOverride, appTheme, designTheme);
             effectiveAppearance = {
                 ...baseAppearance,
-                [DefaultAppearance.FOREGROUND_COLOR]: 0xE0E0E0, // Light Grey for dark app bg
+                [DefaultAppearance.FOREGROUND_COLOR]: 0xE0E0E0,
             };
         } 
         // Handle App Light / Design Dark conflict
         else if (needsOverride && !isDarkMode && designTheme === 'dark') {
-          console.log('needsOverride light - dark', needsOverride, appTheme, designTheme);
             effectiveAppearance = {
                 ...baseAppearance,
                 [DefaultAppearance.FOREGROUND_COLOR]: 0x373A3C,

@@ -14,6 +14,23 @@
     gap: 8px;
 }
 
+.theme-segment-title {
+    color: $color-text;
+}
+
+.menu-item-no-hover {
+  cursor: pointer !important;
+}
+
+// Add hover styles for theme segment
+.menu-item-no-hover:hover {
+  .theme-segment-title,
+  .anticon,
+  .ant-segmented-item-label {
+    color: $color-theme-blue;
+  }
+}
+
 .menu-large-icon {
     display: flex;
     align-items: center;

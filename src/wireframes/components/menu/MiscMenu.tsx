@@ -1,12 +1,11 @@
 import { EllipsisOutlined, GithubOutlined, QuestionCircleOutlined, MoonOutlined, SunOutlined, SettingOutlined, SmileOutlined, CheckOutlined } from '@ant-design/icons';
-import { Button, Dropdown, MenuProps, Modal, Space, Segmented, Divider, Tooltip } from 'antd';
+import { Button, Dropdown, MenuProps, Modal, Space, Segmented } from 'antd';
 import * as React from 'react';
-import { MarkerButton, useEventCallback, useMarkerSDK } from '@app/core';
+import { useEventCallback, useMarkerSDK } from '@app/core';
 import text from '@app/legal.html?raw';
 import { texts } from '@app/texts';
 import { useAppDispatch, useAppSelector } from '@app/store';
 import { setThemeMode, ThemeMode } from '../../model/actions';
-import { selectEffectiveTheme } from '../../model/selectors/themeSelectors';
 import './MiscMenu.scss';
 
 // Component for larger menu icons with consistent styling
@@ -62,9 +61,9 @@ export const MiscMenu = React.memo(() => {
             key: 'themeSegment',
             label: (
                 <>
-                    <div className="dropdown-section-title">{texts.common.toggleTheme}</div>
+                    <div className="theme-segment-title">{texts.common.toggleTheme}</div>
                     <div className="theme-segment-container">
-                        <Segmented<ThemeMode> // Explicitly type the Segmented component
+                        <Segmented<ThemeMode>
                             options={[
                                 { value: 'light',  label: <Space><SunOutlined /> {texts.common.lightTheme}</Space> },
                                 { value: 'dark',   label: <Space><MoonOutlined /> {texts.common.darkTheme}</Space> },
@@ -72,15 +71,14 @@ export const MiscMenu = React.memo(() => {
                             ]}
                             value={themeMode}
                             onChange={handleSetTheme}
-                            block // Make the segmented control take full width within its container
-                            aria-label={texts.common.toggleTheme} // Keep aria-label for accessibility
+                            block
+                            aria-label={texts.common.toggleTheme}
                         />
                     </div>
                 </>
             ),
-            // Make this item non-interactive as the Segmented control handles interaction
             disabled: true, 
-            className: 'menu-item-no-hover', // Add class to remove hover effects if needed
+            className: 'menu-item-no-hover',
         },
     ];
 

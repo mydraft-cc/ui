@@ -38,7 +38,7 @@ export const ColorList = (props: ColorListProps) => {
             {colors.colors.map(c =>
                 <div className={classNames('color-picker-color', { selected: color && c.eq(color) })} key={c.toString()}>
                     <div className='color-picker-color-inner' onClick={() => onClick(c)} style={{ background: c.toString() }}></div>
-                </div>,
+                </div>
             )}
         </div>
     );
