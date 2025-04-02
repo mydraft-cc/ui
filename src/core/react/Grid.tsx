@@ -8,7 +8,7 @@
 import * as React from 'react';
 import { sizeInPx } from '@app/core/utils';
 import { useEventCallback } from './hooks';
-import useResizeObserver from '../../hooks/useResizeObserver';
+import { useResizeObserver } from './hooks';
 
 interface GridProps {
     // The items to render.
@@ -28,9 +28,16 @@ interface GridProps {
 }
 
 interface GridLayoutParams {
-    cellSize: number;
+    // The first index to render.
     indexFirst: number;
+
+    // The last index to render.
     indexLast: number;
+
+    // The size of a cell.
+    cellSize: number;
+
+    // The height of the grid.
     height: number;
 }
 
