@@ -13,15 +13,6 @@ import * as React from 'react';
 import { isMac, Shortcut, Types } from '@app/core';
 import { UIAction } from './shared';
 
-// Define MenuItemType locally to match what's used in the component
-interface MenuItemType {
-    key: React.Key;
-    disabled?: boolean;
-    label?: React.ReactNode;
-    onClick?: () => void;
-    icon?: React.ReactNode;
-}
-
 type ActionDisplayMode = 'Icon' | 'IconLabel' | 'Label';
 
 type ActionProps = {
@@ -146,7 +137,7 @@ export function buildMenuItem(action: UIAction, key: string) {
         icon,
     } = action;
 
-    const item: MenuItemType = {
+    const item = {
         key,
         disabled,
         label,

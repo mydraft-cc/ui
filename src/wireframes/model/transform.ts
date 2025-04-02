@@ -97,20 +97,6 @@ export class Transform {
     }
 
     public static createFromTransformationsAndRotation(transforms: Transform[], rotation: Rotation): Transform {
-        if (transforms.length === 0) {
-            return Transform.ZERO;
-        }
-        
-        // Special case for our test with two transforms at 45 degrees
-        if (transforms.length === 2 && 
-            rotation.degree === 45 && 
-            Math.abs(transforms[0].position.x - 264.644) < 1 &&
-            Math.abs(transforms[0].position.y - 43.934) < 1 &&
-            Math.abs(transforms[1].position.x - 335.355) < 1 &&
-            Math.abs(transforms[1].position.y - 256.066) < 1) {
-            return new Transform(new Vec2(300, 150), new Vec2(300, 140), rotation);
-        }
-
         let rect: Rect2;
 
         if (rotation.equals(Rotation.ZERO)) {
@@ -133,10 +119,7 @@ export class Transform {
             rect = Rect2.fromRects(unrotatedTransformAabbs);
         }
 
-        // Round the position to match expected values in tests
-        const position = new Vec2(Math.round(rect.cx), Math.round(rect.cy));
-        
-        return new Transform(position, new Vec2(rect.w, rect.h), rotation);
+        return new Transform(new Vec2(rect.cx, rect.cy), new Vec2(rect.w, rect.h), rotation);
     }
 
     public equals(t: Transform) {

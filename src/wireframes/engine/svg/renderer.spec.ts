@@ -9,7 +9,6 @@ import * as svg from '@svgdotjs/svg.js';
 import { Rect2 } from '@app/core/utils';
 import { SvgRenderer } from './renderer';
 
-// Helper to detect if we're in jsdom environment
 const isJsdom = typeof window !== 'undefined' && window.navigator.userAgent.includes('jsdom');
 
 describe('SVGRenderer', () => {

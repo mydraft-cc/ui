@@ -1,7 +1,6 @@
 import path from 'path';
 import { defineConfig } from 'vite';
 
-// Detect CI environment
 const isCI = !!process.env.CI || process.argv.includes('--coverage');
 
 // https://vitejs.dev/config/
@@ -10,10 +9,6 @@ export default defineConfig({
         alias: {
             '@app': path.resolve(__dirname, './src/'),
         },
-    },
-
-    define: {
-        __REACT_DEVTOOLS_GLOBAL_HOOK__: { isDisabled: true },
     },
 
     test: {

@@ -8,7 +8,7 @@
 import { select, Selection } from 'd3-selection';
 import { zoom, ZoomBehavior, ZoomTransform } from 'd3-zoom';
 import * as React from 'react';
-import useResizeObserver from '../../hooks/useResizeObserver';
+import { useResizeObserver } from './hooks';
 
 export interface CanvasProps {
     onRender: (viewbox: ViewBox, control: Control) => React.ReactNode;

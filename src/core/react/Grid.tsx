@@ -8,7 +8,7 @@
 import * as React from 'react';
 import { sizeInPx } from '@app/core/utils';
 import { useEventCallback } from './hooks';
-import useResizeObserver from '../../hooks/useResizeObserver';
+import { useResizeObserver } from './hooks';
 
 interface GridProps {
     // The items to render.
@@ -27,20 +27,24 @@ interface GridProps {
     keyBuilder: (item: any) => string;
 }
 
-// Define layout properties type
 interface GridLayoutParams {
-    cellSize: number;
+    // The first index to render.
     indexFirst: number;
+
+    // The last index to render.
     indexLast: number;
+
+    // The size of a cell.
+    cellSize: number;
+
+    // The height of the grid.
     height: number;
 }
 
 const cache: { [key: string]: JSX.Element } = {};
 
-// Update GridList props type to include GridLayoutParams
 export const GridList = React.memo((props: GridProps & GridLayoutParams) => {
     const {
-        // Destructure all necessary props including layout ones
         cellSize,
         indexFirst,
         indexLast,

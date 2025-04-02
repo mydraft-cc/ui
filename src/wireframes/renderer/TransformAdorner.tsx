@@ -164,7 +164,6 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
 
     public onKeyDown(event: KeyboardEvent, next: (event: KeyboardEvent) => void) {
         // If the manipulation with the mouse is still in progress we do not handle the event.
-
         if (isInputFocused() || !this.hasSelection() || this.isSelectionLocked() || this.manipulationMode != Mode.None) {
             next(event);
             return;
@@ -255,7 +254,7 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
     }
 
     public onMouseDown(event: EngineHitEvent, next: (event: EngineHitEvent) => void) {
-      // If the manipulation with the keyboard is still in progress we do not handle the event.
+        // If the manipulation with the keyboard is still in progress we do not handle the event.
         if (event.source.ctrlKey || this.moveTimer || this.manipulationMode != Mode.None || this.isSelectionLocked()) {
             next(event);
             return;
@@ -337,6 +336,7 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
     private move(delta: Vec2, snapMode: SnapMode, showOverlay = true) {
         const snapResult = this.props.snapManager.snapMoving(this.startTransform, delta, snapMode, this.props.selectionSet.editableIds);
 
+        // A resize is very often also a movement, because the center is in the middle.
         this.transform = this.startTransform.moveBy(snapResult.delta);
 
         if (showOverlay) {
@@ -477,7 +477,7 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
     }
 
     private startManipulation(position: Vec2, transform: Transform) {
-      // Use a stream of preview updates to bypass react for performance reasons.
+        // Use a stream of preview updates to bypass react for performance reasons.
         this.props.previewStream.next({ type: 'Start' });
 
         this.moveTimer?.destroy();
@@ -491,7 +491,7 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
     }
 
     private stopTransform() {
-      // Use a stream of preview updates to bypass react for performance reasons.
+        // Use a stream of preview updates to bypass react for performance reasons.
         this.props.previewStream.next({ type: 'End' });
 
         this.moveTimer?.destroy();
@@ -628,4 +628,3 @@ function getSnapMode(event: KeyboardEvent | MouseEvent) {
         return 'Shapes';
     }
 }
-

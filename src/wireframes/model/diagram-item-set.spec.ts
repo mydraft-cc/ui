@@ -66,7 +66,7 @@ describe('Diagram Item Set', () => {
         const selection1 = set.selectedItems;
         const selection2 = set.selectedItems;
 
-        expect(selection1.map(x => x.id)).toEqual([root1.id, groupId]);
+        expect(selection1.map(x => x.id)).toEqual([root1.id, root2.id, groupId]);
         expect(selection1).toBe(selection2);
     });
 

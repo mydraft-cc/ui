@@ -13,7 +13,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { ClipboardContainer, useEventCallback, usePrinter } from '@app/core';
 import { ArrangeMenu, ClipboardMenu, EditorView, HistoryMenu, Icons, LoadingMenu, LockMenu, Outline, Pages, PrintView, Properties, Recent, SettingsMenu, Shapes, UIMenu, MiscMenu } from '@app/wireframes/components';
 import { loadDiagramFromServer, newDiagram, selectTab, showToast, toggleLeftSidebar, toggleRightSidebar, useStore } from '@app/wireframes/model';
-import { useAppDispatch, useAppSelector } from './store';
+import { useAppDispatch } from './store';
 import { texts } from './texts';
 import { CustomDragLayer } from './wireframes/components/CustomDragLayer';
 import { PresentationView } from './wireframes/components/PresentationView';
@@ -64,8 +64,7 @@ export const App = () => {
     const showRightSidebar = useStore(s => s.ui.showRightSidebar);
     const [presenting, setPresenting] = React.useState(false);
     
-    // Subscribe to token changes from loading state
-    const tokenToRead = useAppSelector(state => state.loading.tokenToRead);
+    const tokenToRead = useStore(s => s.loading.tokenToRead);
 
     const [
         print,
