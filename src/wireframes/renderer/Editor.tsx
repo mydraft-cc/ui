@@ -14,8 +14,7 @@ import { Engine, EngineLayer, EngineRect } from '@app/wireframes/engine';
 import { PixiCanvasView } from '@app/wireframes/engine/pixi/canvas/PixiCanvas';
 import { SvgCanvasView } from '@app/wireframes/engine/svg/canvas/SvgCanvas';
 import { Diagram, DiagramItem, DiagramItemSet, Transform } from '@app/wireframes/model';
-import { selectEffectiveAppTheme } from '@app/wireframes/model/selectors/themeSelectors';
-import { selectDesignThemeMode } from '@app/wireframes/model/actions/designThemeSlice';
+import { selectSelectedDiagramBackgroundColor, selectSelectedDiagramDesignTheme } from '@app/wireframes/model/selectors/themeSelectors';
 import { useStore, getEditor } from '@app/wireframes/model';
 import { useOverlayContext } from './../contexts/OverlayContext';
 import { ItemsLayer } from './ItemsLayer';
@@ -92,14 +91,13 @@ export const Editor = React.memo((props: EditorProps) => {
         useWebGL,
     } = props;
 
-    // Get editor state, including user-defined color
+    // Get editor state
     const editor = useStore(getEditor);
-    const userDefinedColor = editor.color; 
 
-    const effectiveAppTheme = useAppSelector(selectEffectiveAppTheme);
-    const isAppDarkMode = effectiveAppTheme === 'dark';
-
-    const designThemeMode = useAppSelector(selectDesignThemeMode);
+    // Get diagram-specific theme properties
+    const diagramBackgroundColor = useAppSelector(selectSelectedDiagramBackgroundColor);
+    const diagramDesignTheme = useAppSelector(selectSelectedDiagramDesignTheme);
+    const isDarkMode = diagramDesignTheme === 'dark';
     
     const [layers, setLayers] = React.useState<Layers>();
     const renderWebGL = React.useRef(useWebGL);
@@ -114,18 +112,17 @@ export const Editor = React.memo((props: EditorProps) => {
             }
 
             // Determine theme-based defaults
-            const designThemeDefaultBgColor = designThemeMode === 'dark' ? '#252525' : '#ffffff';
+            const designThemeDefaultBgColor = isDarkMode ? '#252525' : '#ffffff';
+            const borderDarkColor = isDarkMode ? '#404040' : '#b8b8b8';
+            const gridColor = isDarkMode ? '#333333' : '#e0e0e0';
 
-            const borderDarkColor = isAppDarkMode ? '#404040' : '#b8b8b8';
-            const gridColor = isAppDarkMode ? '#333333' : '#e0e0e0';
+            // Use diagram-specific background color if available, otherwise use design theme default
+            const finalCanvasBgColor = diagramBackgroundColor ? diagramBackgroundColor.toString() : designThemeDefaultBgColor;
 
-            // Use userDefinedColor if available, otherwise use design theme default
-            const finalCanvasBgColor = userDefinedColor ? userDefinedColor.toString() : designThemeDefaultBgColor;
-
-            layers.backgroundRect?.fill(finalCanvasBgColor); // Use final color
-            layers.backgroundRect?.strokeColor(borderDarkColor); // Use app theme for border
+            layers.backgroundRect?.fill(finalCanvasBgColor);
+            layers.backgroundRect?.strokeColor(borderDarkColor);
             
-            // Update any grid-related elements if they exist (using app theme color)
+            // Update any grid-related elements if they exist
             if (layers.engine && typeof layers.engine.updateGridColor === 'function') {
                 layers.engine.updateGridColor(gridColor);
             }
@@ -133,7 +130,7 @@ export const Editor = React.memo((props: EditorProps) => {
             // Force a redraw of the canvas to ensure immediate updates
             layers.engine?.invalidate?.();
         }, 50),
-        [layers, isAppDarkMode, userDefinedColor, designThemeMode]
+        [layers, isDarkMode, diagramBackgroundColor]
     );
 
     const doInit = React.useCallback((engine: Engine) => {
@@ -182,8 +179,7 @@ export const Editor = React.memo((props: EditorProps) => {
         if (layers) {
             updateCanvasTheme();
         }
-        // Add designThemeMode to dependencies
-    }, [isAppDarkMode, layers, userDefinedColor, designThemeMode, updateCanvasTheme]); 
+    }, [isDarkMode, layers, diagramBackgroundColor, updateCanvasTheme]);
 
     React.useEffect(() => {
         overlayContext.snapManager.prepare(diagram, viewSize);
@@ -216,14 +212,14 @@ export const Editor = React.memo((props: EditorProps) => {
             {diagram && layers && (
                 <>
                     <ItemsLayer
-                        designThemeMode={designThemeMode}
+                        designThemeMode={diagramDesignTheme}
                         diagrams={masterDiagrams}
                         diagramLayer={layers.renderMasterLayer}
                         onRender={onRender}
                     />
 
                     <ItemsLayer
-                        designThemeMode={designThemeMode}
+                        designThemeMode={diagramDesignTheme}
                         diagrams={[diagram]}
                         diagramLayer={layers.renderMainLayer}
                         preview={renderPreview.current}

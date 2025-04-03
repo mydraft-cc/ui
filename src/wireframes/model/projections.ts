@@ -5,11 +5,11 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import {  useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
 import { Color, ColorPalette, Types } from '@app/core/utils';
 import { texts } from '@app/texts';
-import { addDiagram, addShape, changeColor, changeColors, changeItemsAppearance, pasteItems, removeDiagram, removeItems } from './actions';
+import { addDiagram, addShape, changeDiagramColors, changeColors, changeItemsAppearance, pasteItems, removeDiagram, removeItems } from './actions';
 import { AssetsStateInStore } from './assets-state';
 import { Diagram } from './diagram';
 import { DiagramItemSet } from './diagram-item-set';
@@ -20,6 +20,7 @@ import { UndoableState } from './undoable-state';
 
 const EMPTY_SELECTION_SET = DiagramItemSet.EMPTY;
 
+// Base selectors
 export const getDiagramId = (state: EditorStateInStore) => state.editor.present.selectedDiagramId;
 export const getDiagrams = (state: EditorStateInStore) => state.editor.present.diagrams;
 export const getDiagramsFilter = (state: UIStateInStore) => state.ui.diagramsFilter;
@@ -32,6 +33,7 @@ export const getOrderedDiagrams = (state: EditorStateInStore) => state.editor.pr
 export const getShapes = (state: AssetsStateInStore) => state.assets.shapes;
 export const getShapesFilter = (state: AssetsStateInStore) => state.assets.shapesFilter;
 
+// Memoized selectors
 export const getIconsFilterRegex = createSelector(
     getIconsFilter,
     filter => new RegExp(filter || '.*', 'i'),
@@ -93,13 +95,34 @@ export const getSelection = createSelector(
     diagram => diagram ? DiagramItemSet.createFromDiagram(diagram.selectedIds.values, diagram) : EMPTY_SELECTION_SET,
 );
 
+// Create a stable reference for the color palette
+const createColorPalette = (colors: { [color: string]: { count: number; color: Color } }) => {
+    const sorted = Object.entries(colors).sort((x, y) => y[1].count - x[1].count);
+    return new ColorPalette(sorted.map(x => x[1].color));
+};
+
+const EMPTY_COLOR_PALETTE = new ColorPalette([]);
+
 export const getColors = createSelector(
-    getEditorRoot,
-    editor => {
+    [getDiagram], // Use getDiagram as the input selector
+    (diagram): ColorPalette => { // Input is now the selected diagram
+        if (!diagram) {
+            // Return an empty, stable palette if no diagram is selected
+            return EMPTY_COLOR_PALETTE;
+        }
+
         const colors: { [color: string]: { count: number; color: Color } } = {};
 
         const addColor = (value: any) => {
+            // Check if value is null or undefined before processing
+            if (value === null || value === undefined) {
+                return;
+            }
+
             const color = Color.fromValue(value);
+            // Ensure we don't add invalid colors (e.g., from invalid input values)
+            // The fromValue method likely handles returning a default or specific instance for invalid inputs,
+            // or the subsequent toString() would reveal issues. Let ColorPalette handle potential duplicates.
 
             let colorKey = color.toString();
             let colorEntry = colors[colorKey];
@@ -112,75 +135,68 @@ export const getColors = createSelector(
             }
         };
 
-        // Only add the editor background color if it's not null
-        if (editor.present.color) {
-            addColor(editor.present.color.toNumber());
-        }
-
-        for (const diagram of editor.present.diagrams.values) {
-            for (const shape of diagram.items.values) {
-                if (shape.type === 'Group') {
-                    continue;
+        // Add colors from the diagram's theme only if they are explicitly set
+        const theme = diagram.theme;
+        if (theme) {
+            // Only add backgroundColor if it's explicitly set (not using default)
+            if (theme.backgroundColor !== null) {
+                addColor(theme.backgroundColor);
+            }
+            
+            const settings = theme.themeSettings;
+            if (settings) {
+                // Only add theme settings colors if they differ from the default theme
+                const defaultTheme = Diagram.createDefaultTheme();
+                if (!settings.borderColor.eq(defaultTheme.themeSettings.borderColor)) {
+                    addColor(settings.borderColor);
                 }
-                
-                for (const [key, value] of shape.appearance.entries) {
-                    if (key.endsWith('COLOR')) {
-                        addColor(value);
-                    }
+                if (!settings.gridColor.eq(defaultTheme.themeSettings.gridColor)) {
+                    addColor(settings.gridColor);
                 }
             }
         }
 
-        const sorted = Object.entries(colors).sort((x, y) => y[1].count - x[1].count);
-
-        return new ColorPalette(sorted.map(x => x[1].color));
-    },
-    {
-        memoizeOptions: {
-            equalityCheck: (current: UndoableState<EditorState>, previous: UndoableState<EditorState>) => {
-                function shouldChange() {
-                    if (current === previous) {
-                        return false;
-                    }
-
-                    if (current.present.id !== previous.present.id) {
-                        return true;
-                    }
-    
-                    const lastAction = previous.lastAction;
-    
-                    return (
-                        addDiagram.match(lastAction) ||
-                        addShape.match(lastAction) ||
-                        changeColor.match(lastAction) ||
-                        changeColors.match(lastAction) ||
-                        changeItemsAppearance.match(lastAction) ||
-                        pasteItems.match(lastAction) ||
-                        removeDiagram.match(lastAction) ||
-                        removeItems.match(lastAction)
-                    );
+        // Add colors from the shapes in the selected diagram
+        for (const shape of diagram.items.values) {
+            if (shape.type === 'Group') {
+                continue;
+            }
+            
+            for (const [key, value] of shape.appearance.entries) {
+                if (key.endsWith('COLOR')) {
+                    addColor(value);
                 }
+            }
+        }
 
-                return !shouldChange();
-            },
-        },
+        return createColorPalette(colors);
     },
+    // Remove custom memoizeOptions, rely on default createSelector behavior based on diagram reference
 );
 
 export function getPageName(diagram: Diagram | string, index: number): string {
-    let title: string | undefined;
-
     if (Types.isString(diagram)) {
-        title = diagram;
-    } else {
-        title = diagram.title;
+        return diagram;
     }
 
-    return title || `${texts.common.page} ${index + 1}`;
+    return diagram.title || `${texts.common.page} ${index + 1}`;
 }
 
 type State = AssetsStateInStore & EditorStateInStore & UIStateInStore & LoadingStateInStore;
 
 export function useStore<T>(selector: ((state: State) => T)) {
-    return useSelector<State, T>(p => selector(p));
+    return useSelector(selector, (a, b) => {
+        if (a === b) {
+            return true;
+        }
+
+        if (Array.isArray(a) && Array.isArray(b)) {
+            if (a.length !== b.length) {
+                return false;
+            }
+            return a.every((x, i) => x === b[i]);
+        }
+
+        return false;
+    });
 }

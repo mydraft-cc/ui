@@ -8,14 +8,14 @@
 import * as React from 'react';
 import { Color, ColorPicker } from '@app/core';
 import { useAppDispatch } from '@app/store';
-import { changeColors, getColors, useStore } from '@app/wireframes/model';
+import { changeDiagramColors, getColors, useStore } from '@app/wireframes/model';
 
 export const Colors = () => {
     const dispatch = useAppDispatch();
     const recentColors = useStore(getColors);
 
     const doChangeColor = React.useCallback((oldColor: Color, newColor: Color) => {
-        dispatch(changeColors(oldColor, newColor));
+        dispatch(changeDiagramColors(oldColor, newColor));
     }, [dispatch]);
 
     return (

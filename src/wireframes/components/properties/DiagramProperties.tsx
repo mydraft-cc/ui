@@ -10,8 +10,9 @@ import * as React from 'react';
 import { Color, ColorPicker, useEventCallback } from '@app/core';
 import { useAppDispatch, useAppSelector } from '@app/store';
 import { texts } from '@app/texts';
-import { changeColor, changeSize, getColors, getEditor, useStore } from '@app/wireframes/model';
-import { selectEffectiveAppTheme } from '@app/wireframes/model/selectors/themeSelectors';
+import { changeSize, getColors, getEditor, useStore } from '@app/wireframes/model';
+import { setDiagramBackgroundColor, setDiagramDesignTheme } from '@app/wireframes/model/actions/diagrams';
+import { selectSelectedDiagramBackgroundColor, selectSelectedDiagramDesignTheme } from '@app/wireframes/model/selectors/themeSelectors';
 import { DesignThemeSelector } from '../DesignThemeSelector';
 
 // Define default theme colors as Color objects
@@ -22,14 +23,14 @@ export const DiagramProperties = React.memo(() => {
     const dispatch = useAppDispatch();
     const editor = useStore(getEditor);
     const editorSize = editor.size;
-    const editorColor = editor.color; // User-defined color from store (might be undefined)
     const recentColors = useStore(getColors);
     const [sizeWidth, setWidth] = React.useState(0);
     const [sizeHeight, setHeight] = React.useState(0);
 
-    // Get the effective theme to determine the default display color
-    const effectiveAppTheme = useAppSelector(selectEffectiveAppTheme);
-    const isDarkMode = effectiveAppTheme === 'dark';
+    // Get diagram-specific theme properties
+    const diagramBackgroundColor = useAppSelector(selectSelectedDiagramBackgroundColor);
+    const diagramDesignTheme = useAppSelector(selectSelectedDiagramDesignTheme);
+    const isDarkMode = diagramDesignTheme === 'dark';
 
     React.useEffect(() => {
         setWidth(editorSize.x);
@@ -41,12 +42,20 @@ export const DiagramProperties = React.memo(() => {
     });
 
     const doChangeColor = useEventCallback((color: Color) => {
-        dispatch(changeColor(color));
+        if (editor.selectedDiagramId) {
+            dispatch(setDiagramBackgroundColor(editor.selectedDiagramId, color));
+        }
+    });
+
+    const doChangeDesignTheme = useEventCallback((theme: 'light' | 'dark') => {
+        if (editor.selectedDiagramId) {
+            dispatch(setDiagramDesignTheme(editor.selectedDiagramId, theme));
+        }
     });
 
     // Determine the color to display in the picker:
-    // Use the user-defined color if set, otherwise use the theme default.
-    const displayColor = editorColor ? editorColor : (isDarkMode ? DARK_DEFAULT_COLOR : LIGHT_DEFAULT_COLOR);
+    // Use the diagram-specific color if set, otherwise use the theme default.
+    const displayColor = diagramBackgroundColor ? diagramBackgroundColor : (isDarkMode ? DARK_DEFAULT_COLOR : LIGHT_DEFAULT_COLOR);
 
     return (
         <>
@@ -74,7 +83,7 @@ export const DiagramProperties = React.memo(() => {
             <Row className='property'>
                 <Col span={12} className='property-label'>{texts.common.designTheme}</Col>
                 <Col span={12} className='property-value'>
-                    <DesignThemeSelector />
+                    <DesignThemeSelector value={diagramDesignTheme} onChange={doChangeDesignTheme} />
                 </Col>
             </Row>
         </>

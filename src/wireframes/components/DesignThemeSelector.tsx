@@ -1,32 +1,29 @@
 import React from 'react';
 import { Segmented } from 'antd';
-import { useAppDispatch, useAppSelector } from '@app/store';
-import { selectDesignThemeMode, setDesignThemeMode } from '../model/actions/designThemeSlice';
-import { texts } from '@app/texts'; // Assuming texts are setup for localization
+import { texts } from '@app/texts';
 
-export const DesignThemeSelector: React.FC = () => {
-    const dispatch = useAppDispatch();
-    const currentMode = useAppSelector(selectDesignThemeMode);
+interface DesignThemeSelectorProps {
+    value: 'light' | 'dark';
+    onChange: (value: 'light' | 'dark') => void;
+}
 
-    const handleChange = (value: string | number) => {
-        // Type assertion as Segmented value can be string | number
-        const mode = value as 'light' | 'dark';
-        dispatch(setDesignThemeMode(mode));
-    };
-
+export const DesignThemeSelector: React.FC<DesignThemeSelectorProps> = ({ value, onChange }) => {
     // Prepare options for the Segmented control
     const options = [
-        { label: texts.common.lightTheme, value: 'light' }, // Use correct key
-        { label: texts.common.darkTheme, value: 'dark' },   // Use correct key
+        { label: texts.common.lightTheme, value: 'light' },
+        { label: texts.common.darkTheme, value: 'dark' },
     ];
 
-    // Add labels or tooltips later for clarity as per the todo
+    const handleChange = (newValue: string | number) => {
+        onChange(newValue as 'light' | 'dark');
+    };
+
     return (
         <Segmented
             options={options}
-            value={currentMode}
+            value={value}
             onChange={handleChange}
-            aria-label="Select Design Theme" // Accessibility
+            aria-label="Select Design Theme"
         />
     );
 }; 
