@@ -10,7 +10,7 @@ import { Input, Select } from 'antd';
 import * as React from 'react';
 import { useStore as useReduxStore } from 'react-redux';
 import { Grid, useEventCallback } from '@app/core';
-import { RootState, useAppDispatch } from '@app/store';
+import { AppState, useAppDispatch } from '@app/store';
 import { texts } from '@app/texts';
 import { addShape, filterIcons, getDiagramId, getFilteredIcons, getIconSet, getIconSets, getIconsFilter, IconInfo, PluginRegistry, selectIcons, useStore } from '@app/wireframes/model';
 import { Icon } from './Icon';
@@ -26,7 +26,7 @@ export const Icons = React.memo(() => {
     const iconSets = useStore(getIconSets);
     const iconsFilter = useStore(getIconsFilter);
     const iconsFiltered = useStore(getFilteredIcons);
-    const store = useReduxStore<RootState>();
+    const store = useReduxStore<AppState>();
 
     const cellRenderer = React.useCallback((icon: IconInfo) => {
         const doAdd = () => {

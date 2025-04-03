@@ -23,7 +23,6 @@ export const PresentationView = (props: PresentationViewProps) => {
     const { onClose } = props;
 
     const [fullscreen, setFullscreen] = useFullscreen();
-    const color = useStore(x => x.editor.present.color);
     const diagrams = useStore(x => x.editor.present.diagrams);
     const diagramsOrdered = useStore(x => x.editor.present.orderedDiagrams);
     const size = useStore(x => x.editor.present.size);
@@ -71,7 +70,6 @@ export const PresentationView = (props: PresentationViewProps) => {
                 {currentDiagram &&
                     <div className='presentation-diagram' style={{ width: w, height: h }}>
                         <PrintDiagram
-                            color={color}
                             diagram={currentDiagram}
                             diagrams={diagrams}
                             onNavigate={doNavigate}

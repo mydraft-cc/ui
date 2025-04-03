@@ -8,7 +8,7 @@
 import { AnyAction } from 'redux';
 import { Types } from '@app/core/utils';
 import { changeItemsAppearance, transformItems } from './appearance';
-import { changeColor, changeSize, renameDiagram } from './diagrams';
+import { changeDiagramColors, changeSize, renameDiagram } from './diagrams';
 import { renameItems, selectItems } from './items';
 
 export function mergeAction(action: AnyAction, prevAction: AnyAction): AnyAction | null {
@@ -44,7 +44,7 @@ export function mergeAction(action: AnyAction, prevAction: AnyAction): AnyAction
         return { type: action.type, payload: { ...action.payload, oldBounds: prevAction.payload.oldBounds } };
     }
 
-    if (changeColor.match(prevAction) ||
+    if (changeDiagramColors.match(prevAction) ||
         changeSize.match(prevAction) ||
         renameDiagram.match(prevAction) ||
         renameItems.match(prevAction)) {

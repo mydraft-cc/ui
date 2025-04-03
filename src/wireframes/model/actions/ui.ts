@@ -8,7 +8,7 @@
 import { createAction, createReducer } from '@reduxjs/toolkit';
 import { message } from 'antd';
 import { NoticeType } from 'antd/lib/message/interface';
-import { AnyAction, Dispatch, Middleware, Reducer } from 'redux';
+import { Middleware, Reducer } from 'redux';
 import { saveWebGLState, UIState } from './../internal';
 
 export const showToast =
@@ -47,7 +47,7 @@ export const toggleWebGL =
     });
 
 export function toastMiddleware() {
-    const middleware: Middleware = () => (next: Dispatch<AnyAction>) => (action: any) => {
+    const middleware: Middleware = _store => next => (action: any) => {
         if (showToast.match(action)) {
             const { content, delayed, key, type } = action.payload;
 

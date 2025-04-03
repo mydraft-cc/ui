@@ -6,7 +6,7 @@
 */
 
 import * as React from 'react';
-import { Color, ImmutableMap, Rect2, useEventCallback, Vec2 } from '@app/core';
+import { ImmutableMap, Rect2, useEventCallback, Vec2 } from '@app/core';
 import { Diagram, DiagramItem, DiagramItemSet } from '@app/wireframes/model';
 import { Editor } from '@app/wireframes/renderer/Editor';
 
@@ -20,9 +20,6 @@ export interface PrintDiagramProps {
     // The diagram size.
     size: Vec2;
 
-    // The color.
-    color: Color;
-
     // True if the bounds should be used as size.
     useBounds?: boolean;
 
@@ -35,7 +32,6 @@ export interface PrintDiagramProps {
 
 export const PrintDiagram = (props: PrintDiagramProps) => {
     const {
-        color,
         diagram,
         diagrams,
         onRender,
@@ -51,13 +47,14 @@ export const PrintDiagram = (props: PrintDiagramProps) => {
     const viewBox = React.useMemo(() => {
         if (useBounds) {
             const aabbs = Array.from(diagram.items.values, x => x.bounds(diagram).aabb);
-
             const rect = Rect2.fromRects(aabbs).inflate(20);
+            const width = rect.width;
+            const height = rect.height;
             return {
                 minX: rect.x,
                 minY: rect.y,
-                maxX: size.x,
-                maxY: size.y,
+                maxX: rect.x + width,
+                maxY: rect.y + height,
                 zoom: 1,
             };
         } else {
@@ -74,10 +71,9 @@ export const PrintDiagram = (props: PrintDiagramProps) => {
     return (
         <>
             <Editor
-                color={color}
                 diagram={diagram}
+                diagrams={diagrams}
                 isDefaultView={false}
-                masterDiagram={diagrams.get(diagram.master!)}
                 onNavigate={onNavigate}
                 onRender={doOnRender}
                 selectionSet={DiagramItemSet.EMPTY}

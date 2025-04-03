@@ -207,7 +207,7 @@ export class DiagramItem extends Record<Props> implements Shape {
             id: id || MathHelper.nextId(),
             childCache: {},
             childIds: ImmutableList.of(childIds),
-            isLocked,
+            isLocked: isLocked ?? false,
             name,
             rotation: rotation || Rotation.ZERO,
             type: 'Group',
@@ -224,7 +224,7 @@ export class DiagramItem extends Record<Props> implements Shape {
             appearance: ImmutableMap.of(appearance),
             configurables,
             constraint,
-            isLocked,
+            isLocked: isLocked ?? false,
             name,
             renderCache: {},
             renderer,
@@ -240,7 +240,7 @@ export class DiagramItem extends Record<Props> implements Shape {
     }
 
     public unlock() {
-        return this.set('isLocked', undefined);
+        return this.set('isLocked', false);
     }
 
     public rename(name: string) {

@@ -57,20 +57,37 @@ export class VerticalScrollbar implements ShapePlugin {
     }
 
     private createBackground(ctx: RenderContext, clickSize: number) {
+        const appearance = ctx.shape;
+        // Use context theme
+        const isDark = ctx.designThemeMode === 'dark';
+        const controlBg = isDark ? 0x333333 : CommonTheme.CONTROL_BACKGROUND_COLOR;
+        
+        // Adjust colors for dark theme
+        const thumbDefault = isDark ? 0x666666 : 0xbdbdbd;
+        let thumbColor = appearance.getAppearance(THUMB_COLOR);
+        if (thumbColor === 0xbdbdbd && isDark) {
+            thumbColor = thumbDefault;
+        }
+        
         ctx.renderer2.group(items => {
             // Rail
             items.rectangle(0, 0, ctx.rect, p => {
-                p.setBackgroundColor(ctx.shape);
+                 // Use appearance background if set, otherwise use theme default
+                if (appearance.getAppearance(DefaultAppearance.BACKGROUND_COLOR) != null && appearance.getAppearance(DefaultAppearance.BACKGROUND_COLOR) !== CommonTheme.CONTROL_BACKGROUND_COLOR) {
+                    p.setBackgroundColor(ctx.shape);
+                } else {
+                    p.setBackgroundColor(controlBg);
+                }
             });
 
-            const barHeight = ctx.shape.getAppearance(THUMB_SIZE) / 100;
-            const barOffset = ctx.shape.getAppearance(THUMB_POSITION) / 100 * (ctx.rect.height - 2 * clickSize) * (1 - barHeight);
+            const barHeight = appearance.getAppearance(THUMB_SIZE) / 100;
+            const barOffset = appearance.getAppearance(THUMB_POSITION) / 100 * (ctx.rect.height - 2 * clickSize) * (1 - barHeight);
             
             const barRect = new Rect2(ctx.rect.x, ctx.rect.y + clickSize + barOffset, ctx.rect.width, (ctx.rect.height - 2 * clickSize) * barHeight);
 
             // Bar
             items.rectangle(0, 0, barRect, p => {
-                p.setBackgroundColor(ctx.shape.getAppearance(THUMB_COLOR));
+                p.setBackgroundColor(thumbColor);
             });
         }, mask => {
             mask.rectangle(0, 0, ctx.rect);
@@ -78,30 +95,62 @@ export class VerticalScrollbar implements ShapePlugin {
     }
 
     private createBorder(ctx: RenderContext) {
+        const appearance = ctx.shape;
+        // Use context theme
+        const isDark = ctx.designThemeMode === 'dark'; 
+        const controlBorder = isDark ? 0x505050 : CommonTheme.CONTROL_BORDER_COLOR;
+        
         ctx.renderer2.rectangle(ctx.shape, 0, ctx.rect, p => {
-            p.setStrokeColor(ctx.shape);
+            // Use appearance stroke if set, otherwise use theme default
+            if (appearance.getAppearance(DefaultAppearance.STROKE_COLOR) != null && appearance.getAppearance(DefaultAppearance.STROKE_COLOR) !== CommonTheme.CONTROL_BORDER_COLOR) {
+                p.setStrokeColor(ctx.shape);
+            } else {
+                p.setStrokeColor(controlBorder);
+            }
         });
     }
 
     private createBottomTriangle(ctx: RenderContext, clickSize: number) {
+        const appearance = ctx.shape;
+        // Use context theme
+        const isDark = ctx.designThemeMode === 'dark';
+        
+        // Adjust colors for dark theme
+        const arrowDefault = isDark ? 0x666666 : 0xbdbdbd;
+        let arrowColor = appearance.getAppearance(ARROW_COLOR);
+        if (arrowColor === 0xbdbdbd && isDark) {
+            arrowColor = arrowDefault;
+        }
+        
         const y = ctx.rect.height - 0.5 * clickSize;
         const x = ctx.rect.right * 0.5;
         const w = clickSize * 0.3;
         const h = clickSize * 0.3;
 
         ctx.renderer2.path(0, `M${x - 0.5 * w},${y - 0.4 * h} L${x},${y + 0.6 * h},L${x + 0.5 * w},${y - 0.4 * h} z`, p => {
-            p.setBackgroundColor(ctx.shape.getAppearance(ARROW_COLOR));
+            p.setBackgroundColor(arrowColor);
         });
     }
 
     private createTopTriangle(ctx: RenderContext, clickSize: number) {
+        const appearance = ctx.shape;
+        // Use context theme
+        const isDark = ctx.designThemeMode === 'dark';
+        
+        // Adjust colors for dark theme
+        const arrowDefault = isDark ? 0x666666 : 0xbdbdbd;
+        let arrowColor = appearance.getAppearance(ARROW_COLOR);
+        if (arrowColor === 0xbdbdbd && isDark) {
+            arrowColor = arrowDefault;
+        }
+        
         const y = ctx.rect.top + 0.5 * clickSize;
         const x = ctx.rect.right * 0.5;
         const w = clickSize * 0.3;
         const h = clickSize * 0.3;
 
         ctx.renderer2.path(0, `M${x - 0.5 * w},${y + 0.4 * h} L${x},${y - 0.6 * h},L${x + 0.5 * w},${y + 0.4 * h} z`, p => {
-            p.setBackgroundColor(ctx.shape.getAppearance(ARROW_COLOR));
+            p.setBackgroundColor(arrowColor);
         });
     }
 }

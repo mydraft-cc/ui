@@ -7,7 +7,7 @@
 
 import { ActionReducerMapBuilder, createAction } from '@reduxjs/toolkit';
 import { Color, MathHelper, Vec2 } from '@app/core/utils';
-import { Diagram, EditorState } from './../internal';
+import { Diagram, EditorState, DiagramTheme } from './../internal';
 import { createDiagramAction, DiagramRef } from './utils';
 
 export const addDiagram =
@@ -50,9 +50,24 @@ export const changeSize =
         return { payload:  { width, height } };
     });
 
-export const changeColor =
-    createAction('editor/color', (color: Color) => {
-        return { payload:  { color: color.toString() } };
+export const changeDiagramColors =
+    createAction('diagram/colors', (oldColor: Color, newColor: Color) => {
+        return { payload: { oldColor: oldColor.toString(), newColor: newColor.toString() } };
+    });
+
+export const setDiagramBackgroundColor =
+    createAction('diagram/background-color', (diagram: DiagramRef, color: Color | null) => {
+        return { payload: createDiagramAction(diagram, { color: color?.toString() }) };
+    });
+
+export const setDiagramDesignTheme =
+    createAction('diagram/design-theme', (diagram: DiagramRef, theme: 'light' | 'dark') => {
+        return { payload: createDiagramAction(diagram, { theme }) };
+    });
+
+export const updateDiagramThemeSettings =
+    createAction('diagram/theme-settings', (diagram: DiagramRef, settings: Partial<DiagramTheme>) => {
+        return { payload: createDiagramAction(diagram, { settings }) };
     });
 
 export function buildDiagrams(builder: ActionReducerMapBuilder<EditorState>) {
@@ -87,10 +102,10 @@ export function buildDiagrams(builder: ActionReducerMapBuilder<EditorState>) {
 
             return state.changeSize(new Vec2(width, height));
         })
-        .addCase(changeColor, (state, action) => {
-            const { color } = action.payload;
+        .addCase(changeDiagramColors, (state, action) => {
+            const { oldColor, newColor } = action.payload;
 
-            return state.changeColor(Color.fromString(color));
+            return state.changeColors(Color.fromString(oldColor), Color.fromString(newColor));
         })
         .addCase(duplicateDiagram, (state, action) => {
             const { diagramId } = action.payload;
@@ -113,5 +128,26 @@ export function buildDiagrams(builder: ActionReducerMapBuilder<EditorState>) {
             }
 
             return newState;
+        })
+        .addCase(setDiagramBackgroundColor, (state, action) => {
+            const { diagramId, color } = action.payload;
+
+            return state.updateDiagram(diagramId, diagram => 
+                diagram.setBackgroundColor(color ? Color.fromString(color) : null)
+            );
+        })
+        .addCase(setDiagramDesignTheme, (state, action) => {
+            const { diagramId, theme } = action.payload;
+
+            return state.updateDiagram(diagramId, diagram => 
+                diagram.setDesignTheme(theme)
+            );
+        })
+        .addCase(updateDiagramThemeSettings, (state, action) => {
+            const { diagramId, settings } = action.payload;
+
+            return state.updateDiagram(diagramId, diagram => 
+                diagram.updateThemeSettings(settings)
+            );
         });
 }

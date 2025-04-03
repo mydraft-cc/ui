@@ -9,24 +9,33 @@
 
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
-import * as ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import { Provider } from 'react-redux';
-import { Route, Router } from 'react-router';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { App } from './App';
 import { registerServiceWorker } from './registerServiceWorker';
 import './index.scss';
-import { history, store } from './store';
+import { store } from './store';
+import { ThemeProvider } from './wireframes/components/ThemeProvider';
 
 const Root = (
     <DndProvider backend={HTML5Backend}>
         <Provider store={store}>
-            <Router history={history}>
-                <Route path='/:token?' component={App} />
-            </Router>
+            <ThemeProvider>
+                <BrowserRouter>
+                    <Routes>
+                        <Route path='/:token?' element={<App />} />
+                    </Routes>
+                </BrowserRouter>
+            </ThemeProvider>
         </Provider>
     </DndProvider>
 );
 
 registerServiceWorker(store);
 
-ReactDOM.render(Root, document.getElementById('root-layout') as HTMLElement);
+const container = document.getElementById('root-layout');
+if (container) {
+    const root = createRoot(container);
+    root.render(Root);
+}

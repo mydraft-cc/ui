@@ -8,11 +8,14 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 
 import * as React from 'react';
-import { Color, ImmutableMap, Subscription, Vec2, ViewBox } from '@app/core';
+import { ImmutableMap, Subscription, Vec2, ViewBox, debounce } from '@app/core';
+import { useAppSelector } from '../../store';
 import { Engine, EngineLayer, EngineRect } from '@app/wireframes/engine';
 import { PixiCanvasView } from '@app/wireframes/engine/pixi/canvas/PixiCanvas';
 import { SvgCanvasView } from '@app/wireframes/engine/svg/canvas/SvgCanvas';
 import { Diagram, DiagramItem, DiagramItemSet, Transform } from '@app/wireframes/model';
+import { selectSelectedDiagramBackgroundColor, selectSelectedDiagramDesignTheme } from '@app/wireframes/model/selectors/themeSelectors';
+import { useStore, getEditor } from '@app/wireframes/model';
 import { useOverlayContext } from './../contexts/OverlayContext';
 import { ItemsLayer } from './ItemsLayer';
 import { NavigateAdorner } from './NavigateAdorner';
@@ -33,9 +36,6 @@ export interface EditorProps {
 
     // The selected items.
     selectionSet: DiagramItemSet;
-
-    // The color.
-    color: Color;
 
     // The viewbox.
     viewBox: ViewBox;
@@ -77,7 +77,6 @@ type Layers = {
 
 export const Editor = React.memo((props: EditorProps) => {
     const {
-        color,
         diagram,
         diagrams,
         isDefaultView,
@@ -92,24 +91,61 @@ export const Editor = React.memo((props: EditorProps) => {
         useWebGL,
     } = props;
 
+    // Get editor state
+    const editor = useStore(getEditor);
+
+    // Get diagram-specific theme properties
+    const diagramBackgroundColor = useAppSelector(selectSelectedDiagramBackgroundColor);
+    const diagramDesignTheme = useAppSelector(selectSelectedDiagramDesignTheme);
+    const isDarkMode = diagramDesignTheme === 'dark';
+    
     const [layers, setLayers] = React.useState<Layers>();
     const renderWebGL = React.useRef(useWebGL);
     const renderPreview = React.useRef(new Subscription<PreviewEvent>());
     const overlayContext = useOverlayContext();
     const masterDiagrams = React.useMemo(() => diagram.masterDiagrams(diagrams), [diagram, diagrams]);
     
+    const updateCanvasTheme = React.useCallback(
+        debounce(() => {
+            if (!layers) {
+                return;
+            }
+
+            // Determine theme-based defaults
+            const designThemeDefaultBgColor = isDarkMode ? '#252525' : '#ffffff';
+            const borderDarkColor = isDarkMode ? '#404040' : '#b8b8b8';
+            const gridColor = isDarkMode ? '#333333' : '#e0e0e0';
+
+            // Use diagram-specific background color if available, otherwise use design theme default
+            const finalCanvasBgColor = diagramBackgroundColor ? diagramBackgroundColor.toString() : designThemeDefaultBgColor;
+
+            layers.backgroundRect?.fill(finalCanvasBgColor);
+            layers.backgroundRect?.strokeColor(borderDarkColor);
+            
+            // Update any grid-related elements if they exist
+            if (layers.engine && typeof layers.engine.updateGridColor === 'function') {
+                layers.engine.updateGridColor(gridColor);
+            }
+            
+            // Force a redraw of the canvas to ensure immediate updates
+            layers.engine?.invalidate?.();
+        }, 50),
+        [layers, isDarkMode, diagramBackgroundColor]
+    );
+
     const doInit = React.useCallback((engine: Engine) => {
         // Might be called multiple times in dev mode!
-        if (!engine) {
+        if (!engine || layers) {
             return;
         }
 
         // Create these layers in the correct order.
         const backgroundRect = engine.layer('background').rect();
         backgroundRect.disable();
-        backgroundRect.fill(color.toString());
-        backgroundRect.strokeWidth(1);
-        backgroundRect.strokeColor('#efefef');
+        
+        // Initial setup - theme-specific colors will be applied in useEffect
+        backgroundRect.fill('var(--color-canvas-background)'); 
+        backgroundRect.strokeWidth(0);
 
         const renderMasterLayer = engine.layer('masterLayer');
         const renderMainLayer = engine.layer('parentLayer');
@@ -132,15 +168,18 @@ export const Editor = React.memo((props: EditorProps) => {
             renderMainLayer,
             renderMasterLayer,
         });
-    }, []);
+    }, [isDefaultView, overlayContext]);
 
     React.useEffect(() => {
         layers?.backgroundRect?.plot({ x: 0, y: 0, w: viewSize.x, h: viewSize.y });
     }, [layers, viewSize]);
 
+    // Effect to handle theme changes: Update background
     React.useEffect(() => {
-        layers?.backgroundRect?.fill(color.toString());
-    }, [layers, color]);
+        if (layers) {
+            updateCanvasTheme();
+        }
+    }, [isDarkMode, layers, diagramBackgroundColor, updateCanvasTheme]);
 
     React.useEffect(() => {
         overlayContext.snapManager.prepare(diagram, viewSize);
@@ -164,7 +203,7 @@ export const Editor = React.memo((props: EditorProps) => {
         <div className='editor' ref={element => overlayContext.element = element}>
             {renderWebGL.current ? (
                 <div className='pixi'>
-                    <PixiCanvasView onInit={doInit} viewBox={viewBox} background='#f0f2f5' />
+                    <PixiCanvasView onInit={doInit} viewBox={viewBox} />
                 </div>
             ) : (
                 <SvgCanvasView onInit={doInit} viewBox={viewBox} />
@@ -173,12 +212,14 @@ export const Editor = React.memo((props: EditorProps) => {
             {diagram && layers && (
                 <>
                     <ItemsLayer
+                        designThemeMode={diagramDesignTheme}
                         diagrams={masterDiagrams}
                         diagramLayer={layers.renderMasterLayer}
                         onRender={onRender}
                     />
 
                     <ItemsLayer
+                        designThemeMode={diagramDesignTheme}
                         diagrams={[diagram]}
                         diagramLayer={layers.renderMainLayer}
                         preview={renderPreview.current}

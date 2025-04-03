@@ -1,0 +1,92 @@
+/*
+ * mydraft.cc
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+*/
+@use 'sass:color';
+
+@import '@app/style/vars';
+
+.misc-menu-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.misc-menu-icon {
+    font-size: 20px;
+}
+
+.misc-menu-modal {
+    max-width: 800px;
+    width: 100%;
+}
+
+.theme-segment-title {
+    color: $color-text;
+    padding-left: .5rem;
+}
+
+.menu-item-no-hover {
+    cursor: pointer !important;
+    background: transparent !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
+
+    .theme-segment-container {
+        padding: 4px 0;
+        
+        .ant-segmented {
+            width: 100%;
+            min-width: 280px;
+        }
+    }
+
+    &:hover, &:active {
+        background: transparent !important;
+        color: inherit !important;
+    }
+}
+
+// Add hover styles for theme segment
+.menu-item-no-hover:hover {
+    .ant-segmented-item-label {
+        color: $color-theme-blue;
+    }
+}
+
+.menu-large-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 12px;
+    
+    .anticon {
+        font-size: 18px;
+    }
+}
+
+.ant-dropdown {
+    .ant-dropdown-menu {
+        background-color: $color-toolbar-background;
+        border: 1px solid $color-border;
+        padding: 4px;
+    }
+
+    .menu-item-with-icon {
+        &:hover {
+            .ant-dropdown-menu-title-content,
+            .menu-large-icon .anticon {
+                color: $color-theme-blue;
+            }
+        }
+
+        .ant-dropdown-menu-title-content {
+            display: flex;
+            align-items: center;
+        }
+    }
+} 

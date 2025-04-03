@@ -1,31 +1,44 @@
 /* stylelint-disable */
 
-$color-background:          rgb(240, 242, 245);
+$color-background:          var(--color-background);
+$color-toolbar-background:  var(--color-toolbar-background);
+$color-canvas-background:   var(--color-canvas-background);
 
-$color-border:              #e8e8e8;
-$color-border-dark:         darken($color-border, 5%);
+$color-border:              var(--color-border);
+$color-border-dark:         var(--color-border-dark);
+$color-border-darker:       var(--color-border-darker);
 
-$color-title:               #000;
-$color-text:                #373a3c;
-$color-text-decent:         #a9b2bb;
-$color-tooltip:             #1a2129;
-$color-input:               #d9d9d9;
+$color-title:               var(--color-title);
+$color-text:                var(--color-text);
+$color-text-decent:         var(--color-text-decent);
+$color-tooltip:             var(--color-tooltip);
+$color-input:               var(--color-input);
 
-$color-theme-blue:          #3389ff;
-$color-theme-blue-dark:     #297ff6;
-$color-theme-blue-lighter:  #65a6ff;
-$color-theme-blue-light:    #9ebeea;
-$color-theme-blue-lightest: #d9e8fc;
-$color-theme-secondary:     #d9dfe5;
+$color-theme-blue:          var(--color-theme-blue);
+$color-theme-blue-dark:     var(--color-theme-blue-dark);
+$color-theme-blue-darker:   var(--color-theme-blue-darker);
+$color-theme-blue-lighter:  var(--color-theme-blue-lighter);
+$color-theme-blue-light:    var(--color-theme-blue-light);
+$color-theme-blue-lightest: var(--color-theme-blue-lightest);
+$color-theme-secondary:     var(--color-theme-secondary);
+$color-theme-secondary-dark:var(--color-theme-secondary-dark);
 
-$color-theme-green:         #4bb958;
-$color-theme-green-dark:    #47b353;
-$color-theme-orange:        #ffb136;
-$color-theme-orange-dark:   #a65b00;
+$color-theme-green:         var(--color-theme-green);
+$color-theme-green-dark:    var(--color-theme-green-dark);
+$color-theme-green-darker:  var(--color-theme-green-darker);
+$color-theme-orange:        var(--color-theme-orange);
+$color-theme-orange-dark:   var(--color-theme-orange-dark);
+$color-theme-orange-darker: var(--color-theme-orange-darker);
 
-$color-theme-error:         #eb3142;
-$color-theme-error-dark:    #c00;
+$color-theme-error:         var(--color-theme-error);
+$color-theme-error-dark:    var(--color-theme-error-dark);
+$color-theme-error-darker:  var(--color-theme-error-darker);
 
-$color-theme-info:          #5bc0de;
+$color-theme-info:          var(--color-theme-info);
+$color-theme-info-dark:     var(--color-theme-info-dark);
 
-$color-white:               #fff;
+$color-shadow-inner:        var(--color-shadow-inner);
+$color-shadow-outer:        var(--color-shadow-outer);
+$color-focus-shadow:        var(--color-focus-shadow);
+
+$color-white:               var(--color-white);

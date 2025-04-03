@@ -8,7 +8,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
 import { Color, Vec2 } from '@app/core/utils';
-import { addDiagram, buildDiagrams, changeColor, changeSize, createClassReducer, Diagram, duplicateDiagram, EditorState, moveDiagram, removeDiagram, renameDiagram, selectDiagram, setDiagramMaster } from '@app/wireframes/model';
+import { addDiagram, buildDiagrams, changeDiagramColors, changeSize, createClassReducer, Diagram, duplicateDiagram, EditorState, moveDiagram, removeDiagram, renameDiagram, selectDiagram, setDiagramMaster } from '@app/wireframes/model';
 
 describe('DiagramReducer', () => {
     const state =
@@ -90,13 +90,26 @@ describe('DiagramReducer', () => {
         expect(state_2.size).toEqual(new Vec2(1500, 1200));
     });
 
-    it('should change color', () => {
-        const action = changeColor(Color.RED);
+    it('should change diagram background color', () => {
+        const diagram = Diagram.create({ id: '1' }).setBackgroundColor(Color.RED);
+        const action = changeDiagramColors(Color.RED, Color.GREEN);
 
-        const state_1 = EditorState.create();
+        const state_1 = EditorState.create().addDiagram(diagram).selectDiagram(diagram.id);
         const state_2 = reducer(state_1, action);
 
-        expect(state_2.color).toEqual(Color.fromString('#ff0000'));
+        const updatedDiagram = state_2.diagrams.get('1');
+        expect(updatedDiagram?.theme?.backgroundColor?.eq(Color.GREEN)).toBe(true);
+    });
+
+    it('should not change colors if no diagram is selected', () => {
+        const diagram = Diagram.create({ id: '1' }).setBackgroundColor(Color.RED);
+        const action = changeDiagramColors(Color.RED, Color.GREEN);
+
+        const state_1 = EditorState.create().addDiagram(diagram);
+        const state_2 = reducer(state_1, action);
+
+        const updatedDiagram = state_2.diagrams.get('1');
+        expect(updatedDiagram?.theme?.backgroundColor?.eq(Color.RED)).toBe(true);
     });
 
     it('should rename title', () => {

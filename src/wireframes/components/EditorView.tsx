@@ -9,9 +9,8 @@ import { Dropdown } from 'antd';
 import * as React from 'react';
 import { DropTargetMonitor, useDrop } from 'react-dnd';
 import { NativeTypes } from 'react-dnd-html5-backend';
-import { findDOMNode } from 'react-dom';
 import { Canvas, ImmutableMap, loadImagesToClipboardItems, useClipboard, useEventCallback, ViewBox } from '@app/core';
-import { useAppDispatch } from '@app/store';
+import { useAppDispatch, useAppSelector } from '@app/store';
 import { ShapeSource } from '@app/wireframes/interface';
 import { addShape, changeItemsAppearance, Diagram, getDiagram, getDiagramId, getDiagrams, getEditor, getSelection, PluginRegistry, selectItems, Transform, transformItems, useStore } from '@app/wireframes/model';
 import { Editor } from '@app/wireframes/renderer/Editor';
@@ -23,7 +22,6 @@ export const EditorView = () => {
     const diagram = useStore(getDiagram);
     const diagrams = useStore(getDiagrams);
     const editor = useStore(getEditor);
-
 
     if (!diagram) {
         return null;
@@ -43,11 +41,11 @@ export const EditorViewInner = ({ diagram, viewBox }: { diagram: Diagram; viewBo
     const dispatch = useAppDispatch();
     const [menuVisible, setMenuVisible] = React.useState(false);
     const editor = useStore(getEditor);
-    const editorColor = editor.color;
     const renderRef = React.useRef<any>();
     const selectedDiagramId = useStore(getDiagramId);
     const selectedPoint = React.useRef({ x: 0, y: 0 });
-    const state = useStore(s => s);
+    const useWebGL = useAppSelector(state => state.ui.useWebGL);
+    const selectionSet = useStore(getSelection);
     const contextMenu = useContextMenu(menuVisible);
 
     const doChangeItemsAppearance = useEventCallback((diagram: DiagramRef, visuals: ItemsRef, key: string, value: any) => {
@@ -117,7 +115,7 @@ export const EditorViewInner = ({ diagram, viewBox }: { diagram: Diagram; viewBo
                 return;
             }
 
-            const componentRect = (findDOMNode(renderRef.current) as HTMLElement)!.getBoundingClientRect();
+            const componentRect = renderRef.current!.getBoundingClientRect();
 
             // Convert to the space of the element
             const relativeX = (offset?.x || 0) - componentRect.left;
@@ -161,15 +159,14 @@ export const EditorViewInner = ({ diagram, viewBox }: { diagram: Diagram; viewBo
             <div className='editor-view' onClick={doSetPosition}>
                 <div className='editor-diagram' ref={renderRef} >
                     <Editor
-                        color={editorColor}
                         diagram={diagram}
                         diagrams={editor.diagrams}
                         isDefaultView={true}
                         onChangeItemsAppearance={doChangeItemsAppearance}
                         onSelectItems={doSelectItems}
                         onTransformItems={doTransformItems}
-                        selectionSet={getSelection(state)}
-                        useWebGL={state.ui.useWebGL}
+                        selectionSet={selectionSet}
+                        useWebGL={useWebGL}
                         viewBox={viewBox}
                         viewSize={editor.size}
                     />

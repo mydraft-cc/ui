@@ -9,7 +9,6 @@ import Icon from '@ant-design/icons';
 import { Button, Dropdown, Menu, MenuItemProps, Tooltip } from 'antd';
 import { ButtonProps } from 'antd/lib/button';
 import { DropdownButtonProps } from 'antd/lib/dropdown';
-import { MenuItemType } from 'antd/lib/menu/hooks/useItems';
 import * as React from 'react';
 import { isMac, Shortcut, Types } from '@app/core';
 import { UIAction } from './shared';
@@ -100,7 +99,7 @@ export const ActionDropdownButton = React.memo((props: ActionProps & DropdownBut
     );
 });
 
-export const ActionButton = React.memo((props: ActionProps & ButtonProps) => {
+export const ActionButton = ((props: ActionProps & ButtonProps) => {
     const { action, displayMode, hideWhenDisabled, ...other } = props;
     const {
         disabled,
@@ -138,7 +137,7 @@ export function buildMenuItem(action: UIAction, key: string) {
         icon,
     } = action;
 
-    const item: MenuItemType = {
+    const item = {
         key,
         disabled,
         label,

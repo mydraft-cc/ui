@@ -6,12 +6,25 @@
 */
 
 import * as React from 'react';
-import { Rotation, Vec2, ViewBox } from '@app/core';
+import { Rotation, Types, Vec2, ViewBox, debounce } from '@app/core';
 import { EngineItem } from '@app/wireframes/engine';
 import { SvgCanvasView } from '@app/wireframes/engine/svg/canvas/SvgCanvas';
 import { SvgEngine } from '@app/wireframes/engine/svg/engine';
-import { ShapePlugin, Size } from '@app/wireframes/interface';
+import { DefaultAppearance, ShapePlugin, Size, AppTheme } from '@app/wireframes/interface';
 import { DefaultConstraintFactory, DiagramItem, Transform } from '@app/wireframes/model';
+import { selectEffectiveAppTheme } from '@app/wireframes/model/selectors/themeSelectors';
+import { selectSelectedDiagramDesignTheme } from '@app/wireframes/model/selectors/themeSelectors';
+import { useAppSelector } from '@app/store';
+import { useStore, getEditor } from '@app/wireframes/model';
+
+// List of shapes where text color should be overridden in conflicting theme toolbar previews
+const TEXT_OVERRIDE_TARGETS = new Set([
+    'Checkbox',
+    'Heading',
+    'Label',
+    'Paragraph',
+    'RadioButton',
+]);
 
 interface ShapeRendererProps {
     plugin: ShapePlugin;
@@ -30,10 +43,14 @@ interface ShapeRendererProps {
 
     // True to use the preview offset.
     usePreviewOffset?: boolean;
+
+    // The current app theme, passed down for toolbar previews.
+    appTheme?: AppTheme;
 }
 
 export const ShapeRenderer = React.memo(React.forwardRef<HTMLDivElement, ShapeRendererProps>((props, ref) => {
     const { 
+        appTheme,
         appearance,
         desiredHeight,
         desiredWidth,
@@ -42,8 +59,15 @@ export const ShapeRenderer = React.memo(React.forwardRef<HTMLDivElement, ShapeRe
         usePreviewSize, 
     } = props;
 
-    const [engine, setEngine] = React.useState<SvgEngine>();
-    const item = React.useRef<EngineItem>();
+    const effectiveAppTheme = useAppSelector(selectEffectiveAppTheme);
+    const diagramDesignTheme = useAppSelector(selectSelectedDiagramDesignTheme);
+
+    const isDarkMode = effectiveAppTheme === 'dark';
+
+    const [engine, setEngine] = React.useState<SvgEngine | null>(null);
+    const item = React.useRef<EngineItem | null>(null);
+    const [forceRender, _setForceRender] = React.useState(0);
+    const renderPending = React.useRef(false);
 
     const viewBox = getViewBox(plugin, 
         desiredWidth,
@@ -69,12 +93,52 @@ export const ShapeRenderer = React.memo(React.forwardRef<HTMLDivElement, ShapeRe
         }
     }, [desiredHeight, desiredWidth, engine, viewBox]);
 
+    const debouncedRerender = React.useCallback(
+        debounce(() => {
+            if (item.current && !renderPending.current) {
+                renderPending.current = true;
+                requestAnimationFrame(() => {
+                    renderShape();
+                    renderPending.current = false;
+                });
+            }
+        }, 50), 
+    []);
+
+    // Force re-render when theme changes
     React.useEffect(() => {
+        if (engine && item.current) {
+            debouncedRerender();
+        }
+    }, [isDarkMode, debouncedRerender, engine]);
+
+    // Extract the shape rendering logic into a separate function
+    const renderShape = React.useCallback(() => {
         if (!engine) {
             return;
         }
 
-        engine.doc.clear();
+        // Determine the base appearance by merging defaults and props
+        const baseAppearance = { ...plugin.defaultAppearance(), ...appearance || {} };
+        let effectiveAppearance = baseAppearance;
+
+        // Check if the shape is one that needs text color override
+        const needsOverride = TEXT_OVERRIDE_TARGETS.has(plugin.identifier());
+
+        // Handle App Dark / Design Light conflict
+        if (needsOverride && isDarkMode && diagramDesignTheme === 'light') {
+          effectiveAppearance = {
+              ...baseAppearance,
+              [DefaultAppearance.FOREGROUND_COLOR]: 0xE0E0E0,
+          };
+      } 
+      // Handle App Light / Design Dark conflict
+      else if (needsOverride && !isDarkMode && diagramDesignTheme === 'dark') {
+          effectiveAppearance = {
+              ...baseAppearance,
+              [DefaultAppearance.FOREGROUND_COLOR]: 0x373A3C,
+          };
+      }
 
         const shape =
             DiagramItem.createShape({
@@ -87,7 +151,7 @@ export const ShapeRenderer = React.memo(React.forwardRef<HTMLDivElement, ShapeRe
                         viewBox.size.x,
                         viewBox.size.y),
                     Rotation.ZERO),
-                appearance: { ...plugin.defaultAppearance(), ...appearance || {} },
+                appearance: effectiveAppearance,
                 configurables: [],
                 constraint: plugin?.constraint?.(DefaultConstraintFactory.INSTANCE),
             });
@@ -96,8 +160,21 @@ export const ShapeRenderer = React.memo(React.forwardRef<HTMLDivElement, ShapeRe
             item.current = engine.layer(plugin.identifier()).item(plugin);
         }
 
-        item.current.plot(shape);
-    }, [appearance, engine, plugin, viewBox]);
+        const renderContext = { designThemeMode: diagramDesignTheme };
+
+        if (item.current && Types.isFunction(item.current.forceReplot)) {
+            item.current.forceReplot(shape, renderContext);
+        } else {
+            item.current.plot(shape, renderContext);
+        }
+    }, [appearance, engine, plugin, viewBox, diagramDesignTheme, appTheme]);
+
+    // Call renderShape whenever dependencies change or forceRender changes
+    React.useEffect(() => {
+        if (!renderPending.current) {
+            renderShape();
+        }
+    }, [renderShape, forceRender]);
 
     return (
         <div ref={ref} style={{ lineHeight: 0 }}>

@@ -7,7 +7,6 @@
 
 import { createAction, createAsyncThunk, createReducer, Middleware } from '@reduxjs/toolkit';
 import { saveAs } from 'file-saver';
-import { History } from 'history';
 import { AnyAction, Reducer } from 'redux';
 import { texts } from '@app/texts';
 import { EditorState, EditorStateInStore, LoadingState, LoadingStateInStore, saveRecentDiagrams, Serializer, UndoableState } from './../internal';
@@ -69,7 +68,7 @@ export const saveDiagramToServer =
         }
     });
 
-export function loadingMiddleware(history: History): Middleware {
+export function loadingMiddleware(): Middleware {
     const middleware: Middleware = store => next => action => {        
         if (loadDiagramFromServer.pending.match(action) ||  loadDiagramFromFile.pending.match(action)) {
             store.dispatch(showToast(texts.common.loadingDiagram, 'loading', action.meta.requestId));
@@ -80,15 +79,7 @@ export function loadingMiddleware(history: History): Middleware {
         try {
             const result = next(action);
 
-            if (newDiagram.match(action) ) {
-                if (action.payload.navigate) {
-                    history.push('');
-                }
-            } else if (loadDiagramFromServer.fulfilled.match(action)) {
-                if (action.meta.arg.navigate) {
-                    history.push(action.payload.tokenToRead);
-                }
-                
+            if (loadDiagramFromServer.fulfilled.match(action)) {
                 store.dispatch(loadDiagramInternal(action.payload.stored, action.meta.requestId));
             } else if (loadDiagramFromFile.fulfilled.match(action)) {
                 store.dispatch(loadDiagramInternal(action.payload.stored, action.meta.requestId));
@@ -97,10 +88,6 @@ export function loadingMiddleware(history: History): Middleware {
             } else if (loadDiagramInternal.match(action)) {
                 store.dispatch(showToast(texts.common.loadingDiagramDone, 'success', action.payload.requestId));
             } else if (saveDiagramToServer.fulfilled.match(action)) {
-                if (action.meta.arg.navigate) {
-                    history.push(action.payload.tokenToRead);
-                }
-
                 saveRecentDiagrams((store.getState() as LoadingStateInStore).loading.recentDiagrams);
 
                 const content = action.payload.update ? 

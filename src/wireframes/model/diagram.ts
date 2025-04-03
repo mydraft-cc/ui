@@ -8,9 +8,20 @@
 import { ImmutableList, ImmutableMap, ImmutableSet, MathHelper, Record, Types } from '@app/core/utils';
 import { DiagramItem } from './diagram-item';
 import { DiagramItemSet } from './diagram-item-set';
+import { Color } from '@app/core/utils';
 
 type Items = ImmutableMap<DiagramItem>;
 type ItemIds = ImmutableList<string>;
+
+export interface DiagramTheme {
+    backgroundColor: Color | null;
+    designTheme: 'light' | 'dark';
+    themeSettings: {
+        borderColor: Color;
+        gridColor: Color;
+        // Add other theme-specific settings
+    }
+}
 
 type UpdateProps = {
     // The list of items.
@@ -41,6 +52,9 @@ type Props = {
 
     // Set the master diagram.
     master?: string;
+
+    // Theme settings for the diagram.
+    theme?: DiagramTheme;
 };
 
 export type InitialDiagramProps = {
@@ -58,6 +72,9 @@ export type InitialDiagramProps = {
 
     // Set the master diagram.
     master?: string;
+
+    // Theme settings for the diagram.
+    theme?: DiagramTheme;
 };
 
 export class Diagram extends Record<Props> {
@@ -86,6 +103,10 @@ export class Diagram extends Record<Props> {
 
     public get master() {
         return this.get('master');
+    }
+
+    public get theme() {
+        return this.get('theme');
     }
 
     public get rootItems(): ReadonlyArray<DiagramItem> {
@@ -138,7 +159,33 @@ export class Diagram extends Record<Props> {
     }
 
     public clone() {
-        return this.set('id', MathHelper.guid());
+        // Clone the diagram with a new ID and copy the theme
+        const newDiagram = this.set('id', MathHelper.guid());
+        if (this.theme) {
+            // Create a deep copy of the theme to ensure independence
+            return newDiagram.set('theme', {
+                ...this.theme,
+                backgroundColor: this.theme.backgroundColor ? new Color(
+                    this.theme.backgroundColor.r,
+                    this.theme.backgroundColor.g,
+                    this.theme.backgroundColor.b
+                ) : null,
+                themeSettings: {
+                    ...this.theme.themeSettings,
+                    borderColor: new Color(
+                        this.theme.themeSettings.borderColor.r,
+                        this.theme.themeSettings.borderColor.g,
+                        this.theme.themeSettings.borderColor.b
+                    ),
+                    gridColor: new Color(
+                        this.theme.themeSettings.gridColor.r,
+                        this.theme.themeSettings.gridColor.g,
+                        this.theme.themeSettings.gridColor.b
+                    )
+                }
+            });
+        }
+        return newDiagram;
     }
 
     public parent(id: string | DiagramItem) {
@@ -349,6 +396,58 @@ export class Diagram extends Record<Props> {
 
             return this.merge({ items: update.items, selectedIds: update.selectedIds, rootIds: update.itemIds });
         }
+    }
+
+    // Theme-related methods
+    public setBackgroundColor(color: Color | null): Diagram {
+        const currentTheme = this.theme || this.createDefaultTheme();
+        return this.set('theme', {
+            ...currentTheme,
+            backgroundColor: color
+        });
+    }
+
+    public setDesignTheme(theme: 'light' | 'dark'): Diagram {
+        const currentTheme = this.theme || this.createDefaultTheme();
+        return this.set('theme', {
+            ...currentTheme,
+            designTheme: theme
+        });
+    }
+
+    public getBackgroundColor(): Color | null {
+        return this.theme?.backgroundColor || null;
+    }
+
+    public getDesignTheme(): 'light' | 'dark' {
+        return this.theme?.designTheme || 'light';
+    }
+
+    public getThemeSettings(): DiagramTheme {
+        return this.theme || this.createDefaultTheme();
+    }
+
+    public updateThemeSettings(settings: Partial<DiagramTheme>): Diagram {
+        const currentTheme = this.theme || this.createDefaultTheme();
+        return this.set('theme', {
+            ...currentTheme,
+            ...settings
+        });
+    }
+
+    public static createDefaultTheme(): DiagramTheme {
+        return {
+            backgroundColor: null,
+            designTheme: 'light',
+            themeSettings: {
+                borderColor: Color.fromString('#000000'),
+                gridColor: Color.fromString('#CCCCCC')
+            }
+        };
+    }
+
+    private createDefaultTheme(): DiagramTheme {
+        return Diagram.createDefaultTheme();
     }
 }
 

@@ -9,7 +9,7 @@ import * as svg from '@svgdotjs/svg.js';
 import { Rect2 } from '@app/core';
 import { ShapePlugin } from '@app/wireframes/interface';
 import { DiagramItem } from '@app/wireframes/model';
-import { EngineItem } from './../interface';
+import { EngineItem, RenderContext } from './../interface';
 import { SvgObject } from './object';
 import { SvgRenderer } from './renderer';
 import { linkToSvg, SvgHelper } from './utils';
@@ -18,8 +18,8 @@ export class SvgItem extends SvgObject implements EngineItem {
     private readonly group: svg.G;
     private readonly selector: svg.Rect;
     private currentShape: DiagramItem | null = null;
-    private currentRect: Rect2 | null = null;
     private isRendered = false;
+    private currentContext: RenderContext = { designThemeMode: 'light' };
 
     protected get root() {
         return this.group;
@@ -46,7 +46,17 @@ export class SvgItem extends SvgObject implements EngineItem {
         this.remove();
     }
 
-    public plot(shape: DiagramItem) {
+    public plot(shape: DiagramItem, context?: RenderContext) {
+        if (context) {
+            this.currentContext = context;
+        }
+
+        if (!shape) {
+            this.remove();
+            this.currentShape = null;
+            return;
+        }
+
         if (this.currentShape === shape && this.isRendered) {
             this.addToLayer();
             return;
@@ -58,6 +68,30 @@ export class SvgItem extends SvgObject implements EngineItem {
         this.currentShape = shape;
     }
 
+    public forceReplot(shape: DiagramItem, context?: RenderContext) {
+        if (context) {
+            this.currentContext = context;
+        }
+
+        if (!shape) {
+            this.remove();
+            this.currentShape = null;
+            return;
+        }
+
+        this.isRendered = false;
+        
+        this.currentShape = null;
+        
+        this.group.children().forEach(child => {
+            if (child !== this.selector) {
+                child.remove();
+            }
+        });
+        
+        this.plot(shape);
+    }
+
     private addToLayer() {
         if (!this.group.parent()) {
             this.layer.add(this.group);
@@ -67,23 +101,16 @@ export class SvgItem extends SvgObject implements EngineItem {
     private renderCore(shape: DiagramItem) {
         const localRect = new Rect2(0, 0, shape.transform.size.x, shape.transform.size.y);
 
-        if (this.currentRect && 
-            this.currentRect.equals(localRect) && 
-            this.currentShape?.appearance === shape.appearance) {
-            this.arrangeContainer(shape);
-            return;
-        }
-
         const previousContainer = this.renderer.getContainer();
         try {
             this.renderer.setContainer(this.group, 1);
 
-            this.plugin.render({ renderer2: this.renderer, rect: localRect, shape: shape });
+            const renderContext = { renderer2: this.renderer, rect: localRect, shape: shape, ...this.currentContext };
+            this.plugin.render(renderContext);
 
             this.arrangeSelector(localRect);
             this.arrangeContainer(shape);
         } finally {
-            this.currentRect = localRect;
             this.renderer.cleanupAll();
             this.renderer.setContainer(previousContainer);
             this.isRendered = true;
@@ -109,7 +136,6 @@ export class SvgItem extends SvgObject implements EngineItem {
     private arrangeSelector(localRect: Rect2) {
         let selectionRect = localRect;
 
-        // Calculate a special selection rect, that is slightly bigger than the bounds to make selection easier.
         const diffW = Math.max(0, MIN_DIMENSIONS - selectionRect.width);
         const diffH = Math.max(0, MIN_DIMENSIONS - selectionRect.height);
 

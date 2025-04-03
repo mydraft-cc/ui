@@ -16,6 +16,8 @@ import { addDiagram, duplicateDiagram, filterDiagrams, getDiagramId, getDiagrams
 import { Page, PageAction } from './Page';
 import './Pages.scss';
 
+const DROPPABLE_ID = 'pages-droppable';
+
 export const Pages = () => {
     const dispatch = useAppDispatch();
     const diagramId = useStore(getDiagramId);
@@ -44,7 +46,6 @@ export const Pages = () => {
             case 'Select':
                 dispatch(selectDiagram(diagramId));
                 break;
-
         }
     });
 
@@ -55,6 +56,29 @@ export const Pages = () => {
     const doSort = useEventCallback((result: DropResult) => {
         dispatch(moveDiagram(result.draggableId, result.destination!.index));
     });
+
+    const renderDroppableContent = React.useCallback((provided: any) => (
+        <div className='pages-list' {...provided.droppableProps} ref={provided.innerRef}>
+            {diagrams.map((item, index) => (
+                <Draggable key={item.id} draggableId={item.id} index={index}>
+                    {(provided) => (
+                        <div ref={provided.innerRef}
+                            {...provided.draggableProps}
+                            {...provided.dragHandleProps}>
+                            <Page
+                                diagram={item}
+                                diagrams={diagramsOrdered}
+                                index={index}
+                                onAction={doAction}
+                                selected={item.id === diagramId}
+                            />
+                        </div>
+                    )}
+                </Draggable>
+            ))}
+            {provided.placeholder}
+        </div>
+    ), [diagrams, diagramsOrdered, diagramId, doAction]);
 
     return (
         <>
@@ -74,28 +98,8 @@ export const Pages = () => {
             </Row>
 
             <DragDropContext onDragEnd={doSort}>
-                <Droppable droppableId='droppable'>
-                    {(provided) => (
-                        <div className='pages-list' {...provided.droppableProps} ref={provided.innerRef}>
-                            {diagrams.map((item, index) =>
-                                <Draggable key={item.id} draggableId={item.id} index={index}>
-                                    {(provided) => (
-                                        <div ref={provided.innerRef}
-                                            {...provided.draggableProps}
-                                            {...provided.dragHandleProps}>
-                                            <Page
-                                                diagram={item}
-                                                diagrams={diagramsOrdered}
-                                                index={index}
-                                                onAction={doAction}
-                                                selected={item.id === diagramId}
-                                            />
-                                        </div>
-                                    )}
-                                </Draggable>,
-                            )}
-                        </div>
-                    )}
+                <Droppable droppableId={DROPPABLE_ID} type="PAGE">
+                    {renderDroppableContent}
                 </Droppable>
             </DragDropContext>
         </>

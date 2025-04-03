@@ -6,10 +6,11 @@
 */
 
 import * as React from 'react';
-import { ImmutableList,  Subscription } from '@app/core';
+import { ImmutableList, Subscription, debounce } from '@app/core';
 import { EngineItem, EngineLayer } from '@app/wireframes/engine';
 import { Diagram, DiagramItem, PluginRegistry } from '@app/wireframes/model';
 import { PreviewEvent } from './preview';
+import { DesignTheme } from '../interface';
 
 export interface ItemsLayerProps {
     // The selected diagram.
@@ -17,6 +18,9 @@ export interface ItemsLayerProps {
 
     // The container to render on.
     diagramLayer: EngineLayer;
+
+    // The Design theme state.
+    designThemeMode: DesignTheme;
 
     // The preview subscription.
     preview?: Subscription<PreviewEvent>;
@@ -31,10 +35,12 @@ export const ItemsLayer = React.memo((props: ItemsLayerProps) => {
         diagramLayer,
         onRender,
         preview,
+        designThemeMode,
     } = props;
 
     const shapesRendered = React.useRef(onRender);
     const shapeRefsById = React.useRef<Record<string, ItemWithPreview>>({});
+    const debouncerRef = React.useRef<ReturnType<typeof debounce> | null>(null);
 
     const orderedShapes = React.useMemo(() => {
         const result: DiagramItem[] = [];
@@ -93,6 +99,8 @@ export const ItemsLayer = React.memo((props: ItemsLayerProps) => {
 
                 references[shape.id] = new ItemWithPreview(diagramLayer.item(plugin));
             }
+            
+            references[shape.id].updateThemeMode(designThemeMode);
         }
 
         let hasIdChanged = false;
@@ -117,7 +125,55 @@ export const ItemsLayer = React.memo((props: ItemsLayerProps) => {
         if (shapesRendered.current) {
             shapesRendered.current();
         }
-    }, [diagramLayer, orderedShapes]);
+    }, [diagramLayer, orderedShapes, designThemeMode]);
+    
+    const forceRerenderAllShapes = React.useCallback(() => {
+        const references = shapeRefsById.current;
+        
+        if (!debouncerRef.current) {
+            debouncerRef.current = debounce((shapes: DiagramItem[], currentDesignTheme: DesignTheme) => {
+                // Use batched updates to prevent excessive repaints
+                let count = 0;
+                const batchSize = 10;
+                const totalShapes = shapes.length;
+                
+                const processBatch = () => {
+                    const startIdx = count;
+                    const endIdx = Math.min(count + batchSize, totalShapes);
+                    
+                    // Process a batch of shapes
+                    for (let i = startIdx; i < endIdx; i++) {
+                        const shape = shapes[i];
+                        if (references[shape.id]) {
+                            references[shape.id].forceRerender(shape, currentDesignTheme);
+                        }
+                    }
+                    
+                    count += batchSize;
+                    
+                    // If more batches need processing, schedule next batch
+                    if (count < totalShapes) {
+                        requestAnimationFrame(processBatch);
+                    } else {
+                        // All shapes processed, notify render complete
+                        if (shapesRendered.current) {
+                            shapesRendered.current();
+                        }
+                    }
+                };
+                
+                // Start batch processing
+                processBatch();
+            }, 100);
+        }
+        
+        debouncerRef.current(orderedShapes, designThemeMode);
+    }, [orderedShapes, designThemeMode]);
+    
+    React.useEffect(() => {
+        // When designThemeMode changes directly through prop, force an immediate re-render
+        forceRerenderAllShapes();
+    }, [designThemeMode, forceRerenderAllShapes]);
 
     React.useEffect(() => {
         return preview?.subscribe(event => {
@@ -140,10 +196,15 @@ class ItemWithPreview {
     private shapePreview: DiagramItem | null = null;
     private shapeStatic: DiagramItem | null = null;
     private currentIndex = -1;
+    private currentDesignThemeMode: DesignTheme = 'light';
 
     constructor(
         private readonly engineItem: EngineItem,
     ) {
+    }
+
+    public updateThemeMode(mode: DesignTheme) {
+        this.currentDesignThemeMode = mode;
     }
 
     public plot(shape: DiagramItem) {
@@ -172,7 +233,24 @@ class ItemWithPreview {
         this.engineItem.remove();
     }
 
+    public forceRerender(shape: DiagramItem, designThemeMode: DesignTheme) {
+        this.currentDesignThemeMode = designThemeMode;
+        const context = { designThemeMode: this.currentDesignThemeMode };
+
+        if (this.engineItem && typeof this.engineItem.forceReplot === 'function') {
+            this.engineItem.forceReplot(shape, context);
+            return true;
+        }
+        
+        this.plot(shape);
+        return false;
+    }
+
     private render() {
-        this.engineItem.plot(this.shapePreview || this.shapeStatic);
+        const shapeToRender = this.shapePreview || this.shapeStatic;
+        if (shapeToRender) {
+            const context = { designThemeMode: this.currentDesignThemeMode };
+            this.engineItem.plot(shapeToRender, context);
+        }
     }
 }

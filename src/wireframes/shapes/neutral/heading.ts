@@ -6,11 +6,11 @@
 */
 
 import { ConstraintFactory, DefaultAppearance, RenderContext, ShapePlugin } from '@app/wireframes/interface';
-import { CommonTheme } from './_theme';
+import { SHAPE_TEXT_COLOR } from './ThemeShapeUtils';
 
 const DEFAULT_APPEARANCE = {
     [DefaultAppearance.FONT_SIZE]: 24,
-    [DefaultAppearance.FOREGROUND_COLOR]: CommonTheme.CONTROL_TEXT_COLOR,
+    [DefaultAppearance.FOREGROUND_COLOR]: SHAPE_TEXT_COLOR.LIGHT,
     [DefaultAppearance.TEXT]: 'Heading',
 };
 
@@ -24,7 +24,7 @@ export class Heading implements ShapePlugin {
     }
 
     public defaultSize() {
-        return { x: 90, y: 35 };
+        return { x: 110, y: 50 };
     }
 
     public constraint(factory: ConstraintFactory) {
@@ -32,8 +32,17 @@ export class Heading implements ShapePlugin {
     }
 
     public render(ctx: RenderContext) {
+        const appearance = ctx.shape;
+        const isDark = ctx.designThemeMode === 'dark';
+        const textColor = isDark ? SHAPE_TEXT_COLOR.DARK : SHAPE_TEXT_COLOR.LIGHT;
+        
         ctx.renderer2.text(ctx.shape, ctx.rect, p => {
-            p.setForegroundColor(ctx.shape);
+            // Use theme-aware text color if the shape has default color
+            if (appearance.getAppearance(DefaultAppearance.FOREGROUND_COLOR) === SHAPE_TEXT_COLOR.LIGHT) {
+                p.setForegroundColor(textColor);
+            } else {
+                p.setForegroundColor(ctx.shape);
+            }
         }, true);
     }
 }

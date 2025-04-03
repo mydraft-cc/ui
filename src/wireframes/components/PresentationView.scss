@@ -21,7 +21,7 @@
 
     &-tools {
         @include fixed(null, null, 20px, 20px);
-        background-color: $color-white;
+        background-color: $color-background;
         border: 1px solid $color-border;
         border-radius: 4px;
         padding: 10px;

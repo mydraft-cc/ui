@@ -23,3 +23,4 @@ export * from './text-measurer';
 export * from './timer';
 export * from './types';
 export * from './vec2';
+export * from './debounce';

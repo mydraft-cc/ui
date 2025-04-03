@@ -20,11 +20,11 @@ export class DiagramItemSet {
     public readonly isComplete: boolean = true;
 
     public get selectedItems() {
-        return this.cachedSelectedItems ||= Array.from(this.selection.values()).filter(x => !x.isLocked);
+        return this.cachedSelectedItems ||= Array.from(this.selection.values());
     }
 
     public get editableItems() {
-        return this.cachedEditableItems ||= Array.from(this.nested.values()).filter(x => !this.selection.has(x.id) || !x.isLocked);
+      return this.cachedEditableItems ||= Array.from(this.nested.values()).filter(x => !this.selection.has(x.id) || !x.isLocked);
     }
 
     public get editableIds() {

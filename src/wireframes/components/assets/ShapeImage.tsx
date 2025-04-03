@@ -10,17 +10,20 @@ import { useDrag } from 'react-dnd';
 import { getEmptyImage } from 'react-dnd-html5-backend';
 import { ShapeInfo } from '@app/wireframes/model';
 import { ShapeRenderer } from '@app/wireframes/shapes/ShapeRenderer';
+import { AppTheme } from '@app/wireframes/interface';
 
 interface ShapeImageProps {
     // The shape data.
     shape: ShapeInfo;
+
+    appTheme: AppTheme;
 }
 
 const DESIRED_WIDTH = 120;
 const DESIRED_HEIGHT = 72;
 
 export const ShapeImage = React.memo((props: ShapeImageProps) => {
-    const { shape } = props;
+    const { appTheme, shape } = props;
 
     const [, drag, connectDragPreview] = useDrag({
         item: shape,
@@ -42,6 +45,7 @@ export const ShapeImage = React.memo((props: ShapeImageProps) => {
     return (
         <div className='asset-shape-image'>
             <ShapeRenderer ref={drag}
+                appTheme={appTheme}
                 desiredHeight={DESIRED_HEIGHT} 
                 desiredWidth={DESIRED_WIDTH} 
                 plugin={shape.plugin}
