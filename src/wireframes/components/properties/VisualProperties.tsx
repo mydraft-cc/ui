@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { Button, Col, Row, Select } from 'antd';
+import { Button, Col, Row, Select, Space } from 'antd';
 import * as React from 'react';
 import { ColorPicker, useEventCallback } from '@app/core';
 import { useAppDispatch } from '@app/store';
@@ -108,7 +108,7 @@ export const VisualProperties = React.memo(() => {
                     <Row className='property'>
                         <Col span={12} className='property-label'>{texts.common.textAlignment}</Col>
                         <Col span={12} className='property-value'>
-                            <Button.Group className='text-alignment'>
+                            <Space.Compact className='text-alignment'>
                                 <TextButton value={textAlignment} onClick={setTextAlignment}
                                     mode='left' icon='icon-align-left' />
 
@@ -117,7 +117,7 @@ export const VisualProperties = React.memo(() => {
 
                                 <TextButton value={textAlignment} onClick={setTextAlignment}
                                     mode='right' icon='icon-align-right' />
-                            </Button.Group>
+                            </Space.Compact>
                         </Col>
                     </Row>
                 </div>

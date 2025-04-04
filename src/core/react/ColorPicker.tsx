@@ -15,6 +15,7 @@ import { texts } from '@app/texts';
 import { ColorList } from './ColorList';
 import { useEventCallback } from './hooks';
 import './ColorPicker.scss';
+import { TabsProps } from 'antd';
 
 type ColorTab = 'palette' | 'advanced';
 
@@ -96,27 +97,41 @@ export const ColorPicker = React.memo((props: ColorPickerProps) => {
         setColorHex(colorHex);
     });
 
+    const tabItems: TabsProps['items'] = [
+        {
+            key: 'palette',
+            label: texts.common.palette,
+            children: (
+                <>
+                    <ColorList color={color} colors={selectedPalette} onClick={doSelectColor} />
+
+                    {recentColors &&
+                        <div>
+                            <h4>{texts.common.recent}</h4>
+
+                            <ColorList color={color} colors={recentColors} onClick={doSelectColor} />
+                        </div>
+                    }
+                </>
+            ),
+        },
+        {
+            key: 'advanced',
+            label: texts.common.advanced,
+            children: (
+                <>
+                    <SketchPicker color={colorHex} onChange={doSelectColorResult} disableAlpha={true} width='210px' />
+
+                    <Button onClick={doConfirmColor}>
+                        {texts.common.apply}
+                    </Button>
+                </>
+            ),
+        },
+    ];
+
     const content = (
-        <Tabs size='small' className='color-picker-tabs' animated={false} activeKey={activeColorTab} onChange={doSelectTab}>
-            <Tabs.TabPane key='palette' tab={texts.common.palette}>
-                <ColorList color={color} colors={selectedPalette} onClick={doSelectColor} />
-
-                {recentColors &&
-                    <div>
-                        <h4>{texts.common.recent}</h4>
-
-                        <ColorList color={color} colors={recentColors} onClick={doSelectColor} />
-                    </div>
-                }
-            </Tabs.TabPane>
-            <Tabs.TabPane key='advanced' tab={texts.common.advanced}>
-                <SketchPicker color={colorHex} onChange={doSelectColorResult} disableAlpha={true} width='210px' />
-
-                <Button onClick={doConfirmColor}>
-                    {texts.common.apply}
-                </Button>
-            </Tabs.TabPane>
-        </Tabs>
+        <Tabs size='small' className='color-picker-tabs' animated={false} activeKey={activeColorTab} onChange={doSelectTab} items={tabItems} />
     );
 
     const placement = popoverPlacement || 'left';

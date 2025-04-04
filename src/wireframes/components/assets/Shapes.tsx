@@ -10,7 +10,7 @@ import { Input } from 'antd';
 import * as React from 'react';
 import { useStore as useReduxStore } from 'react-redux';
 import { Grid, useEventCallback } from '@app/core';
-import { RootState, useAppDispatch } from '@app/store';
+import { AppState, useAppDispatch } from '@app/store';
 import { texts } from '@app/texts';
 import { addShape, filterShapes, getDiagramId, getFilteredShapes, getShapesFilter, ShapeInfo, useStore } from '@app/wireframes/model';
 import { ShapeImage } from './ShapeImage';
@@ -24,7 +24,7 @@ export const Shapes = () => {
     const dispatch = useAppDispatch();
     const shapesFiltered = useStore(getFilteredShapes);
     const shapesFilter = useStore(getShapesFilter);
-    const store = useReduxStore<RootState>();
+    const store = useReduxStore<AppState>();
 
     const cellRenderer = React.useCallback((shape: ShapeInfo) => {
         const doAdd = () => {

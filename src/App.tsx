@@ -9,7 +9,7 @@ import { LeftOutlined, RightOutlined } from '@ant-design/icons';
 import { Button, Layout, Tabs, TabsProps } from 'antd';
 import classNames from 'classnames';
 import * as React from 'react';
-import { useRouteMatch } from 'react-router';
+import { useNavigate, useParams } from 'react-router-dom';
 import { ClipboardContainer, useEventCallback, usePrinter } from '@app/core';
 import { ArrangeMenu, ClipboardMenu, EditorView, HistoryMenu, Icons, LoadingMenu, LockMenu, Outline, Pages, PrintView, Properties, Recent, SettingsMenu, Shapes, UIMenu } from '@app/wireframes/components';
 import { loadDiagramFromServer, newDiagram, selectTab, showToast, toggleLeftSidebar, toggleRightSidebar, useStore } from '@app/wireframes/model';
@@ -49,13 +49,15 @@ const SidebarTabs: TabsProps['items'] = [
 
 export const App = () => {
     const dispatch = useAppDispatch();
-    const route = useRouteMatch<{ token?: string }>();
-    const routeToken = route.params.token || null;
+    const navigate = useNavigate();
+    const { token: routeToken = null } = useParams();
     const routeTokenSnapshot = React.useRef(routeToken);
     const selectedTab = useStore(s => s.ui.selectedTab);
     const showLeftSidebar = useStore(s => s.ui.showLeftSidebar);
     const showRightSidebar = useStore(s => s.ui.showRightSidebar);
     const [presenting, setPresenting] = React.useState(false);
+    
+    const tokenToRead = useStore(s => s.loading.tokenToRead);
 
     const [
         print,
@@ -73,6 +75,15 @@ export const App = () => {
             dispatch(newDiagram(false));
         }
     }, [dispatch]);
+
+    // Handle navigation based on token changes
+    React.useEffect(() => {
+        if (tokenToRead) {
+            navigate(`/${tokenToRead}`, { replace: true });
+        } else {
+            navigate('/', { replace: true });
+        }
+    }, [tokenToRead, navigate]);
 
     React.useEffect(() => {
         if (isPrinting) {
