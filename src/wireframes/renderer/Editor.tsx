@@ -112,7 +112,7 @@ export const Editor = React.memo((props: EditorProps) => {
         backgroundRect.strokeColor('#efefef');
 
         const renderMasterLayer = engine.layer('masterLayer');
-        const renderMainLayer = engine.layer('parentLayer');
+        const renderMainLayer = engine.layer('mainLayer');
         const overlayLayer = engine.layer('overlaysLayer');
         const adornerSelectLayer = engine.layer('selectLayer');
         const adornerTransformLayer = engine.layer('transformLayer');
@@ -220,7 +220,7 @@ export const Editor = React.memo((props: EditorProps) => {
                             selectedDiagram={diagram}
                             selectionSet={selectionSet}
                             showAdorners={showAdorners}
-                            zoom={viewBox.zoom}
+                            viewBox={viewBox}
                         />
                     }
 

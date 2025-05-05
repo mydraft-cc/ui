@@ -43,33 +43,52 @@ export class SelectionAdorner extends React.Component<SelectionAdornerProps> imp
     private selectionShape!: EngineRect;
     private dragStart: Vec2 | null = null;
 
-    public componentDidMount() {
-        this.props.engine.subscribe(this);
+    constructor(props: SelectionAdornerProps) {
+        super(props);
+        this.componentDidUpdate({} as any);
+    }
 
-        // Use a stream of preview updates to bypass react for performance reasons.
-        this.props.previewStream.subscribe(event => {
-            if (event.type === 'Update') {
-                this.markItems({});
-            } else {
-                this.markItems();
+    public componentDidUpdate(prevProps: SelectionAdornerProps) {
+        if (this.props.engine !== prevProps.engine) {
+            if (prevProps.engine) {
+                prevProps.engine.unsubscribe(this);
             }
-        });
+    
+            if (this.props.engine) {
+                this.props.engine.subscribe(this);
+            }
 
-        this.selectionShape = this.props.layer.rect();
-        this.selectionShape.fill('#00aa0044');
-        this.selectionShape.strokeWidth(1);
-        this.selectionShape.strokeColor(SELECTOR_STROKE_COLOR);
-        this.selectionShape.hide();
+            this.selectionShape = this.props.layer.rect();
+            this.selectionShape.fill('#00aa0044');
+            this.selectionShape.strokeWidth(1);
+            this.selectionShape.strokeColor(SELECTOR_STROKE_COLOR);
+            this.selectionShape.hide();
+            this.selectionMarkers = [];
+        }
+
+        if (this.props.previewStream !== prevProps.previewStream) {
+            if (this.props.previewStream) {
+                // Use a stream of preview updates to bypass react for performance reasons.
+                this.props.previewStream.subscribe(event => {
+                    if (event.type === 'Update') {
+                        this.markItems({});
+                    } else {
+                        this.markItems();
+                    }
+                });
+
+            }
+        }
+
+        this.markItems();
     }
 
     public componentWillUnmount() {
-        this.props.engine.unsubscribe(this);
+        if (this.props.engine) {
+            this.props.engine.unsubscribe(this);
+        }
 
         this.selectionMarkers = [];
-    }
-
-    public componentDidUpdate() {
-        this.markItems();
     }
 
     public onMouseDown(event: EngineHitEvent) {     

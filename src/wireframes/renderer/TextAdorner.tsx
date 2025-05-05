@@ -6,7 +6,7 @@
 */
 
 import * as React from 'react';
-import { Keys, sizeInPx } from '@app/core';
+import { Keys, sizeInPx, ViewBox } from '@app/core';
 import { Engine, EngineHitEvent, Listener } from '@app/wireframes/engine';
 import { DefaultAppearance } from '@app/wireframes/interface';
 import { Diagram, DiagramItem, DiagramItemSet } from '@app/wireframes/model';
@@ -16,8 +16,8 @@ const MIN_WIDTH = 150;
 const MIN_HEIGHT = 30;
 
 export interface TextAdornerProps {
-    // The current zoom value.
-    zoom: number;
+    // The viewbox.
+    viewBox: ViewBox;
 
     // The selected diagram.
     selectedDiagram: Diagram;
@@ -42,6 +42,11 @@ export class TextAdorner extends React.PureComponent<TextAdornerProps> implement
     private readonly style = { display: 'none ' };
     private selectedShape: DiagramItem | null = null;
     private textareaElement: HTMLTextAreaElement = null!;
+
+    constructor(props: TextAdornerProps) {
+        super(props);
+        this.componentDidUpdate({} as any);
+    }
 
     public componentDidMount() {
         window.addEventListener('mousedown', this.handleMouseDown);
@@ -83,12 +88,12 @@ export class TextAdorner extends React.PureComponent<TextAdornerProps> implement
                 return;
             }
 
-            const zoom = this.props.zoom;
+            const zoom = this.props.viewBox.zoom;
 
             const transform = event.item.transform;
 
-            const x = sizeInPx(zoom * (transform.position.x - 0.5 * transform.size.x) - 2);
-            const y = sizeInPx(zoom * (transform.position.y - 0.5 * transform.size.y) - 2);
+            const x = sizeInPx(zoom * (transform.position.x - 0.5 * transform.size.x - this.props.viewBox.minX) - 2 );
+            const y = sizeInPx(zoom * (transform.position.y - 0.5 * transform.size.y - this.props.viewBox.minY) - 2 );
 
             const w = sizeInPx(zoom * (Math.max(transform.size.x, MIN_WIDTH)) + 4);
             const h = sizeInPx(zoom * (Math.max(transform.size.y, MIN_HEIGHT)) + 4);

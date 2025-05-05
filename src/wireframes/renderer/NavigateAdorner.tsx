@@ -18,6 +18,11 @@ export interface NavigateAdornerProps {
 }
 
 export class NavigateAdorner extends React.PureComponent<NavigateAdornerProps> implements Listener {
+    constructor(props: NavigateAdornerProps) {
+        super(props);
+        this.componentDidUpdate({} as any);
+    }
+
     public componentDidUpdate(prevProps: NavigateAdornerProps) {
         if (this.props.engine !== prevProps.engine) {
             if (prevProps.engine) {

@@ -55,7 +55,7 @@ export interface TransformAdornerProps {
 const DRAG_SIZE = 12;
 
 export class TransformAdorner extends React.PureComponent<TransformAdornerProps> implements Listener {
-    private allElements: EngineRect[];
+    private allElements: EngineRect[] = [];
     private canResizeX = false;
     private canResizeY = false;
     private manipulated = false;
@@ -72,14 +72,7 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
 
     constructor(props: TransformAdornerProps) {
         super(props);
-
-        this.createRotateShape();
-        this.createMoveShape();
-        this.createResizeShapes();
-        this.allElements = [...this.resizeShapes, this.moveShape, this.rotateShape];
-        this.hideShapes();
-
-        this.props.engine.subscribe(this);
+        this.componentDidUpdate({} as any);
     }
 
     public componentDidUpdate(prevProps: TransformAdornerProps) {
@@ -91,9 +84,15 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
             if (this.props.engine) {
                 this.props.engine.subscribe(this);
             }
+
+            this.createRotateShape();
+            this.createMoveShape();
+            this.createResizeShapes();
+            this.allElements = [...this.resizeShapes, this.moveShape, this.rotateShape];
+            this.hideShapes();
         }
 
-        if (this.props.selectedDiagram.selectedIds !== prevProps.selectedDiagram.selectedIds) {
+        if (this.props.selectedDiagram.selectedIds !== prevProps.selectedDiagram?.selectedIds) {
             this.rotation = Rotation.ZERO;
         }
 
