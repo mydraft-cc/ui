@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { Application, Container, EventBoundary } from 'pixi.js';
+import { Application, Container, EventBoundary, HTMLText, Text } from 'pixi.js';
 import { MathHelper, Types, Vec2 } from '@app/core';
 import { DiagramItem } from '@app/wireframes/model';
 import { Engine, EngineHitEvent, EngineLayer, EngineMouseEvent, EngineObject, Listener } from './../interface';
@@ -19,6 +19,7 @@ import { getSource } from './utils';
 export class PixiEngine implements Engine {
     private readonly pipeline = new InteractionPipeline();
     private readonly renderer = new PixiRenderer();
+    private zoomTimer: any;
     private isDragging = false;
 
     constructor(
@@ -85,6 +86,30 @@ export class PixiEngine implements Engine {
 
     public unsubscribe(listener: Listener) {
         this.pipeline.unsubscribe(listener);
+    }
+
+    public adjustToZoom(zoom: number) {
+        clearInterval(this.zoomTimer);
+
+        this.zoomTimer = setTimeout(() => {
+            const resolution = 2 * Math.max(1, Math.round(zoom));
+
+            function setZoom(container: Container) {
+                if (!container?.children) {
+                    return;
+                }
+        
+                for (const element of container.children) {
+                    if (Types.is(element, HTMLText)) {
+                        element.resolution = resolution;
+                    }
+
+                    setZoom(element);
+                }
+            }
+
+            setZoom(this.application.stage);
+        }, 500);
     }
 
     public setClickLayer(layer: PixiLayer): void {

@@ -40,6 +40,9 @@ export interface Engine {
 
     // Unsubscribe from all events.
     unsubscribe(listener: Listener): void;
+
+    // Adjust to zoom.
+    adjustToZoom?(zoom: number): void;
 }
 
 export interface Listener {
