@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { Meta } from '@storybook/react';
+import { Meta } from '@storybook/react-vite';
 import { Grid } from './Grid';
 
 export default {

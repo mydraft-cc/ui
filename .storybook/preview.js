@@ -1,6 +1,6 @@
 import '@app/index.scss'
 
-/** @type {import('@storybook/react').Preview} */
+/** @type {import('@storybook/react-vite').Preview} */
 const preview = {
     parameters: {
         actions: {
@@ -20,7 +20,9 @@ const preview = {
                 { name: 'Gray', value: '#efefef' },
             ]
         }
-    }
+    },
+
+    tags: ['autodocs']
 };
 
 export default preview;

@@ -1,9 +1,10 @@
 /* stylelint-disable */
+@use "sass:color";
 
 $color-background:          rgb(240, 242, 245);
 
 $color-border:              #e8e8e8;
-$color-border-dark:         darken($color-border, 5%);
+$color-border-dark:         color.adjust($color-border, $lightness: -5%);
 
 $color-title:               #000;
 $color-text:                #373a3c;

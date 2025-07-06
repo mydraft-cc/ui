@@ -33,6 +33,6 @@ class DefaultTextMeasurer {
     }
 }
 
-export module TextMeasurer {
+export namespace TextMeasurer {
     export const DEFAULT = new DefaultTextMeasurer();
 }

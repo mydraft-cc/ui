@@ -1,4 +1,5 @@
 // stylelint-disable
+@use "sass:color";
 
 @mixin build-icon($color) {
     & {
@@ -8,7 +9,7 @@
 
     &:hover,
     &:focus {
-        color: darken($color, 10%);
+        color: color.adjust($color, $lightness: -10%);
     }
 }
 
@@ -38,7 +39,7 @@
 
     &:active,
     &:hover {
-        color: darken($color, 15%);
+        color: color.adjust($color, $lightness: -15%);
     }
 }
 

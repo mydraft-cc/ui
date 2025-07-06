@@ -26,7 +26,7 @@ export function getSource(element: Container) {
     return (element as any)['source'] as PixiObject | PixiLayer;
 }
 
-export module PixiHelper {    
+export namespace PixiHelper {    
     export function roundedRectangleRight(g: Graphics, rectangle: Rect2, radius = 10) {
         const rad = Math.min(radius, rectangle.width * 0.5, rectangle.height * 0.5);
 

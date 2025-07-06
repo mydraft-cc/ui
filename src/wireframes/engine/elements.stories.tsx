@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { Meta } from '@storybook/react';
+import { Meta } from '@storybook/react-vite';
 import { Card, Col, Row } from 'antd';
 import * as React from 'react';
 import { Canvas, ViewBox } from '@app/core';
