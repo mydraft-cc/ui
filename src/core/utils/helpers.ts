@@ -41,7 +41,7 @@ export function escapeHTML(html: string) {
     return html;
 }
 
-export module Keys {
+export namespace Keys {
     const ALT = 18;
     const COMMA = 188;
     const CONTROL = 17;

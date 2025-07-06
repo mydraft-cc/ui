@@ -39,7 +39,7 @@ export interface MatrixTransform {
     h?: number;
 }
 
-export module SvgHelper {    
+export namespace SvgHelper {    
     export function roundedRectangleRight(rectangle: Rect2, radius = 10) {
         const rad = Math.min(radius, rectangle.width * 0.5, rectangle.height * 0.5);
 
@@ -131,15 +131,7 @@ export module SvgHelper {
 
         if (w > 0 && h > 0) {
             if (element.node.nodeName === 'foreignObject') {
-                const text = <HTMLDivElement>element.node.children[0];
-
-                if (text.style.verticalAlign === 'middle') {
-                    text.style.lineHeight = sizeInPx(h);
-                } else {
-                    text.style.lineHeight = '1.5';
-                }
-
-                text.style.height = sizeInPx(h);
+                
             }
 
             if (element.node.nodeName === 'ellipse') {
@@ -183,6 +175,18 @@ export module SvgHelper {
     export function setSize(element: svg.Element, width: number, height: number) {
         fastSetAttribute(element.node, 'width', width);
         fastSetAttribute(element.node, 'height', height);
+    }
+
+    export function setTextHeight(element: SVGElement, height: any) {
+        const text = <HTMLDivElement>element.children[0];
+
+        if (text.style.verticalAlign === 'middle') {
+            text.style.lineHeight = sizeInPx(height);
+        } else {
+            text.style.lineHeight = '1.5';
+        }
+
+        text.style.height = sizeInPx(height);
     }
 
     export function fastSetAttribute(element: Element, name: string, value: any) {

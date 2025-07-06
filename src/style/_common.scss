@@ -1,3 +1,4 @@
+@use "sass:color";
 @import '@app/style/mixins';
 @import '@app/style/vars';
 
@@ -17,7 +18,7 @@ body {
 }
 
 * {
-    @include scrollbars(8px, darken($color-border, 15%), transparent);
+    @include scrollbars(8px, color.adjust($color-border, $lightness: -15%), transparent);
 }
 
 .hidden {

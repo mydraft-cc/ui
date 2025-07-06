@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-export module MathHelper {
+export namespace MathHelper {
     let CURRENT_ID = new Date().getTime();
 
     export function nextId() {

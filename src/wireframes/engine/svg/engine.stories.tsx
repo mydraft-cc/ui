@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { Meta } from '@storybook/react';
+import { Meta } from '@storybook/react-vite';
 import * as React from 'react';
 import { EngineObject, Listener } from './../interface';
 import { SvgCanvasView } from './canvas/SvgCanvas';

@@ -15,7 +15,7 @@ import { Transform } from './transform';
 
 type IdMap = { [id: string]: string };
 
-export module Serializer {
+export namespace Serializer {
     export function tryGenerateNewIds(json: string): string {
         try {
             return generateNewIds(json);
