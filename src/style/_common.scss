@@ -1,6 +1,6 @@
 @use "sass:color";
-@import '@app/style/mixins';
-@import '@app/style/vars';
+@use '@app/style/mixins' as *;
+@use '@app/style/vars' as *;
 
 #root-layout {
     height: 100%;

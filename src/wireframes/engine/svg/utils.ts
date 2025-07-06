@@ -131,7 +131,7 @@ export namespace SvgHelper {
 
         if (w > 0 && h > 0) {
             if (element.node.nodeName === 'foreignObject') {
-                
+                setTextHeight(element.node, h);
             }
 
             if (element.node.nodeName === 'ellipse') {
