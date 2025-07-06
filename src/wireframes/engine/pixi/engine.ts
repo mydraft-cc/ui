@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { Application, Container, EventBoundary, HTMLText, Text } from 'pixi.js';
+import { Application, Container, EventBoundary, HTMLText } from 'pixi.js';
 import { MathHelper, Types, Vec2 } from '@app/core';
 import { DiagramItem } from '@app/wireframes/model';
 import { Engine, EngineHitEvent, EngineLayer, EngineMouseEvent, EngineObject, Listener } from './../interface';
