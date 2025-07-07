@@ -43,8 +43,6 @@ export const ShapeRenderer = React.memo(React.forwardRef<HTMLDivElement, ShapeRe
     } = props;
 
     const [engine, setEngine] = React.useState<SvgEngine>();
-    const item = React.useRef<EngineItem>();
-
     const viewBox = getViewBox(plugin, 
         desiredWidth,
         desiredHeight,
@@ -69,13 +67,7 @@ export const ShapeRenderer = React.memo(React.forwardRef<HTMLDivElement, ShapeRe
         }
     }, [desiredHeight, desiredWidth, engine, viewBox]);
 
-    React.useEffect(() => {
-        if (!engine) {
-            return;
-        }
-
-        engine.doc.clear();
-
+    const shape = React.useMemo(() => {
         const shape =
             DiagramItem.createShape({
                 renderer: plugin.identifier(),
@@ -89,15 +81,20 @@ export const ShapeRenderer = React.memo(React.forwardRef<HTMLDivElement, ShapeRe
                     Rotation.ZERO),
                 appearance: { ...plugin.defaultAppearance(), ...appearance || {} },
                 configurables: [],
-                constraint: plugin?.constraint?.(DefaultConstraintFactory.INSTANCE),
+                constraint: plugin.constraint?.(DefaultConstraintFactory.INSTANCE),
             });
 
-        if (!item.current) {
-            item.current = engine.layer(plugin.identifier()).item(plugin);
+        return shape;
+    }, [appearance, plugin, viewBox]);
+
+    React.useEffect(() => {
+        if (!engine) {
+            return;
         }
 
-        item.current.plot(shape);
-    }, [appearance, engine, plugin, viewBox]);
+        engine.doc.clear();
+        engine.layer(plugin.identifier()).item(plugin).plot(shape);
+    }, [engine, shape]);
 
     return (
         <div ref={ref} style={{ lineHeight: 0 }}>
