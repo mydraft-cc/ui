@@ -7,7 +7,6 @@
 
 import * as React from 'react';
 import { Rotation, Vec2, ViewBox } from '@app/core';
-import { EngineItem } from '@app/wireframes/engine';
 import { SvgCanvasView } from '@app/wireframes/engine/svg/canvas/SvgCanvas';
 import { SvgEngine } from '@app/wireframes/engine/svg/engine';
 import { ShapePlugin, Size } from '@app/wireframes/interface';
