@@ -1,0 +1,5 @@
+services:
+  mydraft:
+    build: .
+    ports:
+      - "8080:5173"
