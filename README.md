@@ -31,7 +31,7 @@ Go to `https://localhost:3002`
     npm i
     npm run build
 
-Copy the files from the `build` folder to your webserver.
+Copy the files from the `dist` folder to your webserver.
 
 ## What are the milestones?
 
