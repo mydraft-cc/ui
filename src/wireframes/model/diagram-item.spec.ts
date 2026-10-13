@@ -150,7 +150,7 @@ describe('DiagramItem', () => {
     });
 
     it('should replace appearance', () => {
-        const appearance = ImmutableMap.empty();
+        const appearance = ImmutableMap.of({ color: 99 });
 
         const item_2 = item_1.replaceAppearance(appearance);
 

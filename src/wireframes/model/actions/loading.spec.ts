@@ -9,7 +9,7 @@
 
 import { diff } from 'deep-object-diff';
 import { Types } from '@app/core';
-import { EditorState, loadDiagramInternal, PluginRegistry, selectDiagram, selectItems, UndoableState } from '@app/wireframes/model';
+import { EditorState, loadDiagramInternal, PluginRegistry } from '@app/wireframes/model';
 import * as Reducers from '@app/wireframes/model/actions';
 import { Button } from '@app/wireframes/shapes/neutral/button';
 import v1 from './diagram_v1.json?raw';
@@ -30,43 +30,32 @@ describe('LoadingReducer', () => {
         Reducers.buildOrdering(builder);
     });
 
-    const undoableReducer = Reducers.undoable(
-        editorReducer,
-        editorState, {
-            capacity: 20,
-            actionMerger: Reducers.mergeAction,
-            actionsToIgnore: [
-                selectDiagram.name,
-                selectItems.name,
-            ],
-        });
-    
-    const rootReducer = Reducers.rootLoading(undoableReducer, editorReducer);
+    const rootReducer = Reducers.rootLoading(editorReducer);
 
     it('should load from old and new format V2', () => {
-        const initial = undoableReducer(undefined, { type: 'NOOP' });
+        const initial = editorReducer(undefined, { type: 'NOOP' });
 
-        const editorV1 = rootReducer(initial, loadDiagramInternal(JSON.parse(v1), '1')) as UndoableState<EditorState>;
-        const editorV2 = rootReducer(initial, loadDiagramInternal(JSON.parse(v2), '2')) as UndoableState<EditorState>;
+        const editorV1 = rootReducer(initial, loadDiagramInternal(JSON.parse(v1), '1')) as EditorState;
+        const editorV2 = rootReducer(initial, loadDiagramInternal(JSON.parse(v2), '2')) as EditorState;
 
-        expect(editorV1.present.diagrams.values[0].items.size).toEqual(10);
-        expect(editorV2.present.diagrams.values[0].items.size).toEqual(10);
+        expect(editorV1.diagrams.values[0].items.size).toEqual(10);
+        expect(editorV2.diagrams.values[0].items.size).toEqual(10);
 
-        const diffsV2 = cleanupDiffs(diff(editorV1.present, editorV2.present), []);
+        const diffsV2 = cleanupDiffs(diff(editorV1, editorV2), []);
 
         expect(diffsV2).toEqual(undefined);
     });
 
     it('should load from old and new format V3', () => {
-        const initial = undoableReducer(undefined, { type: 'NOOP' });
+        const initial = editorReducer(undefined, { type: 'NOOP' });
 
-        const editorV1 = rootReducer(initial, loadDiagramInternal(JSON.parse(v1), '1')) as UndoableState<EditorState>;
-        const editorV3 = rootReducer(initial, loadDiagramInternal(JSON.parse(v3), '2')) as UndoableState<EditorState>;
+        const editorV1 = rootReducer(initial, loadDiagramInternal(JSON.parse(v1), '1')) as EditorState;
+        const editorV3 = rootReducer(initial, loadDiagramInternal(JSON.parse(v3), '2')) as EditorState;
 
-        expect(editorV1.present.diagrams.values[0].items.size).toEqual(10);
-        expect(editorV3.present.diagrams.values[0].items.size).toEqual(10);
+        expect(editorV1.diagrams.values[0].items.size).toEqual(10);
+        expect(editorV3.diagrams.values[0].items.size).toEqual(10);
 
-        const diffsV3 = cleanupDiffs(diff(editorV1.present, editorV3.present), []);
+        const diffsV3 = cleanupDiffs(diff(editorV1, editorV3), []);
 
         expect(diffsV3).toEqual(undefined);
     });
@@ -78,7 +67,7 @@ describe('LoadingReducer', () => {
                 continue;
             }
 
-            if (~['instanceId', 'selectedIds', 'parents', 'computed'].indexOf(key)) {
+            if (~['instanceId', '__instanceId', 'selectedIds', 'parents', 'computed'].indexOf(key)) {
                 delete input[key];
                 continue;
             } 

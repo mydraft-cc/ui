@@ -130,6 +130,9 @@ function writeObject(source: object, serializers: PropertySerializers) {
 function readEditor(source: Record<string, any>) {
     const raw: any = readObject(source, EDITOR_SERIALIZERS);
 
+    // Each loaded diagram gets a new identity, otherwise everybody who loads it would join the same collaboration room.
+    delete raw.id;
+
     return EditorState.create(raw);
 }
 

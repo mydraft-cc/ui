@@ -8,7 +8,7 @@
 /* eslint-disable quote-props */
 
 import { marked } from 'marked';
-import { Assets, Container, ContainerChild, Graphics, GraphicsPath, HTMLText, Sprite, StrokeStyle, TextStyle, ViewContainer } from 'pixi.js';
+import { Assets, Container, ContainerChild, Graphics, GraphicsPath, HTMLText, Sprite, StrokeStyle, TextStyle, Texture, ViewContainer } from 'pixi.js';
 import { Rect2, TextMeasurer, Types } from '@app/core/utils';
 import { RendererColor, RendererOpacity, RendererText, RendererWidth, Shape, ShapeProperties, ShapePropertiesFunc, ShapeRenderer, ShapeRendererFunc, TextConfig, TextDecoration } from '@app/wireframes/interface';
 import { getBackgroundColor, getFontFamily, getFontSize, getForegroundColor, getOpacity, getStrokeColor, getStrokeWidth, getText, getTextAlignment, getValue, setValue } from './../shared';
@@ -76,6 +76,34 @@ const FACTORY_GRAPHICS = (_: Properties, existing?: Graphics) => {
 const FACTORY_SPRITE = (_: Properties, existing?: Sprite) => {
     return existing ??= new Sprite();
 };
+
+// Fits the image into the bounds and centers it, like 'xMidYMid meet' in SVG, when the aspect ratio is preserved.
+function alignSprite(sprite: Sprite, { bounds, ratio }: NonNullable<Properties['sprite']>) {
+    const texture = sprite.texture;
+
+    let x = bounds.x;
+    let y = bounds.y;
+    let w = bounds.w;
+    let h = bounds.h;
+
+    if (ratio && texture.width > 0 && texture.height > 0) {
+        const ratioBounds = bounds.w / bounds.h;
+        const ratioImage = texture.width / texture.height;
+
+        if (ratioImage > ratioBounds) {
+            h = bounds.w / ratioImage;
+            y += (bounds.h - h) * 0.5;
+        } else {
+            w = bounds.h * ratioImage;
+            x += (bounds.w - w) * 0.5;
+        }
+    }
+
+    sprite.x = x;
+    sprite.y = y;
+    sprite.width = w;
+    sprite.height = h;
+}
 
 const FACTORY_GROUP = (_: Properties, existing?: Container) => {
     if (!existing) {
@@ -409,61 +437,35 @@ class PropertiesSetter implements ShapeProperties {
                 return;
             }
 
-            const { bounds, ratio, source: src } = value;
-            if (!src) {
+            const { source } = value;
+            if (!source) {
                 return;
             }
 
-            function align(target: Sprite, bounds: Rect2, ratio: boolean) {
-                const texture = target.texture;
+            // Bounds can change while the image is loading, so the latest value is applied once it has been loaded.
+            setValue(element, 'sprite', value);
 
-                if (!texture) {
-                    return;
-                }
-
-                let x = 0;
-                let y = 0;
-                let w = bounds.w;
-                let h = bounds.h;
-
-                if (ratio && texture) {
-                    const size = element.getSize();
-
-                    const ratioElement = size.width / size.height;
-                    const ratioImage = texture.width / texture.height;
-
-                    if (ratioImage > ratioElement) {
-                        w = size.width;
-                        h = size.width / ratioImage;
-                        y = bounds.y + (size.height - h) * 0.5;
-                    } else {
-                        w = size.height * ratioImage;
-                        h = size.height;
-                        x = bounds.x + (size.width - w) * 0.5;
-                    }
-                }
-
-                element.x = x;
-                element.y = y;
-                element.width = w;
-                element.height = h;
-            }
-
-            let lastValue = getValue<Properties['sprite']>(element, 'values');
-            if (lastValue?.source === value.source) {
-                align(element, bounds, ratio);
+            if (getValue<string>(element, 'spriteSource') === source) {
+                alignSprite(element, value);
                 return;
             }
-            
-            const texture = await Assets.load({ src, loadParser: 'loadTextures' });
-        
-            lastValue = getValue<Properties['sprite']>(element, 'values');
-            if (lastValue !== value) {
+
+            let texture: Texture;
+            try {
+                texture = await Assets.load({ src: source, loadParser: 'loadTextures' });
+            } catch (ex) {
+                console.error(`Failed to load image from ${source}.`, ex);
+                return;
+            }
+
+            const latest = getValue<Properties['sprite']>(element, 'sprite');
+            if (latest?.source !== source) {
                 return;
             }
 
             element.texture = texture;
-            align(element, bounds, ratio);
+            setValue(element, 'spriteSource', source);
+            alignSprite(element, latest);
         },
         textContent: (value, element) => {
             if (!value || !Types.is(element, Container)) {

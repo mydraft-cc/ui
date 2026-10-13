@@ -18,12 +18,12 @@ export interface PrintRendererProps {
 export const PrintView = (props: PrintRendererProps) => {
     const { onRender } = props;
 
-    const color = useStore(x => x.editor.present.color);
-    const diagrams = useStore(x => x.editor.present.diagrams);
-    const diagramsOrdered = useStore(x => x.editor.present.orderedDiagrams);
+    const color = useStore(x => x.editor.color);
+    const diagrams = useStore(x => x.editor.diagrams);
+    const diagramsOrdered = useStore(x => x.editor.orderedDiagrams);
     const renderTargets = React.useRef<ReadonlyArray<Diagram>>([]);
     const renderConfirms = React.useRef(new Set<string>());
-    const size = useStore(x => x.editor.present.size);
+    const size = useStore(x => x.editor.size);
 
     React.useEffect(() => {
         renderTargets.current = diagramsOrdered;

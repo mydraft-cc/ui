@@ -6,10 +6,18 @@
 */
 
 import { moveItems } from './collections';
+import { MathHelper } from './math-helper';
 import { Types } from './types';
 
 export class ImmutableList<T> {
-    private static readonly EMPTY = new ImmutableList<any>([]);
+    public static readonly TYPE_NAME = 'ImmutableList';
+
+    // Stable identity across updates, used to sync with yjs.
+    public readonly __instanceId: string;
+
+    public get __typeName() {
+        return ImmutableList.TYPE_NAME;
+    }
 
     public get size() {
         return this.items.length;
@@ -29,22 +37,24 @@ export class ImmutableList<T> {
 
     constructor(
         private readonly items: ReadonlyArray<T>,
+        instanceId?: string,
     ) {
+        this.__instanceId = instanceId || MathHelper.nextId();
+
         Object.freeze(this);
         Object.freeze(items);
     }
 
     public static empty<V>(): ImmutableList<V> {
-        return ImmutableList.EMPTY;
+        // Do not share instances, because the sync with yjs tracks instances.
+        return new ImmutableList<V>([]);
     }
 
     public static of<V>(items: ReadonlyArray<V> | ImmutableList<V> | undefined) {
         if (!items) {
-            return ImmutableList.EMPTY;
+            return ImmutableList.empty<V>();
         } else if (items instanceof ImmutableList) {
             return items;
-        } else if (items.length === 0) {
-            return ImmutableList.EMPTY;
         } else {
             return new ImmutableList<V>(items);
         }
@@ -81,7 +91,7 @@ export class ImmutableList<T> {
     }
 
     public set(index: number, item: T) {
-        if (item || index < 0 || index >= this.items.length || Types.equals(this.items[index], item)) {
+        if (item === undefined || item === null || index < 0 || index >= this.items.length || Types.equals(this.items[index], item)) {
             return this;
         }
 
@@ -123,6 +133,9 @@ export class ImmutableList<T> {
             const newValue = Object.create(Object.getPrototypeOf(this));
 
             newValue.items = items;
+            newValue.__instanceId = this.__instanceId;
+
+            Object.freeze(newValue);
 
             return newValue;
         }

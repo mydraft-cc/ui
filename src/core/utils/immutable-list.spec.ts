@@ -16,10 +16,18 @@ describe('ImmutableList', () => {
         expect(list.size).toBe(0);
     });
 
-    it('should cache empty instance', () => {
+    it('should not share empty instances', () => {
         const list = ImmutableList.of([]);
 
-        expect(list).toBe(ImmutableList.empty());
+        expect(list.size).toBe(0);
+        expect(list).not.toBe(ImmutableList.empty());
+    });
+
+    it('should keep instance id when updated', () => {
+        const list_1 = ImmutableList.of([1]);
+        const list_2 = list_1.add(2);
+
+        expect(list_2.__instanceId).toBe(list_1.__instanceId);
     });
 
     it('should instantiate from array of items', () => {
@@ -37,6 +45,24 @@ describe('ImmutableList', () => {
         expect(list_1.indexOf(1)).toEqual(0);
         expect(list_1.indexOf(2)).toEqual(1);
         expect(list_1.indexOf(3)).toEqual(2);        
+    });
+
+    it('should set value at index', () => {
+        const list_1 = ImmutableList.of([1, 2, 3]);
+        const list_2 = list_1.set(1, 5);
+
+        expect(list_2.values).toEqual([1, 5, 3]);
+        expect(list_2.set(1, 0).values).toEqual([1, 0, 3]);
+        expect(list_2.__instanceId).toBe(list_1.__instanceId);
+    });
+
+    it('should return original list when index is out of range or value is unchanged', () => {
+        const list_1 = ImmutableList.of([1, 2, 3]);
+
+        expect(list_1.set(-1, 4)).toBe(list_1);
+        expect(list_1.set(3, 4)).toBe(list_1);
+        expect(list_1.set(1, 2)).toBe(list_1);
+        expect(list_1.set(1, null!)).toBe(list_1);
     });
 
     it('should add values', () => {
@@ -79,7 +105,7 @@ describe('ImmutableList', () => {
     it('should return original list when item to remove is null', () => {
         const items: string[] = null!;
 
-        const list_1 = ImmutableList.of([1]);
+        const list_1 = ImmutableList.of<any>([1]);
         const list_2 = list_1.remove.apply(list_1, items);
 
         expect(list_2).toBe(list_1);
@@ -135,14 +161,14 @@ describe('ImmutableList', () => {
     });
 
     it('should ignore items that are not found', () => {
-        const list_1 = ImmutableList.of([1, 2, 3, 4, 5, 6]);
+        const list_1 = ImmutableList.of<any>([1, 2, 3, 4, 5, 6]);
         const list_2 = list_1.bringToFront([3, 'not found']);
 
         expect(list_2.values).toEqual([1, 2, 4, 5, 6, 3]);
     });
 
     it('should return original list no id to sort found', () => {
-        const list_1 = ImmutableList.of([1, 2, 3, 4, 5, 6]);
+        const list_1 = ImmutableList.of<any>([1, 2, 3, 4, 5, 6]);
         const list_2 = list_1.sendBackwards(['not found']);
 
         expect(list_2).toBe(list_1);

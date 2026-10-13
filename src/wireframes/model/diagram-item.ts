@@ -98,6 +98,12 @@ export type InitialGroupProps = {
 } & InitialItemProps;
 
 export class DiagramItem extends Record<Props> implements Shape {
+    public static readonly TYPE_NAME = 'DiagramItem';
+
+    public get __typeName() {
+        return DiagramItem.TYPE_NAME;
+    }
+
     private cachedBounds: { [id: string]: Transform } | undefined = {};
 
     public get id() {

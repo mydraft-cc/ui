@@ -16,15 +16,18 @@ import { App } from './App';
 import { registerServiceWorker } from './registerServiceWorker';
 import './index.scss';
 import { store } from './store';
+import { CollaborationProvider } from './wireframes/collaboration';
 
 const Root = (
     <DndProvider backend={HTML5Backend}>
         <Provider store={store}>
-            <BrowserRouter>
-                <Routes>
-                    <Route path='/:token?' element={<App />} />
-                </Routes>
-            </BrowserRouter>
+            <CollaborationProvider>
+                <BrowserRouter>
+                    <Routes>
+                        <Route path='/:token?' element={<App />} />
+                    </Routes>
+                </BrowserRouter>
+            </CollaborationProvider>
         </Provider>
     </DndProvider>
 );

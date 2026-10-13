@@ -7,7 +7,6 @@
 
 import { Color, ImmutableList, ImmutableMap, MathHelper, Record, Vec2 } from '@app/core/utils';
 import { Diagram } from './diagram';
-import { UndoableState } from './undoable-state';
 
 type Diagrams = ImmutableMap<Diagram>;
 type DiagramIds = ImmutableList<string>;
@@ -33,6 +32,9 @@ type Props = {
 };
 
 export type InitialEditorProps = {
+    // The unique id, also used as name of the collaboration room.
+    id?: string;
+
     // The actual diagrams.
     diagrams?: { [id: string]: Diagram } | ImmutableMap<Diagram>;
 
@@ -47,6 +49,12 @@ export type InitialEditorProps = {
 };
 
 export class EditorState extends Record<Props> {
+    public static readonly TYPE_NAME = 'EditorState';
+
+    public get __typeName() {
+        return EditorState.TYPE_NAME;
+    }
+
     public get id() {
         return this.get('id');
     }
@@ -76,10 +84,10 @@ export class EditorState extends Record<Props> {
     }
 
     public static create(setup: InitialEditorProps = {}): EditorState {
-        const { color, diagrams, diagramIds, size } = setup;
+        const { color, diagrams, diagramIds, id, size } = setup;
 
         const props: Props = {
-            id: MathHelper.guid(),
+            id: id || MathHelper.guid(),
             color: color || Color.WHITE,
             diagrams: ImmutableMap.of(diagrams),
             diagramIds: ImmutableList.of(diagramIds),
@@ -152,5 +160,5 @@ export class EditorState extends Record<Props> {
 }
 
 export interface EditorStateInStore {
-    editor: UndoableState<EditorState>;
+    editor: EditorState;
 }

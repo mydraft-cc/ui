@@ -16,10 +16,18 @@ describe('ImmutableMap', () => {
         expect(map.size).toBe(0);
     });
 
-    it('should return empty instance if creating map from empty object', () => {
+    it('should not share empty instances', () => {
         const map = ImmutableMap.of({});
 
-        expect(map).toBe(ImmutableMap.empty());
+        expect(map.size).toBe(0);
+        expect(map).not.toBe(ImmutableMap.empty());
+    });
+
+    it('should keep instance id when updated', () => {
+        const map_1 = ImmutableMap.of({ a: 1 });
+        const map_2 = map_1.set('b', 2);
+
+        expect(map_2.__instanceId).toBe(map_1.__instanceId);
     });
 
     it('should add items', () => {

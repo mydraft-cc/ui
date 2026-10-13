@@ -11,7 +11,11 @@ import { Types } from './types';
 export abstract class Record<T extends object> {
     private readonly values: T;
 
+    // Changes with every update, e.g. to invalidate caches.
     public readonly instanceId: string;
+
+    // Stable identity across updates, used to sync with yjs.
+    public readonly __instanceId: string;
 
     public get<K extends keyof T>(key: K): T[K] {
         return this.values[key];
@@ -21,6 +25,7 @@ export abstract class Record<T extends object> {
         this.values = values;
         this.values = this.afterClone(this.values);
         this.instanceId = MathHelper.nextId();
+        this.__instanceId = MathHelper.nextId();
 
         Object.freeze(values);
     }
@@ -77,6 +82,7 @@ export abstract class Record<T extends object> {
         record.values = values;
         record.values = record.afterClone(values, this);
         record.instanceId = MathHelper.nextId();
+        record.__instanceId = this.__instanceId;
 
         Object.freeze(record.values);
 

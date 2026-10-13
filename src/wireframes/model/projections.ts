@@ -9,26 +9,24 @@ import {  useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
 import { Color, ColorPalette, Types } from '@app/core/utils';
 import { texts } from '@app/texts';
-import { addDiagram, addShape, changeColor, changeColors, changeItemsAppearance, pasteItems, removeDiagram, removeItems } from './actions';
 import { AssetsStateInStore } from './assets-state';
 import { Diagram } from './diagram';
 import { DiagramItemSet } from './diagram-item-set';
-import { EditorState, EditorStateInStore } from './editor-state';
+import { EditorStateInStore } from './editor-state';
 import { LoadingStateInStore } from './loading-state';
 import { UIStateInStore } from './ui-state';
-import { UndoableState } from './undoable-state';
 
 const EMPTY_SELECTION_SET = DiagramItemSet.EMPTY;
 
-export const getDiagramId = (state: EditorStateInStore) => state.editor.present.selectedDiagramId;
-export const getDiagrams = (state: EditorStateInStore) => state.editor.present.diagrams;
+export const getDiagramId = (state: EditorStateInStore) => state.editor.selectedDiagramId;
+export const getDiagrams = (state: EditorStateInStore) => state.editor.diagrams;
 export const getDiagramsFilter = (state: UIStateInStore) => state.ui.diagramsFilter;
-export const getEditorRoot = (state: EditorStateInStore) => state.editor;
-export const getEditor = (state: EditorStateInStore) => state.editor.present;
+export const getEditor = (state: EditorStateInStore) => state.editor;
+export const getEditorColor = (state: EditorStateInStore) => state.editor.color;
 export const getIcons = (state: AssetsStateInStore) => state.assets.icons;
 export const getIconSet = (state: AssetsStateInStore) => state.assets.iconSet;
 export const getIconsFilter = (state: AssetsStateInStore) => state.assets.iconsFilter;
-export const getOrderedDiagrams = (state: EditorStateInStore) => state.editor.present.orderedDiagrams;
+export const getOrderedDiagrams = (state: EditorStateInStore) => state.editor.orderedDiagrams;
 export const getShapes = (state: AssetsStateInStore) => state.assets.shapes;
 export const getShapesFilter = (state: AssetsStateInStore) => state.assets.shapesFilter;
 
@@ -93,9 +91,24 @@ export const getSelection = createSelector(
     diagram => diagram ? DiagramItemSet.createFromDiagram(diagram.selectedIds.values, diagram) : EMPTY_SELECTION_SET,
 );
 
+// The colors of a shape only change when the appearance changes, which is rare compared to moving shapes.
+const appearanceColors = new WeakMap<object, ReadonlyArray<any>>();
+
+function getAppearanceColors(appearance: { entries: ReadonlyArray<readonly [string, any]> }) {
+    let result = appearanceColors.get(appearance);
+
+    if (!result) {
+        result = appearance.entries.filter(([key]) => key.endsWith('COLOR')).map(([, value]) => value);
+        appearanceColors.set(appearance, result);
+    }
+
+    return result;
+}
+
 export const getColors = createSelector(
-    getEditorRoot,
-    editor => {
+    getEditorColor,
+    getDiagrams,
+    (editorColor, diagrams) => {
         const colors: { [color: string]: { count: number; color: Color } } = {};
 
         const addColor = (value: any) => {
@@ -112,18 +125,16 @@ export const getColors = createSelector(
             }
         };
 
-        addColor(editor.present.color.toNumber());
+        addColor(editorColor.toNumber());
 
-        for (const diagram of editor.present.diagrams.values) {
+        for (const diagram of diagrams.values) {
             for (const shape of diagram.items.values) {
                 if (shape.type === 'Group') {
                     continue;
                 }
                 
-                for (const [key, value] of shape.appearance.entries) {
-                    if (key.endsWith('COLOR')) {
-                        addColor(value);
-                    }
+                for (const value of getAppearanceColors(shape.appearance)) {
+                    addColor(value);
                 }
             }
         }
@@ -134,32 +145,7 @@ export const getColors = createSelector(
     },
     {
         memoizeOptions: {
-            equalityCheck: (current: UndoableState<EditorState>, previous: UndoableState<EditorState>) => {
-                function shouldChange() {
-                    if (current === previous) {
-                        return false;
-                    }
-
-                    if (current.present.id !== previous.present.id) {
-                        return true;
-                    }
-    
-                    const lastAction = previous.lastAction;
-    
-                    return (
-                        addDiagram.match(lastAction) ||
-                        addShape.match(lastAction) ||
-                        changeColor.match(lastAction) ||
-                        changeColors.match(lastAction) ||
-                        changeItemsAppearance.match(lastAction) ||
-                        pasteItems.match(lastAction) ||
-                        removeDiagram.match(lastAction) ||
-                        removeItems.match(lastAction)
-                    );
-                }
-
-                return !shouldChange();
-            },
+            resultEqualityCheck: (current: ColorPalette, previous: ColorPalette) => Types.equals(current.colors, previous.colors),
         },
     },
 );

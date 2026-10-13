@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "@ant-design/icons": "^5.6.1",
+    "@hocuspocus/provider": "^2.15.3",
     "@marker.io/browser": "^0.19.0",
     "@reduxjs/toolkit": "^2.6.1",
     "@storybook/addon-docs": "^9.0.15",
@@ -48,7 +49,10 @@
     "redux-thunk": "^3.1.0",
     "reselect": "4.1.8",
     "sharp": "^0.33.5",
-    "tslib": "2.8.1"
+    "tslib": "2.8.1",
+    "y-protocols": "^1.0.7",
+    "yjs": "^13.6.33",
+    "yjs-redux": "file:vendor/yjs-redux-0.16.0.tgz"
   },
   "devDependencies": {
     "@peterek/vite-plugin-favicons": "^2.1.0",

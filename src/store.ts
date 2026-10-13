@@ -7,7 +7,9 @@
 
 import { Middleware, configureStore } from '@reduxjs/toolkit';
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
-import { assets, buildAlignment, buildAppearance, buildDiagrams, buildGrouping, buildItems, buildOrdering, createClassReducer, loading, loadingMiddleware, mergeAction, rootLoading, selectDiagram, selectItems, toastMiddleware, ui, undoable } from './wireframes/model/actions';
+import { combineReducers, Reducer } from 'redux';
+import { binder } from './wireframes/collaboration/binder';
+import { assets, buildAlignment, buildAppearance, buildDiagrams, buildGrouping, buildItems, buildOrdering, createClassReducer, loading, loadingMiddleware, rootLoading, toastMiddleware, ui } from './wireframes/model/actions';
 import { EditorState } from './wireframes/model/editor-state';
 import { createInitialAssetsState, createInitialLoadingState, createInitialUIState } from './wireframes/model/internal';
 import { registerRenderers } from './wireframes/shapes';
@@ -25,40 +27,33 @@ const editorReducer = createClassReducer(editorState, builder => {
     buildOrdering(builder);
 });
 
-const undoableReducer = undoable(
-    editorReducer,
-    editorState, {
-        actionMerger: mergeAction,
-        actionsToIgnore: [
-            selectDiagram.name,
-            selectItems.name,
-        ],
-    });
-
 // Define AppState and AppDispatch before configureStore
 const rootReducer = {
     // Contains the store for the left sidebar.
     assets: assets(createInitialAssetsState()),
     // Actual editor content.
-    editor: rootLoading(undoableReducer, editorReducer),
+    editor: rootLoading(editorReducer),
     // Loading state, e.g. when something has been loaded.
     loading: loading(createInitialLoadingState()),
     // General UI behavior.
     ui: ui(createInitialUIState()),
 };
 
-// Define temporary store to infer AppState type
-const tempStore = configureStore({ reducer: rootReducer, middleware: (getDefaultMiddleware) => getDefaultMiddleware({ serializableCheck: false }) });
-export type AppState = ReturnType<typeof tempStore.getState>;
-export type AppDispatch = typeof tempStore.dispatch;
+// The editor slice is synchronized with yjs for real-time collaboration and undo.
+const reducer = binder.enhanceReducer(combineReducers(rootReducer)) as Reducer<ReturnType<ReturnType<typeof combineReducers<typeof rootReducer>>>>;
 
 export const store = configureStore({
-    reducer: rootReducer,
-    middleware: (getDefaultMiddleware) => getDefaultMiddleware({ serializableCheck: false }).concat(
-        toastMiddleware() as Middleware<{}, AppState, AppDispatch>,
-        loadingMiddleware() as Middleware<{}, AppState, AppDispatch>
+    reducer,
+    middleware: (getDefaultMiddleware) => getDefaultMiddleware({ serializableCheck: false, immutableCheck: false }).concat(
+        toastMiddleware() as Middleware,
+        loadingMiddleware() as Middleware,
+        binder.middleware as Middleware,
     ),
 });
 
+export type AppState = ReturnType<typeof store.getState>;
+export type AppDispatch = typeof store.dispatch;
+
 export const useAppDispatch: () => AppDispatch = useDispatch;
 export const useAppSelector: TypedUseSelectorHook<AppState> = useSelector;
+

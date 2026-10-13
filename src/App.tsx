@@ -15,9 +15,13 @@ import { ArrangeMenu, ClipboardMenu, EditorView, HistoryMenu, Icons, LoadingMenu
 import { loadDiagramFromServer, newDiagram, selectTab, showToast, toggleLeftSidebar, toggleRightSidebar, useStore } from '@app/wireframes/model';
 import { useAppDispatch } from './store';
 import { texts } from './texts';
+import { Presence, useCollaboration } from './wireframes/collaboration';
 import { CustomDragLayer } from './wireframes/components/CustomDragLayer';
 import { PresentationView } from './wireframes/components/PresentationView';
 import { OverlayContainer } from './wireframes/contexts/OverlayContext';
+
+// Links to live diagrams start with this prefix, e.g. https://mydraft.cc/c:ROOM.
+const LIVE_PREFIX = 'c:';
 
 const SidebarTabs: TabsProps['items'] = [
     {
@@ -58,6 +62,8 @@ export const App = () => {
     const [presenting, setPresenting] = React.useState(false);
     
     const tokenToRead = useStore(s => s.loading.tokenToRead);
+    const collaboration = useCollaboration();
+    const collaborationJoin = React.useRef(collaboration.join);
 
     const [
         print,
@@ -69,7 +75,9 @@ export const App = () => {
     React.useEffect(() => {
         const token = routeTokenSnapshot.current;
 
-        if (token && token.length > 0) {
+        if (token && token.startsWith(LIVE_PREFIX)) {
+            collaborationJoin.current(token.substring(LIVE_PREFIX.length));
+        } else if (token && token.length > 0) {
             dispatch(loadDiagramFromServer({ tokenToRead: token, navigate: false }));
         } else {
             dispatch(newDiagram(false));
@@ -78,12 +86,14 @@ export const App = () => {
 
     // Handle navigation based on token changes
     React.useEffect(() => {
-        if (tokenToRead) {
+        if (collaboration.room) {
+            navigate(`/${LIVE_PREFIX}${collaboration.room}`, { replace: true });
+        } else if (tokenToRead) {
             navigate(`/${tokenToRead}`, { replace: true });
         } else {
             navigate('/', { replace: true });
         }
-    }, [tokenToRead, navigate]);
+    }, [collaboration.room, tokenToRead, navigate]);
 
     React.useEffect(() => {
         if (isPrinting) {
@@ -139,6 +149,8 @@ export const App = () => {
                             </div>
 
                             <div>
+                                <Presence />
+
                                 <LoadingMenu />
                             </div>
                         </div>

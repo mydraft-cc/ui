@@ -5,6 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
+import { MathHelper } from './math-helper';
 import { Types } from './types';
 
 type Mutator<V> = {
@@ -16,7 +17,14 @@ type Mutator<V> = {
 };
 
 export class ImmutableMap<V> {
-    private static readonly EMPTY = new ImmutableMap<any>(new Map());
+    public static readonly TYPE_NAME = 'ImmutableMap';
+
+    // Stable identity across updates, used to sync with yjs.
+    public readonly __instanceId: string;
+
+    public get __typeName() {
+        return ImmutableMap.TYPE_NAME;
+    }
 
     public get size() {
         return this.items.size;
@@ -44,22 +52,24 @@ export class ImmutableMap<V> {
 
     private constructor(
         private readonly items: Map<string, V>,
+        instanceId?: string,
     ) {
+        this.__instanceId = instanceId || MathHelper.nextId();
+
         Object.freeze(this);
         Object.freeze(items);
     }
 
     public static empty<V>(): ImmutableMap<V> {
-        return ImmutableMap.EMPTY;
+        // Do not share instances, because the sync with yjs tracks instances.
+        return new ImmutableMap<V>(new Map());
     }
 
     public static of<V>(items: { [key: string]: V } | ImmutableMap<V> | undefined) {
         if (!items) {
-            return ImmutableMap.EMPTY;
+            return ImmutableMap.empty<V>();
         } else if (items instanceof ImmutableMap) {
             return items;
-        } else if (Object.keys(items).length === 0) {
-            return ImmutableMap.EMPTY;
         } else {
             return new ImmutableMap<V>(new Map(Object.entries(items)));
         }
@@ -95,7 +105,7 @@ export class ImmutableMap<V> {
             return this;
         }
 
-        return new ImmutableMap<V>(updatedItems);
+        return new ImmutableMap<V>(updatedItems, this.__instanceId);
     }
 
     public set(key: string, value: V) {
@@ -113,7 +123,7 @@ export class ImmutableMap<V> {
 
         items.set(key, value);
 
-        return new ImmutableMap<V>(items);
+        return new ImmutableMap<V>(items, this.__instanceId);
     }
 
     public remove(key: string) {
@@ -125,7 +135,7 @@ export class ImmutableMap<V> {
 
         items.delete(key);
 
-        return new ImmutableMap<V>(items);
+        return new ImmutableMap<V>(items, this.__instanceId);
     }
 
     public mutate(updater: (mutator: Mutator<V>) => void): ImmutableMap<V> {
@@ -178,7 +188,7 @@ export class ImmutableMap<V> {
             return this;
         }
 
-        return new ImmutableMap(updatedItems);
+        return new ImmutableMap(updatedItems, this.__instanceId);
     }
 
     public equals(other: ImmutableMap<V>) {
