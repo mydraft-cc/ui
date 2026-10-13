@@ -19,8 +19,16 @@ const PixiCanvasViewComponent = (props: CanvasProps<PixiEngine> & { background?:
     } = props;
 
     const background = props.background || 'white';
-    const [engine, setEngine] = React.useState<PixiEngine>();
+    const [application, setApplication] = React.useState<Application>();
     const canvasContainerRef = React.useRef<HTMLDivElement>(null);
+
+    const pixiEngine = React.useMemo(() => {
+        if (!application?.stage) {
+            return null;
+        }
+
+        return new PixiEngine(application);
+    }, [application]);
 
     React.useEffect(() => {
         const ref = canvasContainerRef.current;
@@ -36,7 +44,7 @@ const PixiCanvasViewComponent = (props: CanvasProps<PixiEngine> & { background?:
         // Define application variable here to be accessible in cleanup
         let application: Application | null = new Application();
 
-        async function setup(containerElement: HTMLDivElement) {
+        async function setup(application: Application, containerElement: HTMLDivElement) {
             // Initialize application (application should not be null here)
             await application!.init({ 
                 antialias: true,
@@ -49,45 +57,43 @@ const PixiCanvasViewComponent = (props: CanvasProps<PixiEngine> & { background?:
                 resolution: window.devicePixelRatio,
             });
 
-            setEngine(new PixiEngine(application!));
-
+            setApplication(application);
             containerElement.appendChild(application!.canvas);
         }
 
         // Call setup only if ref is valid
-        setup(ref).catch(console.error);
+        setup(application, ref).catch(console.error);
 
         return () => {
             if (application && application.stage) {
                 application.destroy(true, true);
             }
-            application = null;
-            setEngine(undefined);
+            setApplication(undefined);
         };
     }, [background]);
 
     React.useEffect(() => {
-        if (!engine || !onInit) {
+        if (!pixiEngine || !onInit) {
             return;
         }
         
-        onInit(engine);
-    }, [engine, onInit]);
+        onInit(pixiEngine);
+    }, [pixiEngine, onInit]);
 
     React.useEffect(() => {
-        if (!engine) {
+        if (!pixiEngine) {
             return;
         }
         
-        engine.application.renderer.background.color = background;
-    }, [background, engine]);
+        pixiEngine.application.renderer.background.color = background;
+    }, [background, pixiEngine]);
 
     React.useEffect(() => {
-        if (!engine) {
+        if (!pixiEngine) {
             return;
         }
 
-        const root = engine.application.stage;
+        const root = pixiEngine.application.stage;
         if (viewBox) {
             root.scale = viewBox.zoom;
             root.x = -viewBox.minX * viewBox.zoom;
@@ -98,7 +104,8 @@ const PixiCanvasViewComponent = (props: CanvasProps<PixiEngine> & { background?:
             root.y = 0;
         }
 
-    }, [engine, viewBox]);
+        pixiEngine?.adjustToZoom(viewBox?.zoom || 1);
+    }, [pixiEngine, viewBox]);
 
     return (
         <div style={style} className={className} ref={canvasContainerRef} />

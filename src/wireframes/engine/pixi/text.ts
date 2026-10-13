@@ -31,7 +31,7 @@ const DEFAULT_ATTRS: Values = {
 export class PixiText extends PixiObject implements EngineText {
     private readonly container = new Container();
     private readonly textBackground = new Graphics();
-    private readonly textElement = new Text({ resolution: 6, anchor: 0.5 });
+    private readonly textElement = new Text({ resolution: 2, anchor: 0.5 });
     private readonly attrs = { ...DEFAULT_ATTRS };
     private invalid = true;
 

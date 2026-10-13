@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 import { Button } from 'antd';
 import { ColorPalette } from '@app/core/utils';
 import { ColorPicker } from './ColorPicker';
