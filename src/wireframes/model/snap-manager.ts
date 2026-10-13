@@ -19,12 +19,12 @@ const RESIZE_MINIMUM = 1;
 export type SnapMode = 'None' | 'Grid' | 'Shapes';
 export type SnapSide = 'Left' | 'Right' | 'Top' | 'Bottom';
 
-const EMPTY_SET = new Set();
+const EMPTY_SET: ReadonlySet<string> = new Set<string>();
 
-export type SnapResult = { 
+export type SnapResult = {
     snapX?: SnapLine;
     snapY?: SnapLine;
-    delta: Vec2; 
+    delta: Vec2;
 };
 
 export type SnapLine = {
@@ -33,13 +33,13 @@ export type SnapLine = {
 
     // The side.
     side?: SnapSide;
-    
+
     // The difference to a side.
     diff?: { x: number; y: number };
-    
+
     // The positions for space snap lines.
-    positions?: { x: number; y: number }[]; 
-    
+    positions?: { x: number; y: number }[];
+
     // True, if the snap line is for a center.
     isCenter?: boolean;
 
@@ -74,9 +74,11 @@ type GridItem = {
 export class SnapManager {
     private currentDiagram?: Diagram;
     private currentView?: Vec2;
+    private currentZoom = 1;
     private grid?: GridItem[];
     private xLines?: SnapLine[];
     private yLines?: SnapLine[];
+    private ignored?: ReadonlySet<string>;
 
     public prepare(diagram: Diagram, view: Vec2) {
         this.currentDiagram = diagram;
@@ -85,6 +87,12 @@ export class SnapManager {
         this.xLines = undefined;
         this.yLines = undefined;
         this.grid = undefined;
+        this.ignored = undefined;
+    }
+
+    public setZoom(zoom: number) {
+        // The snap lines do not depend on the zoom, therefore we do not invalidate them.
+        this.currentZoom = zoom > 0 ? zoom : 1;
     }
 
     public snapRotating(transform: Transform, delta: number, snapMode: SnapMode): number {
@@ -105,96 +113,73 @@ export class SnapManager {
         let dw = delta.x;
         let dh = delta.y;
 
-        if (snapMode === 'Shapes' && transform.rotation.degree === 0) {
+        const isRotated = transform.rotation.degree !== 0;
+
+        if (snapMode === 'Shapes' && !isRotated) {
             const aabb = transform.aabb;
 
             const { xLines, yLines } = this.getSnapLines(ignoreList);
 
-            // Compute the new x and y-positions once.
-            const l = -delta.x + aabb.left;
-            const r = +delta.x + aabb.right;
+            // The threshold is defined in screen pixels.
+            const threshold = RESIZE_SNAP_SHAPE / this.currentZoom;
 
-            const t = -delta.y + aabb.top;
-            const b =  delta.y + aabb.bottom;
+            if (xMode !== 0) {
+                // Only the edge that is dragged is moved.
+                const edge = xMode > 0 ? aabb.right + dw : aabb.left - dw;
 
-            let snapX = Number.MAX_VALUE;
+                const line = findResizeLine(xLines, edge, threshold);
 
-            const isXCandidate = (value: number, line: SnapLine) => {
-                const delta = Math.abs(value - line.value);
-                
-                if (delta > 0 && delta < RESIZE_SNAP_SHAPE && delta < snapX) {
-                    snapX = delta;
-                    return true;
-                }
+                if (line) {
+                    dw = xMode > 0 ? line.value - aabb.right : aabb.left - line.value;
 
-                return false;
-            };
-
-            for (const line of xLines) {
-                // Do not snap with center lines or distribution lines on resize.
-                if (line.isCenter || line.positions) {
-                    continue;
-                }
-                
-                if (xMode > 0) {
-                    if (isXCandidate(r, line)) {
-                        dw = line.value - aabb.right;
-
-                        result.snapX = line;
-                    }
-                } else if (xMode < 0) {
-                    if (isXCandidate(l, line)) {
-                        dw = aabb.left - line.value;
-
-                        result.snapX = line;
-                    }
+                    result.snapX = line;
                 }
             }
 
-            let snapY = Number.MAX_VALUE;
+            if (yMode !== 0) {
+                const edge = yMode > 0 ? aabb.bottom + dh : aabb.top - dh;
 
-            const isYCandidate = (value: number, line: SnapLine) => {
-                const delta = Math.abs(value - line.value);
-                
-                if (delta > 0 && delta < RESIZE_SNAP_SHAPE && delta < snapY) {
-                    snapY = delta;
-                    return true;
-                }
+                const line = findResizeLine(yLines, edge, threshold);
 
-                return false;
-            };
+                if (line) {
+                    dh = yMode > 0 ? line.value - aabb.bottom : aabb.top - line.value;
 
-            for (const line of yLines) {
-                // Do not snap with center lines or distribution lines on resize.
-                if (line.isCenter || line.positions) {
-                    continue;
-                }
-                
-                if (yMode > 0) {
-                    if (isYCandidate(b, line)) {
-                        dh = line.value - aabb.bottom;
-
-                        result.snapY = line;
-                    }
-                } else if (yMode < 0) {
-                    if (isYCandidate(t, line)) {
-                        dh = aabb.top - line.value;
-
-                        result.snapY = line;
-                    }
+                    result.snapY = line;
                 }
             }
-        } else if (snapMode === 'Grid') {
+        } else if (snapMode === 'Grid' && !isRotated) {
+            const aabb = transform.aabb;
+
+            // Snap the dragged edge to the grid, not the size, so that the shape stays aligned to the grid.
+            if (xMode > 0) {
+                dw = MathHelper.roundToMultipleOf(aabb.right + dw, RESIZE_SNAP_GRID) - aabb.right;
+            } else if (xMode < 0) {
+                dw = aabb.left - MathHelper.roundToMultipleOf(aabb.left - dw, RESIZE_SNAP_GRID);
+            }
+
+            if (yMode > 0) {
+                dh = MathHelper.roundToMultipleOf(aabb.bottom + dh, RESIZE_SNAP_GRID) - aabb.bottom;
+            } else if (yMode < 0) {
+                dh = aabb.top - MathHelper.roundToMultipleOf(aabb.top - dh, RESIZE_SNAP_GRID);
+            }
+        } else if (snapMode !== 'None') {
+            // The edges of rotated shapes cannot be aligned, therefore we snap the size instead.
             dw = MathHelper.roundToMultipleOf(transform.size.x + dw, RESIZE_SNAP_GRID) - transform.size.x;
             dh = MathHelper.roundToMultipleOf(transform.size.y + dh, RESIZE_SNAP_GRID) - transform.size.y;
         }
 
         if (transform.size.x + dw < RESIZE_MINIMUM) {
             dw = RESIZE_MINIMUM - transform.size.x;
+
+            // The snap line is not reached anymore.
+            result.snapX = undefined;
         }
 
         if (transform.size.y + dh < RESIZE_MINIMUM) {
             dh = RESIZE_MINIMUM - transform.size.y;
+
+            // The snap line is not reached anymore.
+            result.snapY = undefined;
         }
 
         result.delta = new Vec2(dw, dh);
@@ -213,92 +198,29 @@ export class SnapManager {
         if (snapMode === 'Shapes') {
             const { xLines, yLines, grid } = this.getSnapLines(ignoreList);
 
-            // Compute the new x and y-positions once.
-            const l = x;
-            const r = delta.x + aabb.right;
+            // The threshold is defined in screen pixels.
+            const threshold = MOVE_SNAP_SHAPE / this.currentZoom;
 
-            const t = y;
-            const b = delta.y + aabb.bottom;
-            
-            const cx = delta.x + aabb.cx;
-            const cy = delta.y + aabb.cy;
+            // Compute the new center positions once.
+            const cx = x + aabb.width * 0.5;
+            const cy = y + aabb.height * 0.5;
 
-            let snapX = Number.MAX_VALUE;
+            // Distance lines have a bounds that must be close.
+            const snapX = findMoveLine(xLines, x, aabb.width, threshold, bounds => isOverlapY(cy, aabb.height, bounds));
 
-            const isXCandidate = (value: number, line: SnapLine) => {
-                const delta = Math.abs(value - line.value);
-                
-                if (delta < MOVE_SNAP_SHAPE && delta < snapX) {
-                    snapX = delta;
-                    return true;
-                }
+            if (snapX) {
+                x = snapX.start;
 
-                return false;
-            };
-
-            for (const line of xLines) {    
-                // Distance lines have a bounds that must be close.
-                if (line.gridItem?.aabb && !isOverlapY(cy, aabb.height, line.gridItem?.aabb)) {
-                    continue;
-                }
-
-                if (line.isCenter && isXCandidate(cx, line)) {
-                    x = line.value - aabb.width * 0.5;
-
-                    result.snapX = line;
-                    break;
-                } else if (isXCandidate(l, line)) {
-                    x = line.value;
-
-                    result.snapX = line;
-                    break;
-                } else if (isXCandidate(r, line)) {
-                    x = line.value - aabb.width;
-
-                    result.snapX = line;
-                    break;
-                }
+                result.snapX = enrichLine(snapX.line, grid);
             }
 
-            let snapY = Number.MAX_VALUE;
+            const snapY = findMoveLine(yLines, y, aabb.height, threshold, bounds => isOverlapX(cx, aabb.width, bounds));
 
-            const isYCandidate = (value: number, line: SnapLine) => {
-                const delta = Math.abs(value - line.value);
-                
-                if (delta < MOVE_SNAP_SHAPE && delta < snapY) {
-                    snapY = delta;
-                    return true;
-                }
+            if (snapY) {
+                y = snapY.start;
 
-                return false;
-            };
-
-            for (const line of yLines) {    
-                // Distance lines have a bounds that must be close.
-                if (line.gridItem?.aabb && !isOverlapX(cx, aabb.width, line.gridItem?.aabb)) {
-                    continue;
-                }
-
-                if (line.isCenter && isYCandidate(cy, line)) {
-                    y = line.value - aabb.height * 0.5;
-
-                    result.snapY = line;
-                    break;
-                } else if (isYCandidate(t, line)) {
-                    y = line.value;
-
-                    result.snapY = line;
-                    break;
-                } else if (isYCandidate(b, line)) {
-                    y = line.value - aabb.height;
-
-                    result.snapY = line;
-                    break;
-                }
+                result.snapY = enrichLine(snapY.line, grid);
             }
-
-            result.snapX = enrichLine(result.snapX, grid);
-            result.snapY = enrichLine(result.snapY, grid);
         } else if (snapMode === 'Grid') {
             x = MathHelper.roundToMultipleOf(x, MOVE_SNAP_GRID);
             y = MathHelper.roundToMultipleOf(y, MOVE_SNAP_GRID);
@@ -310,7 +232,10 @@ export class SnapManager {
     }
 
     public getSnapLines(ignoreList?: Set<string>) {
-        if (this.xLines && this.yLines && this.grid) {
+        const ignore = ignoreList || EMPTY_SET;
+
+        // The lines depend on the ignored items, therefore we have to recompute them when the list changes.
+        if (this.xLines && this.yLines && this.grid && this.ignored && areSameSets(this.ignored, ignore)) {
             return { xLines: this.xLines, yLines: this.yLines, grid: this.grid };
         }
 
@@ -319,14 +244,14 @@ export class SnapManager {
         const xLines: SnapLine[] = this.xLines = [];
         const yLines: SnapLine[] = this.yLines = [];
 
+        this.ignored = ignore;
+
         if (!currentDiagram || !currentView) {
             // This should actually never happen, because we call prepare first.
             const grid = this.grid = [];
 
             return { xLines, yLines, grid: grid };
         }
-
-        const ignore = ignoreList || EMPTY_SET;
 
         // Compute the bounding boxes once.
         const bounds = Array.from(currentDiagram.items.values).filter(x => !ignore.has(x.id)).map(x => x.bounds(currentDiagram).aabb);
@@ -353,25 +278,25 @@ export class SnapManager {
 
         for (const gridItem of grid) {
             const bound = gridItem.aabb;
-    
+
             if (gridItem.leftDistance != Number.MAX_VALUE) {
-                xLines.push({ 
-                    value: bound.right + gridItem.leftDistance, 
+                xLines.push({
+                    value: bound.right + gridItem.leftDistance,
                     gridSide: 'Right',
                     gridItem,
                 });
             }
 
             if (gridItem.rightDistance != Number.MAX_VALUE) {
-                xLines.push({ 
-                    value: bound.left - gridItem.rightDistance, 
+                xLines.push({
+                    value: bound.left - gridItem.rightDistance,
                     gridSide: 'Left',
                     gridItem,
                 });
             }
 
             if (gridItem.topDistance != Number.MAX_VALUE) {
-                yLines.push({ 
+                yLines.push({
                     value: bound.bottom + gridItem.topDistance,
                     gridSide: 'Bottom',
                     gridItem,
@@ -379,7 +304,7 @@ export class SnapManager {
             }
 
             if (gridItem.bottomDistance != Number.MAX_VALUE) {
-                yLines.push({ 
+                yLines.push({
                     value: bound.top - gridItem.bottomDistance,
                     gridSide: 'Top',
                     gridItem,
@@ -387,27 +312,86 @@ export class SnapManager {
             }
         }
 
-        // Unset the values to reduce memory usage, when the diagram is not needed otherwise.
-        this.currentDiagram = undefined;
-        this.currentView = undefined;
-
         return { xLines, yLines, grid };
     }
 
     public getDebugLines(ignoreList?: Set<string>) {
-        const { xLines, yLines } = this.getSnapLines(ignoreList);
+        const { xLines, yLines, grid } = this.getSnapLines(ignoreList);
 
-        if (this.grid) {
-            for (const line of xLines) {
-                enrichLine(line, this.grid);
-            }
-            for (const line of yLines) {
-                enrichLine(line, this.grid);
-            }
+        for (const line of xLines) {
+            enrichLine(line, grid);
+        }
+        for (const line of yLines) {
+            enrichLine(line, grid);
         }
 
         return { xLines, yLines };
     }
+}
+
+function findResizeLine(lines: ReadonlyArray<SnapLine>, edge: number, threshold: number) {
+    let bestLine: SnapLine | undefined;
+    let bestDistance = Number.MAX_VALUE;
+
+    for (const line of lines) {
+        // Do not snap with center lines or distribution lines on resize.
+        if (line.isCenter || line.gridSide) {
+            continue;
+        }
+
+        const distance = Math.abs(edge - line.value);
+
+        // Use the nearest line, not the first line within the threshold.
+        if (distance < threshold && distance < bestDistance) {
+            bestDistance = distance;
+            bestLine = line;
+        }
+    }
+
+    return bestLine;
+}
+
+function findMoveLine(lines: ReadonlyArray<SnapLine>, start: number, size: number, threshold: number, isClose: (bounds: Rect2) => boolean) {
+    let bestLine: SnapLine | undefined;
+    let bestDistance = Number.MAX_VALUE;
+    let bestStart = 0;
+
+    const check = (line: SnapLine, offset: number) => {
+        const distance = Math.abs(start + offset - line.value);
+
+        // Use the nearest line, not the first line within the threshold.
+        if (distance < threshold && distance < bestDistance) {
+            bestDistance = distance;
+            bestLine = line;
+            bestStart = line.value - offset;
+        }
+    };
+
+    for (const line of lines) {
+        if (line.gridItem && !isClose(line.gridItem.aabb)) {
+            continue;
+        }
+
+        if (line.isCenter) {
+            // Center lines only align centers.
+            check(line, size * 0.5);
+        } else if (line.gridSide === 'Right' || line.gridSide === 'Bottom') {
+            // The shape is placed after the referenced shape, so only the start edge can keep the distance.
+            check(line, 0);
+        } else if (line.gridSide === 'Left' || line.gridSide === 'Top') {
+            // The shape is placed before the referenced shape, so only the end edge can keep the distance.
+            check(line, size);
+        } else {
+            check(line, 0);
+            check(line, size);
+        }
+    }
+
+    if (!bestLine) {
+        return undefined;
+    }
+
+    return { line: bestLine, start: bestStart };
 }
 
 function enrichLine(line: SnapLine | undefined, grid: GridItem[]) {
@@ -570,7 +554,7 @@ function computeGrid(bounds: ReadonlyArray<Rect2>) {
                 }
             }
         }
-        
+
         grid.push(gridItem);
     }
 
@@ -593,4 +577,22 @@ function areSimilar(lhs: number, rhs: number) {
     const d = Math.abs(lhs - rhs);
 
     return d < 1;
+}
+
+function areSameSets(lhs: ReadonlySet<string>, rhs: ReadonlySet<string>) {
+    if (lhs === rhs) {
+        return true;
+    }
+
+    if (lhs.size !== rhs.size) {
+        return false;
+    }
+
+    for (const value of lhs) {
+        if (!rhs.has(value)) {
+            return false;
+        }
+    }
+
+    return true;
 }

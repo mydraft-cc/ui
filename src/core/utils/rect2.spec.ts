@@ -218,6 +218,36 @@ describe('Rect2', () => {
         expect(actual).toEqual(expected);
     });
 
+    it('should create correct rect from vectors in negative space', () => {
+        const actual =
+            Rect2.fromVecs([
+                new Vec2(-900, -800),
+                new Vec2(-500, -300),
+                new Vec2(-100, -100)]);
+        const expected = new Rect2(-900, -800, 800, 700);
+
+        expect(actual).toEqual(expected);
+    });
+
+    it('should create correct rect from rects in negative space', () => {
+        const actual =
+            Rect2.fromRects([
+                new Rect2(-900, -800, 100, 100),
+                new Rect2(-500, -300, 100, 100),
+                new Rect2(-250, -200, 150, 100)]);
+        const expected = new Rect2(-900, -800, 800, 700);
+
+        expect(actual).toEqual(expected);
+    });
+
+    it('should create identical rect from rotation independent from the quadrant', () => {
+        const positive = Rect2.rotated(new Vec2(500, 500), new Vec2(100, 40), Rotation.fromDegree(45));
+        const negative = Rect2.rotated(new Vec2(-500, -500), new Vec2(100, 40), Rotation.fromDegree(45));
+
+        expect(negative.w).toBeCloseTo(positive.w, 5);
+        expect(negative.h).toBeCloseTo(positive.h, 5);
+    });
+
     it('should create rect from rotation', () => {
         const actual = Rect2.rotated(new Vec2(400, 300), new Vec2(600, 400), Rotation.fromRadian(Math.PI / 2));
         const expected = new Rect2(500, 200, 400, 600);

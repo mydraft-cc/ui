@@ -7,7 +7,7 @@
 
 /* eslint-disable no-multi-assign */
 
-import { Rect2, Rotation, Vec2 } from '@app/core/utils';
+import { MathHelper, Rect2, Rotation, Vec2 } from '@app/core/utils';
 import { Constraint } from '@app/wireframes/interface';
 
 const EPSILON = 0.1;
@@ -53,7 +53,8 @@ export class Transform {
     constructor(position: Vec2, size: Vec2,
         public readonly rotation: Rotation,
     ) {
-        const hasRotation = Math.round(this.rotation.degree) > EPSILON;
+        // Normalize first, otherwise negative angles like -45 are treated as unrotated.
+        const hasRotation = Math.round(MathHelper.toPositiveDegree(this.rotation.degree)) % 360 > EPSILON;
 
         if (hasRotation) {
             this.size = size;
@@ -198,7 +199,7 @@ export class Transform {
 
             if (constraint?.calculateSizeY()) {
                 h = this.size.y;
-            } if (this.size.y === oldBounds.size.y) {
+            } else if (this.size.y === oldBounds.size.y) {
                 h = newBounds.size.y;
             } else {
                 h = Math.round(Math.max(0, this.size.y * ratioSize.y));
@@ -236,9 +237,11 @@ export class Transform {
         } else {
             const elementRot = this.rotation.sub(oldBounds.rotation);
 
-            // Simplified cosinus and sinus that choose one side of the shape.
-            const elementCos = elementRot.cos;
-            const elementSin = elementRot.sin;
+            // Simplified cosinus and sinus that choose one side of the shape. Only the
+            // magnitude matters here, because a shape that is rotated by 180 degrees is
+            // stretched along the same axis as an unrotated shape.
+            const elementCos = Math.abs(elementRot.cos);
+            const elementSin = Math.abs(elementRot.sin);
 
             const dx = ratioSize.x - 1;
             const dy = ratioSize.y - 1;
@@ -260,7 +263,7 @@ export class Transform {
             if (constraint?.calculateSizeY()) {
                 h = this.size.y;
             } else {
-                h = Math.max(0, this.size.y * ratioSize.y);
+                h = Math.max(0, this.size.y * rotatedRatio.y);
             }
 
             newSize = new Vec2(w, h);
@@ -289,8 +292,10 @@ export class Transform {
         const elementCos = Math.cos(this.rotation.radian);
         const elementSin = Math.sin(this.rotation.radian);
 
+        // Rotate the half delta into the coordination system of the shape, so that the
+        // unrotated top left corner stays where it is.
         const centerOffset = new Vec2(
-            Math.round(0.5 * ((ratioSize.x * elementCos) + (ratioSize.y * elementSin))),
+            Math.round(0.5 * ((ratioSize.x * elementCos) - (ratioSize.y * elementSin))),
             Math.round(0.5 * ((ratioSize.x * elementSin) + (ratioSize.y * elementCos))));
 
         return this.resizeTo(newSize).moveBy(centerOffset);

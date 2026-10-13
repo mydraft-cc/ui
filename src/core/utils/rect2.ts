@@ -88,10 +88,10 @@ export class Rect2 {
             return Rect2.EMPTY;
         }
 
-        let minX = Number.MAX_VALUE;
-        let minY = Number.MAX_VALUE;
-        let maxX = Number.MIN_VALUE;
-        let maxY = Number.MIN_VALUE;
+        let minX = Number.POSITIVE_INFINITY;
+        let minY = Number.POSITIVE_INFINITY;
+        let maxX = Number.NEGATIVE_INFINITY;
+        let maxY = Number.NEGATIVE_INFINITY;
 
         for (const v of vecs) {
             minX = Math.min(minX, v.x);
@@ -108,10 +108,10 @@ export class Rect2 {
             return Rect2.EMPTY;
         }
 
-        let minX = Number.MAX_VALUE;
-        let minY = Number.MAX_VALUE;
-        let maxX = Number.MIN_VALUE;
-        let maxY = Number.MIN_VALUE;
+        let minX = Number.POSITIVE_INFINITY;
+        let minY = Number.POSITIVE_INFINITY;
+        let maxX = Number.NEGATIVE_INFINITY;
+        let maxY = Number.NEGATIVE_INFINITY;
 
         for (const r of rects) {
             minX = Math.min(minX, r.left);
