@@ -8,7 +8,7 @@
 /* eslint-disable no-self-compare */
 /* eslint-disable @typescript-eslint/no-unnecessary-boolean-literal-compare */
 
-export module Types {
+export namespace Types {
     export function isString(value: any): value is string {
         return typeof value === 'string' || value instanceof String;
     }

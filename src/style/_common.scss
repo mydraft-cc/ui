@@ -1,5 +1,6 @@
-@import '@app/style/mixins';
-@import '@app/style/vars';
+@use "sass:color";
+@use '@app/style/mixins' as *;
+@use '@app/style/vars' as *;
 
 #root-layout {
     height: 100%;
@@ -17,7 +18,7 @@ body {
 }
 
 * {
-    @include scrollbars(8px, darken($color-border, 15%), transparent);
+    @include scrollbars(8px, color.adjust($color-border, $lightness: -15%), transparent);
 }
 
 .hidden {

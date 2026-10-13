@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { Meta } from '@storybook/react';
+import { Meta } from '@storybook/react-vite';
 import { DefaultAppearance } from '@app/wireframes/interface';
 import { ShapeRenderer } from './ShapeRenderer';
 import * as Shapes from './dependencies';

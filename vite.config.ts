@@ -21,6 +21,9 @@ export default defineConfig({
             [
                 VitePWA({
                     injectRegister: null,
+                    workbox: {
+                        maximumFileSizeToCacheInBytes: 3_000_000,
+                    }
                 }),
                 favicons('public/logo-square.svg', {
                     appName: 'mydraft',

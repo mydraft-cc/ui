@@ -28,7 +28,7 @@ export class Registration {
     }
 }
 
-export module PluginRegistry {
+export namespace PluginRegistry {
     const REGISTRATIONS: { [id: string]: Registration } = {};
 
     export function all() {

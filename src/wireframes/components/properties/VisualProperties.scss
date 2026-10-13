@@ -1,5 +1,5 @@
-@import '@app/style/mixins';
-@import '@app/style/vars';
+@use '@app/style/mixins' as *;
+@use '@app/style/vars' as *;
 
 .text-alignment {
     button {

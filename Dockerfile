@@ -1,4 +1,4 @@
-FROM buildkite/puppeteer:5.2.1
+FROM node:22-alpine
 
 WORKDIR /src
 
@@ -19,3 +19,8 @@ RUN npm run test:ci
 # Build Frontend
 RUN npm run build
 
+# Expose the default vite port.
+EXPOSE 5173
+
+# Automatically start the server.
+ENTRYPOINT ["npm", "start"]
