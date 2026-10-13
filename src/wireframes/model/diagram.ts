@@ -61,6 +61,12 @@ export type InitialDiagramProps = {
 };
 
 export class Diagram extends Record<Props> {
+    public static readonly TYPE_NAME = 'Diagram';
+
+    public get __typeName() {
+        return Diagram.TYPE_NAME;
+    }
+
     private cachedParents?: { [id: string]: DiagramItem };
     private cachedRootItems?: DiagramItem[];
 

@@ -21,7 +21,7 @@ export const Pages = () => {
     const diagramId = useStore(getDiagramId);
     const diagrams = useStore(getFilteredDiagrams);
     const diagramsFilter = useStore(getDiagramsFilter);
-    const diagramsOrdered = useStore(x => x.editor.present.orderedDiagrams);
+    const diagramsOrdered = useStore(x => x.editor.orderedDiagrams);
 
     const doAddDiagram = useEventCallback(() => {
         dispatch(addDiagram());

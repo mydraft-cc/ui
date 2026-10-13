@@ -9,7 +9,7 @@ import { createAction, createAsyncThunk, createReducer, Middleware } from '@redu
 import { saveAs } from 'file-saver';
 import { AnyAction, Reducer } from 'redux';
 import { texts } from '@app/texts';
-import { EditorState, EditorStateInStore, LoadingState, LoadingStateInStore, saveRecentDiagrams, Serializer, UndoableState } from './../internal';
+import { EditorState, EditorStateInStore, LoadingState, LoadingStateInStore, saveRecentDiagrams, Serializer } from './../internal';
 import { getDiagram, postDiagram, putDiagram } from './api';
 import { addDiagram, selectDiagram } from './diagrams';
 import { selectItems } from './items';
@@ -17,8 +17,8 @@ import { migrateOldAction } from './obsolete';
 import { showToast } from './ui';
 
 export const newDiagram =
-    createAction('diagram/new', (navigate: boolean) => {
-        return { payload: { navigate } };
+    createAction('diagram/new', (navigate: boolean, id?: string) => {
+        return { payload: { navigate, id } };
     });
 
 export const loadDiagramFromFile =
@@ -149,60 +149,53 @@ export function loading(initialState: LoadingState) {
         }));
 }
 
-export function rootLoading(undoableReducer: Reducer<UndoableState<EditorState>>, editorReducer: Reducer<EditorState>): Reducer<any> {
+export function rootLoading(editorReducer: Reducer<EditorState>): Reducer<any> {
     return (state: any, action: any) => {
         if (newDiagram.match(action)) {
-            const initialAction = addDiagram();
-            const initialState = editorReducer(EditorState.create(), initialAction);
-
-            state = UndoableState.create(initialState, initialAction);
+            state = editorReducer(EditorState.create({ id: action.payload.id }), addDiagram());
         } else if (loadDiagramInternal.match(action)) {
             const stored = action.payload.stored;
 
-            let initialState: EditorState;
+            let editor: EditorState;
 
             if (stored.initial) {
-                initialState = Serializer.deserializeEditor(stored.initial);
+                editor = Serializer.deserializeEditor(stored.initial);
             } else {
-                initialState = EditorState.create();
+                editor = EditorState.create();
             }
 
-            const actions: AnyAction[] = stored.actions || stored;
+            // Older versions have stored the actions and the initial state.
+            const actions: AnyAction[] = stored.actions || (Array.isArray(stored) ? stored : []);
 
-            let firstAction = actions[0];
-
-            if (!firstAction) {
-                firstAction = addDiagram();
+            if (!stored.initial && actions.length === 0) {
+                editor = editorReducer(editor, addDiagram());
             }
 
-            let editor = UndoableState.create(editorReducer(initialState, firstAction), firstAction);
-
-            for (const loadedAction of actions.slice(1).filter(handleAction)) {
-                editor = undoableReducer(editor, migrateOldAction(loadedAction));
+            for (const loadedAction of actions.filter(handleAction)) {
+                editor = editorReducer(editor, migrateOldAction(loadedAction));
             }
 
-            const selectedDiagram = editor.present.diagrams.get(editor.present.selectedDiagramId!);
+            const selectedDiagram = editor.diagrams.get(editor.selectedDiagramId!);
 
             if (!selectedDiagram) {
-                const firstDiagram = editor.present.orderedDiagrams[0];
+                const firstDiagram = editor.orderedDiagrams[0];
 
                 if (firstDiagram) {
-                    editor = undoableReducer(editor, selectDiagram(firstDiagram));
+                    editor = editorReducer(editor, selectDiagram(firstDiagram));
                 }
             }
 
             state = editor;
         }
 
-        return undoableReducer(state, action);
+        return editorReducer(state, action);
     };
 }
 
 function getSaveState(state: EditorStateInStore) {
-    const initial = Serializer.serializeEditor(state.editor.firstState);
-    const actions = state.editor.actions.slice(1).filter(handleAction);
+    const initial = Serializer.serializeEditor(state.editor);
 
-    return { initial, actions };
+    return { initial, actions: [] };
 }
 
 function handleAction(action: AnyAction) {

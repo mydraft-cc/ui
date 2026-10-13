@@ -19,4 +19,3 @@ export * from './serializer';
 export * from './snap-manager';
 export * from './transform';
 export * from './ui-state';
-export * from './undoable-state';
