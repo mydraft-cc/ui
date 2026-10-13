@@ -314,7 +314,7 @@ export class DiagramItem extends Record<Props> implements Shape {
 
             return this.set('rotation', rotation);
         } else {
-            const transform = this.transform.transformByBounds(oldBounds, newBounds, undefined);
+            const transform = this.transform.transformByBounds(oldBounds, newBounds, this.constraint);
 
             return this.set('transform', transform);
         }
