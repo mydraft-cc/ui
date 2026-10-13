@@ -52,7 +52,7 @@
     "tslib": "2.6.2",
     "y-protocols": "^1.0.7",
     "yjs": "^13.6.33",
-    "yjs-redux": "file:../yjs-redux/yjs-redux-0.16.0.tgz"
+    "yjs-redux": "file:vendor/yjs-redux-0.16.0.tgz"
   },
   "devDependencies": {
     "@peterek/vite-plugin-favicons": "^2.1.0",

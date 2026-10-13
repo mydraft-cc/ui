@@ -4,6 +4,9 @@ WORKDIR /src
 
 COPY package*.json /src/
 
+# Vendored packages that are referenced from package.json
+COPY vendor /src/vendor/
+
 # Install Node packages 
 RUN npm install --loglevel=error
 
