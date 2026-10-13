@@ -47,6 +47,24 @@ describe('ImmutableList', () => {
         expect(list_1.indexOf(3)).toEqual(2);        
     });
 
+    it('should set value at index', () => {
+        const list_1 = ImmutableList.of([1, 2, 3]);
+        const list_2 = list_1.set(1, 5);
+
+        expect(list_2.values).toEqual([1, 5, 3]);
+        expect(list_2.set(1, 0).values).toEqual([1, 0, 3]);
+        expect(list_2.__instanceId).toBe(list_1.__instanceId);
+    });
+
+    it('should return original list when index is out of range or value is unchanged', () => {
+        const list_1 = ImmutableList.of([1, 2, 3]);
+
+        expect(list_1.set(-1, 4)).toBe(list_1);
+        expect(list_1.set(3, 4)).toBe(list_1);
+        expect(list_1.set(1, 2)).toBe(list_1);
+        expect(list_1.set(1, null!)).toBe(list_1);
+    });
+
     it('should add values', () => {
         const list_1 = ImmutableList.empty<number>();
         const list_2 = list_1.add(1);

@@ -91,7 +91,7 @@ export class ImmutableList<T> {
     }
 
     public set(index: number, item: T) {
-        if (item || index < 0 || index >= this.items.length || Types.equals(this.items[index], item)) {
+        if (item === undefined || item === null || index < 0 || index >= this.items.length || Types.equals(this.items[index], item)) {
             return this;
         }
 
