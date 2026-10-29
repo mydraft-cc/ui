@@ -42,11 +42,10 @@ export const ShapeRenderer = React.memo(React.forwardRef<HTMLDivElement, ShapeRe
     } = props;
 
     const [engine, setEngine] = React.useState<SvgEngine>();
-    const viewBox = getViewBox(plugin, 
-        desiredWidth,
-        desiredHeight,
-        usePreviewSize,
-        usePreviewOffset);
+    // Recreating the view box would recreate the shape and render it again on every render.
+    const viewBox = React.useMemo(() => {
+        return getViewBox(plugin, desiredWidth, desiredHeight, usePreviewSize, usePreviewOffset);
+    }, [desiredHeight, desiredWidth, plugin, usePreviewOffset, usePreviewSize]);
 
     React.useEffect(() => {
         if (!engine) {

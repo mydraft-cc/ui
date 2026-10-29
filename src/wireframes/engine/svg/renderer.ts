@@ -401,10 +401,7 @@ class PropertiesSetter implements ShapeProperties {
     private properties!: Properties;
 
     public prepare(defaults: Partial<Properties>) {
-        const newProperties = { ...DEFAULT_PROPERTIES };
-        Object.assign(newProperties, defaults);
-        
-        this.properties = newProperties;
+        this.properties = { ...DEFAULT_PROPERTIES, ...defaults };
     }
 
     public apply(element: svg.Element) {

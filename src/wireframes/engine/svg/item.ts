@@ -8,7 +8,7 @@
 import * as svg from '@svgdotjs/svg.js';
 import { Rect2 } from '@app/core';
 import { ShapePlugin } from '@app/wireframes/interface';
-import { DiagramItem } from '@app/wireframes/model';
+import { DiagramItem, Transform } from '@app/wireframes/model';
 import { EngineItem } from './../interface';
 import { SvgObject } from './object';
 import { SvgRenderer } from './renderer';
@@ -19,6 +19,8 @@ export class SvgItem extends SvgObject implements EngineItem {
     private readonly selector: svg.Rect;
     private currentShape: DiagramItem | null = null;
     private currentRect: Rect2 | null = null;
+    private currentTransform: Transform | null = null;
+    private currentOpacity: number | undefined = undefined;
     private isRendered = false;
 
     protected get root() {
@@ -93,17 +95,25 @@ export class SvgItem extends SvgObject implements EngineItem {
     private arrangeContainer(item: DiagramItem) {
         const to = item.transform;
 
-        SvgHelper.transformBy(this.group, {
-            x: to.position.x - 0.5 * to.size.x,
-            y: to.position.y - 0.5 * to.size.y,
-            w: to.size.x,
-            h: to.size.y,
-            rx: to.position.x,
-            ry: to.position.y,
-            rotation: to.rotation.degree,
-        });
+        // Writing the attributes is expensive, even when the values have not changed.
+        if (!this.currentTransform?.equals(to)) {
+            SvgHelper.transformBy(this.group, {
+                x: to.position.x - 0.5 * to.size.x,
+                y: to.position.y - 0.5 * to.size.y,
+                w: to.size.x,
+                h: to.size.y,
+                rx: to.position.x,
+                ry: to.position.y,
+                rotation: to.rotation.degree,
+            });
 
-        this.group.opacity(item.opacity);
+            this.currentTransform = to;
+        }
+
+        if (this.currentOpacity !== item.opacity) {
+            this.group.opacity(item.opacity);
+            this.currentOpacity = item.opacity;
+        }
     }
 
     private arrangeSelector(localRect: Rect2) {

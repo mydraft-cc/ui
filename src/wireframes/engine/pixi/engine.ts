@@ -28,8 +28,7 @@ export class PixiEngine implements Engine {
             return;
         }
 
-        // Keep rendering for a while, because text and images are rendered asynchronously.
-        this.renderUntil = performance.now() + RENDER_SETTLE_TIME_MS;
+        this.isRenderRequested = true;
 
         if (!ticker.started) {
             ticker.start();
@@ -42,6 +41,7 @@ export class PixiEngine implements Engine {
     private readonly boundary: EventBoundary;
     private zoomTimer: any;
     private renderUntil = 0;
+    private isRenderRequested = false;
     private isDragging = false;
 
     constructor(
@@ -57,6 +57,13 @@ export class PixiEngine implements Engine {
 
         // Text that was rendered with a fallback font must be rendered again.
         document.fonts?.addEventListener('loadingdone', this.requestRender, { signal: this.listeners.signal });
+
+        // Hidden pages get no frames, so asynchronous text and images might have been missed in the meantime.
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden) {
+                this.requestRender();
+            }
+        }, { signal: this.listeners.signal });
 
         this.boundary = new EventBoundary(application.stage);
 
@@ -105,8 +112,15 @@ export class PixiEngine implements Engine {
 
     private renderFrame = () => {
         const application = this.application;
+        const now = performance.now();
 
-        if (performance.now() > this.renderUntil) {
+        // Start the time window with the first frame, because frames can be delayed, e.g. for hidden pages.
+        if (this.isRenderRequested) {
+            this.isRenderRequested = false;
+
+            // Keep rendering for a while, because text and images are rendered asynchronously.
+            this.renderUntil = now + RENDER_SETTLE_TIME_MS;
+        } else if (now > this.renderUntil) {
             application.ticker.stop();
             return;
         }

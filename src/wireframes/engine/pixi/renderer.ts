@@ -337,11 +337,7 @@ export class PixiRenderer implements ShapeRenderer {
         const setter = this.setter;
 
         // Create new properties to ensure to unset properties that are not set anymore.
-        const properties: Properties = {
-            opacity: 1,
-        };
-
-        Object.assign(properties, initialProperties);
+        const properties: Properties = { opacity: 1, ...initialProperties };
         setter.setProperties(properties);
 
         if (customProperties) {
