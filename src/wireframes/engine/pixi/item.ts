@@ -47,8 +47,12 @@ export class PixiItem extends PixiObject implements EngineItem {
         layer.addChild(this.container);
     }
 
-    public detach() {
-        this.remove();
+    public moveBefore(next: PixiItem | null) {
+        // Remove first, so that the index of the next item is not shifted when the item is placed before it.
+        this.container.removeFromParent();
+
+        const index = next ? this.layer.getChildIndex(next.container) : this.layer.children.length;
+        this.layer.addChildAt(this.container, index);
     }
 
     public plot(shape: DiagramItem) {

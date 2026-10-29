@@ -161,8 +161,8 @@ export interface EngineObject {
 }
 
 export interface EngineItem extends EngineObject {
-    // Removes the element from the parent.
-    detach(): void;
+    // Moves the item before the given item or to the end of the layer.
+    moveBefore(next: EngineItem | null): void;
 
     // Renders the item.
     plot(item: DiagramItem | null): void;

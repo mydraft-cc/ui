@@ -42,8 +42,8 @@ export class SvgItem extends SvgObject implements EngineItem {
         linkToSvg(this, this.group);
     }
 
-    public detach() {
-        this.remove();
+    public moveBefore(next: SvgItem | null) {
+        this.layer.node.insertBefore(this.group.node, next?.group.node ?? null);
     }
 
     public plot(shape: DiagramItem) {
