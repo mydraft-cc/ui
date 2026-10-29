@@ -41,6 +41,9 @@ export interface Engine {
     // Unsubscribe from all events.
     unsubscribe(listener: Listener): void;
 
+    // Removes the global event listeners.
+    destroy(): void;
+
     // Adjust to zoom.
     adjustToZoom?(zoom: number): void;
 }

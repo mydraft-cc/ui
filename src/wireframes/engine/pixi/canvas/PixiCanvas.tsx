@@ -73,6 +73,12 @@ const PixiCanvasViewComponent = (props: CanvasProps<PixiEngine> & { background?:
     }, [background]);
 
     React.useEffect(() => {
+        return () => {
+            pixiEngine?.destroy();
+        };
+    }, [pixiEngine]);
+
+    React.useEffect(() => {
         if (!pixiEngine || !onInit) {
             return;
         }

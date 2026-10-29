@@ -19,6 +19,8 @@ import { getSource } from './utils';
 export class PixiEngine implements Engine {
     private readonly pipeline = new InteractionPipeline();
     private readonly renderer = new PixiRenderer();
+    private readonly listeners = new AbortController();
+    private readonly boundary: EventBoundary;
     private zoomTimer: any;
     private isDragging = false;
 
@@ -37,11 +39,13 @@ export class PixiEngine implements Engine {
             }
         });
 
+        this.boundary = new EventBoundary(application.stage);
+
         application.canvas.addEventListener('mousemove', event => {
             const hitEvent = this.buildHitEvent(event);
 
             this.handleMouseMove(hitEvent);
-            this.pipeline.emitMouseMove(this.buildHitEvent(event));
+            this.pipeline.emitMouseMove(hitEvent);
         });
 
         application.canvas.addEventListener('mousedown', event => {
@@ -51,29 +55,33 @@ export class PixiEngine implements Engine {
 
         window.addEventListener('blur', (event: FocusEvent) => {
             this.pipeline.emitBlur(event);
-        });
+        }, { signal: this.listeners.signal });
 
         window.document.addEventListener('keyup', (event: KeyboardEvent) => {
             this.pipeline.emitKeyUp(event);
-        });
+        }, { signal: this.listeners.signal });
 
         window.document.addEventListener('keydown', (event: KeyboardEvent) => {
             this.pipeline.emitKeyDown(event);
-        });
+        }, { signal: this.listeners.signal });
 
         window.document.addEventListener('mousemove', (event: MouseEvent) => {
             if (this.isDragging) {
                 this.isDragging = true;
                 this.pipeline.emitMouseDrag(this.buildMouseEvent(event));
             }
-        });
+        }, { signal: this.listeners.signal });
 
         window.document.addEventListener('mouseup', (event: MouseEvent) => {
             if (this.isDragging) {
                 this.isDragging = false;
                 this.pipeline.emitMouseUp(this.buildMouseEvent(event));
             }
-        });
+        }, { signal: this.listeners.signal });
+    }
+
+    public destroy() {
+        this.listeners.abort();
     }
 
     public layer(label: string): EngineLayer {
@@ -134,10 +142,8 @@ export class PixiEngine implements Engine {
     };
 
     private buildHitEvent = (event: MouseEvent): EngineHitEvent => {
-        const boundary = new EventBoundary(this.application.stage);
-
         const { x, y } = this.getPosition(event);
-        const hit = boundary.hitTest(event.offsetX, event.offsetY);
+        const hit = this.boundary.hitTest(event.offsetX, event.offsetY);
         
         let currentTarget: Container = hit;
         let eventObject: EngineObject | null = null;

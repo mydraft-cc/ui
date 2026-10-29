@@ -19,6 +19,7 @@ import { getElement, getSource } from './utils';
 export class SvgEngine implements Engine {
     private readonly pipeline = new InteractionPipeline();
     private readonly svgRenderer = new SvgRenderer();
+    private readonly listeners = new AbortController();
     private isDragging = false;
 
     constructor(
@@ -36,31 +37,35 @@ export class SvgEngine implements Engine {
 
         window.addEventListener('blur', (event: FocusEvent) => {
             this.pipeline.emitBlur(event);
-        });
+        }, { signal: this.listeners.signal });
 
         window.document.addEventListener('keyup', (event: KeyboardEvent) => {
             this.pipeline.emitKeyUp(event);
-        });
+        }, { signal: this.listeners.signal });
 
         window.document.addEventListener('keydown', (event: KeyboardEvent) => {
             this.pipeline.emitKeyDown(event);
-        });
+        }, { signal: this.listeners.signal });
 
         window.document.addEventListener('mousemove', (event: MouseEvent) => {
             if (this.isDragging) {
                 this.isDragging = true;
                 this.pipeline.emitMouseDrag(this.buildMouseEvent(event));
             }
-        });
+        }, { signal: this.listeners.signal });
 
         window.document.addEventListener('mouseup', (event: MouseEvent) => {
             if (this.isDragging) {
                 this.isDragging = false;
                 this.pipeline.emitMouseUp(this.buildMouseEvent(event));
             }
-        });
+        }, { signal: this.listeners.signal });
     }
-    
+
+    public destroy() {
+        this.listeners.abort();
+    }
+
     private handleMouseDown() {
         this.isDragging = true;
     }

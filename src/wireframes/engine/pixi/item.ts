@@ -128,7 +128,8 @@ export class PixiItem extends PixiObject implements EngineItem {
             selectionRect = selectionRect.inflate(diffW * 0.5, diffH * 0.5);
         }
 
-        this.selector.rect(0, 0, selectionRect.w, selectionRect.y).fill('#fff');
+        this.selector.clear();
+        this.selector.rect(selectionRect.x, selectionRect.y, selectionRect.w, selectionRect.h).fill('#fff');
         this.selector.alpha = 0.00001;
     }
 

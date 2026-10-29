@@ -31,6 +31,12 @@ export const SvgCanvasView = (props: CanvasProps<SvgEngine>) => {
     }, []);
 
     React.useEffect(() => {
+        return () => {
+            engine?.destroy();
+        };
+    }, [engine]);
+
+    React.useEffect(() => {
         if (engine && onInit) {
             onInit(engine);
         }

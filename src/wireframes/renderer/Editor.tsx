@@ -98,6 +98,7 @@ export const Editor = React.memo((props: EditorProps) => {
     const renderPreview = React.useRef(new Subscription<PreviewEvent>());
     const overlayContext = useOverlayContext();
     const masterDiagrams = React.useMemo(() => diagram.masterDiagrams(diagrams), [diagram, diagrams]);
+    const mainDiagrams = React.useMemo(() => [diagram], [diagram]);
     
     const doInit = React.useCallback((engine: Engine) => {
         // Might be called multiple times in dev mode!
@@ -184,7 +185,7 @@ export const Editor = React.memo((props: EditorProps) => {
                     />
 
                     <ItemsLayer
-                        diagrams={[diagram]}
+                        diagrams={mainDiagrams}
                         diagramLayer={layers.renderMainLayer}
                         preview={renderPreview.current}
                         onRender={onRender}

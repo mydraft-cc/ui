@@ -492,7 +492,7 @@ class PropertiesSetter implements ShapeProperties {
                  
             const text = element.getChildAt(1) as HTMLText;
             text.style = { ...value };
-            setValue(text, 'size', null);
+            setValue(element, 'size', null);
         },
         textAlign: (value, element) => {
             if (!value || !Types.is(element, Container)) {
