@@ -160,7 +160,8 @@ export class PixiEngine implements Engine {
                 }
         
                 for (const element of container.children) {
-                    if (Types.is(element, HTMLText)) {
+                    // Changing the resolution renders the text again, even when it is the same value.
+                    if (Types.is(element, HTMLText) && element.resolution !== resolution) {
                         element.resolution = resolution;
                     }
 
@@ -174,12 +175,20 @@ export class PixiEngine implements Engine {
     }
 
     public setClickLayer(layer: PixiLayer): void {
-        layer.container.on('click', event => {
-            this.pipeline.emitClick(() => this.buildHitEvent(event));
+        // Only hit the click layer, because unlike SVG, Pixi also hits unfilled adorners on top, like the move rectangle.
+        const boundary = new EventBoundary(layer.container);
+
+        this.application.canvas.addEventListener('click', event => {
+            if (boundary.hitTest(event.offsetX, event.offsetY)) {
+                this.pipeline.emitClick(() => this.buildHitEvent(event, boundary));
+            }
         });
 
-        layer.container.on('doubleclick', event => {
-            this.pipeline.emitDoubleClick(() => this.buildHitEvent(event));
+        // Pixi has no double click event.
+        this.application.canvas.addEventListener('dblclick', event => {
+            if (boundary.hitTest(event.offsetX, event.offsetY)) {
+                this.pipeline.emitDoubleClick(() => this.buildHitEvent(event, boundary));
+            }
         });
     }
 
@@ -194,9 +203,9 @@ export class PixiEngine implements Engine {
         return engineEvent;
     };
 
-    private buildHitEvent = (event: MouseEvent): EngineHitEvent => {
+    private buildHitEvent = (event: MouseEvent, boundary = this.boundary): EngineHitEvent => {
         const { x, y } = this.getPosition(event);
-        const hit = this.boundary.hitTest(event.offsetX, event.offsetY);
+        const hit = boundary.hitTest(event.offsetX, event.offsetY);
         
         let currentTarget: Container = hit;
         let eventObject: EngineObject | null = null;
