@@ -16,12 +16,32 @@ import { PixiLayer } from './layer';
 import { PixiRenderer } from './renderer';
 import { getSource } from './utils';
 
+const RENDER_SETTLE_TIME_MS = 1000;
+
 export class PixiEngine implements Engine {
+    // Declared before the renderer, because it is passed to it.
+    public readonly requestRender = () => {
+        const ticker = this.application.ticker;
+
+        // The ticker is gone when the application has already been destroyed.
+        if (!ticker) {
+            return;
+        }
+
+        // Keep rendering for a while, because text and images are rendered asynchronously.
+        this.renderUntil = performance.now() + RENDER_SETTLE_TIME_MS;
+
+        if (!ticker.started) {
+            ticker.start();
+        }
+    };
+
     private readonly pipeline = new InteractionPipeline();
-    private readonly renderer = new PixiRenderer();
+    private readonly renderer = new PixiRenderer(this.requestRender);
     private readonly listeners = new AbortController();
     private readonly boundary: EventBoundary;
     private zoomTimer: any;
+    private renderUntil = 0;
     private isDragging = false;
 
     constructor(
@@ -29,15 +49,14 @@ export class PixiEngine implements Engine {
     ) {
         application.stage.eventMode = 'static';
 
-        application.ticker.add(() => {
-            for (const child of application.stage.children) {
-                const source = getSource(child);
+        // Replace the default loop, which renders every frame, even when nothing has changed.
+        application.ticker.remove(application.render, application);
+        application.ticker.add(this.renderFrame);
 
-                if (Types.is(source, PixiLayer)) {
-                    source.invalidate();
-                }
-            }
-        });
+        this.requestRender();
+
+        // Text that was rendered with a fallback font must be rendered again.
+        document.fonts?.addEventListener('loadingdone', this.requestRender, { signal: this.listeners.signal });
 
         this.boundary = new EventBoundary(application.stage);
 
@@ -84,8 +103,27 @@ export class PixiEngine implements Engine {
         this.listeners.abort();
     }
 
+    private renderFrame = () => {
+        const application = this.application;
+
+        if (performance.now() > this.renderUntil) {
+            application.ticker.stop();
+            return;
+        }
+
+        for (const child of application.stage.children) {
+            const source = getSource(child);
+
+            if (Types.is(source, PixiLayer)) {
+                source.invalidate();
+            }
+        }
+
+        application.render();
+    };
+
     public layer(label: string): EngineLayer {
-        return new PixiLayer(this.application, this.renderer, label);  
+        return new PixiLayer(this.application, this.renderer, this.requestRender, label);
     }
 
     public subscribe(listener: Listener) {
@@ -117,6 +155,7 @@ export class PixiEngine implements Engine {
             }
 
             setZoom(this.application.stage);
+            this.requestRender();
         }, 500);
     }
 

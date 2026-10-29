@@ -13,7 +13,7 @@ import { DiagramItem } from '@app/wireframes/model';
 import { EngineItem } from './../interface';
 import { PixiObject } from './object';
 import { PixiRenderer } from './renderer';
-import { linkToPixi } from './utils';
+import { linkToPixi, RequestRender } from './utils';
 
 export class PixiItem extends PixiObject implements EngineItem {
     private readonly container: Container;
@@ -34,8 +34,9 @@ export class PixiItem extends PixiObject implements EngineItem {
         public readonly layer: Container,
         public readonly renderer: PixiRenderer,
         public readonly plugin: ShapePlugin,
+        requestRender: RequestRender,
     ) {
-        super();
+        super(requestRender);
 
         this.selector = new Graphics();
 
@@ -53,6 +54,8 @@ export class PixiItem extends PixiObject implements EngineItem {
 
         const index = next ? this.layer.getChildIndex(next.container) : this.layer.children.length;
         this.layer.addChildAt(this.container, index);
+
+        this.requestRender();
     }
 
     public plot(shape: DiagramItem) {
@@ -65,6 +68,8 @@ export class PixiItem extends PixiObject implements EngineItem {
 
         this.addToLayer();
         this.currentShape = shape;
+
+        this.requestRender();
     }
 
     private addToLayer() {

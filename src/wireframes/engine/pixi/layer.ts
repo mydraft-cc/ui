@@ -14,7 +14,7 @@ import { PixiLine } from './line';
 import { PixiRect as PixiRectOrEllipse } from './rect-or-ellipse';
 import { PixiRenderer } from './renderer';
 import { PixiText } from './text';
-import { getSource, linkToPixi } from './utils';
+import { getSource, linkToPixi, RequestRender } from './utils';
 
 export class PixiLayer implements EngineLayer {
     public readonly container = new Container();
@@ -22,6 +22,7 @@ export class PixiLayer implements EngineLayer {
     constructor(
         private readonly application: Application,
         private readonly renderer: PixiRenderer,
+        private readonly requestRender: RequestRender,
         public readonly name: string,
     ) {
         this.container.eventMode = 'auto';
@@ -31,31 +32,33 @@ export class PixiLayer implements EngineLayer {
     }
 
     public rect(): EngineRect {
-        return new PixiRectOrEllipse(this.container, true);
+        return new PixiRectOrEllipse(this.container, this.requestRender, true);
     }
 
     public ellipse(): EngineRect {
-        return new PixiRectOrEllipse(this.container, false);
+        return new PixiRectOrEllipse(this.container, this.requestRender, false);
     }
 
     public line(): EngineLine {
-        return new PixiLine(this.container);
+        return new PixiLine(this.container, this.requestRender);
     }
 
     public text(): EngineText {
-        return new PixiText(this.container);
+        return new PixiText(this.container, this.requestRender);
     }
 
     public item(plugin: ShapePlugin): EngineItem { 
-        return new PixiItem(this.container, this.renderer, plugin);
+        return new PixiItem(this.container, this.renderer, plugin, this.requestRender);
     }
 
     public show() {
         this.container.visible = true;
+        this.requestRender();
     }
 
     public hide() {
         this.container.visible = false;
+        this.requestRender();
     }
 
     public disable() {
@@ -64,6 +67,7 @@ export class PixiLayer implements EngineLayer {
 
     public remove() {
         this.container.removeFromParent();
+        this.requestRender();
     }
 
     public hitTest(x: number, y: number): EngineObject[] {

@@ -12,7 +12,7 @@ import { Assets, Container, ContainerChild, Graphics, GraphicsPath, HTMLText, Sp
 import { Rect2, TextMeasurer, Types } from '@app/core/utils';
 import { RendererColor, RendererOpacity, RendererText, RendererWidth, Shape, ShapeProperties, ShapePropertiesFunc, ShapeRenderer, ShapeRendererFunc, TextConfig, TextDecoration } from '@app/wireframes/interface';
 import { getBackgroundColor, getFontFamily, getFontSize, getForegroundColor, getOpacity, getStrokeColor, getStrokeWidth, getText, getTextAlignment, getValue, setValue } from './../shared';
-import { PixiHelper } from './utils';
+import { PixiHelper, RequestRender } from './utils';
 
 type GraphicsType =
     'Ellipse' | 
@@ -133,10 +133,15 @@ const FACTORY_TEXT = (_: Properties, existing?: Container) => {
 };
 
 export class PixiRenderer implements ShapeRenderer {
+    private readonly setter: PropertiesSetter;
     private currentContainer: Container = null!;
     private currentIndex = 0;
     private clipping = false;
     private wasClipped = false;
+
+    constructor(requestRender: RequestRender) {
+        this.setter = new PropertiesSetter(requestRender);
+    }
 
     public getContainer() {
         return this.currentContainer;
@@ -329,7 +334,7 @@ export class PixiRenderer implements ShapeRenderer {
             throw new Error('Only one clipping element is supported.');
         }
 
-        const setter = PropertiesSetter.INSTANCE;
+        const setter = this.setter;
 
         // Create new properties to ensure to unset properties that are not set anymore.
         const properties: Properties = {
@@ -392,7 +397,7 @@ export class PixiRenderer implements ShapeRenderer {
 }
 
 type Setters<T, E> = {
-    [P in keyof T]?: (value: T[P], element: E) => void;
+    [P in keyof T]?: (value: T[P], element: E, requestRender: RequestRender) => void;
 };
 
 class PropertiesSetter implements ShapeProperties {
@@ -432,7 +437,7 @@ class PropertiesSetter implements ShapeProperties {
         opacity: (value, element) => {
             element.alpha = value;
         },
-        sprite: async (value, element) => {
+        sprite: async (value, element, requestRender) => {
             if (!value || !Types.is(element, Sprite)) {
                 return;
             }
@@ -466,6 +471,8 @@ class PropertiesSetter implements ShapeProperties {
             element.texture = texture;
             setValue(element, 'spriteSource', source);
             alignSprite(element, latest);
+
+            requestRender();
         },
         textContent: (value, element) => {
             if (!value || !Types.is(element, Container)) {
@@ -540,7 +547,11 @@ class PropertiesSetter implements ShapeProperties {
     } as Setters<Properties, ContainerChild>);
 
     private properties: Properties = null!;
-    public static readonly INSTANCE = new PropertiesSetter();
+
+    constructor(
+        private readonly requestRender: RequestRender,
+    ) {
+    }
 
     public apply(element: ContainerChild) {
         const oldProperties = getValue(element, 'properties', () => ({} as Record<string, any>));
@@ -550,7 +561,7 @@ class PropertiesSetter implements ShapeProperties {
             const value = properties[property];
 
             if (!Types.equals(value, oldProperties[property])) {
-                setter(value as never, element);
+                setter(value as never, element, this.requestRender);
             }
         }
 
