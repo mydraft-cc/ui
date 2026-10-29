@@ -9,11 +9,13 @@ import { applyMiddleware, combineReducers, legacy_createStore as createStore, St
 import * as Y from 'yjs';
 import { createYjsReduxBinder } from 'yjs-redux';
 import { Vec2 } from '@app/core/utils';
-import { addDiagram, addShape, buildAlignment, buildAppearance, buildDiagrams, buildGrouping, buildItems, buildOrdering, changeItemsAppearance, createClassReducer, EditorState, PluginRegistry, removeItems, renameItems, rootLoading, selectItems, Transform, transformItems } from '@app/wireframes/model';
+import { addDiagram, addShape, buildAlignment, buildAppearance, buildDiagrams, buildGrouping, buildItems, buildOrdering, changeItemsAppearance, createClassReducer, EditorState, PluginRegistry, removeItems, renameItems, restoreDiagram, rootLoading, selectItems, Transform, transformItems } from '@app/wireframes/model';
 import { Button } from '@app/wireframes/shapes/neutral/button';
-import { EDITOR_SLICE } from './binder';
+import { EDITOR_SLICE, hasEditorState } from './binder';
 import { createSyncOptions } from './resolvers';
 import { UndoManager } from './undo-manager';
+import { user } from './user';
+import { addVersion, getVersions, readVersion } from './versions';
 
 type Client = { store: Store<{ editor: EditorState }>; document: Y.Doc; undoManager: UndoManager };
 
@@ -171,6 +173,37 @@ describe('Collaboration', () => {
         a.undoManager.redo();
 
         expect(shapeOf(b, 's1')).toBeDefined();
+    });
+
+    it('should not detect editor state in an empty room', () => {
+        const [a] = createPair();
+        const empty = new Y.Doc();
+
+        expect(hasEditorState(empty)).toBeFalsy();
+        expect(empty.share.has(EDITOR_SLICE)).toBeFalsy();
+
+        Y.applyUpdate(empty, Y.encodeStateAsUpdate(a.document));
+
+        expect(hasEditorState(empty)).toBeTruthy();
+    });
+
+    it('should restore a version for all clients and keep the room', () => {
+        const [a, b] = createPair();
+        const room = a.store.getState().editor.id;
+
+        a.store.dispatch(addShape('d1', 'Button', {}, 's1'));
+
+        const version = addVersion(a.document, 'v1', a.store.getState().editor, user);
+
+        b.store.dispatch(removeItems('d1', ['s1']));
+        b.store.dispatch(restoreDiagram(readVersion(getVersions(b.document)[0])));
+
+        expect(version.name).toEqual('v1');
+
+        for (const client of [a, b]) {
+            expect(client.store.getState().editor.id).toEqual(room);
+            expect(shapeOf(client, 's1')).toBeDefined();
+        }
     });
 
     it('should not undo selection changes', () => {

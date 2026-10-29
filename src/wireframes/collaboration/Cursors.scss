@@ -1,0 +1,29 @@
+@use '@app/style/mixins' as *;
+@use '@app/style/vars' as *;
+
+.cursors {
+    @include absolute(0, 0, 0, 0);
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.cursor {
+    position: absolute;
+    transition: left .05s linear, top .05s linear;
+
+    &-pointer {
+        display: block;
+    }
+
+    &-label {
+        border-radius: 4px;
+        color: $color-white;
+        font-size: .7rem;
+        font-weight: 600;
+        left: 12px;
+        padding: 0 4px;
+        position: absolute;
+        top: 14px;
+        white-space: nowrap;
+    }
+}

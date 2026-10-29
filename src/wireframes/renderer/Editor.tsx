@@ -9,6 +9,7 @@
 
 import * as React from 'react';
 import { Color, ImmutableMap, Subscription, Vec2, ViewBox } from '@app/core';
+import { Cursors } from '@app/wireframes/collaboration/Cursors';
 import { Engine, EngineLayer, EngineRect } from '@app/wireframes/engine';
 import { PixiCanvasView } from '@app/wireframes/engine/pixi/canvas/PixiCanvas';
 import { SvgCanvasView } from '@app/wireframes/engine/svg/canvas/SvgCanvas';
@@ -239,6 +240,10 @@ export const Editor = React.memo((props: EditorProps) => {
 
                     {onNavigate &&
                         <NavigateAdorner engine={layers.engine} onNavigate={onNavigate} />
+                    }
+
+                    {isDefaultView &&
+                        <Cursors diagramId={diagram.id} viewBox={viewBox} />
                     }
                 </>
             )}
