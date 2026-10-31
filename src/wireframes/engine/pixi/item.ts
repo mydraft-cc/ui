@@ -13,7 +13,7 @@ import { DiagramItem } from '@app/wireframes/model';
 import { EngineItem } from './../interface';
 import { PixiObject } from './object';
 import { PixiRenderer } from './renderer';
-import { linkToPixi } from './utils';
+import { linkToPixi, RequestRender } from './utils';
 
 export class PixiItem extends PixiObject implements EngineItem {
     private readonly container: Container;
@@ -34,8 +34,9 @@ export class PixiItem extends PixiObject implements EngineItem {
         public readonly layer: Container,
         public readonly renderer: PixiRenderer,
         public readonly plugin: ShapePlugin,
+        requestRender: RequestRender,
     ) {
-        super();
+        super(requestRender);
 
         this.selector = new Graphics();
 
@@ -47,8 +48,14 @@ export class PixiItem extends PixiObject implements EngineItem {
         layer.addChild(this.container);
     }
 
-    public detach() {
-        this.remove();
+    public moveBefore(next: PixiItem | null) {
+        // Remove first, so that the index of the next item is not shifted when the item is placed before it.
+        this.container.removeFromParent();
+
+        const index = next ? this.layer.getChildIndex(next.container) : this.layer.children.length;
+        this.layer.addChildAt(this.container, index);
+
+        this.requestRender();
     }
 
     public plot(shape: DiagramItem) {
@@ -61,6 +68,8 @@ export class PixiItem extends PixiObject implements EngineItem {
 
         this.addToLayer();
         this.currentShape = shape;
+
+        this.requestRender();
     }
 
     private addToLayer() {
@@ -128,7 +137,8 @@ export class PixiItem extends PixiObject implements EngineItem {
             selectionRect = selectionRect.inflate(diffW * 0.5, diffH * 0.5);
         }
 
-        this.selector.rect(0, 0, selectionRect.w, selectionRect.y).fill('#fff');
+        this.selector.clear();
+        this.selector.rect(selectionRect.x, selectionRect.y, selectionRect.w, selectionRect.h).fill('#fff');
         this.selector.alpha = 0.00001;
     }
 

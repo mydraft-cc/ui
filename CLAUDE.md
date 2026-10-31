@@ -20,6 +20,7 @@ mydraft.cc is an open source wireframing tool: Vite + React 18, TypeScript, Redu
 
 ## Coding Guidelines
 
+* Always put readonly fields first in classes, before mutable fields.
 * Always run linting after code generation to fix formatting issues.
 * Always use named constants for magic numbers.
 * Do keep the number of tests small.

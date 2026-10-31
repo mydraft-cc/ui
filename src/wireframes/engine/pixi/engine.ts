@@ -16,10 +16,32 @@ import { PixiLayer } from './layer';
 import { PixiRenderer } from './renderer';
 import { getSource } from './utils';
 
+const RENDER_SETTLE_TIME_MS = 1000;
+
 export class PixiEngine implements Engine {
+    // Declared before the renderer, because it is passed to it.
+    public readonly requestRender = () => {
+        const ticker = this.application.ticker;
+
+        // The ticker is gone when the application has already been destroyed.
+        if (!ticker) {
+            return;
+        }
+
+        this.isRenderRequested = true;
+
+        if (!ticker.started) {
+            ticker.start();
+        }
+    };
+
     private readonly pipeline = new InteractionPipeline();
-    private readonly renderer = new PixiRenderer();
+    private readonly renderer = new PixiRenderer(this.requestRender);
+    private readonly listeners = new AbortController();
+    private readonly boundary: EventBoundary;
     private zoomTimer: any;
+    private renderUntil = 0;
+    private isRenderRequested = false;
     private isDragging = false;
 
     constructor(
@@ -27,21 +49,29 @@ export class PixiEngine implements Engine {
     ) {
         application.stage.eventMode = 'static';
 
-        application.ticker.add(() => {
-            for (const child of application.stage.children) {
-                const source = getSource(child);
+        // Replace the default loop, which renders every frame, even when nothing has changed.
+        application.ticker.remove(application.render, application);
+        application.ticker.add(this.renderFrame);
 
-                if (Types.is(source, PixiLayer)) {
-                    source.invalidate();
-                }
+        this.requestRender();
+
+        // Text that was rendered with a fallback font must be rendered again.
+        document.fonts?.addEventListener('loadingdone', this.requestRender, { signal: this.listeners.signal });
+
+        // Hidden pages get no frames, so asynchronous text and images might have been missed in the meantime.
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden) {
+                this.requestRender();
             }
-        });
+        }, { signal: this.listeners.signal });
+
+        this.boundary = new EventBoundary(application.stage);
 
         application.canvas.addEventListener('mousemove', event => {
             const hitEvent = this.buildHitEvent(event);
 
             this.handleMouseMove(hitEvent);
-            this.pipeline.emitMouseMove(this.buildHitEvent(event));
+            this.pipeline.emitMouseMove(hitEvent);
         });
 
         application.canvas.addEventListener('mousedown', event => {
@@ -51,33 +81,63 @@ export class PixiEngine implements Engine {
 
         window.addEventListener('blur', (event: FocusEvent) => {
             this.pipeline.emitBlur(event);
-        });
+        }, { signal: this.listeners.signal });
 
         window.document.addEventListener('keyup', (event: KeyboardEvent) => {
             this.pipeline.emitKeyUp(event);
-        });
+        }, { signal: this.listeners.signal });
 
         window.document.addEventListener('keydown', (event: KeyboardEvent) => {
             this.pipeline.emitKeyDown(event);
-        });
+        }, { signal: this.listeners.signal });
 
         window.document.addEventListener('mousemove', (event: MouseEvent) => {
             if (this.isDragging) {
                 this.isDragging = true;
                 this.pipeline.emitMouseDrag(this.buildMouseEvent(event));
             }
-        });
+        }, { signal: this.listeners.signal });
 
         window.document.addEventListener('mouseup', (event: MouseEvent) => {
             if (this.isDragging) {
                 this.isDragging = false;
                 this.pipeline.emitMouseUp(this.buildMouseEvent(event));
             }
-        });
+        }, { signal: this.listeners.signal });
     }
 
+    public destroy() {
+        this.listeners.abort();
+    }
+
+    private renderFrame = () => {
+        const application = this.application;
+        const now = performance.now();
+
+        // Start the time window with the first frame, because frames can be delayed, e.g. for hidden pages.
+        if (this.isRenderRequested) {
+            this.isRenderRequested = false;
+
+            // Keep rendering for a while, because text and images are rendered asynchronously.
+            this.renderUntil = now + RENDER_SETTLE_TIME_MS;
+        } else if (now > this.renderUntil) {
+            application.ticker.stop();
+            return;
+        }
+
+        for (const child of application.stage.children) {
+            const source = getSource(child);
+
+            if (Types.is(source, PixiLayer)) {
+                source.invalidate();
+            }
+        }
+
+        application.render();
+    };
+
     public layer(label: string): EngineLayer {
-        return new PixiLayer(this.application, this.renderer, label);  
+        return new PixiLayer(this.application, this.renderer, this.requestRender, label);
     }
 
     public subscribe(listener: Listener) {
@@ -100,7 +160,8 @@ export class PixiEngine implements Engine {
                 }
         
                 for (const element of container.children) {
-                    if (Types.is(element, HTMLText)) {
+                    // Changing the resolution renders the text again, even when it is the same value.
+                    if (Types.is(element, HTMLText) && element.resolution !== resolution) {
                         element.resolution = resolution;
                     }
 
@@ -109,16 +170,25 @@ export class PixiEngine implements Engine {
             }
 
             setZoom(this.application.stage);
+            this.requestRender();
         }, 500);
     }
 
     public setClickLayer(layer: PixiLayer): void {
-        layer.container.on('click', event => {
-            this.pipeline.emitClick(() => this.buildHitEvent(event));
+        // Only hit the click layer, because unlike SVG, Pixi also hits unfilled adorners on top, like the move rectangle.
+        const boundary = new EventBoundary(layer.container);
+
+        this.application.canvas.addEventListener('click', event => {
+            if (boundary.hitTest(event.offsetX, event.offsetY)) {
+                this.pipeline.emitClick(() => this.buildHitEvent(event, boundary));
+            }
         });
 
-        layer.container.on('doubleclick', event => {
-            this.pipeline.emitDoubleClick(() => this.buildHitEvent(event));
+        // Pixi has no double click event.
+        this.application.canvas.addEventListener('dblclick', event => {
+            if (boundary.hitTest(event.offsetX, event.offsetY)) {
+                this.pipeline.emitDoubleClick(() => this.buildHitEvent(event, boundary));
+            }
         });
     }
 
@@ -133,9 +203,7 @@ export class PixiEngine implements Engine {
         return engineEvent;
     };
 
-    private buildHitEvent = (event: MouseEvent): EngineHitEvent => {
-        const boundary = new EventBoundary(this.application.stage);
-
+    private buildHitEvent = (event: MouseEvent, boundary = this.boundary): EngineHitEvent => {
         const { x, y } = this.getPosition(event);
         const hit = boundary.hitTest(event.offsetX, event.offsetY);
         

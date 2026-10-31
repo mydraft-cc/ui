@@ -73,6 +73,12 @@ const PixiCanvasViewComponent = (props: CanvasProps<PixiEngine> & { background?:
     }, [background]);
 
     React.useEffect(() => {
+        return () => {
+            pixiEngine?.destroy();
+        };
+    }, [pixiEngine]);
+
+    React.useEffect(() => {
         if (!pixiEngine || !onInit) {
             return;
         }
@@ -86,6 +92,7 @@ const PixiCanvasViewComponent = (props: CanvasProps<PixiEngine> & { background?:
         }
         
         pixiEngine.application.renderer.background.color = background;
+        pixiEngine.requestRender();
     }, [background, pixiEngine]);
 
     React.useEffect(() => {
@@ -104,7 +111,8 @@ const PixiCanvasViewComponent = (props: CanvasProps<PixiEngine> & { background?:
             root.y = 0;
         }
 
-        pixiEngine?.adjustToZoom(viewBox?.zoom || 1);
+        pixiEngine.adjustToZoom(viewBox?.zoom || 1);
+        pixiEngine.requestRender();
     }, [pixiEngine, viewBox]);
 
     return (

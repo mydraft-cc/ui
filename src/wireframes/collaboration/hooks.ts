@@ -8,6 +8,7 @@
 import * as React from 'react';
 import { CollaborationContext } from './CollaborationProvider';
 import { user as currentUser, User } from './user';
+import { getVersions, Version, VERSIONS_ROOT } from './versions';
 
 export function useCollaboration() {
     return React.useContext(CollaborationContext);
@@ -83,4 +84,32 @@ export function usePresence(): ReadonlyArray<User> {
     }, [awareness]);
 
     return users;
+}
+
+export function useVersions(): ReadonlyArray<Version> {
+    const { document } = useCollaboration();
+    const [versions, setVersions] = React.useState<ReadonlyArray<Version>>([]);
+
+    React.useEffect(() => {
+        if (!document) {
+            setVersions([]);
+            return undefined;
+        }
+
+        const array = document.getArray<Version>(VERSIONS_ROOT);
+
+        const update = () => {
+            setVersions(getVersions(document));
+        };
+
+        update();
+
+        array.observe(update);
+
+        return () => {
+            array.unobserve(update);
+        };
+    }, [document]);
+
+    return versions;
 }

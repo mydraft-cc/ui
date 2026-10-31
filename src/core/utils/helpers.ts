@@ -56,13 +56,13 @@ export namespace Keys {
     export function isAlt(event: SourceEvent) {
         const key = event.key?.toUpperCase();
 
-        return key === 'ALTLEFT' || key === 'ALTRIGHT' || event.keyCode === CONTROL;
+        return key === 'ALT' || event.keyCode === ALT;
     }
 
     export function isControl(event: SourceEvent) {
         const key = event.key?.toUpperCase();
 
-        return key === 'CONTROL' || event.keyCode === ALT;
+        return key === 'CONTROL' || event.keyCode === CONTROL;
     }
 
     export function isComma(event: SourceEvent) {

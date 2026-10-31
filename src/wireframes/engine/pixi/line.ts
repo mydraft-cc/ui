@@ -8,7 +8,7 @@
 import { Container, Graphics } from 'pixi.js';
 import { EngineLine, EngineLinePlotArgs } from './../interface';
 import { PixiObject } from './object';
-import { linkToPixi, PixiHelper } from './utils';
+import { linkToPixi, PixiHelper, RequestRender } from './utils';
 
 type Values = {
     color: string;
@@ -29,8 +29,8 @@ export class PixiLine extends PixiObject implements EngineLine {
         return this.graphics;
     }
 
-    constructor(layer: Container) {
-        super();
+    constructor(layer: Container, requestRender: RequestRender) {
+        super(requestRender);
         linkToPixi(this, this.graphics);
 
         layer.addChild(this.graphics);
@@ -61,6 +61,7 @@ export class PixiLine extends PixiObject implements EngineLine {
         if (this.attrs[key] !== value) {
             this.attrs[key] = value;
             this.invalid = true;
+            this.requestRender();
         }
     }
 }

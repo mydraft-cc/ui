@@ -9,7 +9,7 @@ import { Container, Graphics } from 'pixi.js';
 import { MathHelper, Types } from '@app/core';
 import { EngineRect, EngineRectOrEllipsePlotArgs } from './../interface';
 import { PixiObject } from './object';
-import { linkToPixi, PixiHelper } from './utils';
+import { linkToPixi, PixiHelper, RequestRender } from './utils';
 
 type Values = {
     fill: string;
@@ -34,10 +34,10 @@ export class PixiRect extends PixiObject implements EngineRect {
         return this.graphics;
     }
 
-    constructor(layer: Container,
+    constructor(layer: Container, requestRender: RequestRender,
         private readonly rectangle: boolean,
     ) {
-        super();
+        super(requestRender);
         linkToPixi(this, this.graphics);
 
         this.graphics.eventMode = 'static';
@@ -62,10 +62,12 @@ export class PixiRect extends PixiObject implements EngineRect {
         this.attrs.plot = args;
         if (args.w !== prevPlot.w || args.h !== prevPlot.h) {
             this.invalid = true;
+            this.requestRender();
             return;
         }
 
         this.updateTransform(args);
+        this.requestRender();
     }
 
     public invalidate() {
@@ -117,6 +119,7 @@ export class PixiRect extends PixiObject implements EngineRect {
         if (this.attrs[key] !== value) {
             this.attrs[key] = value;
             this.invalid = true;
+            this.requestRender();
         }
     }
 }

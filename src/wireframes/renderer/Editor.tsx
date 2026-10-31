@@ -9,6 +9,7 @@
 
 import * as React from 'react';
 import { Color, ImmutableMap, Subscription, Vec2, ViewBox } from '@app/core';
+import { Cursors } from '@app/wireframes/collaboration/Cursors';
 import { Engine, EngineLayer, EngineRect } from '@app/wireframes/engine';
 import { PixiCanvasView } from '@app/wireframes/engine/pixi/canvas/PixiCanvas';
 import { SvgCanvasView } from '@app/wireframes/engine/svg/canvas/SvgCanvas';
@@ -97,6 +98,7 @@ export const Editor = React.memo((props: EditorProps) => {
     const renderPreview = React.useRef(new Subscription<PreviewEvent>());
     const overlayContext = useOverlayContext();
     const masterDiagrams = React.useMemo(() => diagram.masterDiagrams(diagrams), [diagram, diagrams]);
+    const mainDiagrams = React.useMemo(() => [diagram], [diagram]);
     
     const doInit = React.useCallback((engine: Engine) => {
         // Might be called multiple times in dev mode!
@@ -183,7 +185,7 @@ export const Editor = React.memo((props: EditorProps) => {
                     />
 
                     <ItemsLayer
-                        diagrams={[diagram]}
+                        diagrams={mainDiagrams}
                         diagramLayer={layers.renderMainLayer}
                         preview={renderPreview.current}
                         onRender={onRender}
@@ -239,6 +241,10 @@ export const Editor = React.memo((props: EditorProps) => {
 
                     {onNavigate &&
                         <NavigateAdorner engine={layers.engine} onNavigate={onNavigate} />
+                    }
+
+                    {isDefaultView &&
+                        <Cursors diagramId={diagram.id} viewBox={viewBox} />
                     }
                 </>
             )}

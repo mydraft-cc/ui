@@ -9,10 +9,10 @@
 
 import { marked } from 'marked';
 import { Assets, Container, ContainerChild, Graphics, GraphicsPath, HTMLText, Sprite, StrokeStyle, TextStyle, Texture, ViewContainer } from 'pixi.js';
-import { Rect2, TextMeasurer, Types } from '@app/core/utils';
+import { escapeHTML, Rect2, TextMeasurer, Types } from '@app/core/utils';
 import { RendererColor, RendererOpacity, RendererText, RendererWidth, Shape, ShapeProperties, ShapePropertiesFunc, ShapeRenderer, ShapeRendererFunc, TextConfig, TextDecoration } from '@app/wireframes/interface';
 import { getBackgroundColor, getFontFamily, getFontSize, getForegroundColor, getOpacity, getStrokeColor, getStrokeWidth, getText, getTextAlignment, getValue, setValue } from './../shared';
-import { PixiHelper } from './utils';
+import { PixiHelper, RequestRender } from './utils';
 
 type GraphicsType =
     'Ellipse' | 
@@ -50,6 +50,8 @@ type Properties = {
 };
 
 type Test = (existing: ContainerChild) => boolean;
+
+const MASK_COLOR = 'red';
 
 const IS_GRAPHICS: Test = (existing?: ContainerChild) => {
     return Types.is(existing, Graphics);
@@ -120,23 +122,81 @@ const FACTORY_TEXT = (_: Properties, existing?: Container) => {
     if (!existing) {
         existing = new Container();
 
+        // The mask is only activated when the text overflows.
         const mask = new Graphics();
-        existing.mask = mask;
-        existing.addChild(mask);
+        mask.visible = false;
 
         const text = new HTMLText();
         text.resolution = 2;
+        existing.addChild(mask);
         existing.addChild(text);
     }
 
     return existing;
 };
 
+function arrangeText(element: Container, value: Properties['textAlign']) {
+    if (!value) {
+        return;
+    }
+
+    const { align, bounds, type } = value;
+    element.position = { x: bounds.x, y: bounds.y };
+
+    const text = element.getChildAt(1) as HTMLText;
+    const size = text.getSize();
+
+    let ax = 0;
+    let ay = 0;
+    let px = 0;
+    let py = 0;
+
+    if (type === 'Single') {
+        ay = 0.5;
+        py = 0.5 * bounds.h;
+    }
+
+    if (align === 'center') {
+        ax = 0.5;
+        px = 0.5 * bounds.w;
+    } else if (align === 'right') {
+        ax = 1;
+        px = bounds.w;
+    }
+
+    if (type === 'Single' && size.width > bounds.w) {
+        ax = 0;
+        px = 0;
+    }
+
+    text.anchor = { x: ax, y: ay };
+    text.position = { x: px, y: py };
+
+    // Masks break batching, therefore only text that does not fit is clipped.
+    const isClipped = size.width > bounds.w || size.height > bounds.h;
+
+    const mask = element.getChildAt(0) as Graphics;
+    mask.clear();
+
+    if (isClipped) {
+        mask.rect(0, 0, bounds.w, bounds.h).fill(MASK_COLOR);
+    }
+
+    // Hidden masks clip everything, so the mask is only visible while it is used.
+    mask.visible = isClipped;
+    element.mask = isClipped ? mask : null;
+}
+
 export class PixiRenderer implements ShapeRenderer {
+    private readonly setter: PropertiesSetter;
     private currentContainer: Container = null!;
     private currentIndex = 0;
     private clipping = false;
     private wasClipped = false;
+
+    constructor(requestRender: RequestRender) {
+        this.setter = new PropertiesSetter(requestRender);
+    }
 
     public getContainer() {
         return this.currentContainer;
@@ -329,14 +389,10 @@ export class PixiRenderer implements ShapeRenderer {
             throw new Error('Only one clipping element is supported.');
         }
 
-        const setter = PropertiesSetter.INSTANCE;
+        const setter = this.setter;
 
         // Create new properties to ensure to unset properties that are not set anymore.
-        const properties: Properties = {
-            opacity: 1,
-        };
-
-        Object.assign(properties, initialProperties);
+        const properties: Properties = { opacity: 1, ...initialProperties };
         setter.setProperties(properties);
 
         if (customProperties) {
@@ -392,7 +448,7 @@ export class PixiRenderer implements ShapeRenderer {
 }
 
 type Setters<T, E> = {
-    [P in keyof T]?: (value: T[P], element: E) => void;
+    [P in keyof T]?: (value: T[P], element: E, requestRender: RequestRender) => void;
 };
 
 class PropertiesSetter implements ShapeProperties {
@@ -432,7 +488,7 @@ class PropertiesSetter implements ShapeProperties {
         opacity: (value, element) => {
             element.alpha = value;
         },
-        sprite: async (value, element) => {
+        sprite: async (value, element, requestRender) => {
             if (!value || !Types.is(element, Sprite)) {
                 return;
             }
@@ -466,81 +522,47 @@ class PropertiesSetter implements ShapeProperties {
             element.texture = texture;
             setValue(element, 'spriteSource', source);
             alignSprite(element, latest);
+
+            requestRender();
         },
         textContent: (value, element) => {
             if (!value || !Types.is(element, Container)) {
                 return;
             }
 
-            let textOrHtml = value.text;
-            if (value.markdown && textOrHtml) {
-                textOrHtml = marked.parseInline(textOrHtml) as string;
+            let html = value.text || '';
+            if (value.markdown) {
+                html = marked.parseInline(html) as string;
+            } else {
+                html = escapeHTML(html);
             }
 
-            if (value.underline && textOrHtml) {
-                textOrHtml = `<span style="text-decoration: underline">${textOrHtml}</span>`;
+            if (value.underline) {
+                html = `<span style="text-decoration: underline">${html}</span>`;
             }
 
             const text = element.getChildAt(1) as HTMLText;
-            text.text = textOrHtml || '';
-            setValue(element, 'size', null);
+            text.text = html;
         },
-        textStyle: (value, element) => {       
+        textStyle: (value, element) => {
             if (!value || !Types.is(element, Container)) {
                 return;
             }
-                 
+
             const text = element.getChildAt(1) as HTMLText;
             text.style = { ...value };
-            setValue(text, 'size', null);
-        },
-        textAlign: (value, element) => {
-            if (!value || !Types.is(element, Container)) {
-                return;
-            }
-
-
-            const { align, bounds, type } = value;
-            element.position = { x: bounds.x, y: bounds.y };
-
-            const mask = element.getChildAt(0) as Graphics;
-            mask?.clear();
-            mask?.rect(0, 0, bounds.w, bounds.h).fill('red');
-
-            const text = element.getChildAt(1) as HTMLText;
-            let ax = 0;
-            let ay = 0;
-            let px = 0;
-            let py = 0;
-
-            if (type === 'Single') {
-                ay = 0.5;
-                py = 0.5 * bounds.h;
-            }
-
-            if (align === 'center') {
-                ax = 0.5;
-                px = 0.5 * bounds.w;
-            } else if (align === 'right') {
-                ax = 1;
-                px = bounds.w;
-            }
-                
-            if (type === 'Single') {
-                const size = getValue(element, 'size', () => text.getSize());
-                if (size.width > bounds.w) {
-                    ax = 0;
-                    px = 0;
-                }
-            }
-
-            text.anchor = { x: ax, y: ay };
-            text.position = { x: px, y: py };
         },
     } as Setters<Properties, ContainerChild>);
 
+    // The layout depends on the size of the text, therefore it is updated when any of these properties changes.
+    private static readonly TEXT_LAYOUT_PROPERTIES = ['textAlign', 'textContent', 'textStyle'];
+
     private properties: Properties = null!;
-    public static readonly INSTANCE = new PropertiesSetter();
+
+    constructor(
+        private readonly requestRender: RequestRender,
+    ) {
+    }
 
     public apply(element: ContainerChild) {
         const oldProperties = getValue(element, 'properties', () => ({} as Record<string, any>));
@@ -550,7 +572,15 @@ class PropertiesSetter implements ShapeProperties {
             const value = properties[property];
 
             if (!Types.equals(value, oldProperties[property])) {
-                setter(value as never, element);
+                setter(value as never, element, this.requestRender);
+            }
+        }
+
+        if (Types.is(element, Container) && properties.textAlign) {
+            const hasLayoutChanged = PropertiesSetter.TEXT_LAYOUT_PROPERTIES.some(property => !Types.equals(properties[property], oldProperties[property]));
+
+            if (hasLayoutChanged) {
+                arrangeText(element, properties.textAlign);
             }
         }
 

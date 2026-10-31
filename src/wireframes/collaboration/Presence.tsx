@@ -5,13 +5,14 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
 */
 
-import { CopyOutlined, ShareAltOutlined } from '@ant-design/icons';
-import { Avatar, Button, Input, Popover, Space, Tooltip } from 'antd';
+import { CopyOutlined, DisconnectOutlined, ShareAltOutlined } from '@ant-design/icons';
+import { Alert, Avatar, Button, Input, Popover, Space, Tooltip } from 'antd';
 import * as React from 'react';
 import { useEventCallback } from '@app/core';
 import { useAppDispatch } from '@app/store';
 import { texts } from '@app/texts';
 import { showToast } from '@app/wireframes/model';
+import { VersionList } from './VersionList';
 import { useCollaboration, usePresence } from './hooks';
 import { user } from './user';
 
@@ -19,6 +20,14 @@ export const Presence = React.memo(() => {
     const dispatch = useAppDispatch();
     const collaboration = useCollaboration();
     const others = usePresence();
+    const [isOpen, setIsOpen] = React.useState(false);
+
+    React.useEffect(() => {
+        // The joining user cannot see the diagram yet, so we explain why right away.
+        if (collaboration.isRoomEmpty) {
+            setIsOpen(true);
+        }
+    }, [collaboration.isRoomEmpty]);
 
     const link = collaboration.room ?
         `${window.location.protocol}//${window.location.host}/c:${collaboration.room}` :
@@ -43,6 +52,10 @@ export const Presence = React.memo(() => {
         collaboration.start();
     });
 
+    const doStartEmpty = useEventCallback(() => {
+        collaboration.startEmpty();
+    });
+
     if (!collaboration.isSupported) {
         return null;
     }
@@ -57,11 +70,24 @@ export const Presence = React.memo(() => {
                 <Button icon={<CopyOutlined />} onClick={doCopy} />
             </Space.Compact>
 
-            {collaboration.status !== 'Connected' &&
+            {collaboration.status === 'Connecting' &&
                 <p style={{ marginTop: 8 }}>{texts.common.collaborateConnecting}</p>
             }
+
+            {collaboration.status === 'Unreachable' &&
+                <Alert style={{ marginTop: 8 }} type='error' message={texts.common.collaborateUnreachable} showIcon />
+            }
+
+            {collaboration.isRoomEmpty &&
+                <Alert style={{ marginTop: 8 }} type='info' message={texts.common.collaborateRoomEmpty} showIcon
+                    action={<Button size='small' onClick={doStartEmpty}>{texts.common.collaborateRoomEmptyStart}</Button>} />
+            }
+
+            <VersionList />
         </div>
     ) : null;
+
+    const isUnreachable = collaboration.status === 'Unreachable';
 
     return (
         <>
@@ -76,8 +102,9 @@ export const Presence = React.memo(() => {
             }
 
             {link ? (
-                <Popover content={content} trigger='click' placement='bottomRight'>
-                    <Button className='menu-item' size='large' icon={<ShareAltOutlined />}
+                <Popover content={content} trigger='click' placement='bottomRight' open={isOpen} onOpenChange={setIsOpen}>
+                    <Button className='menu-item' size='large' icon={isUnreachable ? <DisconnectOutlined /> : <ShareAltOutlined />}
+                        danger={isUnreachable}
                         type={collaboration.status === 'Connected' ? 'primary' : 'default'} />
                 </Popover>
             ) : (

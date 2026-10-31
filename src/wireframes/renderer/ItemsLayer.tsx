@@ -10,6 +10,7 @@ import { ImmutableList,  Subscription } from '@app/core';
 import { EngineItem, EngineLayer } from '@app/wireframes/engine';
 import { Diagram, DiagramItem, PluginRegistry } from '@app/wireframes/model';
 import { PreviewEvent } from './preview';
+import { reorder } from './reorder';
 
 export interface ItemsLayerProps {
     // The selected diagram.
@@ -35,6 +36,7 @@ export const ItemsLayer = React.memo((props: ItemsLayerProps) => {
 
     const shapesRendered = React.useRef(onRender);
     const shapeRefsById = React.useRef<Record<string, ItemWithPreview>>({});
+    const renderedIds = React.useRef<string[]>([]);
 
     const orderedShapes = React.useMemo(() => {
         const result: DiagramItem[] = [];
@@ -82,7 +84,9 @@ export const ItemsLayer = React.memo((props: ItemsLayerProps) => {
             }
         }
 
-        // Create missing shapes.
+        const currentIds = renderedIds.current.filter(id => !!references[id]);
+
+        // Create missing shapes. The engine appends new items to the end of the layer.
         for (const shape of allShapes) {
             if (!references[shape.id]) {
                 const plugin = PluginRegistry.get(shape.renderer)?.plugin;
@@ -92,27 +96,21 @@ export const ItemsLayer = React.memo((props: ItemsLayerProps) => {
                 }
 
                 references[shape.id] = new ItemWithPreview(diagramLayer.item(plugin));
-            }
-        }
-
-        let hasIdChanged = false;
-        for (let i = 0; i < allShapes.length; i++) {
-            if (!references[allShapes[i].id].checkIndex(i)) {
-                hasIdChanged = true;
-                break;
-            }
-        }
-
-        // If the index of at least once shape has changed we have to remove them all to render them in the correct order.
-        if (hasIdChanged) {
-            for (const ref of Object.values(references)) {
-                ref.detach();
+                currentIds.push(shape.id);
             }
         }
 
         for (const shape of allShapes) {
             references[shape.id].plot(shape);
         }
+
+        const desiredIds = allShapes.map(x => x.id);
+
+        reorder(currentIds, desiredIds, (id, nextId) => {
+            references[id].moveBefore(nextId ? references[nextId] : null);
+        });
+
+        renderedIds.current = desiredIds;
 
         if (shapesRendered.current) {
             shapesRendered.current();
@@ -139,7 +137,6 @@ export const ItemsLayer = React.memo((props: ItemsLayerProps) => {
 class ItemWithPreview {
     private shapePreview: DiagramItem | null = null;
     private shapeStatic: DiagramItem | null = null;
-    private currentIndex = -1;
 
     constructor(
         private readonly engineItem: EngineItem,
@@ -157,15 +154,8 @@ class ItemWithPreview {
         this.render();
     }
 
-    public checkIndex(index: number) {
-        const result = this.currentIndex >= 0 && this.currentIndex !== index;
-
-        this.currentIndex = index;
-        return result;
-    }
-
-    public detach() {
-        this.engineItem.detach();
+    public moveBefore(next: ItemWithPreview | null) {
+        this.engineItem.moveBefore(next?.engineItem ?? null);
     }
     
     public remove() {

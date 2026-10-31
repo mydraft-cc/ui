@@ -265,13 +265,9 @@ export class TransformAdorner extends React.PureComponent<TransformAdornerProps>
             return;
         }
 
-        let hitItem = this.hitTest(event.position);
+        const hitItem = this.hitTest(event.position);
         if (!hitItem) {
             next(event);
-        }
-
-        hitItem = this.hitTest(event.position);
-        if (!hitItem) {
             return;
         }
 

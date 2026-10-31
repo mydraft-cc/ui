@@ -10,6 +10,9 @@ import { Color, Rect2, Types } from '@app/core';
 import { PixiLayer } from './layer';
 import { PixiObject } from './object';
 
+// Pixi only renders after a change, so every change to the scene must request a new frame.
+export type RequestRender = () => void;
+
 export function linkToPixi(source: PixiObject | PixiLayer, element: Container) {
     // Create a reference back to the actual object.
     (element as any)['source'] = source;

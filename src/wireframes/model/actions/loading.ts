@@ -40,11 +40,16 @@ export const loadDiagramInternal =
         return { payload: { stored, requestId } };
     });
 
-export const saveDiagramToFile = 
+export const restoreDiagram =
+    createAction('diagram/restore', (stored: any) => {
+        return { payload: { stored } };
+    });
+
+export const saveDiagramToFile =
     createAsyncThunk('diagram/save/file', async (_, thunkAPI) => {
         const state = thunkAPI.getState() as EditorStateInStore;
 
-        const bodyText = JSON.stringify(getSaveState(state), undefined, 4);
+        const bodyText = JSON.stringify(getSaveState(state.editor), undefined, 4);
         const bodyBlob = new Blob([bodyText], { type: 'application/json' });
 
         saveAs(bodyBlob, 'diagram.json');
@@ -58,11 +63,11 @@ export const saveDiagramToServer =
         const tokenToRead = state.loading.tokenToRead;
 
         if (tokenToRead && tokenToWrite) {
-            await putDiagram(tokenToRead, tokenToWrite, getSaveState(state));
+            await putDiagram(tokenToRead, tokenToWrite, getSaveState(state.editor));
 
             return { tokenToRead, tokenToWrite, update: true, navigate: args.navigate };
         } else {
-            const { readToken, writeToken } = await postDiagram(getSaveState(state));
+            const { readToken, writeToken } = await postDiagram(getSaveState(state.editor));
 
             return { tokenToRead: readToken, tokenToWrite: writeToken, navigate: args.navigate };
         }
@@ -72,7 +77,7 @@ export function loadingMiddleware(): Middleware {
     const middleware: Middleware = store => next => action => {        
         if (loadDiagramFromServer.pending.match(action) ||  loadDiagramFromFile.pending.match(action)) {
             store.dispatch(showToast(texts.common.loadingDiagram, 'loading', action.meta.requestId));
-        } else if ( saveDiagramToServer.pending.match(action) || saveDiagramToFile.pending.match(action)) {
+        } else if (saveDiagramToServer.pending.match(action) || saveDiagramToFile.pending.match(action)) {
             store.dispatch(showToast(texts.common.savingDiagram, 'loading', action.meta.requestId));
         }
 
@@ -154,46 +159,53 @@ export function rootLoading(editorReducer: Reducer<EditorState>): Reducer<any> {
         if (newDiagram.match(action)) {
             state = editorReducer(EditorState.create({ id: action.payload.id }), addDiagram());
         } else if (loadDiagramInternal.match(action)) {
-            const stored = action.payload.stored;
+            state = loadEditor(action.payload.stored, editorReducer);
+        } else if (restoreDiagram.match(action)) {
+            const { color, diagramIds, diagrams, selectedDiagramId, size } = loadEditor(action.payload.stored, editorReducer).unsafeValues();
 
-            let editor: EditorState;
-
-            if (stored.initial) {
-                editor = Serializer.deserializeEditor(stored.initial);
-            } else {
-                editor = EditorState.create();
-            }
-
-            // Older versions have stored the actions and the initial state.
-            const actions: AnyAction[] = stored.actions || (Array.isArray(stored) ? stored : []);
-
-            if (!stored.initial && actions.length === 0) {
-                editor = editorReducer(editor, addDiagram());
-            }
-
-            for (const loadedAction of actions.filter(handleAction)) {
-                editor = editorReducer(editor, migrateOldAction(loadedAction));
-            }
-
-            const selectedDiagram = editor.diagrams.get(editor.selectedDiagramId!);
-
-            if (!selectedDiagram) {
-                const firstDiagram = editor.orderedDiagrams[0];
-
-                if (firstDiagram) {
-                    editor = editorReducer(editor, selectDiagram(firstDiagram));
-                }
-            }
-
-            state = editor;
+            // Merges into the current state to keep the id (the collaboration room) and the identity of the root, which is synced with yjs.
+            state = (state as EditorState).merge({ color, diagramIds, diagrams, selectedDiagramId, size });
         }
 
         return editorReducer(state, action);
     };
 }
 
-function getSaveState(state: EditorStateInStore) {
-    const initial = Serializer.serializeEditor(state.editor);
+function loadEditor(stored: any, editorReducer: Reducer<EditorState>) {
+    let editor: EditorState;
+
+    if (stored.initial) {
+        editor = Serializer.deserializeEditor(stored.initial);
+    } else {
+        editor = EditorState.create();
+    }
+
+    // Older versions have stored the actions and the initial state.
+    const actions: AnyAction[] = stored.actions || (Array.isArray(stored) ? stored : []);
+
+    if (!stored.initial && actions.length === 0) {
+        editor = editorReducer(editor, addDiagram());
+    }
+
+    for (const loadedAction of actions.filter(handleAction)) {
+        editor = editorReducer(editor, migrateOldAction(loadedAction));
+    }
+
+    const selectedDiagram = editor.diagrams.get(editor.selectedDiagramId!);
+
+    if (!selectedDiagram) {
+        const firstDiagram = editor.orderedDiagrams[0];
+
+        if (firstDiagram) {
+            editor = editorReducer(editor, selectDiagram(firstDiagram));
+        }
+    }
+
+    return editor;
+}
+
+export function getSaveState(editor: EditorState) {
+    const initial = Serializer.serializeEditor(editor);
 
     return { initial, actions: [] };
 }

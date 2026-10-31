@@ -1,0 +1,44 @@
+@use '@app/style/vars' as *;
+
+.versions {
+    border-top: 1px solid $color-border;
+    margin-top: 16px;
+    padding-top: 12px;
+
+    &-empty {
+        color: $color-text;
+        margin: 8px 0 0;
+    }
+
+    &-list {
+        list-style: none;
+        margin: 8px 0 0;
+        max-height: 240px;
+        overflow-y: auto;
+        padding: 0;
+
+        li {
+            align-items: center;
+            display: flex;
+            gap: 8px;
+            padding: 4px 0;
+        }
+    }
+
+    &-info {
+        flex-grow: 1;
+        min-width: 0;
+    }
+
+    &-name {
+        font-weight: 500;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    &-date {
+        color: $color-text;
+        font-size: .8rem;
+    }
+}

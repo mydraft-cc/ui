@@ -1,3 +1,9 @@
 ignore:
   - "**/snap-manager.ts"
   - "**/shapes/**/*.ts"
+  - "**/*.stories.tsx"
+  - "src/style/**"
+  - "src/wireframes/engine/**"
+  - "src/wireframes/renderer/!(reorder).*"
+  - "src/index.tsx"
+  - "src/registerServiceWorker.ts"

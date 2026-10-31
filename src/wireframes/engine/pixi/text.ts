@@ -8,7 +8,7 @@
 import { Container, Graphics, Text } from 'pixi.js';
 import { EngineText, EngineTextPlotArgs } from './../interface';
 import { PixiObject } from './object';
-import { linkToPixi, PixiHelper } from './utils';
+import { linkToPixi, PixiHelper, RequestRender } from './utils';
 
 type Values = {
     color: string;
@@ -39,8 +39,8 @@ export class PixiText extends PixiObject implements EngineText {
         return this.container;
     }
 
-    constructor(layer: Container) {
-        super();
+    constructor(layer: Container, requestRender: RequestRender) {
+        super(requestRender);
         linkToPixi(this, this.container);
         
         this.container.eventMode = 'static';
@@ -109,6 +109,7 @@ export class PixiText extends PixiObject implements EngineText {
         if (this.attrs[key] !== value) {
             this.attrs[key] = value;
             this.invalid = true;
+            this.requestRender();
         }
     }
 }
