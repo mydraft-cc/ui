@@ -27,7 +27,11 @@ export class Subscription<T> {
         }
 
         return () => {
-            this.subscribers.splice(this.subscribers.indexOf(subscription));
+            const index = this.subscribers.indexOf(subscription);
+
+            if (index >= 0) {
+                this.subscribers.splice(index, 1);
+            }
         };
     }
 }

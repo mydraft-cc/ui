@@ -30,6 +30,18 @@ export default defineConfig({
 
         coverage: {
             provider: 'istanbul',
+            include: ['src/**/*.{ts,tsx}'],
+            exclude: [
+                '**/*.spec.{ts,tsx}',
+                '**/*.stories.{ts,tsx}',
+                '**/*.d.ts',
+                // Rendering code is verified visually, so it would only dilute the report.
+                'src/wireframes/engine/**',
+                'src/wireframes/renderer/**',
+                '!src/wireframes/renderer/reorder.ts',
+                'src/index.tsx',
+                'src/registerServiceWorker.ts',
+            ],
         },
         
         // Increase timeouts for tests
